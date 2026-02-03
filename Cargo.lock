@@ -5908,6 +5908,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-integration"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "nexus-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "nexus-kafka"
 version = "0.1.0-alpha"
 dependencies = [

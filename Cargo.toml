@@ -45,6 +45,7 @@ members = [
     "crates/nexus-flyway",
     "crates/nexus-websocket-stomp",
     "crates/nexus-micrometer",
+    "crates/nexus-integration",
     "tests",
     "examples",
 ]

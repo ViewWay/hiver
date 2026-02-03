@@ -1,0 +1,28 @@
+[package]
+name = "nexus-integration"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+nexus-core = { path = "../nexus-core" }
+
+tokio = { workspace = true, features = ["full", "sync"] }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+async-trait = "0.1"
+
+# UUID for message IDs
+uuid = { workspace = true, features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio-test = { workspace = true }
