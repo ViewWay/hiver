@@ -6286,6 +6286,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-state-machine"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "nexus-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
 name = "nexus-test"
 version = "0.1.0-alpha"
 dependencies = [
