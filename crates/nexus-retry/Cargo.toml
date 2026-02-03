@@ -1,0 +1,13 @@
+[package]
+name = "nexus-retry"
+version = "0.1.0-alpha"
+edition = "2024"
+
+[dependencies]
+nexus-resilience = { path = "../nexus-resilience" }
+nexus-retry-macros = { path = "../nexus-retry-macros" }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
