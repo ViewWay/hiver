@@ -5850,6 +5850,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-flyway"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "serde",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "nexus-http"
 version = "0.1.0-alpha"
 dependencies = [

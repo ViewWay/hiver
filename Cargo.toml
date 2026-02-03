@@ -42,6 +42,7 @@ members = [
     "crates/nexus-batch",
     "crates/nexus-retry",
     "crates/nexus-retry-macros",
+    "crates/nexus-flyway",
     "tests",
     "examples",
 ]
