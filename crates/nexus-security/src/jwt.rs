@@ -485,6 +485,9 @@ mod tests {
         let authorities = vec![Authority::Role(Role::User)];
         let old_token = JwtUtil::create_token("123", "alice", &authorities).unwrap();
 
+        // Sleep briefly to ensure different timestamp
+        std::thread::sleep(std::time::Duration::from_secs(2));
+
         let new_token = JwtUtil::refresh_token(&old_token).unwrap();
         assert_ne!(old_token, new_token);
 

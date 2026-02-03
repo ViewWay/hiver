@@ -155,12 +155,13 @@ impl LocalWallet {
     pub fn from_mnemonic(phrase: &str) -> Result<Self, WalletError> {
         use bip39::Mnemonic;
 
-        let mnemonic = Mnemonic::from_phrase(phrase).map_err(|_| WalletError::InvalidMnemonic)?;
+        // bip39 2.x uses Mnemonic::parse for existing mnemonic phrases
+        let mnemonic = Mnemonic::parse(phrase).map_err(|_| WalletError::InvalidMnemonic)?;
 
         let seed = mnemonic.to_seed("");
         // Use first 32 bytes of seed as private key
         let mut bytes = [0u8; 32];
-        bytes.copy_from_slice(&seed.as_bytes()[..32]);
+        bytes.copy_from_slice(&seed[..32]);
 
         Ok(Self {
             signer: Signer::new(bytes),

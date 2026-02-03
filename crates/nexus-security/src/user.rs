@@ -390,13 +390,12 @@ impl InMemoryUserService {
 
     /// Create with users
     /// 使用用户创建
-    pub fn with_users(users: Vec<User>) -> Self {
+    pub async fn with_users(users: Vec<User>) -> Self {
         let service = Self::new();
         let users_map: std::collections::HashMap<_, _> =
             users.into_iter().map(|u| (u.username.clone(), u)).collect();
 
-        // Note: This is synchronous - in real async context would need tokio spawn
-        service.users.blocking_write().extend(users_map);
+        service.users.write().await.extend(users_map);
 
         service
     }
@@ -480,7 +479,7 @@ mod tests {
             "john",
             "secret",
             &[Role::User],
-        )]);
+        )]).await;
 
         assert!(service.user_exists("john").await);
 

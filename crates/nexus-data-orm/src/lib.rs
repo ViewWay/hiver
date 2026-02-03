@@ -61,6 +61,9 @@ pub mod repository;
 pub mod relationships;
 pub mod migrations;
 
+// Re-export the Model derive macro
+pub use nexus_data_macros::Model;
+
 pub use error::{OrmError, Error, Result, OrmResult};
 pub use model::{Model, ModelMeta, Column, ColumnType};
 pub use active_record::{ActiveRecord, Save, Delete, Refresh};

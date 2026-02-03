@@ -5942,6 +5942,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-micrometer"
+version = "0.1.0-alpha"
+dependencies = [
+ "criterion",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "nexus-core",
+ "opentelemetry 0.31.0",
+ "opentelemetry_sdk 0.31.0",
+ "prometheus",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+]
+
+[[package]]
 name = "nexus-middleware"
 version = "0.1.0-alpha"
 dependencies = [

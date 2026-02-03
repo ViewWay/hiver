@@ -52,6 +52,7 @@ mod context;
 mod encoder;
 mod error;
 mod jwt;
+mod oauth2;
 mod pre_authorize;
 mod rbac;
 mod request_ext;
@@ -65,6 +66,10 @@ pub use context::SecurityContext;
 pub use encoder::{BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder, StandardPasswordEncoder};
 pub use error::{SecurityError, SecurityResult};
 pub use jwt::{JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil};
+pub use oauth2::{
+    OIDCDiscovery, OIDCDiscoveryDocument, OAuth2Client, OAuth2Config, TokenEndpointAuthMethod,
+    TokenResponse, UserInfo,
+};
 pub use pre_authorize::{PreAuthorize, SecurityExpression};
 pub use rbac::{
     AuditLog, AuditLogger, ConsoleAuditLogger, PermissionEntry, RbacConfig, RbacManager,

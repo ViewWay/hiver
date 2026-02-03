@@ -1,7 +1,8 @@
 //! @Pointcut attribute macro
 //! @Pointcut 属性宏
 
-use proc_macro2::TokenStream;
+use proc_macro::TokenStream;
+use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{ItemFn, LitStr, parse_macro_input};
 use syn::{parse::ParseStream, Result as SynResult, parse::Parse};

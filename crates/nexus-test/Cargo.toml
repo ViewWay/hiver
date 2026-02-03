@@ -1,0 +1,62 @@
+[package]
+name = "nexus-test"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Testing framework for Nexus framework.
+Nexus框架的测试框架。
+Equivalent to: Spring Boot Test (@SpringBootTest, @MockBean, TestContainers)
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Macro dependencies / 宏依赖
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+darling = { workspace = true }
+
+# Async runtime / 异步运行时
+nexus-runtime = { path = "../nexus-runtime" }
+nexus-http = { path = "../nexus-http" }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+# HTTP / HTTP
+http = { workspace = true }
+hyper = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Test utilities / 测试工具
+once_cell = { workspace = true }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+trybuild = { workspace = true }

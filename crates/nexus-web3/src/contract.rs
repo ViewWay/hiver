@@ -35,6 +35,8 @@
 
 use std::fmt;
 
+use crate::chain::BlockNumber;
+use crate::tx::TxHash;
 use crate::wallet::Address;
 
 /// Contract error

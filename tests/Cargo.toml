@@ -1,0 +1,33 @@
+[package]
+name = "nexus-tests"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dev-dependencies]
+# Nexus data crates
+nexus-data-commons = { path = "../crates/nexus-data-commons" }
+nexus-data-rdbc = { path = "../crates/nexus-data-rdbc" }
+nexus-data-orm = { path = "../crates/nexus-data-orm" }
+nexus-data-macros = { path = "../crates/nexus-data-macros" }
+
+# Async runtime
+tokio = { workspace = true, features = ["full"] }
+
+# Database
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite"] }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async trait
+async-trait = { workspace = true }
+
+[[test]]
+name = "data_integration"
+path = "lib.rs"

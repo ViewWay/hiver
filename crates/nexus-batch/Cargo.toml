@@ -1,0 +1,23 @@
+[package]
+name = "nexus-batch"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Batch processing framework for Nexus (equivalent to Spring Batch)"
+
+[dependencies]
+nexus-core = { path = "../nexus-core" }
+tokio = { workspace = true, features = ["sync", "fs", "time", "rt"] }
+async-trait = { workspace = true }
+tracing = { workspace = true }
+thiserror = "2.0"
+serde = { workspace = true, features = ["derive"] }
+chrono = { workspace = true }
+uuid = { workspace = true, features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }

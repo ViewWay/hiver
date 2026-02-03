@@ -337,7 +337,7 @@ impl SwaggerConfig {
 
     /// Generate the config JSON object for Swagger UI
     /// 生成 Swagger UI 的配置 JSON 对象
-    fn config_json(&self, spec_url: &str) -> String {
+    fn config_json(&self, _spec_url: &str) -> String {
         let mut parts = Vec::new();
 
         if let Some(ref logo) = self.logo_url {

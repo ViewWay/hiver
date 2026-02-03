@@ -20,6 +20,10 @@ categories = { workspace = true }
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[features]
+default = []
+http-client = ["reqwest"]
+
 [lints]
 workspace = true
 
@@ -73,6 +77,10 @@ tokio = { workspace = true, features = ["sync"] }
 
 # Utilities / 工具
 once_cell = { workspace = true }
+
+# OAuth2 dependencies / OAuth2 依赖
+urlencoding = "2.1"
+reqwest = { workspace = true, optional = true }
 
 [dev-dependencies]
 # Testing / 测试

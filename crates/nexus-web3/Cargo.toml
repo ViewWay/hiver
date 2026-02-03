@@ -27,7 +27,7 @@ wallet = ["ethereum", "dep:bip39"]
 rpc = ["dep:reqwest"]
 contract = ["ethereum", "alloy?/contract"]
 http = ["dep:hyper", "dep:hyper-util"]
-ws = ["dep:tokio-tungstenite", "dep:tungstenite"]
+ws = ["dep:tokio", "dep:tokio-tungstenite", "dep:tungstenite"]
 full = ["ethereum", "wallet", "rpc", "contract", "http", "ws"]
 
 # Chain-specific features / 特定链功能
@@ -93,6 +93,9 @@ time = { workspace = true }
 # Utilities / 工具
 url = { workspace = true }
 indexmap = { workspace = true }
+
+# Async runtime (needed for WebSocket features)
+tokio = { workspace = true, optional = true }
 
 [lints]
 workspace = true

@@ -1,0 +1,59 @@
+[package]
+name = "nexus-data-mongodb"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "MongoDB integration for Nexus framework (Repository, ReactiveMongoTemplate)"
+keywords = ["nexus", "data", "mongodb", "nosql", "database"]
+categories = ["database", "asynchronous"]
+
+[features]
+default = []
+
+# Enable async runtime support
+runtime = ["dep:nexus-runtime"]
+
+# All features
+all = ["runtime"]
+
+[dependencies]
+# Data commons
+nexus-data-commons = { path = "../nexus-data-commons" }
+
+# Data macros for Model derive
+nexus-data-macros = { path = "../nexus-data-macros" }
+
+# Async runtime (optional)
+nexus-runtime = { path = "../nexus-runtime", optional = true }
+
+# MongoDB driver
+mongodb = { version = "3.1" }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# Async trait support
+async-trait = { workspace = true }
+
+# UUID support
+uuid = { version = "1.12", features = ["v4", "serde"] }
+
+# Chrono for datetime
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = { workspace = true }
+
+# Futures support
+futures-util = "0.3"
+
+# Tokio for async runtime
+tokio = { workspace = true, features = ["sync"] }

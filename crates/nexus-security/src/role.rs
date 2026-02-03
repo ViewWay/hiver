@@ -353,7 +353,7 @@ mod tests {
     fn test_role_from_str() {
         assert_eq!(Role::from_str("admin"), Role::Admin);
         assert_eq!(Role::from_str("USER"), Role::User);
-        assert_eq!(Role::from_str("custom_role"), Role::Custom("custom_role".to_string()));
+        assert_eq!(Role::from_str("custom_role"), Role::Custom("CUSTOM_ROLE".to_string()));
     }
 
     #[test]

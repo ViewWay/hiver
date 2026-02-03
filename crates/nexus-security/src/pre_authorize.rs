@@ -89,8 +89,14 @@ impl SecurityExpression {
         // Simple parser for common patterns
         // In a full implementation, this would use a proper expression language
 
+        // Try hasRole with single quotes first, then double quotes
         if input.contains("hasRole(") {
-            if let Some(start) = input.find("hasRole(\"") {
+            if let Some(start) = input.find("hasRole('") {
+                if let Some(end) = input[start..].find("')") {
+                    let role = &input[start + 9..start + end];
+                    expressions.push(SecurityExpression::HasRole(role.to_string()));
+                }
+            } else if let Some(start) = input.find("hasRole(\"") {
                 if let Some(end) = input[start..].find("\")") {
                     let role = &input[start + 9..start + end];
                     expressions.push(SecurityExpression::HasRole(role.to_string()));
@@ -98,8 +104,14 @@ impl SecurityExpression {
             }
         }
 
+        // Try hasAuthority with single quotes first, then double quotes
         if input.contains("hasAuthority(") {
-            if let Some(start) = input.find("hasAuthority(\"") {
+            if let Some(start) = input.find("hasAuthority('") {
+                if let Some(end) = input[start..].find("')") {
+                    let auth = &input[start + 14..start + end];
+                    expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
+                }
+            } else if let Some(start) = input.find("hasAuthority(\"") {
                 if let Some(end) = input[start..].find("\")") {
                     let auth = &input[start + 14..start + end];
                     expressions.push(SecurityExpression::HasAuthority(auth.to_string()));

@@ -109,6 +109,11 @@ impl Column {
         self.is_unique = true;
         self
     }
+
+    pub fn with_default(mut self, default: impl Into<String>) -> Self {
+        self.default = Some(default.into());
+        self
+    }
 }
 
 /// Model metadata

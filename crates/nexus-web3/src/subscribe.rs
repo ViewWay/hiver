@@ -37,8 +37,10 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::sync::Arc;
 
 use crate::tx::TxHash;
 use crate::wallet::Address;
@@ -563,7 +565,7 @@ impl<'a> Stream for BlockReceiver<'a> {
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
+    ) -> std::task::Poll<Option<NewBlockHeader>> {
         // In a real implementation, this would poll from the WebSocket
         std::task::Poll::Pending
     }
@@ -587,7 +589,7 @@ impl<'a> Stream for PendingTxReceiver<'a> {
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
+    ) -> std::task::Poll<Option<PendingTransaction>> {
         std::task::Poll::Pending
     }
 }
@@ -610,7 +612,7 @@ impl<'a> Stream for LogReceiver<'a> {
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
+    ) -> std::task::Poll<Option<LogNotification>> {
         std::task::Poll::Pending
     }
 }

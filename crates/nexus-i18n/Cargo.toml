@@ -1,0 +1,20 @@
+[package]
+name = "nexus-i18n"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Internationalization (i18n) support for Nexus (equivalent to Spring MessageSource and ResourceBundle)"
+
+[dependencies]
+nexus-core = { path = "../nexus-core" }
+tokio = { workspace = true, features = ["sync", "fs", "io-util", "time"] }
+async-trait = { workspace = true }
+tracing = { workspace = true }
+thiserror = "2.0"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }

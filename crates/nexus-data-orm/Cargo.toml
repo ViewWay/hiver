@@ -13,14 +13,14 @@ categories = ["database", "asynchronous"]
 [features]
 default = []
 
-# Sea ORM integration (disabled due to sqlx 0.8.6 compatibility issue)
-# sea-orm = ["dep:sea-orm"]
+# Sea ORM integration (using 2.0 RC for sqlx 0.8 support)
+sea-orm = ["dep:sea-orm"]
 
 # Diesel integration (optional)
 diesel = ["dep:diesel"]
 
 # All ORM integrations
-all = ["diesel"]
+all = ["sea-orm", "diesel"]
 
 [dependencies]
 # Data commons
@@ -29,11 +29,14 @@ nexus-data-commons = { path = "../nexus-data-commons" }
 # Data RDBC for reactive database access
 nexus-data-rdbc = { path = "../nexus-data-rdbc" }
 
+# Data macros for Model derive
+nexus-data-macros = { path = "../nexus-data-macros" }
+
 # Async runtime
 nexus-runtime = { path = "../nexus-runtime" }
 
-# Sea ORM (temporarily disabled due to sqlx 0.8.6 compatibility)
-# sea-orm = { version = "1.1", optional = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql", "macros"] }
+# Sea ORM 2.0 RC with sqlx 0.8 support
+sea-orm = { version = "2.0.0-rc", optional = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql", "macros"] }
 
 # Diesel (optional)
 diesel = { version = "2.2", optional = true, features = ["postgres", "mysql", "sqlite"] }

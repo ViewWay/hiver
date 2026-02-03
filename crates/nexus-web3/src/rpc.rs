@@ -36,7 +36,9 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::chain::Block;
+use crate::chain::{Block, BlockNumber};
+use crate::tx::TxHash;
+use crate::wallet::Address;
 
 /// RPC error
 /// RPC错误

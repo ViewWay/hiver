@@ -36,6 +36,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
+use bytes::Bytes;
 use nexus_http::{Body, Response, Result};
 use nexus_router::{Middleware, Next};
 

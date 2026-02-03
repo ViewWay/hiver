@@ -58,6 +58,7 @@ mod cache_evict;
 mod cache_manager;
 mod cache_put;
 mod cacheable;
+mod caching;
 mod condition_evaluator;
 mod key_generator;
 mod resolver;
@@ -68,6 +69,7 @@ pub use cache_evict::{CacheEvict, CacheEvictExec, CacheEvictOptions, EvictPolicy
 pub use cache_manager::{CacheManager, CacheManagerBuilder, SimpleCacheManager};
 pub use cache_put::{CachePut, CachePutExec, CachePutOptions};
 pub use cacheable::{Cacheable, CacheableOptions, Cached};
+pub use caching::{Caching, CachingBuilder, CachingExec};
 pub use condition_evaluator::evaluate_cache_condition;
 pub use key_generator::{DefaultKeyGenerator, HashKeyGenerator, KeyGenerator};
 pub use resolver::{CacheResolver, SimpleCacheResolver};

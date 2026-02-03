@@ -441,7 +441,7 @@ mod tests {
                 "john",
                 "HASH:secret123",
                 &[Role::User],
-            )]));
+            )]).await);
 
         let manager = SimpleAuthenticationManager::new(user_service, Arc::new(MockPasswordEncoder));
 

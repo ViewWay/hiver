@@ -44,6 +44,7 @@ members = [
     "crates/nexus-retry-macros",
     "crates/nexus-flyway",
     "crates/nexus-websocket-stomp",
+    "crates/nexus-micrometer",
     "tests",
     "examples",
 ]

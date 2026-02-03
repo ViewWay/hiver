@@ -99,7 +99,10 @@
       "Bash(wait:*)",
       "Bash(CARGO_REGISTRIES_CRATES_IO_INDEX=sparse+https://index.crates.io/ cargo update:*)",
       "Bash(git tag:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)"
     ]
   }
 }

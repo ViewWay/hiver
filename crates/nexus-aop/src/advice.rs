@@ -1,7 +1,7 @@
 //! Advice attribute macros (@Before, @After, @Around)
 //! 通知属性宏
 
-use proc_macro2::TokenStream;
+use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, LitStr, parse_macro_input};
 use syn::{parse::ParseStream, Result as SynResult, parse::Parse};

@@ -1,44 +1,112 @@
 //! Nexus Validation - 验证模块 / Validation Module
 //!
-//! 提供请求参数校验功能 / Provides request parameter validation
+//! 提供请求参数校验功能，等价于 Spring Validation / Provides request parameter validation, equivalent to Spring Validation
 //!
-//! # 基本使用 / Basic Usage
+//! # Spring Equivalent / Spring等价物
+//!
+//! - `@Valid` → `#[Valid]` - Cascading validation / 级联验证
+//! - `@Validated` → `#[Validated]` - Group validation / 分组验证
+//! - `@NotNull` → `#[NotNull]` - Non-null check / 非空检查
+//! - `@Size` → `#[Size]` - Size validation / 大小验证
+//! - `@Min/@Max` → `#[Min]/#[Max]` - Numeric bounds / 数值边界
+//! - `@Email` → `#[Email]` - Email validation / 邮箱验证
+//! - `@Pattern` → `#[Pattern]` - Regex validation / 正则验证
+//!
+//! # Basic Usage / 基本使用
 //!
 //! ```rust,ignore
-//! use nexus_validation::{Validate, ValidationErrors};
-//! use serde::{Deserialize, Serialize};
+//! use nexus_validation::{Valid, Validated, NotNull, Size, Email};
+//! use serde::Deserialize;
 //!
-//! #[derive(Debug, Deserialize, Serialize, Validate)]
+//! #[derive(Debug, Deserialize)]
 //! struct CreateUserRequest {
-//!     #[validate(length(min = 3, max = 20))]
+//!     #[NotNull]
+//!     #[Size(min = 3, max = 20)]
 //!     username: String,
 //!
-//!     #[validate(email)]
+//!     #[Email]
 //!     email: String,
 //!
-//!     #[validate(range(min = 18, max = 120))]
+//!     #[Min(18)]
+//!     #[Max(120)]
 //!     age: u32,
 //! }
 //!
+//! // Auto-validation with #[Valid] annotation
+//! // 使用#[Valid]注解自动验证
 //! #[nexus_macros::post("/users")]
 //! async fn create_user(
-//!     #[validated] request: CreateUserRequest,
+//!     #[Valid] request: CreateUserRequest,
 //! ) -> Result<Json<User>, Error> {
-//!     // request is validated
+//!     // request is already validated
+//!     // request 已经被验证
+//!     Ok(Json(user))
+//! }
+//!
+//! // Group validation with #[Validated]
+//! // 使用#[Validated]进行分组验证
+//! #[nexus_macros::post("/users")]
+//! async fn create_user_validated(
+//!     #[Validated(CreateGroup::default())] request: CreateUserRequest,
+//! ) -> Result<Json<User>, Error> {
+//!     Ok(Json(user))
+//! }
+//! ```
+//!
+//! # Validation Groups / 验证分组
+//!
+//! ```rust,ignore
+//! use nexus_validation::Validated;
+//!
+//! #[derive(Debug, Default)]
+//! struct CreateGroup;
+//!
+//! #[derive(Debug, Default)]
+//! struct UpdateGroup;
+//!
+//! #[derive(Debug, Deserialize)]
+//! struct UserRequest {
+//!     #[NotNull(group = "CreateGroup")]
+//!     username: String,
+//!
+//!     #[NotNull(group = "UpdateGroup")]
+//!     id: u64,
+//! }
+//!
+//! // Only validates fields marked with CreateGroup
+//! // 仅验证标记为CreateGroup的字段
+//! async fn create_user(
+//!     #[Validated(CreateGroup)] request: UserRequest,
+//! ) -> Result<Json<User>, Error> {
 //!     Ok(Json(user))
 //! }
 //! ```
 
+pub mod annotations;
 pub mod error;
 pub mod extractor;
+pub mod groups;
+pub mod nested;
 pub mod traits;
 pub mod validators;
 
-// Re-exports commonly used types
+// Re-exports commonly used types / 重新导出常用类型
 pub use error::{ValidationError, ValidationErrors};
 pub use extractor::Valid;
+pub use groups::Validated;
 pub use traits::Validate;
 pub use validators::*;
+
+// Re-export validation annotations / 重新导出验证注解
+pub use annotations::{
+    AssertFalse, AssertTrue, CreditCardNumber, DecimalMax, DecimalMin, Digits, Email,
+    Future, FutureOrPresent, Length, Max, Min, Negative, NegativeOrZero, NotBlank,
+    NotEmpty, NotNull, Past, PastOrPresent, Pattern, Positive, PositiveOrZero, Size,
+    Url,
+};
+
+// Re-export nested validation / 重新导出嵌套验证
+pub use nested::{Nested, ValidateNested};
 
 use std::fmt;
 

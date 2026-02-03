@@ -13,8 +13,10 @@ pub static EMAIL_REGEX: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap());
 
 /// URL 正则 / URL regex
+/// Supports: domain names, localhost, and IP addresses
+/// 支持: 域名、localhost 和 IP 地址
 pub static URL_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^https?://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$").unwrap());
+    Lazy::new(|| Regex::new(r"^https?://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|localhost|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})(:[0-9]+)?(/.*)?$").unwrap());
 
 /// 用户名正则 / Username regex
 pub static USERNAME_REGEX: Lazy<Regex> =

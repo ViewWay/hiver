@@ -1,7 +1,7 @@
 //! OpenAPI path definitions
 //! OpenAPI路径定义
 
-use crate::{Operation, Schema};
+use crate::{Operation, Schema, Response, Parameter};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -93,7 +93,7 @@ pub struct PathItem {
     /// Parameters
     /// 参数列表
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub parameters: Vec<crate::Parameter>,
+    pub parameters: Vec<Parameter>,
 
     /// Servers
     /// 服务器列表
@@ -261,12 +261,12 @@ pub struct Components {
     /// Responses
     /// 响应列表
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub responses: Option<HashMap<String, crate::Response>>,
+    pub responses: Option<HashMap<String, Response>>,
 
     /// Parameters
     /// 参数列表
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<HashMap<String, crate::Parameter>>,
+    pub parameters: Option<HashMap<String, Parameter>>,
 
     /// Examples
     /// 示例列表
@@ -312,7 +312,7 @@ impl Components {
 
     /// Add response
     /// 添加响应
-    pub fn add_response(&mut self, name: impl Into<String>, response: crate::Response) -> &mut Self {
+    pub fn add_response(&mut self, name: impl Into<String>, response: Response) -> &mut Self {
         self.responses
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), response);
@@ -321,7 +321,7 @@ impl Components {
 
     /// Add parameter
     /// 添加参数
-    pub fn add_parameter(&mut self, name: impl Into<String>, parameter: crate::Parameter) -> &mut Self {
+    pub fn add_parameter(&mut self, name: impl Into<String>, parameter: Parameter) -> &mut Self {
         self.parameters
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), parameter);
@@ -352,9 +352,9 @@ mod tests {
     fn test_path_operation() {
         let op = PathOperation::get(
             "/users/{id}",
-            crate::Operation::new()
+            Operation::new()
                 .summary("Get user")
-                .add_response("200", crate::Response::ok("User found"))
+                .add_response("200", Response::ok("User found"))
         );
 
         assert_eq!(op.path, "/users/{id}");

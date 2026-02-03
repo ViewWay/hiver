@@ -79,7 +79,7 @@ pub mod runtime;
 /// ```
 #[proc_macro_attribute]
 pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    aspect::impl_aspect(_attr, item)
+    aspect::impl_aspect(_attr, item).into()
 }
 
 // ========================================================================
@@ -101,7 +101,7 @@ pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_before(attr, item)
+    advice::impl_before(attr, item).into()
 }
 
 /// Marks a method as after advice
@@ -119,7 +119,7 @@ pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_after(attr, item)
+    advice::impl_after(attr, item).into()
 }
 
 /// Marks a method as around advice
@@ -140,7 +140,7 @@ pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_around(attr, item)
+    advice::impl_around(attr, item).into()
 }
 
 // ========================================================================
@@ -162,7 +162,7 @@ pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
-    pointcut::impl_pointcut(attr, item)
+    pointcut::impl_pointcut(attr, item).into()
 }
 
 // ============================================================================
