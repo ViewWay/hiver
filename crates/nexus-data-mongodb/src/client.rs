@@ -97,12 +97,12 @@ impl MongoClient {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_client_creation() {
-        let client = MongoClient::from_client(
-            Client::with_uri_str("mongodb://localhost:27017").unwrap(),
-            "test_db"
-        );
-        assert_eq!(client.database_name(), "test_db");
+    #[tokio::test]
+    async fn test_client_creation() {
+        let client = Client::with_uri_str("mongodb://localhost:27017")
+            .await
+            .unwrap();
+        let mc = MongoClient::from_client(client, "test_db");
+        assert_eq!(mc.database_name(), "test_db");
     }
 }
