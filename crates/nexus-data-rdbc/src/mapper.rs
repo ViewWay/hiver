@@ -122,9 +122,7 @@ pub trait BaseMapper<T: for<'de> serde::Deserialize<'de>, C: DatabaseClient>: Se
     {
         self.executor()
             .select_page(&page, &wrapper, Self::table_name())
-            .await
-            .map_err(R2dbcError::from)
-    }
+            .await}
 }
 
 /// R2DBC Base Repository trait

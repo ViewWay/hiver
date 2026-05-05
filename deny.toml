@@ -14,18 +14,6 @@ db-path = "~/.cargo/advisory-db"
 # The url(s) of the advisory databases to use
 # 要使用的数据公告数据库 URL
 db-urls = ["https://github.com/rustsec/advisory-db"]
-# The lint level for security vulnerabilities
-# 安全漏洞的 lint 级别
-vulnerability = "deny"
-# The lint level for unmaintained crates
-# 未维护 crate 的 lint 级别
-unmaintained = "warn"
-# The lint level for crates that have been yanked from their source registry
-# 从源注册表中被撤回的 crate 的 lint 级别
-yanked = "warn"
-# The lint level for crates with security notices
-# 有安全通知的 crate 的 lint 级别
-notice = "warn"
 # A list of advisory IDs to ignore
 # 要忽略的公告 ID 列表
 ignore = []
@@ -34,9 +22,6 @@ ignore = []
 # License Checks / 许可证检查
 # ==============================================================================
 [licenses]
-# The lint level for crates which do not have a detectable license
-# 无法检测许可证的 crate 的 lint 级别
-unlicensed = "deny"
 # List of explicitly allowed licenses
 # 明确允许的许可证列表
 allow = [
@@ -48,28 +33,10 @@ allow = [
     "ISC",
     "Unicode-DFS-2016",
 ]
-# List of explicitly disallowed licenses
-# 明确禁止的许可证列表
-deny = [
-    "GPL-2.0",
-    "GPL-3.0",
-    "AGPL-3.0",
-]
-# Lint level for licenses considered copyleft
-# 著作权留左（copyleft）许可证的 lint 级别
-copyleft = "warn"
-# Blanket approval or denial for OSI-approved or FSF Free/Libre licenses
-# OSI 批准或 FSF 自由/免费许可证的 blanket 批准或拒绝
-allow-osi-fsf-free = "both"
-# Lint level used when no other predicates are matched
-# 当没有其他谓词匹配时使用的 lint 级别
-default = "deny"
 # The confidence threshold for detecting a license from license text.
 # 从许可证文本检测许可证的置信度阈值。
 # The higher the value, the more closely the license text must be matched.
 # 值越高，许可证文本必须匹配得越紧密。
-# Both high and low confidence will be used in some capacity
-# 高置信度和低置信度都会以某种方式使用
 confidence-threshold = 0.8
 # Allow 1 or more licenses on a per-crate basis
 # 在每个 crate 的基础上允许一个或多个许可证

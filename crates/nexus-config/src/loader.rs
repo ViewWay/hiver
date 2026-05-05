@@ -403,7 +403,7 @@ impl Watcher {
     pub fn watch_file(&self, path: PathBuf) {
         if let Ok(metadata) = std::fs::metadata(&path)
             && let Ok(modified) = metadata.modified() {
-                let mut files = self.watched_files.write().unwrap();
+                let mut files = self.watched_files.write().expect("lock poisoned");
                 files.insert(path, modified);
             }
     }
@@ -429,7 +429,7 @@ impl Watcher {
             while running.load(std::sync::atomic::Ordering::SeqCst) {
                 std::thread::sleep(interval);
 
-                let mut files = watched_files.write().unwrap();
+                let mut files = watched_files.write().expect("lock poisoned");
                 let mut changed = Vec::new();
 
                 for (path, last_modified) in files.iter() {

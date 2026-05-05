@@ -72,7 +72,7 @@ impl DatabaseClient for SqlxPoolClient {
 
         db_rows
             .iter()
-            .map(|db_row| any_row_to_nexus_row(db_row))
+            .map(any_row_to_nexus_row)
             .collect()
     }
 

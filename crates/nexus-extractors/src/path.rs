@@ -128,9 +128,9 @@ where
                 return Err(ExtractorError::Missing("expected 2 path parameters".to_string()));
             }
 
-            let v1 = T1::from_str(path_vars.get(&var_names[0]).unwrap())
+            let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error"))
                 .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
-            let v2 = T2::from_str(path_vars.get(&var_names[1]).unwrap())
+            let v2 = T2::from_str(path_vars.get(&var_names[1]).expect("unexpected error"))
                 .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
 
             Ok(Path((v1, v2)))
@@ -157,11 +157,11 @@ where
                 return Err(ExtractorError::Missing("expected 3 path parameters".to_string()));
             }
 
-            let v1 = T1::from_str(path_vars.get(&var_names[0]).unwrap())
+            let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error"))
                 .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
-            let v2 = T2::from_str(path_vars.get(&var_names[1]).unwrap())
+            let v2 = T2::from_str(path_vars.get(&var_names[1]).expect("unexpected error"))
                 .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
-            let v3 = T3::from_str(path_vars.get(&var_names[2]).unwrap())
+            let v3 = T3::from_str(path_vars.get(&var_names[2]).expect("unexpected error"))
                 .map_err(|e| ExtractorError::Invalid(format!("parameter 2: {}", e)))?;
 
             Ok(Path((v1, v2, v3)))
@@ -186,7 +186,7 @@ where
 /// }
 /// ```
 pub fn get_path_var(req: &Request, name: &str) -> Option<String> {
-    req.path_var(name).map(std::string::ToString::to_string)
+    req.path_var(name).map(ToString::to_string)
 }
 
 /// Get all path variables

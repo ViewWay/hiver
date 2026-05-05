@@ -134,7 +134,7 @@ pub struct ValidatedInput {
 impl ValidatedInput {
     /// Get args as string slices / 获取参数作为字符串切片
     pub fn args_slices(&self) -> Vec<&str> {
-        self.args.iter().map(std::string::String::as_str).collect()
+        self.args.iter().map(String::as_str).collect()
     }
 
     /// Check if this is empty input / 检查是否为空输入

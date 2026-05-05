@@ -103,10 +103,10 @@ pub struct ApplicationContext {
 impl Debug for ApplicationContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ApplicationContext")
-            .field("singletons_count", &self.singletons.read().unwrap().len())
-            .field("named_beans_count", &self.named_beans.read().unwrap().len())
+            .field("singletons_count", &self.singletons.read().expect("lock poisoned").len())
+            .field("named_beans_count", &self.named_beans.read().expect("lock poisoned").len())
             .field("auto_configurations_count", &self.auto_configurations.len())
-            .field("started", &self.started.read().unwrap())
+            .field("started", &self.started.read().expect("lock poisoned"))
             .finish()
     }
 }
@@ -152,14 +152,14 @@ impl ApplicationContext {
     /// ```
     pub fn register_bean<T: 'static + Send + Sync>(&self, bean: T) {
         let type_id = TypeId::of::<T>();
-        let mut singletons = self.singletons.write().unwrap();
+        let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(type_id, Box::new(bean));
     }
 
     /// 注册 Bean（按类型，使用 Arc）
     /// Register bean (by type, using Arc)
     pub fn register_bean_arc<T: 'static + Send + Sync>(&self, bean: Arc<T>) {
-        let mut singletons = self.singletons.write().unwrap();
+        let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(TypeId::of::<T>(), Box::new(bean));
     }
 
@@ -177,8 +177,8 @@ impl ApplicationContext {
         bean: T,
     ) {
         let type_id = TypeId::of::<T>();
-        let mut named_beans = self.named_beans.write().unwrap();
-        let mut bean_names = self.bean_names.write().unwrap();
+        let mut named_beans = self.named_beans.write().expect("lock poisoned");
+        let mut bean_names = self.bean_names.write().expect("lock poisoned");
 
         named_beans.insert(name.clone(), Box::new(bean));
         bean_names.insert(name, type_id);
@@ -208,7 +208,7 @@ impl ApplicationContext {
     /// }
     /// ```
     pub fn get_bean<T: 'static + Clone + Send + Sync>(&self) -> Option<Arc<T>> {
-        let singletons = self.singletons.read().unwrap();
+        let singletons = self.singletons.read().expect("lock poisoned");
         singletons
             .get(&TypeId::of::<T>())
             .and_then(|b: &Box<dyn Any + Send + Sync>| b.downcast_ref::<T>())
@@ -236,7 +236,7 @@ impl ApplicationContext {
         &self,
         name: &str,
     ) -> Option<Arc<T>> {
-        let named_beans = self.named_beans.read().unwrap();
+        let named_beans = self.named_beans.read().expect("lock poisoned");
         named_beans
             .get(name)
             .and_then(|b: &Box<dyn Any + Send + Sync>| b.downcast_ref::<T>())
@@ -250,21 +250,21 @@ impl ApplicationContext {
     /// 检查 Bean 是否存在（按类型）
     /// Check if bean exists (by type)
     pub fn contains_bean<T: 'static>(&self) -> bool {
-        let singletons = self.singletons.read().unwrap();
+        let singletons = self.singletons.read().expect("lock poisoned");
         singletons.contains_key(&TypeId::of::<T>())
     }
 
     /// 检查 Bean 是否存在（按名称）
     /// Check if bean exists (by name)
     pub fn contains_named_bean(&self, name: &str) -> bool {
-        let named_beans = self.named_beans.read().unwrap();
+        let named_beans = self.named_beans.read().expect("lock poisoned");
         named_beans.contains_key(name)
     }
 
     /// 获取所有 Bean 名称
     /// Get all bean names
     pub fn get_bean_names(&self) -> Vec<String> {
-        let bean_names = self.bean_names.read().unwrap();
+        let bean_names = self.bean_names.read().expect("lock poisoned");
         bean_names.keys().cloned().collect()
     }
 
@@ -299,7 +299,7 @@ impl ApplicationContext {
     /// 检查 Bean 是否存在（按 `TypeId`）
     /// Check if bean exists (by `TypeId`)
     pub fn contains_bean_by_id(&self, type_id: TypeId) -> bool {
-        let singletons = self.singletons.read().unwrap();
+        let singletons = self.singletons.read().expect("lock poisoned");
         singletons.contains_key(&type_id)
     }
 
@@ -316,7 +316,7 @@ impl ApplicationContext {
         // Check if already started
         // 检查是否已启动
         {
-            let started = self.started.read().unwrap();
+            let started = self.started.read().expect("lock poisoned");
             if *started {
                 return Ok(());
             }
@@ -331,7 +331,7 @@ impl ApplicationContext {
 
         // Mark as started
         // 标记为已启动
-        *self.started.write().unwrap() = true;
+        *self.started.write().expect("lock poisoned") = true;
         let elapsed = start.elapsed();
 
         tracing::info!(
@@ -452,20 +452,20 @@ impl ApplicationContext {
     /// Shutdown application context
     pub async fn shutdown(&self) -> AnyhowResult<()> {
         tracing::info!("Shutting down Nexus ApplicationContext...");
-        *self.started.write().unwrap() = false;
+        *self.started.write().expect("lock poisoned") = false;
         Ok(())
     }
 
     /// 检查是否已启动
     /// Check if started
     pub fn is_started(&self) -> bool {
-        *self.started.read().unwrap()
+        *self.started.read().expect("lock poisoned")
     }
 
     /// 获取已注册的 Bean 数量
     /// Get the number of registered beans
     pub fn bean_count(&self) -> usize {
-        self.singletons.read().unwrap().len()
+        self.singletons.read().expect("lock poisoned").len()
     }
 
     // ========================================================================
@@ -649,11 +649,11 @@ impl ComponentRegistry {
     /// 获取所有组件名称
     pub fn all_components(&self) -> Vec<&str> {
         let mut all = Vec::new();
-        all.extend(self.controllers.iter().map(std::string::String::as_str));
-        all.extend(self.services.iter().map(std::string::String::as_str));
-        all.extend(self.repositories.iter().map(std::string::String::as_str));
-        all.extend(self.configurations.iter().map(std::string::String::as_str));
-        all.extend(self.components.iter().map(std::string::String::as_str));
+        all.extend(self.controllers.iter().map(String::as_str));
+        all.extend(self.services.iter().map(String::as_str));
+        all.extend(self.repositories.iter().map(String::as_str));
+        all.extend(self.configurations.iter().map(String::as_str));
+        all.extend(self.components.iter().map(String::as_str));
         all
     }
 }

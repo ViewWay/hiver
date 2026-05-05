@@ -62,7 +62,7 @@ impl IdGenerator {
     fn next_trace_id(&self) -> TraceId {
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .unwrap()
+            .expect("system clock before UNIX_EPOCH")
             .as_nanos() as u64;
         let random = self.counter.fetch_add(1, Ordering::Relaxed);
         TraceId::from_parts(timestamp, random)
@@ -123,13 +123,17 @@ impl TraceId {
     /// Get high 64 bits
     /// 获取高64位
     pub fn high(&self) -> u64 {
-        u64::from_be_bytes(self.0[0..8].try_into().unwrap())
+        u64::from_be_bytes(
+            self.0[0..8]
+                .try_into()
+                .expect("slice has correct length"),
+        )
     }
 
     /// Get low 64 bits
     /// 获取低64位
     pub fn low(&self) -> u64 {
-        u64::from_be_bytes(self.0[8..16].try_into().unwrap())
+        u64::from_be_bytes(self.0[8..16].try_into().expect("slice has correct length"))
     }
 
     /// Convert to hex string
@@ -329,17 +333,25 @@ impl TraceContext {
             return Err(TraceContextError::InvalidFormat);
         }
 
+        // SAFETY: length verified to be 4 above
+        #[allow(clippy::indexing_slicing)]
         let version = parts[0];
         if version != "00" {
             return Err(TraceContextError::UnsupportedVersion(version.to_string()));
         }
 
+        // SAFETY: length verified to be 4 above
+        #[allow(clippy::indexing_slicing)]
         let trace_id = TraceId::from_hex(parts[1])
             .ok_or(TraceContextError::InvalidTraceId(parts[1].to_string()))?;
 
+        // SAFETY: length verified to be 4 above
+        #[allow(clippy::indexing_slicing)]
         let span_id = SpanId::from_hex(parts[2])
             .ok_or(TraceContextError::InvalidSpanId(parts[2].to_string()))?;
 
+        // SAFETY: length verified to be 4 above
+        #[allow(clippy::indexing_slicing)]
         let flags = u8::from_str_radix(parts[3], 16)
             .map_err(|_| TraceContextError::InvalidFlags(parts[3].to_string()))?;
 
@@ -557,7 +569,7 @@ impl Span {
     pub fn with_context(name: impl Into<String>, context: TraceContext) -> Self {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .unwrap()
+            .expect("system clock before UNIX_EPOCH")
             .as_nanos() as u64;
 
         Self {
@@ -882,14 +894,14 @@ static GLOBAL_TRACER: std::sync::LazyLock<std::sync::RwLock<Option<Tracer>>> =
 /// 初始化全局追踪器
 pub fn init_tracer(service_name: impl Into<String>) -> Tracer {
     let tracer = Tracer::new(service_name);
-    *GLOBAL_TRACER.write().unwrap() = Some(tracer.clone());
+    *GLOBAL_TRACER.write().expect("lock poisoned") = Some(tracer.clone());
     tracer
 }
 
 /// Get the global tracer
 /// 获取全局追踪器
 pub fn global_tracer() -> Option<Tracer> {
-    GLOBAL_TRACER.read().unwrap().as_ref().cloned()
+    GLOBAL_TRACER.read().expect("lock poisoned").as_ref().cloned()
 }
 
 #[cfg(test)]

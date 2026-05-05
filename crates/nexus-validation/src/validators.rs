@@ -4,26 +4,25 @@
 //! Provides predefined validation rules and utility functions
 
 use crate::{ValidationError, ValidationErrors};
-use once_cell::sync::Lazy;
 use regex::Regex;
 use std::collections::HashMap;
 
 /// 邮箱正则 / Email regex
 pub static EMAIL_REGEX: std::sync::LazyLock<Regex> =
-    std::sync::LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap());
+    std::sync::LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").expect("unexpected error"));
 
 /// URL 正则 / URL regex
 /// Supports: domain names, localhost, and IP addresses
 /// 支持: 域名、localhost 和 IP 地址
 pub static URL_REGEX: std::sync::LazyLock<Regex> =
-    std::sync::LazyLock::new(|| Regex::new(r"^https?://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|localhost|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})(:[0-9]+)?(/.*)?$").unwrap());
+    std::sync::LazyLock::new(|| Regex::new(r"^https?://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|localhost|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})(:[0-9]+)?(/.*)?$").expect("unexpected error"));
 
 /// 用户名正则 / Username regex
 pub static USERNAME_REGEX: std::sync::LazyLock<Regex> =
-    std::sync::LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9_-]{3,20}$").unwrap());
+    std::sync::LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9_-]{3,20}$").expect("unexpected error"));
 
 /// 手机号正则 / Phone regex
-pub static PHONE_REGEX: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| Regex::new(r"^[+]?[1-9]\d{1,14}$").unwrap());
+pub static PHONE_REGEX: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| Regex::new(r"^[+]?[1-9]\d{1,14}$").expect("unexpected error"));
 
 /// 验证规则 / Validation rules
 #[derive(Debug, Clone)]
@@ -93,7 +92,7 @@ impl ValidationRule {
                 }
             },
             ValidationRule::Regex(pattern) => {
-                let regex = Regex::new(pattern).unwrap();
+                let regex = Regex::new(pattern).expect("unexpected error");
                 if !regex.is_match(value) {
                     return Err(ValidationError::pattern_mismatch(field, pattern));
                 }

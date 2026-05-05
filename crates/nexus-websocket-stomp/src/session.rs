@@ -159,19 +159,19 @@ impl StompSession {
     /// Check if connected
     /// 检查是否已连接
     pub fn is_connected(&self) -> bool {
-        *self.connected.read().unwrap()
+        *self.connected.read().expect("lock poisoned")
     }
 
     /// Set connected state
     /// 设置连接状态
     pub fn set_connected(&self, connected: bool) {
-        *self.connected.write().unwrap() = connected;
+        *self.connected.write().expect("lock poisoned") = connected;
     }
 
     /// Add subscription
     /// 添加订阅
     pub fn subscribe(&self, subscription: Subscription) -> Result<()> {
-        let mut subs = self.subscriptions.write().unwrap();
+        let mut subs = self.subscriptions.write().expect("lock poisoned");
         if subs.contains_key(&subscription.id) {
             return Err(StompError::InvalidHeader(format!(
                 "Subscription already exists: {}",
@@ -185,7 +185,7 @@ impl StompSession {
     /// Remove subscription
     /// 移除订阅
     pub fn unsubscribe(&self, id: &str) -> Result<()> {
-        let mut subs = self.subscriptions.write().unwrap();
+        let mut subs = self.subscriptions.write().expect("lock poisoned");
         subs.remove(id)
             .ok_or_else(|| StompError::SubscriptionNotFound(id.to_string()))?;
         Ok(())
@@ -194,7 +194,7 @@ impl StompSession {
     /// Get subscription
     /// 获取订阅
     pub fn subscription(&self, id: &str) -> Option<Subscription> {
-        self.subscriptions.read().unwrap().get(id).cloned()
+        self.subscriptions.read().expect("lock poisoned").get(id).cloned()
     }
 
     /// Get all subscriptions
@@ -223,7 +223,7 @@ impl StompSession {
     /// Begin transaction
     /// 开始事务
     pub fn begin_transaction(&self, id: String) {
-        let mut txs = self.transactions.write().unwrap();
+        let mut txs = self.transactions.write().expect("lock poisoned");
         txs.insert(
             id.clone(),
             TransactionState {
@@ -236,7 +236,7 @@ impl StompSession {
     /// Commit transaction
     /// 提交事务
     pub fn commit_transaction(&self, id: &str) -> Result<Vec<StompFrame>> {
-        let mut txs = self.transactions.write().unwrap();
+        let mut txs = self.transactions.write().expect("lock poisoned");
         let tx = txs
             .remove(id)
             .ok_or_else(|| StompError::InvalidHeader(format!("Transaction not found: {}", id)))?;
@@ -246,7 +246,7 @@ impl StompSession {
     /// Abort transaction
     /// 回滚事务
     pub fn abort_transaction(&self, id: &str) -> Result<()> {
-        let mut txs = self.transactions.write().unwrap();
+        let mut txs = self.transactions.write().expect("lock poisoned");
         txs.remove(id)
             .ok_or_else(|| StompError::InvalidHeader(format!("Transaction not found: {}", id)))?;
         Ok(())
@@ -255,7 +255,7 @@ impl StompSession {
     /// Add message to transaction
     /// 添加消息到事务
     pub fn add_to_transaction(&self, tx_id: &str, frame: StompFrame) -> Result<()> {
-        let mut txs = self.transactions.write().unwrap();
+        let mut txs = self.transactions.write().expect("lock poisoned");
         let tx = txs
             .get_mut(tx_id)
             .ok_or_else(|| StompError::InvalidHeader(format!("Transaction not found: {}", tx_id)))?;
@@ -266,13 +266,13 @@ impl StompSession {
     /// Set heartbeat configuration
     /// 设置心跳配置
     pub fn set_heartbeat(&self, config: HeartbeatConfig) {
-        *self.heartbeat.write().unwrap() = config;
+        *self.heartbeat.write().expect("lock poisoned") = config;
     }
 
     /// Get heartbeat configuration
     /// 获取心跳配置
     pub fn heartbeat(&self) -> HeartbeatConfig {
-        self.heartbeat.read().unwrap().clone()
+        self.heartbeat.read().expect("lock poisoned").clone()
     }
 
     /// Generate message ID
@@ -334,7 +334,7 @@ impl Default for MemoryBroker {
 #[async_trait::async_trait]
 impl StompBroker for MemoryBroker {
     async fn subscribe(&self, session: &StompSession, destination: &str) -> Result<()> {
-        let mut subs = self.subscribers.write().unwrap();
+        let mut subs = self.subscribers.write().expect("lock poisoned");
         subs.entry(destination.to_string())
             .or_default()
             .push(session.id().to_string());
@@ -342,7 +342,7 @@ impl StompBroker for MemoryBroker {
     }
 
     async fn unsubscribe(&self, session_id: &str, destination: &str) -> Result<()> {
-        let mut subs = self.subscribers.write().unwrap();
+        let mut subs = self.subscribers.write().expect("lock poisoned");
         if let Some(subs_for_dest) = subs.get_mut(destination) {
             subs_for_dest.retain(|id| id != session_id);
         }

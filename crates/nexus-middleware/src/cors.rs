@@ -104,21 +104,21 @@ impl CorsConfig {
     /// Set allowed methods
     /// 设置允许的方法
     pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {
-        self.allowed_methods = methods.iter().map(std::string::ToString::to_string).collect();
+        self.allowed_methods = methods.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Set allowed headers
     /// 设置允许的headers
     pub fn allowed_headers(mut self, headers: Vec<&str>) -> Self {
-        self.allowed_headers = headers.iter().map(std::string::ToString::to_string).collect();
+        self.allowed_headers = headers.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Set exposed headers
     /// 设置暴露的headers
     pub fn exposed_headers(mut self, headers: Vec<&str>) -> Self {
-        self.exposed_headers = headers.iter().map(std::string::ToString::to_string).collect();
+        self.exposed_headers = headers.iter().map(ToString::to_string).collect();
         self
     }
 

@@ -109,7 +109,7 @@ impl ValidationErrors {
     /// Convert to HTTP error
     /// 转换为 HTTP 错误
     pub fn to_http_error(&self) -> Error {
-        let error_messages: Vec<String> = self.errors.iter().map(std::string::ToString::to_string).collect();
+        let error_messages: Vec<String> = self.errors.iter().map(ToString::to_string).collect();
 
         Error::bad_request(format!("Validation failed: {}", error_messages.join(", ")))
     }
@@ -120,7 +120,7 @@ impl std::fmt::Display for ValidationErrors {
         if self.errors.len() == 1 {
             write!(f, "{}", self.errors[0])
         } else {
-            let messages: Vec<String> = self.errors.iter().map(std::string::ToString::to_string).collect();
+            let messages: Vec<String> = self.errors.iter().map(ToString::to_string).collect();
             write!(f, "Multiple validation errors: {}", messages.join(", "))
         }
     }

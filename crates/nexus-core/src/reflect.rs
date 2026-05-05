@@ -49,14 +49,14 @@ impl ReflectContainer {
     {
         let factory_arc: Arc<dyn ReflectBeanFactory> = Arc::new(factory);
 
-        let mut factories_by_name = self.factories_by_name.write().unwrap();
+        let mut factories_by_name = self.factories_by_name.write().expect("lock poisoned");
         factories_by_name.insert(type_name.to_string(), factory_arc);
     }
 
     /// Create a bean dynamically by type name
     /// 按类型名称动态创建Bean
     pub fn create_bean_by_name(&self, type_name: &str) -> Result<Box<dyn Reflect>> {
-        let factories = self.factories_by_name.read().unwrap();
+        let factories = self.factories_by_name.read().expect("lock poisoned");
         let factory = factories.get(type_name).ok_or_else(|| {
             Error::not_found(format!("Factory not found for type: {}", type_name))
         })?;

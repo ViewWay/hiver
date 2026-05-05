@@ -258,7 +258,7 @@ impl Config {
     /// Get loaded files
     /// 获取已加载的文件
     pub fn files(&self) -> Vec<PathBuf> {
-        self.files.read().unwrap().clone()
+        self.files.read().expect("lock poisoned").clone()
     }
 
     /// Get reload strategy
@@ -464,7 +464,7 @@ impl Config {
     fn toml_to_value(toml: &toml::Value) -> Value {
         match toml {
             toml::Value::Boolean(v) => Value::Bool(*v),
-            toml::Value::Integer(v) => Value::Integer((*v)),
+            toml::Value::Integer(v) => Value::Integer(*v),
             toml::Value::Float(v) => Value::Float(*v),
             toml::Value::String(v) => Value::String(v.clone()),
             toml::Value::Array(v) => Value::List(v.iter().map(Self::toml_to_value).collect()),

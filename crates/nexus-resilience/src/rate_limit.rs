@@ -215,7 +215,7 @@ impl TokenBucketState {
     /// 尝试获取令牌
     fn try_acquire(&self, refill_rate: u64) -> Result<()> {
         // Refill tokens based on elapsed time
-        let mut last = self.last_refill.lock().unwrap();
+        let mut last = self.last_refill.lock().expect("lock poisoned");
         let elapsed = last.elapsed();
         let tokens_to_add = (elapsed.as_secs_f64() * refill_rate as f64) as usize;
 
@@ -278,7 +278,7 @@ impl SlidingWindowState {
     /// Try to acquire a permit
     /// 尝试获取许可
     fn try_acquire(&self) -> Result<()> {
-        let mut timestamps = self.timestamps.lock().unwrap();
+        let mut timestamps = self.timestamps.lock().expect("lock poisoned");
         let now = Instant::now();
 
         // Remove timestamps outside the window
@@ -337,7 +337,7 @@ impl FixedWindowState {
     /// Try to acquire a permit
     /// 尝试获取许可
     fn try_acquire(&self) -> Result<()> {
-        let mut start = self.window_start.lock().unwrap();
+        let mut start = self.window_start.lock().expect("lock poisoned");
 
         // Check if we need to reset the window
         if start.elapsed() >= self.window_duration {
@@ -509,7 +509,7 @@ impl RateLimiter {
             },
             RateLimiterType::SlidingWindow => {
                 if let Some(ref window) = self.sliding_window {
-                    let timestamps = window.timestamps.lock().unwrap();
+                    let timestamps = window.timestamps.lock().expect("lock poisoned");
                     RateLimiterMetrics {
                         available_tokens: None,
                         window_count: Some(timestamps.len()),
@@ -570,21 +570,21 @@ impl RateLimiterRegistry {
     /// Register a rate limiter
     /// 注册限流器
     pub fn register(&self, limiter: RateLimiter) {
-        let mut limiters = self.limiters.write().unwrap();
+        let mut limiters = self.limiters.write().expect("lock poisoned");
         limiters.insert(limiter.name().to_string(), limiter);
     }
 
     /// Get a rate limiter by name
     /// 按名称获取限流器
     pub fn get(&self, name: &str) -> Option<RateLimiter> {
-        let limiters = self.limiters.read().unwrap();
+        let limiters = self.limiters.read().expect("lock poisoned");
         limiters.get(name).cloned()
     }
 
     /// Get all rate limiters
     /// 获取所有限流器
     pub fn all(&self) -> Vec<RateLimiter> {
-        let limiters = self.limiters.read().unwrap();
+        let limiters = self.limiters.read().expect("lock poisoned");
         limiters.values().cloned().collect()
     }
 }

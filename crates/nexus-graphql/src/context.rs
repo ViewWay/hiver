@@ -49,11 +49,11 @@ impl GraphQLContext {
     }
 
     pub fn get_bool(&self, key: &str) -> Option<bool> {
-        self.values.get(key).and_then(serde_json::Value::as_bool)
+        self.values.get(key).and_then(Value::as_bool)
     }
 
     pub fn get_i64(&self, key: &str) -> Option<i64> {
-        self.values.get(key).and_then(serde_json::Value::as_i64)
+        self.values.get(key).and_then(Value::as_i64)
     }
 
     pub fn contains_key(&self, key: &str) -> bool {

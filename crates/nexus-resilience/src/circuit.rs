@@ -171,7 +171,7 @@ impl Metrics {
     /// Reset window if expired
     /// 如果窗口过期则重置
     fn reset_if_expired(&self) {
-        let mut start = self.window_start.lock().unwrap();
+        let mut start = self.window_start.lock().expect("lock poisoned");
         if start.elapsed() >= self.window_duration {
             self.total_requests.store(0, Ordering::Relaxed);
             self.failed_requests.store(0, Ordering::Relaxed);
@@ -415,7 +415,7 @@ impl CircuitBreaker {
     /// Get current state
     /// 获取当前状态
     pub fn state(&self) -> CircuitState {
-        let mut data = self.state_data.lock().unwrap();
+        let mut data = self.state_data.lock().expect("lock poisoned");
         let current = data.get_state();
 
         // Auto-transition from Open to HalfOpen after duration
@@ -470,7 +470,7 @@ impl CircuitBreaker {
     fn on_success(&self) {
         self.metrics.record_success();
 
-        let mut data = self.state_data.lock().unwrap();
+        let mut data = self.state_data.lock().expect("lock poisoned");
         match data.get_state() {
             CircuitState::Closed => {
                 // Stay in Closed state
@@ -499,7 +499,7 @@ impl CircuitBreaker {
     fn on_error(&self) {
         self.metrics.record_failure();
 
-        let mut data = self.state_data.lock().unwrap();
+        let mut data = self.state_data.lock().expect("lock poisoned");
         match data.get_state() {
             CircuitState::Closed => {
                 // Check if we should trip the circuit
@@ -525,14 +525,14 @@ impl CircuitBreaker {
     /// Manually open the circuit
     /// 手动打开电路
     pub fn open(&self) {
-        let mut data = self.state_data.lock().unwrap();
+        let mut data = self.state_data.lock().expect("lock poisoned");
         data.set_state(CircuitState::Open);
     }
 
     /// Manually close the circuit
     /// 手动关闭电路
     pub fn close(&self) {
-        let mut data = self.state_data.lock().unwrap();
+        let mut data = self.state_data.lock().expect("lock poisoned");
         data.set_state(CircuitState::Closed);
         data.half_open_success_count = 0;
         data.half_open_total_count = 0;
@@ -541,7 +541,7 @@ impl CircuitBreaker {
     /// Get current metrics
     /// 获取当前指标
     pub fn metrics(&self) -> CircuitMetrics {
-        let data = self.state_data.lock().unwrap();
+        let data = self.state_data.lock().expect("lock poisoned");
         CircuitMetrics {
             state: data.get_state(),
             failure_rate: self.metrics.failure_rate(),
@@ -591,28 +591,28 @@ impl CircuitBreakerRegistry {
     /// Register a circuit breaker
     /// 注册熔断器
     pub fn register(&self, breaker: CircuitBreaker) {
-        let mut breakers = self.breakers.write().unwrap();
+        let mut breakers = self.breakers.write().expect("lock poisoned");
         breakers.insert(breaker.name().to_string(), breaker);
     }
 
     /// Get a circuit breaker by name
     /// 按名称获取熔断器
     pub fn get(&self, name: &str) -> Option<CircuitBreaker> {
-        let breakers = self.breakers.read().unwrap();
+        let breakers = self.breakers.read().expect("lock poisoned");
         breakers.get(name).cloned()
     }
 
     /// Get all circuit breakers
     /// 获取所有熔断器
     pub fn all(&self) -> Vec<CircuitBreaker> {
-        let breakers = self.breakers.read().unwrap();
+        let breakers = self.breakers.read().expect("lock poisoned");
         breakers.values().cloned().collect()
     }
 
     /// Get all circuit breaker states
     /// 获取所有熔断器状态
     pub fn states(&self) -> Vec<(String, CircuitState)> {
-        let breakers = self.breakers.read().unwrap();
+        let breakers = self.breakers.read().expect("lock poisoned");
         breakers
             .values()
             .map(|b| (b.name().to_string(), b.state()))

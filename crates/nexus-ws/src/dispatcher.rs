@@ -32,7 +32,7 @@ impl MessageDispatcher {
         let soap_action = request.soap_action.as_deref().unwrap_or("");
 
         // Find matching endpoint by SOAP action
-        for (_name, endpoint) in &self.endpoints {
+        for endpoint in self.endpoints.values() {
             if endpoint.handles(soap_action) {
                 match endpoint.invoke(&request.body).await {
                     Ok(response) => return response,
@@ -46,7 +46,7 @@ impl MessageDispatcher {
 
     /// List registered endpoints / 列出已注册的端点
     pub fn endpoint_names(&self) -> Vec<&str> {
-        self.endpoints.keys().map(std::string::String::as_str).collect()
+        self.endpoints.keys().map(String::as_str).collect()
     }
 }
 

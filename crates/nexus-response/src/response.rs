@@ -242,7 +242,7 @@ impl From<Response> for http::Response<Body> {
             }
         }
 
-        builder.body(resp.body).unwrap()
+        builder.body(resp.body).expect("unexpected error")
     }
 }
 
@@ -438,26 +438,26 @@ impl IntoResponse for &'static [u8] {
 
 impl IntoResponse for Vec<u8> {
     fn into_response(self) -> Response {
-        Response::builder().body(self).unwrap()
+        Response::builder().body(self).expect("unexpected error")
     }
 }
 
 impl IntoResponse for Bytes {
     fn into_response(self) -> Response {
-        Response::builder().body(self).unwrap()
+        Response::builder().body(self).expect("unexpected error")
     }
 }
 
 impl IntoResponse for StatusCode {
     fn into_response(self) -> Response {
-        Response::builder().status(self).finish().unwrap()
+        Response::builder().status(self).finish().expect("unexpected error")
     }
 }
 
 /// Create a response with the given status code
 /// 使用给定状态码创建响应
 pub fn status(status: StatusCode) -> Response {
-    Response::builder().status(status).finish().unwrap()
+    Response::builder().status(status).finish().expect("unexpected error")
 }
 
 #[cfg(test)]

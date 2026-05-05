@@ -88,7 +88,7 @@ pub fn evaluate_cache_condition(
     // Handle method calls like length() — must be checked BEFORE == operator
     // 处理像 length() 这样的方法调用 — 必须在 == 运算符之前检查
     if expr.contains(".length()") {
-        let param_part = expr.split(".length()").next().unwrap();
+        let param_part = expr.split(".length()").next().expect("unexpected error");
         let method_end = param_part.len() + ".length()".len();
         let rest = &expr[method_end..];
 
@@ -245,11 +245,10 @@ fn get_value(
     }
 
     // Handle parameter reference like #param
-    if let Some(param_name) = expr.strip_prefix('#') {
-        if let Some(value) = args.get(param_name) {
+    if let Some(param_name) = expr.strip_prefix('#')
+        && let Some(value) = args.get(param_name) {
             return value.clone();
         }
-    }
 
     // Handle string literals (both single and double quotes)
     // 处理字符串字面量（单引号和双引号）
@@ -265,7 +264,7 @@ fn get_value(
     }
 
     if let Ok(num) = expr.parse::<f64>() {
-        return JsonValue::Number(serde_json::Number::from_f64(num).unwrap());
+        return JsonValue::Number(serde_json::Number::from_f64(num).expect("unexpected error"));
     }
 
     // Handle boolean literals

@@ -116,7 +116,7 @@ impl TransactionContextExt {
             .read()
             .await
             .as_ref()
-            .is_some_and(super::transaction::Transaction::is_active)
+            .is_some_and(Transaction::is_active)
     }
 
     /// Get transaction status

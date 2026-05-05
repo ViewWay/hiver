@@ -173,7 +173,7 @@ impl Banner {
     /// Create a custom banner / 创建自定义横幅
     pub fn custom(lines: Vec<&str>) -> Self {
         Self {
-            lines: lines.iter().map(std::string::ToString::to_string).collect(),
+            lines: lines.iter().map(ToString::to_string).collect(),
             enabled: true,
         }
     }

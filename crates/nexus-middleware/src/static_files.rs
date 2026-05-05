@@ -160,7 +160,7 @@ impl StaticFiles {
             builder = builder.header("cache-control", cache);
         }
 
-        Ok(builder.body(Body::from(contents)).unwrap())
+        Ok(builder.body(Body::from(contents)).expect("unexpected error"))
     }
 
     /// Serve directory listing

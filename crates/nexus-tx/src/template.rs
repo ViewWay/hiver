@@ -177,7 +177,7 @@ impl TransactionTemplate {
         E: Into<TransactionError> + Send + 'static,
         TransactionError: Into<E>,
     {
-        self.execute(f).await.map_err(std::convert::Into::into)
+        self.execute(f).await.map_err(Into::into)
     }
 }
 

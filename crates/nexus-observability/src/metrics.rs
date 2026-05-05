@@ -436,7 +436,7 @@ impl HistogramData {
         // Ensure buckets are sorted and end with +Inf
         let has_infinity = buckets.iter().any(Option::is_none);
         buckets.sort_by(|a, b| match (a, b) {
-            (Some(va), Some(vb)) => va.partial_cmp(vb).unwrap(),
+            (Some(va), Some(vb)) => va.partial_cmp(vb).expect("unexpected error"),
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
             (None, None) => std::cmp::Ordering::Equal,

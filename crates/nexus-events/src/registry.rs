@@ -182,7 +182,7 @@ impl EventRegistry {
 
         // Sort by order
         if let Some(list) = consumers.get_mut(&event_type_id) {
-            list.sort_by_key(super::listener::BoxedEventConsumer::order);
+            list.sort_by_key(BoxedEventConsumer::order);
         }
 
         let mut subscriptions = self.subscriptions.write().await;
@@ -251,7 +251,7 @@ impl EventRegistry {
     {
         let type_id = TypeId::of::<E>();
         let consumers = self.consumers.read().await;
-        consumers.get(&type_id).map_or(0, std::vec::Vec::len)
+        consumers.get(&type_id).map_or(0, Vec::len)
     }
 
     /// Check if there are consumers for event type
@@ -283,7 +283,7 @@ impl EventRegistry {
     /// 获取总消费者数量
     pub async fn total_count(&self) -> usize {
         let consumers = self.consumers.read().await;
-        consumers.values().map(std::vec::Vec::len).sum()
+        consumers.values().map(Vec::len).sum()
     }
 }
 

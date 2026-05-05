@@ -230,7 +230,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
             .collect();
 
         // Derive key
-        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).unwrap();
+        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("unexpected error");
         mac.update(&salt);
 
         for _ in 1..self.iterations {
@@ -274,7 +274,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         use hmac::Mac;
         use sha2::Sha256;
 
-        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).unwrap();
+        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("unexpected error");
         mac.update(&salt);
 
         for _ in 1..iterations {

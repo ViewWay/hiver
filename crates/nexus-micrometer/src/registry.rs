@@ -61,7 +61,7 @@ impl MetricRegistry {
         let key = self.metric_key(&metric_name, &tags);
         let id = MetricId::new(metric_name.clone(), tags);
 
-        let mut counters = self.inner.counters.write().unwrap();
+        let mut counters = self.inner.counters.write().expect("lock poisoned");
         if let Some(counter) = counters.get(&key) {
             Ok(counter.clone())
         } else {
@@ -84,7 +84,7 @@ impl MetricRegistry {
         let key = self.metric_key(&metric_name, &tags);
         let id = MetricId::new(metric_name.clone(), tags);
 
-        let mut gauges = self.inner.gauges.write().unwrap();
+        let mut gauges = self.inner.gauges.write().expect("lock poisoned");
         if let Some(gauge) = gauges.get(&key) {
             Ok(gauge.clone())
         } else {
@@ -118,7 +118,7 @@ impl MetricRegistry {
         let key = self.metric_key(&metric_name, &tags);
         let id = MetricId::new(metric_name.clone(), tags);
 
-        let mut gauges = self.inner.gauges.write().unwrap();
+        let mut gauges = self.inner.gauges.write().expect("lock poisoned");
 
         // For function gauges, we create a regular gauge that wraps the function
         // In a real implementation, we'd store the FunctionGauge separately
@@ -145,7 +145,7 @@ impl MetricRegistry {
         let key = self.metric_key(&metric_name, &tags);
         let id = MetricId::new(metric_name.clone(), tags);
 
-        let mut timers = self.inner.timers.write().unwrap();
+        let mut timers = self.inner.timers.write().expect("lock poisoned");
         if let Some(timer) = timers.get(&key) {
             Ok(timer.clone())
         } else {
@@ -168,7 +168,7 @@ impl MetricRegistry {
         let key = self.metric_key(&metric_name, &tags);
         let id = MetricId::new(metric_name.clone(), tags);
 
-        let mut long_timers = self.inner.long_task_timers.write().unwrap();
+        let mut long_timers = self.inner.long_task_timers.write().expect("lock poisoned");
         if let Some(timer) = long_timers.get(&key) {
             Ok(timer.clone())
         } else {
@@ -217,10 +217,10 @@ impl MetricRegistry {
     /// Remove a metric by name
     /// 按名称删除指标
     pub fn remove(&self, name: &str) -> Result<()> {
-        let mut counters = self.inner.counters.write().unwrap();
-        let mut gauges = self.inner.gauges.write().unwrap();
-        let mut timers = self.inner.timers.write().unwrap();
-        let mut long_timers = self.inner.long_task_timers.write().unwrap();
+        let mut counters = self.inner.counters.write().expect("lock poisoned");
+        let mut gauges = self.inner.gauges.write().expect("lock poisoned");
+        let mut timers = self.inner.timers.write().expect("lock poisoned");
+        let mut long_timers = self.inner.long_task_timers.write().expect("lock poisoned");
 
         let mut removed = false;
 
@@ -247,19 +247,19 @@ impl MetricRegistry {
     /// Clear all metrics
     /// 清除所有指标
     pub fn clear(&self) {
-        self.inner.counters.write().unwrap().clear();
-        self.inner.gauges.write().unwrap().clear();
-        self.inner.timers.write().unwrap().clear();
-        self.inner.long_task_timers.write().unwrap().clear();
+        self.inner.counters.write().expect("lock poisoned").clear();
+        self.inner.gauges.write().expect("lock poisoned").clear();
+        self.inner.timers.write().expect("lock poisoned").clear();
+        self.inner.long_task_timers.write().expect("lock poisoned").clear();
     }
 
     /// Get metric count
     /// 获取指标数量
     pub fn metric_count(&self) -> usize {
-        self.inner.counters.read().unwrap().len()
-            + self.inner.gauges.read().unwrap().len()
-            + self.inner.timers.read().unwrap().len()
-            + self.inner.long_task_timers.read().unwrap().len()
+        self.inner.counters.read().expect("lock poisoned").len()
+            + self.inner.gauges.read().expect("lock poisoned").len()
+            + self.inner.timers.read().expect("lock poisoned").len()
+            + self.inner.long_task_timers.read().expect("lock poisoned").len()
     }
 
     /// Generate metric key from name and tags

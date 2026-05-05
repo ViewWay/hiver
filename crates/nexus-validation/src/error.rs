@@ -204,7 +204,7 @@ impl ValidationErrors {
 
     /// 获取指定字段的错误 / Get errors for specific field
     pub fn get(&self, field: &str) -> Option<&[ValidationError]> {
-        self.errors.get(field).map(std::vec::Vec::as_slice)
+        self.errors.get(field).map(Vec::as_slice)
     }
 
     /// 转换为 JSON 值 / Convert to JSON value

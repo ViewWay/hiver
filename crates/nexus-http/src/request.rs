@@ -139,7 +139,7 @@ impl Request {
     /// Get a query parameter
     /// 获取查询参数
     pub fn param(&self, name: &str) -> Option<&str> {
-        self.query_params.get(name).map(std::string::String::as_str)
+        self.query_params.get(name).map(String::as_str)
     }
 
     /// Get all query parameters
@@ -151,7 +151,7 @@ impl Request {
     /// Get a path variable
     /// 获取路径变量
     pub fn path_var(&self, name: &str) -> Option<&str> {
-        self.path_vars.get(name).map(std::string::String::as_str)
+        self.path_vars.get(name).map(String::as_str)
     }
 
     /// Get all path variables

@@ -134,14 +134,14 @@ impl TableResult {
     /// Create a new table with headers / 创建带标题的新表格
     pub fn new(headers: Vec<&str>) -> Self {
         Self {
-            headers: headers.iter().map(std::string::ToString::to_string).collect(),
+            headers: headers.iter().map(ToString::to_string).collect(),
             rows: Vec::new(),
         }
     }
 
     /// Add a row / 添加行
     pub fn row(mut self, values: Vec<&str>) -> Self {
-        self.rows.push(values.iter().map(std::string::ToString::to_string).collect());
+        self.rows.push(values.iter().map(ToString::to_string).collect());
         self
     }
 
@@ -183,7 +183,7 @@ impl ShellOutput for TableResult {
         }
 
         // Calculate column widths / 计算列宽
-        let mut widths: Vec<usize> = self.headers.iter().map(std::string::String::len).collect();
+        let mut widths: Vec<usize> = self.headers.iter().map(String::len).collect();
         for row in &self.rows {
             for (i, cell) in row.iter().enumerate() {
                 if i < widths.len() {

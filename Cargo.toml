@@ -409,6 +409,9 @@ indexing_slicing = "warn"
 # Override pedantic settings for missing safety documentation
 # 文档检查 - 暂时允许，我们将逐步改进文档
 missing_safety_doc = "allow"
+# Allow missing docs on methods/functions/fields — incremental improvement
+# 允许方法/函数/字段缺少文档 — 逐步改进
+doc_markdown = "allow"
 
 # Allow some pedantic lints that are often false positives
 # 允许一些经常误报的严格检查
@@ -431,9 +434,24 @@ unused_self = "allow"
 # Allow missing must_use on some internal methods
 # 允许某些内部方法缺少must_use
 must_use_candidate = "allow"
+# Builder pattern returns Self — must_use is redundant for chained builders
+# Builder模式返回Self — must_use对链式builder是冗余的
+return_self_not_must_use = "allow"
 # Allow bool count in config structs
 # 允许配置结构体中的bool计数
 struct_excessive_bools = "allow"
+# Allow similar method names across different types (common in trait hierarchies)
+# 允许不同类型间的相似方法名（trait层次结构中常见)
+similar_names = "allow"
+# Cargo metadata warnings for internal crates — not published yet
+# Cargo元数据警告 — 内部crate尚未发布
+cargo_common_metadata = "allow"
+# Allow unnecessary qualification — explicit paths improve readability
+# 允许不必要的限定 — 显式路径提升可读性
+unnecessary_qualifications = "allow"
+# Allow debug formatting lint noise
+# 允许debug格式化噪音
+unnecessary_debug_formatting = "allow"
 # Allow integer casts for FFI
 # 允许用于FFI的整数转换
 cast_lossless = "allow"

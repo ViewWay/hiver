@@ -156,7 +156,7 @@ impl MatrixVariables {
     pub fn get_or(&self, key: &str, default: &str) -> String {
         self.0
             .get(key)
-            .map_or(default, std::string::String::as_str)
+            .map_or(default, String::as_str)
             .to_string()
     }
 }

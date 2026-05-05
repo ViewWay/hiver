@@ -163,7 +163,7 @@ where
         let mut errors = ValidationErrors::new();
         let mut results = Vec::new();
 
-        for item in self.into_iter() {
+        for item in self {
             if let Err(e) = validator(&item) {
                 errors.merge(e);
             } else {

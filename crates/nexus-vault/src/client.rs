@@ -355,7 +355,7 @@ impl VaultClient {
     /// Perform a LIST request to Vault / 向 Vault 执行 LIST 请求
     pub async fn list(&self, path: &str) -> VaultResult<reqwest::Response> {
         let url = self.url(path)?;
-        let mut req = self.inner.http.request(reqwest::Method::from_bytes(b"LIST").unwrap(), url);
+        let mut req = self.inner.http.request(reqwest::Method::from_bytes(b"LIST").expect("unexpected error"), url);
         req = self.add_auth(req)?;
         let resp = req.send().await?;
         self.check_response(resp).await

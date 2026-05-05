@@ -171,19 +171,12 @@ impl RedisPipeline {
 /// Result of a pipeline execution.
 /// 管道执行的结果。
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct PipelineResult {
     pub results: Vec<redis::Value>,
     pub command_count: usize,
 }
 
-impl Default for PipelineResult {
-    fn default() -> Self {
-        Self {
-            results: Vec::new(),
-            command_count: 0,
-        }
-    }
-}
 
 impl PipelineResult {
     /// Get result as string at index.

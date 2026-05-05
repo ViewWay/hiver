@@ -345,7 +345,7 @@ where
                 last_error = Some(err);
 
                 // Check if we should retry
-                let error_ref = last_error.as_ref().unwrap();
+                let error_ref = last_error.as_ref().expect("unexpected error");
                 if !predicate.should_retry(error_ref) {
                     break;
                 }
@@ -359,7 +359,7 @@ where
     }
 
     Err(RetryError {
-        error: last_error.unwrap(),
+        error: last_error.expect("unexpected error"),
         attempts: policy.max_attempts,
         total_delay,
     })

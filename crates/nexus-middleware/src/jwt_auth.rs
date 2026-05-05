@@ -155,7 +155,7 @@ impl JwtAuthenticationMiddleware {
     ///     .with_skip_paths(&["/api/auth/login", "/api/auth/register"]);
     /// ```
     pub fn with_skip_paths(mut self, paths: &[&str]) -> Self {
-        self.skip_paths = paths.iter().map(std::string::ToString::to_string).collect();
+        self.skip_paths = paths.iter().map(ToString::to_string).collect();
         self
     }
 

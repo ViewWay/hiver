@@ -217,7 +217,7 @@ impl UriBuilder {
                         builder.path = path
                             .split('/')
                             .filter(|s: &&str| !s.is_empty())
-                            .map(std::string::ToString::to_string)
+                            .map(ToString::to_string)
                             .collect();
                     }
                     for pair in q.split('&') {
@@ -230,7 +230,7 @@ impl UriBuilder {
                     builder.path = to_parse
                         .split('/')
                         .filter(|s: &&str| !s.is_empty())
-                        .map(std::string::ToString::to_string)
+                        .map(ToString::to_string)
                         .collect();
                 }
             } else {
@@ -240,7 +240,7 @@ impl UriBuilder {
                         builder.path = path
                             .split('/')
                             .filter(|s: &&str| !s.is_empty())
-                            .map(std::string::ToString::to_string)
+                            .map(ToString::to_string)
                             .collect();
                     }
                     for pair in q.split('&') {
@@ -253,7 +253,7 @@ impl UriBuilder {
                     builder.path = remaining
                         .split('/')
                         .filter(|s: &&str| !s.is_empty())
-                        .map(std::string::ToString::to_string)
+                        .map(ToString::to_string)
                         .collect();
                 }
             }
@@ -262,7 +262,7 @@ impl UriBuilder {
             builder.path = uri
                 .split('/')
                 .filter(|s: &&str| !s.is_empty())
-                .map(std::string::ToString::to_string)
+                .map(ToString::to_string)
                 .collect();
         }
 
@@ -304,7 +304,7 @@ impl UriBuilder {
         self.path = path_str
             .split('/')
             .filter(|s| !s.is_empty())
-            .map(std::string::ToString::to_string)
+            .map(ToString::to_string)
             .collect();
         self
     }
@@ -396,17 +396,17 @@ impl UriBuilder {
 
         // Scheme
         if let Some(scheme) = &self.scheme {
-            write!(result, "{}://", scheme).unwrap();
+            write!(result, "{}://", scheme).expect("unexpected error");
         }
 
         // User info
         if let Some(user_info) = &self.user_info {
-            write!(result, "{}@", user_info).unwrap();
+            write!(result, "{}@", user_info).expect("unexpected error");
         }
 
         // Host
         if let Some(host) = &self.host {
-            write!(result, "{}", host).unwrap();
+            write!(result, "{}", host).expect("unexpected error");
         }
 
         // Port (only if non-standard for the scheme)
@@ -418,7 +418,7 @@ impl UriBuilder {
                 _ => None,
             };
             if standard_port != Some(port) {
-                write!(result, ":{}", port).unwrap();
+                write!(result, ":{}", port).expect("unexpected error");
             }
         }
 
@@ -458,13 +458,13 @@ impl UriBuilder {
                 if i > 0 {
                     result.push('&');
                 }
-                write!(result, "{}={}", name, value).unwrap();
+                write!(result, "{}={}", name, value).expect("unexpected error");
             }
         }
 
         // Fragment
         if let Some(fragment) = &self.fragment {
-            write!(result, "#{}", fragment).unwrap();
+            write!(result, "#{}", fragment).expect("unexpected error");
         }
 
         Uri { uri: result }

@@ -103,7 +103,7 @@ impl CommandMeta {
 
     /// Set aliases / 设置别名
     pub fn aliases(mut self, aliases: &[&str]) -> Self {
-        self.aliases = aliases.iter().map(std::string::ToString::to_string).collect();
+        self.aliases = aliases.iter().map(ToString::to_string).collect();
         self
     }
 
@@ -274,7 +274,7 @@ impl CommandRegistry {
 
     /// List all command names / 列出所有命令名
     pub fn command_names(&self) -> Vec<&str> {
-        let mut names: Vec<&str> = self.commands.keys().map(std::string::String::as_str).collect();
+        let mut names: Vec<&str> = self.commands.keys().map(String::as_str).collect();
         names.sort_unstable();
         names
     }

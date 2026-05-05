@@ -339,7 +339,7 @@ impl MultipartData {
     /// Get a field value by name
     /// 按名称获取字段值
     pub fn field(&self, name: &str) -> Option<&str> {
-        self.fields.get(name).map(std::string::String::as_str)
+        self.fields.get(name).map(String::as_str)
     }
 
     /// Get all fields

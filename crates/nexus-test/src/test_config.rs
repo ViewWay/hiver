@@ -308,7 +308,7 @@ impl Default for TestConfigHolder {
 /// Global test configuration holder
 /// 全局测试配置持有者
 pub fn global_test_config() -> &'static TestConfigHolder {
-    use once_cell::sync::Lazy;
+    
     static CONFIG: std::sync::LazyLock<TestConfigHolder> = std::sync::LazyLock::new(TestConfigHolder::new);
     &CONFIG
 }

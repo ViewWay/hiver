@@ -357,7 +357,7 @@ impl SimpleServiceRegistry {
     /// Get healthy instances for a service
     /// 获取服务的健康实例
     fn get_healthy_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>> {
-        let services = self.services.read().unwrap();
+        let services = self.services.read().expect("lock poisoned");
         let instances = services
             .get(service_name)
             .ok_or_else(|| DiscoveryError::ServiceNotFound(service_name.to_string()))?;
@@ -382,7 +382,7 @@ impl SimpleServiceRegistry {
 
         match self.strategy {
             LoadBalanceStrategy::RoundRobin => {
-                let mut counter = self.rr_counter.write().unwrap();
+                let mut counter = self.rr_counter.write().expect("lock poisoned");
                 let index = counter.entry(service_name.to_string()).or_insert(0);
                 let instance = instances[*index % instances.len()].clone();
                 *index = (*index + 1) % instances.len();
@@ -416,7 +416,7 @@ impl ServiceRegistry for SimpleServiceRegistry {
     }
 
     fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()> {
-        let mut services = self.services.write().unwrap();
+        let mut services = self.services.write().expect("lock poisoned");
         let entry = services
             .entry(service_name.to_string())
             .or_default();
@@ -431,7 +431,7 @@ impl ServiceRegistry for SimpleServiceRegistry {
     }
 
     fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()> {
-        let mut services = self.services.write().unwrap();
+        let mut services = self.services.write().expect("lock poisoned");
         if let Some(instances) = services.get_mut(service_name) {
             instances.retain(|i| i.id != instance_id);
             Ok(())
@@ -441,7 +441,7 @@ impl ServiceRegistry for SimpleServiceRegistry {
     }
 
     fn get_services(&self) -> Result<Vec<String>> {
-        let services = self.services.read().unwrap();
+        let services = self.services.read().expect("lock poisoned");
         Ok(services.keys().cloned().collect())
     }
 }

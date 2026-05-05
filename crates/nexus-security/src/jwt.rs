@@ -87,7 +87,7 @@ impl JwtClaims {
         Self {
             sub: user_id.into(),
             username: username.into(),
-            authorities: authorities.iter().map(std::string::ToString::to_string).collect(),
+            authorities: authorities.iter().map(ToString::to_string).collect(),
             iat: now.timestamp(),
             exp: expiration.timestamp(),
             iss: Some("nexus-security".to_string()),

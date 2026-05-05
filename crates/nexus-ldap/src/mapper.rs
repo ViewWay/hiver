@@ -34,7 +34,7 @@ impl AttrMap {
     pub fn new() -> Self { Self { attrs: Vec::new() } }
 
     pub fn add(&mut self, key: &str, values: &[&str]) {
-        self.attrs.push((key.to_string(), values.iter().map(std::string::ToString::to_string).collect()));
+        self.attrs.push((key.to_string(), values.iter().map(ToString::to_string).collect()));
     }
 
     pub fn get(&self, key: &str) -> Option<&[String]> {
@@ -42,7 +42,7 @@ impl AttrMap {
     }
 
     pub fn get_first(&self, key: &str) -> Option<&str> {
-        self.get(key).and_then(|v| v.first().map(std::string::String::as_str))
+        self.get(key).and_then(|v| v.first().map(String::as_str))
     }
 }
 

@@ -348,7 +348,7 @@ impl OAuth2Client {
         // Simple state generation - in production, use crypto-secure RNG
         // 简单的状态生成 - 在生产环境中使用加密安全的 RNG
         use std::time::{SystemTime, UNIX_EPOCH};
-        format!("{:x}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())
+        format!("{:x}", SystemTime::now().duration_since(UNIX_EPOCH).expect("unexpected error").as_nanos())
     }
 
     /// Exchange authorization code for access token

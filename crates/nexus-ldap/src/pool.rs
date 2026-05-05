@@ -68,16 +68,16 @@ impl LdapPool {
 
     /// Borrow a connection from the pool / 从池中借用连接
     pub fn borrow(&self) -> LdapResult<LdapContextSource> {
-        let mut idle = self.idle.lock().unwrap();
+        let mut idle = self.idle.lock().expect("lock poisoned");
         if let Some(conn) = idle.pop_front() {
             let _ = conn;
-            *self.active_count.lock().unwrap() += 1;
+            *self.active_count.lock().expect("lock poisoned") += 1;
             Ok(self.context_source.clone())
         } else {
             // Create new if under max
-            let active = *self.active_count.lock().unwrap();
+            let active = *self.active_count.lock().expect("lock poisoned");
             if active < self.config.max_size {
-                *self.active_count.lock().unwrap() += 1;
+                *self.active_count.lock().expect("lock poisoned") += 1;
                 Ok(self.context_source.clone())
             } else {
                 Err(crate::error::LdapError::Connection("Pool exhausted".into()))
@@ -87,8 +87,8 @@ impl LdapPool {
 
     /// Return a connection to the pool / 将连接归还到池
     pub fn return_connection(&self, _conn: LdapContextSource) {
-        let mut idle = self.idle.lock().unwrap();
-        *self.active_count.lock().unwrap() -= 1;
+        let mut idle = self.idle.lock().expect("lock poisoned");
+        *self.active_count.lock().expect("lock poisoned") -= 1;
 
         if idle.len() < self.config.max_idle {
             idle.push_back(PooledConnection { active: false });
@@ -98,8 +98,8 @@ impl LdapPool {
     /// Get pool statistics / 获取池统计信息
     pub fn stats(&self) -> PoolStats {
         PoolStats {
-            active: *self.active_count.lock().unwrap(),
-            idle: self.idle.lock().unwrap().len(),
+            active: *self.active_count.lock().expect("lock poisoned"),
+            idle: self.idle.lock().expect("lock poisoned").len(),
             max_size: self.config.max_size,
         }
     }

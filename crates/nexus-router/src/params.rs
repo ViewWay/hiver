@@ -68,7 +68,7 @@ impl<'a> PathDeserializer<'a> {
     /// Get a parameter value
     /// 获取参数值
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.params.get(key).map(std::string::String::as_str)
+        self.params.get(key).map(String::as_str)
     }
 
     /// Deserialize into type T

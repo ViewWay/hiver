@@ -48,14 +48,14 @@ where
 
     pub async fn load(&self, key: K) -> Option<V> {
         {
-            let cache = self.cache.lock().unwrap();
+            let cache = self.cache.lock().expect("lock poisoned");
             if let Some(v) = cache.get(&key) {
                 return Some(v.clone());
             }
         }
         let (tx, rx) = tokio::sync::oneshot::channel();
         {
-            let mut pending = self.pending.lock().unwrap();
+            let mut pending = self.pending.lock().expect("lock poisoned");
             pending.entry(key.clone()).or_default().push(tx);
         }
         self.dispatch().await;
@@ -66,14 +66,14 @@ where
         let mut receivers: Vec<(K, tokio::sync::oneshot::Receiver<V>)> = Vec::new();
         let mut result = HashMap::new();
         {
-            let cache = self.cache.lock().unwrap();
+            let cache = self.cache.lock().expect("lock poisoned");
             for key in &keys {
                 if let Some(v) = cache.get(key) {
                     result.insert(key.clone(), Some(v.clone()));
                 }
             }
         }
-        let mut pending = self.pending.lock().unwrap();
+        let mut pending = self.pending.lock().expect("lock poisoned");
         for key in keys {
             if result.contains_key(&key) { continue; }
             let (tx, rx) = tokio::sync::oneshot::channel();
@@ -89,26 +89,26 @@ where
     }
 
     pub fn prime(&self, key: K, value: V) {
-        self.cache.lock().unwrap().insert(key, value);
+        self.cache.lock().expect("lock poisoned").insert(key, value);
     }
 
     pub fn prime_many(&self, entries: HashMap<K, V>) {
-        self.cache.lock().unwrap().extend(entries);
+        self.cache.lock().expect("lock poisoned").extend(entries);
     }
 
     pub fn clear(&self) {
-        self.cache.lock().unwrap().clear();
+        self.cache.lock().expect("lock poisoned").clear();
     }
 
     pub async fn dispatch(&self) -> usize {
         let pending_keys: Vec<K> = {
-            self.pending.lock().unwrap().keys().cloned().collect()
+            self.pending.lock().expect("lock poisoned").keys().cloned().collect()
         };
         if pending_keys.is_empty() { return 0; }
         let batch_keys: Vec<K> = pending_keys.into_iter().take(self.max_batch_size).collect();
         let loaded = self.loader.load(&batch_keys).await;
-        let mut pending = self.pending.lock().unwrap();
-        let mut cache = self.cache.lock().unwrap();
+        let mut pending = self.pending.lock().expect("lock poisoned");
+        let mut cache = self.cache.lock().expect("lock poisoned");
         let mut count = 0;
         for key in &batch_keys {
             if let Some(value) = loaded.get(key) {

@@ -294,7 +294,7 @@ fn extract_param_names(pattern: &str) -> Vec<String> {
             s.strip_prefix('{')
                 .and_then(|s| s.strip_suffix('}'))
         })
-        .map(std::string::ToString::to_string)
+        .map(ToString::to_string)
         .collect()
 }
 

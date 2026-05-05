@@ -57,7 +57,7 @@ impl FileValidator {
     /// Set allowed MIME types
     /// 设置允许的 MIME 类型
     pub fn allowed_types(mut self, types: impl IntoIterator<Item = impl Into<String>>) -> Self {
-        self.allowed_types = Some(types.into_iter().map(std::convert::Into::into).collect());
+        self.allowed_types = Some(types.into_iter().map(Into::into).collect());
         self
     }
 

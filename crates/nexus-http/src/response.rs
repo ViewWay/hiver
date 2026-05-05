@@ -50,7 +50,7 @@ impl Response {
     /// Get a header value
     /// 获取header值
     pub fn header(&self, name: &str) -> Option<&str> {
-        self.headers.get(name).map(std::string::String::as_str)
+        self.headers.get(name).map(String::as_str)
     }
 
     /// Get all headers

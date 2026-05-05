@@ -351,7 +351,7 @@ where
     T: Into<Value>,
 {
     fn from(v: Vec<T>) -> Self {
-        Value::List(v.into_iter().map(std::convert::Into::into).collect())
+        Value::List(v.into_iter().map(Into::into).collect())
     }
 }
 
@@ -482,7 +482,7 @@ impl ValueExtractor {
             }
 
         default
-            .map(std::string::ToString::to_string)
+            .map(ToString::to_string)
             .ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
 

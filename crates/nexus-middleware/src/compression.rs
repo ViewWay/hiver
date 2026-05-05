@@ -439,7 +439,7 @@ where
                 return next.call(req, state).await;
             }
 
-            let compression = compression_type.unwrap();
+            let compression = compression_type.expect("unexpected error");
 
             // If client explicitly requested identity (no compression), skip
             // 如果客户端明确请求 identity（不压缩），则跳过
@@ -466,7 +466,7 @@ where
 
             // Check content type
             // 检查内容类型
-            let content_type = response.header("Content-Type").map(std::string::ToString::to_string);
+            let content_type = response.header("Content-Type").map(ToString::to_string);
             let should_compress = middleware_check.should_compress_mime(content_type.as_deref());
 
             if !should_compress {

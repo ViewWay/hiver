@@ -250,7 +250,7 @@ where
 /// Equivalent to Spring's `@RequestParam("name")`.
 /// 等价于Spring的`@RequestParam("name")`。
 pub fn get_param(req: &Request, name: &str) -> Option<String> {
-    req.param(name).map(std::string::ToString::to_string)
+    req.param(name).map(ToString::to_string)
 }
 
 /// Get all query parameters

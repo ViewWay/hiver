@@ -253,7 +253,7 @@ impl Sse {
             .map(Event::to_sse_format)
             .collect::<String>();
 
-        builder.body(Body::from(body)).unwrap()
+        builder.body(Body::from(body)).expect("unexpected error")
     }
 
     /// Create a simple event (shorthand)

@@ -85,7 +85,7 @@ impl SecurityMetadata {
                     required: self
                         .roles
                         .iter()
-                        .map(std::string::ToString::to_string)
+                        .map(ToString::to_string)
                         .collect::<Vec<_>>()
                         .join(", "),
                     has: "none".to_string(),
@@ -96,7 +96,7 @@ impl SecurityMetadata {
                     required: self
                         .authorities
                         .iter()
-                        .map(super::role::Authority::authority)
+                        .map(Authority::authority)
                         .collect::<Vec<_>>()
                         .join(", "),
                     has: "none".to_string(),

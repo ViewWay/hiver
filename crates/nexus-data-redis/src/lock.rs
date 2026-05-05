@@ -22,7 +22,7 @@
 //! }
 //! ```
 
-use crate::{RedisClient, RedisError, RedisResult};
+use crate::{RedisClient, RedisResult};
 use redis::AsyncCommands;
 use std::time::{Duration, Instant};
 use uuid::Uuid;

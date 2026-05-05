@@ -120,7 +120,7 @@ impl MultipartFile {
     /// 获取文件数据为 UTF-8 字符串
     pub fn text(&self) -> MultipartResult<String> {
         std::str::from_utf8(&self.data)
-            .map(std::string::ToString::to_string)
+            .map(ToString::to_string)
             .map_err(|_| MultipartError::Decode("Invalid UTF-8".to_string()))
     }
 

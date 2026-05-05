@@ -136,7 +136,7 @@ impl WeightedLoadBalancer {
             return None;
         }
 
-        let mut rng = self._rng.lock().unwrap();
+        let mut rng = self._rng.lock().expect("lock poisoned");
         let mut random = rng.random::<f32>() * total_weight;
 
         for (instance, weight) in weighted_instances {

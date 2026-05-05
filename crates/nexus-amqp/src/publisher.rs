@@ -29,6 +29,7 @@ pub struct Publisher {
 /// Publishing options
 /// 发布选项
 #[derive(Clone, Debug)]
+#[derive(Default)]
 pub struct PublishingOptions {
     /// Exchange
     /// 交换机
@@ -79,24 +80,6 @@ pub struct PublishingOptions {
     pub content_encoding: Option<String>,
 }
 
-impl Default for PublishingOptions {
-    fn default() -> Self {
-        Self {
-            exchange: String::new(),
-            routing_key: String::new(),
-            mandatory: false,
-            immediate: false,
-            delivery_mode: None,
-            priority: None,
-            expiration: None,
-            message_id: None,
-            correlation_id: None,
-            reply_to: None,
-            content_type: None,
-            content_encoding: None,
-        }
-    }
-}
 
 impl PublishingOptions {
     /// Create new publishing options

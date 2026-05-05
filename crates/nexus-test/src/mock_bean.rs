@@ -224,7 +224,7 @@ impl Default for MockRegistry {
 /// Global mock registry
 /// 全局模拟注册表
 pub fn global_mock_registry() -> &'static MockRegistry {
-    use once_cell::sync::Lazy;
+    
     static REGISTRY: std::sync::LazyLock<MockRegistry> = std::sync::LazyLock::new(MockRegistry::new);
     &REGISTRY
 }

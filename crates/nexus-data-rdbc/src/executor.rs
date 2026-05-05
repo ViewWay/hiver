@@ -9,7 +9,7 @@
 use crate::client::DatabaseClient;
 use crate::error::{Error, Result};
 use crate::row::Row;
-use nexus_data_commons::{Condition, Direction, Page, PageRequest, QueryOrder, QueryWrapper, UpdateWrapper};
+use nexus_data_commons::{Condition, Page, PageRequest, QueryWrapper, UpdateWrapper};
 
 /// Query executor — wraps a DatabaseClient for MyBatis-Plus style query execution.
 /// 查询执行器 — 包装 DatabaseClient 用于 MyBatis-Plus 风格查询执行。
@@ -258,7 +258,7 @@ impl<C: DatabaseClient> QueryExecutor<C> {
             })
             .collect();
 
-        sql.push_str(" ");
+        sql.push(' ');
         sql.push_str(&set_clauses.join(", "));
 
         let mut params = Vec::new();
@@ -298,7 +298,7 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         }
 
         let mut sql = String::new();
-        let mut params = Vec::new();
+        let params = Vec::new();
 
         for (i, condition) in conditions.iter().enumerate() {
             if i > 0 {

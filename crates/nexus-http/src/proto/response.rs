@@ -84,7 +84,7 @@ pub fn encode_response(response: &Response, ctx: &ConnectionContext) -> Result<B
         let content_type = response
             .headers()
             .get("content-type")
-            .map_or("text/plain", std::string::String::as_str);
+            .map_or("text/plain", String::as_str);
         writeln!(buffer, "content-type: {}\r", content_type).map_err(|_| {
             crate::Error::InvalidResponse("Failed to write content-type".to_string())
         })?;
