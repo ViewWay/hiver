@@ -290,7 +290,10 @@ impl Router {
 fn extract_param_names(pattern: &str) -> Vec<String> {
     pattern
         .split('/')
-        .filter_map(|s| s.strip_prefix(':'))
+        .filter_map(|s| {
+            s.strip_prefix('{')
+                .and_then(|s| s.strip_suffix('}'))
+        })
         .map(std::string::ToString::to_string)
         .collect()
 }
@@ -307,7 +310,7 @@ fn match_path_pattern(pattern: &str, path: &str) -> Option<HashMap<String, Strin
 
     let mut params = HashMap::new();
     for (pattern_part, path_part) in pattern_parts.iter().zip(path_parts.iter()) {
-        if let Some(param_name) = pattern_part.strip_prefix(':') {
+        if let Some(param_name) = pattern_part.strip_prefix('{').and_then(|s| s.strip_suffix('}')) {
             params.insert(param_name.to_string(), path_part.to_string());
         } else if pattern_part != path_part {
             return None;
@@ -550,12 +553,12 @@ mod tests {
 
     #[test]
     fn test_extract_param_names() {
-        assert_eq!(extract_param_names("/users/:id"), vec!["id"]);
+        assert_eq!(extract_param_names("/users/{id}"), vec!["id"]);
         assert_eq!(
-            extract_param_names("/users/:user_id/posts/:post_id"),
+            extract_param_names("/users/{user_id}/posts/{post_id}"),
             vec!["user_id", "post_id"]
         );
-        assert_eq!(extract_param_names("/users"), vec![""]);
+        assert_eq!(extract_param_names("/users"), Vec::<String>::new());
     }
 
     #[test]
@@ -564,16 +567,16 @@ mod tests {
         assert!(match_path_pattern("/users", "/users").is_some());
 
         // With parameter
-        let params = match_path_pattern("/users/:id", "/users/123").unwrap();
+        let params = match_path_pattern("/users/{id}", "/users/123").unwrap();
         assert_eq!(params.get("id"), Some(&"123".to_string()));
 
         // Multiple parameters
-        let params = match_path_pattern("/users/:uid/posts/:pid", "/users/42/posts/99").unwrap();
+        let params = match_path_pattern("/users/{uid}/posts/{pid}", "/users/42/posts/99").unwrap();
         assert_eq!(params.get("uid"), Some(&"42".to_string()));
         assert_eq!(params.get("pid"), Some(&"99".to_string()));
 
         // No match
-        assert!(match_path_pattern("/users/:id", "/posts/123").is_none());
+        assert!(match_path_pattern("/users/{id}", "/posts/123").is_none());
     }
 
     #[test]

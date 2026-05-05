@@ -318,7 +318,7 @@ pub fn global_test_config() -> &'static TestConfigHolder {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_test::test_config;
 ///
 /// #[test_config]

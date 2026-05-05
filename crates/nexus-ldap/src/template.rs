@@ -13,7 +13,7 @@ use crate::mapper::ContextMapper;
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run
+/// ```rust,no_run,ignore
 /// use nexus_ldap::{LdapTemplate, LdapContextSource};
 ///
 /// let context_source = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");

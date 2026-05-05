@@ -389,7 +389,7 @@ impl ValidationHelpers {
     ///
     /// # Example / 示例
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_http::validation::ValidationHelpers;
     /// use nexus_http::ValidationError;
     ///
@@ -411,7 +411,7 @@ impl ValidationHelpers {
     ///
     /// # Example / 示例
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_http::validation::ValidationHelpers;
     /// use nexus_http::ValidationError;
     ///
@@ -495,7 +495,7 @@ impl ValidationHelpers {
     ///
     /// # Example / 示例
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_http::validation::ValidationHelpers;
     /// use nexus_http::ValidationError;
     ///

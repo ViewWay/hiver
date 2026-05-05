@@ -66,7 +66,7 @@ impl TrieRouter {
     ///
     /// # Arguments / 参数
     ///
-    /// * `path` - The path pattern (e.g., "/users/:id") / 路径模式（如 "/users/:id"）
+    /// * `path` - The path pattern (e.g., "/users/{id}") / 路径模式（如 "/users/{id}"）
     /// * `method` - The HTTP method / HTTP方法
     /// * `handler` - The handler function / 处理函数
     ///
@@ -77,7 +77,7 @@ impl TrieRouter {
     /// use nexus_http::Method;
     ///
     /// let mut router = TrieRouter::new();
-    /// router.insert("/users/:id", Method::GET, get_user_handler);
+    /// router.insert("/users/{id}", Method::GET, get_user_handler);
     /// ```
     pub fn insert(&mut self, path: &str, method: Method, handler: Handler) -> Result<()> {
         // Convert path to matchit format (uses :param instead of {param})
@@ -87,7 +87,9 @@ impl TrieRouter {
         // Extract parameter names from path
         let param_names: Vec<String> = path
             .split('/')
-            .filter_map(|s| s.strip_prefix(':').map(std::string::ToString::to_string))
+            .filter_map(|s| {
+                s.strip_prefix('{').and_then(|s| s.strip_suffix('}')).map(std::string::ToString::to_string)
+            })
             .collect();
 
         router
@@ -231,7 +233,7 @@ mod tests {
     fn test_param_route() {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("User");
-        router.insert("/users/:id", Method::GET, handler).unwrap();
+        router.insert("/users/{id}", Method::GET, handler).unwrap();
 
         let result = router.match_request(&Method::GET, "/users/123");
         assert!(result.is_some());
@@ -245,7 +247,7 @@ mod tests {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("Post");
         router
-            .insert("/users/:user_id/posts/:post_id", Method::GET, handler)
+            .insert("/users/{user_id}/posts/{post_id}", Method::GET, handler)
             .unwrap();
 
         let result = router.match_request(&Method::GET, "/users/42/posts/99");
@@ -278,7 +280,7 @@ mod tests {
     fn test_wildcard_route() {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("Catch all");
-        router.insert("/*path", Method::GET, handler).unwrap();
+        router.insert("/{*path}", Method::GET, handler).unwrap();
 
         assert!(router.match_request(&Method::GET, "/anything").is_some());
         assert!(router.match_request(&Method::GET, "/nested/path").is_some());

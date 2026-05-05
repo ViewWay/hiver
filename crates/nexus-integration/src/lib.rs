@@ -16,7 +16,7 @@
 //!
 //! # Example / 示例
 //!
-//! ```rust
+//! ```rust,no_run,ignore
 //! use nexus_integration::prelude::*;
 //!
 //! #[tokio::main]

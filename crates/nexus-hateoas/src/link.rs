@@ -287,7 +287,7 @@ impl From<&str> for UriTemplate {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_hateoas::{Link, LinkRelation};
 ///
 /// let link = Link::new("/api/employees/1")

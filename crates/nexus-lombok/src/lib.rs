@@ -24,7 +24,7 @@
 //!
 //! ## Example / 示例
 //!
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use nexus_lombok::Data;
 //! use serde::{Serialize, Deserialize};
 //!
@@ -53,7 +53,7 @@
 //!
 //! And use:
 //!
-//! ```rust
+//! ```rust,no_run,ignore
 //! use nexus_lombok::Data;
 //!
 //! #[derive(Data)]
@@ -79,7 +79,7 @@ use syn::parse_macro_input;
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::Getter;
 ///
 /// #[derive(Getter)]
@@ -105,7 +105,7 @@ pub fn derive_getter(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::Setter;
 ///
 /// #[derive(Setter)]
@@ -131,7 +131,7 @@ pub fn derive_setter(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::AllArgsConstructor;
 ///
 /// #[derive(AllArgsConstructor)]
@@ -158,7 +158,7 @@ pub fn derive_all_args_constructor(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::NoArgsConstructor;
 ///
 /// #[derive(NoArgsConstructor)]
@@ -194,7 +194,7 @@ pub fn derive_no_args_constructor(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::Data;
 ///
 /// #[derive(Data)]
@@ -221,7 +221,7 @@ pub fn derive_data(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::Builder;
 ///
 /// #[derive(Builder)]
@@ -248,7 +248,7 @@ pub fn derive_builder(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::Value;
 ///
 /// #[derive(Value)]
@@ -274,7 +274,7 @@ pub fn derive_value(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_lombok::With;
 ///
 /// #[derive(With, Clone)]

@@ -76,15 +76,7 @@ impl Locale {
         }
     }
 
-    /// Get locale string (e.g., "en_US", "zh_CN")
-    /// 获取语言环境字符串（传统格式）
-    pub fn to_string(&self) -> String {
-        if let Some(country) = &self.country {
-            format!("{}_{}", self.language, country)
-        } else {
-            self.language.clone()
-        }
-    }
+
 
     /// Parse locale from string
     /// 从字符串解析语言环境
@@ -184,7 +176,11 @@ impl FromStr for Locale {
 
 impl fmt::Display for Locale {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_string())
+        if let Some(country) = &self.country {
+            write!(f, "{}_{}", self.language, country)
+        } else {
+            write!(f, "{}", self.language)
+        }
     }
 }
 

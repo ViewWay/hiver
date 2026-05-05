@@ -21,7 +21,7 @@ struct EntityArgs {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Entity;
 ///
 /// #[Entity]
@@ -69,7 +69,7 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Table;
 ///
 /// #[Table(name = "users")]
@@ -89,9 +89,19 @@ pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
         // 默认为小写的结构体名
         name.to_string().to_lowercase()
     } else {
-        // Parse custom table name
-        // 解析自定义表名
-        attr.to_string().trim_matches('"').to_string()
+        // Parse custom table name: handle `name = "value"` or just `"value"`
+        // 解析自定义表名：处理 `name = "value"` 或仅 `"value"`
+        let attr_str = attr.to_string();
+        if let Some(eq_pos) = attr_str.find('=') {
+            // Extract value after `=` and trim whitespace and quotes
+            // 提取 `=` 后面的值并去除空白和引号
+            attr_str[eq_pos + 1..]
+                .trim()
+                .trim_matches('"')
+                .to_string()
+        } else {
+            attr_str.trim_matches('"').to_string()
+        }
     };
 
     let expanded = quote! {

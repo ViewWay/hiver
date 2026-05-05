@@ -121,7 +121,7 @@ fn test_command_registry_execute_line() {
         "add",
         "Add numbers",
         |args| {
-            let sum: i32 = args.iter().filter_map(|s| s.parse().ok()).sum();
+            let sum: i32 = args.iter().filter_map(|s| s.parse::<i32>().ok()).sum();
             Ok(sum.to_string())
         },
     ));
@@ -609,7 +609,7 @@ fn test_shell_command_macro() {
     let cmd: CommandBox = crate::shell_command!(
         "test-macro",
         "A macro-defined command",
-        |args| {
+        |args: &[&str]| {
             Ok(format!("macro output: {}", args.join(",")))
         }
     );

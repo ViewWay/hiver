@@ -60,7 +60,7 @@ pub trait AuthBackend: Send + Sync {
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_vault::auth::TokenAuth;
 /// use nexus_vault::VaultClient;
 ///
@@ -155,7 +155,7 @@ pub struct AppRoleLoginRequest {
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_vault::auth::AppRoleAuth;
 /// use nexus_vault::VaultClient;
 ///

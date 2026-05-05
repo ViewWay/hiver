@@ -16,7 +16,7 @@ use async_trait::async_trait;
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run
+/// ```rust,no_run,ignore
 /// use nexus_ldap::LdapRepository;
 ///
 /// trait PersonRepository: LdapRepository<Person, String> {

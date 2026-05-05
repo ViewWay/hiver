@@ -115,7 +115,7 @@ impl WebServerAutoConfiguration {
     ///
     /// # 示例 / Example
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_starter::web::WebServerAutoConfiguration;
     ///
     /// let config = WebServerAutoConfiguration::new();

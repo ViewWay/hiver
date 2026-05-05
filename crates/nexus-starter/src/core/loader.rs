@@ -54,7 +54,7 @@ impl AutoConfigurationLoader {
     ///
     /// # 示例 / Example
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_starter::core::AutoConfigurationLoader;
     ///
     /// let loader = AutoConfigurationLoader::new();
@@ -78,7 +78,7 @@ impl AutoConfigurationLoader {
     ///
     /// # 示例 / Example
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_starter::core::AutoConfigurationLoader;
     ///
     /// let loader = AutoConfigurationLoader::new()

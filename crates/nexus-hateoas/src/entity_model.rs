@@ -34,7 +34,7 @@ use std::fmt;
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_hateoas::{EntityModel, Link, LinkRelation};
 /// use serde::Serialize;
 ///

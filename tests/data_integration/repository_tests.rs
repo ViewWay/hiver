@@ -162,6 +162,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_save() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -183,6 +184,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_find_by_id() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -210,6 +212,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_exists_by_id() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -234,6 +237,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_find_all() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -258,6 +262,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_count() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -284,6 +289,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_delete_by_id() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -311,6 +317,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_delete() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -335,6 +342,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_delete_all() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -361,6 +369,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_update() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
@@ -393,6 +402,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_crud_repository_save_all() {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();

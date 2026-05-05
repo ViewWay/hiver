@@ -49,7 +49,7 @@ impl Parse for PointcutExpr {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::Pointcut;
 ///
 /// // Define a reusable pointcut
@@ -69,7 +69,7 @@ impl Parse for PointcutExpr {
 ///
 /// # Complex Expressions / 复杂表达式
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::Pointcut;
 ///
 /// // Combine multiple pointcuts

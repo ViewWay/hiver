@@ -143,8 +143,7 @@ impl std::fmt::Display for LogLevel {
 ///
 /// # Example / 示例
 ///
-/// ```
-/// # "%d [%t] %p %c - %m%n"
+/// ```text
 /// # "2024-01-30 10:30:45 [12345] INFO my.app.Service - User logged in"
 /// ```
 pub fn format_pattern(

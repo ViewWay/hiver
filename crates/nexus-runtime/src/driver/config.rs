@@ -162,7 +162,7 @@ impl DriverFactory {
     ///
     /// # Examples / 示例
     ///
-    /// ```no_run
+    /// ```rust,no_run,ignore
     /// use nexus_runtime::driver::{DriverFactory, DriverType};
     ///
     /// let driver = DriverFactory::create(DriverType::Auto).unwrap();

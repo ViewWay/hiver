@@ -27,7 +27,7 @@ impl Dn {
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run
+/// ```rust,no_run,ignore
 /// use nexus_ldap::odm::OdmEntry;
 ///
 /// #[derive(OdmEntry)]

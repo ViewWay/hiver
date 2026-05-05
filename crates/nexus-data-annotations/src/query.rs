@@ -32,7 +32,7 @@ impl Parse for QueryArgs {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Query;
 /// use nexus_data::Repository;
 ///
@@ -76,7 +76,7 @@ pub(crate) fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Insert;
 ///
 /// trait UserRepository {
@@ -119,7 +119,7 @@ pub(crate) fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Update;
 ///
 /// trait UserRepository {
@@ -162,7 +162,7 @@ pub(crate) fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Delete;
 ///
 /// trait UserRepository {

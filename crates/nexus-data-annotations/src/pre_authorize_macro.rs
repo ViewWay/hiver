@@ -26,7 +26,7 @@ pub struct PreAuthorizeAttrs {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::PreAuthorize;
 ///
 /// impl UserService {

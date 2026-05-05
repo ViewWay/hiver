@@ -234,33 +234,15 @@ where
 
             // Process items
             for item in items {
-                let mut retries = 0;
-                let result = loop {
-                    match self.processor.write().await.process(item).await {
-                        Ok(Some(processed_item)) => {
-                            break Ok(Some(processed_item));
-                        }
-                        Ok(None) => {
-                            // Filtered out
-                            break Ok(None);
-                        }
-                        Err(e) if retries < self.retry_limit => {
-                            // Cannot retry without Clone - skip the item
-                            // In production, you'd want to either require Clone or use Arc
-                            retries += 1;
-                            step_execution.increment_rollback_count();
-                            // If we could clone, we'd retry. Since we can't, we skip.
-                            if retries < self.retry_limit {
-                                // Need the item back but we consumed it
-                                return Err(BatchError::ValidationError {
-                                    message: "Retry requires Clone bound on item type".to_string(),
-                                });
-                            }
-                            break Err(e);
-                        }
-                        Err(e) => {
-                            break Err(e);
-                        }
+                let result = match self.processor.write().await.process(item).await {
+                    Ok(Some(processed_item)) => Ok(Some(processed_item)),
+                    Ok(None) => {
+                        // Filtered out
+                        Ok(None)
+                    }
+                    Err(e) => {
+                        step_execution.increment_rollback_count();
+                        Err(e)
                     }
                 };
 

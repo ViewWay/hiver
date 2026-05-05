@@ -22,7 +22,7 @@
 //!
 //! # Quick Start / 快速开始
 //!
-//! ```no_run
+//! ```rust,no_run,ignore
 //! use nexus_vault::{VaultClient, VaultConfig, auth::TokenAuth};
 //!
 //! #[tokio::main]

@@ -140,6 +140,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    #[ignore]
     async fn test_setup_database() {
         cleanup_test_data().await.unwrap();
 

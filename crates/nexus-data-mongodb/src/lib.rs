@@ -31,7 +31,7 @@
 //!
 //! ## Example / 示例
 //!
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use nexus_data_mongodb::{
 //!     MongoTemplate, MongoClient, MongoFilter, MongoQueryOptions,
 //!     Aggregation, FieldProjection, BulkOperations,

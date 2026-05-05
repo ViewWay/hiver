@@ -58,10 +58,59 @@ pub fn evaluate_cache_condition(
 ) -> bool {
     let expr = expression.trim();
 
+    // Handle parenthesized expressions — strip outer parens if balanced
+    // 处理括号表达式 — 如果外层括号匹配则去掉
+    if expr.starts_with('(') && expr.ends_with(')') {
+        let mut depth = 0;
+        let mut balanced = true;
+        for (i, c) in expr.char_indices() {
+            match c {
+                '(' => depth += 1,
+                ')' => depth -= 1,
+                _ => {}
+            }
+            if depth == 0 && i < expr.len() - 1 {
+                balanced = false;
+                break;
+            }
+        }
+        if balanced && depth == 0 {
+            return evaluate_cache_condition(&expr[1..expr.len() - 1], args, result);
+        }
+    }
+
     // Handle logical NOT
     if expr.starts_with('!') {
         let inner_expr = expr[1..].trim();
         return !evaluate_cache_condition(inner_expr, args, result);
+    }
+
+    // Handle method calls like length() — must be checked BEFORE == operator
+    // 处理像 length() 这样的方法调用 — 必须在 == 运算符之前检查
+    if expr.contains(".length()") {
+        let param_part = expr.split(".length()").next().unwrap();
+        let method_end = param_part.len() + ".length()".len();
+        let rest = &expr[method_end..];
+
+        let value = get_value(param_part.trim(), args, result);
+        let length = get_length(&value);
+
+        if rest.starts_with(" >") {
+            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
+            return (length as i64) > threshold;
+        } else if rest.starts_with(" <") {
+            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
+            return (length as i64) < threshold;
+        } else if rest.starts_with(" >=") {
+            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+            return (length as i64) >= threshold;
+        } else if rest.starts_with(" <=") {
+            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+            return (length as i64) <= threshold;
+        } else if rest.starts_with(" ==") {
+            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+            return length == (threshold as usize);
+        }
     }
 
     // Handle OR expressions (left to right)
@@ -156,36 +205,6 @@ pub fn evaluate_cache_condition(
         let param_part = expr.split('.').next().unwrap_or(expr);
         let value = get_value(param_part.trim(), args, result);
         return is_empty_value(&value);
-    }
-
-    // Handle method calls like length() > 0
-    // 处理像 length() > 0 这样的方法调用
-    if expr.contains(".length()") {
-        let param_part = expr.split(".length()").next().unwrap();
-        // Calculate the byte position after .length()
-        // 计算 .length() 之后的字节位置
-        let method_end = param_part.len() + ".length()".len();
-        let rest = &expr[method_end..];
-
-        let value = get_value(param_part.trim(), args, result);
-        let length = get_length(&value);
-
-        if rest.starts_with(" >") {
-            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
-            return (length as i64) > threshold;
-        } else if rest.starts_with(" <") {
-            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
-            return (length as i64) < threshold;
-        } else if rest.starts_with(" >=") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
-            return (length as i64) >= threshold;
-        } else if rest.starts_with(" <=") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
-            return (length as i64) <= threshold;
-        } else if rest.starts_with(" ==") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
-            return length == (threshold as usize);
-        }
     }
 
     // Handle simple parameter reference - check if it's truthy

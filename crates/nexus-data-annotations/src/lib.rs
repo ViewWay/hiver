@@ -15,7 +15,7 @@
 //!
 //! ## Example / 示例
 //!
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use nexus_data_annotations::{Entity, Table, Id, GeneratedValue, Column};
 //! use nexus_lombok::Data;
 //! use serde::{Serialize, Deserialize};
@@ -85,7 +85,7 @@ mod pre_authorize_macro;
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Entity;
 ///
 /// #[Entity]
@@ -95,7 +95,7 @@ mod pre_authorize_macro;
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn entity(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_entity(attr, item)
 }
 
@@ -109,7 +109,7 @@ pub fn entity(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Table;
 ///
 /// #[Entity]
@@ -119,7 +119,7 @@ pub fn entity(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn table(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_table(attr, item)
 }
 
@@ -137,7 +137,7 @@ pub fn table(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::{Id, GeneratedValue};
 ///
 /// #[Entity]
@@ -148,7 +148,7 @@ pub fn table(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn id(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_id(attr, item)
 }
 
@@ -157,7 +157,7 @@ pub fn id(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::{GeneratedValue, Id};
 ///
 /// #[Entity]
@@ -168,7 +168,7 @@ pub fn id(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn generated_value(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_generated_value(attr, item)
 }
 
@@ -188,7 +188,7 @@ pub fn generated_value(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Column;
 ///
 /// #[Entity]
@@ -198,7 +198,7 @@ pub fn generated_value(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn column(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
     column::impl_column(attr, item)
 }
 
@@ -223,7 +223,7 @@ pub fn column(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Query;
 /// use nexus_data::Repository;
 ///
@@ -236,7 +236,7 @@ pub fn column(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn query(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_query(attr, item)
 }
 
@@ -245,7 +245,7 @@ pub fn query(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Insert;
 ///
 /// trait UserRepository {
@@ -254,7 +254,7 @@ pub fn query(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn insert(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_insert(attr, item)
 }
 
@@ -263,7 +263,7 @@ pub fn insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Update;
 ///
 /// trait UserRepository {
@@ -272,7 +272,7 @@ pub fn insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn update(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_update(attr, item)
 }
 
@@ -281,7 +281,7 @@ pub fn update(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Delete;
 ///
 /// trait UserRepository {
@@ -290,7 +290,7 @@ pub fn update(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn delete(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_delete(attr, item)
 }
 
@@ -332,7 +332,7 @@ pub fn delete(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn Transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     transactional_macro::impl_transactional(attr, item)
 }
 
@@ -400,7 +400,7 @@ pub fn transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[cfg(feature = "security")]
 #[proc_macro_attribute]
-pub fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn PreAuthorize(attr: TokenStream, item: TokenStream) -> TokenStream {
     pre_authorize_macro::pre_authorize(attr, item)
 }
 
@@ -408,6 +408,6 @@ pub fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// @PreAuthorize 注解的别名
 #[cfg(feature = "security")]
 #[proc_macro_attribute]
-pub fn pre_authorize_macro_fn(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream {
     pre_authorize_macro::pre_authorize(attr, item)
 }

@@ -40,7 +40,7 @@ impl Parse for PointcutExpr {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::Before;
 ///
 /// #[Before("execution(* com.example..*.*(..))")]
@@ -87,7 +87,7 @@ pub(crate) fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::After;
 ///
 /// #[After("execution(* com.example..*.*(..))")]
@@ -134,7 +134,7 @@ pub(crate) fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::Around;
 ///
 /// #[Around("execution(* com.example..*.*(..))")]

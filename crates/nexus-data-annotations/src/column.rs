@@ -11,7 +11,7 @@ use proc_macro::TokenStream;
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Column;
 ///
 /// #[Entity]

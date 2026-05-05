@@ -19,7 +19,7 @@ use crate::error::{VaultError, VaultResult};
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_vault::VaultConfig;
 ///
 /// let config = VaultConfig::builder()
@@ -187,7 +187,7 @@ struct VaultClientInner {
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_vault::{VaultClient, VaultConfig};
 ///
 /// #[tokio::main]

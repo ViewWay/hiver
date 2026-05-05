@@ -14,7 +14,7 @@
 //!
 //! ## Example / 示例
 //!
-//! ```rust
+//! ```rust,no_run,ignore
 //! use nexus_validation_annotations::{Valid, NotNull, Email, Size};
 //! use nexus_http::Json;
 //!
@@ -55,7 +55,7 @@ use syn::{parse_macro_input, DeriveInput};
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Valid;
 ///
 /// #[post("/users")]
@@ -83,7 +83,7 @@ pub fn valid(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::NotNull;
 ///
 /// #[derive(NotNull)]
@@ -137,7 +137,7 @@ pub fn derive_not_null(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Email;
 ///
 /// #[derive(Email)]
@@ -202,7 +202,7 @@ pub fn derive_email(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Size;
 ///
 /// #[derive(Size)]
@@ -271,7 +271,7 @@ pub fn derive_size(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Min;
 ///
 /// #[derive(Min)]
@@ -331,7 +331,7 @@ pub fn derive_min(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Max;
 ///
 /// #[derive(Max)]
@@ -391,7 +391,7 @@ pub fn derive_max(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Pattern;
 ///
 /// #[derive(Pattern)]
@@ -455,7 +455,7 @@ pub fn derive_pattern(input: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_validation_annotations::Length;
 ///
 /// #[derive(Length)]

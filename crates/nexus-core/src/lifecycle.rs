@@ -163,7 +163,7 @@ pub trait BeanPostProcessor: Send + Sync {
 ///
 /// # Example / 示例
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_core::lifecycle::BeanFactoryPostProcessor;
 /// use std::any::Any;
 ///

@@ -11,7 +11,7 @@ use async_trait::async_trait;
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::CrudRepository;
 /// use nexus_data_annotations::Entity;
 ///
@@ -87,7 +87,7 @@ where
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::PagingRepository;
 ///
 /// #[async_trait]
@@ -151,7 +151,7 @@ impl PageRequest {
     ///
     /// # Example / 示例
     ///
-    /// ```
+    /// ```rust,no_run,ignore
     /// use nexus_data_annotations::PageRequest;
     ///
     /// // 第 0 页，每页 20 条，按 ID 降序

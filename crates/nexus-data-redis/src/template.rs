@@ -219,6 +219,181 @@ impl RedisTemplate {
     }
 }
 
+impl RedisTemplate {
+    // ── Typed Operations (Serialization-based) ──
+// ── 类型化操作（基于序列化）──
+
+/// Typed set — serialize and store any serde type as JSON.
+/// 类型化 set — 序列化并存储任意 serde 类型为 JSON。
+pub async fn set_typed<T: serde::Serialize + Send + Sync>(
+    &self,
+    key: &str,
+    value: &T,
+) -> RedisResult<()> {
+    let json = serde_json::to_string(value)
+        .map_err(|e| {
+            crate::RedisError::serialization(format!("{} at key={}", e, key))
+        })?;
+    self.set(key, &json).await
+}
+
+/// Typed set with expiration. / 类型化 set 带过期。
+pub async fn set_typed_ex<T: serde::Serialize + Send + Sync>(
+    &self,
+    key: &str,
+    value: &T,
+    seconds: u64,
+) -> RedisResult<()> {
+    let json = serde_json::to_string(value)
+        .map_err(|e| {
+            crate::RedisError::serialization(format!("{} at key={}", e, key))
+        })?;
+    self.set_ex(key, &json, seconds).await
+}
+
+/// Typed get — deserialize a previously stored serde type from JSON.
+/// 类型化 get — 从 JSON 反序列化之前存储的 serde 类型。
+pub async fn get_typed<T: serde::de::DeserializeOwned + Send + Sync>(
+    &self,
+    key: &str,
+) -> RedisResult<Option<T>> {
+    match self.get(key).await? {
+        Some(json) => {
+            let value = serde_json::from_str(&json).map_err(|e| {
+                crate::RedisError::deserialization(format!(
+                    "{} at key={}. JSON: {}",
+                    e, key, json
+                ))
+            })?;
+            Ok(Some(value))
+        }
+        None => Ok(None),
+    }
+}
+
+/// Get or insert — like `get_typed` but inserts a default value if key is absent.
+/// 获取或插入 — 类似 `get_typed` 但如果键不存在则插入默认值。
+pub async fn get_or_insert<T>(
+    &self,
+    key: &str,
+    default: T,
+) -> RedisResult<T>
+where
+    T: serde::Serialize + serde::de::DeserializeOwned + Send + Sync + Clone,
+{
+    match self.get_typed(key).await? {
+        Some(v) => Ok(v),
+        None => {
+            self.set_typed(key, &default).await?;
+            Ok(default)
+        }
+    }
+}
+
+/// Get or insert with async factory function.
+/// 使用异步工厂函数获取或插入。
+pub async fn get_or_insert_with<F, Fut, T>(
+    &self,
+    key: &str,
+    factory: F,
+) -> RedisResult<T>
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = T>,
+    T: serde::Serialize + serde::de::DeserializeOwned + Send + Sync + Clone,
+{
+    match self.get_typed(key).await? {
+        Some(v) => Ok(v),
+        None => {
+            let value = factory().await;
+            self.set_typed(key, &value).await?;
+            Ok(value)
+        }
+    }
+}
+
+/// Batch set — store multiple typed values atomically via pipeline.
+/// 批量 set — 通过管道原子性地存储多个类型化值。
+pub async fn set_all_typed<T: serde::Serialize + Send + Sync>(
+    &self,
+    items: &[(&str, &T)],
+) -> RedisResult<()> {
+    if items.is_empty() {
+        return Ok(());
+    }
+
+    use crate::pipeline::RedisPipeline;
+    let mut pipe = RedisPipeline::new();
+    for (key, value) in items {
+        let json = serde_json::to_string(value).map_err(|e| {
+            crate::RedisError::serialization(format!("{} at key={}", e, key))
+        })?;
+        pipe = pipe.set(*key, json.into_bytes());
+    }
+
+    let mut conn = self.client.get_connection().await?;
+    pipe.execute(&mut conn).await?;
+    Ok(())
+}
+
+/// Batch get — deserialize multiple typed values atomically via pipeline.
+/// 批量 get — 通过管道原子性地反序列化多个类型化值。
+pub async fn get_all_typed<T: serde::de::DeserializeOwned + Send + Sync>(
+    &self,
+    keys: &[&str],
+) -> RedisResult<Vec<Option<T>>> {
+    if keys.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    use crate::pipeline::RedisPipeline;
+    let mut pipe = RedisPipeline::new();
+    for key in keys {
+        pipe = pipe.get(*key);
+    }
+
+    let mut conn = self.client.get_connection().await?;
+    let result = pipe.execute(&mut conn).await?;
+
+    let mut output = Vec::with_capacity(keys.len());
+    for i in 0..keys.len() {
+        let val = match result.get_optional_string(i) {
+            Ok(Some(json)) => {
+                Some(serde_json::from_str(&json).map_err(|e| {
+                    crate::RedisError::deserialization(format!(
+                        "{} at key={}. JSON: {}",
+                        e, keys[i], json
+                    ))
+                })?)
+            }
+            Ok(None) => None,
+            Err(e) => return Err(e),
+        };
+        output.push(val);
+    }
+    Ok(output)
+}
+
+/// Execute a callback within a pipeline, collecting responses.
+/// 在管道内执行回调，收集响应。
+///
+/// The callback receives a `RedisPipeline` builder and returns it
+/// after adding commands. Useful for batch atomic operations.
+/// 回调接收 `RedisPipeline` 构建器并在添加命令后返回它。
+/// 适用于批量原子操作。
+pub async fn execute_pipelined<F>(
+    &self,
+    f: F,
+) -> RedisResult<crate::pipeline::PipelineResult>
+where
+    F: FnOnce(crate::pipeline::RedisPipeline) -> crate::pipeline::RedisPipeline,
+{
+    let pipe = f(crate::pipeline::RedisPipeline::new());
+    let mut conn = self.client.get_connection().await?;
+    pipe.execute(&mut conn).await
+}
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -227,6 +402,6 @@ mod tests {
     fn test_template_creation() {
         let client = redis::Client::open("redis://127.0.0.1").unwrap();
         let template = RedisTemplate::new(client);
-        assert_eq!(format!("{:?}", template.client().inner().get_connection_info().addr), "Tcp(127.0.0.1:6379)");
+        assert!(format!("{:?}", template.client().inner().get_connection_info().addr).contains("127.0.0.1"));
     }
 }

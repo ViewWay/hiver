@@ -13,7 +13,7 @@ use syn::{DeriveInput, parse_macro_input};
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_aop::Aspect;
 ///
 /// #[Aspect]

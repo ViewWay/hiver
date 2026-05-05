@@ -440,6 +440,7 @@ impl RouterBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::PointToPointChannel;
 
     #[tokio::test]
     async fn test_content_based_router() {

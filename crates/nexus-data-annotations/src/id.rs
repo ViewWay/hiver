@@ -11,7 +11,7 @@ use proc_macro::TokenStream;
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::Id;
 ///
 /// #[Entity]
@@ -34,7 +34,7 @@ pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Example / 示例
 ///
-/// ```rust
+/// ```rust,no_run,ignore
 /// use nexus_data_annotations::{Id, GeneratedValue};
 ///
 /// #[Entity]

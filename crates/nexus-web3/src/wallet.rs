@@ -552,6 +552,7 @@ pub mod address {
     #[cfg(test)]
     mod tests {
         use super::*;
+        use super::super::{LocalWallet, Signature, Wallet, WalletError};
 
         #[test]
         fn test_address_zero() {
@@ -588,7 +589,7 @@ pub mod address {
 
         #[test]
         fn test_address_invalid_hex() {
-            let result = Address::from_hex("0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+            let result = Address::from_hex("0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
             assert!(matches!(result, Err(AddressError::InvalidHex)));
         }
 

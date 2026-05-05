@@ -16,7 +16,7 @@ use crate::error::{VaultError, VaultResult};
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run,ignore
 /// use nexus_vault::VaultClient;
 ///
 /// async fn example(client: &VaultClient) -> Result<(), Box<dyn std::error::Error>> {

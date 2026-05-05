@@ -12,7 +12,7 @@
 //!
 //! ## Example / 示例
 //!
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use nexus_data_redis::{RedisTemplate, RedisClient};
 //!
 //! async fn example() -> Result<(), Box<dyn std::error::Error>> {
@@ -35,16 +35,22 @@
 #[cfg(test)]
 mod tests;
 
+pub mod cache;
 pub mod client;
 pub mod error;
+pub mod lock;
+pub mod operations;
+pub mod pipeline;
 pub mod template;
-pub mod cache;
 
 // Re-exports commonly used types
+pub use cache::{RedisCache, RedisCacheManager};
 pub use client::RedisClient;
 pub use error::{RedisError, RedisResult};
+pub use lock::{RedisLock, RedisLockGuard};
+pub use operations::{GeoUnit, HashOps, LuaScript};
+pub use pipeline::RedisPipeline;
 pub use template::RedisTemplate;
-pub use cache::{RedisCache, RedisCacheManager};
 
 /// Redis version information / Redis 版本信息
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

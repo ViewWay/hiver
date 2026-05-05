@@ -59,7 +59,7 @@ impl CoreAutoConfiguration {
     ///
     /// # 示例 / Example
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_starter::core::CoreAutoConfiguration;
     ///
     /// let config = CoreAutoConfiguration::new();
@@ -85,7 +85,7 @@ impl CoreAutoConfiguration {
     ///
     /// # 示例 / Example
     ///
-    /// ```rust
+    /// ```rust,no_run,ignore
     /// use nexus_starter::core::CoreAutoConfiguration;
     ///
     /// let config = CoreAutoConfiguration::with_app_name("My App");
