@@ -42,7 +42,7 @@ nexus-runtime = { path = "../nexus-runtime" }
 sea-orm = { version = "2.0.0-rc", optional = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql", "macros"] }
 
 # Diesel (optional)
-diesel = { version = "2.2", optional = true, features = ["postgres", "mysql", "sqlite"] }
+diesel = { version = "2.3", optional = true, features = ["postgres", "mysql", "sqlite"] }
 
 # SQLx (optional)
 sqlx = { workspace = true, optional = true }
