@@ -226,7 +226,7 @@ impl MessageAggregator for CorrelationAggregator {
 
         // Find first complete group
         // 查找第一个完整的组
-        for (correlation_id, messages) in groups.iter() {
+        for (_correlation_id, messages) in groups.iter() {
             if messages.len() >= self.target_per_group {
                 let base = &messages[0];
                 let aggregated: Vec<String> = messages
@@ -291,7 +291,7 @@ where
     /// 检查特定组是否完成
     pub async fn is_group_complete(&self, key: &K) -> bool {
         let groups = self.groups.read().await;
-        groups.get(key).map_or(false, |msgs| msgs.len() >= self.target_size)
+        groups.get(key).is_some_and(|msgs| msgs.len() >= self.target_size)
     }
 }
 

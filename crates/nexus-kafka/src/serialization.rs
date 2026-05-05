@@ -87,7 +87,7 @@ pub struct BytesSerializer;
 impl Serializer for BytesSerializer {
     fn serialize(&self, data: &dyn SerializeData) -> Result<Vec<u8>, String> {
         data.as_bytes()
-            .map(|b| b.to_vec())
+            .map(<[u8]>::to_vec)
             .ok_or_else(|| "Cannot serialize to bytes".to_string())
     }
 }

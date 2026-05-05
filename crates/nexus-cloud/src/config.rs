@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Cloud / 等价于 Spring Cloud
 //!
-//! - `@EnableConfigServer` - EnableConfigServer
-//! - `@RefreshScope` - RefreshScope
+//! - `@EnableConfigServer` - `EnableConfigServer`
+//! - `@RefreshScope` - `RefreshScope`
 //! - Spring Cloud Config client
 
 use crate::discovery::ServiceDiscovery;
@@ -16,8 +16,8 @@ use std::sync::Arc;
 /// Config client
 /// 配置客户端
 ///
-/// Equivalent to Spring Cloud Config's ConfigServicePropertySourceLocator.
-/// 等价于Spring Cloud Config的ConfigServicePropertySourceLocator。
+/// Equivalent to Spring Cloud Config's `ConfigServicePropertySourceLocator`.
+/// 等价于Spring Cloud `Config的ConfigServicePropertySourceLocator`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -55,7 +55,7 @@ pub trait ConfigClient: Send + Sync {
 /// Config watcher
 /// 配置监视器
 ///
-/// Equivalent to Spring's @RefreshScope with context refresh.
+/// Equivalent to Spring's @`RefreshScope` with context refresh.
 /// 等价于Spring的@RefreshScope与context refresh。
 #[async_trait]
 pub trait ConfigWatcher: Send + Sync {
@@ -278,8 +278,8 @@ impl ConfigWatcher for SimpleConfigWatcher {
 /// Remote config source
 /// 远程配置源
 ///
-/// Equivalent to Spring's PropertySourceLocator that fetches from config server.
-/// 等价于Spring从配置服务器获取的PropertySourceLocator。
+/// Equivalent to Spring's `PropertySourceLocator` that fetches from config server.
+/// `等价于Spring从配置服务器获取的PropertySourceLocator`。
 pub struct RemoteConfigSource {
     /// Config client
     /// 配置客户端
@@ -349,7 +349,7 @@ impl RemoteConfigSource {
 /// Refresh scope
 /// 刷新范围
 ///
-/// Equivalent to Spring's @RefreshScope.
+/// Equivalent to Spring's @`RefreshScope`.
 /// 等价于Spring的@RefreshScope。
 pub struct RefreshScope;
 

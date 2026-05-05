@@ -156,7 +156,7 @@ impl GatewayResponse {
 /// 网关路由
 ///
 /// Equivalent to Spring Cloud Gateway's Route.
-/// 等价于Spring Cloud Gateway的Route。
+/// 等价于Spring Cloud `Gateway的Route`。
 #[derive(Debug, Clone)]
 pub struct GatewayRoute {
     /// Route ID
@@ -223,8 +223,8 @@ impl GatewayRoute {
 /// Gateway filter
 /// 网关过滤器
 ///
-/// Equivalent to Spring Cloud Gateway's GatewayFilter.
-/// 等价于Spring Cloud Gateway的GatewayFilter。
+/// Equivalent to Spring Cloud Gateway's `GatewayFilter`.
+/// 等价于Spring Cloud `Gateway的GatewayFilter`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -393,8 +393,8 @@ impl GatewayFilter for LoggingFilter {
 /// Rate limiting filter
 /// 限流过滤器
 ///
-/// Equivalent to Spring Cloud Gateway's RequestRateLimiter.
-/// 等价于Spring Cloud Gateway的RequestRateLimiter。
+/// Equivalent to Spring Cloud Gateway's `RequestRateLimiter`.
+/// 等价于Spring Cloud `Gateway的RequestRateLimiter`。
 pub struct RateLimitFilter {
     /// Max requests per second
     /// 每秒最大请求数

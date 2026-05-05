@@ -37,6 +37,9 @@
 //! quick_counter.increment();
 //! ```
 
+#[cfg(test)]
+mod tests;
+
 pub mod error;
 pub mod metric;
 pub mod counter;

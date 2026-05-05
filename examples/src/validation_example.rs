@@ -95,7 +95,7 @@ fn user_input_validation_example() {
         password: "SecurePass123!".to_string(),
     };
     match valid_user.validate() {
-        Ok(_) => println!("    Validation passed!"),
+        Ok(()) => println!("    Validation passed!"),
         Err(e) => println!("    Validation failed: {:?}", e),
     }
 
@@ -108,7 +108,7 @@ fn user_input_validation_example() {
         password: "123".to_string(),    // Too weak
     };
     match invalid_user.validate() {
-        Ok(_) => println!("    Validation passed!"),
+        Ok(()) => println!("    Validation passed!"),
         Err(errors) => {
             println!("    Validation failed with {} fields:", errors.len());
             for field in errors.fields() {
@@ -135,13 +135,13 @@ fn custom_validation_example() {
 
     println!("    Weak password: {}", weak_password);
     match validate_password_strength(weak_password) {
-        Ok(_) => println!("      Valid"),
+        Ok(()) => println!("      Valid"),
         Err(e) => println!("      Invalid: {}", e.to_map().iter().next().unwrap().1.join(", ")),
     }
 
     println!("    Strong password: {}", strong_password);
     match validate_password_strength(strong_password) {
-        Ok(_) => println!("      Valid"),
+        Ok(()) => println!("      Valid"),
         Err(e) => println!("      Invalid: {}", e.to_map().iter().next().unwrap().1.join(", ")),
     }
 }
@@ -150,8 +150,8 @@ fn custom_validation_example() {
 fn validate_password_strength(password: &str) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
 
-    let has_uppercase = password.chars().any(|c| c.is_uppercase());
-    let has_lowercase = password.chars().any(|c| c.is_lowercase());
+    let has_uppercase = password.chars().any(char::is_uppercase);
+    let has_lowercase = password.chars().any(char::is_lowercase);
     let has_digit = password.chars().any(|c| c.is_ascii_digit());
     let has_special = password.chars().any(|c| !c.is_alphanumeric());
 
@@ -197,7 +197,7 @@ fn nested_validation_example() {
     };
 
     match user_with_address.validate() {
-        Ok(_) => println!("    All validations passed!"),
+        Ok(()) => println!("    All validations passed!"),
         Err(e) => println!("    Validation failed: {}", e),
     }
 }
@@ -210,14 +210,14 @@ fn error_handling_example() {
     println!("  Converting validation errors to HTTP response:");
 
     let invalid_user = UserInput {
-        username: "".to_string(),
+        username: String::new(),
         email: "invalid".to_string(),
         age: 10,
         password: "123".to_string(),
     };
 
     match invalid_user.validate() {
-        Ok(_) => println!("    User is valid"),
+        Ok(()) => println!("    User is valid"),
         Err(errors) => {
             // Convert to API error response / 转换为API错误响应
             let error_map = errors.to_map();
@@ -359,7 +359,7 @@ impl Validate for UserWithAddress {
             // Merge errors / 合并错误
             for (field, field_errors) in addr_errors.to_map() {
                 for message in field_errors {
-                    errors.add(&format!("address.{}", field), message);
+                    errors.add(format!("address.{}", field), message);
                 }
             }
         }

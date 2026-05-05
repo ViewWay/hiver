@@ -138,13 +138,12 @@ where
     /// 处理 CONNECT/STOMP 帧
     async fn handle_connect(&self, frame: StompFrame) -> Result<()> {
         // Check version
-        if let Some(version) = frame.header("accept-version") {
-            if version != "1.2" && version != "1.1" && version != "1.0" {
+        if let Some(version) = frame.header("accept-version")
+            && version != "1.2" && version != "1.1" && version != "1.0" {
                 let error_frame = StompFrame::error(format!("Unsupported version: {}", version));
                 self.send_frame(error_frame).await?;
                 return Err(StompError::InvalidHeader(format!("Unsupported version: {}", version)));
             }
-        }
 
         // Check authentication
         if self.config.require_login {
@@ -152,7 +151,7 @@ where
                 StompError::AuthenticationFailed("Missing login header".to_string())
             })?;
 
-            let passcode = frame.header("passcode").ok_or_else(|| {
+            let _passcode = frame.header("passcode").ok_or_else(|| {
                 StompError::AuthenticationFailed("Missing passcode header".to_string())
             })?;
 
@@ -189,8 +188,8 @@ where
     /// 处理 SEND 帧
     async fn handle_send(&self, frame: StompFrame) -> Result<()> {
         let destination = frame.require_header("destination")?.clone();
-        let receipt_id = frame.header("receipt").map(|r| r.clone());
-        let tx_id = frame.header("transaction").map(|t| t.clone());
+        let receipt_id = frame.header("receipt").cloned();
+        let tx_id = frame.header("transaction").cloned();
         let body_len = frame.body_len();
         let has_body = frame.has_body();
         let body = if has_body { frame.body.clone() } else { None };
@@ -213,7 +212,7 @@ where
             self.session.add_to_transaction(&tx, frame)?;
         } else {
             // Send to broker
-            let body_bytes = body.unwrap_or_else(|| Bytes::new());
+            let body_bytes = body.unwrap_or_else(Bytes::new);
             self.broker.send(&destination, body_bytes, frame.headers).await?;
         }
 
@@ -305,7 +304,7 @@ where
     /// 处理 COMMIT 帧
     async fn handle_commit(&self, frame: StompFrame) -> Result<()> {
         let tx_id = frame.require_header("transaction")?.clone();
-        let receipt_id = frame.header("receipt").map(|r| r.clone());
+        let receipt_id = frame.header("receipt").cloned();
         let messages = self.session.commit_transaction(&tx_id)?;
 
         // Send all pending messages

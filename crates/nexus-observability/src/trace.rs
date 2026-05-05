@@ -3,17 +3,17 @@
 //!
 //! # Overview / 概述
 //!
-//! This module provides distributed tracing functionality compatible with OpenTelemetry.
+//! This module provides distributed tracing functionality compatible with `OpenTelemetry`.
 //! It includes span management, trace context propagation, and W3C Trace Context format.
 //!
-//! 本模块提供与 OpenTelemetry 兼容的分布式追踪功能。
+//! 本模块提供与 `OpenTelemetry` 兼容的分布式追踪功能。
 //! 包括 span 管理、追踪上下文传播和 W3C Trace Context 格式。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Cloud Sleuth + OpenTelemetry Tracing
+//! - Spring Cloud Sleuth + `OpenTelemetry` Tracing
 //! - Micrometer Tracing
-//! - @NewSpan annotation
+//! - @`NewSpan` annotation
 //!
 //! # Example / 示例
 //!
@@ -35,7 +35,6 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use once_cell::sync::Lazy;
 use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -43,7 +42,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Global trace ID generator
 /// 全局追踪ID生成器
-static TRACE_ID_GENERATOR: Lazy<Arc<IdGenerator>> = Lazy::new(|| Arc::new(IdGenerator::new()));
+static TRACE_ID_GENERATOR: std::sync::LazyLock<Arc<IdGenerator>> = std::sync::LazyLock::new(|| Arc::new(IdGenerator::new()));
 
 /// ID generator for trace and span IDs
 /// ID生成器，用于追踪和span ID
@@ -876,8 +875,8 @@ impl fmt::Debug for Tracer {
 
 /// Global tracer instance
 /// 全局追踪器实例
-static GLOBAL_TRACER: Lazy<std::sync::RwLock<Option<Tracer>>> =
-    Lazy::new(|| std::sync::RwLock::new(None));
+static GLOBAL_TRACER: std::sync::LazyLock<std::sync::RwLock<Option<Tracer>>> =
+    std::sync::LazyLock::new(|| std::sync::RwLock::new(None));
 
 /// Initialize the global tracer
 /// 初始化全局追踪器

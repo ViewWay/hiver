@@ -1,8 +1,8 @@
 //! Repository CRUD 自动生成支持
 //! Repository CRUD Auto-generation Support
 //!
-//! 提供 CrudRepository trait，自动生成基础的 CRUD 方法
-//! Provides CrudRepository trait for automatic CRUD method generation
+//! 提供 `CrudRepository` trait，自动生成基础的 CRUD 方法
+//! Provides `CrudRepository` trait for automatic CRUD method generation
 
 use async_trait::async_trait;
 
@@ -47,10 +47,10 @@ use async_trait::async_trait;
 /// }
 /// ```
 #[async_trait]
-pub trait CrudRepository<T, ID>: Send + Sync
+pub(crate) trait CrudRepository<T, ID>: Send + Sync
 where
     T: Send + Sync,
-    ID: Send + Sync,
+    ID: Send + Sync + 'static,
 {
     /// 保存实体（新增或更新）
     /// Save entity (insert or update)
@@ -101,7 +101,7 @@ where
 /// }
 /// ```
 #[async_trait]
-pub trait PagingRepository<T>: Send + Sync
+pub(crate) trait PagingRepository<T>: Send + Sync
 where
     T: Send + Sync,
 {
@@ -121,7 +121,7 @@ where
 /// 分页请求
 /// Page request
 #[derive(Clone, Debug)]
-pub struct PageRequest {
+pub(crate) struct PageRequest {
     /// 页码（从 0 开始）/ Page number (0-indexed)
     pub page: usize,
 
@@ -138,7 +138,7 @@ pub struct PageRequest {
 /// 排序方向
 /// Sort direction
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SortDirection {
+pub(crate) enum SortDirection {
     /// 升序 / Ascending
     Asc,
 
@@ -158,7 +158,7 @@ impl PageRequest {
     /// let page = PageRequest::new(0, 20)
     ///     .with_sort("id", SortDirection::Desc);
     /// ```
-    pub fn new(page: usize, size: usize) -> Self {
+    pub(crate) fn new(page: usize, size: usize) -> Self {
         Self {
             page,
             size,
@@ -169,24 +169,24 @@ impl PageRequest {
 
     /// 设置排序字段
     /// Set sort field
-    pub fn with_sort(mut self, field: impl Into<String>, direction: SortDirection) -> Self {
+    pub(crate) fn with_sort(mut self, field: impl Into<String>, direction: SortDirection) -> Self {
         self.sort = Some(field.into());
         self.direction = direction;
         self
     }
 
     /// 获取偏移量 / Get offset
-    pub fn offset(&self) -> usize {
+    pub(crate) fn offset(&self) -> usize {
         self.page * self.size
     }
 
     /// 创建下一页请求 / Create next page request
-    pub fn next(&self) -> Option<Self> {
+    pub(crate) fn next(&self) -> Option<Self> {
         Some(PageRequest::new(self.page + 1, self.size))
     }
 
     /// 创建上一页请求 / Create previous page request
-    pub fn previous(&self) -> Option<Self> {
+    pub(crate) fn previous(&self) -> Option<Self> {
         if self.page > 0 {
             Some(PageRequest::new(self.page - 1, self.size))
         } else {
@@ -195,7 +195,7 @@ impl PageRequest {
     }
 
     /// 第一页 / First page
-    pub fn first() -> Self {
+    pub(crate) fn first(&self) -> Self {
         Self::new(0, self.size)
     }
 }
@@ -209,7 +209,7 @@ impl Default for PageRequest {
 /// 分页结果
 /// Page result
 #[derive(Clone, Debug)]
-pub struct Page<T> {
+pub(crate) struct Page<T> {
     /// 内容 / Content
     pub content: Vec<T>,
 
@@ -240,7 +240,7 @@ pub struct Page<T> {
 
 impl<T> Page<T> {
     /// 创建分页结果 / Create page result
-    pub fn new(content: Vec<T>, number: usize, size: usize, total_elements: i64) -> Self {
+    pub(crate) fn new(content: Vec<T>, number: usize, size: usize, total_elements: i64) -> Self {
         let total_pages = if total_elements == 0 {
             0
         } else {
@@ -266,32 +266,32 @@ impl<T> Page<T> {
     }
 
     /// 获取空分页 / Get empty page
-    pub fn empty() -> Self {
+    pub(crate) fn empty() -> Self {
         Self::new(Vec::new(), 0, 20, 0)
     }
 
     /// 获取总页数 / Get total pages
-    pub fn total_pages(&self) -> usize {
+    pub(crate) fn total_pages(&self) -> usize {
         self.total_pages
     }
 
     /// 获取元素总数 / Get total elements
-    pub fn total_elements(&self) -> i64 {
+    pub(crate) fn total_elements(&self) -> i64 {
         self.total_elements
     }
 
     /// 是否为空 / Is empty
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.content.is_empty()
     }
 
     /// 获取元素数量 / Get number of elements
-    pub fn number_of_elements(&self) -> usize {
+    pub(crate) fn number_of_elements(&self) -> usize {
         self.content.len()
     }
 
     /// 转换内容类型 / Transform content
-    pub fn map<U, F>(self, f: F) -> Page<U>
+    pub(crate) fn map<U, F>(self, f: F) -> Page<U>
     where
         T: Send + Sync,
         U: Send + Sync,
@@ -314,7 +314,7 @@ impl<T> Page<T> {
 /// 查询条件
 /// Query criteria
 #[derive(Clone, Debug)]
-pub struct QueryCriteria {
+pub(crate) struct QueryCriteria {
     /// 条件表达式 / Criteria expression
     pub expression: String,
 
@@ -324,7 +324,7 @@ pub struct QueryCriteria {
 
 impl QueryCriteria {
     /// 创建查询条件 / Create query criteria
-    pub fn new(expression: impl Into<String>) -> Self {
+    pub(crate) fn new(expression: impl Into<String>) -> Self {
         Self {
             expression: expression.into(),
             bindings: Vec::new(),
@@ -332,7 +332,7 @@ impl QueryCriteria {
     }
 
     /// 添加参数绑定 / Add parameter binding
-    pub fn bind(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub(crate) fn bind(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
         self.bindings.push((key.into(), value.into()));
         self
     }
@@ -341,7 +341,7 @@ impl QueryCriteria {
 /// 排序
 /// Sort
 #[derive(Clone, Debug)]
-pub struct Sort {
+pub(crate) struct Sort {
     /// 排序字段 / Sort field
     pub field: String,
 
@@ -351,7 +351,7 @@ pub struct Sort {
 
 impl Sort {
     /// 创建排序 / Create sort
-    pub fn new(field: impl Into<String>, direction: SortDirection) -> Self {
+    pub(crate) fn new(field: impl Into<String>, direction: SortDirection) -> Self {
         Self {
             field: field.into(),
             direction,
@@ -359,12 +359,12 @@ impl Sort {
     }
 
     /// 升序 / Ascending
-    pub fn asc(field: impl Into<String>) -> Self {
+    pub(crate) fn asc(field: impl Into<String>) -> Self {
         Self::new(field, SortDirection::Asc)
     }
 
     /// 降序 / Descending
-    pub fn desc(field: impl Into<String>) -> Self {
+    pub(crate) fn desc(field: impl Into<String>) -> Self {
         Self::new(field, SortDirection::Desc)
     }
 }
@@ -372,7 +372,7 @@ impl Sort {
 /// 错误类型
 /// Error type
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
+pub(crate) enum Error {
     #[error("Database error: {0}")]
     Database(String),
 

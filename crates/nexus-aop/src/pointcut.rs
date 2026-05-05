@@ -2,7 +2,6 @@
 //! @Pointcut 属性宏
 
 use proc_macro::TokenStream;
-use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{ItemFn, LitStr, parse_macro_input};
 use syn::{parse::ParseStream, Result as SynResult, parse::Parse};
@@ -91,7 +90,7 @@ impl Parse for PointcutExpr {
 /// #[Pointcut("execution(* com.example.Service.*(..)) || execution(* com.example.Repository.*(..))")]
 /// fn service_or_repository() -> PointcutExpression {}
 /// ```
-pub fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

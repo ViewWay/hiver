@@ -64,6 +64,7 @@ where
     }
 
     /// Convert ID to Bson / 将 ID 转换为 Bson
+    #[allow(dead_code)]
     fn to_bson(&self, id: ID) -> Bson {
         id.into()
     }

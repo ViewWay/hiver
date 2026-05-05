@@ -228,3 +228,7 @@ fn parse_retry_config_string(args_str: &str) -> RetryConfig {
 
     config
 }
+
+
+#[cfg(test)]
+mod tests;

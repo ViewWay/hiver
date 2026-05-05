@@ -1,5 +1,5 @@
-//! OpenAPI schema definitions
-//! OpenAPI模式定义
+//! `OpenAPI` schema definitions
+//! `OpenAPI模式定义`
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -80,8 +80,8 @@ pub enum SchemaFormat {
     Uuid,
 }
 
-/// OpenAPI Schema
-/// OpenAPI模式
+/// `OpenAPI` Schema
+/// `OpenAPI模式`
 ///
 /// Equivalent to Spring's `@Schema` annotation.
 /// 等价于Spring的`@Schema`注解。
@@ -96,6 +96,7 @@ pub enum SchemaFormat {
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct Schema {
     /// Schema type
     /// 模式类型
@@ -335,28 +336,6 @@ impl Schema {
     }
 }
 
-impl Default for Schema {
-    fn default() -> Self {
-        Self {
-            schema_type: None,
-            format: None,
-            description: None,
-            example: None,
-            properties: None,
-            required: Vec::new(),
-            items: None,
-            ref_: None,
-            enum_values: None,
-            minimum: None,
-            maximum: None,
-            min_length: None,
-            max_length: None,
-            pattern: None,
-            default: None,
-            nullable: None,
-        }
-    }
-}
 
 /// Schema property
 /// 模式属性

@@ -1,5 +1,5 @@
-//! OpenAPI operation definitions
-//! OpenAPI操作定义
+//! `OpenAPI` operation definitions
+//! `OpenAPI操作定义`
 
 use crate::response::Response;
 use serde::{Deserialize, Serialize};
@@ -163,6 +163,7 @@ impl Parameter {
 /// Example definition
 /// 示例定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct Example {
     /// Summary
     /// 摘要
@@ -207,16 +208,6 @@ impl Example {
     }
 }
 
-impl Default for Example {
-    fn default() -> Self {
-        Self {
-            summary: None,
-            description: None,
-            value: None,
-            external_value: None,
-        }
-    }
-}
 
 /// Security scheme
 /// 安全方案
@@ -259,8 +250,8 @@ pub enum SecurityScheme {
         description: Option<String>,
     },
 
-    /// OAuth2 flows
-    /// OAuth2流程
+    /// `OAuth2` flows
+    /// `OAuth2流程`
     OAuth2 {
         /// Flows
         /// 流程
@@ -272,8 +263,8 @@ pub enum SecurityScheme {
         description: Option<String>,
     },
 
-    /// OpenID Connect
-    /// OpenID Connect
+    /// `OpenID` Connect
+    /// `OpenID` Connect
     OpenIdConnect {
         /// URL
         /// URL
@@ -306,6 +297,7 @@ pub enum SecurityScheme {
 /// )
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct Operation {
     /// Tags
     /// 标签列表
@@ -428,22 +420,6 @@ impl Operation {
     }
 }
 
-impl Default for Operation {
-    fn default() -> Self {
-        Self {
-            tags: Vec::new(),
-            summary: None,
-            description: None,
-            external_docs: None,
-            operation_id: None,
-            parameters: Vec::new(),
-            request_body: None,
-            responses: HashMap::new(),
-            deprecated: false,
-            security: Vec::new(),
-        }
-    }
-}
 
 /// External documentation
 /// 外部文档
@@ -462,6 +438,7 @@ pub struct ExternalDocs {
 /// Request body
 /// 请求体
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct RequestBody {
     /// Description
     /// 描述
@@ -507,19 +484,11 @@ impl RequestBody {
     }
 }
 
-impl Default for RequestBody {
-    fn default() -> Self {
-        Self {
-            description: None,
-            content: HashMap::new(),
-            required: false,
-        }
-    }
-}
 
 /// Media type
 /// 媒体类型
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct MediaType {
     /// Schema
     /// 模式
@@ -564,16 +533,6 @@ impl MediaType {
     }
 }
 
-impl Default for MediaType {
-    fn default() -> Self {
-        Self {
-            schema: None,
-            example: None,
-            examples: None,
-            encoding: None,
-        }
-    }
-}
 
 /// Encoding
 /// 编码

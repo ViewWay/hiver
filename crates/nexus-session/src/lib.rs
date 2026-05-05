@@ -15,7 +15,7 @@
 //!
 //! - In-memory session storage / 内存会话存储
 //! - Redis session storage / Redis会话存储
-//! - MongoDB session storage / MongoDB会话存储
+//! - `MongoDB` session storage / `MongoDB会话存储`
 //! - Session expiration / 会话过期
 //! - Session attributes / 会话属性
 //! - Spring Boot compatible API / Spring Boot 兼容 API
@@ -55,6 +55,9 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod session;
 pub mod store;

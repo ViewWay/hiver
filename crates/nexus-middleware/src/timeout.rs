@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @RequestTimeout
-//! - TimeoutWebHandlerExecutor
+//! - @`RequestTimeout`
+//! - `TimeoutWebHandlerExecutor`
 //! - Resilience4j timeout
 
 #![warn(missing_docs)]
@@ -81,15 +81,12 @@ where
         Box::pin(async move {
             // Use tokio::time::timeout for the timeout functionality
             // 使用tokio::time::timeout实现超时功能
-            match tokio::time::timeout(timeout, next.call(req, state)).await {
-                Ok(response) => response,
-                Err(_) => {
-                    tracing::warn!("Request timed out after {:?}", timeout);
-                    Err(nexus_http::Error::Timeout(format!(
-                        "Request timed out after {:?}",
-                        timeout
-                    )))
-                },
+            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await { response } else {
+                tracing::warn!("Request timed out after {:?}", timeout);
+                Err(nexus_http::Error::Timeout(format!(
+                    "Request timed out after {:?}",
+                    timeout
+                )))
             }
         })
     }

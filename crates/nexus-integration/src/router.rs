@@ -1,7 +1,7 @@
 //! Message routing patterns
 //! 消息路由模式
 
-use crate::channel::{MessageChannel, PointToPointChannel};
+use crate::channel::MessageChannel;
 use crate::error::{IntegrationError, Result};
 use crate::message::Message;
 use async_trait::async_trait;

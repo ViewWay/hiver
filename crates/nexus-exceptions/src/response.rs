@@ -157,8 +157,8 @@ impl ErrorResponse {
         Self::build_response(body)
     }
 
-    /// Build response from ErrorBody
-    /// 从 ErrorBody 构建响应
+    /// Build response from `ErrorBody`
+    /// 从 `ErrorBody` 构建响应
     fn build_response(body: ErrorBody) -> Response {
         // Convert to JSON bytes
         match serde_json::to_vec(&body) {

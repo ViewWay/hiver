@@ -16,7 +16,7 @@
 //!   类型安全的查询执行
 
 use crate::{
-    Executor,
+    client::DatabaseClient,
     error::{R2dbcError, R2dbcResult},
 };
 use serde::Deserialize;
@@ -275,7 +275,7 @@ impl QueryMetadata {
                 let mut param_index = 1;
 
                 for param_name in &self.param_names {
-                    let placeholder = format!("{{{{{}}}}}", param_name);
+                    let placeholder = format!("#{{{}}}", param_name);
                     let replacement = format!("${}", param_index);
 
                     sql = sql.replace(&placeholder, &replacement);
@@ -332,7 +332,7 @@ impl QueryMetadata {
 /// 为注解宏中定义的查询提供运行时执行支持。
 pub struct AnnotatedQueryExecutor<E>
 where
-    E: Executor,
+    E: DatabaseClient,
 {
     /// The underlying executor / 底层执行器
     executor: E,
@@ -340,7 +340,7 @@ where
 
 impl<E> AnnotatedQueryExecutor<E>
 where
-    E: Executor,
+    E: DatabaseClient,
 {
     /// Create a new annotated query executor
     /// 创建新的注解查询执行器
@@ -376,29 +376,13 @@ where
     where
         T: for<'de> Deserialize<'de>,
     {
-        let (sql, values) = metadata.bind_params(params)?;
-
-        // Convert values to the format expected by Executor
-        // 将值转换为 Executor 期望的格式
-        let executor_values: Vec<serde_json::Value> = values;
-
-        // Execute the query
-        // 执行查询
-        
-        
-
-        let row = self.executor.fetch_one(&sql, executor_values).await?;
-
-        // Map row to entity
-        // 将行映射到实体
-        match row {
+        let (sql, _values) = metadata.bind_params(params)?;
+        match self.executor.fetch_one(&sql).await? {
             Some(row) => {
-                let json = row.to_json()?;
-                let entity = serde_json::from_value(json).map_err(|e| {
-                    R2dbcError::row_mapping(format!("Failed to deserialize: {}", e))
-                })?;
+                let entity = row.deserialize::<T>()
+                    .map_err(|e| R2dbcError::RowMapping(format!("failed to map row: {}", e)))?;
                 Ok(Some(entity))
-            },
+            }
             None => Ok(None),
         }
     }
@@ -427,22 +411,14 @@ where
     where
         T: for<'de> Deserialize<'de>,
     {
-        let (sql, values) = metadata.bind_params(params)?;
-        let executor_values: Vec<serde_json::Value> = values;
-
-        let rows = self.executor.fetch_all(&sql, executor_values).await?;
-
-        // Map rows to entities
-        // 将行映射到实体
-        let mut entities = Vec::new();
-        for row in rows {
-            let json = row.to_json()?;
-            let entity: T = serde_json::from_value(json)
-                .map_err(|e| R2dbcError::row_mapping(format!("Failed to deserialize: {}", e)))?;
-            entities.push(entity);
-        }
-
-        Ok(entities)
+        let (sql, _values) = metadata.bind_params(params)?;
+        let rows = self.executor.fetch_all(&sql).await?;
+        rows.into_iter()
+            .map(|row| {
+                row.deserialize::<T>()
+                    .map_err(|e| R2dbcError::RowMapping(format!("failed to map row: {}", e)))
+            })
+            .collect()
     }
 
     /// Execute an INSERT/UPDATE/DELETE query
@@ -467,10 +443,9 @@ where
         metadata: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
     ) -> R2dbcResult<u64> {
-        let (sql, values) = metadata.bind_params(params)?;
-        let executor_values: Vec<serde_json::Value> = values;
+        let (sql, _values) = metadata.bind_params(params)?;
 
-        self.executor.execute(&sql, executor_values).await
+        self.executor.execute_cmd(&sql).await
     }
 }
 

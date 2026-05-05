@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 /// 定义事务之间如何关联。
 ///
 /// Equivalent to Spring's Propagation enum.
-/// 等价于Spring的Propagation枚举。
+/// `等价于Spring的Propagation枚举`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -19,6 +19,7 @@ use serde::{Deserialize, Serialize};
 /// public void auditAction() { ... }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum Propagation {
     /// Required
     /// 必需
@@ -26,6 +27,7 @@ pub enum Propagation {
     /// Support a current transaction, create a new one if none exists.
     /// This is the default.
     /// 支持当前事务，如果不存在则创建新事务。这是默认值。
+    #[default]
     Required = 0,
 
     /// Supports
@@ -116,11 +118,6 @@ impl Propagation {
     }
 }
 
-impl Default for Propagation {
-    fn default() -> Self {
-        Propagation::Required
-    }
-}
 
 impl std::fmt::Display for Propagation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

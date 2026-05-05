@@ -97,7 +97,7 @@ pub trait MessageHandler: Send + Sync {
 
 /// Function-based message handler
 /// 基于函数的消息处理器
-pub struct FnHandler<F>
+pub(crate) struct FnHandler<F>
 where
     F: Fn(AmqpMessage) -> Result<(), String> + Send + Sync,
 {

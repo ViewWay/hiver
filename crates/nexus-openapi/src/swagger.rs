@@ -29,8 +29,8 @@ pub struct SwaggerConfig {
     /// 服务 Swagger UI 的路径
     pub path: String,
 
-    /// Path to serve OpenAPI JSON spec
-    /// 服务 OpenAPI JSON 规范的路径
+    /// Path to serve `OpenAPI` JSON spec
+    /// 服务 `OpenAPI` JSON 规范的路径
     pub spec_path: String,
 
     /// Swagger UI title
@@ -77,24 +77,22 @@ pub struct SwaggerConfig {
 /// Model rendering mode
 /// 模型渲染模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum ModelRendering {
     /// Example
     /// 示例
+    #[default]
     Example,
     /// Model
     /// 模型
     Model,
 }
 
-impl Default for ModelRendering {
-    fn default() -> Self {
-        Self::Example
-    }
-}
 
 /// Syntax highlight theme
 /// 语法高亮主题
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum SyntaxHighlightTheme {
     /// Agate theme
     Agate,
@@ -109,6 +107,7 @@ pub enum SyntaxHighlightTheme {
     /// GitHub Light theme
     GithubLight,
     /// Monokai theme
+    #[default]
     Monokai,
     /// Nord theme
     Nord,
@@ -122,11 +121,6 @@ pub enum SyntaxHighlightTheme {
     VsCodeLight,
 }
 
-impl Default for SyntaxHighlightTheme {
-    fn default() -> Self {
-        Self::Monokai
-    }
-}
 
 impl SyntaxHighlightTheme {
     /// Get the theme name for Swagger UI
@@ -169,8 +163,8 @@ impl Default for SwaggerConfig {
 }
 
 impl SwaggerConfig {
-    /// Create a new SwaggerConfig
-    /// 创建新的 SwaggerConfig
+    /// Create a new `SwaggerConfig`
+    /// 创建新的 `SwaggerConfig`
     pub fn new() -> Self {
         Self::default()
     }
@@ -182,8 +176,8 @@ impl SwaggerConfig {
         self
     }
 
-    /// Set the path to serve OpenAPI JSON spec
-    /// 设置服务 OpenAPI JSON 规范的路径
+    /// Set the path to serve `OpenAPI` JSON spec
+    /// 设置服务 `OpenAPI` JSON 规范的路径
     pub fn spec_path(mut self, spec_path: impl Into<String>) -> Self {
         self.spec_path = spec_path.into();
         self
@@ -326,10 +320,10 @@ impl SwaggerConfig {
                 ModelRendering::Example => "example",
                 ModelRendering::Model => "model",
             },
-            display_operation_id = self.display_operation_id.to_string(),
-            try_it_out_enabled = self.try_it_out_enabled.to_string(),
-            persist_authorization = self.persist_authorization.to_string(),
-            display_request_duration = self.display_request_duration.to_string(),
+            display_operation_id = self.display_operation_id,
+            try_it_out_enabled = self.try_it_out_enabled,
+            persist_authorization = self.persist_authorization,
+            display_request_duration = self.display_request_duration,
             theme = self.syntax_highlight_theme.as_str(),
             config = if config_json.is_empty() { "" } else { "," }
         )
@@ -351,8 +345,8 @@ impl SwaggerConfig {
 /// Swagger UI handler
 /// Swagger UI 处理器
 ///
-/// Provides HTTP handlers for serving the Swagger UI and OpenAPI spec.
-/// 提供用于服务 Swagger UI 和 OpenAPI 规范的 HTTP 处理器。
+/// Provides HTTP handlers for serving the Swagger UI and `OpenAPI` spec.
+/// 提供用于服务 Swagger UI 和 `OpenAPI` 规范的 HTTP 处理器。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -373,8 +367,8 @@ impl SwaggerConfig {
 /// ```
 #[derive(Debug, Clone)]
 pub struct SwaggerUi {
-    /// OpenAPI spec
-    /// OpenAPI 规范
+    /// `OpenAPI` spec
+    /// `OpenAPI` 规范
     openapi: Arc<OpenApi>,
 
     /// Configuration
@@ -383,8 +377,8 @@ pub struct SwaggerUi {
 }
 
 impl SwaggerUi {
-    /// Create a new SwaggerUi handler
-    /// 创建新的 SwaggerUi 处理器
+    /// Create a new `SwaggerUi` handler
+    /// 创建新的 `SwaggerUi` 处理器
     pub fn new(openapi: OpenApi) -> Self {
         Self {
             openapi: Arc::new(openapi),
@@ -401,14 +395,14 @@ impl SwaggerUi {
         }
     }
 
-    /// Get the OpenAPI spec as JSON
-    /// 获取 OpenAPI 规范的 JSON
+    /// Get the `OpenAPI` spec as JSON
+    /// 获取 `OpenAPI` 规范的 JSON
     pub fn spec_json(&self) -> Result<String, serde_json::Error> {
         self.openapi.to_json()
     }
 
-    /// Get the OpenAPI spec as YAML
-    /// 获取 OpenAPI 规范的 YAML
+    /// Get the `OpenAPI` spec as YAML
+    /// 获取 `OpenAPI` 规范的 YAML
     pub fn spec_yaml(&self) -> Result<String, serde_yaml::Error> {
         self.openapi.to_yaml()
     }
@@ -463,8 +457,8 @@ impl SwaggerUi {
         &self.config
     }
 
-    /// Get the OpenAPI spec
-    /// 获取 OpenAPI 规范
+    /// Get the `OpenAPI` spec
+    /// 获取 `OpenAPI` 规范
     pub fn openapi(&self) -> &OpenApi {
         &self.openapi
     }

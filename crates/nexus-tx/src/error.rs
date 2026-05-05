@@ -6,8 +6,8 @@ use thiserror::Error;
 /// Transaction error
 /// 事务错误
 ///
-/// Equivalent to Spring's TransactionException.
-/// 等价于Spring的TransactionException。
+/// Equivalent to Spring's `TransactionException`.
+/// `等价于Spring的TransactionException`。
 #[derive(Error, Debug)]
 pub enum TransactionError {
     /// Transaction creation failed
@@ -73,8 +73,8 @@ pub type TransactionResult<T> = Result<T, TransactionError>;
 /// Transaction exception runtime type
 /// 事务异常运行时类型
 ///
-/// Equivalent to Spring's TransactionSystemException.
-/// 等价于Spring的TransactionSystemException。
+/// Equivalent to Spring's `TransactionSystemException`.
+/// `等价于Spring的TransactionSystemException`。
 #[derive(Error, Debug)]
 #[error("Transaction system exception: {message}")]
 pub(crate) struct TransactionSystemException {
@@ -114,8 +114,8 @@ impl TransactionSystemException {
 /// Unexpected rollback exception
 /// 意外回滚异常
 ///
-/// Equivalent to Spring's UnexpectedRollbackException.
-/// 等价于Spring的UnexpectedRollbackException。
+/// Equivalent to Spring's `UnexpectedRollbackException`.
+/// `等价于Spring的UnexpectedRollbackException`。
 #[derive(Error, Debug)]
 #[error("Unexpected rollback: {message}")]
 pub(crate) struct UnexpectedRollbackException {

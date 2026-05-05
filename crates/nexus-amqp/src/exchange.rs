@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 /// Exchange type
 /// 交换机类型
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum ExchangeType {
     /// Direct exchange (exact match)
     /// 直连交换机（精确匹配）
+    #[default]
     Direct,
 
     /// Fanout exchange (broadcast)
@@ -24,11 +26,6 @@ pub enum ExchangeType {
     Headers,
 }
 
-impl Default for ExchangeType {
-    fn default() -> Self {
-        Self::Direct
-    }
-}
 
 impl std::fmt::Display for ExchangeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -129,7 +126,7 @@ impl Exchange {
     /// 创建默认交换机
     pub fn default_exchange() -> Self {
         Self {
-            name: "".to_string(),
+            name: String::new(),
             exchange_type: ExchangeType::Direct,
             durable: true,
             auto_delete: false,

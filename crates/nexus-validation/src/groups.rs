@@ -68,7 +68,7 @@ pub trait ValidationGroup: Any + Send + Sync + 'static {
             .unwrap_or(type_name)
     }
 
-    /// Get the group TypeId / 获取分组TypeId
+    /// Get the group `TypeId` / `获取分组TypeId`
     fn type_id(&self) -> TypeId {
         TypeId::of::<Self>()
     }
@@ -86,7 +86,7 @@ impl ValidationGroup for DefaultGroup {}
 /// 表示一组活跃的验证分组。
 #[derive(Clone)]
 pub struct GroupSet {
-    /// Active group type IDs / 活跃分组TypeId
+    /// Active group type IDs / `活跃分组TypeId`
     groups: HashSet<TypeId>,
     /// Group names for display / 用于显示的分组名称
     names: HashSet<String>,
@@ -238,7 +238,7 @@ impl<T, G: ValidationGroup> Validated<T, G> {
         self.group.name()
     }
 
-    /// Get the group TypeId / 获取分组TypeId
+    /// Get the group `TypeId` / `获取分组TypeId`
     pub fn group_type_id(&self) -> TypeId {
         ValidationGroup::type_id(&self.group)
     }

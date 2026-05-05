@@ -3,9 +3,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @ResponseStatus
-//! - ResponseEntityExceptionHandler
-//! - @ExceptionHandler
+//! - @`ResponseStatus`
+//! - `ResponseEntityExceptionHandler`
+//! - @`ExceptionHandler`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -39,10 +39,10 @@ impl Error {
         }
     }
 
-    /// Create a new error from ErrorKind
-    /// 从ErrorKind创建新错误
+    /// Create a new error from `ErrorKind`
+    /// `从ErrorKind创建新错误`
     ///
-    /// When ErrorKind already contains a message (like NotFound or Internal),
+    /// When `ErrorKind` already contains a message (like `NotFound` or Internal),
     /// that message is extracted and used as the error message.
     pub fn from_kind(kind: ErrorKind) -> Self {
         let message = match &kind {

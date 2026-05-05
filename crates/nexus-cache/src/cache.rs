@@ -208,7 +208,7 @@ impl CacheStats {
 /// 缓存trait
 ///
 /// Equivalent to Spring's Cache abstraction.
-/// 等价于Spring的Cache抽象。
+/// `等价于Spring的Cache抽象`。
 #[async_trait]
 pub trait Cache<K, V>: Send + Sync
 where
@@ -288,7 +288,7 @@ where
         // 使用 time_to_live（从插入开始的绝对TTL）而不是 time_to_idle（滑动窗口）
         // 以匹配 CacheEntry::expires_at 语义，后者使用从创建时间开始的绝对过期
         let builder = moka::future::CacheBuilder::new(config.max_capacity as u64).time_to_live(
-            Duration::from_secs(config.ttl_secs.unwrap_or(crate::DEFAULT_TTL_SECS) as u64),
+            Duration::from_secs(config.ttl_secs.unwrap_or(crate::DEFAULT_TTL_SECS)),
         );
 
         Self {
@@ -335,24 +335,21 @@ where
         let mut stats = self.stats.write().await;
         stats.total_requests += 1;
 
-        match self.inner.get(key).await {
-            Some(entry) => {
-                if !entry.is_expired() {
-                    stats.hits += 1;
-                    stats.calculate_hit_rate();
-                    Some(entry.value)
-                } else {
-                    self.inner.invalidate(key).await;
-                    stats.misses += 1;
-                    stats.calculate_hit_rate();
-                    None
-                }
-            },
-            None => {
+        if let Some(entry) = self.inner.get(key).await {
+            if entry.is_expired() {
+                self.inner.invalidate(key).await;
                 stats.misses += 1;
                 stats.calculate_hit_rate();
                 None
-            },
+            } else {
+                stats.hits += 1;
+                stats.calculate_hit_rate();
+                Some(entry.value)
+            }
+        } else {
+            stats.misses += 1;
+            stats.calculate_hit_rate();
+            None
         }
     }
 
@@ -392,7 +389,7 @@ where
     }
 
     async fn contains_key(&self, key: &K) -> bool {
-        self.inner.get(key).await.map_or(false, |e| !e.is_expired())
+        self.inner.get(key).await.is_some_and(|e| !e.is_expired())
     }
 
     async fn size(&self) -> usize {

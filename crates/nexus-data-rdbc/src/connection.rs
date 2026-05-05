@@ -6,6 +6,8 @@
 //! This module provides database connection pooling and management.
 //! 本模块提供数据库连接池和管理。
 
+#![allow(dead_code)] // pub(crate) scaffolding items for future use; 内部脚手架，后续使用
+
 use crate::{DatabaseType, R2dbcError, R2dbcResult};
 use std::sync::Arc;
 use std::time::Duration;
@@ -319,8 +321,8 @@ impl ConnectionPool {
         let inner: Box<dyn PoolInner> = match database_type {
             DatabaseType::PostgreSQL => {
                 let sqlx_pool = sqlx::postgres::PgPoolOptions::new()
-                    .max_connections(config.max_size as u32)
-                    .min_connections(config.min_idle as u32)
+                    .max_connections(config.max_size)
+                    .min_connections(config.min_idle)
                     .acquire_timeout(config.connection_timeout)
                     .idle_timeout(config.idle_timeout)
                     .max_lifetime(config.max_lifetime)

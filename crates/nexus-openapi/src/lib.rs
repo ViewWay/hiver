@@ -1,5 +1,5 @@
-//! Nexus OpenAPI - OpenAPI/Swagger documentation support
-//! Nexus OpenAPI - OpenAPI/Swagger 文档支持
+//! Nexus `OpenAPI` - OpenAPI/Swagger documentation support
+//! Nexus `OpenAPI` - OpenAPI/Swagger 文档支持
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
@@ -13,7 +13,7 @@
 //!
 //! # Features / 功能
 //!
-//! - OpenAPI 3.0 specification generation / OpenAPI 3.0 规范生成
+//! - `OpenAPI` 3.0 specification generation / `OpenAPI` 3.0 规范生成
 //! - Swagger UI integration / Swagger UI 集成
 //! - Type-safe schema definitions / 类型安全的模式定义
 //! - HTTP framework integration / HTTP 框架集成
@@ -56,7 +56,7 @@
 //! - [`operation`] - Operation definitions / 操作定义
 //! - [`response`] - Response definitions / 响应定义
 //! - [`path`] - Path definitions / 路径定义
-//! - [`openapi`] - OpenAPI builder / OpenAPI 构建器
+//! - [`openapi`] - `OpenAPI` builder / `OpenAPI` 构建器
 //! - [`swagger`] - Swagger UI integration / Swagger UI 集成
 //! - [`http`] - HTTP framework integration / HTTP 框架集成
 //! - [`macros`] - Re-exported utoipa macros / 重新导出的 utoipa 宏
@@ -68,6 +68,9 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod config;
 pub mod schema;
@@ -88,11 +91,11 @@ pub use openapi::OpenApi;
 pub use swagger::{SwaggerUi, SwaggerConfig, ModelRendering, SyntaxHighlightTheme};
 pub use http::{OpenApiHandler, OpenApiResponse, OpenApiRoutes, OpenApiRouter};
 
-/// Version of the OpenAPI module
+/// Version of the `OpenAPI` module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Default OpenAPI version
-/// 默认OpenAPI版本
+/// Default `OpenAPI` version
+/// `默认OpenAPI版本`
 pub const OPENAPI_VERSION: &str = "3.0.3";
 
 /// Re-exports of commonly used types
@@ -108,11 +111,11 @@ pub mod prelude {
     };
 }
 
-/// OpenApi trait for generating documentation
-/// OpenApi trait 用于生成文档
+/// `OpenApi` trait for generating documentation
+/// `OpenApi` trait 用于生成文档
 ///
-/// Equivalent to SpringDoc's OpenAPI annotation.
-/// 等价于SpringDoc的OpenAPI注解。
+/// Equivalent to `SpringDoc`'s `OpenAPI` annotation.
+/// `等价于SpringDoc的OpenAPI注解`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -125,12 +128,12 @@ pub mod prelude {
 /// )
 /// ```
 pub trait GenerateOpenApi {
-    /// Generate OpenAPI specification
-    /// 生成OpenAPI规范
+    /// Generate `OpenAPI` specification
+    /// `生成OpenAPI规范`
     fn generate(&self) -> Result<utoipa::openapi::OpenApi, String>;
 }
 
-/// Default implementation for utoipa::OpenApi
+/// Default implementation for `utoipa::OpenApi`
 impl<T: utoipa::OpenApi> GenerateOpenApi for T {
     fn generate(&self) -> Result<utoipa::openapi::OpenApi, String> {
         Ok(T::openapi())

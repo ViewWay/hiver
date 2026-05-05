@@ -4,9 +4,9 @@
 //! Implements conditional assembly similar to Spring Boot.
 //!
 //! 参考 Spring Boot 的 @Conditional* 注解：
-//! - @ConditionalOnClass → ConditionalOnFeature
-//! - @ConditionalOnProperty → ConditionalOnProperty
-//! - @ConditionalOnMissingBean → ConditionalOnMissingBean
+//! - @`ConditionalOnClass` → `ConditionalOnFeature`
+//! - @`ConditionalOnProperty` → `ConditionalOnProperty`
+//! - @`ConditionalOnMissingBean` → `ConditionalOnMissingBean`
 
 use std::any::TypeId;
 use std::fmt::Debug;
@@ -68,7 +68,7 @@ impl ConditionalOnProperty {
         self
     }
 
-    /// 设置 match_if_empty
+    /// 设置 `match_if_empty`
     pub fn match_if_empty(mut self, match_if_empty: bool) -> Self {
         self.match_if_empty = match_if_empty;
         self
@@ -206,8 +206,8 @@ impl Conditional for ConditionalOnFeature {
 /// 表达式条件
 /// Expression condition
 ///
-/// 支持类似 SpEL 的简单表达式。
-/// Supports simple expressions similar to SpEL.
+/// 支持类似 `SpEL` 的简单表达式。
+/// Supports simple expressions similar to `SpEL`.
 ///
 /// # 示例 / Example
 ///
@@ -352,7 +352,7 @@ impl<'a> ExpressionParser<'a> {
         let ops = ["==", "!=", "<=", ">=", "<", ">"];
         for op in &ops {
             if self.consume(op) {
-                return Some(op.to_string());
+                return Some((*op).to_string());
             }
         }
         None
@@ -522,8 +522,7 @@ impl<'a> ExpressionParser<'a> {
 /// 从上下文获取属性值
 fn ctx_get_property(ctx: &ApplicationContext, key: &str) -> Value {
     ctx.get_property(key)
-        .map(|v| parse_value_string(&v))
-        .unwrap_or(Value::Null)
+        .map_or(Value::Null, |v| parse_value_string(&v))
 }
 
 /// 解析值字符串
@@ -564,29 +563,29 @@ impl Value {
             (Value::Number(a), Value::Number(b)) => (a - b).abs() < f64::EPSILON,
             (Value::Null, Value::Null) => true,
             (Value::String(a), Value::Number(b)) => {
-                a.parse::<f64>().map(|n| (n - b).abs() < f64::EPSILON).unwrap_or(false)
+                a.parse::<f64>().is_ok_and(|n| (n - b).abs() < f64::EPSILON)
             }
             (Value::Number(a), Value::String(b)) => {
-                b.parse::<f64>().map(|n| (a - n).abs() < f64::EPSILON).unwrap_or(false)
+                b.parse::<f64>().is_ok_and(|n| (a - n).abs() < f64::EPSILON)
             }
             _ => false,
         }
     }
 
     fn less_than(&self, other: &Value) -> bool {
-        self.compare(other).map(|v| v < 0).unwrap_or(false)
+        self.compare(other).is_some_and(|v| v < 0)
     }
 
     fn greater_than(&self, other: &Value) -> bool {
-        self.compare(other).map(|v| v > 0).unwrap_or(false)
+        self.compare(other).is_some_and(|v| v > 0)
     }
 
     fn less_than_or_equal(&self, other: &Value) -> bool {
-        self.compare(other).map(|v| v <= 0).unwrap_or(false)
+        self.compare(other).is_some_and(|v| v <= 0)
     }
 
     fn greater_than_or_equal(&self, other: &Value) -> bool {
-        self.compare(other).map(|v| v >= 0).unwrap_or(false)
+        self.compare(other).is_some_and(|v| v >= 0)
     }
 
     fn compare(&self, other: &Value) -> Option<i32> {
@@ -738,8 +737,8 @@ macro_rules! all_conditions {
     }};
 }
 
-/// Macro to create an AnyConditions collection from multiple conditions
-/// 从多个条件创建 AnyConditions 集合的宏
+/// Macro to create an `AnyConditions` collection from multiple conditions
+/// 从多个条件创建 `AnyConditions` 集合的宏
 ///
 /// # Example / 示例
 ///

@@ -276,7 +276,7 @@ impl Runtime {
             // Poll the future
             // 轮询future
             match Pin::new(&mut future).poll(&mut context) {
-                Poll::Ready(_) => {
+                Poll::Ready(()) => {
                     // Future completed, flush any remaining events
                     // Future完成，刷新任何剩余事件
                     let _ = self.flush_events();

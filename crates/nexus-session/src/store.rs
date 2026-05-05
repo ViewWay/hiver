@@ -47,8 +47,8 @@ impl SessionData {
         }
     }
 
-    /// Create new Session from SessionData
-    /// 从SessionData创建新的Session
+    /// Create new Session from `SessionData`
+    /// `从SessionData创建新的Session`
     fn to_session(&self) -> Session {
         let session = Session::new(SessionId::from_string(self.id.clone()));
         // Note: attributes are not preserved in distributed stores

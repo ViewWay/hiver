@@ -10,9 +10,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @RequestMapping, @GetMapping, @PostMapping, etc.
-//! - PathVariable extraction
-//! - RequestParam extraction
+//! - @`RequestMapping`, @`GetMapping`, @`PostMapping`, etc.
+//! - `PathVariable` extraction
+//! - `RequestParam` extraction
 //!
 //! # Example / 示例
 //!
@@ -35,6 +35,9 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod params;
 pub mod route;

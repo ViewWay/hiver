@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Cloud / 等价于 Spring Cloud
 //!
-//! - `@LoadBalanced` - LoadBalanced
-//! - Ribbon / Spring Cloud LoadBalancer
+//! - `@LoadBalanced` - `LoadBalanced`
+//! - Ribbon / Spring Cloud `LoadBalancer`
 //! - Client-side load balancing
 
 #![allow(async_fn_in_trait)]
@@ -17,8 +17,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 /// Load balancer
 /// 负载均衡器
 ///
-/// Equivalent to Spring Cloud LoadBalancer / Ribbon.
-/// 等价于Spring Cloud LoadBalancer / Ribbon。
+/// Equivalent to Spring Cloud `LoadBalancer` / Ribbon.
+/// 等价于Spring Cloud `LoadBalancer` / Ribbon。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -43,8 +43,8 @@ pub trait LoadBalancer: Send + Sync {
 /// Round-robin load balancer
 /// 轮询负载均衡器
 ///
-/// Equivalent to Spring Cloud's RoundRobinLoadBalancer.
-/// 等价于Spring Cloud的RoundRobinLoadBalancer。
+/// Equivalent to Spring Cloud's `RoundRobinLoadBalancer`.
+/// 等价于Spring `Cloud的RoundRobinLoadBalancer`。
 #[derive(Debug)]
 pub struct RoundRobinLoadBalancer {
     /// Current index
@@ -83,8 +83,8 @@ impl LoadBalancer for RoundRobinLoadBalancer {
 /// Random load balancer
 /// 随机负载均衡器
 ///
-/// Equivalent to Spring Cloud's RandomLoadBalancer.
-/// 等价于Spring Cloud的RandomLoadBalancer。
+/// Equivalent to Spring Cloud's `RandomLoadBalancer`.
+/// 等价于Spring `Cloud的RandomLoadBalancer`。
 pub struct RandomLoadBalancer;
 
 impl LoadBalancer for RandomLoadBalancer {
@@ -103,8 +103,8 @@ impl LoadBalancer for RandomLoadBalancer {
 /// Each instance has a weight that affects selection probability.
 /// 每个实例都有一个影响选择概率的权重。
 ///
-/// Equivalent to Spring Cloud's WeightedServiceInstanceListSupplier.
-/// 等价于Spring Cloud的WeightedServiceInstanceListSupplier。
+/// Equivalent to Spring Cloud's `WeightedServiceInstanceListSupplier`.
+/// 等价于Spring `Cloud的WeightedServiceInstanceListSupplier`。
 #[derive(Debug)]
 pub struct WeightedLoadBalancer {
     /// Random number generator
@@ -164,11 +164,11 @@ impl Default for WeightedLoadBalancer {
 /// Chooses the instance with the fewest active connections.
 /// 选择活动连接最少的实例。
 ///
-/// Equivalent to Spring Cloud's LeastConnectionLoadBalancer.
-/// 等价于Spring Cloud的LeastConnectionLoadBalancer。
+/// Equivalent to Spring Cloud's `LeastConnectionLoadBalancer`.
+/// 等价于Spring `Cloud的LeastConnectionLoadBalancer`。
 pub struct LeastConnectionLoadBalancer {
-    /// Connection counts (instance_id -> count)
-    /// 连接计数（instance_id -> count）
+    /// Connection counts (`instance_id` -> count)
+    /// `连接计数（instance_id` -> count）
     connections: Arc<tokio::sync::RwLock<std::collections::HashMap<String, usize>>>,
 }
 
@@ -192,11 +192,10 @@ impl LeastConnectionLoadBalancer {
     /// 减少实例的连接计数
     pub async fn decrement_connection(&self, instance_id: &str) {
         let mut connections = self.connections.write().await;
-        if let Some(count) = connections.get_mut(instance_id) {
-            if *count > 0 {
+        if let Some(count) = connections.get_mut(instance_id)
+            && *count > 0 {
                 *count -= 1;
             }
-        }
     }
 }
 
@@ -247,8 +246,8 @@ pub struct WeightedServiceInstance {
 /// Combines multiple load balancing strategies.
 /// 组合多种负载均衡策略。
 ///
-/// Equivalent to Spring Cloud ReactorLoadBalancer.
-/// 等价于Spring Cloud ReactorLoadBalancer。
+/// Equivalent to Spring Cloud `ReactorLoadBalancer`.
+/// 等价于Spring Cloud `ReactorLoadBalancer`。
 pub struct ReactiveLoadBalancer {
     /// Round robin strategy
     /// 轮询策略

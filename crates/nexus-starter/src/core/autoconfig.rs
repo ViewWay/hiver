@@ -3,8 +3,8 @@
 //! 定义自动配置的 trait 和相关类型。
 //! Defines the auto-configuration trait and related types.
 //!
-//! 参考 Spring Boot 的 @AutoConfiguration 注解设计。
-//! Based on Spring Boot's @AutoConfiguration annotation design.
+//! 参考 Spring Boot 的 @`AutoConfiguration` 注解设计。
+//! Based on Spring Boot's @`AutoConfiguration` annotation design.
 
 use std::fmt::{self, Debug};
 use std::any::TypeId;
@@ -56,8 +56,8 @@ use super::container::ApplicationContext;
 /// }
 /// ```
 pub trait AutoConfiguration: Send + Sync + 'static {
-    /// 获取配置类型的 TypeId
-    /// Get the TypeId of this configuration type
+    /// 获取配置类型的 `TypeId`
+    /// Get the `TypeId` of this configuration type
     fn type_id(&self) -> TypeId {
         TypeId::of::<Self>()
     }
@@ -111,8 +111,8 @@ pub trait AutoConfiguration: Send + Sync + 'static {
     /// 应该在哪些配置之后执行
     /// Should execute after these configurations
     ///
-    /// 返回配置类型的 TypeId 列表。
-    /// Returns a list of TypeIds of configuration types.
+    /// 返回配置类型的 `TypeId` 列表。
+    /// Returns a list of `TypeIds` of configuration types.
     fn after(&self) -> &[TypeId] {
         &[]
     }
@@ -120,8 +120,8 @@ pub trait AutoConfiguration: Send + Sync + 'static {
     /// 应该在哪些配置之前执行
     /// Should execute before these configurations
     ///
-    /// 返回配置类型的 TypeId 列表。
-    /// Returns a list of TypeIds of configuration types.
+    /// 返回配置类型的 `TypeId` 列表。
+    /// Returns a list of `TypeIds` of configuration types.
     fn before(&self) -> &[TypeId] {
         &[]
     }
@@ -137,8 +137,8 @@ pub trait AutoConfiguration: Send + Sync + 'static {
 // AutoConfiguration 辅助宏 / Helper Macros
 // ============================================================================
 
-/// 简化 AutoConfiguration 实现的宏
-/// Macro to simplify AutoConfiguration implementation
+/// 简化 `AutoConfiguration` 实现的宏
+/// Macro to simplify `AutoConfiguration` implementation
 #[macro_export]
 macro_rules! impl_auto_configuration {
     ($struct_name:ident, $order:expr, $config:block) => {
@@ -208,8 +208,8 @@ impl fmt::Display for AutoConfigurationMetadata {
 // 配置顺序常量 / Configuration Order Constants
 // ============================================================================
 
-/// 配置优先级常量（参考 Spring Boot 的 @AutoConfigureOrder）
-/// Configuration priority constants (based on Spring Boot's @AutoConfigureOrder)
+/// 配置优先级常量（参考 Spring Boot 的 @`AutoConfigureOrder`）
+/// Configuration priority constants (based on Spring Boot's @`AutoConfigureOrder`)
 pub mod order {
     /// 配置加载顺序：最高优先级（核心基础设施）
     /// Configuration loading order: highest priority (core infrastructure)

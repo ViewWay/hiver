@@ -91,7 +91,7 @@ impl FromRequest for Header<String> {
             .next()
             .and_then(|(name, _)| req.headers().get(name))
             .and_then(|v| v.to_str().ok())
-            .map(|s| s.to_string());
+            .map(std::string::ToString::to_string);
 
         Box::pin(async move {
             value
@@ -161,7 +161,7 @@ impl FromRequest for HeaderOption<String> {
             .next()
             .and_then(|(name, _)| req.headers().get(name))
             .and_then(|v| v.to_str().ok())
-            .map(|s| s.to_string());
+            .map(std::string::ToString::to_string);
 
         Box::pin(async move { Ok(HeaderOption(value)) })
     }
@@ -248,7 +248,7 @@ pub fn get_header(req: &Request, name: &str) -> Option<String> {
     req.headers()
         .get(name)
         .and_then(|v| v.to_str().ok())
-        .map(|s| s.to_string())
+        .map(std::string::ToString::to_string)
 }
 
 /// Get all header values for a name
@@ -258,7 +258,7 @@ pub fn get_all_headers(req: &Request, name: &str) -> Vec<String> {
         .get_all(name)
         .iter()
         .filter_map(|v| v.to_str().ok())
-        .map(|s| s.to_string())
+        .map(std::string::ToString::to_string)
         .collect()
 }
 

@@ -3,9 +3,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `KeyGenerator` - KeyGenerator interface
+//! - `KeyGenerator` - `KeyGenerator` interface
 //! - `SimpleKeyGenerator` - Default key generator
-//! - SpEL expression support for keys
+//! - `SpEL` expression support for keys
 
 use std::fmt::Debug;
 use std::hash::{Hash, Hasher};
@@ -13,8 +13,8 @@ use std::hash::{Hash, Hasher};
 /// Key generator trait
 /// Key生成器trait
 ///
-/// Equivalent to Spring's KeyGenerator interface.
-/// 等价于Spring的KeyGenerator接口。
+/// Equivalent to Spring's `KeyGenerator` interface.
+/// `等价于Spring的KeyGenerator接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -80,7 +80,7 @@ where
     T: KeyParam,
 {
     fn as_key_string(&self) -> String {
-        let items: Vec<String> = self.iter().map(|v| v.as_key_string()).collect();
+        let items: Vec<String> = self.iter().map(KeyParam::as_key_string).collect();
         format!("[{}]", items.join(","))
     }
 }
@@ -88,8 +88,8 @@ where
 /// Default key generator
 /// 默认key生成器
 ///
-/// Equivalent to Spring's SimpleKeyGenerator.
-/// 等价于Spring的SimpleKeyGenerator。
+/// Equivalent to Spring's `SimpleKeyGenerator`.
+/// `等价于Spring的SimpleKeyGenerator`。
 ///
 /// Generates keys by concatenating parameter values.
 /// 通过连接参数值生成key。
@@ -125,7 +125,7 @@ impl Default for DefaultKeyGenerator {
 
 impl KeyGenerator for DefaultKeyGenerator {
     fn generate(&self, target: &str, _method: &str, params: &[&dyn KeyParam]) -> String {
-        let parts: Vec<String> = params.iter().map(|p| p.as_key_string()).collect();
+        let parts: Vec<String> = params.iter().map(KeyParam::as_key_string).collect();
         format!("{}{}{}", target, self.separator, parts.join(&self.separator))
     }
 }
@@ -178,7 +178,7 @@ impl KeyGenerator for HashKeyGenerator {
 /// - "#param.name" - use field value
 /// - "#p0", "#p1" - use parameter by index
 ///
-/// Equivalent to Spring's SpEL expressions in @Cacheable.
+/// Equivalent to Spring's `SpEL` expressions in @Cacheable.
 /// 等价于Spring在@Cacheable中的SpEL表达式。
 #[derive(Debug, Clone)]
 pub(crate) struct SpelKeyGenerator {
@@ -189,7 +189,7 @@ pub(crate) struct SpelKeyGenerator {
 
 impl SpelKeyGenerator {
     /// Create a new SpEL-style key generator
-    /// 创建新的SpEL风格key生成器
+    /// `创建新的SpEL风格key生成器`
     pub(crate) fn new(expression: impl Into<String>) -> Self {
         Self {
             expression: expression.into(),
@@ -203,21 +203,18 @@ impl SpelKeyGenerator {
 
         if expr.starts_with("#p") {
             // Parameter by index: #p0, #p1, etc.
-            if let Ok(index) = expr[2..].parse::<usize>() {
-                if let Some(param) = params.get(index) {
+            if let Ok(index) = expr[2..].parse::<usize>()
+                && let Some(param) = params.get(index) {
                     return param.as_key_string();
                 }
-            }
-        } else if expr.starts_with('#') {
+        } else if let Some(param_name) = expr.strip_prefix('#') {
             // Parameter by name (simplified - just use first param)
             if !params.is_empty() {
-                let param_name = &expr[1..];
                 if param_name.contains('.') {
                     // Field access - simplified
                     return params[0].as_key_string();
-                } else {
-                    return params[0].as_key_string();
                 }
+                return params[0].as_key_string();
             }
         }
 
@@ -235,8 +232,8 @@ impl KeyGenerator for SpelKeyGenerator {
 /// Key builder for fluent key construction
 /// 流畅key构建的key构建器
 ///
-/// Equivalent to Spring's KeyGenerator for custom key construction.
-/// 等价于Spring的用于自定义key构建的KeyGenerator。
+/// Equivalent to Spring's `KeyGenerator` for custom key construction.
+/// `等价于Spring的用于自定义key构建的KeyGenerator`。
 #[derive(Debug, Clone, Default)]
 pub(crate) struct KeyBuilder {
     parts: Vec<String>,

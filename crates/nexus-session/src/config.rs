@@ -126,8 +126,8 @@ pub struct CookieConfig {
     /// Cookie域
     pub domain: Option<String>,
 
-    /// SameSite policy
-    /// SameSite策略
+    /// `SameSite` policy
+    /// `SameSite策略`
     pub same_site: SameSitePolicy,
 
     /// Whether cookie is secure (HTTPS only)
@@ -185,8 +185,8 @@ impl CookieConfig {
         self
     }
 
-    /// Set SameSite policy
-    /// 设置SameSite策略
+    /// Set `SameSite` policy
+    /// `设置SameSite策略`
     pub fn with_same_site(mut self, policy: SameSitePolicy) -> Self {
         self.same_site = policy;
         self
@@ -214,10 +214,11 @@ impl CookieConfig {
     }
 }
 
-/// SameSite policy
-/// SameSite策略
+/// `SameSite` policy
+/// `SameSite策略`
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum SameSitePolicy {
     /// Strict
     /// 严格模式
@@ -225,6 +226,7 @@ pub enum SameSitePolicy {
 
     /// Lax
     /// 宽松模式
+    #[default]
     Lax,
 
     /// None
@@ -232,19 +234,16 @@ pub enum SameSitePolicy {
     None,
 }
 
-impl Default for SameSitePolicy {
-    fn default() -> Self {
-        Self::Lax
-    }
-}
 
 /// Session strategy
 /// 会话策略
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum SessionStrategy {
     /// Cookie-based session
     /// 基于Cookie的会话
+    #[default]
     Cookie,
 
     /// Header-based session
@@ -252,15 +251,10 @@ pub enum SessionStrategy {
     Header,
 
     /// Cookie and header
-    /// Cookie和Header
+    /// `Cookie和Header`
     Both,
 }
 
-impl Default for SessionStrategy {
-    fn default() -> Self {
-        Self::Cookie
-    }
-}
 
 #[cfg(test)]
 mod tests {

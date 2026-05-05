@@ -60,13 +60,13 @@ async fn main() -> anyhow::Result<()> {
 /// 打印 Banner
 /// Print banner
 fn print_banner(profile: &Option<String>) {
-    let banner = r#"
+    let banner = r"
   _   _                      ___  ____
  | \ | | _____  ___   _ ___ / _ \/ ___|
  |  \| |/ _ \ \/ / | | / __| | | \___ \
  | |\  |  __/>  <| |_| \__ \ |_| |___) |
  |_| \_|\___/_/\_\\__,_|___/\___/|_____/
-"#;
+";
 
     println!("{}", banner);
     println!(" :: Nexus Logging Demo ::           (v0.1.0)");

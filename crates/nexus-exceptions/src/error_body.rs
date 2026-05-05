@@ -1,8 +1,8 @@
 //! Error response body
 //! 错误响应体
 //!
-//! # Equivalent to Spring's ErrorResponse
-//! # 等价于 Spring 的 ErrorResponse
+//! # Equivalent to Spring's `ErrorResponse`
+//! # 等价于 Spring 的 `ErrorResponse`
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -27,8 +27,8 @@ use std::fmt;
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorBody {
-    /// Error code (e.g., "VALIDATION_ERROR", "NOT_FOUND")
-    /// 错误代码（例如："VALIDATION_ERROR"、"NOT_FOUND"）
+    /// Error code (e.g., "`VALIDATION_ERROR`", "`NOT_FOUND`")
+    /// `错误代码（例如："VALIDATION_ERROR"、"NOT_FOUND`"）
     pub error: String,
 
     /// Human-readable error message

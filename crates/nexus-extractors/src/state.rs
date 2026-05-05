@@ -115,9 +115,9 @@ impl<T> Clone for State<T> {
 /// Extension trait for adding state to requests
 /// 向请求添加状态的扩展trait
 ///
-/// Note: This is not currently supported with nexus_http::Request.
+/// Note: This is not currently supported with `nexus_http::Request`.
 /// Use Router's `with_state()` method instead.
-/// 注意：目前不支持nexus_http::Request。请改用Router的`with_state()`方法。
+/// `注意：目前不支持nexus_http::Request。请改用Router的``with_state()`方法。
 pub trait AddState {
     /// Add state to the request
     /// 向请求添加状态

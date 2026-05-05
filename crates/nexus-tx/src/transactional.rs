@@ -263,7 +263,7 @@ impl<T> Transactional for T where T: Send + Sync {}
 /// Automatically commits or rolls back when dropped.
 /// 删除时自动提交或回滚。
 ///
-/// Equivalent to Spring's TransactionTemplate with try-with-resources.
+/// Equivalent to Spring's `TransactionTemplate` with try-with-resources.
 /// 等价于Spring与try-with-resources的TransactionTemplate。
 pub(crate) struct TransactionGuard<'a> {
     /// Transaction status

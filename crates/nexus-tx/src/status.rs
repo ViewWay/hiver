@@ -10,8 +10,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 /// Represents the current state of a transaction.
 /// 表示事务的当前状态。
 ///
-/// Equivalent to Spring's TransactionStatus interface.
-/// 等价于Spring的TransactionStatus接口。
+/// Equivalent to Spring's `TransactionStatus` interface.
+/// `等价于Spring的TransactionStatus接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -164,7 +164,7 @@ impl TransactionState {
 /// 事务保存点
 ///
 /// Equivalent to Spring's Savepoint.
-/// 等价于Spring的Savepoint。
+/// `等价于Spring的Savepoint`。
 #[derive(Debug, Clone)]
 pub(crate) struct Savepoint {
     /// Savepoint name

@@ -13,7 +13,7 @@ use std::sync::Arc;
 /// 表示主体（用户）的认证。
 ///
 /// Equivalent to Spring's Authentication interface.
-/// 等价于Spring的Authentication接口。
+/// `等价于Spring的Authentication接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -213,8 +213,8 @@ impl Default for AuthDetails {
 /// Username and password authentication token
 /// 用户名和密码认证令牌
 ///
-/// Equivalent to Spring's UsernamePasswordAuthenticationToken.
-/// 等价于Spring的UsernamePasswordAuthenticationToken。
+/// Equivalent to Spring's `UsernamePasswordAuthenticationToken`.
+/// `等价于Spring的UsernamePasswordAuthenticationToken`。
 #[derive(Debug, Clone)]
 pub struct UsernamePasswordAuthenticationToken {
     /// Username
@@ -240,8 +240,8 @@ impl UsernamePasswordAuthenticationToken {
 /// Authentication manager
 /// 认证管理器
 ///
-/// Equivalent to Spring's AuthenticationManager interface.
-/// 等价于Spring的AuthenticationManager接口。
+/// Equivalent to Spring's `AuthenticationManager` interface.
+/// `等价于Spring的AuthenticationManager接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -358,8 +358,8 @@ impl AuthenticationManager for SimpleAuthenticationManager {
 /// Anonymous authentication
 /// 匿名认证
 ///
-/// Equivalent to Spring's AnonymousAuthenticationToken.
-/// 等价于Spring的AnonymousAuthenticationToken。
+/// Equivalent to Spring's `AnonymousAuthenticationToken`.
+/// `等价于Spring的AnonymousAuthenticationToken`。
 #[derive(Debug, Clone)]
 pub struct AnonymousAuthentication;
 
@@ -387,8 +387,8 @@ impl AnonymousAuthentication {
 /// Remember me authentication
 /// 记住我认证
 ///
-/// Equivalent to Spring's RememberMeAuthenticationToken.
-/// 等价于Spring的RememberMeAuthenticationToken。
+/// Equivalent to Spring's `RememberMeAuthenticationToken`.
+/// `等价于Spring的RememberMeAuthenticationToken`。
 #[derive(Debug, Clone)]
 pub struct RememberMeAuthentication {
     /// Key hash

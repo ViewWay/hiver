@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - ResponseEntity, @ResponseBody, @ResponseStatus
+//! - `ResponseEntity`, @`ResponseBody`, @`ResponseStatus`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -50,7 +50,7 @@ impl Response {
     /// Get a header value
     /// 获取header值
     pub fn header(&self, name: &str) -> Option<&str> {
-        self.headers.get(name).map(|s| s.as_str())
+        self.headers.get(name).map(std::string::String::as_str)
     }
 
     /// Get all headers
@@ -191,8 +191,8 @@ pub struct BodyBuilder {
 }
 
 impl BodyBuilder {
-    /// Create a new BodyBuilder with the given status
-    /// 使用给定状态创建新的BodyBuilder
+    /// Create a new `BodyBuilder` with the given status
+    /// `使用给定状态创建新的BodyBuilder`
     fn new(status: StatusCode) -> Self {
         Self {
             status,

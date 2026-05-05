@@ -132,7 +132,7 @@ impl BindingBuilder {
             binding: Binding {
                 destination,
                 source: Exchange::default_exchange(),
-                routing_key: "".to_string(),
+                routing_key: String::new(),
                 arguments: std::collections::HashMap::new(),
             },
         }

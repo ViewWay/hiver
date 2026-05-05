@@ -1,7 +1,6 @@
 //! Resource bundle message source
 //! 资源包消息源
 
-use async_trait::async_trait;
 use crate::error::{I18nError, I18nResult};
 use crate::locale::Locale;
 use crate::message_source::MessageSource;
@@ -226,19 +225,17 @@ impl ResourceBundleMessageSource {
                 // Read 4 hex digits
                 let mut hex = String::new();
                 for _ in 0..4 {
-                    if let Some(&c) = chars.peek() {
-                        if c.is_ascii_hexdigit() {
+                    if let Some(&c) = chars.peek()
+                        && c.is_ascii_hexdigit() {
                             hex.push(c);
                             chars.next();
                         }
-                    }
                 }
 
-                if let Ok(code) = u32::from_str_radix(&hex, 16) {
-                    if let Some(c) = char::from_u32(code) {
+                if let Ok(code) = u32::from_str_radix(&hex, 16)
+                    && let Some(c) = char::from_u32(code) {
                         result.push(c);
                     }
-                }
             } else {
                 result.push(c);
             }

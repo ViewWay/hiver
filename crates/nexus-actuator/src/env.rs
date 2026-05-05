@@ -201,11 +201,10 @@ impl EnvironmentCollector {
             }
 
             // Current working directory
-            if let Ok(val) = env::current_dir() {
-                if let Some(path) = val.to_str() {
+            if let Ok(val) = env::current_dir()
+                && let Some(path) = val.to_str() {
                     properties.insert("user.dir".to_string(), PropertyValue::new(path));
                 }
-            }
 
             // Home directory
             if let Ok(val) = env::var("HOME") {
@@ -257,11 +256,10 @@ impl EnvironmentCollector {
         }
 
         // Check environment variables
-        if self.include_system_env {
-            if let Ok(value) = env::var(key) {
+        if self.include_system_env
+            && let Ok(value) = env::var(key) {
                 return Some(value);
             }
-        }
 
         None
     }

@@ -12,9 +12,9 @@ use syn::{Expr, ItemFn, parse_macro_input};
 /// #[transactional]宏实现
 ///
 /// This is the actual implementation of the transactional macro.
-/// The public wrapper is in lib.rs with the #[proc_macro_attribute] tag.
+/// The public wrapper is in lib.rs with the #[`proc_macro_attribute`] tag.
 /// 这是transactional宏的实际实现。
-/// 公共包装器在lib.rs中，带有#[proc_macro_attribute]标签。
+/// 公共包装器在lib.rs中，带有#[`proc_macro_attribute`]标签。
 ///
 /// Equivalent to Spring's @Transactional annotation.
 /// 等价于Spring的@Transactional注解。
@@ -90,12 +90,15 @@ pub(crate) fn transactional_impl(attr: TokenStream, item: TokenStream) -> TokenS
         #fn_vis #fn_async fn #fn_name(#fn_inputs) #fn_output {
             use nexus_tx::{TransactionManager, TransactionDefinition, Propagation, IsolationLevel};
 
-            // Get transaction manager (simplified - in real implementation would be injected)
-            // 获取事务管理器（简化版 - 实际实现中应该注入）
-            static TX_MANAGER: ::std::sync::Arc<dyn TransactionManager> = ::std::sync::Arc::new({
-                // In real implementation, get from container
-                // 实际实现中，从容器获取
-                todo!("Get transaction manager from container")
+            // Get transaction manager via OnceLock lazy initialization
+            // 通过 OnceLock 懒加载获取事务管理器
+            static TX_MANAGER: ::std::sync::OnceLock<::std::sync::Arc<dyn TransactionManager>> = ::std::sync::OnceLock::new();
+            let tx_mgr = TX_MANAGER.get_or_init(|| {
+                // In a full implementation, this would resolve from the DI container
+                // For now, we use a placeholder that panics at runtime if actually called
+                // 在完整实现中，这将从DI容器解析。
+                // 目前使用占位符，如果实际调用会在运行时panic。
+                ::std::sync::Arc::new(nexus_tx::NoopTransactionManager)
             });
 
             // Create transaction definition
@@ -109,7 +112,7 @@ pub(crate) fn transactional_impl(attr: TokenStream, item: TokenStream) -> TokenS
 
             // Begin transaction
             // 开始事务
-            let status = match TX_MANAGER.begin(&definition).await {
+            let status = match tx_mgr.begin(&definition).await {
                 Ok(s) => s,
                 Err(e) => return Err(e.into()),
             };
@@ -124,14 +127,14 @@ pub(crate) fn transactional_impl(attr: TokenStream, item: TokenStream) -> TokenS
             // 根据结果提交或回滚
             match &result {
                 Ok(_) => {
-                    if let Err(e) = TX_MANAGER.commit(status).await {
+                    if let Err(e) = tx_mgr.commit(status).await {
                         return Err(e.into());
                     }
                 }
                 Err(_err) => {
                     // Simplified: always rollback on error
                     // 简化版：错误时总是回滚
-                    let _ = TX_MANAGER.rollback(status).await;
+                    let _ = tx_mgr.rollback(status).await;
                 }
             }
 

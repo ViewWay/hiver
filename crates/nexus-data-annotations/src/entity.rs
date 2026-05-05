@@ -2,10 +2,9 @@
 //! @Entity 派生宏实现
 
 use darling::FromDeriveInput;
-use proc_macro2::TokenStream;
+use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Attribute, Meta};
-use syn::{Data, DataStruct, DeriveInput, Fields, parse_macro_input};
+use syn::{DeriveInput, parse_macro_input};
 
 /// Represents attributes on struct or fields
 /// 表示结构体或字段上的属性
@@ -31,7 +30,7 @@ struct EntityArgs {
 ///     pub username: String,
 /// }
 /// ```
-pub fn impl_entity(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;
 
@@ -79,7 +78,7 @@ pub fn impl_entity(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     pub username: String,
 /// }
 /// ```
-pub fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;
 
@@ -92,7 +91,7 @@ pub fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
     } else {
         // Parse custom table name
         // 解析自定义表名
-        attr.to_string().trim_matches('"')
+        attr.to_string().trim_matches('"').to_string()
     };
 
     let expanded = quote! {

@@ -67,7 +67,7 @@ impl Flyway {
 
         let pool = Pool::<Postgres>::connect(&config.datasource_url)
             .await
-            .map_err(|e| crate::FlywayError::ConnectionError(e))?;
+            .map_err(crate::FlywayError::ConnectionError)?;
 
         Ok(Self { config, pool })
     }
@@ -221,17 +221,15 @@ impl Flyway {
             if let Some(stored_checksum) = entry.checksum {
                 // Load migration from file and verify checksum
                 let migrations = self.load_migrations()?;
-                if let Some(migration) = migrations.iter().find(|m| m.version() == &entry.version) {
-                    if let Some(file_checksum) = migration.checksum() {
-                        if stored_checksum != file_checksum {
+                if let Some(migration) = migrations.iter().find(|m| m.version() == &entry.version)
+                    && let Some(file_checksum) = migration.checksum()
+                        && stored_checksum != file_checksum {
                             return Err(crate::FlywayError::ChecksumMismatch {
                                 version: entry.version.clone(),
                                 expected: stored_checksum,
                                 actual: file_checksum,
                             });
                         }
-                    }
-                }
             }
         }
 
@@ -377,7 +375,7 @@ impl Flyway {
 
         for entry in entries {
             let entry = entry
-                .map_err(|_e| crate::FlywayError::Io(_e))?;
+                .map_err(crate::FlywayError::Io)?;
             let path = entry.path();
 
             // Skip directories and hidden files
@@ -394,7 +392,7 @@ impl Flyway {
             // Parse Flyway naming convention: V1__Description.sql or V1.1__Description.sql
             if let Some((version, description)) = parse_migration_filename(&file_name) {
                 let sql = std::fs::read_to_string(&path)
-                    .map_err(|e| crate::FlywayError::Io(e))?;
+                    .map_err(crate::FlywayError::Io)?;
 
                 let migration: Migration = SqlMigration::new(version, description, sql).into();
                 migrations.push(migration);
@@ -552,7 +550,7 @@ impl Flyway {
         sqlx::query(&query)
             .bind(&baseline.version)
             .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
-            .bind(format!("<< Flyway Baseline >>"))
+            .bind("<< Flyway Baseline >>".to_string())
             .bind("nexus-flyway")
             .bind(Utc::now())
             .execute(&self.pool)

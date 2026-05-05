@@ -1,7 +1,6 @@
 //! Integration framework errors
 //! 集成框架错误
 
-use std::sync::Arc;
 
 /// Integration framework error
 /// 集成框架错误

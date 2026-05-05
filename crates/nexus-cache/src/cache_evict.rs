@@ -1,9 +1,9 @@
-//! CacheEvict annotation equivalent
-//! @CacheEvict注解等价物
+//! `CacheEvict` annotation equivalent
+//! @`CacheEvict注解等价物`
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@CacheEvict` - CacheEvict trait
+//! - `@CacheEvict` - `CacheEvict` trait
 //!
 //! # Spring Equivalent / Spring等价物
 ///
@@ -38,8 +38,8 @@ pub enum EvictPolicy {
     AllAfterExecution,
 }
 
-/// CacheEvict trait - equivalent to Spring's @CacheEvict
-/// CacheEvict trait - 等价于Spring的@CacheEvict
+/// `CacheEvict` trait - equivalent to Spring's @`CacheEvict`
+/// `CacheEvict` trait - 等价于Spring的@CacheEvict
 ///
 /// # Example / 示例
 ///
@@ -80,8 +80,8 @@ where
     ) -> Pin<Box<dyn Future<Output = ()> + Send>>;
 }
 
-/// CacheEvict wrapper for async functions
-/// 异步函数的CacheEvict包装器
+/// `CacheEvict` wrapper for async functions
+/// `异步函数的CacheEvict包装器`
 ///
 /// Equivalent to Spring's `@CacheEvict` annotation.
 /// 等价于Spring的`@CacheEvict`注解。
@@ -117,7 +117,7 @@ impl CacheEvictExec {
     /// Execute function and evict key
     /// 执行函数并驱逐key
     ///
-    /// Equivalent to Spring's @CacheEvict method execution.
+    /// Equivalent to Spring's @`CacheEvict` method execution.
     /// 等价于Spring的@CacheEvict方法执行。
     pub async fn execute_and_evict_key<K, V, F>(cache: &dyn Cache<K, V>, key: &K, f: F)
     where
@@ -175,8 +175,8 @@ impl CacheEvictExec {
     }
 }
 
-/// CacheEvict options - equivalent to Spring's @CacheEvict parameters
-/// CacheEvict选项 - 等价于Spring的@CacheEvict参数
+/// `CacheEvict` options - equivalent to Spring's @`CacheEvict` parameters
+/// `CacheEvict选项` - 等价于Spring的@CacheEvict参数
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -194,7 +194,7 @@ pub struct CacheEvictOptions {
     /// 缓存名称
     pub cache_names: Vec<String>,
 
-    /// Cache key (SpEL expression in Spring)
+    /// Cache key (`SpEL` expression in Spring)
     /// 缓存key（Spring中的SpEL表达式）
     pub key: Option<String>,
 
@@ -206,7 +206,7 @@ pub struct CacheEvictOptions {
     /// 是否在方法执行前驱逐
     pub before_invocation: bool,
 
-    /// Condition for eviction (SpEL expression in Spring)
+    /// Condition for eviction (`SpEL` expression in Spring)
     /// 驱逐条件（Spring中的SpEL表达式）
     pub condition: Option<String>,
 }
@@ -245,15 +245,15 @@ impl CacheEvictOptions {
         self
     }
 
-    /// Set all_entries
-    /// 设置all_entries
+    /// Set `all_entries`
+    /// `设置all_entries`
     pub fn all_entries(mut self, all: bool) -> Self {
         self.all_entries = all;
         self
     }
 
-    /// Set before_invocation
-    /// 设置before_invocation
+    /// Set `before_invocation`
+    /// `设置before_invocation`
     pub fn before_invocation(mut self, before: bool) -> Self {
         self.before_invocation = before;
         self

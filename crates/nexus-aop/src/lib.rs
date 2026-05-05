@@ -55,6 +55,9 @@ use proc_macro::TokenStream;
 //       不能导出常规模块或运行时类型。
 //       运行时类型应该在单独的库 crate 中。
 
+#[cfg(test)]
+mod tests;
+
 mod advice;
 mod aspect;
 mod pointcut;
@@ -79,7 +82,7 @@ pub mod runtime;
 /// ```
 #[proc_macro_attribute]
 pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    aspect::impl_aspect(_attr, item).into()
+    aspect::impl_aspect(_attr, item)
 }
 
 // ========================================================================
@@ -101,7 +104,7 @@ pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_before(attr, item).into()
+    advice::impl_before(attr, item)
 }
 
 /// Marks a method as after advice
@@ -119,7 +122,7 @@ pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_after(attr, item).into()
+    advice::impl_after(attr, item)
 }
 
 /// Marks a method as around advice
@@ -140,7 +143,7 @@ pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
-    advice::impl_around(attr, item).into()
+    advice::impl_around(attr, item)
 }
 
 // ========================================================================
@@ -162,7 +165,7 @@ pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 pub fn pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
-    pointcut::impl_pointcut(attr, item).into()
+    pointcut::impl_pointcut(attr, item)
 }
 
 // ============================================================================

@@ -205,7 +205,7 @@ impl HealthCheck {
 pub struct SystemHealthIndicator;
 
 impl HealthIndicator for SystemHealthIndicator {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "system"
     }
 

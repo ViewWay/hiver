@@ -182,7 +182,7 @@ pub trait Auditable {
 ///     }
 /// }
 /// ```
-pub(crate) trait Versioned {
+pub trait Versioned {
     /// Get current version
     /// 获取当前版本
     fn version(&self) -> i32;
@@ -231,7 +231,7 @@ pub(crate) trait Versioned {
 ///     }
 /// }
 /// ```
-pub(crate) trait SoftDeletable {
+pub trait SoftDeletable {
     /// Check if entity is deleted
     /// 检查实体是否已删除
     fn is_deleted(&self) -> bool;
@@ -322,7 +322,7 @@ pub enum LifecycleEvent {
 ///     }
 /// }
 /// ```
-pub(crate) trait EntityWithLifecycle {
+pub trait EntityWithLifecycle {
     /// Callback before save
     /// 保存前回调
     fn before_save(&mut self) {}
@@ -399,7 +399,7 @@ pub(crate) trait EntityWithLifecycle {
 ///     }
 /// }
 /// ```
-pub(crate) trait TableName {
+pub trait TableName {
     /// Get the table name for this entity
     /// 获取此实体的表名
     fn table_name() -> &'static str;
@@ -440,7 +440,7 @@ pub(crate) trait TableName {
 ///     }
 /// }
 /// ```
-pub(crate) trait ColumnName {
+pub trait ColumnName {
     /// Convert field name to column name
     /// 将字段名转换为列名
     fn column_name(field: &str) -> String {
@@ -498,7 +498,7 @@ pub(crate) trait ColumnName {
 ///     }
 /// }
 /// ```
-pub(crate) trait Entity: AggregateRoot + TableName + Any + Send + Sync {
+pub trait Entity: AggregateRoot + TableName + Any + Send + Sync {
     /// Get a value by field name
     /// 通过字段名获取值
     fn get_field(&self, _field: &str) -> Option<String> {

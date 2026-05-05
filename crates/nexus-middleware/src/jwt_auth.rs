@@ -32,7 +32,7 @@ use nexus_security::{JwtAuthentication, JwtClaims, JwtUtil, SecurityError};
 /// JWT 认证中间件
 ///
 /// Extracts and validates JWT tokens from the Authorization header.
-/// 从Authorization头中提取并验证JWT token。
+/// `从Authorization头中提取并验证JWT` token。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -55,7 +55,7 @@ use nexus_security::{JwtAuthentication, JwtClaims, JwtUtil, SecurityError};
 /// # Header Format / 头格式
 ///
 /// The middleware expects the JWT token in the Authorization header:
-/// 中间件期望在Authorization头中有JWT token：
+/// `中间件期望在Authorization头中有JWT` token：
 ///
 /// ```text
 /// Authorization: Bearer <token>
@@ -155,7 +155,7 @@ impl JwtAuthenticationMiddleware {
     ///     .with_skip_paths(&["/api/auth/login", "/api/auth/register"]);
     /// ```
     pub fn with_skip_paths(mut self, paths: &[&str]) -> Self {
-        self.skip_paths = paths.iter().map(|s| s.to_string()).collect();
+        self.skip_paths = paths.iter().map(std::string::ToString::to_string).collect();
         self
     }
 
@@ -233,12 +233,9 @@ where
                 None => None,
             };
 
-            let token = match token {
-                Some(t) => t,
-                None => {
-                    tracing::warn!("Missing JWT token for path: {}", path);
-                    return Err(Error::unauthorized());
-                }
+            let token = if let Some(t) = token { t } else {
+                tracing::warn!("Missing JWT token for path: {}", path);
+                return Err(Error::unauthorized());
             };
 
             // Verify and parse JWT token
@@ -272,7 +269,7 @@ where
 }
 
 /// Extension trait to get JWT authentication from request
-/// 从请求获取JWT认证的扩展trait
+/// `从请求获取JWT认证的扩展trait`
 ///
 /// # Spring Equivalent / Spring等价物
 ///

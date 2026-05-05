@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Project Status
 
-**Phase**: Production Ready (Phase 7, 100% complete)
+**Phase**: Data Layer (Phase 8, in progress)
 **Estimated Timeline**: 18-24 months to v1.0
 
 **Completed Phases (0-7):**
@@ -28,6 +28,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Phase 5**: Observability (distributed tracing, metrics, structured logging)
 - **Phase 6**: Web3 Support (chain abstraction, wallet management, transactions, RPC client, smart contracts)
 - **Phase 7**: Production Ready (performance optimization, security audit, documentation, examples)
+
+**In Progress:**
+- **Phase 8**: Data Layer (6 months, P0 blocking)
+  - 8.1 nexus-data-commons: Repository traits, Page/Sort, entity metadata, `MethodName::parse()` for findByXxxAndYyy ✅
+  - 8.2 nexus-data-rdbc: DatabaseClient, Connection pool, RowMapper, ResultSetExtractor ✅
+  - 8.3 nexus-data-orm: ORM abstraction, ActiveRecord, Model derive, SeaORM bridge
+  - Pre-existing code in mapper/executor/query_runtime modules needs structural refactoring
 
 **All Development Complete:**
 - Performance optimization (TechEmpower benchmarks, stress tests, fuzzing)

@@ -57,7 +57,7 @@ impl FileValidator {
     /// Set allowed MIME types
     /// 设置允许的 MIME 类型
     pub fn allowed_types(mut self, types: impl IntoIterator<Item = impl Into<String>>) -> Self {
-        self.allowed_types = Some(types.into_iter().map(|s| s.into()).collect());
+        self.allowed_types = Some(types.into_iter().map(std::convert::Into::into).collect());
         self
     }
 
@@ -87,18 +87,17 @@ impl FileValidator {
     /// 验证 multipart 文件
     pub fn validate(&self, file: &MultipartFile) -> MultipartResult<()> {
         // Check file size
-        if let Some(max) = self.max_size {
-            if file.size() > max {
+        if let Some(max) = self.max_size
+            && file.size() > max {
                 return Err(MultipartError::FileTooLarge {
                     size: file.size(),
                     max,
                 });
             }
-        }
 
         // Check MIME type
-        if let Some(allowed) = &self.allowed_types {
-            if let Some(content_type) = file.content_type() {
+        if let Some(allowed) = &self.allowed_types
+            && let Some(content_type) = file.content_type() {
                 // Parse MIME type (handle parameters like charset)
                 let mime = content_type
                     .split(';')
@@ -113,19 +112,16 @@ impl FileValidator {
                     });
                 }
             }
-        }
 
         // Check extension
-        if let Some(allowed) = &self.allowed_extensions {
-            if let Some(ext) = file.extension() {
-                if !allowed.contains(&ext.to_lowercase()) {
+        if let Some(allowed) = &self.allowed_extensions
+            && let Some(ext) = file.extension()
+                && !allowed.contains(&ext.to_lowercase()) {
                     return Err(MultipartError::InvalidExtension {
                         found: ext.to_string(),
                         allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
                     });
                 }
-            }
-        }
 
         Ok(())
     }
@@ -154,8 +150,8 @@ pub mod mime_types {
     /// GIF 图片格式
     pub const IMAGE_GIF: &str = "image/gif";
 
-    /// WebP image format
-    /// WebP 图片格式
+    /// `WebP` image format
+    /// `WebP` 图片格式
     pub const IMAGE_WEBP: &str = "image/webp";
 
     /// SVG vector image format
@@ -190,8 +186,8 @@ pub mod mime_types {
     /// MP4 视频格式
     pub const VIDEO_MP4: &str = "video/mp4";
 
-    /// WebM video format
-    /// WebM 视频格式
+    /// `WebM` video format
+    /// `WebM` 视频格式
     pub const VIDEO_WEBM: &str = "video/webm";
 
     /// Audio MIME types / 音频类型

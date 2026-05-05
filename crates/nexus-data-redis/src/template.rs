@@ -207,6 +207,7 @@ impl RedisTemplate {
     ///
     /// Note: This creates a new dedicated connection for pub/sub.
     /// The caller is responsible for managing the connection lifecycle.
+    #[allow(deprecated)]
     pub async fn subscribe(&self, channels: &[&str]) -> RedisResult<()> {
         let client = self.client.inner().clone();
         let conn = client.get_async_connection().await?;

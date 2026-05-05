@@ -99,8 +99,7 @@ impl Environment {
         std::env::var("NEXUS_PROFILE")
             .or_else(|_| std::env::var("APP_PROFILE"))
             .or_else(|_| std::env::var("SPRING_PROFILES_ACTIVE"))
-            .map(|s| Profile::from_str(s.as_str()))
-            .unwrap_or(Profile::Dev)
+            .map_or(Profile::Dev, |s| Profile::from_str(s.as_str()))
     }
 
     /// 获取当前活动的 Profile

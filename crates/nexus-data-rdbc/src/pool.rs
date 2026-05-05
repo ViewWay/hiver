@@ -1,108 +1,291 @@
-//! Database connection pool
-//! 数据库连接池
+//! SQLx connection pool client
+//! SQLx 连接池客户端
 //!
 //! # Overview / 概述
 //!
-//! Connection pool for database connections.
-//! 数据库连接的连接池。
+//! Real DatabaseClient implementation using sqlx with Postgres/MySQL/SQLite support.
+//! 使用 sqlx 的真实 DatabaseClient 实现，支持 Postgres/MySQL/SQLite。
 
-use std::time::Duration;
+use crate::client::DatabaseClient;
+use crate::error::{Error, Result};
+use crate::row::{ColumnValue, Row};
+use sqlx::any::AnyRow;
+use sqlx::{Any, Column as _, Row as _};
 
-/// Connection pool trait
-/// 连接池 trait
-///
-/// Generic connection pool trait.
-/// 通用连接池 trait。
-pub trait Pool: Send + Sync {
-    /// Close the pool
-    /// 关闭连接池
-    fn close(&self) -> impl std::future::Future<Output = Result<(), crate::Error>> + Send;
-
-    /// Get pool size
-    /// 获取连接池大小
-    fn size(&self) -> usize;
-
-    /// Get idle connections count
-    /// 获取空闲连接数
-    fn idle_connections(&self) -> usize;
+/// SQLx-based pool client using sqlx::Any for multi-database support.
+/// 基于 SQLx 的连接池客户端，使用 sqlx::Any 支持多数据库。
+pub struct SqlxPoolClient {
+    pool: sqlx::AnyPool,
 }
 
-/// Pool options
-/// 连接池选项
-#[derive(Debug, Clone)]
-pub struct PoolOptions {
-    /// Maximum connections
-    /// 最大连接数
-    pub max_connections: u32,
+/// PostgreSQL specific pool client (alias)
+pub type PgPoolClient = SqlxPoolClient;
 
-    /// Minimum idle connections
-    /// 最小空闲连接数
-    pub min_connections: u32,
+/// MySQL specific pool client (alias)
+#[cfg(feature = "mysql")]
+pub type MySqlPoolClient = SqlxPoolClient;
 
-    /// Connection timeout
-    /// 连接超时
-    pub connect_timeout: Duration,
+/// SQLite specific pool client (alias)
+#[cfg(feature = "sqlite")]
+pub type SqlitePoolClient = SqlxPoolClient;
 
-    /// Idle timeout
-    /// 空闲超时
-    pub idle_timeout: Duration,
+impl SqlxPoolClient {
+    /// Create a new pool client from an existing AnyPool
+    pub fn from_pool(pool: sqlx::AnyPool) -> Self {
+        Self { pool }
+    }
 
-    /// Max lifetime
-    /// 最大生命周期
-    pub max_lifetime: Option<Duration>,
+    /// Connect to a database (any supported dialect)
+    pub async fn connect(database_url: &str) -> Result<Self> {
+        let pool = sqlx::any::AnyPoolOptions::new()
+            .connect(database_url)
+            .await
+            .map_err(|e| Error::Connection(format!("connection failed: {}", e)))?;
+        Ok(Self { pool })
+    }
+
+    /// Connect with custom pool options
+    pub async fn connect_with_options(database_url: &str, max_connections: u32) -> Result<Self> {
+        let pool = sqlx::any::AnyPoolOptions::new()
+            .max_connections(max_connections)
+            .connect(database_url)
+            .await
+            .map_err(|e| Error::Connection(format!("connection failed: {}", e)))?;
+        Ok(Self { pool })
+    }
+
+    /// Get the underlying pool
+    pub fn pool(&self) -> &sqlx::AnyPool {
+        &self.pool
+    }
 }
 
-impl Default for PoolOptions {
-    fn default() -> Self {
-        Self {
-            max_connections: 10,
-            min_connections: 1,
-            connect_timeout: Duration::from_secs(30),
-            idle_timeout: Duration::from_secs(600),
-            max_lifetime: Some(Duration::from_secs(1800)),
+// DatabaseClient implementation
+
+#[async_trait::async_trait]
+impl DatabaseClient for SqlxPoolClient {
+    async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>> {
+        let db_rows = sqlx::query(sql)
+            .fetch_all(&self.pool)
+            .await
+            .map_err(Error::from)?;
+
+        db_rows
+            .iter()
+            .map(|db_row| any_row_to_nexus_row(db_row))
+            .collect()
+    }
+
+    async fn fetch_one(&self, sql: &str) -> Result<Option<Row>> {
+        let db_row = sqlx::query(sql)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(Error::from)?;
+
+        match db_row {
+            Some(row) => Ok(Some(any_row_to_nexus_row(&row)?)),
+            None => Ok(None),
         }
     }
+
+    async fn execute_cmd(&self, sql: &str) -> Result<u64> {
+        let result = sqlx::query(sql)
+            .execute(&self.pool)
+            .await
+            .map_err(Error::from)?;
+
+        Ok(result.rows_affected())
+    }
+
+    async fn begin_transaction(&self) -> Result<crate::Transaction> {
+        let tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| Error::Transaction(format!("begin transaction failed: {}", e)))?;
+
+        Ok(crate::Transaction::new(std::sync::Arc::new(
+            AnyTransactionInner {
+                inner: std::sync::Mutex::new(Some(tx)),
+            },
+        )))
+    }
+
+    async fn ping(&self) -> Result<()> {
+        sqlx::query("SELECT 1")
+            .execute(&self.pool)
+            .await
+            .map_err(|e| Error::Connection(format!("ping failed: {}", e)))?;
+        Ok(())
+    }
+
+    async fn close(&self) -> Result<()> {
+        self.pool.close().await;
+        Ok(())
+    }
 }
 
-impl PoolOptions {
-    /// Create new pool options
-    /// 创建新的连接池选项
-    pub fn new() -> Self {
-        Self::default()
+// Row conversion: sqlx AnyRow to Nexus Row
+
+fn any_row_to_nexus_row(row: &AnyRow) -> Result<Row> {
+    let columns = row.columns();
+    let mut nexus_row = Row::new();
+
+    for col in columns {
+        let name = col.name().to_string();
+        let type_name = format!("{}", col.type_info()).to_lowercase();
+
+        let value = extract_any_column_value(row, col.ordinal(), &type_name)?;
+        nexus_row = nexus_row.with_column(name, value);
     }
 
-    /// Set max connections
-    /// 设置最大连接数
-    pub fn max_connections(mut self, max: u32) -> Self {
-        self.max_connections = max;
-        self
-    }
+    Ok(nexus_row)
+}
 
-    /// Set min connections
-    /// 设置最小连接数
-    pub fn min_connections(mut self, min: u32) -> Self {
-        self.min_connections = min;
-        self
+fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Result<ColumnValue> {
+    match type_name {
+        "boolean" | "bool" => {
+            let val: bool = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::Bool(val))
+        },
+        "int2" | "smallint" | "tinyint" => {
+            let val: i16 = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::I16(val))
+        },
+        "int4" | "integer" | "int" => {
+            let val: i32 = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::I32(val))
+        },
+        "int8" | "bigint" => {
+            let val: i64 = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::I64(val))
+        },
+        "float4" | "real" | "float" => {
+            let val: f32 = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::F32(val))
+        },
+        "float8" | "double precision" | "double" => {
+            let val: f64 = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::F64(val))
+        },
+        "varchar" | "text" | "char" | "bpchar" | "name" | "citext" | "string" => {
+            let val: String = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::String(val))
+        },
+        "bytea" | "blob" | "binary" => {
+            let val: Vec<u8> = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            Ok(ColumnValue::Bytes(val))
+        },
+        "uuid" => {
+            let val: String = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            if let Ok(u) = uuid::Uuid::parse_str(&val) {
+                Ok(ColumnValue::Uuid(u))
+            } else {
+                Ok(ColumnValue::String(val))
+            }
+        },
+        "timestamp" | "timestamptz" | "datetime"
+        | "timestamp without time zone" | "timestamp with time zone" => {
+            let val: String = row
+                .try_get(index)
+                .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
+            let formats = [
+                "%Y-%m-%d %H:%M:%S",
+                "%Y-%m-%d %H:%M:%S%.f",
+                "%Y-%m-%dT%H:%M:%S",
+                "%Y-%m-%dT%H:%M:%S%.f",
+            ];
+            let mut parsed = None;
+            for fmt in &formats {
+                if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(&val, fmt) {
+                    parsed = Some(dt);
+                    break;
+                }
+            }
+            if let Some(dt) = parsed {
+                Ok(ColumnValue::NaiveDateTime(dt))
+            } else {
+                Ok(ColumnValue::String(val))
+            }
+        },
+        _ => {
+            let val: String = row.try_get(index).ok().unwrap_or_default();
+            Ok(ColumnValue::String(val))
+        },
     }
+}
 
-    /// Set connect timeout
-    /// 设置连接超时
-    pub fn connect_timeout(mut self, timeout: Duration) -> Self {
-        self.connect_timeout = timeout;
-        self
+// Transaction inner for sqlx Any
+
+use std::sync::Mutex;
+
+struct AnyTransactionInner {
+    inner: Mutex<Option<sqlx::Transaction<'static, Any>>>,
+}
+
+impl crate::transaction::TransactionInner for AnyTransactionInner {
+    fn execute(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
+        Err("sync execute not supported for AnyTransactionInner".into())
     }
-
-    /// Set idle timeout
-    /// 设置空闲超时
-    pub fn idle_timeout(mut self, timeout: Duration) -> Self {
-        self.idle_timeout = timeout;
-        self
+    fn fetch_all(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Err("sync fetch_all not supported for AnyTransactionInner".into())
     }
+    fn fetch_one(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Err("sync fetch_one not supported for AnyTransactionInner".into())
+    }
+    fn commit(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        Err("sync commit not supported for AnyTransactionInner".into())
+    }
+    fn rollback(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        Err("sync rollback not supported for AnyTransactionInner".into())
+    }
+    fn isolation_level(&self) -> crate::transaction::IsolationLevel {
+        crate::transaction::IsolationLevel::ReadCommitted
+    }
+    fn is_committed(&self) -> bool {
+        false
+    }
+    fn is_rolled_back(&self) -> bool {
+        false
+    }
+    fn clone_box(&self) -> Box<dyn crate::transaction::TransactionInner> {
+        Box::new(AnyTransactionInner {
+            inner: Mutex::new(None),
+        })
+    }
+}
 
-    /// Set max lifetime
-    /// 设置最大生命周期
-    pub fn max_lifetime(mut self, lifetime: Duration) -> Self {
-        self.max_lifetime = Some(lifetime);
-        self
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_types_compile() {
+        let _client: Option<super::SqlxPoolClient> = None;
     }
 }

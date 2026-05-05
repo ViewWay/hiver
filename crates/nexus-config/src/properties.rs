@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@ConfigurationProperties` - PropertiesConfig trait
-//! - `@ConfigurationPropertiesScan` - PropertiesConfigRegistry
+//! - `@ConfigurationProperties` - `PropertiesConfig` trait
+//! - `@ConfigurationPropertiesScan` - `PropertiesConfigRegistry`
 //! - `@EnableConfigurationProperties` - Enable properties
 //!
 //! # Example / 示例
@@ -229,7 +229,7 @@ impl Default for PropertiesConfigRegistry {
 pub(crate) struct NestedProperties;
 
 impl NestedProperties {
-    /// Flatten nested keys (e.g., "server.port" to "server_port" or vice versa)
+    /// Flatten nested keys (e.g., "server.port" to "`server_port`" or vice versa)
     /// 展平嵌套键
     pub(crate) fn flatten_key(key: &str) -> String {
         key.replace('.', "_")
@@ -244,11 +244,7 @@ impl NestedProperties {
     /// Extract prefix from key
     /// 从键中提取前缀
     pub(crate) fn extract_prefix(key: &str) -> Option<String> {
-        if let Some(pos) = key.rfind('.') {
-            Some(key[..pos].to_string())
-        } else {
-            None
-        }
+        key.rfind('.').map(|pos| key[..pos].to_string())
     }
 
     /// Extract suffix from key
@@ -262,8 +258,8 @@ impl NestedProperties {
     }
 }
 
-/// Builder pattern helper for PropertiesConfig
-/// PropertiesConfig的构建器模式助手
+/// Builder pattern helper for `PropertiesConfig`
+/// `PropertiesConfig的构建器模式助手`
 pub(crate) struct PropertiesConfigBuilder<T> {
     _phantom: std::marker::PhantomData<T>,
 }
@@ -318,8 +314,8 @@ where
 // 注：由于specialization不稳定，移除了blanket实现
 // 用户应该使用 impl_properties_config 宏代替
 
-/// Macro to implement PropertiesConfig for a type
-/// 为类型实现PropertiesConfig的宏
+/// Macro to implement `PropertiesConfig` for a type
+/// `为类型实现PropertiesConfig的宏`
 #[macro_export]
 macro_rules! impl_properties_config {
     ($type:ty, $prefix:expr) => {

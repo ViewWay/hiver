@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `Config` - Spring ConfigurableEnvironment
+//! - `Config` - Spring `ConfigurableEnvironment`
 //! - `ConfigBuilder` - Builder pattern
 //! - `FileFormat` - Configuration file formats
 //! - `ReloadStrategy` - Configuration reload strategies
@@ -170,21 +170,19 @@ impl Config {
     /// 获取属性值
     pub fn get(&self, key: &str) -> Option<Value> {
         // Check cache first
-        if let Ok(cache) = self.values.read() {
-            if let Some(value) = cache.get(key) {
+        if let Ok(cache) = self.values.read()
+            && let Some(value) = cache.get(key) {
                 return Some(value.clone());
             }
-        }
 
         // Get from environment
         let value = self.environment.get_property(key);
 
         // Cache the value
-        if let Some(ref v) = value {
-            if let Ok(mut cache) = self.values.write() {
+        if let Some(ref v) = value
+            && let Ok(mut cache) = self.values.write() {
                 cache.insert(key.to_string(), v.clone());
             }
-        }
 
         value
     }
@@ -360,11 +358,10 @@ impl Config {
                     Some('u') => {
                         // Unicode escape \uXXXX
                         let code: String = chars.by_ref().take(4).collect();
-                        if let Ok(code_point) = u32::from_str_radix(&code, 16) {
-                            if let Some(c) = char::from_u32(code_point) {
+                        if let Ok(code_point) = u32::from_str_radix(&code, 16)
+                            && let Some(c) = char::from_u32(code_point) {
                                 result.push(c);
                             }
-                        }
                     },
                     Some(next) => result.push(next),
                     None => result.push('\\'),
@@ -405,7 +402,7 @@ impl Config {
     }
 
     /// Convert YAML value to our Value type
-    /// 将YAML值转换为我们的Value类型
+    /// `将YAML值转换为我们的Value类型`
     fn yaml_to_value(yaml: &serde_yaml::Value) -> ConfigResult<Value> {
         Ok(match yaml {
             serde_yaml::Value::Null => Value::Null,
@@ -463,11 +460,11 @@ impl Config {
     }
 
     /// Convert TOML value to our Value type
-    /// 将TOML值转换为我们的Value类型
+    /// `将TOML值转换为我们的Value类型`
     fn toml_to_value(toml: &toml::Value) -> Value {
         match toml {
             toml::Value::Boolean(v) => Value::Bool(*v),
-            toml::Value::Integer(v) => Value::Integer(*v as i64),
+            toml::Value::Integer(v) => Value::Integer((*v)),
             toml::Value::Float(v) => Value::Float(*v),
             toml::Value::String(v) => Value::String(v.clone()),
             toml::Value::Array(v) => Value::List(v.iter().map(Self::toml_to_value).collect()),
@@ -506,7 +503,7 @@ impl Config {
     }
 
     /// Convert JSON value to our Value type
-    /// 将JSON值转换为我们的Value类型
+    /// `将JSON值转换为我们的Value类型`
     fn json_to_value(json: &serde_json::Value) -> Value {
         match json {
             serde_json::Value::Null => Value::Null,
@@ -641,12 +638,11 @@ impl ConfigBuilder {
         source.set_file_path(PathBuf::from("<args>"));
 
         for arg in args.iter().skip(1) {
-            if let Some((key, value)) = arg.split_once('=') {
-                if key.starts_with("--") {
+            if let Some((key, value)) = arg.split_once('=')
+                && key.starts_with("--") {
                     let key = key[2..].to_string();
                     source.put(key, Value::string(value));
                 }
-            }
         }
 
         self.config.add_property_source(source);

@@ -132,7 +132,7 @@ impl SessionContext {
     /// Get session ID
     /// 获取会话ID
     pub fn session_id(&self) -> Option<&SessionId> {
-        self.session.as_ref().map(|s| s.id())
+        self.session.as_ref().map(super::session::Session::id)
     }
 
     /// Get attribute from session

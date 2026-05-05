@@ -18,8 +18,8 @@ use http::{HeaderMap, HeaderName, HeaderValue, StatusCode};
 /// 此trait提供了一种统一的方式来将各种类型转换为`HeaderName`。
 /// 它处理静态字符串（使用`from_static`以提高效率）。
 pub trait IntoHeaderName {
-    /// Convert self into a HeaderName
-    /// 将self转换为HeaderName
+    /// Convert self into a `HeaderName`
+    /// `将self转换为HeaderName`
     fn into_header_name(self) -> HeaderName;
 }
 
@@ -31,8 +31,8 @@ impl IntoHeaderName for &'static str {
     }
 }
 
-/// Implement for HeaderName directly (no-op conversion)
-/// 为 HeaderName 直接实现（无操作转换）
+/// Implement for `HeaderName` directly (no-op conversion)
+/// 为 `HeaderName` 直接实现（无操作转换）
 impl IntoHeaderName for HeaderName {
     fn into_header_name(self) -> HeaderName {
         self
@@ -56,8 +56,8 @@ impl IntoHeaderName for &HeaderName {
 /// 此trait提供了一种统一的方式来将各种类型转换为`HeaderValue`。
 /// 它处理静态字符串（使用`from_static`以提高效率）和动态字符串。
 pub trait IntoHeaderVal {
-    /// Convert self into a HeaderValue
-    /// 将self转换为HeaderValue
+    /// Convert self into a `HeaderValue`
+    /// `将self转换为HeaderValue`
     fn into_header_val(self) -> HeaderValue;
 }
 
@@ -85,8 +85,8 @@ impl IntoHeaderVal for &String {
     }
 }
 
-/// Implement for HeaderValue directly (no-op conversion)
-/// 为 HeaderValue 直接实现（无操作转换）
+/// Implement for `HeaderValue` directly (no-op conversion)
+/// 为 `HeaderValue` 直接实现（无操作转换）
 impl IntoHeaderVal for HeaderValue {
     fn into_header_val(self) -> HeaderValue {
         self
@@ -236,7 +236,7 @@ impl From<Response> for http::Response<Body> {
         // 注意：`HeaderMap::into_iter()` 产生 (Option<HeaderName>, HeaderValue) 对。
         // 名称是 Option 是因为具有多个值的头部只迭代一次名称。
         // 我们跳过名称为 None 的条目（这些是已见过头部的附加值）。
-        for (maybe_name, value) in resp.headers.into_iter() {
+        for (maybe_name, value) in resp.headers {
             if let Some(name) = maybe_name {
                 builder = builder.header(name, value);
             }
@@ -287,8 +287,8 @@ impl ResponseBuilder {
         }
     }
 
-    /// Set the status code using StatusCode enum
-    /// 使用StatusCode枚举设置状态码
+    /// Set the status code using `StatusCode` enum
+    /// `使用StatusCode枚举设置状态码`
     pub fn status_code(self, status: StatusCode) -> Self {
         Self {
             status: Some(status),
@@ -375,7 +375,7 @@ impl Default for ResponseBuilder {
 }
 
 /// Trait for types that can be converted to HTTP responses
-/// 可转换为HTTP响应的类型的trait
+/// `可转换为HTTP响应的类型的trait`
 ///
 /// Types implementing this trait can be used as return types from handlers.
 /// 实现此trait的类型可以用作处理器的返回类型。

@@ -62,6 +62,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod event;
 pub mod publisher;
 pub mod listener;

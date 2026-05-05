@@ -3,13 +3,13 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@PreAuthorize` - PreAuthorize
+//! - `@PreAuthorize` - `PreAuthorize`
 //! - `@Secured` - Secured
-//! - `@RolesAllowed` - RolesAllowed
+//! - `@RolesAllowed` - `RolesAllowed`
 //! - `UserDetails` - User
 //! - `GrantedAuthority` - Permission/Role
 //! - `Authentication` - Auth
-//! - `SecurityContext` - SecurityContext
+//! - `SecurityContext` - `SecurityContext`
 //!
 //! # Example / 示例
 //!
@@ -45,6 +45,9 @@
 // Allow unreachable_pub: Some public items are exported for feature flag compatibility
 // 允许 unreachable_pub：某些公共项目导出用于功能标志兼容性
 #![allow(unreachable_pub)]
+
+#[cfg(test)]
+mod tests;
 
 mod auth;
 mod authority;

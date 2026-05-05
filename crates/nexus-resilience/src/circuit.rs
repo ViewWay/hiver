@@ -10,15 +10,15 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Resilience4j CircuitBreaker
-//! - Spring Retry CircuitBreaker
+//! - Resilience4j `CircuitBreaker`
+//! - Spring Retry `CircuitBreaker`
 //! - Hystrix (deprecated)
 //!
 //! # States / 状态
 //!
 //! 1. **Closed** (关闭) - Normal operation, requests pass through
 //! 2. **Open** (打开) - Circuit is tripped, requests fail fast
-//! 3. **HalfOpen** (半开) - Testing if service has recovered
+//! 3. **`HalfOpen`** (半开) - Testing if service has recovered
 //!
 //! # Example / 示例
 //!
@@ -64,7 +64,7 @@ pub enum CircuitState {
     /// 打开 - 电路跳闸，请求快速失败
     Open,
 
-    /// HalfOpen - testing if service has recovered
+    /// `HalfOpen` - testing if service has recovered
     /// 半开 - 测试服务是否恢复
     HalfOpen,
 }
@@ -218,16 +218,16 @@ pub struct CircuitBreakerConfig {
     /// 尝试恢复前保持打开状态的持续时间
     open_duration: Duration,
 
-    /// Number of successful requests in HalfOpen to transition to Closed
-    /// HalfOpen状态下成功请求数以转换到Closed
+    /// Number of successful requests in `HalfOpen` to transition to Closed
+    /// `HalfOpen状态下成功请求数以转换到Closed`
     permitted_calls_in_half_open: usize,
 
     /// Sliding window size for metrics
     /// 指标的滑动窗口大小
     sliding_window_size: Duration,
 
-    /// Maximum number of calls in HalfOpen state
-    /// HalfOpen状态下的最大调用数
+    /// Maximum number of calls in `HalfOpen` state
+    /// `HalfOpen状态下的最大调用数`
     max_calls_in_half_open: usize,
 }
 
@@ -236,7 +236,7 @@ impl Default for CircuitBreakerConfig {
         Self {
             error_threshold: 0.5,
             min_requests: 10,
-            open_duration: Duration::from_secs(60),
+            open_duration: Duration::from_mins(1),
             permitted_calls_in_half_open: 3,
             sliding_window_size: Duration::from_secs(10),
             max_calls_in_half_open: 10,
@@ -278,8 +278,8 @@ impl CircuitBreakerConfig {
         self
     }
 
-    /// Set number of successful calls in HalfOpen to close circuit
-    /// 设置HalfOpen状态下关闭电路的成功调用数
+    /// Set number of successful calls in `HalfOpen` to close circuit
+    /// `设置HalfOpen状态下关闭电路的成功调用数`
     pub fn with_permitted_calls_in_half_open(mut self, count: usize) -> Self {
         self.permitted_calls_in_half_open = count;
         self
@@ -292,8 +292,8 @@ impl CircuitBreakerConfig {
         self
     }
 
-    /// Set maximum calls in HalfOpen state
-    /// 设置HalfOpen状态下的最大调用数
+    /// Set maximum calls in `HalfOpen` state
+    /// `设置HalfOpen状态下的最大调用数`
     pub fn with_max_calls_in_half_open(mut self, max: usize) -> Self {
         self.max_calls_in_half_open = max;
         self
@@ -312,12 +312,12 @@ struct StateData {
     /// 电路何时打开
     opened_at: Option<Instant>,
 
-    /// Successful calls in HalfOpen state
-    /// HalfOpen状态下的成功调用数
+    /// Successful calls in `HalfOpen` state
+    /// `HalfOpen状态下的成功调用数`
     half_open_success_count: usize,
 
-    /// Total calls in HalfOpen state
-    /// HalfOpen状态下的总调用数
+    /// Total calls in `HalfOpen` state
+    /// `HalfOpen状态下的总调用数`
     half_open_total_count: usize,
 }
 

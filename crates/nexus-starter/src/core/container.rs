@@ -3,8 +3,8 @@
 //! 实现 IoC 容器和依赖注入功能。
 //! Implements IoC container and dependency injection.
 //!
-//! 参考 Spring 的 ApplicationContext。
-//! Based on Spring's ApplicationContext.
+//! 参考 Spring 的 `ApplicationContext`。
+//! Based on Spring's `ApplicationContext`.
 
 use std::any::{Any, TypeId};
 use std::collections::{HashMap, HashSet};
@@ -45,8 +45,8 @@ impl AutoConfiguration for DummyAutoConfig {
 // ApplicationContext / 应用上下文
 // ============================================================================
 
-/// 应用上下文（类似 Spring ApplicationContext）
-/// Application context (similar to Spring ApplicationContext)
+/// 应用上下文（类似 Spring `ApplicationContext`）
+/// Application context (similar to Spring `ApplicationContext`)
 ///
 /// 这是 Nexus Starter 的核心 IoC 容器，负责：
 /// - Bean 的注册和获取
@@ -83,8 +83,8 @@ pub struct ApplicationContext {
     /// Named bean container
     named_beans: RwLock<HashMap<String, Box<dyn Any + Send + Sync>>>,
 
-    /// Bean 名称到 TypeId 的映射
-    /// Bean name to TypeId mapping
+    /// Bean 名称到 `TypeId` 的映射
+    /// Bean name to `TypeId` mapping
     bean_names: RwLock<HashMap<String, TypeId>>,
 
     /// 已注册的配置类
@@ -296,8 +296,8 @@ impl ApplicationContext {
         self.get_property_or_default(key, default)
     }
 
-    /// 检查 Bean 是否存在（按 TypeId）
-    /// Check if bean exists (by TypeId)
+    /// 检查 Bean 是否存在（按 `TypeId`）
+    /// Check if bean exists (by `TypeId`)
     pub fn contains_bean_by_id(&self, type_id: TypeId) -> bool {
         let singletons = self.singletons.read().unwrap();
         singletons.contains_key(&type_id)
@@ -375,9 +375,7 @@ impl ApplicationContext {
                 // Get configuration and check conditions
                 let should_process = {
                     let config = &self.auto_configurations[idx];
-                    if !config.condition() {
-                        false
-                    } else {
+                    if config.condition() {
                         // 检查依赖：所有 after 依赖必须已处理
                         // Check dependencies: all 'after' dependencies must be processed
                         Self::check_dependencies_satisfied(
@@ -386,6 +384,8 @@ impl ApplicationContext {
                             &processed,
                             idx,
                         )
+                    } else {
+                        false
                     }
                 };
 
@@ -649,11 +649,11 @@ impl ComponentRegistry {
     /// 获取所有组件名称
     pub fn all_components(&self) -> Vec<&str> {
         let mut all = Vec::new();
-        all.extend(self.controllers.iter().map(|s| s.as_str()));
-        all.extend(self.services.iter().map(|s| s.as_str()));
-        all.extend(self.repositories.iter().map(|s| s.as_str()));
-        all.extend(self.configurations.iter().map(|s| s.as_str()));
-        all.extend(self.components.iter().map(|s| s.as_str()));
+        all.extend(self.controllers.iter().map(std::string::String::as_str));
+        all.extend(self.services.iter().map(std::string::String::as_str));
+        all.extend(self.repositories.iter().map(std::string::String::as_str));
+        all.extend(self.configurations.iter().map(std::string::String::as_str));
+        all.extend(self.components.iter().map(std::string::String::as_str));
         all
     }
 }

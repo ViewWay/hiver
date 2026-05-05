@@ -465,8 +465,8 @@ where
     }
 }
 
-/// Adaptor to convert EventListener to EventConsumer
-/// 将EventListener转换为EventConsumer的适配器
+/// Adaptor to convert `EventListener` to `EventConsumer`
+/// `将EventListener转换为EventConsumer的适配器`
 pub struct ListenerAdapter<E, L>
 where
     E: Send + Sync + 'static,
@@ -513,8 +513,8 @@ where
     }
 }
 
-/// Adaptor to convert AsyncEventListener to EventConsumer
-/// 将AsyncEventListener转换为EventConsumer的适配器
+/// Adaptor to convert `AsyncEventListener` to `EventConsumer`
+/// `将AsyncEventListener转换为EventConsumer的适配器`
 pub struct AsyncListenerAdapter<E, L>
 where
     E: Send + Sync + 'static,

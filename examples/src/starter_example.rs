@@ -13,7 +13,7 @@
 //! # 功能特性 / Features
 //!
 //! - `#[nexus_main]` 宏自动配置应用 / Auto-configuration via `#[nexus_main]` macro
-//! - ApplicationContext IoC 容器 / ApplicationContext IoC container
+//! - `ApplicationContext` IoC 容器 / `ApplicationContext` IoC container
 //! - 自动配置加载器 / Auto-configuration loader
 //! - 优先级排序的配置执行 / Priority-ordered configuration execution
 
@@ -50,8 +50,8 @@ fn main() -> anyhow::Result<()> {
 /// 自定义配置类
 /// Custom configuration class
 ///
-/// 演示如何创建自定义配置并注入到 ApplicationContext。
-/// Demonstrates how to create custom configuration and inject into ApplicationContext.
+/// 演示如何创建自定义配置并注入到 `ApplicationContext`。
+/// Demonstrates how to create custom configuration and inject into `ApplicationContext`.
 #[derive(Debug)]
 struct DatabaseConfig {
     url: String,
@@ -100,7 +100,7 @@ impl UserService {
         format!(
             "User(id={}, db={})",
             id,
-            self.config.url.split('/').last().unwrap_or("unknown")
+            self.config.url.split('/').next_back().unwrap_or("unknown")
         )
     }
 }

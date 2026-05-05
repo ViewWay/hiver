@@ -17,13 +17,13 @@ use std::time::Instant;
 /// 打印 Nexus Banner（类似 Spring Boot）
 /// Print Nexus banner (Spring Boot-style)
 pub fn print_banner(version: &str) {
-    let banner = r#"
+    let banner = r"
   _   _                      ___  ____
  | \ | | _____  ___   _ ___ / _ \/ ___|
  |  \| |/ _ \ \/ / | | / __| | | \___ \
  | |\  |  __/>  <| |_| \__ \ |_| |___) |
  |_| \_|\___/_/\_\\__,_|___/\___/|_____/
-"#;
+";
 
     println!("{}", banner);
     println!(" :: Nexus Starter ::                (v{})", version);
@@ -310,12 +310,12 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()> {
 /// 日志级别图标（保留用于其他地方）
 /// Log level icons
 pub fn level_icon(level: &tracing::Level) -> &'static str {
-    match level {
-        &tracing::Level::ERROR => "❌",
-        &tracing::Level::WARN => "⚠️ ",
-        &tracing::Level::INFO => "✨",
-        &tracing::Level::DEBUG => "🔍",
-        &tracing::Level::TRACE => "📝",
+    match *level {
+        tracing::Level::ERROR => "❌",
+        tracing::Level::WARN => "⚠️ ",
+        tracing::Level::INFO => "✨",
+        tracing::Level::DEBUG => "🔍",
+        tracing::Level::TRACE => "📝",
     }
 }
 

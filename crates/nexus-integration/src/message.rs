@@ -547,7 +547,7 @@ where
                     std::any::type_name::<T>()
                 ))
             })
-            .map(|payload| Self {
+            .map(|_payload| Self {
                 inner: msg,
                 _phantom: std::marker::PhantomData,
             })

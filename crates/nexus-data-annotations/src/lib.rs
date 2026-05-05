@@ -53,6 +53,7 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+#![allow(dead_code)] // Annotations/traits intended for external use via proc macros; 注解/Trait 供外部 proc macro 使用
 
 use proc_macro::TokenStream;
 
@@ -131,8 +132,8 @@ pub fn table(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Attributes / 属性
 ///
-/// - `type` - Primary key type: "auto", "input", "assign_id"
-///   主键类型："auto", "input", "assign_id"
+/// - `type` - Primary key type: "auto", "input", "`assign_id`"
+///   主键类型："auto", "input", "`assign_id`"
 ///
 /// # Example / 示例
 ///
@@ -302,11 +303,11 @@ pub fn delete(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Attributes / 属性
 ///
-/// - `isolation` - Transaction isolation level (Default, ReadUncommitted, ReadCommitted, RepeatableRead, Serializable)
+/// - `isolation` - Transaction isolation level (Default, `ReadUncommitted`, `ReadCommitted`, `RepeatableRead`, Serializable)
 ///   事务隔离级别
 /// - `timeout` - Transaction timeout in seconds
 ///   事务超时时间（秒）
-/// - `propagation` - Transaction propagation behavior (Required, Supports, Mandatory, RequiresNew, NotSupported, Never, Nested)
+/// - `propagation` - Transaction propagation behavior (Required, Supports, Mandatory, `RequiresNew`, `NotSupported`, Never, Nested)
 ///   事务传播行为
 /// - `read_only` - Whether transaction is read-only
 ///   事务是否只读

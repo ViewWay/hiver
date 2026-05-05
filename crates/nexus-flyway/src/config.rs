@@ -162,17 +162,11 @@ impl Config {
 ///     .locations("db/migration")
 ///     .baselineOnMigrate(true)
 /// ```
+#[derive(Default)]
 pub struct ConfigBuilder {
     config: Config,
 }
 
-impl Default for ConfigBuilder {
-    fn default() -> Self {
-        Self {
-            config: Config::default(),
-        }
-    }
-}
 
 impl ConfigBuilder {
     /// Create a new builder

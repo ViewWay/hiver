@@ -71,7 +71,7 @@ pub fn encode_response(response: &Response, ctx: &ConnectionContext) -> Result<B
 
     // Add Content-Length if not present and we have a body
     if !has_content_length && !has_transfer_encoding {
-        let body_len = response.body().as_bytes().map(|b| b.len()).unwrap_or(0);
+        let body_len = response.body().as_bytes().map_or(0, <[u8]>::len);
         if body_len > 0 || !matches!(status, StatusCode::NO_CONTENT) {
             writeln!(buffer, "content-length: {}\r", body_len).map_err(|_| {
                 crate::Error::InvalidResponse("Failed to write content-length".to_string())
@@ -84,8 +84,7 @@ pub fn encode_response(response: &Response, ctx: &ConnectionContext) -> Result<B
         let content_type = response
             .headers()
             .get("content-type")
-            .map(|v| v.as_str())
-            .unwrap_or("text/plain");
+            .map_or("text/plain", std::string::String::as_str);
         writeln!(buffer, "content-type: {}\r", content_type).map_err(|_| {
             crate::Error::InvalidResponse("Failed to write content-type".to_string())
         })?;

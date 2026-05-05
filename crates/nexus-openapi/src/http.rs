@@ -1,18 +1,18 @@
-//! HTTP framework integration for OpenAPI
-//! OpenAPI 的 HTTP 框架集成
+//! HTTP framework integration for `OpenAPI`
+//! `OpenAPI` 的 HTTP 框架集成
 //!
-//! Provides integration with the HTTP framework for serving OpenAPI documentation.
-//! 提供与 HTTP 框架的集成以服务 OpenAPI 文档。
+//! Provides integration with the HTTP framework for serving `OpenAPI` documentation.
+//! 提供与 HTTP 框架的集成以服务 `OpenAPI` 文档。
 
 use crate::{OpenApi, SwaggerUi, SwaggerConfig};
 use http::{HeaderMap, HeaderValue, StatusCode};
 use std::sync::Arc;
 
-/// OpenAPI HTTP handler
-/// OpenAPI HTTP 处理器
+/// `OpenAPI` HTTP handler
+/// `OpenAPI` HTTP 处理器
 ///
-/// Provides HTTP handlers for serving OpenAPI documentation.
-/// 提供用于服务 OpenAPI 文档的 HTTP 处理器。
+/// Provides HTTP handlers for serving `OpenAPI` documentation.
+/// 提供用于服务 `OpenAPI` 文档的 HTTP 处理器。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -33,8 +33,8 @@ pub struct OpenApiHandler {
 }
 
 impl OpenApiHandler {
-    /// Create a new OpenAPI handler from an OpenApi spec
-    /// 从 OpenApi 规范创建新的 OpenAPI 处理器
+    /// Create a new `OpenAPI` handler from an `OpenApi` spec
+    /// 从 `OpenApi` 规范创建新的 `OpenAPI` 处理器
     pub fn new(openapi: OpenApi) -> Self {
         Self {
             swagger: SwaggerUi::new(openapi),
@@ -49,8 +49,8 @@ impl OpenApiHandler {
         }
     }
 
-    /// Create from a SwaggerUi instance
-    /// 从 SwaggerUi 实例创建
+    /// Create from a `SwaggerUi` instance
+    /// 从 `SwaggerUi` 实例创建
     pub fn from_swagger(swagger: SwaggerUi) -> Self {
         Self { swagger }
     }
@@ -58,8 +58,8 @@ impl OpenApiHandler {
     /// Handle an HTTP request
     /// 处理 HTTP 请求
     ///
-    /// Returns (body, status_code, headers)
-    /// 返回 (body, status_code, headers)
+    /// Returns (body, `status_code`, headers)
+    /// 返回 (body, `status_code`, headers)
     pub fn handle(&self, path: &str) -> OpenApiResponse {
         let (body, status, headers) = self.swagger.handle(path);
         OpenApiResponse {
@@ -75,15 +75,15 @@ impl OpenApiHandler {
         &self.swagger
     }
 
-    /// Get the OpenAPI spec
-    /// 获取 OpenAPI 规范
+    /// Get the `OpenAPI` spec
+    /// 获取 `OpenAPI` 规范
     pub fn openapi(&self) -> &OpenApi {
         self.swagger.openapi()
     }
 }
 
-/// OpenAPI HTTP response
-/// OpenAPI HTTP 响应
+/// `OpenAPI` HTTP response
+/// `OpenAPI` HTTP 响应
 #[derive(Debug, Clone)]
 pub struct OpenApiResponse {
     /// Response body
@@ -123,11 +123,10 @@ impl OpenApiResponse {
     /// 添加头
     pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         let name_str = name.into();
-        if let Ok(val) = HeaderValue::try_from(value.into()) {
-            if let Ok(key) = http::header::HeaderName::from_bytes(name_str.as_bytes()) {
+        if let Ok(val) = HeaderValue::try_from(value.into())
+            && let Ok(key) = http::header::HeaderName::from_bytes(name_str.as_bytes()) {
                 self.headers.insert(key, val);
             }
-        }
         self
     }
 
@@ -149,24 +148,24 @@ impl OpenApiResponse {
     }
 }
 
-/// Route configuration for OpenAPI endpoints
-/// OpenAPI 端点的路由配置
+/// Route configuration for `OpenAPI` endpoints
+/// `OpenAPI` 端点的路由配置
 #[derive(Debug, Clone)]
 pub struct OpenApiRoutes {
-    /// Path prefix for all OpenAPI routes
-    /// 所有 OpenAPI 路由的路径前缀
+    /// Path prefix for all `OpenAPI` routes
+    /// 所有 `OpenAPI` 路由的路径前缀
     pub prefix: String,
 
     /// Path for Swagger UI
     /// Swagger UI 的路径
     pub swagger_ui: String,
 
-    /// Path for OpenAPI JSON spec
-    /// OpenAPI JSON 规范的路径
+    /// Path for `OpenAPI` JSON spec
+    /// `OpenAPI` JSON 规范的路径
     pub spec_json: String,
 
-    /// Path for OpenAPI YAML spec
-    /// OpenAPI YAML 规范的路径
+    /// Path for `OpenAPI` YAML spec
+    /// `OpenAPI` YAML 规范的路径
     pub spec_yaml: Option<String>,
 }
 
@@ -202,15 +201,15 @@ impl OpenApiRoutes {
         self
     }
 
-    /// Set the OpenAPI JSON spec path
-    /// 设置 OpenAPI JSON 规范路径
+    /// Set the `OpenAPI` JSON spec path
+    /// 设置 `OpenAPI` JSON 规范路径
     pub fn spec_json(mut self, path: impl Into<String>) -> Self {
         self.spec_json = path.into();
         self
     }
 
-    /// Set the OpenAPI YAML spec path
-    /// 设置 OpenAPI YAML 规范路径
+    /// Set the `OpenAPI` YAML spec path
+    /// 设置 `OpenAPI` YAML 规范路径
     pub fn spec_yaml(mut self, path: impl Into<String>) -> Self {
         self.spec_yaml = Some(path.into());
         self
@@ -240,8 +239,8 @@ impl OpenApiRoutes {
 /// Router integration helper
 /// 路由器集成助手
 ///
-/// Provides methods to easily register OpenAPI routes with a router.
-/// 提供轻松向路由器注册 OpenAPI 路由的方法。
+/// Provides methods to easily register `OpenAPI` routes with a router.
+/// 提供轻松向路由器注册 `OpenAPI` 路由的方法。
 #[derive(Debug, Clone)]
 pub struct OpenApiRouter {
     /// Handler

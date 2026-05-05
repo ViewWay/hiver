@@ -32,6 +32,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod env;
 pub mod health;
 pub mod info;

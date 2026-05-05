@@ -37,6 +37,9 @@
 //! }
 //! ```
 
+#[cfg(test)]
+mod tests;
+
 pub mod error;
 pub mod migration;
 pub mod config;

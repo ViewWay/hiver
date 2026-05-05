@@ -84,8 +84,8 @@ pub struct MultipartFile {
 }
 
 impl MultipartFile {
-    /// Create a new MultipartFile
-    /// 创建新的 MultipartFile
+    /// Create a new `MultipartFile`
+    /// 创建新的 `MultipartFile`
     pub fn new(
         name: impl Into<String>,
         filename: Option<String>,
@@ -157,16 +157,14 @@ impl MultipartFile {
     pub fn has_content_type(&self, content_type: &str) -> bool {
         self.content_type
             .as_ref()
-            .map(|ct| ct.starts_with(content_type))
-            .unwrap_or(false)
+            .is_some_and(|ct| ct.starts_with(content_type))
     }
 
     /// Check if the file has a specific extension
     /// 检查文件是否有特定扩展名
     pub fn has_extension(&self, extension: &str) -> bool {
         self.extension()
-            .map(|ext| ext.eq_ignore_ascii_case(extension))
-            .unwrap_or(false)
+            .is_some_and(|ext| ext.eq_ignore_ascii_case(extension))
     }
 }
 
@@ -217,8 +215,8 @@ pub struct MultipartForm<T> {
 }
 
 impl<T> MultipartForm<T> {
-    /// Create a new MultipartForm
-    /// 创建新的 MultipartForm
+    /// Create a new `MultipartForm`
+    /// 创建新的 `MultipartForm`
     pub fn new(inner: T) -> Self {
         Self { inner }
     }
@@ -305,8 +303,8 @@ pub struct MultipartData {
 }
 
 impl MultipartData {
-    /// Create a new MultipartData
-    /// 创建新的 MultipartData
+    /// Create a new `MultipartData`
+    /// 创建新的 `MultipartData`
     pub fn new() -> Self {
         Self {
             files: HashMap::new(),
@@ -341,7 +339,7 @@ impl MultipartData {
     /// Get a field value by name
     /// 按名称获取字段值
     pub fn field(&self, name: &str) -> Option<&str> {
-        self.fields.get(name).map(|s| s.as_str())
+        self.fields.get(name).map(std::string::String::as_str)
     }
 
     /// Get all fields
@@ -504,8 +502,7 @@ pub fn validate_extension(filename: &str, allowed: &[&str]) -> bool {
     filename
         .rsplit('.')
         .next()
-        .map(|ext| allowed.iter().any(|allowed| ext.eq_ignore_ascii_case(allowed)))
-        .unwrap_or(false)
+        .is_some_and(|ext| allowed.iter().any(|allowed| ext.eq_ignore_ascii_case(allowed)))
 }
 
 /// Validate content type

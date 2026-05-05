@@ -117,6 +117,7 @@ pub struct TransactionState {
 /// Heartbeat configuration
 /// 心跳配置
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct HeartbeatConfig {
     /// Client send interval (ms)
     /// 客户端发送间隔
@@ -135,16 +136,6 @@ pub struct HeartbeatConfig {
     pub server_receive: Option<u64>,
 }
 
-impl Default for HeartbeatConfig {
-    fn default() -> Self {
-        Self {
-            client_send: None,
-            client_receive: None,
-            server_send: None,
-            server_receive: None,
-        }
-    }
-}
 
 impl StompSession {
     /// Create a new session
@@ -345,7 +336,7 @@ impl StompBroker for MemoryBroker {
     async fn subscribe(&self, session: &StompSession, destination: &str) -> Result<()> {
         let mut subs = self.subscribers.write().unwrap();
         subs.entry(destination.to_string())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(session.id().to_string());
         Ok(())
     }

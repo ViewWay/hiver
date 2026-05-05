@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - AntPathMatcher for path pattern matching
-//! - @PathVariable with URI templates
+//! - `AntPathMatcher` for path pattern matching
+//! - @`PathVariable` with URI templates
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -87,7 +87,7 @@ impl TrieRouter {
         // Extract parameter names from path
         let param_names: Vec<String> = path
             .split('/')
-            .filter_map(|s| s.strip_prefix(':').map(|s| s.to_string()))
+            .filter_map(|s| s.strip_prefix(':').map(std::string::ToString::to_string))
             .collect();
 
         router
@@ -177,8 +177,8 @@ impl Default for TrieRouter {
     }
 }
 
-/// Convert Router to HttpService
-/// 将 Router 转换为 HttpService
+/// Convert Router to `HttpService`
+/// 将 Router 转换为 `HttpService`
 ///
 /// This allows the Router to be used directly with the Server.
 /// 这使得 Router 可以直接与 Server 一起使用。

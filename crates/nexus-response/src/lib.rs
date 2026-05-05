@@ -10,6 +10,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod html;
 pub mod json;
 pub mod response;

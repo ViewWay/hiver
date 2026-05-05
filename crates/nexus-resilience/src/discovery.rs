@@ -215,9 +215,11 @@ impl fmt::Display for InstanceStatus {
 /// Load balancing strategy
 /// 负载均衡策略
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum LoadBalanceStrategy {
     /// Round-robin selection
     /// 轮询选择
+    #[default]
     RoundRobin,
 
     /// Random selection
@@ -244,11 +246,6 @@ impl fmt::Display for LoadBalanceStrategy {
     }
 }
 
-impl Default for LoadBalanceStrategy {
-    fn default() -> Self {
-        Self::RoundRobin
-    }
-}
 
 /// Service discovery error
 /// 服务发现错误
@@ -381,9 +378,7 @@ impl SimpleServiceRegistry {
         instances: &[ServiceInstance],
         service_name: &str,
     ) -> ServiceInstance {
-        if instances.is_empty() {
-            panic!("Cannot select from empty instances list");
-        }
+        assert!(!instances.is_empty(), "Cannot select from empty instances list");
 
         match self.strategy {
             LoadBalanceStrategy::RoundRobin => {
@@ -424,7 +419,7 @@ impl ServiceRegistry for SimpleServiceRegistry {
         let mut services = self.services.write().unwrap();
         let entry = services
             .entry(service_name.to_string())
-            .or_insert_with(Vec::new);
+            .or_default();
 
         // Check if instance already exists
         let exists = entry.iter().any(|i| i.id == instance.id);

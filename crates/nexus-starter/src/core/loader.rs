@@ -377,43 +377,43 @@ impl AutoConfigurationRegistry {
 
         // 格式 1: # priority: 100
         if let Some(idx) = lower.find("#priority:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 10) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 10) {
                 return num.parse().ok();
             }
         }
         if let Some(idx) = lower.find("# priority:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 11) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 11) {
                 return num.parse().ok();
             }
         }
 
         // 格式 2: # order: 100
         if let Some(idx) = lower.find("#order:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 7) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 7) {
                 return num.parse().ok();
             }
         }
         if let Some(idx) = lower.find("# order:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 8) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 8) {
                 return num.parse().ok();
             }
         }
 
         // 格式 3: // priority: 100
         if let Some(idx) = lower.find("//priority:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 11) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 11) {
                 return num.parse().ok();
             }
         }
         if let Some(idx) = lower.find("// priority:") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 12) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 12) {
                 return num.parse().ok();
             }
         }
 
         // 格式 4: @Order(100)
         if let Some(idx) = lower.find("@order(") {
-            if let Some(num) = Self::extract_number_in_parens(&class_name, idx + 7) {
+            if let Some(num) = Self::extract_number_in_parens(class_name, idx + 7) {
                 return num.parse().ok();
             }
         }
@@ -422,7 +422,7 @@ impl AutoConfigurationRegistry {
         if let Some(idx) = lower.find("@order(\"") {
             if let Some(comma) = class_name[idx..].find(',') {
                 let abs_comma = idx + comma + 1;
-                if let Some(num) = Self::extract_number_after(&class_name, abs_comma) {
+                if let Some(num) = Self::extract_number_after(class_name, abs_comma) {
                     return num.parse().ok();
                 }
             }
@@ -430,14 +430,14 @@ impl AutoConfigurationRegistry {
 
         // 格式 6: [order=100]
         if let Some(idx) = lower.find("[order=") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 7) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 7) {
                 return num.parse().ok();
             }
         }
 
         // 格式 7: [priority=100]
         if let Some(idx) = lower.find("[priority=") {
-            if let Some(num) = Self::extract_number_after(&class_name, idx + 10) {
+            if let Some(num) = Self::extract_number_after(class_name, idx + 10) {
                 return num.parse().ok();
             }
         }
@@ -492,10 +492,10 @@ impl AutoConfigurationRegistry {
             }
         }
 
-        if !result.is_empty() {
-            Some(result)
-        } else {
+        if result.is_empty() {
             None
+        } else {
+            Some(result)
         }
     }
 

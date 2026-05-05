@@ -1,69 +1,12 @@
 //! Nexus Data R2DBC - Reactive database access
 //! Nexus Data R2DBC - 响应式数据库访问
-//!
-//! # Equivalent to Spring / 等价于 Spring
-//!
-//! | Nexus | Spring |
-//! |-------|--------|
-//! | `R2dbcRepository` | `R2dbcRepository` |
-//! | `DatabaseClient` | `DatabaseClient` / `R2dbcEntityTemplate` |
-//! | `Connection` | `Connection` |
-//! | `Transaction` | `TransactionalDatabaseClient` |
-//! | `Row` | `Row` |
-//! | `Rows` | `Result` |
-//!
-//! # Features / 功能
-//!
-//! - Reactive database access / 响应式数据库访问
-//! - SQLx-based implementation / 基于 SQLx 的实现
-//! - Connection pooling / 连接池
-//! - Transaction support / 事务支持
-//! - Repository pattern / Repository 模式
-//! - Type-safe queries / 类型安全查询
-//!
-//! # Quick Start / 快速开始
-//!
-//! ```rust,ignore
-//! use nexus_data_rdbc::{R2dbcRepository, SqlxRepository, PostgresConfig};
-//! use nexus_data_commons::{CrudRepository, Error};
-//!
-//! #[derive(Debug, Clone)]
-//! struct User {
-//!     id: i64,
-//!     name: String,
-//!     email: String,
-//! }
-//!
-//! struct UserRepository {
-//!     inner: SqlxRepository<User, i64>,
-//! }
-//!
-//! impl UserRepository {
-//!     fn new() -> Self {
-//!         Self {
-//!             inner: SqlxRepository::new("users"),
-//!         }
-//!     }
-//! }
-//!
-//! #[async_trait]
-//! impl CrudRepository<User, i64> for UserRepository {
-//!     type Error = Error;
-//!
-//!     async fn save(&self, entity: User) -> Result<User, Self::Error> {
-//!         self.inner.save(entity).await
-//!     }
-//!
-//!     async fn find_by_id(&self, id: i64) -> Result<Option<User>, Self::Error> {
-//!         self.inner.find_by_id(id).await
-//!     }
-//!
-//!     // ... other methods
-//! }
-//! ```
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+#![allow(clippy::module_inception)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod error;
 pub mod config;
@@ -71,46 +14,82 @@ pub mod row;
 pub mod connection;
 pub mod transaction;
 pub mod client;
-pub mod repository;
 pub mod pool;
+pub mod repository;
+pub mod extractor;
+pub mod executor;
+pub mod mapper;
+pub mod query_runtime;
 
-pub use error::{R2dbcError, Error, Result, R2dbcResult};
-pub use config::{DatabaseConfig, PostgresConfig, MySqlConfig, SqliteConfig, SslMode};
-pub use row::{Row, RowInternal, ColumnValue, ColumnType};
+// Error types
+pub use error::{Error, Result, R2dbcError, R2dbcResult};
+
+// Config types
+pub use config::{DatabaseConfig, MySqlConfig, PostgresConfig, SqliteConfig, SslMode};
+
+// Row types
+pub use row::{Column, ColumnType, ColumnValue, FromRowValue, Row};
+
+// Connection types
 pub use connection::{Connection, PoolConfig};
-pub use transaction::{Transaction, TransactionManager, IsolationLevel};
-pub use client::{DatabaseClient, SqlxPoolClient, ToSql};
+
+// Transaction types
+pub use transaction::{IsolationLevel, Transaction, TransactionManager};
+
+// Client types
+pub use client::{DatabaseClient, ToSql};
+
+// Pool types
+pub use pool::{PgPoolClient, SqlxPoolClient};
+#[cfg(any(feature = "mysql", feature = "all"))]
+pub use pool::MySqlPoolClient;
+#[cfg(any(feature = "sqlite", feature = "all"))]
+pub use pool::SqlitePoolClient;
+
+// Repository types
 pub use repository::{R2dbcRepository, SqlxRepository};
-pub use pool::{Pool, PoolOptions};
+
+// Extractor types
+pub use extractor::{ResultSetExtractor, RowMapper, Rows, row_mapper};
+
+// Executor types
+pub use executor::QueryExecutor;
+
+// Mapper types
+pub use mapper::{BaseMapper, R2dbcBaseRepository, R2dbcCrudRepository};
+
+// Query runtime types
+pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType};
 
 /// Database type enum
-/// 数据库类型枚值
+/// 数据库类型枚举
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DatabaseType {
-    /// PostgreSQL
+    /// PostgreSQL database
     PostgreSQL,
-    /// MySQL
+    /// MySQL database
     MySQL,
-    /// SQLite
+    /// SQLite database (file-based)
     SQLite,
-    /// H2
+    /// H2 embedded database (compatibility)
     H2,
 }
 
-/// Version of the data-rdbc module
+/// Crate version string
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Re-exports of commonly used types
-/// 常用类型的重新导出
+/// Commonly used types re-exported for convenience
 pub mod prelude {
     pub use super::{
-        Error, Result,
-        DatabaseClient, SqlxPoolClient,
-        R2dbcRepository, SqlxRepository,
+        BaseMapper, DatabaseClient, DatabaseConfig, Error, IsolationLevel, MySqlConfig,
+        PgPoolClient, PostgresConfig, QueryExecutor, R2dbcRepository, Result, ResultSetExtractor,
+        Row, RowMapper, Rows, SqliteConfig, SqlxPoolClient, SqlxRepository,
         Transaction, TransactionManager,
-        Row, DatabaseConfig, PostgresConfig, MySqlConfig, SqliteConfig,
     };
+    #[cfg(any(feature = "mysql", feature = "all"))]
+    pub use super::MySqlPoolClient;
+    #[cfg(any(feature = "sqlite", feature = "all"))]
+    pub use super::SqlitePoolClient;
 }
 
-// Re-export nexus-data-commons Error for convenience
 pub use nexus_data_commons::Error as DataError;

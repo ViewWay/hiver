@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @RequestBody, @ResponseBody, ResponseEntity
+//! - @`RequestBody`, @`ResponseBody`, `ResponseEntity`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -150,8 +150,8 @@ impl HttpBody for EmptyBody {
     }
 }
 
-/// Body type alias using FullBody by default
-/// 默认使用FullBody的Body类型别名
+/// Body type alias using `FullBody` by default
+/// `默认使用FullBody的Body类型别名`
 pub type Body = FullBody;
 
 impl Body {

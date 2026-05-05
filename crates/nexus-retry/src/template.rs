@@ -288,7 +288,7 @@ impl RetryTemplate {
     /// ```
     pub async fn execute_with_recovery<F, Fut, T, E, R>(
         &self,
-        mut op: F,
+        op: F,
         recover: R,
     ) -> Result<T, String>
     where

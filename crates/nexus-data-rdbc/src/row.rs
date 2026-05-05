@@ -6,69 +6,104 @@
 //! Types for representing database rows and results.
 //! 表示数据库行和结果的类型。
 
-use std::any::Any;
+use crate::error::Error;
 
-/// Database row
-/// 数据库行
-///
-/// Represents a single row from a query result.
-/// 表示查询结果中的单行。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// use nexus_data_rdbc::Row;
-///
-/// let row: Row = // ... obtained from query
-/// let id: i64 = row.get("id")?;
-/// let name: String = row.get("name")?;
-/// ```
-pub trait Row: Send + Sync {
-    /// Get a value by column name
-    /// 通过列名获取值
-    fn get<'a, T>(&'a self, name: &str) -> Result<T, crate::Error>
-    where
-        T: RowValue<'a>;
-
-    /// Get a value by column index
-    /// 通过列索引获取值
-    fn get_by_index<'a, T>(&'a self, index: usize) -> Result<T, crate::Error>
-    where
-        T: RowValue<'a>;
-
-    /// Get the number of columns
-    /// 获取列数
-    fn column_count(&self) -> usize;
-
-    /// Get column names
-    /// 获取列名
-    fn column_names(&self) -> Vec<String>;
-
-    /// Try to get a value by column name, returns None if column doesn't exist
-    /// 尝试通过列名获取值，如果列不存在则返回 None
-    fn try_get<'a, T>(&'a self, name: &str) -> Result<Option<T>, crate::Error>
-    where
-        T: RowValue<'a>;
+/// Database row — map of column name to value
+/// 数据库行 — 列名到值的映射
+#[derive(Debug, Clone)]
+pub struct Row {
+    columns: Vec<(String, ColumnValue)>,
 }
 
-/// Marker trait for types that can be extracted from a row
-/// 可从行中提取的类型的标记 trait
-pub trait RowValue<'a>: Sized {
-    /// Extract this value from a row
-    /// 从行中提取此值
-    fn extract(row: &'a dyn RowInternal) -> Result<Self, crate::Error>;
+impl Row {
+    /// Create a new empty row
+    pub fn new() -> Self {
+        Self { columns: Vec::new() }
+    }
+
+    /// Add a column value
+    pub fn with_column(mut self, name: impl Into<String>, value: ColumnValue) -> Self {
+        self.columns.push((name.into(), value));
+        self
+    }
+
+    /// Get a column value by name
+    pub fn get(&self, name: &str) -> Option<&ColumnValue> {
+        self.columns
+            .iter()
+            .find(|(col, _)| col == name)
+            .map(|(_, v)| v)
+    }
+
+    /// Require a column value by name
+    pub fn require(&self, name: &str) -> Result<&ColumnValue, Error> {
+        self.get(name)
+            .ok_or_else(|| Error::RowMapping(format!("column '{}' not found", name)))
+    }
+
+    /// Get as a specific type (with column name)
+    pub fn get_as<T: FromRowValue>(&self, name: &str) -> Result<T, Error> {
+        self.require(name)?
+            .as_type()
+            .ok_or_else(|| Error::RowMapping(format!("cannot convert column '{}'", name)))
+    }
+
+    /// Try to get a value, returning None if not found
+    pub fn try_get<T: FromRowValue>(&self, name: &str) -> Result<Option<T>, Error> {
+        match self.get(name) {
+            Some(v) => v.as_type().map(Some).ok_or_else(|| {
+                Error::RowMapping(format!("cannot convert column '{}'", name))
+            }),
+            None => Ok(None),
+        }
+    }
+
+    /// Iterate over all columns
+    pub fn columns(&self) -> impl Iterator<Item = &(String, ColumnValue)> {
+        self.columns.iter()
+    }
+
+    /// Number of columns
+    pub fn len(&self) -> usize {
+        self.columns.len()
+    }
+
+    /// Whether the row is empty
+    pub fn is_empty(&self) -> bool {
+        self.columns.is_empty()
+    }
+
+    /// Create a row from a list of (name, value) pairs
+    pub fn from_pairs(pairs: Vec<(impl Into<String>, ColumnValue)>) -> Self {
+        Self {
+            columns: pairs.into_iter().map(|(n, v)| (n.into(), v)).collect(),
+        }
+    }
+
+    /// Deserialize this row into a type using serde JSON as intermediate
+    /// 通过 serde JSON 作为中间格式将行反序列化为目标类型
+    pub fn deserialize<T: serde::de::DeserializeOwned>(&self) -> Result<T, Error> {
+        let map: serde_json::Map<String, serde_json::Value> = self
+            .columns
+            .iter()
+            .map(|(name, value)| (name.clone(), value.to_json_value()))
+            .collect();
+        serde_json::from_value(serde_json::Value::Object(map))
+            .map_err(|e| Error::Deserialization(format!("row deserialization failed: {}", e)))
+    }
 }
 
-/// Internal row trait for value extraction
-/// 用于值提取的内部行 trait
-pub trait RowInternal {
-    /// Get raw column value
-    /// 获取原始列值
-    fn get_raw(&self, name: &str) -> Result<ColumnValue, crate::Error>;
+impl Default for Row {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
-    /// Get raw column value by index
-    /// 通过索引获取原始列值
-    fn get_raw_by_index(&self, index: usize) -> Result<ColumnValue, crate::Error>;
+// Allow iterating rows directly as &Row → usable by RowMapper
+impl AsRef<Row> for Row {
+    fn as_ref(&self) -> &Row {
+        self
+    }
 }
 
 /// Column value
@@ -76,101 +111,147 @@ pub trait RowInternal {
 #[derive(Debug, Clone)]
 pub enum ColumnValue {
     /// Null value
-    /// 空值
     Null,
-
     /// Boolean value
-    /// 布尔值
     Bool(bool),
-
-    /// Integer value (32-bit)
+    /// 8-bit integer
+    I8(i8),
+    /// 16-bit integer
+    I16(i16),
+    /// 32-bit integer
     I32(i32),
-
-    /// Integer value (64-bit)
+    /// 64-bit integer
     I64(i64),
-
-    /// Float value
-    /// 浮点数值
+    /// 32-bit float
+    F32(f32),
+    /// 64-bit float
     F64(f64),
-
     /// String value
-    /// 字符串值
     String(String),
-
     /// Bytes value
-    /// 字节值
     Bytes(Vec<u8>),
-
     /// UUID value
-    /// UUID 值
     Uuid(uuid::Uuid),
+    /// NaiveDateTime
+    NaiveDateTime(chrono::NaiveDateTime),
 }
 
 impl ColumnValue {
     /// Check if value is null
-    /// 检查值是否为空
     pub fn is_null(&self) -> bool {
         matches!(self, Self::Null)
     }
 
-    /// Convert to i64
-    /// 转换为 i64
-    pub fn as_i64(&self) -> Option<i64> {
-        match self {
-            Self::I64(v) => Some(*v),
-            Self::I32(v) => Some(*v as i64),
-            _ => None,
-        }
+    /// Try to convert to a specific type
+    pub fn as_type<T: FromRowValue>(&self) -> Option<T> {
+        FromRowValue::from_column_value(self)
     }
 
-    /// Convert to f64
-    /// 转换为 f64
-    pub fn as_f64(&self) -> Option<f64> {
+    /// Convert to serde_json::Value for serialization
+    pub fn to_json_value(&self) -> serde_json::Value {
         match self {
-            Self::F64(v) => Some(*v),
-            Self::I64(v) => Some(*v as f64),
-            _ => None,
+            Self::Null => serde_json::Value::Null,
+            Self::Bool(v) => serde_json::json!(*v),
+            Self::I8(v) => serde_json::json!(*v),
+            Self::I16(v) => serde_json::json!(*v),
+            Self::I32(v) => serde_json::json!(*v),
+            Self::I64(v) => serde_json::json!(*v),
+            Self::F32(v) => serde_json::json!(*v),
+            Self::F64(v) => serde_json::json!(*v),
+            Self::String(v) => serde_json::json!(v),
+            Self::Bytes(_) => serde_json::Value::Null,
+            Self::Uuid(v) => serde_json::json!(v.to_string()),
+            Self::NaiveDateTime(v) => serde_json::json!(v.format("%Y-%m-%d %H:%M:%S").to_string()),
         }
     }
+}
 
-    /// Convert to String
-    /// 转换为 String
-    pub fn as_str(&self) -> Option<&str> {
-        match self {
-            Self::String(v) => Some(v),
-            _ => None,
-        }
-    }
+/// Trait for types that can be extracted from a ColumnValue
+/// 可从 ColumnValue 中提取的类型的 trait
+pub trait FromRowValue: Sized {
+    /// Try to convert from ColumnValue
+    fn from_column_value(val: &ColumnValue) -> Option<Self>;
+}
 
-    /// Convert to bytes
-    /// 转换为字节
-    pub fn as_bytes(&self) -> Option<&[u8]> {
-        match self {
-            Self::Bytes(v) => Some(v),
+impl FromRowValue for i32 {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::I32(v) => Some(*v),
+            ColumnValue::I8(v) => Some(*v as i32),
+            ColumnValue::I16(v) => Some(*v as i32),
             _ => None,
         }
     }
 }
 
-/// Database rows (result set) - placeholder
-/// 数据库行（结果集）- 占位符
-///
-/// Represents a collection of rows from a query result.
-/// 表示查询结果的行集合。
-///
-/// Note: This is currently a placeholder. A full implementation would need
-/// to use a concrete row type rather than the Row trait (which is not dyn-compatible).
-/// 注意：这目前是占位符。完整实现需要使用具体的行类型而不是 Row trait（不是 dyn 兼容的）。
-pub trait Rows: Send + Sync {
-    /// Get the number of rows (placeholder)
-    /// 获取行数（占位符）
-    fn count(&self) -> Result<u64, crate::Error>;
+impl FromRowValue for i64 {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::I64(v) => Some(*v),
+            ColumnValue::I32(v) => Some(*v as i64),
+            ColumnValue::I8(v) => Some(*v as i64),
+            ColumnValue::I16(v) => Some(*v as i64),
+            _ => None,
+        }
+    }
+}
 
-    /// Collect all rows into a count (placeholder)
-    /// 收集所有行到计数（占位符）
-    fn collect(self) -> Result<u64, crate::Error>
-    where
-        Self: Sized;
+impl FromRowValue for f64 {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::F64(v) => Some(*v),
+            ColumnValue::F32(v) => Some(*v as f64),
+            _ => None,
+        }
+    }
+}
+
+impl FromRowValue for String {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::String(v) => Some(v.clone()),
+            ColumnValue::I32(v) => Some(v.to_string()),
+            ColumnValue::I64(v) => Some(v.to_string()),
+            _ => None,
+        }
+    }
+}
+
+impl FromRowValue for bool {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::Bool(v) => Some(*v),
+            _ => None,
+        }
+    }
+}
+
+impl FromRowValue for Vec<u8> {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::Bytes(v) => Some(v.clone()),
+            _ => None,
+        }
+    }
+}
+
+impl FromRowValue for uuid::Uuid {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::Uuid(v) => Some(*v),
+            ColumnValue::String(s) => uuid::Uuid::parse_str(s).ok(),
+            _ => None,
+        }
+    }
+}
+
+impl FromRowValue for chrono::NaiveDateTime {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::NaiveDateTime(v) => Some(*v),
+            _ => None,
+        }
+    }
 }
 
 /// Column metadata
@@ -178,15 +259,10 @@ pub trait Rows: Send + Sync {
 #[derive(Debug, Clone)]
 pub struct Column {
     /// Column name
-    /// 列名
     pub name: String,
-
     /// Column type
-    /// 列类型
     pub type_: ColumnType,
-
     /// Whether the column is nullable
-    /// 列是否可为空
     pub nullable: bool,
 }
 
@@ -194,61 +270,19 @@ pub struct Column {
 /// 列类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ColumnType {
-    /// Boolean type
-    /// 布尔类型
     Bool,
-
-    /// Integer type
-    /// 整数类型
+    I8,
+    I16,
+    I32,
     I64,
-
-    /// Float type
-    /// 浮点类型
+    F32,
     F64,
-
-    /// String type
-    /// 字符串类型
     String,
-
-    /// Bytes type
-    /// 字节类型
     Bytes,
-
-    /// UUID type
-    /// UUID 类型
     Uuid,
-
-    /// Timestamp type
-    /// 时间戳类型
     Timestamp,
-
-    /// Date type
-    /// 日期类型
     Date,
-
-    /// Unknown type
-    /// 未知类型
     Unknown,
-}
-
-// Implement RowValue for common types
-impl<'a> RowValue<'a> for i64 {
-    fn extract(row: &'a dyn RowInternal) -> Result<Self, crate::Error> {
-        match row.get_raw("id")? {
-            ColumnValue::I64(v) => Ok(v),
-            ColumnValue::I32(v) => Ok(v as i64),
-            _ => Err(crate::Error::Deserialization("Expected i64".to_string())),
-        }
-    }
-}
-
-impl<'a> RowValue<'a> for String {
-    fn extract(row: &'a dyn RowInternal) -> Result<Self, crate::Error> {
-        match row.get_raw("name")? {
-            ColumnValue::String(v) => Ok(v),
-            _ => Err(crate::Error::Deserialization("Expected String".to_string())),
-        }
-    }
 }
 
 #[cfg(test)]
@@ -256,23 +290,46 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_row_building() {
+        let row = Row::new()
+            .with_column("id", ColumnValue::I64(1))
+            .with_column("name", ColumnValue::String("Alice".into()));
+
+        assert_eq!(row.len(), 2);
+        assert_eq!(row.get_as::<i64>("id").unwrap(), 1);
+        assert_eq!(row.get_as::<String>("name").unwrap(), "Alice");
+    }
+
+    #[test]
     fn test_column_value_null() {
         let value = ColumnValue::Null;
         assert!(value.is_null());
-        assert!(value.as_i64().is_none());
     }
 
     #[test]
-    fn test_column_value_i64() {
-        let value = ColumnValue::I64(42);
-        assert!(!value.is_null());
-        assert_eq!(value.as_i64(), Some(42));
-        assert_eq!(value.as_f64(), Some(42.0));
+    fn test_column_value_as_type() {
+        assert_eq!(ColumnValue::I64(42).as_type::<i64>(), Some(42));
+        assert_eq!(ColumnValue::F64(3.14).as_type::<f64>(), Some(3.14));
+        assert_eq!(ColumnValue::Bool(true).as_type::<bool>(), Some(true));
+        assert_eq!(ColumnValue::String("hello".into()).as_type::<String>(), Some("hello".into()));
     }
 
     #[test]
-    fn test_column_value_string() {
-        let value = ColumnValue::String("hello".to_string());
-        assert_eq!(value.as_str(), Some("hello"));
+    fn test_row_deserialize() {
+        use serde::Deserialize;
+
+        #[derive(Debug, Deserialize, PartialEq)]
+        struct User {
+            id: i64,
+            name: String,
+        }
+
+        let row = Row::from_pairs(vec![
+            ("id", ColumnValue::I64(42)),
+            ("name", ColumnValue::String("Bob".into())),
+        ]);
+
+        let user: User = row.deserialize().unwrap();
+        assert_eq!(user, User { id: 42, name: "Bob".into() });
     }
 }

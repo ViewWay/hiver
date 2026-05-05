@@ -59,12 +59,12 @@ pub struct Caching {
     /// Cacheable操作
     pub cacheable: Vec<CacheableOptions>,
 
-    /// CachePut operations
-    /// CachePut操作
+    /// `CachePut` operations
+    /// `CachePut操作`
     pub put: Vec<CachePutOptions>,
 
-    /// CacheEvict operations
-    /// CacheEvict操作
+    /// `CacheEvict` operations
+    /// `CacheEvict操作`
     pub evict: Vec<CacheEvictOptions>,
 }
 
@@ -191,13 +191,12 @@ impl CachingExec {
         // 首先，检查任何cacheable操作是否有缓存的值
         for opts in &operations.cacheable {
             for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
-                    if let Some(value) = cache.get(&key).await {
+                if let Some(cache) = caches.get(cache_name)
+                    && let Some(value) = cache.get(&key).await {
                         // Found in cache - return this value
                         // 在缓存中找到 - 返回此值
                         return Some(value);
                     }
-                }
             }
         }
 
@@ -247,7 +246,7 @@ impl CachingExec {
     /// Execute caching operations with a result value (always executes function)
     /// 使用结果值执行caching操作（总是执行函数）
     ///
-    /// Unlike `execute`, this always executes the function (for @CachePut scenarios).
+    /// Unlike `execute`, this always executes the function (for @`CachePut` scenarios).
     /// 与`execute`不同，这总是执行函数（用于@CachePut场景）。
     pub async fn execute_and_update<K, V>(
         caches: &HashMap<String, Arc<dyn Cache<K, V>>>,
@@ -343,7 +342,7 @@ impl CachingExec {
 /// Caching选项构建器
 ///
 /// Provides a fluent API for building complex caching operations.
-/// 为构建复杂的caching操作提供流畅API。
+/// `为构建复杂的caching操作提供流畅API`。
 #[derive(Debug, Clone, Default)]
 pub struct CachingBuilder {
     operations: Caching,

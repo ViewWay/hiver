@@ -4,7 +4,7 @@
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
 //! - `@Value` annotation - Value extractor
-//! - SpEL (Spring Expression Language) support - Placeholder resolution
+//! - `SpEL` (Spring Expression Language) support - Placeholder resolution
 
 use crate::ConfigError;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -351,7 +351,7 @@ where
     T: Into<Value>,
 {
     fn from(v: Vec<T>) -> Self {
-        Value::List(v.into_iter().map(|x| x.into()).collect())
+        Value::List(v.into_iter().map(std::convert::Into::into).collect())
     }
 }
 
@@ -391,8 +391,8 @@ impl<'de> Deserialize<'de> for Value {
 }
 
 impl Value {
-    /// Convert from serde_json::Value
-    /// 从serde_json::Value转换
+    /// Convert from `serde_json::Value`
+    /// `从serde_json::Value转换`
     fn from_json(json: serde_json::Value) -> Self {
         match json {
             serde_json::Value::Null => Value::Null,
@@ -461,11 +461,10 @@ impl ValueExtractor {
         T: FromStr + serde::de::DeserializeOwned,
         T::Err: fmt::Display,
     {
-        if let Some(value) = env.get_property(key) {
-            if let Ok(parsed) = value.into::<T>() {
+        if let Some(value) = env.get_property(key)
+            && let Ok(parsed) = value.into::<T>() {
                 return Ok(parsed);
             }
-        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -477,14 +476,13 @@ impl ValueExtractor {
         default: Option<&str>,
         env: &crate::Environment,
     ) -> Result<String, ConfigError> {
-        if let Some(value) = env.get_property(key) {
-            if let Some(s) = value.as_str() {
+        if let Some(value) = env.get_property(key)
+            && let Some(s) = value.as_str() {
                 return Ok(s.to_string());
             }
-        }
 
         default
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
 
@@ -495,11 +493,10 @@ impl ValueExtractor {
         default: Option<bool>,
         env: &crate::Environment,
     ) -> Result<bool, ConfigError> {
-        if let Some(value) = env.get_property(key) {
-            if let Some(b) = value.as_bool() {
+        if let Some(value) = env.get_property(key)
+            && let Some(b) = value.as_bool() {
                 return Ok(b);
             }
-        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -515,13 +512,11 @@ impl ValueExtractor {
         T: FromStr + serde::de::DeserializeOwned,
         T::Err: fmt::Display,
     {
-        if let Some(value) = env.get_property(key) {
-            if let Some(i) = value.as_i64() {
-                if let Ok(parsed) = format!("{}", i).parse::<T>() {
+        if let Some(value) = env.get_property(key)
+            && let Some(i) = value.as_i64()
+                && let Ok(parsed) = format!("{}", i).parse::<T>() {
                     return Ok(parsed);
                 }
-            }
-        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -551,11 +546,10 @@ impl ValueExtractor {
     pub fn resolve_placeholder(input: &str, env: &crate::Environment) -> String {
         let (key, default) = Self::parse_placeholder(input);
 
-        if let Some(value) = env.get_property(&key) {
-            if let Some(s) = value.as_str() {
+        if let Some(value) = env.get_property(&key)
+            && let Some(s) = value.as_str() {
                 return s.to_string();
             }
-        }
 
         default.unwrap_or_default()
     }

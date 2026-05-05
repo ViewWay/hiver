@@ -109,7 +109,7 @@ impl ValidationErrors {
     /// Convert to HTTP error
     /// 转换为 HTTP 错误
     pub fn to_http_error(&self) -> Error {
-        let error_messages: Vec<String> = self.errors.iter().map(|e| e.to_string()).collect();
+        let error_messages: Vec<String> = self.errors.iter().map(std::string::ToString::to_string).collect();
 
         Error::bad_request(format!("Validation failed: {}", error_messages.join(", ")))
     }
@@ -120,7 +120,7 @@ impl std::fmt::Display for ValidationErrors {
         if self.errors.len() == 1 {
             write!(f, "{}", self.errors[0])
         } else {
-            let messages: Vec<String> = self.errors.iter().map(|e| e.to_string()).collect();
+            let messages: Vec<String> = self.errors.iter().map(std::string::ToString::to_string).collect();
             write!(f, "Multiple validation errors: {}", messages.join(", "))
         }
     }
@@ -511,10 +511,10 @@ impl ValidationHelpers {
     pub fn require_pattern(field: &str, value: &str, pattern: &str) -> Option<ValidationError> {
         match regex::Regex::new(pattern) {
             Ok(re) => {
-                if !re.is_match(value) {
-                    Some(ValidationError::new(field, "Does not match required pattern"))
-                } else {
+                if re.is_match(value) {
                     None
+                } else {
+                    Some(ValidationError::new(field, "Does not match required pattern"))
                 }
             },
             Err(_) => Some(ValidationError::new(field, "Invalid regex pattern")),

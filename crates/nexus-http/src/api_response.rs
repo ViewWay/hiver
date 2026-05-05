@@ -470,8 +470,8 @@ impl<T> PageResponse<T> {
         Self::new(vec![], 0, 10, 0)
     }
 
-    /// Wrap the page content in an ApiResponse
-    /// 将分页内容包装为 ApiResponse
+    /// Wrap the page content in an `ApiResponse`
+    /// 将分页内容包装为 `ApiResponse`
     pub fn into_api_response(self) -> ApiResponse<Vec<T>> {
         ApiResponse::success_data(self.content)
             .add_error("page", self.page.to_string())
@@ -509,11 +509,11 @@ fn format_timestamp() -> String {
 // Conversion Traits / 转换 Trait
 // ============================================================================
 
-/// Trait for converting types to ApiResponse
-/// 将类型转换为 ApiResponse 的 Trait
+/// Trait for converting types to `ApiResponse`
+/// 将类型转换为 `ApiResponse` 的 Trait
 pub trait IntoApiResponse<T> {
-    /// Convert self into an ApiResponse
-    /// 将 self 转换为 ApiResponse
+    /// Convert self into an `ApiResponse`
+    /// 将 self 转换为 `ApiResponse`
     fn into_api_response(self) -> ApiResponse<T>;
 }
 
@@ -536,10 +536,10 @@ impl<T: Serialize> crate::IntoResponse for ApiResponse<T> {
 impl<T: Serialize> crate::IntoResponse for PageResponse<T> {
     fn into_response(self) -> Response {
         let api_response = ApiResponse::success_data(self.content)
-            .add_error("page", &self.page.to_string())
-            .add_error("size", &self.size.to_string())
-            .add_error("total_elements", &self.total_elements.to_string())
-            .add_error("total_pages", &self.total_pages.to_string());
+            .add_error("page", self.page.to_string())
+            .add_error("size", self.size.to_string())
+            .add_error("total_elements", self.total_elements.to_string())
+            .add_error("total_pages", self.total_pages.to_string());
 
         api_response.into_response()
     }

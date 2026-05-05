@@ -6,10 +6,12 @@ use super::{MAX_BUFFER_SIZE, MAX_HEADER_SIZE};
 /// HTTP version
 /// HTTP 版本
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum HttpVersion {
     /// HTTP/1.0
     Http10,
     /// HTTP/1.1
+    #[default]
     Http11,
 }
 
@@ -30,11 +32,6 @@ impl HttpVersion {
     }
 }
 
-impl Default for HttpVersion {
-    fn default() -> Self {
-        HttpVersion::Http11
-    }
-}
 
 /// Connection context for HTTP parsing/encoding
 /// HTTP 解析/编码的连接上下文

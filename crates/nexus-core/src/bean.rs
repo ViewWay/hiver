@@ -35,14 +35,14 @@ pub trait Bean: Any {
         Scope::Singleton
     }
 
-    /// Initialize callback (equivalent to @PostConstruct)
-    /// 初始化回调（等价于 @PostConstruct）
+    /// Initialize callback (equivalent to @`PostConstruct`)
+    /// 初始化回调（等价于 @`PostConstruct`）
     fn init(&self) {
         // Default: no-op
     }
 
-    /// Destroy callback (equivalent to @PreDestroy)
-    /// 销毁回调（等价于 @PreDestroy）
+    /// Destroy callback (equivalent to @`PreDestroy`)
+    /// 销毁回调（等价于 @`PreDestroy`）
     fn destroy(&self) {
         // Default: no-op
     }
@@ -55,9 +55,11 @@ impl<T: Any> Bean for T {}
 /// Bean scope
 /// Bean作用域
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default)]
 pub enum Scope {
     /// Single instance per container (default)
     /// 每个容器单个实例（默认）
+    #[default]
     Singleton,
 
     /// New instance for each request
@@ -77,11 +79,6 @@ pub enum Scope {
     Application,
 }
 
-impl Default for Scope {
-    fn default() -> Self {
-        Scope::Singleton
-    }
-}
 
 /// Bean definition
 /// Bean定义

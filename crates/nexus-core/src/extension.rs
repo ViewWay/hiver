@@ -17,7 +17,7 @@ use std::collections::HashMap;
 /// 用于存储请求范围数据的扩展
 ///
 /// This is equivalent to Spring's Model or request attributes.
-/// 这等价于Spring的Model或请求属性。
+/// `这等价于Spring的Model或请求属性`。
 #[derive(Default)]
 pub struct Extensions {
     inner: HashMap<TypeId, Box<dyn Any + Send + Sync>>,

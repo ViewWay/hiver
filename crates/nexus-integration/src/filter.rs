@@ -1,7 +1,6 @@
 //! Message filtering patterns
 //! 消息过滤模式
 
-use crate::error::{IntegrationError, Result};
 use crate::message::Message;
 use async_trait::async_trait;
 use std::sync::Arc;

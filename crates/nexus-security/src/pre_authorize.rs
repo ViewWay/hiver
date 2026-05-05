@@ -1,14 +1,14 @@
-//! PreAuthorize module
+//! `PreAuthorize` module
 //! PreAuthorize模块（@PreAuthorize等价物）
 
 use crate::{Authority, SecurityContext};
 use std::future::Future;
 use std::pin::Pin;
 
-/// Security expression for @PreAuthorize
-/// @PreAuthorize的安全表达式
+/// Security expression for @`PreAuthorize`
+/// @`PreAuthorize的安全表达式`
 ///
-/// Equivalent to Spring Security's SpEL expressions in @PreAuthorize.
+/// Equivalent to Spring Security's `SpEL` expressions in @`PreAuthorize`.
 /// 等价于Spring Security在@PreAuthorize中的SpEL表达式。
 ///
 /// # Spring Equivalent / Spring等价物
@@ -96,12 +96,11 @@ impl SecurityExpression {
                     let role = &input[start + 9..start + end];
                     expressions.push(SecurityExpression::HasRole(role.to_string()));
                 }
-            } else if let Some(start) = input.find("hasRole(\"") {
-                if let Some(end) = input[start..].find("\")") {
+            } else if let Some(start) = input.find("hasRole(\"")
+                && let Some(end) = input[start..].find("\")") {
                     let role = &input[start + 9..start + end];
                     expressions.push(SecurityExpression::HasRole(role.to_string()));
                 }
-            }
         }
 
         // Try hasAuthority with single quotes first, then double quotes
@@ -111,12 +110,11 @@ impl SecurityExpression {
                     let auth = &input[start + 14..start + end];
                     expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
                 }
-            } else if let Some(start) = input.find("hasAuthority(\"") {
-                if let Some(end) = input[start..].find("\")") {
+            } else if let Some(start) = input.find("hasAuthority(\"")
+                && let Some(end) = input[start..].find("\")") {
                     let auth = &input[start + 14..start + end];
                     expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
                 }
-            }
         }
 
         if input.contains("isAuthenticated()") {
@@ -135,10 +133,10 @@ impl SecurityExpression {
     }
 }
 
-/// PreAuthorize trait
-/// PreAuthorize trait
+/// `PreAuthorize` trait
+/// `PreAuthorize` trait
 ///
-/// Equivalent to Spring's @PreAuthorize annotation.
+/// Equivalent to Spring's @`PreAuthorize` annotation.
 /// 等价于Spring的@PreAuthorize注解。
 ///
 /// # Spring Equivalent / Spring等价物
@@ -159,8 +157,8 @@ pub trait PreAuthorize {
     ) -> Pin<Box<dyn Future<Output = bool> + Send>>;
 }
 
-/// PreAuthorize options
-/// PreAuthorize选项
+/// `PreAuthorize` options
+/// `PreAuthorize选项`
 #[derive(Debug, Clone)]
 pub struct PreAuthorizeOptions {
     /// Security expressions

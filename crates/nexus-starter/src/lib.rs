@@ -58,6 +58,9 @@
 // ============================================================================
 
 /// 自动配置核心
+#[cfg(test)]
+mod tests;
+
 pub mod core;
 
 /// 配置管理
@@ -139,9 +142,9 @@ pub const DEFAULT_SERVER_HOST: &str = "127.0.0.1";
 /// 默认工作线程数
 /// Default number of worker threads
 ///
-/// Note: This is a conservative default. Actual runtime uses available_parallelism()
+/// Note: This is a conservative default. Actual runtime uses `available_parallelism()`
 /// which returns the number of CPU cores.
-/// 注意：这是一个保守的默认值。实际运行时使用 available_parallelism()
+/// 注意：这是一个保守的默认值。实际运行时使用 `available_parallelism()`
 /// 返回 CPU 核心数。
 pub const DEFAULT_WORKER_THREADS: usize = 4;
 

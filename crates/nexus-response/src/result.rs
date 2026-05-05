@@ -151,7 +151,7 @@ impl<T> Result<T> {
         }
     }
 
-    /// 创建错误响应（ResultCode） / Create error response with ResultCode
+    /// 创建错误响应（ResultCode） / Create error response with `ResultCode`
     pub fn from_code(code: ResultCode) -> Self {
         Self::error(code as u16, code.description())
     }

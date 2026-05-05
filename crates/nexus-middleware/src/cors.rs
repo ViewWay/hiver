@@ -3,9 +3,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @CrossOrigin
-//! - CorsConfiguration, CorsConfigurationSource
-//! - CorsFilter, UrlBasedCorsConfigurationSource
+//! - @`CrossOrigin`
+//! - `CorsConfiguration`, `CorsConfigurationSource`
+//! - `CorsFilter`, `UrlBasedCorsConfigurationSource`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -104,21 +104,21 @@ impl CorsConfig {
     /// Set allowed methods
     /// 设置允许的方法
     pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {
-        self.allowed_methods = methods.iter().map(|s| s.to_string()).collect();
+        self.allowed_methods = methods.iter().map(std::string::ToString::to_string).collect();
         self
     }
 
     /// Set allowed headers
     /// 设置允许的headers
     pub fn allowed_headers(mut self, headers: Vec<&str>) -> Self {
-        self.allowed_headers = headers.iter().map(|s| s.to_string()).collect();
+        self.allowed_headers = headers.iter().map(std::string::ToString::to_string).collect();
         self
     }
 
     /// Set exposed headers
     /// 设置暴露的headers
     pub fn exposed_headers(mut self, headers: Vec<&str>) -> Self {
-        self.exposed_headers = headers.iter().map(|s| s.to_string()).collect();
+        self.exposed_headers = headers.iter().map(std::string::ToString::to_string).collect();
         self
     }
 
@@ -228,10 +228,10 @@ where
                 };
 
                 if !allowed {
-                    return Ok(Response::builder()
+                    return Response::builder()
                         .status(StatusCode::FORBIDDEN)
                         .header("Access-Control-Allow-Origin", "*")
-                        .body(Body::from("Origin not allowed"))?);
+                        .body(Body::from("Origin not allowed"));
                 }
 
                 // Build preflight response
@@ -259,7 +259,7 @@ where
                     builder = builder.header("Access-Control-Max-Age", max_age.to_string());
                 }
 
-                return Ok(builder.body(Body::empty())?);
+                return builder.body(Body::empty());
             }
 
             // Handle normal request - add CORS headers to response
@@ -282,11 +282,10 @@ pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'sta
 
     if config.wildcard {
         headers.push(("Access-Control-Allow-Origin", "*".to_string()));
-    } else if let Some(origin) = origin {
-        if config.allowed_origins.contains(&origin.to_string()) {
+    } else if let Some(origin) = origin
+        && config.allowed_origins.contains(&origin.to_string()) {
             headers.push(("Access-Control-Allow-Origin", origin.to_string()));
         }
-    }
 
     if !config.allowed_methods.is_empty() {
         headers.push(("Access-Control-Allow-Methods", config.allowed_methods.join(", ")));

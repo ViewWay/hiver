@@ -8,8 +8,8 @@ use std::path::Path;
 /// Multipart file
 /// Multipart 文件
 ///
-/// Equivalent to Spring's MultipartFile.
-/// 等价于Spring的MultipartFile。
+/// Equivalent to Spring's `MultipartFile`.
+/// `等价于Spring的MultipartFile`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -120,7 +120,7 @@ impl MultipartFile {
     /// 获取文件数据为 UTF-8 字符串
     pub fn text(&self) -> MultipartResult<String> {
         std::str::from_utf8(&self.data)
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .map_err(|_| MultipartError::Decode("Invalid UTF-8".to_string()))
     }
 

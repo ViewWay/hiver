@@ -263,7 +263,7 @@ impl Environment {
                 let key = &result[absolute_pos + 2..absolute_pos + end];
                 if let Some(value) = self.get_property(key) {
                     let value_str = value.as_str().unwrap_or_default();
-                    result.replace_range(absolute_pos..absolute_pos + end + 1, value_str);
+                    result.replace_range(absolute_pos..=(absolute_pos + end), value_str);
                 }
                 start = absolute_pos + 1;
             } else {

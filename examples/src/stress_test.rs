@@ -79,7 +79,7 @@ async fn send_requests(port: u16, num_requests: u64, concurrency: usize) -> Resu
     for i in 0..concurrency {
         let client = client.clone();
         let url = format!("http://127.0.0.1:{}/", port);
-        let count = requests_per_task + if i < (num_requests % concurrency as u64) as usize { 1 } else { 0 };
+        let count = requests_per_task + u64::from(i < (num_requests % concurrency as u64) as usize);
 
         join_set.spawn(async move {
             for _ in 0..count {

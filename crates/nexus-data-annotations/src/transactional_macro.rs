@@ -4,17 +4,17 @@
 //! This macro provides compile-time support for the @Transactional annotation.
 //! 此宏为 @Transactional 注解提供编译时支持。
 
-use proc_macro2::TokenStream;
+use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ItemFn, Lit, Meta, parse_macro_input};
+use syn::{ItemFn, parse_macro_input};
 use syn::{parse::ParseStream, Result as SynResult, parse::Parse};
 
 /// Parses @Transactional attributes
 /// 解析 @Transactional 属性
 struct TransactionalAttrs {
-    isolation: Option<proc_macro2::Ident>,
+    isolation: Option<syn::Ident>,
     timeout: Option<syn::LitInt>,
-    propagation: Option<proc_macro2::Ident>,
+    propagation: Option<syn::Ident>,
     read_only: Option<bool>,
     max_retries: Option<syn::LitInt>,
 }
@@ -30,7 +30,7 @@ impl Parse for TransactionalAttrs {
         while !input.is_empty() {
             // Parse key = value or key
             // 解析 key = value 或 key
-            let key: proc_macro2::Ident = input.parse()?;
+            let key: syn::Ident = input.parse()?;
 
             if input.peek(syn::token::Eq) {
                 // key = value
@@ -46,11 +46,11 @@ impl Parse for TransactionalAttrs {
                     }
                 } else if lookahead.peek(syn::LitBool) {
                     let value: syn::LitBool = input.parse()?;
-                    if key == "read_only" || key == "readOnly" || key == "readOnly" {
+                    if key == "read_only" || key == "readOnly" {
                         read_only = Some(value.value);
                     }
-                } else if lookahead.peek(proc_macro2::Ident) {
-                    let value: proc_macro2::Ident = input.parse()?;
+                } else if lookahead.peek(syn::Ident) {
+                    let value: syn::Ident = input.parse()?;
                     if key == "isolation" || key == "isolationLevel" {
                         isolation = Some(value);
                     } else if key == "propagation" {
@@ -62,7 +62,7 @@ impl Parse for TransactionalAttrs {
             } else {
                 // Just a key, treat as boolean flag
                 // 仅仅是 key，视为布尔标志
-                if key == "read_only" || key == "readOnly" || key == "readOnly" {
+                if key == "read_only" || key == "readOnly" {
                     read_only = Some(true);
                 }
             }
@@ -164,9 +164,9 @@ impl Parse for TransactionalAttrs {
 ///     Ok(())
 /// }
 /// ```
-pub fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
-    let func_name = &input.sig.ident;
+    let _func_name = &input.sig.ident;
     let attrs = &input.attrs;
     let vis = &input.vis;
     let sig = &input.sig;
@@ -191,7 +191,7 @@ pub fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     };
 
     if let Some(iso) = isolation {
-        let iso_str = format!("{:?}", iso).to_uppercase();
+        let _iso_str = format!("{:?}", iso).to_uppercase();
         config_builder = quote! {
             #config_builder.isolation(::nexus_data_annotations::transactional::IsolationLevel::#iso)
         };
@@ -225,8 +225,8 @@ pub fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     // Extract function parameters for the wrapper
     // 为包装器提取函数参数
-    let inputs = &sig.inputs;
-    let output = &sig.output;
+    let _inputs = &sig.inputs;
+    let _output = &sig.output;
     let generics = &sig.generics;
 
     // Generate wrapper function
@@ -263,7 +263,7 @@ pub fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// 这是一个辅助函数，应该被从依赖注入容器中获取实际执行器的代码替换。
 #[doc(hidden)]
-pub fn get_transactional_executor() -> crate::transactional::TransactionalExecutor
+pub(crate) fn get_transactional_executor() -> crate::transactional::TransactionalExecutor
 {
     // This is a placeholder - actual implementation would get the executor
     // from a dependency injection container or global context
@@ -282,7 +282,7 @@ mod tests {
     #[test]
     fn test_parse_transactional_attrs_empty() {
         let input = quote! {};
-        let attrs: TransactionalAttrs = parse_macro_input::parse(input.into()).unwrap();
+        let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert!(attrs.isolation.is_none());
         assert!(attrs.timeout.is_none());
         assert!(attrs.propagation.is_none());
@@ -293,7 +293,7 @@ mod tests {
     #[test]
     fn test_parse_transactional_attrs_isolation() {
         let input = quote! { isolation = ReadCommitted };
-        let attrs: TransactionalAttrs = parse_macro_input::parse(input.into()).unwrap();
+        let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert_eq!(attrs.isolation.unwrap().to_string(), "ReadCommitted");
     }
 
@@ -306,7 +306,7 @@ mod tests {
             read_only = true,
             max_retries = 5
         };
-        let attrs: TransactionalAttrs = parse_macro_input::parse(input.into()).unwrap();
+        let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert_eq!(attrs.isolation.unwrap().to_string(), "Serializable");
         assert_eq!(attrs.timeout.unwrap().base10_parse::<u64>().unwrap(), 60);
         assert_eq!(attrs.propagation.unwrap().to_string(), "RequiresNew");
@@ -317,7 +317,7 @@ mod tests {
     #[test]
     fn test_parse_transactional_attrs_read_only_flag() {
         let input = quote! { read_only };
-        let attrs: TransactionalAttrs = parse_macro_input::parse(input.into()).unwrap();
+        let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert_eq!(attrs.read_only.unwrap(), true);
     }
 }

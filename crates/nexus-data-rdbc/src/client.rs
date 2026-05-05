@@ -3,111 +3,105 @@
 //!
 //! # Overview / 概述
 //!
-//! High-level database client for executing queries.
-//! 用于执行查询的高级数据库客户端。
+//! High-level database client for executing queries with real sqlx backend.
+//! 用于执行查询的高级数据库客户端，基于 sqlx 真实后端。
 
-use crate::{Error, Result};
-use std::sync::Arc;
+use crate::error::{Error, Result};
+use crate::row::Row;
 
-/// Database client
-/// 数据库客户端
+/// Database client trait
+/// 数据库客户端 trait
 ///
-/// High-level client for database operations.
-/// 用于数据库操作的高级客户端。
+/// Abstracts over different database backends (Postgres, MySQL, SQLite).
+/// 抽象不同数据库后端（Postgres, MySQL, SQLite）。
+#[async_trait::async_trait]
 pub trait DatabaseClient: Send + Sync {
-    /// Execute a query and return row count (placeholder - returns count for now)
-    /// 执行查询并返回行数（占位符 - 现在返回计数）
-    fn query(
-        &self,
-        sql: &str,
-        params: &[&dyn ToSql],
-    ) -> impl std::future::Future<Output = Result<u64>> + Send;
+    /// Execute a query and return all rows
+    /// 执行查询并返回所有行
+    async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>>;
 
-    /// Execute a query and return the first row count (placeholder - returns count for now)
-    /// 执行查询并返回第一行计数（占位符 - 现在返回计数）
-    fn query_one(
-        &self,
-        sql: &str,
-        params: &[&dyn ToSql],
-    ) -> impl std::future::Future<Output = Result<u64>> + Send;
+    /// Execute a query and return the first row
+    /// 执行查询并返回第一行
+    async fn fetch_one(&self, sql: &str) -> Result<Option<Row>>;
 
-    /// Execute a command (INSERT, UPDATE, DELETE)
-    /// 执行命令 (INSERT, UPDATE, DELETE)
-    fn execute(
-        &self,
-        sql: &str,
-        params: &[&dyn ToSql],
-    ) -> impl std::future::Future<Output = Result<u64>> + Send;
+    /// Execute a command (INSERT, UPDATE, DELETE) and return affected rows
+    /// 执行命令（INSERT, UPDATE, DELETE）并返回受影响行数
+    async fn execute_cmd(&self, sql: &str) -> Result<u64>;
 
     /// Begin a transaction
     /// 开始事务
-    fn begin_transaction(
-        &self,
-    ) -> impl std::future::Future<Output = Result<crate::Transaction>> + Send;
+    async fn begin_transaction(&self) -> Result<crate::Transaction>;
 
     /// Ping the database
     /// Ping 数据库
-    fn ping(&self) -> impl std::future::Future<Output = Result<()>> + Send;
+    async fn ping(&self) -> Result<()>;
 
     /// Close the client
     /// 关闭客户端
-    fn close(&self) -> impl std::future::Future<Output = Result<()>> + Send;
-}
-
-/// SQLx-based pool client
-/// 基于 SQLx 的连接池客户端
-pub struct SqlxPoolClient {
-    /// Inner SQLx pool
-    /// 内部 SQLx 连接池
-    inner: sqlx::Pool<sqlx::Postgres>,
-}
-
-impl SqlxPoolClient {
-    /// Create a new pool client
-    /// 创建新的连接池客户端
-    pub async fn new(database_url: &str) -> Result<Self> {
-        let pool = sqlx::postgres::PgPoolOptions::new()
-            .connect(database_url)
-            .await
-            .map_err(|e| Error::connection(e.to_string()))?;
-
-        Ok(Self { inner: pool })
-    }
-
-    /// Get the underlying SQLx pool
-    /// 获取底层 SQLx 连接池
-    pub fn pool(&self) -> &sqlx::Pool<sqlx::Postgres> {
-        &self.inner
-    }
+    async fn close(&self) -> Result<()>;
 }
 
 /// Trait for SQL parameter conversion
+/// SQL 参数转换 trait
 pub trait ToSql: Send + Sync {
-    /// Convert to SQL value
+    /// Convert to SQL literal
     fn to_sql(&self) -> String;
 }
 
 impl ToSql for i32 {
-    fn to_sql(&self) -> String {
-        self.to_string()
-    }
+    fn to_sql(&self) -> String { self.to_string() }
 }
-
 impl ToSql for i64 {
-    fn to_sql(&self) -> String {
-        self.to_string()
-    }
+    fn to_sql(&self) -> String { self.to_string() }
 }
-
+impl ToSql for u32 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for u64 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for f64 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
 impl ToSql for &str {
     fn to_sql(&self) -> String {
-        format!("'{}'", self.replace("'", "''"))
+        format!("'{}'", self.replace('\'', "''"))
+    }
+}
+impl ToSql for String {
+    fn to_sql(&self) -> String {
+        format!("'{}'", self.replace('\'', "''"))
+    }
+}
+impl ToSql for bool {
+    fn to_sql(&self) -> String {
+        if *self { "TRUE".to_string() } else { "FALSE".to_string() }
     }
 }
 
-impl ToSql for String {
-    fn to_sql(&self) -> String {
-        format!("'{}'", self.replace("'", "''"))
+/// No-op client for testing SQL builders without a real database
+/// 无操作客户端，用于测试 SQL 构建器无需真实数据库
+pub(crate) struct NoopClient;
+
+#[async_trait::async_trait]
+impl DatabaseClient for NoopClient {
+    async fn fetch_all(&self, _sql: &str) -> Result<Vec<Row>> {
+        Ok(Vec::new())
+    }
+    async fn fetch_one(&self, _sql: &str) -> Result<Option<Row>> {
+        Ok(None)
+    }
+    async fn execute_cmd(&self, _sql: &str) -> Result<u64> {
+        Ok(0)
+    }
+    async fn begin_transaction(&self) -> Result<crate::Transaction> {
+        Err(Error::Transaction("noop client has no transactions".into()))
+    }
+    async fn ping(&self) -> Result<()> {
+        Ok(())
+    }
+    async fn close(&self) -> Result<()> {
+        Ok(())
     }
 }
 
@@ -116,13 +110,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_to_sql_i32() {
+    fn test_to_sql_conversions() {
         assert_eq!(42i32.to_sql(), "42");
-    }
-
-    #[test]
-    fn test_to_sql_string() {
         assert_eq!("hello".to_sql(), "'hello'");
         assert_eq!("it's".to_sql(), "'it''s'");
+        assert_eq!(true.to_sql(), "TRUE");
+        assert_eq!(false.to_sql(), "FALSE");
     }
 }

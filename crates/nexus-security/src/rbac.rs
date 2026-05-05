@@ -479,8 +479,8 @@ impl RbacManager {
         user_agent: Option<String>,
     ) -> SecurityResult<bool> {
         // Check cache first
-        if self.config.enable_cache {
-            if let Some(cached) = self.get_cached_permissions(user_id).await {
+        if self.config.enable_cache
+            && let Some(cached) = self.get_cached_permissions(user_id).await {
                 let granted = cached.contains(permission);
                 self.audit_log(
                     user_id, permission, resource, granted, None, ip_address, user_agent,
@@ -488,7 +488,6 @@ impl RbacManager {
                 .await;
                 return Ok(granted);
             }
-        }
 
         // Get user's effective permissions
         let permissions = self.get_user_permissions(user_id).await?;
@@ -513,11 +512,10 @@ impl RbacManager {
 
         if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
-            if let Some(expires_at) = user_role.expires_at {
-                if Utc::now() > expires_at {
+            if let Some(expires_at) = user_role.expires_at
+                && Utc::now() > expires_at {
                     return Ok(false);
                 }
-            }
 
             // Check direct role
             if user_role.roles.contains(role) {
@@ -547,11 +545,10 @@ impl RbacManager {
 
         if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
-            if let Some(expires_at) = user_role.expires_at {
-                if Utc::now() > expires_at {
+            if let Some(expires_at) = user_role.expires_at
+                && Utc::now() > expires_at {
                     return Ok(permissions);
                 }
-            }
 
             // Add direct permissions
             permissions.extend(user_role.direct_permissions.clone());
@@ -619,11 +616,10 @@ impl RbacManager {
     /// 获取用户的缓存权限
     async fn get_cached_permissions(&self, user_id: &str) -> Option<HashSet<String>> {
         let cache = self.cache.read().await;
-        if let Some(entry) = cache.get(user_id) {
-            if entry.expires_at > Utc::now() {
+        if let Some(entry) = cache.get(user_id)
+            && entry.expires_at > Utc::now() {
                 return Some(entry.permissions.clone());
             }
-        }
         None
     }
 
@@ -666,8 +662,8 @@ impl RbacManager {
         ip_address: Option<String>,
         user_agent: Option<String>,
     ) {
-        if self.config.enable_audit {
-            if let Some(logger) = &self.audit_logger {
+        if self.config.enable_audit
+            && let Some(logger) = &self.audit_logger {
                 let entry = AuditLog {
                     timestamp: Utc::now(),
                     user_id: user_id.to_string(),
@@ -681,7 +677,6 @@ impl RbacManager {
 
                 let _ = logger.log(entry).await;
             }
-        }
     }
 
     /// Get all roles for a user
@@ -691,11 +686,10 @@ impl RbacManager {
 
         if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
-            if let Some(expires_at) = user_role.expires_at {
-                if Utc::now() > expires_at {
+            if let Some(expires_at) = user_role.expires_at
+                && Utc::now() > expires_at {
                     return Ok(HashSet::new());
                 }
-            }
             return Ok(user_role.roles.clone());
         }
 

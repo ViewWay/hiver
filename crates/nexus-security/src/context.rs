@@ -10,8 +10,8 @@ use std::sync::Arc;
 /// Holds the current authentication and security information.
 /// 保存当前认证和安全信息。
 ///
-/// Equivalent to Spring's SecurityContext.
-/// 等价于Spring的SecurityContext。
+/// Equivalent to Spring's `SecurityContext`.
+/// `等价于Spring的SecurityContext`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -61,8 +61,7 @@ impl SecurityContext {
             .read()
             .await
             .as_ref()
-            .map(|a| a.authenticated)
-            .unwrap_or(false)
+            .is_some_and(|a| a.authenticated)
     }
 
     /// Get current username
@@ -82,8 +81,7 @@ impl SecurityContext {
             .read()
             .await
             .as_ref()
-            .map(|a| a.has_authority(authority))
-            .unwrap_or(false)
+            .is_some_and(|a| a.has_authority(authority))
     }
 
     /// Check if user has role
@@ -93,15 +91,14 @@ impl SecurityContext {
             .read()
             .await
             .as_ref()
-            .map(|a| a.has_role(role))
-            .unwrap_or(false)
+            .is_some_and(|a| a.has_role(role))
     }
 }
 
 /// Global security context
 /// 全局安全上下文
-static GLOBAL_CONTEXT: once_cell::sync::Lazy<SecurityContext> =
-    once_cell::sync::Lazy::new(SecurityContext::new);
+static GLOBAL_CONTEXT: std::sync::LazyLock<SecurityContext> =
+    std::sync::LazyLock::new(SecurityContext::new);
 
 /// Get global security context
 /// 获取全局安全上下文

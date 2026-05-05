@@ -12,12 +12,12 @@ use super::{error::Result, request::Request, response::Response};
 use std::future::Future;
 
 /// HTTP Service trait
-/// HTTP服务trait
+/// `HTTP服务trait`
 ///
 /// This trait is implemented by types that can handle HTTP requests.
 /// Functions that handle requests implement this trait via the framework.
 ///
-/// 此trait由可以处理HTTP请求的类型实现。
+/// `此trait由可以处理HTTP请求的类型实现`。
 /// 处理请求的函数通过框架实现此trait。
 pub trait HttpService: Send + Sync {
     /// Handle the incoming request and return a response

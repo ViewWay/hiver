@@ -7,7 +7,6 @@
 //! 本模块提供 Model trait 和相关的 ORM 操作元数据。
 
 use crate::{Error, Result};
-use std::collections::HashMap;
 
 /// Column type
 /// 列类型
@@ -15,12 +14,28 @@ use std::collections::HashMap;
 pub enum ColumnType {
     /// Boolean type
     Bool,
-    /// Integer types
-    I8, I16, I32, I64, I128,
-    /// Unsigned integer types
-    U8, U16, U32, U64,
-    /// Float types
-    F32, F64,
+    /// 8-bit signed integer
+    I8,
+    /// 16-bit signed integer
+    I16,
+    /// 32-bit signed integer
+    I32,
+    /// 64-bit signed integer
+    I64,
+    /// 128-bit signed integer
+    I128,
+    /// 8-bit unsigned integer
+    U8,
+    /// 16-bit unsigned integer
+    U16,
+    /// 32-bit unsigned integer
+    U32,
+    /// 64-bit unsigned integer
+    U64,
+    /// 32-bit float
+    F32,
+    /// 64-bit float
+    F64,
     /// String type
     String,
     /// Text type (long string)
@@ -29,8 +44,12 @@ pub enum ColumnType {
     Bytes,
     /// UUID type
     Uuid,
-    /// Date/Time types
-    Date, Time, Timestamp,
+    /// Date type
+    Date,
+    /// Time type
+    Time,
+    /// Timestamp type
+    Timestamp,
     /// JSON type
     Json,
     /// Decimal type
@@ -65,24 +84,35 @@ impl ColumnType {
 /// SQL dialect
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SqlDialect {
+    /// PostgreSQL dialect
     PostgreSQL,
+    /// MySQL dialect
     MySQL,
+    /// SQLite dialect
     SQLite,
 }
 
 /// Column metadata
 #[derive(Debug, Clone)]
 pub struct Column {
+    /// Column name
     pub name: String,
+    /// Column type
     pub type_: ColumnType,
+    /// Whether this is a primary key
     pub is_primary_key: bool,
+    /// Whether this column is nullable
     pub is_nullable: bool,
+    /// Whether this column has a unique constraint
     pub is_unique: bool,
+    /// Default value expression
     pub default: Option<String>,
+    /// Maximum length for string types
     pub max_length: Option<usize>,
 }
 
 impl Column {
+    /// Create a new column definition
     pub fn new(name: impl Into<String>, type_: ColumnType) -> Self {
         Self {
             name: name.into(),
@@ -95,21 +125,25 @@ impl Column {
         }
     }
 
+    /// Mark this column as a primary key
     pub fn primary_key(mut self) -> Self {
         self.is_primary_key = true;
         self
     }
 
+    /// Mark this column as nullable
     pub fn nullable(mut self) -> Self {
         self.is_nullable = true;
         self
     }
 
+    /// Mark this column as unique
     pub fn unique(mut self) -> Self {
         self.is_unique = true;
         self
     }
 
+    /// Set the default value for this column
     pub fn with_default(mut self, default: impl Into<String>) -> Self {
         self.default = Some(default.into());
         self
@@ -119,11 +153,14 @@ impl Column {
 /// Model metadata
 #[derive(Debug, Clone)]
 pub struct ModelMeta {
+    /// Table name
     pub table_name: String,
+    /// Column definitions
     pub columns: Vec<Column>,
 }
 
 impl ModelMeta {
+    /// Create new model metadata with the given table name
     pub fn new(table_name: impl Into<String>) -> Self {
         Self {
             table_name: table_name.into(),
@@ -131,11 +168,13 @@ impl ModelMeta {
         }
     }
 
+    /// Add a column to the model metadata
     pub fn add_column(mut self, column: Column) -> Self {
         self.columns.push(column);
         self
     }
 
+    /// Get the table name
     pub fn table_name(&self) -> &str {
         &self.table_name
     }
@@ -183,8 +222,8 @@ mod tests {
 
     #[test]
     fn test_model_meta() {
-        let meta = ModelMeta::new("users")
-            .add_column(Column::new("id", ColumnType::I64).primary_key());
+        let meta =
+            ModelMeta::new("users").add_column(Column::new("id", ColumnType::I64).primary_key());
 
         assert_eq!(meta.table_name(), "users");
         assert_eq!(meta.columns.len(), 1);

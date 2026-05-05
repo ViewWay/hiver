@@ -1,8 +1,8 @@
 //! Reflection support for Container
 //! Container的反射支持
 //!
-//! This module provides dynamic bean operations using bevy_reflect.
-//! 本模块使用bevy_reflect提供动态Bean操作。
+//! This module provides dynamic bean operations using `bevy_reflect`.
+//! `本模块使用bevy_reflect提供动态Bean操作`。
 
 use super::error::{Error, Result};
 use bevy_reflect::Reflect;
@@ -33,8 +33,8 @@ pub trait ReflectBeanFactory: Send + Sync {
 }
 
 impl ReflectContainer {
-    /// Create a new ReflectContainer
-    /// 创建新的ReflectContainer
+    /// Create a new `ReflectContainer`
+    /// `创建新的ReflectContainer`
     pub fn new() -> Self {
         Self {
             factories_by_name: Arc::new(RwLock::new(HashMap::new())),

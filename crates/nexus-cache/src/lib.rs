@@ -4,12 +4,12 @@
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
 //! - `@Cacheable` - Cacheable
-//! - `@CacheEvict` - CacheEvict
-//! - `@CachePut` - CachePut
+//! - `@CacheEvict` - `CacheEvict`
+//! - `@CachePut` - `CachePut`
 //! - `@Caching` - Caching (multi-operation)
-//! - `@CacheConfig` - CacheConfig
-//! - CacheManager - CacheManager
-//! - `@EnableCaching` - EnableCaching
+//! - `@CacheConfig` - `CacheConfig`
+//! - `CacheManager` - `CacheManager`
+//! - `@EnableCaching` - `EnableCaching`
 //!
 //! # Example / 示例
 //!

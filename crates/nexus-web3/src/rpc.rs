@@ -10,7 +10,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Web3j (Web3j, HttpService, WebSocketService)
+//! - Spring Web3j (Web3j, `HttpService`, `WebSocketService`)
 //! - Web3j RPC client
 //!
 //! # Example / 示例
@@ -36,9 +36,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::chain::{Block, BlockNumber};
-use crate::tx::TxHash;
-use crate::wallet::Address;
+use crate::chain::Block;
 
 /// RPC error
 /// RPC错误
@@ -409,8 +407,8 @@ struct RpcErrorObject {
     message: Option<String>,
 }
 
-/// RPC block (from eth_getBlockByNumber)
-/// RPC区块（来自eth_getBlockByNumber）
+/// RPC block (from `eth_getBlockByNumber`)
+/// `RPC区块（来自eth_getBlockByNumber`）
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct RpcBlock {
@@ -468,8 +466,8 @@ impl From<RpcBlock> for Block {
     }
 }
 
-/// RPC transaction (from eth_getTransactionByHash)
-/// RPC交易（来自eth_getTransactionByHash）
+/// RPC transaction (from `eth_getTransactionByHash`)
+/// `RPC交易（来自eth_getTransactionByHash`）
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RpcTransaction {

@@ -56,9 +56,11 @@ pub struct TestConfig {
 /// 测试模式
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum TestMode {
     /// Unit test (no external dependencies)
     /// 单元测试（无外部依赖）
+    #[default]
     Unit,
 
     /// Integration test (some external dependencies)
@@ -70,11 +72,6 @@ pub enum TestMode {
     E2E,
 }
 
-impl Default for TestMode {
-    fn default() -> Self {
-        Self::Unit
-    }
-}
 
 /// Server configuration for tests
 /// 测试的服务器配置
@@ -228,11 +225,10 @@ impl TestConfig {
     pub fn load_from_env(&mut self) {
         // Load common test configuration from environment
         // 从环境变量加载常用测试配置
-        if let Ok(port) = std::env::var("TEST_SERVER_PORT") {
-            if let Ok(p) = port.parse::<u16>() {
+        if let Ok(port) = std::env::var("TEST_SERVER_PORT")
+            && let Ok(p) = port.parse::<u16>() {
                 self.server.port = p;
             }
-        }
 
         if let Ok(db_url) = std::env::var("TEST_DATABASE_URL") {
             self.database.url = Some(db_url);
@@ -313,12 +309,12 @@ impl Default for TestConfigHolder {
 /// 全局测试配置持有者
 pub fn global_test_config() -> &'static TestConfigHolder {
     use once_cell::sync::Lazy;
-    static CONFIG: Lazy<TestConfigHolder> = Lazy::new(TestConfigHolder::new);
+    static CONFIG: std::sync::LazyLock<TestConfigHolder> = std::sync::LazyLock::new(TestConfigHolder::new);
     &CONFIG
 }
 
-/// test_config attribute macro
-/// test_config 属性宏
+/// `test_config` attribute macro
+/// `test_config` 属性宏
 ///
 /// # Example / 示例
 ///
@@ -334,4 +330,4 @@ pub fn global_test_config() -> &'static TestConfigHolder {
 /// ```
 // Note: test_config would be a proc-macro in a full implementation
 // 注：test_config 在完整实现中将是过程宏
-pub type TestConfigFn = fn() -> TestConfig;
+pub(crate) type TestConfigFn = fn() -> TestConfig;

@@ -13,7 +13,6 @@
 
 use crate::{Page, PageRequest, Sort};
 use async_trait::async_trait;
-use std::any::Any;
 use std::fmt::Debug;
 
 /// Core repository trait
@@ -182,31 +181,4 @@ pub trait PagingAndSortingRepository<T: Send + 'static, ID: Send + Sync + 'stati
     }
 }
 
-/// Entity type ID trait
-/// 实体类型 ID trait
-///
-/// Marks a type as being usable as an entity ID.
-/// 标记类型可用作实体 ID。
-///
-/// Note: This is currently unused and kept for potential future use.
-/// 注意：此 trait 当前未使用，保留供将来可能使用。
-pub(crate) trait Identifier: Any + Send + Sync {}
 
-impl Identifier for i32 {}
-impl Identifier for i64 {}
-impl Identifier for u32 {}
-impl Identifier for u64 {}
-impl Identifier for String {}
-impl Identifier for uuid::Uuid {}
-
-/// Blanket implementation for Repository trait
-/// Repository trait 的 blanket 实现
-///
-/// This allows any type that implements Repository to be used as a repository.
-/// 这允许任何实现 Repository 的类型用作 repository。
-///
-/// # Note / 注意
-///
-/// This is a marker trait. Actual implementations should be done per-backend.
-/// 这是一个标记 trait。实际实现应按后端完成。
-pub(crate) trait Marker {}

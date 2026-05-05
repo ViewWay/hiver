@@ -3,10 +3,10 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `spring-boot-starter-oauth2-client` - OAuth2 Client
-//! - `spring-boot-starter-oauth2-resource-server` - OAuth2 Resource Server
-//! - `@EnableOAuth2Client` - Enable OAuth2 Client
-//! - `@EnableOAuth2ResourceServer` - Enable OAuth2 Resource Server
+//! - `spring-boot-starter-oauth2-client` - `OAuth2` Client
+//! - `spring-boot-starter-oauth2-resource-server` - `OAuth2` Resource Server
+//! - `@EnableOAuth2Client` - Enable `OAuth2` Client
+//! - `@EnableOAuth2ResourceServer` - Enable `OAuth2` Resource Server
 //!
 //! # Supported Flows / 支持的流程
 //!
@@ -50,8 +50,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 
-/// OAuth2 client configuration
-/// OAuth2 客户端配置
+/// `OAuth2` client configuration
+/// `OAuth2` 客户端配置
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -109,9 +109,11 @@ pub struct OAuth2Config {
 /// 令牌端点认证方法
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum TokenEndpointAuthMethod {
     /// Client secret in request body
     /// 在请求体中发送客户端密钥
+    #[default]
     ClientSecretPost,
 
     /// Basic authentication header
@@ -123,15 +125,10 @@ pub enum TokenEndpointAuthMethod {
     None,
 }
 
-impl Default for TokenEndpointAuthMethod {
-    fn default() -> Self {
-        Self::ClientSecretPost
-    }
-}
 
 impl OAuth2Config {
-    /// Create a new OAuth2 configuration
-    /// 创建新的 OAuth2 配置
+    /// Create a new `OAuth2` configuration
+    /// 创建新的 `OAuth2` 配置
     pub fn new() -> Self {
         Self {
             client_id: String::new(),
@@ -215,8 +212,8 @@ impl Default for OAuth2Config {
     }
 }
 
-/// OAuth2 access token response
-/// OAuth2 访问令牌响应
+/// `OAuth2` access token response
+/// `OAuth2` 访问令牌响应
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -281,8 +278,8 @@ impl TokenResponse {
     }
 }
 
-/// OAuth2 client
-/// OAuth2 客户端
+/// `OAuth2` client
+/// `OAuth2` 客户端
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -302,8 +299,8 @@ pub struct OAuth2Client {
 }
 
 impl OAuth2Client {
-    /// Create a new OAuth2 client
-    /// 创建新的 OAuth2 客户端
+    /// Create a new `OAuth2` client
+    /// 创建新的 `OAuth2` 客户端
     pub fn new(config: OAuth2Config) -> Self {
         Self {
             config: Arc::new(config),
@@ -513,7 +510,7 @@ pub struct OIDCDiscoveryDocument {
     /// 令牌端点
     pub token_endpoint: String,
 
-    /// UserInfo endpoint
+    /// `UserInfo` endpoint
     /// 用户信息端点
     #[serde(rename = "userinfo_endpoint")]
     pub user_info_endpoint: Option<String>,
@@ -550,8 +547,8 @@ pub struct OIDCDiscoveryDocument {
 }
 
 impl OIDCDiscoveryDocument {
-    /// Convert to OAuth2Config
-    /// 转换为 OAuth2 配置
+    /// Convert to `OAuth2Config`
+    /// 转换为 `OAuth2` 配置
     pub fn to_oauth2_config(
         &self,
         client_id: String,
@@ -647,8 +644,8 @@ impl OIDCDiscovery {
     }
 }
 
-/// UserInfo response from OIDC UserInfo endpoint
-/// 来自 OIDC UserInfo 端点的用户信息响应
+/// `UserInfo` response from OIDC `UserInfo` endpoint
+/// 来自 OIDC `UserInfo` 端点的用户信息响应
 ///
 /// # Spring Equivalent / Spring等价物
 ///

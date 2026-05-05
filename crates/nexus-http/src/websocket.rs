@@ -1,5 +1,5 @@
 //! WebSocket support
-//! WebSocket支持
+//! `WebSocket支持`
 //!
 //! # Overview / 概述
 //!
@@ -9,9 +9,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - WebSocketHandler
-//! - @EnableWebSocket
-//! - WebSocketSession
+//! - `WebSocketHandler`
+//! - @`EnableWebSocket`
+//! - `WebSocketSession`
 //!
 //! # Example / 示例
 //!
@@ -45,10 +45,10 @@ use std::fmt;
 use crate::{Body, Error, Response, StatusCode};
 
 /// WebSocket message
-/// WebSocket消息
+/// `WebSocket消息`
 ///
 /// Represents a WebSocket message that can be sent or received.
-/// 表示可以发送或接收的WebSocket消息。
+/// `表示可以发送或接收的WebSocket消息`。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Message {
     /// Text message (UTF-8 encoded)
@@ -247,10 +247,10 @@ impl CloseFrame {
 }
 
 /// WebSocket upgrade response
-/// WebSocket升级响应
+/// `WebSocket升级响应`
 ///
 /// Response sent to complete the WebSocket handshake.
-/// 发送以完成WebSocket握手的响应。
+/// `发送以完成WebSocket握手的响应`。
 #[derive(Debug, Clone)]
 pub struct WebSocketUpgrade {
     /// Accepted protocols (in order of preference)
@@ -276,7 +276,7 @@ pub struct WebSocketUpgrade {
 
 impl WebSocketUpgrade {
     /// Create a new WebSocket upgrade
-    /// 创建新的WebSocket升级
+    /// `创建新的WebSocket升级`
     pub fn new() -> Self {
         Self {
             protocols: Vec::new(),
@@ -357,7 +357,7 @@ impl From<WebSocketUpgrade> for Response {
 }
 
 /// WebSocket connection
-/// WebSocket连接
+/// `WebSocket连接`
 ///
 /// Represents an active WebSocket connection for sending/receiving messages.
 /// 表示用于发送/接收消息的活动WebSocket连接。
@@ -374,7 +374,7 @@ pub struct WebSocket {
 
 impl WebSocket {
     /// Create a new WebSocket connection
-    /// 创建新的WebSocket连接
+    /// `创建新的WebSocket连接`
     pub fn new() -> Self {
         Self {
             open: true,
@@ -415,7 +415,7 @@ impl Default for WebSocket {
 }
 
 /// WebSocket handshake error
-/// WebSocket握手错误
+/// `WebSocket握手错误`
 #[derive(Debug, Clone)]
 pub enum WebSocketError {
     /// Missing Upgrade header
@@ -427,11 +427,11 @@ pub enum WebSocketError {
     MissingConnectionHeader,
 
     /// Invalid WebSocket version
-    /// 无效的WebSocket版本
+    /// `无效的WebSocket版本`
     InvalidVersion,
 
     /// Missing WebSocket key
-    /// 缺少WebSocket密钥
+    /// `缺少WebSocket密钥`
     MissingKey,
 
     /// Protocol not supported
@@ -467,10 +467,10 @@ impl From<WebSocketError> for Error {
 }
 
 /// WebSocket configuration
-/// WebSocket配置
+/// `WebSocket配置`
 ///
 /// Configuration for WebSocket connections.
-/// WebSocket连接的配置。
+/// `WebSocket连接的配置`。
 #[derive(Debug, Clone)]
 pub struct WebSocketConfig {
     /// Maximum frame size in bytes
@@ -508,7 +508,7 @@ impl Default for WebSocketConfig {
 
 impl WebSocketConfig {
     /// Create a new WebSocket config
-    /// 创建新的WebSocket配置
+    /// `创建新的WebSocket配置`
     pub fn new() -> Self {
         Self::default()
     }

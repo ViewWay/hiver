@@ -10,8 +10,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - SseEmitter
-//! - ResponseBodyEmitter
+//! - `SseEmitter`
+//! - `ResponseBodyEmitter`
 //!
 //! # Example / 示例
 //!
@@ -250,7 +250,7 @@ impl Sse {
         let body = self
             .events
             .iter()
-            .map(|e| e.to_sse_format())
+            .map(Event::to_sse_format)
             .collect::<String>();
 
         builder.body(Body::from(body)).unwrap()

@@ -96,7 +96,7 @@ impl MessageConverter for JsonMessageConverter {
 /// }
 /// ```
 #[derive(Clone, Default)]
-pub struct StringMessageConverter {
+pub(crate) struct StringMessageConverter {
     /// Content type
     /// 内容类型
     content_type: String,
@@ -109,7 +109,7 @@ pub struct StringMessageConverter {
 impl StringMessageConverter {
     /// Create new string converter
     /// 创建新的字符串转换器
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             content_type: "text/plain".to_string(),
             content_encoding: Some("utf-8".to_string()),
@@ -118,14 +118,14 @@ impl StringMessageConverter {
 
     /// Create with custom content type
     /// 使用自定义内容类型创建
-    pub fn with_content_type(mut self, content_type: impl Into<String>) -> Self {
+    pub(crate) fn with_content_type(mut self, content_type: impl Into<String>) -> Self {
         self.content_type = content_type.into();
         self
     }
 
     /// Set content encoding
     /// 设置内容编码
-    pub fn with_content_encoding(mut self, encoding: impl Into<String>) -> Self {
+    pub(crate) fn with_content_encoding(mut self, encoding: impl Into<String>) -> Self {
         self.content_encoding = Some(encoding.into());
         self
     }
@@ -162,7 +162,7 @@ impl MessageConverter for StringMessageConverter {
 /// Simple pass-through converter for byte arrays.
 /// 字节数组的简单透传转换器。
 #[derive(Clone, Default)]
-pub struct BytesMessageConverter;
+pub(crate) struct BytesMessageConverter;
 
 impl MessageConverter for BytesMessageConverter {
     fn to_message<T: serde::Serialize>(&self, value: &T) -> Result<Message, String> {

@@ -10,8 +10,8 @@ pub type MultipartResult<T> = Result<T, MultipartError>;
 /// Multipart error
 /// Multipart 错误
 ///
-/// Equivalent to Spring's MultipartException.
-/// 等价于Spring的MultipartException。
+/// Equivalent to Spring's `MultipartException`.
+/// `等价于Spring的MultipartException`。
 #[derive(Debug)]
 pub enum MultipartError {
     /// Invalid multipart request

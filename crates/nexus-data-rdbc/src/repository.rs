@@ -6,10 +6,9 @@
 //! Repository implementation using SQLx.
 //! 使用 SQLx 的 Repository 实现。
 
-use crate::{Error, Result, Row};
-use nexus_data_commons::{CrudRepository, PagingAndSortingRepository, Page, PageRequest, Sort};
+#![allow(dead_code)] // build_*_query methods are scaffolding for future query generation
+
 use std::marker::PhantomData;
-use async_trait::async_trait;
 
 /// R2DBC repository trait
 /// R2DBC Repository trait
@@ -128,8 +127,11 @@ where
 }
 
 /// Simple mock Row implementation
+/// 简单的模拟 Row 实现
 #[derive(Debug, Clone)]
 pub struct MockRow {
+    /// Column data as key-value pairs
+    /// 列数据键值对
     pub data: std::collections::HashMap<String, String>,
 }
 

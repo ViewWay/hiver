@@ -101,7 +101,7 @@ where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
     fn from_request(req: &Request) -> ExtractorFuture<Self> {
-        let body_bytes = req.body().as_bytes().map(|b| b.to_vec());
+        let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
         let content_type = req.header("content-type").unwrap_or("").to_string();
 
         Box::pin(async move {
@@ -171,13 +171,11 @@ pub fn url_decode(input: &str) -> String {
             result.push(' ');
         } else if c == '%' {
             let hex: String = chars.by_ref().take(2).collect();
-            if hex.len() == 2 {
-                if let Ok(byte) = u8::from_str_radix(&hex, 16) {
-                    if let Some(decoded) = char::from_u32(byte as u32) {
+            if hex.len() == 2
+                && let Ok(byte) = u8::from_str_radix(&hex, 16)
+                    && let Some(decoded) = char::from_u32(byte as u32) {
                         result.push(decoded);
                     }
-                }
-            }
         } else {
             result.push(c);
         }

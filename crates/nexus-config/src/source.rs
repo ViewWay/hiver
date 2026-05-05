@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `PropertySource` - Spring PropertySource
+//! - `PropertySource` - Spring `PropertySource`
 //! - `PropertySource.Builder` - Spring PropertySource.Builder
 //! - `PropertySource.Order` - Property source ordering/priority
 
@@ -15,8 +15,8 @@ use std::path::PathBuf;
 /// Property source type
 /// 属性源类型
 ///
-/// Equivalent to Spring's PropertySource types.
-/// 等价于Spring的PropertySource类型。
+/// Equivalent to Spring's `PropertySource` types.
+/// `等价于Spring的PropertySource类型`。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PropertySourceType {
     /// Command line arguments

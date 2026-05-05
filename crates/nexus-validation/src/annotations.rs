@@ -53,7 +53,7 @@ use std::fmt;
 /// # Spring Equivalent / Spring等价物
 ///
 /// The following Java code shows the equivalent Spring validation groups:
-/// 以下Java代码显示了等效的Spring验证分组:
+/// `以下Java代码显示了等效的Spring验证分组`:
 ///
 /// ```java
 /// public interface CreateGroup {}
@@ -234,22 +234,20 @@ impl ValidationRule {
             },
             ValidationRule::Size { min, max } => {
                 let len = value.len();
-                if let Some(min_val) = min {
-                    if len < *min_val {
+                if let Some(min_val) = min
+                    && len < *min_val {
                         return Err(ValidationError::new(
                             field,
                             format!("Size must be at least {}", min_val),
                         ));
                     }
-                }
-                if let Some(max_val) = max {
-                    if len > *max_val {
+                if let Some(max_val) = max
+                    && len > *max_val {
                         return Err(ValidationError::new(
                             field,
                             format!("Size must be at most {}", max_val),
                         ));
                     }
-                }
             },
             ValidationRule::Min(min) => {
                 if let Ok(num) = value.parse::<i64>() {
@@ -367,44 +365,40 @@ impl ValidationRule {
                     if num >= 0 {
                         return Err(ValidationError::new(field, "Must be negative"));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if num >= 0.0 {
+                } else if let Ok(num) = value.parse::<f64>()
+                    && num >= 0.0 {
                         return Err(ValidationError::new(field, "Must be negative"));
                     }
-                }
             },
             ValidationRule::Positive => {
                 if let Ok(num) = value.parse::<i64>() {
                     if num <= 0 {
                         return Err(ValidationError::new(field, "Must be positive"));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if num <= 0.0 {
+                } else if let Ok(num) = value.parse::<f64>()
+                    && num <= 0.0 {
                         return Err(ValidationError::new(field, "Must be positive"));
                     }
-                }
             },
             ValidationRule::NegativeOrZero => {
                 if let Ok(num) = value.parse::<i64>() {
                     if num > 0 {
                         return Err(ValidationError::new(field, "Must be negative or zero"));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if num > 0.0 {
+                } else if let Ok(num) = value.parse::<f64>()
+                    && num > 0.0 {
                         return Err(ValidationError::new(field, "Must be negative or zero"));
                     }
-                }
             },
             ValidationRule::PositiveOrZero => {
                 if let Ok(num) = value.parse::<i64>() {
                     if num < 0 {
                         return Err(ValidationError::new(field, "Must be positive or zero"));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if num < 0.0 {
+                } else if let Ok(num) = value.parse::<f64>()
+                    && num < 0.0 {
                         return Err(ValidationError::new(field, "Must be positive or zero"));
                     }
-                }
             },
             ValidationRule::Past => {
                 if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
@@ -531,7 +525,7 @@ fn is_valid_credit_card(number: &str) -> bool {
         double = !double;
     }
 
-    sum % 10 == 0
+    sum.is_multiple_of(10)
 }
 
 // ============================================================================
@@ -539,7 +533,7 @@ fn is_valid_credit_card(number: &str) -> bool {
 // 注解标记结构体 - 用作属性标记
 // ============================================================================
 
-/// NotNull annotation marker / NotNull注解标记
+/// `NotNull` annotation marker / `NotNull注解标记`
 ///
 /// Validates that a value is not null/empty.
 /// 验证值不为null/空。
@@ -564,13 +558,13 @@ fn is_valid_credit_card(number: &str) -> bool {
 /// ```
 pub struct NotNull;
 
-/// NotEmpty annotation marker / NotEmpty注解标记
+/// `NotEmpty` annotation marker / `NotEmpty注解标记`
 ///
 /// Validates that a string, collection, or array is not empty.
 /// 验证字符串、集合或数组不为空。
 pub struct NotEmpty;
 
-/// NotBlank annotation marker / NotBlank注解标记
+/// `NotBlank` annotation marker / `NotBlank注解标记`
 ///
 /// Validates that a string is not empty and contains non-whitespace characters.
 /// 验证字符串不为空且包含非空白字符。
@@ -609,13 +603,13 @@ pub struct Min(pub i64);
 /// 验证数字最多为给定的最大值。
 pub struct Max(pub i64);
 
-/// DecimalMin annotation marker / DecimalMin注解标记
+/// `DecimalMin` annotation marker / `DecimalMin注解标记`
 ///
 /// Validates that a decimal number is at least the given minimum.
 /// 验证小数至少为给定的最小值。
 pub struct DecimalMin(pub f64);
 
-/// DecimalMax annotation marker / DecimalMax注解标记
+/// `DecimalMax` annotation marker / `DecimalMax注解标记`
 ///
 /// Validates that a decimal number is at most the given maximum.
 /// 验证小数最多为给定的最大值。
@@ -675,13 +669,13 @@ pub struct Negative;
 /// 验证数字为正数。
 pub struct Positive;
 
-/// NegativeOrZero annotation marker / NegativeOrZero注解标记
+/// `NegativeOrZero` annotation marker / `NegativeOrZero注解标记`
 ///
 /// Validates that a number is negative or zero.
 /// 验证数字为负数或零。
 pub struct NegativeOrZero;
 
-/// PositiveOrZero annotation marker / PositiveOrZero注解标记
+/// `PositiveOrZero` annotation marker / `PositiveOrZero注解标记`
 ///
 /// Validates that a number is positive or zero.
 /// 验证数字为正数或零。
@@ -699,31 +693,31 @@ pub struct Past;
 /// 验证日期在未来。
 pub struct Future;
 
-/// PastOrPresent annotation marker / PastOrPresent注解标记
+/// `PastOrPresent` annotation marker / `PastOrPresent注解标记`
 ///
 /// Validates that a date is in the past or present.
 /// 验证日期在过去或现在。
 pub struct PastOrPresent;
 
-/// FutureOrPresent annotation marker / FutureOrPresent注解标记
+/// `FutureOrPresent` annotation marker / `FutureOrPresent注解标记`
 ///
 /// Validates that a date is in the future or present.
 /// 验证日期在未来或现在。
 pub struct FutureOrPresent;
 
-/// AssertTrue annotation marker / AssertTrue注解标记
+/// `AssertTrue` annotation marker / `AssertTrue注解标记`
 ///
 /// Validates that a boolean is true.
 /// 验证布尔值为true。
 pub struct AssertTrue;
 
-/// AssertFalse annotation marker / AssertFalse注解标记
+/// `AssertFalse` annotation marker / `AssertFalse注解标记`
 ///
 /// Validates that a boolean is false.
 /// 验证布尔值为false。
 pub struct AssertFalse;
 
-/// CreditCardNumber annotation marker / CreditCardNumber注解标记
+/// `CreditCardNumber` annotation marker / `CreditCardNumber注解标记`
 ///
 /// Validates that a string is a valid credit card number.
 /// 验证字符串是有效的信用卡号。

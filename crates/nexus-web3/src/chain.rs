@@ -9,7 +9,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Web3j (ChainId, BlockchainService)
+//! - Spring Web3j (`ChainId`, `BlockchainService`)
 //! - Web3j Chain Id and Block management
 //!
 //! # Example / 示例
@@ -102,8 +102,8 @@ pub enum ChainId {
     /// 以太坊主网
     Ethereum,
 
-    /// Polygon PoS Chain
-    /// Polygon PoS链
+    /// Polygon `PoS` Chain
+    /// Polygon `PoS链`
     Polygon,
 
     /// Binance Smart Chain
@@ -275,7 +275,7 @@ pub struct ChainConfig {
     pub rpc_urls: Vec<String>,
 
     /// WebSocket endpoints
-    /// WebSocket端点
+    /// `WebSocket端点`
     pub ws_urls: Option<Vec<String>>,
 
     /// Explorer URL
@@ -348,7 +348,7 @@ impl ChainConfig {
     }
 
     /// Set WebSocket URLs
-    /// 设置WebSocket URL
+    /// `设置WebSocket` URL
     pub fn with_ws_urls(mut self, urls: Vec<String>) -> Self {
         self.ws_urls = Some(urls);
         self

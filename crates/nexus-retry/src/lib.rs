@@ -45,6 +45,9 @@
 
 pub use nexus_retry_macros::{retry, recover};
 
+#[cfg(test)]
+mod tests;
+
 mod template;
 
 pub use template::{

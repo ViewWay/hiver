@@ -32,6 +32,9 @@
 #![warn(unreachable_pub)]
 #![allow(dead_code)]
 
+#[cfg(test)]
+mod tests;
+
 mod config;
 mod connection;
 mod publisher;

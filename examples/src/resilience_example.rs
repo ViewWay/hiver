@@ -5,8 +5,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `CircuitBreaker` → Resilience4j CircuitBreaker
-//! - `RateLimiter` → Resilience4j RateLimiter
+//! - `CircuitBreaker` → Resilience4j `CircuitBreaker`
+//! - `RateLimiter` → Resilience4j `RateLimiter`
 //! - `RetryPolicy` → Resilience4j Retry
 //! - `ServiceDiscovery` → Spring Cloud Service Discovery
 
@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// Demonstrates circuit breaker pattern for fault tolerance.
 /// 演示用于容错的熔断器模式。
 ///
-/// Equivalent to Resilience4j's CircuitBreaker.
+/// Equivalent to Resilience4j's `CircuitBreaker`.
 /// 等价于 Resilience4j 的熔断器。
 async fn circuit_breaker_example() {
     println!("  Creating circuit breaker:");

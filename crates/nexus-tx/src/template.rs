@@ -9,8 +9,8 @@ use std::sync::Arc;
 /// Transaction template
 /// 事务模板
 ///
-/// Equivalent to Spring's TransactionTemplate.
-/// 等价于Spring的TransactionTemplate。
+/// Equivalent to Spring's `TransactionTemplate`.
+/// `等价于Spring的TransactionTemplate`。
 ///
 /// # Example / 示例
 ///
@@ -177,15 +177,15 @@ impl TransactionTemplate {
         E: Into<TransactionError> + Send + 'static,
         TransactionError: Into<E>,
     {
-        self.execute(f).await.map_err(|e| e.into())
+        self.execute(f).await.map_err(std::convert::Into::into)
     }
 }
 
 /// Callback for transaction execution
 /// 事务执行的回调
 ///
-/// Equivalent to Spring's TransactionCallback.
-/// 等价于Spring的TransactionCallback。
+/// Equivalent to Spring's `TransactionCallback`.
+/// `等价于Spring的TransactionCallback`。
 pub(crate) trait TransactionCallback<T>: Send {
     /// Execute within transaction
     /// 在事务内执行
@@ -195,8 +195,8 @@ pub(crate) trait TransactionCallback<T>: Send {
 /// Callback without return value
 /// 无返回值的回调
 ///
-/// Equivalent to Spring's TransactionCallbackWithoutResult.
-/// 等价于Spring的TransactionCallbackWithoutResult。
+/// Equivalent to Spring's `TransactionCallbackWithoutResult`.
+/// `等价于Spring的TransactionCallbackWithoutResult`。
 pub(crate) trait TransactionCallbackWithoutResult: Send {
     /// Execute within transaction
     /// 在事务内执行

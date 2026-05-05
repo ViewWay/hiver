@@ -2,8 +2,7 @@
 //! 消息转换模式
 
 use crate::error::{IntegrationError, Result};
-use crate::message::{GenericMessage, Message};
-use async_trait::async_trait;
+use crate::message::Message;
 use std::sync::Arc;
 
 /// Transformer for converting messages

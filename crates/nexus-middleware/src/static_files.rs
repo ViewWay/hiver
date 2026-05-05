@@ -170,7 +170,7 @@ impl StaticFiles {
             .map_err(|e| Error::internal(format!("Failed to read directory: {}", e)))?;
 
         let mut html = String::from(
-            r#"<!DOCTYPE html>
+            r"<!DOCTYPE html>
 <html>
 <head>
     <title>Directory Listing</title>
@@ -182,18 +182,18 @@ impl StaticFiles {
     </style>
 </head>
 <body>
-    <h1>Index of "#,
+    <h1>Index of ",
         );
         html.push_str(request_path);
         html.push_str(
-            r#"</h1>
+            r"</h1>
     <hr>
     <ul>
-"#,
+",
         );
 
         // Parent directory link
-        if request_path != &self.uri_prefix {
+        if request_path != self.uri_prefix {
             html.push_str(
                 r#"        <li><a class="parent" href="../">../</a></li>
 "#,
@@ -207,8 +207,7 @@ impl StaticFiles {
             let name = entry.file_name().to_string_lossy().to_string();
             let is_dir = entry
                 .file_type()
-                .map(|ft| ft.is_dir())
-                .unwrap_or(false);
+                .is_ok_and(|ft| ft.is_dir());
 
             let suffix = if is_dir { "/" } else { "" };
             html.push_str(&format!(
@@ -219,11 +218,11 @@ impl StaticFiles {
         }
 
         html.push_str(
-            r#"    </ul>
+            r"    </ul>
     <hr>
 </body>
 </html>
-"#,
+",
         );
 
         Ok(Response::builder()
@@ -272,14 +271,13 @@ where
             // Check for path traversal attacks
             if file_path
                 .canonicalize()
-                .map(|p| {
+                .is_ok_and(|p| {
                     !p.starts_with(
-                        &base_path
+                        base_path
                             .canonicalize()
                             .unwrap_or_else(|_| base_path.clone()),
                     )
                 })
-                .unwrap_or(false)
             {
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
@@ -290,8 +288,8 @@ where
             // Check if file exists
             if !file_path.exists() {
                 // SPA mode: serve index.html for non-existent files
-                if spa_mode {
-                    if let Some(ref index) = index_file {
+                if spa_mode
+                    && let Some(ref index) = index_file {
                         file_path = base_path.clone();
                         file_path.push(index);
                         if file_path.exists() {
@@ -307,7 +305,6 @@ where
                             .serve_file(&file_path);
                         }
                     }
-                }
                 return next.call(req, state).await;
             }
 

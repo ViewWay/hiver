@@ -3,9 +3,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - UriComponentsBuilder
-//! - ServletUriComponentsBuilder
-//! - MvcUriComponentsBuilder
+//! - `UriComponentsBuilder`
+//! - `ServletUriComponentsBuilder`
+//! - `MvcUriComponentsBuilder`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -217,7 +217,7 @@ impl UriBuilder {
                         builder.path = path
                             .split('/')
                             .filter(|s: &&str| !s.is_empty())
-                            .map(|s| s.to_string())
+                            .map(std::string::ToString::to_string)
                             .collect();
                     }
                     for pair in q.split('&') {
@@ -230,7 +230,7 @@ impl UriBuilder {
                     builder.path = to_parse
                         .split('/')
                         .filter(|s: &&str| !s.is_empty())
-                        .map(|s| s.to_string())
+                        .map(std::string::ToString::to_string)
                         .collect();
                 }
             } else {
@@ -240,7 +240,7 @@ impl UriBuilder {
                         builder.path = path
                             .split('/')
                             .filter(|s: &&str| !s.is_empty())
-                            .map(|s| s.to_string())
+                            .map(std::string::ToString::to_string)
                             .collect();
                     }
                     for pair in q.split('&') {
@@ -253,7 +253,7 @@ impl UriBuilder {
                     builder.path = remaining
                         .split('/')
                         .filter(|s: &&str| !s.is_empty())
-                        .map(|s| s.to_string())
+                        .map(std::string::ToString::to_string)
                         .collect();
                 }
             }
@@ -262,7 +262,7 @@ impl UriBuilder {
             builder.path = uri
                 .split('/')
                 .filter(|s: &&str| !s.is_empty())
-                .map(|s| s.to_string())
+                .map(std::string::ToString::to_string)
                 .collect();
         }
 
@@ -304,7 +304,7 @@ impl UriBuilder {
         self.path = path_str
             .split('/')
             .filter(|s| !s.is_empty())
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .collect();
         self
     }
@@ -473,8 +473,8 @@ impl UriBuilder {
     /// Replace all path variables at once
     /// 一次性替换所有路径变量
     ///
-    /// This is a convenience method for setting all path variables from a HashMap.
-    /// 这是用于从HashMap一次性设置所有路径变量的便捷方法。
+    /// This is a convenience method for setting all path variables from a `HashMap`.
+    /// `这是用于从HashMap一次性设置所有路径变量的便捷方法`。
     pub fn replace_path_vars(mut self, vars: HashMap<String, String>) -> Self {
         self.path_vars = vars;
         self

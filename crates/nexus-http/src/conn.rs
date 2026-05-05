@@ -8,7 +8,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - ServerConnection, client connection management
+//! - `ServerConnection`, client connection management
 //!
 //! # Features / 功能
 //!
@@ -120,8 +120,8 @@ impl Connection {
         Self::with_remote_addr_opt(Some(addr.into()))
     }
 
-    /// Create a connection with a SocketAddr
-    /// 创建带SocketAddr的连接
+    /// Create a connection with a `SocketAddr`
+    /// `创建带SocketAddr的连接`
     ///
     /// # Example / 示例
     ///
@@ -146,7 +146,7 @@ impl Connection {
             state: AtomicBool::new(false),
             last_activity: now,
             created_at: now,
-            max_idle: Duration::from_secs(60), // Default 60 second keep-alive
+            max_idle: Duration::from_mins(1), // Default 60 second keep-alive
         }
     }
 

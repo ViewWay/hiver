@@ -1,15 +1,15 @@
-//! OpenAPI specification builder
-//! OpenAPI规范构建器
+//! `OpenAPI` specification builder
+//! `OpenAPI规范构建器`
 
 use crate::{Components, InfoConfig, OpenApiConfig, PathItem, TagConfig};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// OpenAPI specification
-/// OpenAPI规范
+/// `OpenAPI` specification
+/// `OpenAPI规范`
 ///
-/// The root document of the OpenAPI specification.
-/// OpenAPI规范的根文档。
+/// The root document of the `OpenAPI` specification.
+/// `OpenAPI规范的根文档`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -20,8 +20,8 @@ use std::collections::HashMap;
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OpenApi {
-    /// OpenAPI version
-    /// OpenAPI版本
+    /// `OpenAPI` version
+    /// `OpenAPI版本`
     pub openapi: String,
 
     /// Info
@@ -59,8 +59,8 @@ pub struct OpenApi {
 }
 
 impl OpenApi {
-    /// Create a new OpenAPI specification
-    /// 创建新的OpenAPI规范
+    /// Create a new `OpenAPI` specification
+    /// `创建新的OpenAPI规范`
     pub fn new(config: OpenApiConfig) -> Self {
         Self {
             openapi: crate::OPENAPI_VERSION.to_string(),
@@ -147,11 +147,11 @@ impl Default for OpenApi {
     }
 }
 
-/// OpenAPI builder
-/// OpenAPI构建器
+/// `OpenAPI` builder
+/// `OpenAPI构建器`
 ///
-/// Helper for building OpenAPI specifications.
-/// 用于构建OpenAPI规范的助手。
+/// Helper for building `OpenAPI` specifications.
+/// `用于构建OpenAPI规范的助手`。
 #[derive(Debug, Clone)]
 pub struct OpenApiBuilder {
     config: OpenApiConfig,
@@ -212,8 +212,8 @@ impl OpenApiBuilder {
         self
     }
 
-    /// Build the OpenAPI specification
-    /// 构建OpenAPI规范
+    /// Build the `OpenAPI` specification
+    /// `构建OpenAPI规范`
     pub fn build(self) -> OpenApi {
         let mut openapi = OpenApi::new(self.config);
         

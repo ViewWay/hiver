@@ -132,8 +132,8 @@ impl WebServerAutoConfiguration {
         }
     }
 
-    /// 从 ApplicationContext 读取配置
-    /// Create configuration from ApplicationContext
+    /// 从 `ApplicationContext` 读取配置
+    /// Create configuration from `ApplicationContext`
     ///
     /// # 参数 / Parameters
     ///
@@ -496,8 +496,8 @@ impl MiddlewareAutoConfiguration {
         }
     }
 
-    /// 从 ApplicationContext 读取配置
-    /// Create from ApplicationContext
+    /// 从 `ApplicationContext` 读取配置
+    /// Create from `ApplicationContext`
     pub fn from_config(ctx: &ApplicationContext) -> Self {
         Self {
             cors_enabled: ctx

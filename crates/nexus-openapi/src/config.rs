@@ -1,14 +1,14 @@
-//! OpenAPI configuration
-//! OpenAPI配置
+//! `OpenAPI` configuration
+//! `OpenAPI配置`
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// OpenAPI configuration
-/// OpenAPI配置
+/// `OpenAPI` configuration
+/// `OpenAPI配置`
 ///
-/// Equivalent to SpringDoc's OpenAPIDefinition properties.
-/// 等价于SpringDoc的OpenAPIDefinition属性。
+/// Equivalent to `SpringDoc`'s `OpenAPIDefinition` properties.
+/// `等价于SpringDoc的OpenAPIDefinition属性`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -349,19 +349,19 @@ pub enum SecuritySchemeConfig {
         location: ApiKeyLocation,
     },
 
-    /// OAuth2
-    /// OAuth2
+    /// `OAuth2`
+    /// `OAuth2`
     OAuth2 {
         /// Flows
         /// 流程
         flows: OAuthFlows,
     },
 
-    /// OpenID Connect
-    /// OpenID Connect
+    /// `OpenID` Connect
+    /// `OpenID` Connect
     OpenIdConnect {
-        /// OpenID Connect URL
-        /// OpenID Connect URL
+        /// `OpenID` Connect URL
+        /// `OpenID` Connect URL
         connect_url: String,
     },
 }
@@ -381,7 +381,7 @@ pub enum ApiKeyLocation {
 }
 
 /// OAuth flows
-/// OAuth流程
+/// `OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OAuthFlows {
     /// Implicit flow
@@ -406,7 +406,7 @@ pub struct OAuthFlows {
 }
 
 /// Implicit OAuth flow
-/// 隐式OAuth流程
+/// `隐式OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImplicitFlow {
     /// Authorization URL
@@ -428,7 +428,7 @@ pub struct ImplicitFlow {
 }
 
 /// Password OAuth flow
-/// 密码OAuth流程
+/// `密码OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PasswordFlow {
     /// Token URL
@@ -446,7 +446,7 @@ pub struct PasswordFlow {
 }
 
 /// Client credentials OAuth flow
-/// 客户端凭证OAuth流程
+/// `客户端凭证OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClientCredentialsFlow {
     /// Token URL
@@ -464,7 +464,7 @@ pub struct ClientCredentialsFlow {
 }
 
 /// Authorization code OAuth flow
-/// 授权码OAuth流程
+/// `授权码OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AuthorizationCodeFlow {
     /// Authorization URL

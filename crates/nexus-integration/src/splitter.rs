@@ -4,7 +4,6 @@
 use crate::error::{IntegrationError, Result};
 use crate::message::Message;
 use async_trait::async_trait;
-use std::sync::Arc;
 
 /// Message splitter
 /// 消息拆分器

@@ -124,13 +124,11 @@ where
 
         // Get thread name or ID
         let thread = std::thread::current()
-            .name()
-            .map(|n| n.to_string())
-            .unwrap_or_else(|| {
+            .name().map_or_else(|| {
                 format!("{:?}", std::thread::current().id())
                     .replace("ThreadId(", "")
-                    .replace(")", "")
-            });
+                    .replace(')', "")
+            }, ToString::to_string);
 
         // Get target (logger/module name) and shorten it
         let target = event.metadata().target();
@@ -185,7 +183,7 @@ where
 /// Format log level with proper spacing and symbol
 /// 格式化日志级别，包含符号标识
 ///
-/// Returns (level_string, symbol) where symbol is used in non-color mode
+/// Returns (`level_string`, symbol) where symbol is used in non-color mode
 /// 返回 (级别字符串, 符号)，符号用于无颜色模式
 fn format_level(level: Level) -> (&'static str, &'static str) {
     match level {
@@ -331,8 +329,7 @@ impl RequestLogFormat {
     pub fn format_compact(&self) -> String {
         let status = self
             .status
-            .map(|s| s.to_string())
-            .unwrap_or("-".to_string());
+            .map_or("-".to_string(), |s| s.to_string());
         format!("{} {} {} {}ms", self.method, self.path, status, self.duration_ms)
     }
 
@@ -345,8 +342,7 @@ impl RequestLogFormat {
             format!(
                 "status={}",
                 self.status
-                    .map(|s| s.to_string())
-                    .unwrap_or("-".to_string())
+                    .map_or("-".to_string(), |s| s.to_string())
             ),
             format!("duration={}ms", self.duration_ms),
         ];
@@ -382,14 +378,14 @@ impl Banner {
     /// 打印带有版本信息的启动横幅
     pub fn print(app_name: &str, version: &str, port: u16) {
         println!(
-            r#"
+            r"
   _   _           ___     ___
  | | | | ___  ___| |_   / _ \ _ __ ___
  | |_| |/ _ \/ __| __| | | | | '_ ` _ \
  |  _  | (_) \__ \ |_  | |_| | | | | | |
  |_| |_|\___/|___/\__|  \___/|_| |_| |_|
 {} v{} | port: {} | profile: active
-"#,
+",
             app_name, version, port
         );
     }

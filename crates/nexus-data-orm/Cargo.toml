@@ -64,3 +64,7 @@ tracing = { workspace = true }
 # Futures support
 futures-util = "0.3"
 
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+nexus-data-rdbc = { path = "../nexus-data-rdbc" }
+

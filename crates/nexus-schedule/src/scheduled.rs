@@ -3,12 +3,12 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! - `@Scheduled` - ScheduledTask
-//! - `@EnableScheduling` - TaskScheduler::run()
-//! - `fixedRate` - schedule_fixed_rate()
-//! - `fixedDelay` - schedule_fixed_delay()
-//! - `cron` - schedule_cron()
-//! - `initialDelay` - initial_delay parameter
+//! - `@Scheduled` - `ScheduledTask`
+//! - `@EnableScheduling` - `TaskScheduler::run()`
+//! - `fixedRate` - `schedule_fixed_rate()`
+//! - `fixedDelay` - `schedule_fixed_delay()`
+//! - `cron` - `schedule_cron()`
+//! - `initialDelay` - `initial_delay` parameter
 
 use crate::DEFAULT_INITIAL_DELAY_MS;
 use std::sync::Arc;
@@ -21,7 +21,7 @@ use tracing::info;
 pub type TaskFn = Arc<dyn Fn() + Send + Sync + 'static>;
 
 /// Async task function type / 异步任务函数类型
-pub type AsyncTaskFn = Arc<dyn Fn() -> std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>> + Send + Sync + 'static>;
+pub type AsyncTaskFn = Arc<dyn Fn() -> std::pin::Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync + 'static>;
 
 /// Schedule type
 /// 调度类型
@@ -136,10 +136,10 @@ impl ScheduledTask {
     pub fn with_async_fn<F, Fut>(mut self, f: F) -> Self
     where
         F: Fn() -> Fut + Send + Sync + 'static,
-        Fut: std::future::Future<Output = ()> + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         self.async_task_fn = Some(Arc::new(move || {
-            Box::pin(f()) as std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>
+            Box::pin(f()) as std::pin::Pin<Box<dyn Future<Output = ()> + Send>>
         }));
         self
     }
@@ -176,7 +176,7 @@ impl std::fmt::Debug for ScheduledTask {
 /// Task scheduler
 /// 任务调度器
 ///
-/// Equivalent to Spring's @EnableScheduling.
+/// Equivalent to Spring's @`EnableScheduling`.
 /// 等价于Spring的@EnableScheduling。
 ///
 /// # Spring Equivalent / Spring等价物
@@ -329,7 +329,7 @@ impl Default for TaskScheduler {
 /// public void task() { }
 /// ```
 ///
-/// Returns a JoinHandle that can be used to cancel the task.
+/// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
 pub async fn schedule_fixed_rate<F, Fut>(
     interval_ms: u64,
@@ -337,7 +337,7 @@ pub async fn schedule_fixed_rate<F, Fut>(
 ) -> JoinHandle<()>
 where
     F: FnMut() -> Fut + Send + 'static,
-    Fut: std::future::Future<Output = ()> + Send + 'static,
+    Fut: Future<Output = ()> + Send + 'static,
 {
     tokio::spawn(async move {
         let mut timer = interval(Duration::from_millis(interval_ms));
@@ -358,7 +358,7 @@ where
 /// public void task() { }
 /// ```
 ///
-/// Returns a JoinHandle that can be used to cancel the task.
+/// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
 pub async fn schedule_fixed_delay<F, Fut>(
     delay_ms: u64,
@@ -366,7 +366,7 @@ pub async fn schedule_fixed_delay<F, Fut>(
 ) -> JoinHandle<()>
 where
     F: FnMut() -> Fut + Send + 'static,
-    Fut: std::future::Future<Output = ()> + Send + 'static,
+    Fut: Future<Output = ()> + Send + 'static,
 {
     tokio::spawn(async move {
         loop {
@@ -379,7 +379,7 @@ where
 /// Helper function to run a scheduled task with fixed rate (sync)
 /// 辅助函数：按固定速率运行定时任务（同步）
 ///
-/// Returns a JoinHandle that can be used to cancel the task.
+/// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
 pub async fn schedule_fixed_rate_sync<F>(
     interval_ms: u64,
@@ -400,7 +400,7 @@ where
 /// Helper function to run a scheduled task with fixed delay (sync)
 /// 辅助函数：按固定延迟运行定时任务（同步）
 ///
-/// Returns a JoinHandle that can be used to cancel the task.
+/// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
 pub async fn schedule_fixed_delay_sync<F>(
     delay_ms: u64,

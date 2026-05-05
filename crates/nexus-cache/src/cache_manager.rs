@@ -3,10 +3,10 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `CacheManager` - CacheManager interface
+//! - `CacheManager` - `CacheManager` interface
 //! - `SimpleCacheManager` - Basic cache manager
 //! - `CompositeCacheManager` - Multiple cache managers
-//! - `@EnableCaching` - EnableCaching setup
+//! - `@EnableCaching` - `EnableCaching` setup
 
 use crate::{Cache, CacheConfig, MemoryCache};
 use std::collections::HashMap;
@@ -16,8 +16,8 @@ use std::sync::Arc;
 /// Cache manager trait
 /// 缓存管理器trait
 ///
-/// Equivalent to Spring's CacheManager interface.
-/// 等价于Spring的CacheManager接口。
+/// Equivalent to Spring's `CacheManager` interface.
+/// `等价于Spring的CacheManager接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -75,7 +75,7 @@ pub trait CacheWorker: Send + Sync {
     fn config(&self) -> &CacheConfig;
 }
 
-/// Implement CacheWorker for MemoryCache
+/// Implement `CacheWorker` for `MemoryCache`
 #[async_trait::async_trait]
 impl<K, V> CacheWorker for MemoryCache<K, V>
 where
@@ -106,8 +106,8 @@ where
 /// Simple cache manager
 /// 简单缓存管理器
 ///
-/// Equivalent to Spring's SimpleCacheManager.
-/// 等价于Spring的SimpleCacheManager。
+/// Equivalent to Spring's `SimpleCacheManager`.
+/// `等价于Spring的SimpleCacheManager`。
 ///
 /// Manages a set of in-memory caches.
 /// 管理一组内存缓存。
@@ -204,8 +204,8 @@ impl CacheManager for SimpleCacheManager {
 /// Cache manager builder
 /// 缓存管理器构建器
 ///
-/// Equivalent to Spring's CacheManagerCustomizer.
-/// 等价于Spring的CacheManagerCustomizer。
+/// Equivalent to Spring's `CacheManagerCustomizer`.
+/// `等价于Spring的CacheManagerCustomizer`。
 pub struct CacheManagerBuilder {
     caches: HashMap<String, CacheConfig>,
     default_config: CacheConfig,
@@ -251,8 +251,8 @@ impl Default for CacheManagerBuilder {
 /// Global cache manager (for convenience)
 /// 全局缓存管理器（用于便利）
 ///
-/// Equivalent to Spring's auto-configured CacheManager.
-/// 等价于Spring的自动配置的CacheManager。
+/// Equivalent to Spring's auto-configured `CacheManager`.
+/// `等价于Spring的自动配置的CacheManager`。
 static GLOBAL_MANAGER: tokio::sync::OnceCell<SimpleCacheManager> =
     tokio::sync::OnceCell::const_new();
 

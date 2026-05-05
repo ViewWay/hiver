@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// 事务隔离级别
 ///
 /// Equivalent to Spring's Isolation enum.
-/// 等价于Spring的Isolation枚举。
+/// `等价于Spring的Isolation枚举`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 /// public void transferMoney() { ... }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum IsolationLevel {
     /// Read uncommitted
     /// 读未提交
@@ -48,8 +49,9 @@ pub enum IsolationLevel {
     /// Default isolation level
     /// 默认隔离级别
     ///
-    /// Uses the database's default isolation level (usually ReadCommitted).
+    /// Uses the database's default isolation level (usually `ReadCommitted`).
     /// 使用数据库的默认隔离级别（通常是ReadCommitted）。
+    #[default]
     Default = 0,
 }
 
@@ -94,11 +96,6 @@ impl IsolationLevel {
     }
 }
 
-impl Default for IsolationLevel {
-    fn default() -> Self {
-        IsolationLevel::Default
-    }
-}
 
 impl std::fmt::Display for IsolationLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

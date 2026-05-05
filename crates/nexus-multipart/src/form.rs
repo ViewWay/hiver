@@ -7,8 +7,8 @@ use bytes::Bytes;
 /// Multipart form data
 /// Multipart 表单数据
 ///
-/// Equivalent to Spring's MultipartHttpServletRequest.
-/// 等价于Spring的MultipartHttpServletRequest。
+/// Equivalent to Spring's `MultipartHttpServletRequest`.
+/// `等价于Spring的MultipartHttpServletRequest`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -73,8 +73,8 @@ impl Multipart {
         match self.inner.next_field().await {
             Ok(Some(field)) => {
                 let name = field.name().unwrap_or("").to_string();
-                let filename = field.file_name().map(|s| s.to_string());
-                let content_type = field.content_type().map(|s| s.to_string());
+                let filename = field.file_name().map(std::string::ToString::to_string);
+                let content_type = field.content_type().map(std::string::ToString::to_string);
 
                 let data = match field.bytes().await {
                     Ok(bytes) => bytes,
@@ -127,8 +127,8 @@ impl Multipart {
             if field.is_file() {
                 files.push(MultipartFile::new(
                     field.name().to_string(),
-                    field.filename().map(|s| s.to_string()),
-                    field.content_type().map(|s| s.to_string()),
+                    field.filename().map(std::string::ToString::to_string),
+                    field.content_type().map(std::string::ToString::to_string),
                     field.data,
                 ));
             }
@@ -198,7 +198,7 @@ impl MultipartField {
     /// 获取字段数据为 UTF-8 字符串
     pub fn text(&self) -> MultipartResult<String> {
         std::str::from_utf8(&self.data)
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .map_err(|_| MultipartError::Decode("Invalid UTF-8".to_string()))
     }
 

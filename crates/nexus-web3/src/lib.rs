@@ -16,6 +16,9 @@
 // 这是预期且有意的设计。
 #![allow(dead_code)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod chain;
 pub mod contract;
 pub mod rpc;

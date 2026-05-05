@@ -38,7 +38,7 @@ use std::sync::Arc;
 ///
 /// @Transactional 行为的配置。
 #[derive(Debug, Clone)]
-pub struct TransactionalConfig {
+pub(crate) struct TransactionalConfig {
     /// Isolation level
     /// 隔离级别
     pub isolation: IsolationLevel,
@@ -63,9 +63,11 @@ pub struct TransactionalConfig {
 /// Transaction isolation level
 /// 事务隔离级别
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum IsolationLevel {
+#[derive(Default)]
+pub(crate) enum IsolationLevel {
     /// Use the default isolation level
     /// 使用默认隔离级别
+    #[default]
     Default,
 
     /// Read uncommitted - lowest isolation
@@ -85,11 +87,6 @@ pub enum IsolationLevel {
     Serializable,
 }
 
-impl Default for IsolationLevel {
-    fn default() -> Self {
-        Self::Default
-    }
-}
 
 /// Transaction propagation behavior
 /// 事务传播行为
@@ -100,9 +97,11 @@ impl Default for IsolationLevel {
 /// 定义当一个 @Transactional 方法从另一个 @Transactional 方法调用时
 /// 事务应该如何传播。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Propagation {
+#[derive(Default)]
+pub(crate) enum Propagation {
     /// Support a current transaction, create a new one if none exists
     /// 支持当前事务，如果没有则创建新事务
+    #[default]
     Required,
 
     /// Support a current transaction, execute non-transactionally if none exists
@@ -130,11 +129,6 @@ pub enum Propagation {
     Nested,
 }
 
-impl Default for Propagation {
-    fn default() -> Self {
-        Self::Required
-    }
-}
 
 impl Default for TransactionalConfig {
     fn default() -> Self {
@@ -151,41 +145,41 @@ impl Default for TransactionalConfig {
 impl TransactionalConfig {
     /// Create a new transactional config
     /// 创建新的事务配置
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
     /// Set the isolation level
     /// 设置隔离级别
-    pub fn isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub(crate) fn isolation(mut self, isolation: IsolationLevel) -> Self {
         self.isolation = isolation;
         self
     }
 
     /// Set the timeout in seconds
     /// 设置超时时间（秒）
-    pub fn timeout(mut self, timeout: u64) -> Self {
+    pub(crate) fn timeout(mut self, timeout: u64) -> Self {
         self.timeout = Some(timeout);
         self
     }
 
     /// Set the propagation behavior
     /// 设置传播行为
-    pub fn propagation(mut self, propagation: Propagation) -> Self {
+    pub(crate) fn propagation(mut self, propagation: Propagation) -> Self {
         self.propagation = propagation;
         self
     }
 
     /// Set the read-only flag
     /// 设置只读标志
-    pub fn read_only(mut self, read_only: bool) -> Self {
+    pub(crate) fn read_only(mut self, read_only: bool) -> Self {
         self.read_only = read_only;
         self
     }
 
     /// Set the max retries
     /// 设置最大重试次数
-    pub fn max_retries(mut self, max_retries: u32) -> Self {
+    pub(crate) fn max_retries(mut self, max_retries: u32) -> Self {
         self.max_retries = max_retries;
         self
     }
@@ -215,7 +209,7 @@ impl TransactionalConfig {
 ///     Ok(())
 /// }).await?;
 /// ```
-pub struct TransactionalExecutor {
+pub(crate) struct TransactionalExecutor {
     /// Transaction manager
     /// 事务管理器
     transaction_manager: Arc<dyn TransactionManager>,
@@ -245,7 +239,7 @@ struct TransactionContext {
 impl TransactionalExecutor {
     /// Create a new transactional executor
     /// 创建新的事务执行器
-    pub fn new(transaction_manager: Arc<dyn TransactionManager>) -> Self {
+    pub(crate) fn new(transaction_manager: Arc<dyn TransactionManager>) -> Self {
         Self {
             transaction_manager,
             current_context: Arc::new(tokio::sync::RwLock::new(None)),
@@ -259,13 +253,13 @@ impl TransactionalExecutor {
     /// and rolled back if it returns Err.
     ///
     /// 如果函数返回 Ok，事务将被提交；如果返回 Err，事务将被回滚。
-    pub async fn execute<F, T, E>(
+    pub(crate) async fn execute<F, T, E>(
         &self,
         config: TransactionalConfig,
         f: F,
     ) -> Result<T, TransactionError<E>>
     where
-        F: FnOnce() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
+        F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
         E: std::error::Error + Send + Sync + 'static,
     {
         // Handle propagation
@@ -297,10 +291,12 @@ impl TransactionalExecutor {
         };
         drop(context);
 
+        let mut f = f;
+
         if should_create_new {
-            self.execute_in_new_transaction(config, f).await
+            self.execute_in_new_transaction(config, &mut f).await
         } else {
-            self.execute_in_existing_transaction(f).await
+            self.execute_in_existing_transaction(&mut f).await
         }
     }
 
@@ -309,10 +305,10 @@ impl TransactionalExecutor {
     async fn execute_in_new_transaction<F, T, E>(
         &self,
         config: TransactionalConfig,
-        f: F,
+        f: &mut F,
     ) -> Result<T, TransactionError<E>>
     where
-        F: FnOnce() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
+        F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
         E: std::error::Error + Send + Sync + 'static,
     {
         // Begin transaction
@@ -367,9 +363,9 @@ impl TransactionalExecutor {
 
     /// Execute in existing transaction
     /// 在现有事务中执行
-    async fn execute_in_existing_transaction<F, T, E>(&self, f: F) -> Result<T, TransactionError<E>>
+    async fn execute_in_existing_transaction<F, T, E>(&self, f: &mut F) -> Result<T, TransactionError<E>>
     where
-        F: FnOnce() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
+        F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
         E: std::error::Error + Send + Sync + 'static,
     {
         // Just execute the function without transaction management
@@ -382,11 +378,11 @@ impl TransactionalExecutor {
     async fn execute_with_retry<F, T, E>(
         &self,
         config: TransactionalConfig,
-        tx: &Transaction,
-        f: F,
+        _tx: &Transaction,
+        f: &mut F,
     ) -> Result<T, TransactionError<E>>
     where
-        F: FnOnce() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
+        F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
         E: std::error::Error + Send + Sync + 'static,
     {
         let mut attempt = 0;
@@ -401,7 +397,7 @@ impl TransactionalExecutor {
                 Err(e) if attempt < max_attempts && self.is_retryable_error(e) => {
                     // Retry
                     // 重试
-                    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                    std::thread::sleep(std::time::Duration::from_millis(100));
                     continue;
                 },
                 _ => {
@@ -428,7 +424,7 @@ impl TransactionalExecutor {
 /// Transaction error
 /// 事务错误
 #[derive(Debug)]
-pub enum TransactionError<E>
+pub(crate) enum TransactionError<E>
 where
     E: std::error::Error,
 {
@@ -474,7 +470,7 @@ impl<E: std::error::Error + 'static> std::error::Error for TransactionError<E> {
 
 /// Transaction manager trait
 /// 事务管理器 trait
-pub trait TransactionManager: Send + Sync {
+pub(crate) trait TransactionManager: Send + Sync {
     /// Begin a new transaction
     /// 开始新事务
     fn begin(
@@ -485,14 +481,14 @@ pub trait TransactionManager: Send + Sync {
 
 /// Transaction
 /// 事务
-pub struct Transaction {
+pub(crate) struct Transaction {
     _inner: (),
 }
 
 /// Transaction configuration for the manager
 /// 事务管理器的配置
 #[derive(Debug, Clone)]
-pub struct TransactionConfig {
+pub(crate) struct TransactionConfig {
     /// Isolation level
     /// 隔离级别
     pub isolation: IsolationLevel,
@@ -514,7 +510,7 @@ impl From<TransactionalConfig> for TransactionConfig {
 impl Transaction {
     /// Commit the transaction
     /// 提交事务
-    pub async fn commit(&self) -> Result<(), String> {
+    pub(crate) async fn commit(&self) -> Result<(), String> {
         // Placeholder
         // 占位符
         Ok(())
@@ -522,7 +518,7 @@ impl Transaction {
 
     /// Rollback the transaction
     /// 回滚事务
-    pub async fn rollback(&self) -> Result<(), String> {
+    pub(crate) async fn rollback(&self) -> Result<(), String> {
         // Placeholder
         // 占位符
         Ok(())

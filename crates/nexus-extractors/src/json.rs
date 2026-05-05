@@ -100,7 +100,7 @@ where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
     fn from_request(req: &Request) -> ExtractorFuture<Self> {
-        let body_bytes = req.body().as_bytes().map(|b| b.to_vec());
+        let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
         let content_type = req.header("content-type").unwrap_or("").to_string();
 
         Box::pin(async move {

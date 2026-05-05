@@ -1,5 +1,5 @@
-//! OpenAPI path definitions
-//! OpenAPI路径定义
+//! `OpenAPI` path definitions
+//! `OpenAPI路径定义`
 
 use crate::{Operation, Schema, Response, Parameter};
 use serde::{Deserialize, Serialize};
@@ -49,6 +49,7 @@ pub enum PathMethod {
 /// Describes the operations available on a single path.
 /// 描述单个路径上可用的操作。
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PathItem {
     /// GET operation
     /// GET操作
@@ -144,22 +145,6 @@ impl PathItem {
     }
 }
 
-impl Default for PathItem {
-    fn default() -> Self {
-        Self {
-            get: None,
-            post: None,
-            put: None,
-            delete: None,
-            patch: None,
-            head: None,
-            options: None,
-            trace: None,
-            parameters: Vec::new(),
-            servers: Vec::new(),
-        }
-    }
-}
 
 /// Path operation
 /// 路径操作
@@ -252,6 +237,7 @@ impl SchemaRef {
 /// Components
 /// 组件
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct Components {
     /// Schemas
     /// 模式列表
@@ -329,20 +315,6 @@ impl Components {
     }
 }
 
-impl Default for Components {
-    fn default() -> Self {
-        Self {
-            schemas: None,
-            responses: None,
-            parameters: None,
-            examples: None,
-            request_bodies: None,
-            security_schemes: None,
-            links: None,
-            callbacks: None,
-        }
-    }
-}
 
 #[cfg(test)]
 mod tests {

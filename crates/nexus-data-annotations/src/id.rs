@@ -1,9 +1,7 @@
-//! @Id and @GeneratedValue attribute macros
-//! @Id 和 @GeneratedValue 属性宏
+//! @Id and @`GeneratedValue` attribute macros
+//! @Id 和 @`GeneratedValue` 属性宏
 
-use proc_macro2::TokenStream;
-use quote::quote;
-use syn::{DeriveInput, parse_macro_input};
+use proc_macro::TokenStream;
 
 /// Implements #[Id] attribute macro
 /// 实现 #[Id] 属性宏
@@ -22,14 +20,14 @@ use syn::{DeriveInput, parse_macro_input};
 ///     pub id: i64,
 /// }
 /// ```
-pub fn impl_id(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // For field-level attributes, just pass through with marker
     // 对于字段级别的属性，直接传递并添加标记
     item
 }
 
-/// Implements #[GeneratedValue] attribute macro
-/// 实现 #[GeneratedValue] 属性宏
+/// Implements #[`GeneratedValue`] attribute macro
+/// 实现 #[`GeneratedValue`] 属性宏
 ///
 /// Specifies the strategy for generating primary key values
 /// 指定主键值的生成策略
@@ -46,7 +44,7 @@ pub fn impl_id(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     pub id: i64,
 /// }
 /// ```
-pub fn impl_generated_value(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_generated_value(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // Just pass through for now, storing the strategy
     // 目前直接传递，存储策略
     item

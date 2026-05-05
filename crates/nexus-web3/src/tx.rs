@@ -10,7 +10,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Web3j (Transaction, RawTransaction)
+//! - Spring Web3j (Transaction, `RawTransaction`)
 //! - Web3j Transaction management
 //!
 //! # Example / 示例

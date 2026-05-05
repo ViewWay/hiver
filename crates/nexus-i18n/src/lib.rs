@@ -43,6 +43,9 @@
 //! error.not.found=\u672a\u627e\u5230\u8d44\u6e90\uff1a{0}
 //! ```
 
+#[cfg(test)]
+mod tests;
+
 mod message_source;
 mod resource_bundle;
 mod locale;

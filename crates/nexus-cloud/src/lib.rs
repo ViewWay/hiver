@@ -22,6 +22,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod circuit_breaker;
 pub mod config;
 pub mod discovery;

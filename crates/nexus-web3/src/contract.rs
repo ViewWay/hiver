@@ -10,7 +10,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Web3j (SmartContract, Contract)
+//! - Spring Web3j (`SmartContract`, Contract)
 //! - Web3j smart contract wrapper
 //!
 //! # Example / 示例
@@ -35,8 +35,6 @@
 
 use std::fmt;
 
-use crate::chain::BlockNumber;
-use crate::tx::TxHash;
 use crate::wallet::Address;
 
 /// Contract error

@@ -43,11 +43,10 @@ pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
         if let Some((key, value)) = pair.split_once('=') {
             let key = key.trim();
             let value = value.trim();
-            if key == "order" {
-                if let Ok(val) = value.parse::<i32>() {
+            if key == "order"
+                && let Ok(val) = value.parse::<i32>() {
                     order = val;
                 }
-            }
         }
     }
 
@@ -103,11 +102,10 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
             let value = value.trim();
             if key == "phase" {
                 phase = value.to_string();
-            } else if key == "order" {
-                if let Ok(val) = value.parse::<i32>() {
+            } else if key == "order"
+                && let Ok(val) = value.parse::<i32>() {
                     order = val;
                 }
-            }
         }
     }
 
@@ -136,15 +134,12 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
 /// 从函数参数中查找事件类型
 fn find_event_type(inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) -> Option<Type> {
     for arg in inputs {
-        if let FnArg::Typed(pat) = arg {
-            if let Type::Path(type_path) = &*pat.ty {
-                if let Some(segment) = type_path.path.segments.first() {
-                    if segment.ident != "Self" && segment.ident != "self" {
+        if let FnArg::Typed(pat) = arg
+            && let Type::Path(type_path) = &*pat.ty
+                && let Some(segment) = type_path.path.segments.first()
+                    && segment.ident != "Self" && segment.ident != "self" {
                         return Some(Type::Path(type_path.clone()));
                     }
-                }
-            }
-        }
     }
     None
 }
@@ -159,7 +154,9 @@ fn generate_async_listener(
     event_type: Option<Type>,
     order: i32,
 ) -> proc_macro2::TokenStream {
-    let expanded = match event_type {
+    
+
+    match event_type {
         Some(evt) => quote! {
             // Original function (unchanged)
             #input_fn
@@ -175,9 +172,7 @@ fn generate_async_listener(
             compile_error!("EventListener function must have an event parameter");
             #input_fn
         },
-    };
-
-    expanded
+    }
 }
 
 /// Generate sync event listener implementation
@@ -190,7 +185,9 @@ fn generate_sync_listener(
     event_type: Option<Type>,
     order: i32,
 ) -> proc_macro2::TokenStream {
-    let expanded = match event_type {
+    
+
+    match event_type {
         Some(evt) => quote! {
             // Original function (unchanged)
             #input_fn
@@ -205,9 +202,7 @@ fn generate_sync_listener(
             compile_error!("EventListener function must have an event parameter");
             #input_fn
         },
-    };
-
-    expanded
+    }
 }
 
 /// Generate transactional event listener implementation (async)
@@ -221,7 +216,9 @@ fn generate_transactional_listener_async(
     order: i32,
     _phase: String,
 ) -> proc_macro2::TokenStream {
-    let expanded = match event_type {
+    
+
+    match event_type {
         Some(_evt) => quote! {
             // Original function (unchanged)
             #input_fn
@@ -236,9 +233,7 @@ fn generate_transactional_listener_async(
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn
         },
-    };
-
-    expanded
+    }
 }
 
 /// Generate transactional event listener implementation (sync)
@@ -252,7 +247,9 @@ fn generate_transactional_listener_sync(
     order: i32,
     _phase: String,
 ) -> proc_macro2::TokenStream {
-    let expanded = match event_type {
+    
+
+    match event_type {
         Some(_evt) => quote! {
             // Original function (unchanged)
             #input_fn
@@ -267,7 +264,9 @@ fn generate_transactional_listener_sync(
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn
         },
-    };
-
-    expanded
+    }
 }
+
+
+#[cfg(test)]
+mod tests;

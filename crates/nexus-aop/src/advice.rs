@@ -48,7 +48,7 @@ impl Parse for PointcutExpr {
 ///     println!("Entering: {}", join_point.method_name());
 /// }
 /// ```
-pub fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -95,7 +95,7 @@ pub fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     println!("Exiting: {}", join_point.method_name());
 /// }
 /// ```
-pub fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -145,7 +145,7 @@ pub fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     Ok(result)
 /// }
 /// ```
-pub fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

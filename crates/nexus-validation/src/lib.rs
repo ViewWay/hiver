@@ -82,6 +82,9 @@
 //! }
 //! ```
 
+#[cfg(test)]
+mod tests;
+
 pub mod annotations;
 pub mod error;
 pub mod extractor;

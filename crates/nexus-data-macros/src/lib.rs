@@ -214,8 +214,8 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     let mut primary_keys = Vec::new();
     let mut field_names = Vec::new();
 
-    if let Data::Struct(DataStruct { fields, .. }) = &input.data {
-        if let Fields::Named(named_fields) = fields {
+    if let Data::Struct(DataStruct { fields, .. }) = &input.data
+        && let Fields::Named(named_fields) = fields {
             for field in &named_fields.named {
                 let field_name = field.ident.as_ref().unwrap();
                 let field_name_str = field_name.to_string();
@@ -274,7 +274,6 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
                 });
             }
         }
-    }
 
     // Generate primary_key and set_primary_key implementations
     let pk_field = if !primary_keys.is_empty() {
@@ -328,7 +327,9 @@ fn map_type_to_column_type(ty: &Type) -> proc_macro2::TokenStream {
         .replace("alloc::string::String", "String")
         .replace("&str", "str");
 
-    let column_type = match simplified.as_str() {
+    
+
+    match simplified.as_str() {
         "i8" => quote!(nexus_data_orm::ColumnType::I8),
         "i16" => quote!(nexus_data_orm::ColumnType::I16),
         "i32" => quote!(nexus_data_orm::ColumnType::I32),
@@ -349,9 +350,7 @@ fn map_type_to_column_type(ty: &Type) -> proc_macro2::TokenStream {
         "Date" | "chrono::Date" => quote!(nexus_data_orm::ColumnType::Date),
         "serde_json::Value" => quote!(nexus_data_orm::ColumnType::Json),
         _ => quote!(nexus_data_orm::ColumnType::Text),
-    };
-
-    column_type
+    }
 }
 
 /// Convert CamelCase/PascalCase to snake_case
@@ -492,13 +491,13 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
     let expanded = quote! {
         // Repository struct
         #vis struct #struct_name {
-            client: std::sync::Arc<nexus_data_rdbc::DatabaseClient>,
+            client: std::sync::Arc<nexus_data_rdbc::SqlxPoolClient>,
             table: &'static str,
         }
 
         impl #struct_name {
             /// Create a new repository instance
-            pub fn new(client: std::sync::Arc<nexus_data_rdbc::DatabaseClient>) -> Self {
+            pub fn new(client: std::sync::Arc<nexus_data_rdbc::SqlxPoolClient>) -> Self {
                 Self {
                     client,
                     table: #table_name,
@@ -511,34 +510,40 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
 
             /// Get the database client
-            pub fn client(&self) -> &std::sync::Arc<nexus_data_rdbc::DatabaseClient> {
+            pub fn client(&self) -> &std::sync::Arc<nexus_data_rdbc::SqlxPoolClient> {
                 &self.client
             }
         }
 
-        // Implement CrudRepository
+        // Implement CrudRepository using QueryBuilder/ActiveRecord
         #[async_trait::async_trait]
         impl nexus_data_commons::CrudRepository<#entity_type, #id_type> for #struct_name {
             type Error = nexus_data_commons::Error;
 
             async fn save(&self, entity: #entity_type) -> Result<#entity_type, Self::Error> {
-                // Implementation uses SQLx repository
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.save_with_client(entity, &self.client).await
+                let pk = entity.primary_key().map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let sql = format!(
+                    "INSERT INTO {} (id) VALUES ({}) ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id",
+                    self.table, pk
+                );
+                self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(entity)
             }
 
             async fn save_all(&self, entities: Vec<#entity_type>) -> Result<Vec<#entity_type>, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
                 let mut results = Vec::new();
                 for entity in entities {
-                    results.push(repo.save_with_client(entity, &self.client).await?);
+                    results.push(self.save(entity).await?);
                 }
                 Ok(results)
             }
 
             async fn find_by_id(&self, id: #id_type) -> Result<Option<#entity_type>, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.find_by_id_with_client(id, &self.client).await
+                let sql = format!("SELECT * FROM {} WHERE id = {}", self.table, id);
+                match self.client.fetch_one(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))? {
+                    Some(row) => row.deserialize().map(Some).map_err(|e| nexus_data_commons::Error::other(e.to_string())),
+                    None => Ok(None),
+                }
             }
 
             async fn exists_by_id(&self, id: #id_type) -> Result<bool, Self::Error> {
@@ -546,15 +551,19 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
 
             async fn find_all(&self) -> Result<Vec<#entity_type>, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.find_all_with_client(&self.client).await
+                let sql = format!("SELECT * FROM {}", self.table);
+                let rows = self.client.fetch_all(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let mut results = Vec::with_capacity(rows.len());
+                for row in &rows {
+                    results.push(row.deserialize().map_err(|e| nexus_data_commons::Error::other(e.to_string()))?);
+                }
+                Ok(results)
             }
 
             async fn find_all_by_ids(&self, ids: Vec<#id_type>) -> Result<Vec<#entity_type>, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
                 let mut results = Vec::new();
                 for id in ids {
-                    if let Some(entity) = repo.find_by_id_with_client(id, &self.client).await? {
+                    if let Some(entity) = self.find_by_id(id).await? {
                         results.push(entity);
                     }
                 }
@@ -562,24 +571,29 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
 
             async fn count(&self) -> Result<usize, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.count_with_client(&self.client).await
+                let sql = format!("SELECT COUNT(*) AS cnt FROM {}", self.table);
+                let rows = self.client.fetch_all(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let cnt = rows.first().and_then(|r| r.get_as::<i64>("cnt").ok()).unwrap_or(0);
+                Ok(cnt as usize)
             }
 
             async fn delete_by_id(&self, id: #id_type) -> Result<bool, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.delete_by_id_with_client(id, &self.client).await
+                let sql = format!("DELETE FROM {} WHERE id = {}", self.table, id);
+                let affected = self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(affected > 0)
             }
 
             async fn delete(&self, entity: #entity_type) -> Result<bool, Self::Error> {
                 let pk = entity.primary_key().map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
-                let pk_id: #id_type = pk.parse().map_err(|_| nexus_data_commons::Error::validation("Invalid primary key".to_string()))?;
-                self.delete_by_id(pk_id).await
+                let sql = format!("DELETE FROM {} WHERE id = {}", self.table, pk);
+                let affected = self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(affected > 0)
             }
 
             async fn delete_all(&self) -> Result<usize, Self::Error> {
-                let repo = nexus_data_rdbc::SqlxRepository::new(self.table);
-                repo.delete_all_with_client(&self.client).await
+                let sql = format!("DELETE FROM {}", self.table);
+                let affected = self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(affected as usize)
             }
 
             async fn delete_all_by_ids(&self, ids: Vec<#id_type>) -> Result<usize, Self::Error> {
@@ -613,9 +627,9 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
         // Constructor for convenience
         impl #struct_name {
             pub fn with_url(url: &str) -> Result<Self, Box<dyn std::error::Error>> {
-                use nexus_data_rdbc::DatabaseConfig;
+                use nexus_data_rdbc::{DatabaseConfig, SqlxPoolClient};
                 let config = DatabaseConfig::from_url(url)?;
-                let client = std::sync::Arc::new(DatabaseClient::new(config)?);
+                let client = std::sync::Arc::new(SqlxPoolClient::new(&config.url())?);
                 Ok(Self::new(client))
             }
         }

@@ -9,8 +9,8 @@
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
 //! - SLF4J + Logback → tracing + tracing-subscriber
-//! - Logger → tracing::info/warn/error/debug/trace!
-//! - @Slf4j → #[nexus_observability::logger] macro
+//! - Logger → `tracing::info/warn/error/debug/trace`!
+//! - @Slf4j → #[`nexus_observability::logger`] macro
 //!
 //! # Example / 示例
 //!
@@ -688,11 +688,10 @@ impl Logger {
         let mut config = LoggerConfig::default();
 
         // Spring Boot: logging.level.root
-        if let Ok(level) = std::env::var("LOGGING_LEVEL_ROOT") {
-            if let Some(lvl) = LogLevel::from_str(&level) {
+        if let Ok(level) = std::env::var("LOGGING_LEVEL_ROOT")
+            && let Some(lvl) = LogLevel::from_str(&level) {
                 config.level = lvl;
             }
-        }
 
         // Spring Boot: logging.file.name
         if let Ok(file) = std::env::var("LOGGING_FILE_NAME") {
@@ -705,11 +704,10 @@ impl Logger {
         }
 
         // Also support NEXUS_LOG_PATTERN
-        if std::env::var("NEXUS_LOG_PATTERN").is_ok() {
-            if let Ok(pattern) = std::env::var("NEXUS_LOG_PATTERN") {
+        if std::env::var("NEXUS_LOG_PATTERN").is_ok()
+            && let Ok(pattern) = std::env::var("NEXUS_LOG_PATTERN") {
                 config.custom_pattern = Some(pattern);
             }
-        }
 
         Logger::init_with_config(config)
     }
@@ -832,12 +830,14 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter {
 
     // Support Spring Boot style: logging.level.<package>=<LEVEL>
     // 支持Spring Boot风格：logging.level.<package>=<LEVEL>
-    let filter = if let Ok(level_str) = std::env::var("LOGGING_LEVEL") {
+    
+
+    if let Ok(level_str) = std::env::var("LOGGING_LEVEL") {
         let parts: Vec<&str> = level_str.split('=').collect();
         if parts.len() == 2 {
             let target = parts[0];
             let level = parts[1];
-            if let Some(lvl) = LogLevel::from_str(level).and_then(|l| l.to_tracing_level()) {
+            if let Some(lvl) = LogLevel::from_str(level).and_then(LogLevel::to_tracing_level) {
                 base_filter.add_directive(
                     format!("{}={}", target, lvl)
                         .parse()
@@ -851,9 +851,7 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter {
         }
     } else {
         base_filter
-    };
-
-    filter
+    }
 }
 
 /// Create rolling file appender
@@ -879,8 +877,8 @@ fn create_file_appender(
     Ok(RollingFileAppender::new(rotation, directory, prefix))
 }
 
-/// Logger Factory (equivalent to SLF4J's LoggerFactory)
-/// 日志工厂（等价于 SLF4J 的 LoggerFactory）
+/// Logger Factory (equivalent to SLF4J's `LoggerFactory`)
+/// 日志工厂（等价于 SLF4J 的 `LoggerFactory`）
 ///
 /// # Example / 示例
 ///
@@ -959,7 +957,7 @@ impl LoggerHandle {
     /// Log an ERROR message
     /// 记录 ERROR 消息
     pub fn error(&self, message: std::fmt::Arguments) {
-        self.error_args(&[], message)
+        self.error_args(&[], message);
     }
 
     /// Log an ERROR message with fields
@@ -973,7 +971,7 @@ impl LoggerHandle {
     /// Log a WARN message
     /// 记录 WARN 消息
     pub fn warn(&self, message: std::fmt::Arguments) {
-        self.warn_args(&[], message)
+        self.warn_args(&[], message);
     }
 
     /// Log a WARN message with fields
@@ -985,7 +983,7 @@ impl LoggerHandle {
     /// Log an INFO message
     /// 记录 INFO 消息
     pub fn info(&self, message: std::fmt::Arguments) {
-        self.info_args(&[], message)
+        self.info_args(&[], message);
     }
 
     /// Log an INFO message with fields
@@ -997,7 +995,7 @@ impl LoggerHandle {
     /// Log a DEBUG message
     /// 记录 DEBUG 消息
     pub fn debug(&self, message: std::fmt::Arguments) {
-        self.debug_args(&[], message)
+        self.debug_args(&[], message);
     }
 
     /// Log a DEBUG message with fields
@@ -1009,7 +1007,7 @@ impl LoggerHandle {
     /// Log a TRACE message
     /// 记录 TRACE 消息
     pub fn trace(&self, message: std::fmt::Arguments) {
-        self.trace_args(&[], message)
+        self.trace_args(&[], message);
     }
 
     /// Log a TRACE message with fields

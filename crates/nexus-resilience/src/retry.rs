@@ -12,7 +12,7 @@
 //!
 //! - Spring Retry @Retryable
 //! - Resilience4j Retry
-//! - Spring Cloud CircuitBreaker retry
+//! - Spring Cloud `CircuitBreaker` retry
 //!
 //! # Example / 示例
 //!

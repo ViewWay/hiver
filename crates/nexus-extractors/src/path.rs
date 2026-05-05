@@ -186,7 +186,7 @@ where
 /// }
 /// ```
 pub fn get_path_var(req: &Request, name: &str) -> Option<String> {
-    req.path_var(name).map(|s| s.to_string())
+    req.path_var(name).map(std::string::ToString::to_string)
 }
 
 /// Get all path variables

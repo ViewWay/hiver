@@ -1,9 +1,9 @@
-//! CachePut annotation equivalent
-//! @CachePut注解等价物
+//! `CachePut` annotation equivalent
+//! @`CachePut注解等价物`
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@CachePut` - CachePut trait
+//! - `@CachePut` - `CachePut` trait
 //!
 //! # Spring Equivalent / Spring等价物
 //!
@@ -18,10 +18,10 @@ use crate::Cache;
 use std::future::Future;
 use std::pin::Pin;
 
-/// CachePut trait - equivalent to Spring's @CachePut
-/// CachePut trait - 等价于Spring的@CachePut
+/// `CachePut` trait - equivalent to Spring's @`CachePut`
+/// `CachePut` trait - 等价于Spring的@CachePut
 ///
-/// Unlike @Cacheable, @CachePut always executes the method and
+/// Unlike @Cacheable, @`CachePut` always executes the method and
 /// puts the result in the cache.
 ///
 /// 与@Cacheable不同，@CachePut总是执行方法并将结果放入缓存。
@@ -67,8 +67,8 @@ where
     ) -> Pin<Box<dyn Future<Output = V> + Send>>;
 }
 
-/// CachePut wrapper for async functions
-/// 异步函数的CachePut包装器
+/// `CachePut` wrapper for async functions
+/// `异步函数的CachePut包装器`
 ///
 /// Equivalent to Spring's `@CachePut` annotation.
 /// 等价于Spring的`@CachePut`注解。
@@ -98,7 +98,7 @@ impl CachePutExec {
     /// Execute function and put result in cache
     /// 执行函数并将结果放入缓存
     ///
-    /// Equivalent to Spring's @CachePut method execution.
+    /// Equivalent to Spring's @`CachePut` method execution.
     /// 等价于Spring的@CachePut方法执行。
     pub async fn execute_and_update<K, V, F>(cache: &dyn Cache<K, V>, key: K, f: F) -> V
     where
@@ -162,8 +162,8 @@ impl CachePutExec {
     }
 }
 
-/// CachePut options - equivalent to Spring's @CachePut parameters
-/// CachePut选项 - 等价于Spring的@CachePut参数
+/// `CachePut` options - equivalent to Spring's @`CachePut` parameters
+/// `CachePut选项` - 等价于Spring的@CachePut参数
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -180,15 +180,15 @@ pub struct CachePutOptions {
     /// 缓存名称
     pub cache_names: Vec<String>,
 
-    /// Cache key (SpEL expression in Spring)
+    /// Cache key (`SpEL` expression in Spring)
     /// 缓存key（Spring中的SpEL表达式）
     pub key: Option<String>,
 
-    /// Condition for caching (SpEL expression in Spring)
+    /// Condition for caching (`SpEL` expression in Spring)
     /// 缓存条件（Spring中的SpEL表达式）
     pub condition: Option<String>,
 
-    /// Unless condition (SpEL expression in Spring)
+    /// Unless condition (`SpEL` expression in Spring)
     /// Unless条件（Spring中的SpEL表达式）
     pub unless: Option<String>,
 }

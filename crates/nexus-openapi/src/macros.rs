@@ -1,15 +1,15 @@
-//! OpenAPI procedural macros
-//! OpenAPI过程宏
+//! `OpenAPI` procedural macros
+//! `OpenAPI过程宏`
 //!
-//! This module re-exports utoipa macros for defining OpenAPI documentation.
-//! 此模块重新导出 utoipa 宏用于定义 OpenAPI 文档。
+//! This module re-exports utoipa macros for defining `OpenAPI` documentation.
+//! 此模块重新导出 utoipa 宏用于定义 `OpenAPI` 文档。
 //!
 //! # Available Macros / 可用宏
 //!
-//! - `#[derive(ToSchema)]` - Define OpenAPI schema for structs / 为结构体定义 OpenAPI 模式
+//! - `#[derive(ToSchema)]` - Define `OpenAPI` schema for structs / 为结构体定义 `OpenAPI` 模式
 //! - `#[derive(IntoParams)]` - Define parameters for path/query / 定义路径/查询参数
 //! - `#[derive(ToResponse)]` - Define response schema / 定义响应模式
-//! - `#[openapi(...)]` - Define OpenAPI specification / 定义 OpenAPI 规范
+//! - `#[openapi(...)]` - Define `OpenAPI` specification / 定义 `OpenAPI` 规范
 //!
 //! # Spring Equivalent / Spring等价物
 //!

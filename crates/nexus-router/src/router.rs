@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @RequestMapping with method, path, params, headers
+//! - @`RequestMapping` with method, path, params, headers
 //! - Ant-style path patterns ("/user/**", "/user/{id}", "/user/?")
 
 #![warn(missing_docs)]
@@ -109,8 +109,8 @@ impl<S> Clone for Handler<S> {
     fn clone(&self) -> Self {
         match self {
             Handler::Fn(f) => Handler::Fn(f.clone()),
-            Handler::Static(s) => Handler::Static(*s),
-            Handler::Bytes(b) => Handler::Bytes(*b),
+            Handler::Static(s) => Handler::Static(s),
+            Handler::Bytes(b) => Handler::Bytes(b),
         }
     }
 }
@@ -291,7 +291,7 @@ fn extract_param_names(pattern: &str) -> Vec<String> {
     pattern
         .split('/')
         .filter_map(|s| s.strip_prefix(':'))
-        .map(|s| s.to_string())
+        .map(std::string::ToString::to_string)
         .collect()
 }
 
@@ -364,7 +364,7 @@ impl<S> Next<S> {
     }
 
     /// Create a new Next from an Arc'd function
-    /// 从Arc函数创建新的Next
+    /// `从Arc函数创建新的Next`
     pub fn from_arc(f: HandlerFn<S>) -> Self {
         Self { inner: f }
     }
@@ -376,8 +376,8 @@ impl<S> Next<S> {
     }
 }
 
-/// Implement HttpService for Router
-/// 为Router实现HttpService
+/// Implement `HttpService` for Router
+/// `为Router实现HttpService`
 impl<S> nexus_http::HttpService for Router<S>
 where
     S: Send + Sync + 'static,

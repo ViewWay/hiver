@@ -1,8 +1,7 @@
 //! @Column attribute macro
 //! @Column 属性宏
 
-use proc_macro2::TokenStream;
-use quote::quote;
+use proc_macro::TokenStream;
 
 /// Implements #[Column] attribute macro
 /// 实现 #[Column] 属性宏
@@ -21,7 +20,7 @@ use quote::quote;
 ///     pub username: String,
 /// }
 /// ```
-pub fn impl_column(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_column(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // For field-level attributes, just pass through with marker
     // 对于字段级别的属性，直接传递并添加标记
     item

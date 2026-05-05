@@ -10,9 +10,9 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Resilience4j RateLimiter
-//! - Spring Cloud Gateway RequestRateLimiter
-//! - Guava RateLimiter
+//! - Resilience4j `RateLimiter`
+//! - Spring Cloud Gateway `RequestRateLimiter`
+//! - Guava `RateLimiter`
 //!
 //! # Example / 示例
 //!
@@ -474,12 +474,12 @@ impl RateLimiter {
     /// Acquire a permit, blocking until available
     /// 获取许可，阻塞直到可用
     ///
-    /// Note: This is a simplified version that just calls try_acquire.
+    /// Note: This is a simplified version that just calls `try_acquire`.
     /// In a real implementation, this would use async waiting.
     pub async fn acquire(&self) -> Result<()> {
         loop {
             match self.try_acquire() {
-                Ok(_) => return Ok(()),
+                Ok(()) => return Ok(()),
                 Err(RateLimitError::Exceeded { retry_after }) => {
                     // In a real async implementation, we would sleep here
                     // For now, just return the error

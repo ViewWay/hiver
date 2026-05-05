@@ -212,7 +212,7 @@ impl Future for ConnectFuture {
     fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         match &mut *self {
             ConnectFuture::Error(e) => {
-                let e = std::mem::replace(e, io::Error::new(io::ErrorKind::Other, ""));
+                let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             ConnectFuture::Done => panic!("ConnectFuture polled after completion"),
@@ -614,7 +614,7 @@ impl Future for BindFuture {
     fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         match &mut *self {
             BindFuture::Error(e) => {
-                let e = std::mem::replace(e, io::Error::new(io::ErrorKind::Other, ""));
+                let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             BindFuture::Done => panic!("BindFuture polled after completion"),
@@ -962,7 +962,7 @@ impl Future for BindUdpFuture {
     fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         match &mut *self {
             BindUdpFuture::Error(e) => {
-                let e = std::mem::replace(e, io::Error::new(io::ErrorKind::Other, ""));
+                let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             BindUdpFuture::Done => panic!("BindUdpFuture polled after completion"),
@@ -1160,7 +1160,7 @@ impl Future for RecvFromFuture<'_, '_> {
             // Parse peer address (simplified)
             // 解析对端地址（简化版）
             let peer_addr = SocketAddr::V4(std::net::SocketAddrV4::new(
-                std::net::Ipv4Addr::new(127, 0, 0, 1),
+                std::net::Ipv4Addr::LOCALHOST,
                 0,
             ));
 
@@ -1234,9 +1234,7 @@ impl Future for ConnectUdpFuture {
     type Output = io::Result<()>;
 
     fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
-        if self.done {
-            panic!("ConnectUdpFuture polled after completion");
-        }
+        assert!(!self.done, "ConnectUdpFuture polled after completion");
 
         // Perform the connect operation
         // 执行connect操作

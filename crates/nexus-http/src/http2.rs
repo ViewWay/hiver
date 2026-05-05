@@ -57,16 +57,16 @@ pub enum FrameType {
     /// PRIORITY帧 - 设置流优先级
     Priority = 0x2,
 
-    /// RST_STREAM frame - cancels stream
-    /// RST_STREAM帧 - 取消流
+    /// `RST_STREAM` frame - cancels stream
+    /// `RST_STREAM帧` - 取消流
     RstStream = 0x3,
 
     /// SETTINGS frame - configure connection
     /// SETTINGS帧 - 配置连接
     Settings = 0x4,
 
-    /// PUSH_PROMISE frame - server push
-    /// PUSH_PROMISE帧 - 服务器推送
+    /// `PUSH_PROMISE` frame - server push
+    /// `PUSH_PROMISE帧` - 服务器推送
     PushPromise = 0x5,
 
     /// PING frame - measure round-trip time
@@ -77,8 +77,8 @@ pub enum FrameType {
     /// GOAWAY帧 - 关闭连接
     GoAway = 0x7,
 
-    /// WINDOW_UPDATE frame - flow control
-    /// WINDOW_UPDATE帧 - 流控制
+    /// `WINDOW_UPDATE` frame - flow control
+    /// `WINDOW_UPDATE帧` - 流控制
     WindowUpdate = 0x8,
 
     /// CONTINUATION frame - continues header block
@@ -132,8 +132,8 @@ impl FrameType {
 /// HTTP/2 error codes
 /// HTTP/2 错误码
 ///
-/// Error codes used in RST_STREAM and GOAWAY frames.
-/// RST_STREAM和GOAWAY帧中使用的错误码。
+/// Error codes used in `RST_STREAM` and GOAWAY frames.
+/// `RST_STREAM和GOAWAY帧中使用的错误码`。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
 pub enum ErrorCode {
@@ -346,7 +346,7 @@ impl StreamId {
     /// Check if this is initiated by the server
     /// 检查是否由服务器发起
     pub fn is_server_initiated(&self) -> bool {
-        self.0 % 2 == 0 && self.0 != 0
+        self.0.is_multiple_of(2) && self.0 != 0
     }
 
     /// The connection control stream ID

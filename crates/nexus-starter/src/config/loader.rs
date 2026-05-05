@@ -373,7 +373,7 @@ impl ConfigurationLoader {
                 let config_key = key["NEXUS_".len()..].to_lowercase().replace('_', ".");
                 self.properties.insert(config_key, value);
             } else if key.starts_with("APP_") {
-                let config_key = key["APP_".len()..].to_lowercase().replace("_", ".");
+                let config_key = key["APP_".len()..].to_lowercase().replace('_', ".");
                 self.properties.insert(config_key, value);
             }
         }

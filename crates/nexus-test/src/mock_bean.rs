@@ -70,7 +70,7 @@ struct MockDefinition {
 impl MockDefinition {
     /// Create a new mock definition
     /// 创建新的模拟定义
-    pub fn new<
+    pub(crate) fn new<
         F: Fn(Vec<Arc<dyn Any + Send + Sync>>) -> Box<dyn Any + Send + Sync> + Send + Sync + 'static,
     >(
         func: F,
@@ -85,7 +85,7 @@ impl MockDefinition {
 
     /// Create with expected arguments
     /// 使用预期参数创建
-    pub fn with_expected_args<
+    pub(crate) fn with_expected_args<
         F: Fn(Vec<Arc<dyn Any + Send + Sync>>) -> Box<dyn Any + Send + Sync> + Send + Sync + 'static,
     >(
         func: F,
@@ -225,6 +225,6 @@ impl Default for MockRegistry {
 /// 全局模拟注册表
 pub fn global_mock_registry() -> &'static MockRegistry {
     use once_cell::sync::Lazy;
-    static REGISTRY: Lazy<MockRegistry> = Lazy::new(MockRegistry::new);
+    static REGISTRY: std::sync::LazyLock<MockRegistry> = std::sync::LazyLock::new(MockRegistry::new);
     &REGISTRY
 }

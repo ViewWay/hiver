@@ -1,5 +1,5 @@
-//! User and UserDetails module
-//! 用户和UserDetails模块
+//! User and `UserDetails` module
+//! `用户和UserDetails模块`
 
 use crate::{Authority, PasswordEncoder, Role, SecurityError, SecurityResult};
 use serde::{Deserialize, Serialize};
@@ -8,8 +8,8 @@ use std::sync::Arc;
 /// User
 /// 用户
 ///
-/// Equivalent to Spring's User class or Custom UserDetails implementation.
-/// 等价于Spring的 User类或自定义UserDetails实现。
+/// Equivalent to Spring's User class or Custom `UserDetails` implementation.
+/// 等价于Spring的 `User类或自定义UserDetails实现`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -123,8 +123,8 @@ impl User {
 /// User builder
 /// 用户构建器
 ///
-/// Equivalent to Spring's UserBuilder.
-/// 等价于Spring的UserBuilder。
+/// Equivalent to Spring's `UserBuilder`.
+/// `等价于Spring的UserBuilder`。
 #[derive(Debug, Clone)]
 pub struct UserBuilder {
     username: Option<String>,
@@ -246,11 +246,11 @@ impl Default for UserBuilder {
     }
 }
 
-/// UserDetails trait
-/// UserDetails trait
+/// `UserDetails` trait
+/// `UserDetails` trait
 ///
-/// Equivalent to Spring's UserDetails interface.
-/// 等价于Spring的UserDetails接口。
+/// Equivalent to Spring's `UserDetails` interface.
+/// `等价于Spring的UserDetails接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -295,7 +295,7 @@ pub trait UserDetails: Send + Sync {
     fn is_enabled(&self) -> bool;
 }
 
-/// Implement UserDetails for User
+/// Implement `UserDetails` for User
 impl UserDetails for User {
     fn authorities(&self) -> Vec<Authority> {
         self.authorities.clone()
@@ -329,8 +329,8 @@ impl UserDetails for User {
 /// User service trait
 /// 用户服务trait
 ///
-/// Equivalent to Spring's UserDetailsService.
-/// 等价于Spring的UserDetailsService。
+/// Equivalent to Spring's `UserDetailsService`.
+/// `等价于Spring的UserDetailsService`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -365,8 +365,8 @@ pub trait UserService: Send + Sync {
 /// In-memory user service
 /// 内存用户服务
 ///
-/// Equivalent to Spring's InMemoryUserDetailsManager.
-/// 等价于Spring的InMemoryUserDetailsManager。
+/// Equivalent to Spring's `InMemoryUserDetailsManager`.
+/// `等价于Spring的InMemoryUserDetailsManager`。
 #[derive(Debug)]
 pub struct InMemoryUserService {
     users: Arc<tokio::sync::RwLock<std::collections::HashMap<String, User>>>,

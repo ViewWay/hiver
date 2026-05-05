@@ -468,11 +468,10 @@ where
 
     async fn open(&mut self) -> BatchResult<()> {
         // Clear file if exists
-        if self.write_headers {
-            if let Some(headers) = &self.headers {
+        if self.write_headers
+            && let Some(headers) = &self.headers {
                 self.write_line(headers.clone()).await?;
             }
-        }
         Ok(())
     }
 

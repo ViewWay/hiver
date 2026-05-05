@@ -11,6 +11,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod log;
 pub mod metrics;
 pub mod trace;

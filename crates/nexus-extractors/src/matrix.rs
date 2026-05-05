@@ -53,8 +53,8 @@ use std::pin::Pin;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MatrixVariable<T>(pub T);
 
-/// Extract all matrix variables from the path as a HashMap
-/// 从路径提取所有矩阵变量为HashMap
+/// Extract all matrix variables from the path as a `HashMap`
+/// `从路径提取所有矩阵变量为HashMap`
 ///
 /// # Example / 示例
 ///
@@ -156,8 +156,7 @@ impl MatrixVariables {
     pub fn get_or(&self, key: &str, default: &str) -> String {
         self.0
             .get(key)
-            .map(|s| s.as_str())
-            .unwrap_or(default)
+            .map_or(default, std::string::String::as_str)
             .to_string()
     }
 }
@@ -183,8 +182,8 @@ fn extract_first_matrix_value(path: &str) -> Option<String> {
     None
 }
 
-/// Parse all matrix variables from a path into a HashMap
-/// 将路径中的所有矩阵变量解析为HashMap
+/// Parse all matrix variables from a path into a `HashMap`
+/// `将路径中的所有矩阵变量解析为HashMap`
 fn parse_matrix_variables(path: &str) -> HashMap<String, String> {
     let mut result = HashMap::new();
 

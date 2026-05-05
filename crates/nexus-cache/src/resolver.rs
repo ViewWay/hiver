@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `CacheResolver` - CacheResolver interface
+//! - `CacheResolver` - `CacheResolver` interface
 //! - `SimpleCacheResolver` - Basic cache resolver
 //! - `NamedCacheResolver` - Resolve by cache name
 
@@ -14,8 +14,8 @@ use std::sync::Arc;
 /// Cache resolver trait
 /// 缓存解析器trait
 ///
-/// Equivalent to Spring's CacheResolver interface.
-/// 等价于Spring的CacheResolver接口。
+/// Equivalent to Spring's `CacheResolver` interface.
+/// `等价于Spring的CacheResolver接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -36,8 +36,8 @@ pub trait CacheResolver: Send + Sync {
 /// Uses cache names directly to resolve caches.
 /// 直接使用缓存名称解析缓存。
 ///
-/// Equivalent to Spring's SimpleCacheResolver.
-/// 等价于Spring的SimpleCacheResolver。
+/// Equivalent to Spring's `SimpleCacheResolver`.
+/// `等价于Spring的SimpleCacheResolver`。
 #[derive(Clone)]
 pub struct SimpleCacheResolver {
     /// Cache manager

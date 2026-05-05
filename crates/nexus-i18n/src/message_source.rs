@@ -2,7 +2,6 @@
 //! 消息源trait和实现
 
 use crate::error::{I18nError, I18nResult};
-use async_trait::async_trait;
 use std::fmt;
 
 /// Message source trait
@@ -220,7 +219,7 @@ impl Default for StaticMessageSource {
 #[async_trait::async_trait]
 impl MessageSource for StaticMessageSource {
     async fn get_message(&self, code: &str, args: &[String], _locale: &str) -> I18nResult<String> {
-        let key = format!("{}", code);
+        let key = code.to_string();
         self.messages
             .get(&key)
             .map(|msg| self.format_message(msg, args))

@@ -39,6 +39,9 @@
 //! // Handle incoming frames...
 //! ```
 
+#[cfg(test)]
+mod tests;
+
 pub mod error;
 pub mod frame;
 pub mod session;

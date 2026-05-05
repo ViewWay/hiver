@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - HttpStatus, @ResponseStatus
+//! - `HttpStatus`, @`ResponseStatus`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -129,7 +129,7 @@ impl StatusCode {
     /// 511 Network Authentication Required
     pub const NETWORK_AUTHENTICATION_REQUIRED: StatusCode = StatusCode(511);
 
-    /// Create a StatusCode from a u16
+    /// Create a `StatusCode` from a u16
     /// 从u16创建状态码
     pub const fn from_u16(code: u16) -> StatusCode {
         StatusCode(code)

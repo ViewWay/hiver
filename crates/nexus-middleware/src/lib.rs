@@ -9,10 +9,10 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Filter, HandlerInterceptor
-//! - @CrossOrigin
-//! - OncePerRequestFilter
-//! - CorsConfiguration, CORS filter
+//! - Filter, `HandlerInterceptor`
+//! - @`CrossOrigin`
+//! - `OncePerRequestFilter`
+//! - `CorsConfiguration`, CORS filter
 //! - Request logging / MDC
 
 #![warn(missing_docs)]
@@ -22,6 +22,9 @@
 // 允许 dead_code：这是一个框架库，包含许多公共 API 供用户使用但内部未使用。
 // 这是预期且有意的设计。
 #![allow(dead_code)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod compression;
 pub mod cors;

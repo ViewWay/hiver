@@ -131,7 +131,7 @@ where
         let query_params = parse_query_params(&uri);
 
         // Extract form data from body (if present)
-        let body_bytes = req.body().as_bytes().map(|b| b.to_vec());
+        let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
         let content_type = req.header("content-type").unwrap_or("").to_string();
         let has_form_body = content_type.starts_with("application/x-www-form-urlencoded");
 
@@ -139,8 +139,8 @@ where
             let mut merged_params = query_params;
 
             // Merge form data if present (form data takes precedence)
-            if has_form_body {
-                if let Some(body) = body_bytes {
+            if has_form_body
+                && let Some(body) = body_bytes {
                     let body_str = String::from_utf8(body).map_err(|_| {
                         ExtractorError::Invalid("Invalid UTF-8 in body".to_string())
                     })?;
@@ -150,7 +150,6 @@ where
                         merged_params.insert(key, value);
                     }
                 }
-            }
 
             // Deserialize merged parameters
             serde_json::to_value(&merged_params)

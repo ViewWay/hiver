@@ -73,7 +73,7 @@ impl CompletionQueue {
     unsafe fn set(&self, index: usize, entry: Option<CompletionEntry>) {
         // SAFETY: We have exclusive access through the ring buffer discipline
         // 我们通过环形缓冲区规则拥有独占访问权
-        let ptr = self.entries.as_ptr() as *mut Option<CompletionEntry>;
+        let ptr = self.entries.as_ptr().cast_mut();
         *ptr.add(index) = entry;
     }
 }

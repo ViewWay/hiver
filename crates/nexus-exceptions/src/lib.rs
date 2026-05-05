@@ -1,5 +1,5 @@
-//! Nexus Exceptions - Spring @ControllerAdvice equivalent features
-//! Nexus Exceptions - Spring @ControllerAdvice 等价功能
+//! Nexus Exceptions - Spring @`ControllerAdvice` equivalent features
+//! Nexus Exceptions - Spring @`ControllerAdvice` 等价功能
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
@@ -36,6 +36,9 @@
 // 允许 dead_code：这是一个框架库，包含许多公共 API 供用户使用但内部未使用。
 // 这是预期且有意的设计。
 #![allow(dead_code)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod advice;
 pub mod error_body;

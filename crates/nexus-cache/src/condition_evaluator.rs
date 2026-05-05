@@ -2,7 +2,7 @@
 //! 缓存条件表达式求值器
 //!
 //! Evaluates SpEL-like expressions for cache annotations
-//! 评估缓存注解的类似 SpEL 的表达式
+//! 评估缓存注解的类似 `SpEL` 的表达式
 
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
@@ -59,7 +59,7 @@ pub fn evaluate_cache_condition(
     let expr = expression.trim();
 
     // Handle logical NOT
-    if expr.starts_with("!") {
+    if expr.starts_with('!') {
         let inner_expr = expr[1..].trim();
         return !evaluate_cache_condition(inner_expr, args, result);
     }
@@ -101,55 +101,51 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle greater than
-    if expr.contains(">") {
-        let parts: Vec<&str> = expr.split(">").collect();
-        if parts.len() == 2 {
-            if let (Some(left_num), Some(right_num)) = (
+    if expr.contains('>') {
+        let parts: Vec<&str> = expr.split('>').collect();
+        if parts.len() == 2
+            && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
             ) {
                 return left_num > right_num;
             }
-        }
     }
 
     // Handle less than
-    if expr.contains("<") {
-        let parts: Vec<&str> = expr.split("<").collect();
-        if parts.len() == 2 {
-            if let (Some(left_num), Some(right_num)) = (
+    if expr.contains('<') {
+        let parts: Vec<&str> = expr.split('<').collect();
+        if parts.len() == 2
+            && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
             ) {
                 return left_num < right_num;
             }
-        }
     }
 
     // Handle greater than or equal
     if expr.contains(">=") {
         let parts: Vec<&str> = expr.splitn(2, ">=").collect();
-        if parts.len() == 2 {
-            if let (Some(left_num), Some(right_num)) = (
+        if parts.len() == 2
+            && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
             ) {
                 return left_num >= right_num;
             }
-        }
     }
 
     // Handle less than or equal
     if expr.contains("<=") {
         let parts: Vec<&str> = expr.splitn(2, "<=").collect();
-        if parts.len() == 2 {
-            if let (Some(left_num), Some(right_num)) = (
+        if parts.len() == 2
+            && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
             ) {
                 return left_num <= right_num;
             }
-        }
     }
 
     // Handle method calls like isEmpty()
@@ -201,9 +197,9 @@ pub fn evaluate_cache_condition(
 /// 查找运算符位置（考虑括号）
 fn find_operator(expr: &str, op: &str) -> Option<usize> {
     let mut depth = 0;
-    let mut chars = expr.char_indices();
+    let chars = expr.char_indices();
 
-    while let Some((i, c)) = chars.next() {
+    for (i, c) in chars {
         match c {
             '(' => depth += 1,
             ')' => depth -= 1,
@@ -230,8 +226,7 @@ fn get_value(
     }
 
     // Handle parameter reference like #param
-    if expr.starts_with("#") {
-        let param_name = &expr[1..];
+    if let Some(param_name) = expr.strip_prefix('#') {
         if let Some(value) = args.get(param_name) {
             return value.clone();
         }
@@ -310,7 +305,7 @@ fn extract_number(
 fn is_truthy(value: &JsonValue) -> bool {
     match value {
         JsonValue::Bool(b) => *b,
-        JsonValue::Number(n) => n.as_f64().map_or(false, |n| n != 0.0),
+        JsonValue::Number(n) => n.as_f64().is_some_and(|n| n != 0.0),
         JsonValue::String(s) => !s.is_empty(),
         JsonValue::Array(arr) => !arr.is_empty(),
         JsonValue::Object(obj) => !obj.is_empty(),

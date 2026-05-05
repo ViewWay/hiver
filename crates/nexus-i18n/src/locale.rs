@@ -2,7 +2,6 @@
 //! 语言环境处理
 
 use crate::error::{I18nError, I18nResult};
-use async_trait::async_trait;
 use std::fmt;
 use std::str::FromStr;
 use std::sync::Arc;

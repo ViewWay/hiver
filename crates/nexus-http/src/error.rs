@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @ResponseStatus, @ExceptionHandler, ResponseEntity, ResponseStatusException
+//! - @`ResponseStatus`, @`ExceptionHandler`, `ResponseEntity`, `ResponseStatusException`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -138,7 +138,7 @@ impl From<std::io::Error> for Error {
 }
 
 /// Result type for HTTP operations
-/// HTTP操作的Result类型
+/// `HTTP操作的Result类型`
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Response Status Exception
@@ -175,8 +175,8 @@ pub struct ResponseStatusException {
 }
 
 impl ResponseStatusException {
-    /// Create a new ResponseStatusException with the given status code and reason
-    /// 使用给定的状态码和原因创建新的ResponseStatusException
+    /// Create a new `ResponseStatusException` with the given status code and reason
+    /// `使用给定的状态码和原因创建新的ResponseStatusException`
     pub fn new(status: StatusCode, reason: impl Into<String>) -> Self {
         Self {
             status,
@@ -253,7 +253,7 @@ impl fmt::Display for ResponseStatusException {
 
 impl std::error::Error for ResponseStatusException {}
 
-/// Convert ResponseStatusException to Error
+/// Convert `ResponseStatusException` to Error
 impl From<ResponseStatusException> for Error {
     fn from(ex: ResponseStatusException) -> Self {
         Error::Custom(ex.status.as_u16(), ex.reason)

@@ -37,6 +37,9 @@
 #![warn(missing_docs)]
 #![warn(rust_2018_idioms)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod client;
 pub mod error;
 pub mod query;

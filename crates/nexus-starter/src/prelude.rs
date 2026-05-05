@@ -14,7 +14,7 @@
 // ============================================================================
 
 /// 应用主宏 - 标记应用程序入口点
-/// Similar to Spring Boot's @SpringBootApplication
+/// Similar to Spring Boot's @`SpringBootApplication`
 pub use nexus_macros::nexus_main;
 
 /// 组件注解宏

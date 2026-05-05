@@ -73,12 +73,12 @@ pub enum SecurityError {
     #[error("Expired token: {0}")]
     ExpiredToken(String),
 
-    /// Token error (alias for InvalidToken)
+    /// Token error (alias for `InvalidToken`)
     /// 令牌错误（InvalidToken的别名）
     #[error("Token error: {0}")]
     TokenError(String),
 
-    /// Token expired (alias for ExpiredToken)
+    /// Token expired (alias for `ExpiredToken`)
     /// 令牌已过期（ExpiredToken的别名）
     #[error("Token expired: {0}")]
     TokenExpired(String),
@@ -111,8 +111,8 @@ pub type SecurityResult<T> = Result<T, SecurityError>;
 /// Access denied exception
 /// 访问被拒绝异常
 ///
-/// Equivalent to Spring's AccessDeniedException.
-/// 等价于Spring的AccessDeniedException。
+/// Equivalent to Spring's `AccessDeniedException`.
+/// `等价于Spring的AccessDeniedException`。
 #[derive(Error, Debug)]
 #[error("Access denied: {message}")]
 pub struct AccessDeniedException {
@@ -142,8 +142,8 @@ impl AccessDeniedException {
 /// Authentication exception
 /// 认证异常
 ///
-/// Equivalent to Spring's AuthenticationException.
-/// 等价于Spring的AuthenticationException。
+/// Equivalent to Spring's `AuthenticationException`.
+/// `等价于Spring的AuthenticationException`。
 #[derive(Error, Debug)]
 #[error("Authentication failed: {message}")]
 pub struct AuthenticationException {

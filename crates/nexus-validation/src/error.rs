@@ -116,8 +116,8 @@ impl fmt::Display for ValidationError {
 
 impl std::error::Error for ValidationError {}
 
-/// Convert ValidationErrors to ValidationError
-/// 将 ValidationErrors 转换为 ValidationError
+/// Convert `ValidationErrors` to `ValidationError`
+/// 将 `ValidationErrors` 转换为 `ValidationError`
 ///
 /// This conversion is used when propagating validation errors
 /// through error handling mechanisms that expect a single error.
@@ -204,7 +204,7 @@ impl ValidationErrors {
 
     /// 获取指定字段的错误 / Get errors for specific field
     pub fn get(&self, field: &str) -> Option<&[ValidationError]> {
-        self.errors.get(field).map(|v| v.as_slice())
+        self.errors.get(field).map(std::vec::Vec::as_slice)
     }
 
     /// 转换为 JSON 值 / Convert to JSON value

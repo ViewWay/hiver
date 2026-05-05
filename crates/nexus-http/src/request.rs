@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - HttpServletRequest, @RequestParam, @PathVariable, @RequestBody
+//! - `HttpServletRequest`, @`RequestParam`, @`PathVariable`, @`RequestBody`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -16,7 +16,7 @@ use super::{
 use http::request::Parts;
 use std::collections::HashMap;
 
-/// Convert our Method to http::Method
+/// Convert our Method to `http::Method`
 impl From<&Method> for http::Method {
     fn from(method: &Method) -> Self {
         match method {
@@ -33,7 +33,7 @@ impl From<&Method> for http::Method {
     }
 }
 
-/// Convert http::Method to our Method
+/// Convert `http::Method` to our Method
 impl From<&http::Method> for Method {
     fn from(method: &http::Method) -> Self {
         match method.as_str() {
@@ -74,8 +74,8 @@ pub struct Request {
 }
 
 impl Request {
-    /// Create a new request from an http::Request
-    /// 从 http::Request 创建新请求
+    /// Create a new request from an `http::Request`
+    /// 从 `http::Request` 创建新请求
     pub fn new(inner: http::Request<Body>) -> Self {
         let uri = inner.uri().to_string();
         let query_params = Self::parse_query_params(&uri);
@@ -139,7 +139,7 @@ impl Request {
     /// Get a query parameter
     /// 获取查询参数
     pub fn param(&self, name: &str) -> Option<&str> {
-        self.query_params.get(name).map(|s| s.as_str())
+        self.query_params.get(name).map(std::string::String::as_str)
     }
 
     /// Get all query parameters
@@ -151,7 +151,7 @@ impl Request {
     /// Get a path variable
     /// 获取路径变量
     pub fn path_var(&self, name: &str) -> Option<&str> {
-        self.path_vars.get(name).map(|s| s.as_str())
+        self.path_vars.get(name).map(std::string::String::as_str)
     }
 
     /// Get all path variables
@@ -182,14 +182,14 @@ impl Request {
         &mut self.inner
     }
 
-    /// Consume this request and return the inner http::Request
-    /// 消费此请求并返回内部的 http::Request
+    /// Consume this request and return the inner `http::Request`
+    /// 消费此请求并返回内部的 `http::Request`
     pub fn into_inner(self) -> http::Request<Body> {
         self.inner
     }
 
-    /// Get a reference to the inner http::Request
-    /// 获取内部 http::Request 的引用
+    /// Get a reference to the inner `http::Request`
+    /// 获取内部 `http::Request` 的引用
     pub fn inner(&self) -> &http::Request<Body> {
         &self.inner
     }
@@ -197,8 +197,8 @@ impl Request {
     /// Get request extensions (for storing request-scoped data)
     /// 获取请求扩展（用于存储请求范围的数据）
     ///
-    /// This is equivalent to Spring's RequestAttributes or HttpServletRequest attributes.
-    /// 这等价于Spring的RequestAttributes或HttpServletRequest属性。
+    /// This is equivalent to Spring's `RequestAttributes` or `HttpServletRequest` attributes.
+    /// `这等价于Spring的RequestAttributes或HttpServletRequest属性`。
     pub fn extensions(&self) -> &http::Extensions {
         self.inner.extensions()
     }

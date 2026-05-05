@@ -53,6 +53,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod error;
 pub mod model;
 pub mod active_record;
@@ -60,15 +63,21 @@ pub mod query;
 pub mod repository;
 pub mod relationships;
 pub mod migrations;
+pub mod connection;
+#[cfg(feature = "sea-orm")]
+pub mod sea_orm;
 
 // Re-export the Model derive macro
 pub use nexus_data_macros::Model;
 
 pub use error::{OrmError, Error, Result, OrmResult};
-pub use model::{Model, ModelMeta, Column, ColumnType};
-pub use active_record::{ActiveRecord, Save, Delete, Refresh};
-pub use query::{QueryBuilder, WhereClause, OrderBy, Limit};
+pub use model::{Model, ModelMeta, Column, ColumnType, SqlDialect};
+pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count};
+pub use query::{QueryBuilder, WhereClause, OrderBy, Limit, ToSql};
 pub use repository::{OrmRepository, DefaultOrmRepository};
+pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, Relation, RelationType, OnDelete};
+pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
+pub use connection::Connection;
 
 /// Version of the data-orm module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

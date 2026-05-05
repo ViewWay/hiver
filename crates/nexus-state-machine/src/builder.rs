@@ -69,7 +69,7 @@ where
     /// 设置源状态
     pub fn source(mut self, source: S) -> Self {
         if let Some(ref mut builder) = self.current_transition {
-            *builder = std::mem::replace(builder, TransitionBuilder::new()).source(source);
+            *builder = std::mem::take(builder).source(source);
         }
         self
     }
@@ -78,7 +78,7 @@ where
     /// 设置目标状态
     pub fn target(mut self, target: S) -> Self {
         if let Some(ref mut builder) = self.current_transition {
-            *builder = std::mem::replace(builder, TransitionBuilder::new()).target(target);
+            *builder = std::mem::take(builder).target(target);
         }
         self
     }
@@ -87,7 +87,7 @@ where
     /// 设置事件
     pub fn event(mut self, event: E) -> Self {
         if let Some(ref mut builder) = self.current_transition {
-            *builder = std::mem::replace(builder, TransitionBuilder::new()).event(event);
+            *builder = std::mem::take(builder).event(event);
         }
         self
     }
@@ -99,7 +99,7 @@ where
         guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
     ) -> Self {
         if let Some(ref mut builder) = self.current_transition {
-            *builder = std::mem::replace(builder, TransitionBuilder::new()).guard(guard);
+            *builder = std::mem::take(builder).guard(guard);
         }
         self
     }
@@ -111,7 +111,7 @@ where
         action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
     ) -> Self {
         if let Some(ref mut builder) = self.current_transition {
-            *builder = std::mem::replace(builder, TransitionBuilder::new()).action(action);
+            *builder = std::mem::take(builder).action(action);
         }
         self
     }

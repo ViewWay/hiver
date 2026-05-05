@@ -172,7 +172,7 @@ impl AmqpConfig {
 /// 连接配置
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ConnectionConfig {
-    /// Prefetch count (QoS)
+    /// Prefetch count (`QoS`)
     /// 预取数量（QoS）
     #[serde(default = "default_prefetch")]
     pub prefetch_count: u16,

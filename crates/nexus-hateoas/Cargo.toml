@@ -1,0 +1,47 @@
+[package]
+name = "nexus-hateoas"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+HATEOAS (Hypermedia as the Engine of Application State) support for Nexus framework.
+Nexus框架的HATEOAS（超媒体作为应用状态引擎）支持。
+Equivalent to: Spring HATEOAS
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Core types / 核心类型
+nexus-core = { path = "../nexus-core" }
+nexus-http = { path = "../nexus-http" }
+nexus-router = { path = "../nexus-router" }
+
+# Serialization / 序列化 (Spring Jackson JSON)
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# URL handling / URL处理
+url = { workspace = true }
+
+# HTTP types / HTTP类型
+http = { workspace = true }
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -550,7 +550,15 @@ impl Future for Sleep {
     type Output = ();
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()> {
-        if !self.registered {
+        if self.registered {
+            // Check if the duration has elapsed
+            // 检查持续时间是否已过
+            if let Some(start) = self.start
+                && start.elapsed() >= self.duration {
+                    return Poll::Ready(());
+                }
+            Poll::Pending
+        } else {
             // First poll: register the timer
             // 第一次轮询：注册定时器
             self.registered = true;
@@ -562,15 +570,6 @@ impl Future for Sleep {
 
             // Check if already expired
             // 检查是否已到期
-            Poll::Pending
-        } else {
-            // Check if the duration has elapsed
-            // 检查持续时间是否已过
-            if let Some(start) = self.start {
-                if start.elapsed() >= self.duration {
-                    return Poll::Ready(());
-                }
-            }
             Poll::Pending
         }
     }

@@ -3,11 +3,11 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - ApplicationContext
-//! - BeanFactory
+//! - `ApplicationContext`
+//! - `BeanFactory`
 //! - @Component, @Service, @Repository scanning
 //! - Dependency injection / autowiring
-//! - Lifecycle callbacks (@PostConstruct, @PreDestroy)
+//! - Lifecycle callbacks (@`PostConstruct`, @`PreDestroy`)
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -40,12 +40,12 @@ pub struct BeanRegistration<T> {
     /// 创建bean的工厂函数
     pub factory: Option<BeanFactoryFn<T>>,
 
-    /// Post-init callback (@PostConstruct equivalent)
-    /// 初始化后回调（等价于 @PostConstruct）
+    /// Post-init callback (@`PostConstruct` equivalent)
+    /// 初始化后回调（等价于 @`PostConstruct`）
     pub post_construct: Option<Arc<dyn Fn(&T) -> Result<()> + Send + Sync>>,
 
-    /// Pre-destroy callback (@PreDestroy equivalent)
-    /// 销毁前回调（等价于 @PreDestroy）
+    /// Pre-destroy callback (@`PreDestroy` equivalent)
+    /// 销毁前回调（等价于 @`PreDestroy`）
     pub pre_destroy: Option<Arc<dyn Fn(&T) -> Result<()> + Send + Sync>>,
 }
 
@@ -274,15 +274,14 @@ impl Container {
 
         // Call post-construct callback if available (without holding lock)
         // 如果有回调，调用它（不持有锁）
-        if let Some(post_construct) = post_construct_callback {
-            if let Err(e) = post_construct(&bean_arc) {
+        if let Some(post_construct) = post_construct_callback
+            && let Err(e) = post_construct(&bean_arc) {
                 return Err(Error::internal(format!(
                     "Post-construct callback failed for {}: {}",
                     std::any::type_name::<T>(),
                     e
                 )));
             }
-        }
 
         // Now insert the bean (with write lock)
         // 现在插入bean（使用写锁）
@@ -340,23 +339,20 @@ impl Container {
                 .read()
                 .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
-            if let Some(bean) = beans.singletons.get(&type_id) {
-                if let Ok(typed) = Arc::clone(bean).downcast::<T>() {
+            if let Some(bean) = beans.singletons.get(&type_id)
+                && let Ok(typed) = Arc::clone(bean).downcast::<T>() {
                     return Ok(typed);
                 }
-            }
 
             // Check for circular dependency: if we're currently creating this bean,
             // try to return the early-exposed Weak reference
             // 检查循环依赖：如果正在创建此bean，尝试返回提前暴露的Weak引用
             if beans.creating.borrow().contains(&type_id) {
-                if let Some(weak) = beans.early_exposed.get(&type_id) {
-                    if let Some(arc) = weak.upgrade() {
-                        if let Ok(typed) = arc.downcast::<T>() {
+                if let Some(weak) = beans.early_exposed.get(&type_id)
+                    && let Some(arc) = weak.upgrade()
+                        && let Ok(typed) = arc.downcast::<T>() {
                             return Ok(typed);
                         }
-                    }
-                }
                 // Circular dependency detected but no early-exposed reference
                 // 检测到循环依赖但没有提前暴露的引用
                 return Err(Error::internal(format!(
@@ -434,13 +430,11 @@ impl Container {
                     .beans
                     .read()
                     .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
-                if let Some(reg) = beans.registrations.get(&type_id) {
-                    if let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>() {
-                        if let Some(post_construct) = &reg_t.post_construct {
+                if let Some(reg) = beans.registrations.get(&type_id)
+                    && let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
+                        && let Some(post_construct) = &reg_t.post_construct {
                             post_construct(&placeholder)?;
                         }
-                    }
-                }
             }
 
             Ok(placeholder)
@@ -476,11 +470,10 @@ impl Container {
                 .read()
                 .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
-            if let Some(bean) = beans.singletons.get(&type_id) {
-                if let Ok(typed) = Arc::clone(bean).downcast::<T>() {
+            if let Some(bean) = beans.singletons.get(&type_id)
+                && let Ok(typed) = Arc::clone(bean).downcast::<T>() {
                     return Ok(typed);
                 }
-            }
         }
 
         // Check if we have a registration with factory and create the bean
@@ -524,12 +517,11 @@ impl Container {
     pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool {
         let type_id = TypeId::of::<T>();
 
-        if let Ok(beans) = self.beans.try_read() {
-            if beans.singletons.contains_key(&type_id) || beans.registrations.contains_key(&type_id)
+        if let Ok(beans) = self.beans.try_read()
+            && (beans.singletons.contains_key(&type_id) || beans.registrations.contains_key(&type_id))
             {
                 return true;
             }
-        }
 
         false
     }
@@ -775,8 +767,8 @@ impl Default for ApplicationContext {
     }
 }
 
-/// Component scanner (equivalent to @ComponentScan)
-/// 组件扫描器（等价于 @ComponentScan）
+/// Component scanner (equivalent to @`ComponentScan`)
+/// 组件扫描器（等价于 @`ComponentScan`）
 pub struct ComponentScanner {
     base_packages: Vec<String>,
 }

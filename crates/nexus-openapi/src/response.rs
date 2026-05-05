@@ -1,5 +1,5 @@
-//! OpenAPI response definitions
-//! OpenAPI响应定义
+//! `OpenAPI` response definitions
+//! `OpenAPI响应定义`
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -132,6 +132,7 @@ impl Response {
 /// Header definition
 /// 头定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct Header {
     /// Description
     /// 描述
@@ -181,17 +182,6 @@ impl Header {
     }
 }
 
-impl Default for Header {
-    fn default() -> Self {
-        Self {
-            description: None,
-            schema: None,
-            required: false,
-            deprecated: false,
-            allow_empty_value: false,
-        }
-    }
-}
 
 /// Response content
 /// 响应内容

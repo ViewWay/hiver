@@ -161,7 +161,7 @@ impl SubmitEntry {
             opcode: super::opcode::WRITE,
             flags: 0,
             user_data,
-            buf_ptr: NonNull::new(buf as *mut u8),
+            buf_ptr: NonNull::new(buf.cast_mut()),
             buf_len,
             offset: 0,
             addr: None,

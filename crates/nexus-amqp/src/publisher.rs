@@ -82,8 +82,8 @@ pub struct PublishingOptions {
 impl Default for PublishingOptions {
     fn default() -> Self {
         Self {
-            exchange: "".to_string(),
-            routing_key: "".to_string(),
+            exchange: String::new(),
+            routing_key: String::new(),
             mandatory: false,
             immediate: false,
             delivery_mode: None,

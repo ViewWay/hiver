@@ -780,3 +780,7 @@ macro_rules! concat {
         Ident::new($str).to_string()
     }
 }
+
+
+#[cfg(test)]
+mod tests;

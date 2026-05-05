@@ -3,8 +3,8 @@
 //! 自动发现和注册应用中的组件。
 //! Automatically discover and register components in the application.
 //!
-//! 参考 Spring Boot 的 @ComponentScan。
-//! Based on Spring Boot's @ComponentScan.
+//! 参考 Spring Boot 的 @`ComponentScan`。
+//! Based on Spring Boot's @`ComponentScan`.
 
 use std::collections::HashMap;
 
@@ -20,7 +20,7 @@ use super::container::ApplicationContext;
 /// Component type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ComponentType {
-    /// 控制器 (@RestController)
+    /// 控制器 (@`RestController`)
     Controller,
 
     /// 服务 (@Service)
@@ -147,8 +147,8 @@ pub enum ComponentScope {
 /// 自动扫描并注册应用中的组件。
 /// Automatically scans and registers components in the application.
 ///
-/// 参考 Spring Boot 的 @ComponentScan。
-/// Based on Spring Boot's @ComponentScan.
+/// 参考 Spring Boot 的 @`ComponentScan`。
+/// Based on Spring Boot's @`ComponentScan`.
 #[derive(Debug)]
 pub struct ComponentScanner {
     /// 基础包名

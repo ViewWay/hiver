@@ -5,7 +5,7 @@ use crate::error::{IntegrationError, Result};
 use crate::message::Message;
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
+use tokio::sync::{broadcast, mpsc, RwLock};
 
 /// Message channel trait
 /// 消息通道接口
@@ -450,7 +450,7 @@ static GLOBAL_REGISTRY: std::sync::OnceLock<ChannelRegistry> = std::sync::OnceLo
 /// Get the global channel registry
 /// 获取全局通道注册表
 pub fn global_registry() -> &'static ChannelRegistry {
-    GLOBAL_REGISTRY.get_or_init(|| ChannelRegistry::new())
+    GLOBAL_REGISTRY.get_or_init(ChannelRegistry::new)
 }
 
 #[cfg(test)]

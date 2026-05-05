@@ -105,12 +105,9 @@ impl PropertyResolver {
 
                     // Find matching closing brace, accounting for nested placeholders
                     let end = self.find_matching_end(&result, start);
-                    let end = match end {
-                        Some(e) => e + self.placeholder_suffix.len(),
-                        None => {
-                            pos = start + self.placeholder_prefix.len();
-                            continue;
-                        }
+                    let end = if let Some(e) = end { e + self.placeholder_suffix.len() } else {
+                        pos = start + self.placeholder_prefix.len();
+                        continue;
                     };
 
                     let placeholder = &result[start..end];
@@ -158,12 +155,9 @@ impl PropertyResolver {
             if let Some(start) = result[pos..].find(&self.placeholder_prefix) {
                 let start = start + pos;
                 let end = self.find_matching_end(&result, start);
-                let end = match end {
-                    Some(e) => e + self.placeholder_suffix.len(),
-                    None => {
-                        pos = start + self.placeholder_prefix.len();
-                        continue;
-                    }
+                let end = if let Some(e) = end { e + self.placeholder_suffix.len() } else {
+                    pos = start + self.placeholder_prefix.len();
+                    continue;
                 };
 
                 let placeholder = &result[start..end];

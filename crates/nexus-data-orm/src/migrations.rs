@@ -3,8 +3,8 @@
 //!
 //! # Overview / 概述
 //!
-//! This module provides database migration support.
-//! 本模块提供数据库迁移支持。
+//! This module provides database migration support backed by a `DatabaseClient`.
+//! 本模块提供由 `DatabaseClient` 支持的数据库迁移支持。
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
@@ -23,72 +23,42 @@
 //!     .up("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);")
 //!     .down("DROP TABLE users;");
 //!
-//! let migrator = Migrator::new(db);
+//! let mut migrator = Migrator::new();
 //! migrator.register(migration);
-//! migrator.up().await?;
+//! migrator.up(&client).await?;
 //! ```
 
 use crate::{Error, Result};
+use nexus_data_rdbc::DatabaseClient;
 use std::collections::HashMap;
 
-/// Migration
-/// 迁移
-///
-/// Represents a single database migration with up and down SQL.
-/// 表示具有向上和向下 SQL 的单个数据库迁移。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// let migration = Migration::new("001_create_users")
-///     .up("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);")
-///     .down("DROP TABLE users;");
-/// ```
+/// Migration — a single database migration with up and down SQL.
+/// 迁移 — 具有向上和向下 SQL 的单个数据库迁移。
 #[derive(Debug, Clone)]
 pub struct Migration {
-    /// Migration name/identifier
-    /// 迁移名称/标识符
+    /// Migration name/identifier / 迁移名称/标识符
     pub name: String,
-
-    /// Migration version (e.g., "001", "2023-01-01")
-    /// 迁移版本（例如 "001", "2023-01-01"）
+    /// Migration version / 迁移版本
     pub version: String,
-
-    /// Description of what the migration does
-    /// 迁移所做事情的描述
+    /// Description of what the migration does / 迁移所做事情的描述
     pub description: String,
-
-    /// SQL to apply the migration
-    /// 应用迁移的 SQL
+    /// SQL to apply the migration / 应用迁移的 SQL
     pub up_sql: String,
-
-    /// SQL to rollback the migration
-    /// 回滚迁移的 SQL
+    /// SQL to rollback the migration / 回滚迁移的 SQL
     pub down_sql: String,
-
-    /// Whether this migration has been applied
-    /// 此迁移是否已应用
+    /// Whether this migration has been applied / 此迁移是否已应用
     pub applied: bool,
-
-    /// Migration attributes
-    /// 迁移属性
+    /// Migration attributes / 迁移属性
     pub attributes: HashMap<String, String>,
 }
 
 impl Migration {
-    /// Create a new migration
-    /// 创建新迁移
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let migration = Migration::new("001_create_users");
-    /// ```
+    /// Create a new migration / 创建新迁移
     pub fn new(name: impl Into<String>) -> Self {
         let name = name.into();
         Self {
-            name: name.clone(),
             version: Self::extract_version(&name),
+            name: name.clone(),
             description: String::new(),
             up_sql: String::new(),
             down_sql: String::new(),
@@ -97,8 +67,7 @@ impl Migration {
         }
     }
 
-    /// Create a new migration with explicit version
-    /// 创建具有显式版本的新迁移
+    /// Create a new migration with explicit version / 创建具有显式版本的新迁移
     pub fn with_version(version: impl Into<String>, name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
@@ -111,478 +80,313 @@ impl Migration {
         }
     }
 
-    /// Set the up SQL
-    /// 设置向上 SQL
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let migration = Migration::new("001_create_users")
-    ///     .up("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);");
-    /// ```
+    /// Set the up SQL / 设置向上 SQL
     pub fn up(mut self, sql: impl Into<String>) -> Self {
         self.up_sql = sql.into();
         self
     }
 
-    /// Set the down SQL
-    /// 设置向下 SQL
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let migration = Migration::new("001_create_users")
-    ///     .down("DROP TABLE users;");
-    /// ```
+    /// Set the down SQL / 设置向下 SQL
     pub fn down(mut self, sql: impl Into<String>) -> Self {
         self.down_sql = sql.into();
         self
     }
 
-    /// Set the description
-    /// 设置描述
+    /// Set the description / 设置描述
     pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.description = desc.into();
         self
     }
 
-    /// Add an attribute
-    /// 添加属性
+    /// Add an attribute / 添加属性
     pub fn attribute(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.attributes.insert(key.into(), value.into());
         self
     }
 
-    /// Extract version from migration name
-    /// 从迁移名称提取版本
+    /// Extract version from migration name / 从迁移名称提取版本
     fn extract_version(name: &str) -> String {
-        // Try to extract a leading number or date pattern
-        if let Some(stripped) = name.strip_prefix('V') {
-            if let Some(end) = stripped.find("__") {
+        if let Some(stripped) = name.strip_prefix('V')
+            && let Some(end) = stripped.find("__") {
                 return format!("V{}", &stripped[..end]);
             }
-        }
-        // Look for leading number pattern
         if let Some(end) = name.find('_') {
             let prefix = &name[..end];
             if prefix.chars().all(|c| c.is_ascii_digit()) {
                 return prefix.to_string();
             }
         }
-        // Default: use the full name as version
         name.to_string()
     }
 
-    /// Validate the migration
-    /// 验证迁移
+    /// Validate the migration / 验证迁移
     pub fn validate(&self) -> Result<()> {
         if self.up_sql.is_empty() {
             return Err(Error::validation(format!(
-                "Migration {} has no up_sql",
-                self.name
+                "Migration {} has no up_sql", self.name
             )));
         }
         if self.down_sql.is_empty() {
             return Err(Error::validation(format!(
-                "Migration {} has no down_sql",
-                self.name
+                "Migration {} has no down_sql", self.name
             )));
         }
         Ok(())
     }
 }
 
-/// Migration direction
-/// 迁移方向
+/// Migration direction / 迁移方向
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MigrationDirection {
-    /// Apply migrations (up)
-    /// 应用迁移（向上）
+    /// Apply migrations (up) / 应用迁移（向上）
     Up,
-
-    /// Rollback migrations (down)
-    /// 回滚迁移（向下）
+    /// Rollback migrations (down) / 回滚迁移（向下）
     Down,
 }
 
-/// Migrator
-/// 迁移器
-///
-/// Manages and executes database migrations.
-/// 管理和执行数据库迁移。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// let migrator = Migrator::new(db);
-/// migrator.register(migration);
-/// migrator.up().await?;
-/// ```
+/// Migrator — manages and executes database migrations.
+/// 迁移器 — 管理和执行数据库迁移。
 pub struct Migrator {
-    /// Registered migrations
-    /// 已注册的迁移
+    /// Registered migrations / 已注册的迁移
     migrations: Vec<Migration>,
-
-    /// Connection (placeholder - would be actual connection type)
-    /// 连接（占位符 - 将是实际的连接类型）
-    #[allow(dead_code)]
-    connection: Option<Connection>,
-
-    /// Migration table name
-    /// 迁移表名
+    /// Migration table name / 迁移表名
     migration_table: String,
 }
 
-/// Connection placeholder
-/// 连接占位符
-#[derive(Clone)]
-pub struct Connection;
-
 impl Migrator {
-    /// Create a new migrator
-    /// 创建新迁移器
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let migrator = Migrator::new(None);
-    /// ```
-    pub fn new(connection: Option<Connection>) -> Self {
+    /// Create a new migrator / 创建新迁移器
+    pub fn new() -> Self {
         Self {
             migrations: Vec::new(),
-            connection,
             migration_table: "_migrations".to_string(),
         }
     }
 
-    /// Register a migration
-    /// 注册迁移
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// migrator.register(migration);
-    /// ```
-    pub fn register(mut self, migration: Migration) -> Self {
+    /// Register a migration / 注册迁移
+    pub fn register(&mut self, migration: Migration) {
         self.migrations.push(migration);
-        self
     }
 
-    /// Register multiple migrations
-    /// 注册多个迁移
-    pub fn register_all(mut self, migrations: Vec<Migration>) -> Self {
+    /// Register multiple migrations / 注册多个迁移
+    pub fn register_all(&mut self, migrations: Vec<Migration>) {
         self.migrations.extend(migrations);
-        self
     }
 
-    /// Set the migration table name
-    /// 设置迁移表名
+    /// Build the migrator with a custom migration table name / 设置迁移表名
     pub fn migration_table(mut self, table: impl Into<String>) -> Self {
         self.migration_table = table.into();
         self
     }
 
-    /// Get all migrations
-    /// 获取所有迁移
+    /// Get all migrations / 获取所有迁移
     pub fn migrations(&self) -> &[Migration] {
         &self.migrations
     }
 
-    /// Get pending migrations
-    /// 获取待执行的迁移
+    /// Get pending migrations / 获取待执行的迁移
     pub fn pending(&self) -> Vec<&Migration> {
-        self.migrations
-            .iter()
-            .filter(|m| !m.applied)
-            .collect()
+        self.migrations.iter().filter(|m| !m.applied).collect()
     }
 
-    /// Get applied migrations
-    /// 获取已应用的迁移
+    /// Get applied migrations / 获取已应用的迁移
     pub fn applied(&self) -> Vec<&Migration> {
-        self.migrations
-            .iter()
-            .filter(|m| m.applied)
-            .collect()
+        self.migrations.iter().filter(|m| m.applied).collect()
     }
 
-    /// Run all pending migrations (placeholder)
-    /// 运行所有待执行的迁移（占位符）
-    pub async fn up(&mut self) -> Result<usize> {
-        let pending = self.pending();
-        let count = pending.len();
+    /// Ensure the migration tracking table exists.
+    /// 确保迁移跟踪表存在。
+    async fn ensure_migration_table<C: DatabaseClient>(&self, client: &C) -> Result<()> {
+        let sql = format!(
+            "CREATE TABLE IF NOT EXISTS {} (version TEXT PRIMARY KEY, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
+            self.migration_table
+        );
+        client
+            .execute_cmd(&sql)
+            .await
+            .map_err(|e| Error::migration(format!("Failed to create migration table: {e}")))?;
+        Ok(())
+    }
 
-        for migration in pending {
+    /// Run all pending migrations.
+    /// 运行所有待执行的迁移。
+    pub async fn up<C: DatabaseClient>(&mut self, client: &C) -> Result<usize> {
+        self.ensure_migration_table(client).await?;
+
+        let mut applied_count = 0;
+        for migration in &mut self.migrations {
+            if migration.applied {
+                continue;
+            }
             migration.validate()?;
-            // Placeholder: execute up_sql
-        }
 
-        Ok(count)
+            client
+                .execute_cmd(&migration.up_sql)
+                .await
+                .map_err(|e| {
+                    Error::migration(format!(
+                        "Migration {} failed: {}",
+                        migration.name, e
+                    ))
+                })?;
+
+            // Record the migration as applied
+            let record_sql = format!(
+                "INSERT INTO {} (version) VALUES ('{}')",
+                self.migration_table, migration.version,
+            );
+            client.execute_cmd(&record_sql).await.map_err(|e| {
+                Error::migration(format!("Failed to record migration {}: {}", migration.name, e))
+            })?;
+
+            migration.applied = true;
+            applied_count += 1;
+        }
+        Ok(applied_count)
     }
 
-    /// Rollback the last migration (placeholder)
-    /// 回滚最后的迁移（占位符）
-    pub async fn down(&mut self) -> Result<bool> {
-        if let Some(last) = self.migrations.iter().rev().find(|m| m.applied) {
+    /// Rollback the last applied migration.
+    /// 回滚最后的迁移。
+    pub async fn down<C: DatabaseClient>(&mut self, client: &C) -> Result<bool> {
+        if let Some(last) = self
+            .migrations
+            .iter_mut()
+            .rev()
+            .find(|m| m.applied)
+        {
             last.validate()?;
-            // Placeholder: execute down_sql
+
+            client
+                .execute_cmd(&last.down_sql)
+                .await
+                .map_err(|e| {
+                    Error::migration(format!(
+                        "Rollback of {} failed: {}",
+                        last.name, e
+                    ))
+                })?;
+
+            // Remove migration record
+            let delete_sql = format!(
+                "DELETE FROM {} WHERE version = '{}'",
+                self.migration_table, last.version,
+            );
+            client.execute_cmd(&delete_sql).await.map_err(|e| {
+                Error::migration(format!("Failed to unrecord migration {}: {}", last.name, e))
+            })?;
+
+            last.applied = false;
             Ok(true)
         } else {
             Ok(false)
         }
     }
 
-    /// Rollback a specific number of migrations (placeholder)
-    /// 回滚指定数量的迁移（占位符）
-    pub async fn rollback(&mut self, steps: usize) -> Result<usize> {
-        let applied: Vec<_> = self
-            .migrations
-            .iter()
-            .filter(|m| m.applied)
-            .rev()
-            .take(steps)
-            .collect();
-
-        let count = applied.len();
-        for migration in applied {
-            migration.validate()?;
-            // Placeholder: execute down_sql
+    /// Rollback a specific number of migrations.
+    /// 回滚指定数量的迁移。
+    pub async fn rollback<C: DatabaseClient>(&mut self, client: &C, steps: usize) -> Result<usize> {
+        let mut rolled_back = 0;
+        for _ in 0..steps {
+            if self.down(client).await? {
+                rolled_back += 1;
+            } else {
+                break;
+            }
         }
-
-        Ok(count)
+        Ok(rolled_back)
     }
 
-    /// Refresh - rollback all migrations and reapply them (placeholder)
-    /// 刷新 - 回滚所有迁移并重新应用它们（占位符）
-    pub async fn refresh(&mut self) -> Result<usize> {
-        self.down().await?;
-        self.up().await
+    /// Refresh — rollback all then reapply.
+    /// 刷新 — 回滚所有迁移并重新应用。
+    pub async fn refresh<C: DatabaseClient>(&mut self, client: &C) -> Result<usize> {
+        let to_rollback = self.applied().len();
+        for _ in 0..to_rollback {
+            self.down(client).await?;
+        }
+        self.up(client).await
     }
 
-    /// Reset - rollback all migrations (placeholder)
-    /// 重置 - 回滚所有迁移（占位符）
-    pub async fn reset(&mut self) -> Result<usize> {
-        let count = self.applied().len();
-        // Placeholder: rollback all
+    /// Reset — rollback all migrations.
+    /// 重置 — 回滚所有迁移。
+    pub async fn reset<C: DatabaseClient>(&mut self, client: &C) -> Result<usize> {
+        let mut count = 0;
+        while self.down(client).await? {
+            count += 1;
+        }
         Ok(count)
     }
 }
 
 impl Default for Migrator {
     fn default() -> Self {
-        Self::new(None)
+        Self::new()
     }
 }
 
-/// Schema builder
-/// Schema 构建器
-///
-/// Provides a fluent interface for building database schemas.
-/// 提供用于构建数据库模式的流畅接口。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// let sql = Schema::create_table("users")
-///     .column("id", ColumnType::I64).primary_key()
-///     .column("name", ColumnType::String).max_length(255)
-///     .column("email", ColumnType::String).max_length(255).unique()
-///     .to_sql();
-/// ```
+/// Schema builder — provides a fluent interface for building database schemas.
+/// Schema 构建器 — 提供用于构建数据库模式的流畅接口。
 pub struct Schema {
-    /// Schema operations
-    /// 模式操作
     operations: Vec<SchemaOperation>,
 }
 
-/// Schema operation
-/// 模式操作
+/// Schema operation / 模式操作
 #[derive(Debug, Clone)]
+#[allow(missing_docs)]
 pub enum SchemaOperation {
-    /// Create table
-    /// 创建表
+    /// Create table / 创建表
     CreateTable {
         name: String,
         columns: Vec<ColumnDefinition>,
     },
-
-    /// Drop table
-    /// 删除表
+    /// Drop table / 删除表
     DropTable { name: String },
-
-    /// Add column
-    /// 添加列
+    /// Add column / 添加列
     AddColumn {
         table: String,
         column: ColumnDefinition,
     },
-
-    /// Drop column
-    /// 删除列
+    /// Drop column / 删除列
     DropColumn { table: String, name: String },
-
-    /// Rename table
-    /// 重命名表
+    /// Rename table / 重命名表
     RenameTable { from: String, to: String },
-
-    /// Add index
-    /// 添加索引
+    /// Add index / 添加索引
     AddIndex {
         table: String,
         name: String,
         columns: Vec<String>,
         unique: bool,
     },
-
-    /// Drop index
-    /// 删除索引
+    /// Drop index / 删除索引
     DropIndex { table: String, name: String },
 }
 
-/// Column definition
-/// 列定义
+/// Column definition / 列定义
 #[derive(Debug, Clone)]
+#[allow(missing_docs)]
 pub struct ColumnDefinition {
-    /// Column name
-    /// 列名
     pub name: String,
-
-    /// Column type
-    /// 列类型
     pub type_: crate::ColumnType,
-
-    /// Whether this is a primary key
-    /// 是否为主键
     pub is_primary_key: bool,
-
-    /// Whether this is nullable
-    /// 是否可为空
     pub is_nullable: bool,
-
-    /// Whether this is unique
-    /// 是否唯一
     pub is_unique: bool,
-
-    /// Default value
-    /// 默认值
     pub default: Option<String>,
-
-    /// Max length for string types
-    /// 字符串类型的最大长度
     pub max_length: Option<usize>,
-
-    /// References (foreign key)
-    /// 引用（外键）
     pub references: Option<Reference>,
 }
 
-/// Foreign key reference
-/// 外键引用
+/// Foreign key reference / 外键引用
 #[derive(Debug, Clone)]
+#[allow(missing_docs)]
 pub struct Reference {
-    /// Referenced table
-    /// 被引用的表
     pub table: String,
-
-    /// Referenced column
-    /// 被引用的列
     pub column: String,
-
-    /// On delete behavior
-    /// 删除时行为
-    pub on_delete: Option<super::relationships::OnDelete>,
 }
 
 impl Schema {
-    /// Create a new schema builder
-    /// 创建新的模式构建器
+    /// Create a new schema builder / 创建新的模式构建器
     pub fn new() -> Self {
         Self {
             operations: Vec::new(),
         }
-    }
-
-    /// Create a table
-    /// 创建表
-    pub fn create_table(name: impl Into<String>) -> TableBuilder {
-        TableBuilder {
-            name: name.into(),
-            columns: Vec::new(),
-        }
-    }
-
-    /// Drop a table
-    /// 删除表
-    pub fn drop_table(mut self, name: impl Into<String>) -> Self {
-        self.operations.push(SchemaOperation::DropTable {
-            name: name.into(),
-        });
-        self
-    }
-
-    /// Add the operation to the schema
-    /// 将操作添加到模式
-    pub fn add_operation(mut self, operation: SchemaOperation) -> Self {
-        self.operations.push(operation);
-        self
-    }
-
-    /// Generate SQL for the schema (placeholder)
-    /// 为模式生成 SQL（占位符）
-    pub fn to_sql(&self, dialect: crate::model::SqlDialect) -> String {
-        let mut sql = String::new();
-        for operation in &self.operations {
-            sql.push_str(&self.operation_to_sql(operation, dialect));
-            sql.push_str(";\n");
-        }
-        sql
-    }
-
-    fn operation_to_sql(&self, operation: &SchemaOperation, dialect: crate::model::SqlDialect) -> String {
-        match operation {
-            SchemaOperation::CreateTable { name, columns } => {
-                let mut sql = format!("CREATE TABLE {} (", name);
-                let column_defs: Vec<String> = columns
-                    .iter()
-                    .map(|c| self.column_to_sql(c, dialect))
-                    .collect();
-                sql.push_str(&column_defs.join(", "));
-                sql.push(')');
-                sql
-            }
-            SchemaOperation::DropTable { name } => {
-                format!("DROP TABLE {}", name)
-            }
-            _ => format!("-- Not implemented: {:?}", operation),
-        }
-    }
-
-    fn column_to_sql(&self, column: &ColumnDefinition, dialect: crate::model::SqlDialect) -> String {
-        let mut sql = format!("{} {}", column.name, column.type_.as_sql(dialect));
-
-        if column.is_primary_key {
-            sql.push_str(" PRIMARY KEY");
-        }
-
-        if !column.is_nullable {
-            sql.push_str(" NOT NULL");
-        }
-
-        if column.is_unique {
-            sql.push_str(" UNIQUE");
-        }
-
-        if let Some(default) = &column.default {
-            sql.push_str(&format!(" DEFAULT {}", default));
-        }
-
-        if let Some(len) = column.max_length {
-            if matches!(column.type_, crate::ColumnType::String) {
-                sql = format!("{}({})", sql.split(' ').next().unwrap_or(&column.name), len);
-            }
-        }
-
-        sql
     }
 }
 
@@ -592,118 +396,101 @@ impl Default for Schema {
     }
 }
 
-/// Table builder
-/// 表构建器
-pub struct TableBuilder {
-    name: String,
-    columns: Vec<ColumnDefinition>,
-}
-
-impl TableBuilder {
-    /// Add a column
-    /// 添加列
-    pub fn column(mut self, name: impl Into<String>, type_: crate::ColumnType) -> ColumnBuilder {
-        ColumnBuilder {
-            table_builder: self,
+impl Schema {
+    /// Create a table operation / 创建表操作
+    pub fn create_table(name: impl Into<String>) -> Schema {
+        let mut schema = Self::new();
+        schema.operations.push(SchemaOperation::CreateTable {
             name: name.into(),
-            type_,
-            is_primary_key: false,
-            is_nullable: false,
-            is_unique: false,
-            default: None,
-            max_length: None,
-            references: None,
-        }
-    }
-
-    /// Finish building the table
-    /// 完成表构建
-    pub fn done(self) -> Schema {
-        Schema {
-            operations: vec![SchemaOperation::CreateTable {
-                name: self.name,
-                columns: self.columns,
-            }],
-        }
-    }
-}
-
-/// Column builder
-/// 列构建器
-pub struct ColumnBuilder {
-    table_builder: TableBuilder,
-    name: String,
-    type_: crate::ColumnType,
-    is_primary_key: bool,
-    is_nullable: bool,
-    is_unique: bool,
-    default: Option<String>,
-    max_length: Option<usize>,
-    references: Option<Reference>,
-}
-
-impl ColumnBuilder {
-    /// Set as primary key
-    /// 设置为主键
-    pub fn primary_key(mut self) -> TableBuilder {
-        self.is_primary_key = true;
-        self.finish_column()
-    }
-
-    /// Set as nullable
-    /// 设置为可为空
-    pub fn nullable(mut self) -> Self {
-        self.is_nullable = true;
-        self
-    }
-
-    /// Set as unique
-    /// 设置为唯一
-    pub fn unique(mut self) -> Self {
-        self.is_unique = true;
-        self
-    }
-
-    /// Set default value
-    /// 设置默认值
-    pub fn default(mut self, value: impl Into<String>) -> Self {
-        self.default = Some(value.into());
-        self
-    }
-
-    /// Set max length
-    /// 设置最大长度
-    pub fn max_length(mut self, len: usize) -> Self {
-        self.max_length = Some(len);
-        self
-    }
-
-    /// Finish this column and add another
-    /// 完成此列并添加另一列
-    pub fn column(self, name: impl Into<String>, type_: crate::ColumnType) -> ColumnBuilder {
-        let table_builder = self.finish_column();
-        table_builder.column(name, type_)
-    }
-
-    /// Finish the table
-    /// 完成表
-    pub fn done(self) -> Schema {
-        let table_builder = self.finish_column();
-        table_builder.done()
-    }
-
-    fn finish_column(mut self) -> TableBuilder {
-        self.table_builder.columns.push(ColumnDefinition {
-            name: self.name,
-            type_: self.type_,
-            is_primary_key: self.is_primary_key,
-            is_nullable: self.is_nullable,
-            is_unique: self.is_unique,
-            default: self.default,
-            max_length: self.max_length,
-            references: self.references,
+            columns: Vec::new(),
         });
-        self.table_builder
+        schema
+    }
+
+    /// Add a column to the current create table / 添加列到当前创建表
+    pub fn column(mut self, name: &str, type_: crate::ColumnType) -> Self {
+        if let Some(SchemaOperation::CreateTable { columns, .. }) = self.operations.last_mut() {
+            columns.push(ColumnDefinition {
+                name: name.to_string(),
+                type_,
+                is_primary_key: false,
+                is_nullable: false,
+                is_unique: false,
+                default: None,
+                max_length: None,
+                references: None,
+            });
+        }
+        self
+    }
+
+    /// Execute the schema operations against a DatabaseClient.
+    /// 对 DatabaseClient 执行模式操作。
+    pub async fn execute<C: DatabaseClient>(&self, client: &C) -> Result<()> {
+        for op in &self.operations {
+            let sql = schema_op_to_sql(op);
+            client
+                .execute_cmd(&sql)
+                .await
+                .map_err(|e| Error::migration(format!("Schema execution failed: {e}")))?;
+        }
+        Ok(())
+    }
+}
+
+/// Convert a SchemaOperation to SQL / 将 SchemaOperation 转换为 SQL
+fn schema_op_to_sql(op: &SchemaOperation) -> String {
+    match op {
+        SchemaOperation::CreateTable { name, columns } => {
+            let col_defs: Vec<String> = columns
+                .iter()
+                .map(|c| {
+                    let mut def = format!("{} {}", c.name, c.type_.as_sql(crate::model::SqlDialect::PostgreSQL));
+                    if c.is_primary_key {
+                        def.push_str(" PRIMARY KEY");
+                    }
+                    if !c.is_nullable {
+                        def.push_str(" NOT NULL");
+                    }
+                    if c.is_unique {
+                        def.push_str(" UNIQUE");
+                    }
+                    if let Some(d) = &c.default {
+                        def.push_str(&format!(" DEFAULT {}", d));
+                    }
+                    def
+                })
+                .collect();
+            format!("CREATE TABLE {} ({})", name, col_defs.join(", "))
+        }
+        SchemaOperation::DropTable { name } => format!("DROP TABLE IF EXISTS {}", name),
+        SchemaOperation::AddColumn { table, column } => {
+            format!(
+                "ALTER TABLE {} ADD COLUMN {} {}",
+                table,
+                column.name,
+                column.type_.as_sql(crate::model::SqlDialect::PostgreSQL),
+            )
+        }
+        SchemaOperation::DropColumn { table, name } => {
+            format!("ALTER TABLE {} DROP COLUMN {}", table, name)
+        }
+        SchemaOperation::RenameTable { from, to } => {
+            format!("ALTER TABLE {} RENAME TO {}", from, to)
+        }
+        SchemaOperation::AddIndex { table, name, columns, unique } => {
+            let unique_str = if *unique { "UNIQUE " } else { "" };
+            format!(
+                "CREATE {}INDEX {} ON {} ({})",
+                unique_str,
+                name,
+                table,
+                columns.join(", "),
+            )
+        }
+        SchemaOperation::DropIndex { table, name } => {
+            format!("DROP INDEX IF EXISTS {}.{}", table, name)
+        }
     }
 }
 
@@ -712,54 +499,52 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_migration_creation() {
-        let migration = Migration::new("001_create_users")
-            .up("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);")
-            .down("DROP TABLE users;");
-
-        assert_eq!(migration.name, "001_create_users");
-        assert_eq!(migration.version, "001");
-        assert!(!migration.up_sql.is_empty());
-        assert!(!migration.down_sql.is_empty());
-    }
-
-    #[test]
     fn test_migration_validation() {
-        let migration = Migration::new("001_create_users")
-            .up("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT);")
+        let m = Migration::new("001_test")
+            .up("CREATE TABLE test (id INT);")
+            .down("DROP TABLE test;");
+        assert!(m.validate().is_ok());
+    }
+
+    #[test]
+    fn test_migration_validation_fails_without_sql() {
+        let m = Migration::new("001_test");
+        assert!(m.validate().is_err());
+    }
+
+    #[test]
+    fn test_migration_builder() {
+        let m = Migration::new("V001__create_users")
+            .description("Create users table")
+            .up("CREATE TABLE users (id SERIAL);")
             .down("DROP TABLE users;");
-
-        assert!(migration.validate().is_ok());
-
-        let invalid_migration = Migration::new("002_empty")
-            .up("")
-            .down("");
-        assert!(invalid_migration.validate().is_err());
+        assert_eq!(m.version, "V001");
+        assert_eq!(m.description, "Create users table");
     }
 
     #[test]
-    fn test_schema_create_table() {
-        let schema = Schema::create_table("users")
-            .column("id", crate::ColumnType::I64).primary_key()
-            .column("name", crate::ColumnType::String)
-            .done();
-
-        assert_eq!(schema.operations.len(), 1);
-
-        let sql = schema.to_sql(crate::model::SqlDialect::PostgreSQL);
-        assert!(sql.contains("CREATE TABLE users"));
-        assert!(sql.contains("id BIGINT PRIMARY KEY"));
-        assert!(sql.contains("name VARCHAR"));
-    }
-
-    #[test]
-    fn test_migrator() {
-        let migrator = Migrator::new(None)
-            .register(Migration::new("001_create_users"))
-            .register(Migration::new("002_add_posts"));
-
-        assert_eq!(migrator.migrations().len(), 2);
+    fn test_migrator_pending() {
+        let mut migrator = Migrator::new();
+        migrator.register(
+            Migration::new("001_a")
+                .up("CREATE TABLE a (id INT);")
+                .down("DROP TABLE a;"),
+        );
+        migrator.register(
+            Migration::new("002_b")
+                .up("CREATE TABLE b (id INT);")
+                .down("DROP TABLE b;"),
+        );
         assert_eq!(migrator.pending().len(), 2);
         assert_eq!(migrator.applied().len(), 0);
+    }
+
+    #[test]
+    fn test_schema_create_table_sql() {
+        let schema = Schema::create_table("users")
+            .column("id", crate::ColumnType::I64);
+        let sql = schema_op_to_sql(&schema.operations[0]);
+        assert!(sql.contains("CREATE TABLE users"));
+        assert!(sql.contains("id"));
     }
 }

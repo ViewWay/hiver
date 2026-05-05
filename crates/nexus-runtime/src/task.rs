@@ -472,7 +472,7 @@ where
         // Create a no-op waker for now (Phase 2)
         // 目前创建一个空操作的waker（第2阶段）
         let waker = Waker::noop();
-        let mut context = Context::from_waker(&waker);
+        let mut context = Context::from_waker(waker);
 
         // Simple polling loop - this will block the thread
         // 简单轮询循环 - 这将阻塞线程

@@ -18,6 +18,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod attribute;
 pub mod cookie;
 pub mod form;
@@ -57,7 +60,7 @@ pub use nexus_http::Request;
 /// - `@RequestHeader`
 /// - `@CookieValue`
 /// - `@ModelAttribute`
-/// - `@ModelAttribute` (with QueryParams variant)
+/// - `@ModelAttribute` (with `QueryParams` variant)
 /// - `@RequestAttribute`
 /// - `@MatrixVariable`
 ///
@@ -68,7 +71,7 @@ pub use nexus_http::Request;
 /// - `@RequestHeader`
 /// - `@CookieValue`
 /// - `@ModelAttribute`
-/// - `@ModelAttribute` (带 QueryParams 变体)
+/// - `@ModelAttribute` (带 `QueryParams` 变体)
 /// - `@RequestAttribute`
 /// - `@MatrixVariable`
 pub trait FromRequest: Sized {
@@ -77,8 +80,8 @@ pub trait FromRequest: Sized {
     fn from_request(req: &Request) -> ExtractorFuture<Self>;
 }
 
-/// Future type returned by FromRequest
-/// FromRequest 返回的 Future 类型
+/// Future type returned by `FromRequest`
+/// `FromRequest` 返回的 Future 类型
 pub type ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorError>> + Send>>;
 
 /// Extractor error

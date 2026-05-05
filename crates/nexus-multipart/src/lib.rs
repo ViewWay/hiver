@@ -1,5 +1,5 @@
-//! Nexus Multipart - Spring MultipartFile equivalent features
-//! Nexus Multipart - Spring MultipartFile 等价功能
+//! Nexus Multipart - Spring `MultipartFile` equivalent features
+//! Nexus Multipart - Spring `MultipartFile` 等价功能
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
@@ -28,6 +28,9 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod error;
 pub mod extractor;

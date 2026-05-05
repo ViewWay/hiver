@@ -55,7 +55,7 @@ pub type AsyncResult<T> = Result<T, AsyncError>;
 
 impl From<AsyncError> for std::io::Error {
     fn from(err: AsyncError) -> Self {
-        std::io::Error::new(std::io::ErrorKind::Other, err.to_string())
+        std::io::Error::other(err.to_string())
     }
 }
 

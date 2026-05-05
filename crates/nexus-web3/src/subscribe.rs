@@ -1,19 +1,19 @@
 //! WebSocket subscription module
-//! WebSocket订阅模块
+//! `WebSocket订阅模块`
 //!
 //! # Overview / 概述
 //!
 //! This module provides WebSocket-based event subscriptions for blockchain events.
 //! It supports subscribing to new blocks, pending transactions, and contract events.
 //!
-//! 本模块提供基于WebSocket的区块链事件订阅功能。
+//! `本模块提供基于WebSocket的区块链事件订阅功能`。
 //! 支持订阅新区块、待处理交易和合约事件。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring WebSocket (WebSocketStompClient)
+//! - Spring WebSocket (`WebSocketStompClient`)
 //! - Web3j WebSocket subscriptions
-//! - Spring WebFlux event streaming
+//! - Spring `WebFlux` event streaming
 //!
 //! # Example / 示例
 //!
@@ -37,16 +37,14 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::sync::Arc;
 
 use crate::tx::TxHash;
 use crate::wallet::Address;
 
 /// WebSocket error
-/// WebSocket错误
+/// `WebSocket错误`
 #[derive(Debug, Clone)]
 pub enum WsError {
     /// Connection error
@@ -118,8 +116,8 @@ pub enum SubscriptionType {
 }
 
 impl SubscriptionType {
-    /// Get the subscription method name for eth_subscribe
-    /// 获取eth_subscribe的方法名
+    /// Get the subscription method name for `eth_subscribe`
+    /// `获取eth_subscribe的方法名`
     pub fn method_name(self) -> &'static str {
         match self {
             Self::NewHeads => "newHeads",
@@ -284,8 +282,8 @@ pub struct PendingTransaction {
 }
 
 impl PendingTransaction {
-    /// Parse as TxHash
-    /// 解析为TxHash
+    /// Parse as `TxHash`
+    /// `解析为TxHash`
     pub fn as_tx_hash(&self) -> Result<TxHash, WsError> {
         TxHash::from_hex(&self.hash).map_err(|e| WsError::ParseError(e.to_string()))
     }

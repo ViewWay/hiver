@@ -121,7 +121,7 @@ where
         if let Err(e) = item.validate() {
             // Add index information to errors
             // 将索引信息添加到错误
-            for (field, field_errors) in e.errors.into_iter() {
+            for (field, field_errors) in e.errors {
                 for field_error in field_errors {
                     let nested_field = format!("{}[{}]", field, index);
                     errors.add_error(ValidationError {
@@ -190,8 +190,8 @@ where
     }
 }
 
-/// Helper macro to implement ValidateNested for a type
-/// 帮助宏为类型实现ValidateNested
+/// Helper macro to implement `ValidateNested` for a type
+/// `帮助宏为类型实现ValidateNested`
 ///
 /// # Example / 示例
 ///
@@ -311,7 +311,7 @@ where
             if let Err(e) = value.validate() {
                 // Add key information to errors
                 // 将键信息添加到错误
-                for (field, field_errors) in e.errors.into_iter() {
+                for (field, field_errors) in e.errors {
                     for field_error in field_errors {
                         let nested_field = format!("{:?}", key);
                         let full_field = if field.is_empty() {

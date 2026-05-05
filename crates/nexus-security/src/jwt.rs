@@ -87,7 +87,7 @@ impl JwtClaims {
         Self {
             sub: user_id.into(),
             username: username.into(),
-            authorities: authorities.iter().map(|a| a.to_string()).collect(),
+            authorities: authorities.iter().map(std::string::ToString::to_string).collect(),
             iat: now.timestamp(),
             exp: expiration.timestamp(),
             iss: Some("nexus-security".to_string()),
@@ -134,8 +134,8 @@ impl JwtClaims {
 /// JWT utility
 /// JWT 工具类
 ///
-/// Equivalent to Spring's JwtUtil class.
-/// 等价于Spring的JwtUtil类。
+/// Equivalent to Spring's `JwtUtil` class.
+/// `等价于Spring的JwtUtil类`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -308,8 +308,8 @@ impl JwtUtil {
 /// JWT token provider
 /// JWT token 提供者
 ///
-/// Equivalent to Spring's JwtTokenProvider.
-/// 等价于Spring的JwtTokenProvider。
+/// Equivalent to Spring's `JwtTokenProvider`.
+/// `等价于Spring的JwtTokenProvider`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///

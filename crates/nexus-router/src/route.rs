@@ -159,6 +159,7 @@ impl fmt::Debug for Route {
 ///
 /// let handler: AsyncHandlerFn = |req, params| Box::pin(get_user(req, params));
 /// ```
+#[derive(Default)]
 pub enum Handler {
     /// A function pointer handler (synchronous, no arguments)
     /// 函数指针处理程序（同步，无参数）
@@ -182,6 +183,7 @@ pub enum Handler {
 
     /// Unimplemented handler (returns 501 Not Implemented)
     /// 未实现的处理程序（返回501 Not Implemented）
+    #[default]
     Unimplemented,
 }
 
@@ -306,11 +308,6 @@ impl fmt::Debug for Handler {
     }
 }
 
-impl Default for Handler {
-    fn default() -> Self {
-        Self::Unimplemented
-    }
-}
 
 impl Clone for Handler {
     fn clone(&self) -> Self {

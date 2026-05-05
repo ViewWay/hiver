@@ -6,13 +6,13 @@
 //! `nexus-http` provides HTTP server and client implementations for the
 //! Nexus framework.
 //!
-//! `nexus-http` 为Nexus框架提供HTTP服务器和客户端实现。
+//! `nexus-http` `为Nexus框架提供HTTP服务器和客户端实现`。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - Spring Web / Spring WebFlux / Spring MVC
-//! - ResponseEntity, @RequestBody, @ResponseBody
-//! - HttpServletRequest, HttpServletResponse
+//! - Spring Web / Spring `WebFlux` / Spring MVC
+//! - `ResponseEntity`, @`RequestBody`, @`ResponseBody`
+//! - `HttpServletRequest`, `HttpServletResponse`
 //!
 //! # Example / 示例
 //!
@@ -34,6 +34,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 #![allow(async_fn_in_trait)]
+
+#[cfg(test)]
+mod tests;
 
 pub mod api_response;
 pub mod body;
@@ -189,7 +192,7 @@ impl<T> From<T> for Json<T> {
 // ============================================================================
 
 /// Trait for types that can be converted to HTTP responses
-/// 可转换为HTTP响应的类型trait
+/// `可转换为HTTP响应的类型trait`
 ///
 /// This is equivalent to Spring's `ResponseEntity` or methods
 /// annotated with `@ResponseBody`.
@@ -291,7 +294,7 @@ impl IntoResponse for error::ResponseStatusException {
 // ============================================================================
 
 /// Trait for extracting data from HTTP requests
-/// 从HTTP请求中提取数据的trait
+/// `从HTTP请求中提取数据的trait`
 ///
 /// This is equivalent to Spring's:
 /// - `@RequestParam` → extract query parameters
@@ -335,7 +338,7 @@ impl FromRequest for Vec<u8> {
         Ok(req
             .body()
             .as_bytes()
-            .map(|b| b.to_vec())
+            .map(<[u8]>::to_vec)
             .unwrap_or_default())
     }
 }

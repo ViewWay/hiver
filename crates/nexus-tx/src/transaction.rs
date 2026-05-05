@@ -10,8 +10,8 @@ use std::sync::Arc;
 /// Represents an active transaction.
 /// 表示活动事务。
 ///
-/// Equivalent to Spring's TransactionRepresentation.
-/// 等价于Spring的TransactionRepresentation。
+/// Equivalent to Spring's `TransactionRepresentation`.
+/// `等价于Spring的TransactionRepresentation`。
 #[derive(Debug, Clone)]
 pub struct Transaction {
     /// Transaction status
@@ -126,8 +126,8 @@ impl Transaction {
 /// Transaction holder for thread-local storage
 /// 事务的线程本地存储持有者
 ///
-/// Equivalent to Spring's TransactionSynchronizationManager.
-/// 等价于Spring的TransactionSynchronizationManager。
+/// Equivalent to Spring's `TransactionSynchronizationManager`.
+/// `等价于Spring的TransactionSynchronizationManager`。
 pub(crate) struct TransactionHolder {
     /// Current transaction
     /// 当前事务
@@ -197,8 +197,8 @@ impl Default for TransactionHolder {
 
 /// Global transaction holder
 /// 全局事务持有者
-static GLOBAL_HOLDER: once_cell::sync::Lazy<TransactionHolder> =
-    once_cell::sync::Lazy::new(TransactionHolder::new);
+static GLOBAL_HOLDER: std::sync::LazyLock<TransactionHolder> =
+    std::sync::LazyLock::new(TransactionHolder::new);
 
 /// Get global transaction holder
 /// 获取全局事务持有者

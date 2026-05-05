@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 /// Queue type
 /// 队列类型
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum QueueType {
     /// Classic queue
     /// 经典队列
+    #[default]
     Classic,
 
     /// Quorum queue
@@ -20,11 +22,6 @@ pub enum QueueType {
     Stream,
 }
 
-impl Default for QueueType {
-    fn default() -> Self {
-        Self::Classic
-    }
-}
 
 /// AMQP queue
 /// AMQP队列

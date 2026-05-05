@@ -30,6 +30,7 @@
 //! ```
 
 use crate::{Error, Model, Result};
+use nexus_data_rdbc::DatabaseClient;
 use std::marker::PhantomData;
 
 /// Trait for SQL parameter conversion
@@ -72,6 +73,8 @@ impl ToSql for f64 {
 
 impl ToSql for &str {
     fn to_sql(&self) -> String {
+        // Escape single-quotes for SQL safety: ' → ''
+        // Backslash is NOT a standard SQL escape — use doubled single quotes.
         format!("'{}'", self.replace("'", "''"))
     }
 }
@@ -331,6 +334,18 @@ impl JoinType {
 /// Provides a fluent interface for building database queries.
 /// 提供用于构建数据库查询的流畅接口。
 ///
+/// # Safety / 安全性
+///
+/// Condition values passed to `where_()` are escaped via [`ToSql`] before
+/// insertion into the generated SQL. For string parameters single-quotes
+/// are escaped (`'` → `''`). Nevertheless, **do not concatenate untrusted
+/// user input into condition strings** — use the `?` placeholder pattern
+/// and pass values separately through the params slice.
+///
+/// Column names in `order_by()`, `select()`, `group_by()` are interpolated
+/// directly — they should come from trusted sources only (column enums or
+/// the [`ModelMeta`](crate::ModelMeta), not raw user input).
+///
 /// # Example / 示例
 ///
 /// ```rust,no_run,ignore
@@ -410,6 +425,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .where_("status = ?", &["active"])
     ///     .all().await?;
     /// ```
+    #[must_use = "QueryBuilder is consumed by each method; chain calls or use the final result"]
     pub fn where_(mut self, condition: &str, params: &[&dyn ToSql]) -> Self {
         let mut params_vec = Vec::new();
         for &param in params {
@@ -432,7 +448,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .order_by("created_at DESC")
     ///     .all().await?;
     /// ```
-    pub fn order_by(mut self, column: &str) -> OrderByBuilder<M> {
+    pub fn order_by(self, column: &str) -> OrderByBuilder<M> {
         OrderByBuilder {
             query_builder: self,
             column: column.to_string(),
@@ -449,6 +465,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .limit(10)
     ///     .all().await?;
     /// ```
+    #[must_use]
     pub fn limit(mut self, limit: usize) -> Self {
         self.limit.limit = Some(limit);
         self
@@ -465,6 +482,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .offset(20)
     ///     .all().await?;
     /// ```
+    #[must_use]
     pub fn offset(mut self, offset: usize) -> Self {
         self.limit.offset = Some(offset);
         self
@@ -480,6 +498,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .join(JoinType::Inner, "posts", "users.id = posts.user_id")
     ///     .all().await?;
     /// ```
+    #[must_use]
     pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self {
         self.joins.push(Join::new(join_type, table, on));
         self
@@ -495,6 +514,7 @@ impl<M: Model> QueryBuilder<M> {
     ///     .select(&["id", "name"])
     ///     .all().await?;
     /// ```
+    #[must_use]
     pub fn select(mut self, columns: &[&str]) -> Self {
         self.select = columns.iter().map(|s| s.to_string()).collect();
         self
@@ -502,6 +522,7 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Add a group by clause
     /// 添加 GROUP BY 子句
+    #[must_use]
     pub fn group_by(mut self, columns: &[&str]) -> Self {
         self.group_by = columns.iter().map(|s| s.to_string()).collect();
         self
@@ -509,6 +530,7 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Add a having clause
     /// 添加 HAVING 子句
+    #[must_use]
     pub fn having(mut self, condition: &str) -> Self {
         self.having = Some(condition.to_string());
         self
@@ -516,6 +538,7 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Set distinct flag
     /// 设置 DISTINCT 标志
+    #[must_use]
     pub fn distinct(mut self) -> Self {
         self.distinct = true;
         self
@@ -532,7 +555,7 @@ impl<M: Model> QueryBuilder<M> {
             sql.push_str("DISTINCT ");
         }
         if self.select.is_empty() {
-            sql.push_str("*");
+            sql.push('*');
         } else {
             sql.push_str(&self.select.join(", "));
         }
@@ -608,33 +631,118 @@ impl<M: Model> QueryBuilder<M> {
         sql
     }
 
-    /// Execute the query and return all results (placeholder)
-    /// 执行查询并返回所有结果（占位符）
-    pub async fn all(&self) -> Result<Vec<M>> {
-        // Placeholder - actual implementation would execute the query
-        Err(Error::unknown("Query execution not yet implemented"))
+    /// Execute the query and return all results.
+    /// 执行查询并返回所有结果。
+    ///
+    /// Requires the model to implement `serde::de::DeserializeOwned` so rows
+    /// can be deserialised via the JSON intermediate.
+    pub async fn all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<M>>
+    where
+        M: serde::de::DeserializeOwned,
+    {
+        let sql = self.to_sql();
+        let rows = client
+            .fetch_all(&sql)
+            .await
+            .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
+        let mut results = Vec::with_capacity(rows.len());
+        for row in &rows {
+            results.push(
+                row.deserialize()
+                    .map_err(|e| Error::query_build(format!("Row deserialization failed: {e}")))?,
+            );
+        }
+        Ok(results)
     }
 
-    /// Execute the query and return the first result (placeholder)
-    /// 执行查询并返回第一个结果（占位符）
-    pub async fn first(&self) -> Result<Option<M>> {
-        // Placeholder - actual implementation would execute the query
-        Err(Error::unknown("Query execution not yet implemented"))
+    /// Execute the query and return the first result, if any.
+    /// 执行查询并返回第一个结果（如果存在）。
+    pub async fn first<C: DatabaseClient>(&self, client: &C) -> Result<Option<M>>
+    where
+        M: serde::de::DeserializeOwned,
+    {
+        let sql = self.to_sql();
+        let row = client
+            .fetch_one(&sql)
+            .await
+            .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
+        match row {
+            Some(r) => r
+                .deserialize()
+                .map(Some)
+                .map_err(|e| Error::query_build(format!("Row deserialization failed: {e}"))),
+            None => Ok(None),
+        }
     }
 
-    /// Execute the query and return the count (placeholder)
-    /// 执行查询并返回计数（占位符）
-    pub async fn count(&self) -> Result<i64> {
-        // Placeholder - actual implementation would execute the query
-        Err(Error::unknown("Count query not yet implemented"))
+    /// Execute a COUNT query and return the count.
+    /// 执行 COUNT 查询并返回计数。
+    pub async fn count<C: DatabaseClient>(&self, client: &C) -> Result<i64> {
+        let mut count_sql = String::from("SELECT COUNT(*) AS cnt FROM ");
+        count_sql.push_str(&M::table_name());
+
+        if !self.wheres.is_empty() {
+            count_sql.push_str(" WHERE ");
+            let conditions: Vec<String> = self
+                .wheres
+                .iter()
+                .map(|w| {
+                    let mut condition = w.condition.clone();
+                    for param in &w.params {
+                        condition = condition.replacen('?', param, 1);
+                    }
+                    condition
+                })
+                .collect();
+            count_sql.push_str(&conditions.join(" AND "));
+        }
+
+        let rows = client
+            .fetch_all(&count_sql)
+            .await
+            .map_err(|e| Error::query_build(format!("Count query failed: {e}")))?;
+        let cnt = rows
+            .first()
+            .and_then(|r| r.get_as::<i64>("cnt").ok())
+            .unwrap_or(0);
+        Ok(cnt)
     }
 
-    /// Execute the query and return paginated results (placeholder)
-    /// 执行查询并返回分页结果（占位符）
-    pub async fn paginate(&self, page: u32, per_page: u32) -> Result<nexus_data_commons::Page<M>> {
-        // Placeholder - actual implementation would execute the query
-        Err(Error::unknown("Pagination not yet implemented"))
+    /// Execute the query with pagination and return a page of results.
+    /// 执行分页查询并返回一页结果。
+    pub async fn paginate<C: DatabaseClient>(
+        &self,
+        client: &C,
+        page: u32,
+        per_page: u32,
+    ) -> Result<nexus_data_commons::Page<M>>
+    where
+        M: serde::de::DeserializeOwned,
+    {
+        let total = self.count(client).await?;
+        let offset = ((page.max(1) - 1) * per_page) as usize;
+        let sql = format!("{} LIMIT {} OFFSET {}", self.to_sql(), per_page, offset);
+
+        let rows = client
+            .fetch_all(&sql)
+            .await
+            .map_err(|e| Error::query_build(format!("Pagination query failed: {e}")))?;
+        let records: Vec<M> = rows
+            .iter()
+            .map(|r| {
+                r.deserialize()
+                    .map_err(|e| Error::query_build(format!("Row deserialization failed: {e}")))
+            })
+            .collect::<Result<Vec<M>>>()?;
+
+        Ok(nexus_data_commons::Page::new(
+            records,
+            page,
+            per_page,
+            total as u64,
+        ))
     }
+
 }
 
 impl<M: Model> Default for QueryBuilder<M> {

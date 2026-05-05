@@ -1,0 +1,68 @@
+//! XML marshalling/unmarshalling for SOAP
+//! SOAP的XML编组/解组
+//!
+//! Equivalent to Spring WS OXM (Object/XML Mapping)
+//! 等价于 Spring WS OXM（对象/XML映射）
+
+use serde::{de::DeserializeOwned, Serialize};
+use thiserror::Error;
+
+/// Marshalling error / 编组错误
+#[derive(Error, Debug)]
+pub enum MarshalError {
+    #[error("Serialization error: {0}")]
+    Serialization(String),
+    #[error("Deserialization error: {0}")]
+    Deserialization(String),
+    #[error("Unsupported format: {0}")]
+    UnsupportedFormat(String),
+}
+
+/// XML Marshal trait / `XML编组trait`
+pub trait XmlMarshal {
+    fn marshal(&self) -> Result<String, MarshalError>;
+}
+
+/// XML Unmarshal trait / `XML解组trait`
+pub trait XmlUnmarshal: Sized {
+    fn unmarshal(xml: &str) -> Result<Self, MarshalError>;
+}
+
+/// Default marshaller using JSON as intermediate format
+/// 使用JSON作为中间格式的默认编组器
+pub struct DefaultMarshaller;
+
+impl DefaultMarshaller {
+    pub fn to_xml<T: Serialize>(value: &T) -> Result<String, MarshalError> {
+        let json = serde_json::to_string(value)
+            .map_err(|e| MarshalError::Serialization(e.to_string()))?;
+        Ok(format!("<envelope><body>{}</body></envelope>", json))
+    }
+
+    pub fn from_xml<T: DeserializeOwned>(xml: &str) -> Result<T, MarshalError> {
+        serde_json::from_str(xml)
+            .map_err(|e| MarshalError::Deserialization(e.to_string()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    struct Greeting { message: String }
+
+    #[test]
+    fn test_marshal() {
+        let g = Greeting { message: "hello".into() };
+        let xml = DefaultMarshaller::to_xml(&g).unwrap();
+        assert!(xml.contains("hello"));
+    }
+
+    #[test]
+    fn test_unmarshal() {
+        let g: Greeting = DefaultMarshaller::from_xml(r#"{"message":"hello"}"#).unwrap();
+        assert_eq!(g.message, "hello");
+    }
+}

@@ -11,7 +11,7 @@ use std::fmt;
 /// 大多数应用程序中的常见角色。
 ///
 /// Equivalent to Spring Security's Role enum.
-/// 等价于Spring Security的Role枚举。
+/// 等价于Spring `Security的Role枚举`。
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Role {
     /// Administrator role
@@ -61,7 +61,7 @@ impl Role {
     }
 
     /// Get role with ROLE_ prefix (Spring style)
-    /// 获取带ROLE_前缀的角色（Spring风格）
+    /// `获取带ROLE_前缀的角色（Spring风格`）
     pub fn with_prefix(&self) -> String {
         format!("{}{}", crate::DEFAULT_ROLE_PREFIX, self.name())
     }
@@ -94,8 +94,8 @@ impl From<&str> for Role {
 /// Collection of roles
 /// 角色集合
 ///
-/// Equivalent to Spring's SimpleGrantedAuthority with roles.
-/// 等价于Spring的带角色的SimpleGrantedAuthority。
+/// Equivalent to Spring's `SimpleGrantedAuthority` with roles.
+/// `等价于Spring的带角色的SimpleGrantedAuthority`。
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Roles {
     /// List of roles
@@ -148,8 +148,8 @@ impl Default for Roles {
 /// Represents a granted authority or permission.
 /// 表示授予权限或许可。
 ///
-/// Equivalent to Spring's GrantedAuthority interface.
-/// 等价于Spring的GrantedAuthority接口。
+/// Equivalent to Spring's `GrantedAuthority` interface.
+/// `等价于Spring的GrantedAuthority接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -235,8 +235,8 @@ impl fmt::Display for Authority {
 /// Trait for granted authorities
 /// 授予权限的trait
 ///
-/// Equivalent to Spring's GrantedAuthority.
-/// 等价于Spring的GrantedAuthority。
+/// Equivalent to Spring's `GrantedAuthority`.
+/// `等价于Spring的GrantedAuthority`。
 pub trait GrantedAuthority: Send + Sync {
     /// Get the authority string
     /// 获取权限字符串
@@ -247,7 +247,7 @@ pub trait GrantedAuthority: Send + Sync {
     fn equals(&self, other: &dyn GrantedAuthority) -> bool;
 }
 
-/// Implement GrantedAuthority for Authority
+/// Implement `GrantedAuthority` for Authority
 impl GrantedAuthority for Authority {
     fn get_authority(&self) -> String {
         self.authority()

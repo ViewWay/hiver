@@ -1,8 +1,8 @@
 //! Exception handler trait
 //! 异常处理器 trait
 //!
-//! # Equivalent to Spring's @ExceptionHandler
-//! # 等价于 Spring 的 @ExceptionHandler
+//! # Equivalent to Spring's @`ExceptionHandler`
+//! # 等价于 Spring 的 @`ExceptionHandler`
 
 use nexus_http::Response;
 use std::fmt::Debug;

@@ -13,7 +13,7 @@
 //!
 //! - Micrometer Metrics
 //! - Spring Boot Actuator Metrics
-//! - Prometheus MeterRegistry
+//! - Prometheus `MeterRegistry`
 //!
 //! # Example / 示例
 //!
@@ -42,7 +42,6 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
@@ -93,8 +92,8 @@ impl MetricId {
         self
     }
 
-    /// Create a new MetricId with a suffix added to the name
-    /// 创建名称带后缀的新 MetricId
+    /// Create a new `MetricId` with a suffix added to the name
+    /// 创建名称带后缀的新 `MetricId`
     fn with_suffix(&self, suffix: &str) -> MetricId {
         MetricId {
             name: format!("{}_{}", self.name, suffix),
@@ -435,7 +434,7 @@ impl HistogramData {
     /// 使用自定义桶创建新的直方图数据
     fn with_buckets(mut buckets: Vec<Option<f64>>) -> Self {
         // Ensure buckets are sorted and end with +Inf
-        let has_infinity = buckets.iter().any(|b| b.is_none());
+        let has_infinity = buckets.iter().any(Option::is_none);
         buckets.sort_by(|a, b| match (a, b) {
             (Some(va), Some(vb)) => va.partial_cmp(vb).unwrap(),
             (Some(_), None) => std::cmp::Ordering::Less,
@@ -462,7 +461,7 @@ impl HistogramData {
 
         // Find the appropriate bucket
         for (i, upper_bound) in self.buckets.iter().enumerate() {
-            if upper_bound.map_or(true, |ub| value <= ub) {
+            if upper_bound.is_none_or(|ub| value <= ub) {
                 self.bucket_counts[i] += 1;
             }
         }
@@ -550,13 +549,13 @@ impl Histogram {
     /// Get the total count of observations
     /// 获取观察总数
     pub fn count(&self) -> u64 {
-        self.data.read().map(|d| d.count).unwrap_or(0)
+        self.data.read().map_or(0, |d| d.count)
     }
 
     /// Get the sum of observed values
     /// 获取观察值的总和
     pub fn sum(&self) -> f64 {
-        self.data.read().map(|d| d.sum).unwrap_or(0.0)
+        self.data.read().map_or(0.0, |d| d.sum)
     }
 
     /// Get the buckets with cumulative counts
@@ -692,11 +691,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read() {
-            if let Some(Metric::Counter(counter)) = metrics.get(&id) {
+        if let Ok(metrics) = self.metrics.read()
+            && let Some(Metric::Counter(counter)) = metrics.get(&id) {
                 return counter.clone();
             }
-        }
 
         let counter = Counter::with_labels(name, all_labels);
         if let Ok(mut metrics) = self.metrics.write() {
@@ -724,11 +722,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read() {
-            if let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
+        if let Ok(metrics) = self.metrics.read()
+            && let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
                 return gauge.clone();
             }
-        }
 
         let gauge = Gauge::with_labels(name, all_labels);
         if let Ok(mut metrics) = self.metrics.write() {
@@ -756,11 +753,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read() {
-            if let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
+        if let Ok(metrics) = self.metrics.read()
+            && let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
                 return histogram.clone();
             }
-        }
 
         let histogram = Histogram::with_labels(name, all_labels);
         if let Ok(mut metrics) = self.metrics.write() {
@@ -790,7 +786,7 @@ impl MetricsRegistry {
         for metric in &metrics {
             by_name
                 .entry(metric.id().name.clone())
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(metric);
         }
 
@@ -799,28 +795,28 @@ impl MetricsRegistry {
             if let Some(help) = group.first().and_then(|m| m.help()) {
                 output.push_str("# HELP ");
                 output.push_str(&name);
-                output.push_str(" ");
+                output.push(' ');
                 output.push_str(&help);
-                output.push_str("\n");
+                output.push('\n');
             }
 
             // Get type
             if let Some(first) = group.first() {
                 output.push_str("# TYPE ");
                 output.push_str(&name);
-                output.push_str(" ");
+                output.push(' ');
                 output.push_str(first.metric_type().as_str());
-                output.push_str("\n");
+                output.push('\n');
             }
 
             // Export each metric
             for metric in group {
                 match metric {
                     Metric::Counter(counter) => {
-                        output.push_str(&export_metric_line(&counter.id(), counter.get()));
+                        output.push_str(&export_metric_line(counter.id(), counter.get()));
                     },
                     Metric::Gauge(gauge) => {
-                        output.push_str(&export_metric_line(&gauge.id(), gauge.get() as u64));
+                        output.push_str(&export_metric_line(gauge.id(), gauge.get() as u64));
                     },
                     Metric::Histogram(histogram) => {
                         // Export bucket counts with _bucket suffix
@@ -911,14 +907,14 @@ fn export_metric_line(id: &MetricId, value: u64) -> String {
 
     line.push(' ');
     line.push_str(&formatted_value);
-    line.push_str("\n");
+    line.push('\n');
 
     line
 }
 
 /// Global metrics registry
 /// 全局指标注册表
-static GLOBAL_REGISTRY: Lazy<MetricsRegistry> = Lazy::new(|| MetricsRegistry::new());
+static GLOBAL_REGISTRY: std::sync::LazyLock<MetricsRegistry> = std::sync::LazyLock::new(|| MetricsRegistry::new());
 
 /// Get the global metrics registry
 /// 获取全局指标注册表

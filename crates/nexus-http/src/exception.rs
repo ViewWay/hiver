@@ -200,8 +200,8 @@ impl ErrorResponse {
     }
 }
 
-/// Builder for ErrorResponse
-/// ErrorResponse 构建器
+/// Builder for `ErrorResponse`
+/// `ErrorResponse` 构建器
 impl Default for ErrorResponse {
     fn default() -> Self {
         Self::internal_server_error()
@@ -218,8 +218,8 @@ impl Default for ErrorResponse {
 /// Equivalent to Spring's `@ExceptionHandler` mechanism.
 /// 等价于 Spring 的 `@ExceptionHandler` 机制。
 pub trait IntoErrorResponse: Send + Sync {
-    /// Convert this error into an ErrorResponse
-    /// 将此错误转换为 ErrorResponse
+    /// Convert this error into an `ErrorResponse`
+    /// 将此错误转换为 `ErrorResponse`
     fn into_error_response(&self) -> ErrorResponse;
 
     /// Get the HTTP status code for this error
@@ -240,8 +240,8 @@ pub type ExceptionHandlerFn =dyn Fn(&dyn std::any::Any) -> ErrorResponse + Send 
 /// Global exception handler registry
 /// 全局异常处理器注册表
 pub struct ExceptionHandlerRegistry {
-    /// TypeID to handler mapping
-    /// TypeID 到处理器的映射
+    /// `TypeID` to handler mapping
+    /// `TypeID` 到处理器的映射
     handlers: HashMap<std::any::TypeId, Box<ExceptionHandlerFn>>,
 }
 
@@ -275,8 +275,8 @@ impl ExceptionHandlerRegistry {
         self.handlers.insert(type_id, boxed_handler);
     }
 
-    /// Handle an error, returning an ErrorResponse if a handler is registered
-    /// 处理错误，如果注册了处理器则返回 ErrorResponse
+    /// Handle an error, returning an `ErrorResponse` if a handler is registered
+    /// 处理错误，如果注册了处理器则返回 `ErrorResponse`
     pub fn handle<E: 'static + IntoErrorResponse + std::any::Any>(&self, error: &E) -> ErrorResponse {
         let type_id = std::any::TypeId::of::<E>();
         if let Some(handler) = self.handlers.get(&type_id) {
@@ -425,7 +425,7 @@ impl IntoErrorResponse for ResourceNotFoundException {
     fn into_error_response(&self) -> ErrorResponse {
         ErrorResponse::not_found()
             .code("RESOURCE_NOT_FOUND")
-            .message(&format!(
+            .message(format!(
                 "{} with id '{}' not found",
                 self.resource_type, self.resource_id
             ))
@@ -537,7 +537,7 @@ impl IntoErrorResponse for ValidationException {
 
         for field_error in &self.field_errors {
             error_response = error_response.detail(
-                &format!("field.{}", field_error.field),
+                format!("field.{}", field_error.field),
                 &field_error.message,
             );
         }

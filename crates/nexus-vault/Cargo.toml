@@ -1,0 +1,54 @@
+[package]
+name = "nexus-vault"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Spring Vault — Secrets management with HashiCorp Vault.
+Nexus框架的HashiCorp Vault密钥管理。
+Equivalent to: Spring Vault
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Core framework / 核心框架
+nexus-core = { path = "../nexus-core" }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+
+# Async / 异步
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# HTTP client / HTTP客户端
+reqwest = { workspace = true, features = ["json", "rustls-tls"] }
+
+# Utilities / 工具
+url = { workspace = true }
+chrono = { workspace = true }
+base64 = { workspace = true }
+
+[dev-dependencies]
+mockito = { workspace = true }
+tokio-test = { workspace = true }

@@ -143,13 +143,11 @@ pub fn url_decode(input: &str) -> String {
             result.push(' ');
         } else if c == '%' {
             let hex: String = chars.by_ref().take(2).collect();
-            if hex.len() == 2 {
-                if let Ok(byte) = u8::from_str_radix(&hex, 16) {
-                    if let Some(decoded) = char::from_u32(byte as u32) {
+            if hex.len() == 2
+                && let Ok(byte) = u8::from_str_radix(&hex, 16)
+                    && let Some(decoded) = char::from_u32(byte as u32) {
                         result.push(decoded);
                     }
-                }
-            }
         } else {
             result.push(c);
         }
@@ -252,7 +250,7 @@ where
 /// Equivalent to Spring's `@RequestParam("name")`.
 /// 等价于Spring的`@RequestParam("name")`。
 pub fn get_param(req: &Request, name: &str) -> Option<String> {
-    req.param(name).map(|s| s.to_string())
+    req.param(name).map(std::string::ToString::to_string)
 }
 
 /// Get all query parameters

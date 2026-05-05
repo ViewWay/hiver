@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `ConfigFileApplicationListener` - ConfigLoader
+//! - `ConfigFileApplicationListener` - `ConfigLoader`
 //! - `EnvironmentPostProcessor` - Loader processors
 //! - File watching and hot reload support
 
@@ -229,9 +229,7 @@ impl ConfigLoader {
         let args: Vec<String> = std::env::args().collect();
 
         for arg in args.iter().skip(1) {
-            if arg.starts_with("--") {
-                let arg = &arg[2..];
-
+            if let Some(arg) = arg.strip_prefix("--") {
                 if let Some((key, value)) = arg.split_once('=') {
                     builder.put(key, Value::string(value));
                 } else {
@@ -255,8 +253,8 @@ impl Default for ConfigLoader {
 /// Configuration loader builder
 /// 配置加载器构建器
 ///
-/// Provides a fluent API for building a ConfigLoader.
-/// 为构建ConfigLoader提供流畅的API。
+/// Provides a fluent API for building a `ConfigLoader`.
+/// `为构建ConfigLoader提供流畅的API`。
 pub struct ConfigLoaderBuilder {
     loader: ConfigLoader,
 }
@@ -403,12 +401,11 @@ impl Watcher {
     /// Add a file to watch
     /// 添加要监视的文件
     pub fn watch_file(&self, path: PathBuf) {
-        if let Ok(metadata) = std::fs::metadata(&path) {
-            if let Ok(modified) = metadata.modified() {
+        if let Ok(metadata) = std::fs::metadata(&path)
+            && let Ok(modified) = metadata.modified() {
                 let mut files = self.watched_files.write().unwrap();
                 files.insert(path, modified);
             }
-        }
     }
 
     /// Start watching
@@ -436,13 +433,11 @@ impl Watcher {
                 let mut changed = Vec::new();
 
                 for (path, last_modified) in files.iter() {
-                    if let Ok(metadata) = std::fs::metadata(path) {
-                        if let Ok(modified) = metadata.modified() {
-                            if modified != *last_modified {
+                    if let Ok(metadata) = std::fs::metadata(path)
+                        && let Ok(modified) = metadata.modified()
+                            && modified != *last_modified {
                                 changed.push((path.clone(), modified));
                             }
-                        }
-                    }
                 }
 
                 for (path, modified) in changed {

@@ -4,8 +4,8 @@
 /// Password encoder trait
 /// 密码编码器trait
 ///
-/// Equivalent to Spring's PasswordEncoder interface.
-/// 等价于Spring的PasswordEncoder接口。
+/// Equivalent to Spring's `PasswordEncoder` interface.
+/// `等价于Spring的PasswordEncoder接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -32,11 +32,11 @@ pub trait PasswordEncoder: Send + Sync {
     }
 }
 
-/// BCrypt password encoder
-/// BCrypt密码编码器
+/// `BCrypt` password encoder
+/// `BCrypt密码编码器`
 ///
-/// Equivalent to Spring's BCryptPasswordEncoder.
-/// 等价于Spring的BCryptPasswordEncoder。
+/// Equivalent to Spring's `BCryptPasswordEncoder`.
+/// `等价于Spring的BCryptPasswordEncoder`。
 pub struct BcryptPasswordEncoder {
     /// Cost factor (4-31, default 10)
     /// 成本因子（4-31，默认10）
@@ -44,8 +44,8 @@ pub struct BcryptPasswordEncoder {
 }
 
 impl BcryptPasswordEncoder {
-    /// Create a new BCrypt encoder with default cost
-    /// 创建具有默认成本的BCrypt编码器
+    /// Create a new `BCrypt` encoder with default cost
+    /// `创建具有默认成本的BCrypt编码器`
     pub fn new() -> Self {
         Self { cost: 10 }
     }
@@ -80,22 +80,21 @@ impl PasswordEncoder for BcryptPasswordEncoder {
 
     fn upgrade_encoding(&self, encoded: &str) -> bool {
         // Check if the encoded password has the target cost
-        if let Some(prefix) = encoded.split('$').nth(2) {
-            if let Ok(cost) = prefix.parse::<u32>() {
+        if let Some(prefix) = encoded.split('$').nth(2)
+            && let Ok(cost) = prefix.parse::<u32>() {
                 return cost != self.cost;
             }
-        }
         true
     }
 }
 
-/// NoOp password encoder (for testing only!)
+/// `NoOp` password encoder (for testing only!)
 /// NoOp密码编码器（仅用于测试！）
 ///
 /// WARNING: This does not actually encode passwords!
 /// 警告：这不会实际编码密码！
 ///
-/// Equivalent to Spring's NoOpPasswordEncoder (for testing only).
+/// Equivalent to Spring's `NoOpPasswordEncoder` (for testing only).
 /// 等价于Spring的NoOpPasswordEncoder（仅用于测试）。
 pub struct NoOpPasswordEncoder;
 
@@ -112,8 +111,8 @@ impl PasswordEncoder for NoOpPasswordEncoder {
 /// Standard password encoder
 /// 标准密码编码器
 ///
-/// Uses BCrypt by default.
-/// 默认使用BCrypt。
+/// Uses `BCrypt` by default.
+/// `默认使用BCrypt`。
 pub struct StandardPasswordEncoder {
     encoder: Box<dyn PasswordEncoder + Send + Sync>,
 }
@@ -141,8 +140,8 @@ impl StandardPasswordEncoder {
         }
     }
 
-    /// Create with BCrypt
-    /// 使用BCrypt创建
+    /// Create with `BCrypt`
+    /// `使用BCrypt创建`
     pub fn bcrypt() -> Self {
         Self {
             encoder: Box::new(BcryptPasswordEncoder::new()),
@@ -175,7 +174,7 @@ impl PasswordEncoder for StandardPasswordEncoder {
 /// PBKDF2 password encoder
 /// PBKDF2密码编码器
 ///
-/// Alternative to BCrypt with different security properties.
+/// Alternative to `BCrypt` with different security properties.
 /// BCrypt的替代品，具有不同的安全属性。
 pub struct Pbkdf2PasswordEncoder {
     /// Number of iterations

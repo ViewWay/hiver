@@ -8,7 +8,6 @@ use crate::metric::{MetricId, MetricName, Tags};
 use crate::timer::{LongTaskTimer, Timer};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
-use std::time::Duration;
 
 /// Metric registry
 /// 指标注册表
@@ -292,7 +291,7 @@ static GLOBAL_REGISTRY: std::sync::OnceLock<MetricRegistry> = std::sync::OnceLoc
 /// Get the global metric registry
 /// 获取全局指标注册表
 pub fn global_registry() -> &'static MetricRegistry {
-    GLOBAL_REGISTRY.get_or_init(|| MetricRegistry::new())
+    GLOBAL_REGISTRY.get_or_init(MetricRegistry::new)
 }
 
 /// Convenience function to get or create a counter

@@ -1,7 +1,7 @@
-//! Request extension for TransactionContext
-//! TransactionContext的Request扩展
+//! Request extension for `TransactionContext`
+//! `TransactionContext的Request扩展`
 //!
-//! This module provides Request-based TransactionContext that works across async boundaries.
+//! This module provides Request-based `TransactionContext` that works across async boundaries.
 //! 本模块提供基于Request的TransactionContext，可在异步边界间工作。
 
 use crate::{Transaction, TransactionStatus};
@@ -9,13 +9,13 @@ use nexus_http::Request;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-/// TransactionContext extension for Request
-/// Request的TransactionContext扩展
+/// `TransactionContext` extension for Request
+/// `Request的TransactionContext扩展`
 ///
-/// This allows TransactionContext to be passed through Request extensions,
-/// making it available across async boundaries without ThreadLocal.
+/// This allows `TransactionContext` to be passed through Request extensions,
+/// making it available across async boundaries without `ThreadLocal`.
 ///
-/// 这允许TransactionContext通过Request扩展传递，
+/// `这允许TransactionContext通过Request扩展传递`，
 /// 使其在异步边界间可用，无需ThreadLocal。
 ///
 /// # Example / 示例
@@ -43,8 +43,8 @@ pub struct TransactionContextExt {
 }
 
 impl TransactionContextExt {
-    /// Create a new TransactionContext extension
-    /// 创建新的TransactionContext扩展
+    /// Create a new `TransactionContext` extension
+    /// `创建新的TransactionContext扩展`
     pub fn new() -> Self {
         Self {
             current: Arc::new(RwLock::new(None)),
@@ -52,17 +52,17 @@ impl TransactionContextExt {
         }
     }
 
-    /// Get TransactionContext from Request extensions
-    /// 从Request扩展中获取TransactionContext
+    /// Get `TransactionContext` from Request extensions
+    /// `从Request扩展中获取TransactionContext`
     ///
-    /// Returns None if TransactionContext is not found in the request.
+    /// Returns None if `TransactionContext` is not found in the request.
     /// 如果请求中未找到TransactionContext，则返回None。
     pub fn from_request(req: &Request) -> Option<Arc<Self>> {
         req.extensions().get::<Arc<Self>>().cloned()
     }
 
-    /// Set TransactionContext to Request extensions
-    /// 将TransactionContext设置到Request扩展
+    /// Set `TransactionContext` to Request extensions
+    /// `将TransactionContext设置到Request扩展`
     pub fn set_to_request(req: &mut Request) -> Arc<Self> {
         let ctx = Arc::new(Self::new());
         req.extensions_mut().insert(ctx.clone());
@@ -116,8 +116,7 @@ impl TransactionContextExt {
             .read()
             .await
             .as_ref()
-            .map(|tx| tx.is_active())
-            .unwrap_or(false)
+            .is_some_and(super::transaction::Transaction::is_active)
     }
 
     /// Get transaction status

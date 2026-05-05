@@ -4,7 +4,7 @@
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
 //! - server.compression.enabled
-//! - GzipFilter, DeflateFilter
+//! - `GzipFilter`, `DeflateFilter`
 //! - Content-Encoding
 //!
 //! # Features / 特性
@@ -36,7 +36,6 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
-use bytes::Bytes;
 use nexus_http::{Body, Response, Result};
 use nexus_router::{Middleware, Next};
 
@@ -423,7 +422,9 @@ where
 
             // Select compression type based on Accept-Encoding
             // 根据 Accept-Encoding 选择压缩类型
-            let compression_type = if !compression_types.is_empty() {
+            let compression_type = if compression_types.is_empty() {
+                None
+            } else {
                 Self {
                     min_response_size: min_size,
                     compression_types,
@@ -432,8 +433,6 @@ where
                     compression_level,
                 }
                 .select_compression(&accept_encoding)
-            } else {
-                None
             };
 
             if compression_type.is_none() {
@@ -467,7 +466,7 @@ where
 
             // Check content type
             // 检查内容类型
-            let content_type = response.header("Content-Type").map(|s| s.to_string());
+            let content_type = response.header("Content-Type").map(std::string::ToString::to_string);
             let should_compress = middleware_check.should_compress_mime(content_type.as_deref());
 
             if !should_compress {

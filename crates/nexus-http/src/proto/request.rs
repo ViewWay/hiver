@@ -102,7 +102,7 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
                 .method(request.inner().method().clone())
                 .uri(request.inner().uri().clone());
 
-            for (name, value) in request.inner().headers().iter() {
+            for (name, value) in request.inner().headers() {
                 http_builder = http_builder.header(name, value);
             }
 

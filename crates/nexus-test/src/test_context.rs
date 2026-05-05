@@ -285,6 +285,6 @@ impl Default for TestContextRegistry {
 /// 全局测试上下文实例
 pub fn global_test_registry() -> &'static TestContextRegistry {
     use once_cell::sync::Lazy;
-    static REGISTRY: Lazy<TestContextRegistry> = Lazy::new(TestContextRegistry::new);
+    static REGISTRY: std::sync::LazyLock<TestContextRegistry> = std::sync::LazyLock::new(TestContextRegistry::new);
     &REGISTRY
 }

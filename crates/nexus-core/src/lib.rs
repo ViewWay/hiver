@@ -11,8 +11,8 @@
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
 //! - Spring Core (IoC Container)
-//! - ApplicationContext
-//! - BeanFactory, @Component, @Autowired
+//! - `ApplicationContext`
+//! - `BeanFactory`, @Component, @Autowired
 //!
 //! # Features / 功能
 //!
@@ -25,11 +25,15 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+#[cfg(test)]
+mod tests;
+
 pub mod bean;
 pub mod container;
 pub mod context;
 pub mod error;
 pub mod extension;
+pub mod lifecycle;
 pub mod reflect;
 
 // Re-exports / 重新导出

@@ -1,9 +1,9 @@
 //! @Query annotation macro
 //! @Query 注解宏
 
-use proc_macro2::TokenStream;
+use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ItemFn, LitStr, ReturnType, Signature, parse_macro_input};
+use syn::{ItemFn, LitStr, parse_macro_input};
 use syn::{parse::ParseStream, Result as SynResult, parse::Parse};
 
 /// Parses arguments from @Query annotation
@@ -41,7 +41,7 @@ impl Parse for QueryArgs {
 ///     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
 /// }
 /// ```
-pub fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -84,7 +84,7 @@ pub fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn insert_user(&self, username: &str, email: &str) -> Result<u64, Error>;
 /// }
 /// ```
-pub fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -127,7 +127,7 @@ pub fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn update_email(&self, id: i64, email: &str) -> Result<u64, Error>;
 /// }
 /// ```
-pub fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -170,7 +170,7 @@ pub fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn delete_by_id(&self, id: i64) -> Result<u64, Error>;
 /// }
 /// ```
-pub fn impl_delete(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_delete(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

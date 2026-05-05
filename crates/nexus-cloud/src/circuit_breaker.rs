@@ -4,7 +4,7 @@
 //! # Equivalent to Spring Cloud / 等价于 Spring Cloud
 //!
 //! - `@EnableCircuitBreaker` - Enable circuit breaker
-//! - `@CircuitBreaker` - CircuitBreaker
+//! - `@CircuitBreaker` - `CircuitBreaker`
 //! - Resilience4j equivalent
 //!
 //! # Spring Equivalent / Spring等价物
@@ -90,7 +90,7 @@ impl CircuitBreakerConfig {
         Self {
             failure_threshold: 5,
             success_threshold: 2,
-            open_timeout: Duration::from_secs(60),
+            open_timeout: Duration::from_mins(1),
             half_open_max_calls: 10,
         }
     }
@@ -235,17 +235,13 @@ impl CircuitBreaker {
     async fn check_state(&self) {
         let state = *self.state.read().await;
 
-        match state {
-            CircuitState::Open => {
-                // Check if we should transition to half-open
-                if let Some(last_fail) = *self.last_failure.read().await {
-                    if last_fail.elapsed() >= self.config.open_timeout {
-                        *self.state.write().await = CircuitState::HalfOpen;
-                        self.successes.store(0, Ordering::SeqCst);
-                    }
+        if state == CircuitState::Open {
+            // Check if we should transition to half-open
+            if let Some(last_fail) = *self.last_failure.read().await
+                && last_fail.elapsed() >= self.config.open_timeout {
+                    *self.state.write().await = CircuitState::HalfOpen;
+                    self.successes.store(0, Ordering::SeqCst);
                 }
-            },
-            _ => {},
         }
     }
 

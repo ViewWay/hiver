@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - RequestMethod, HttpMethod
-//! - @GetMapping, @PostMapping, etc.
+//! - `RequestMethod`, `HttpMethod`
+//! - @`GetMapping`, @`PostMapping`, etc.
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -15,9 +15,11 @@ use std::str::FromStr;
 /// HTTP Methods
 /// HTTP 方法
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default)]
 pub enum Method {
     /// GET method - retrieve a resource
     /// GET 方法 - 获取资源
+    #[default]
     GET,
     /// POST method - create a resource
     /// POST 方法 - 创建资源
@@ -81,11 +83,6 @@ impl Method {
     }
 }
 
-impl Default for Method {
-    fn default() -> Self {
-        Method::GET
-    }
-}
 
 impl fmt::Display for Method {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

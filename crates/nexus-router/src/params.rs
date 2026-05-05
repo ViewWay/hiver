@@ -3,8 +3,8 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - @PathVariable annotation
-//! - PathVariable from URI template
+//! - @`PathVariable` annotation
+//! - `PathVariable` from URI template
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -68,22 +68,22 @@ impl<'a> PathDeserializer<'a> {
     /// Get a parameter value
     /// 获取参数值
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.params.get(key).map(|s| s.as_str())
+        self.params.get(key).map(std::string::String::as_str)
     }
 
     /// Deserialize into type T
     /// 反序列化为类型T
     ///
-    /// Converts the HashMap of string parameters into the target type.
+    /// Converts the `HashMap` of string parameters into the target type.
     /// This uses serde's deserialization via JSON intermediate format.
     ///
-    /// 将字符串参数的HashMap转换为目标类型。
-    /// 这使用serde通过JSON中间格式的反序列化。
+    /// `将字符串参数的HashMap转换为目标类型`。
+    /// `这使用serde通过JSON中间格式的反序列化`。
     pub fn deserialize<T: for<'de> Deserialize<'de>>(&self) -> Result<T, String> {
         // Convert HashMap to a JSON value for deserialization
         // 将HashMap转换为JSON值以进行反序列化
         let mut map = serde_json::Map::new();
-        for (k, v) in self.params.iter() {
+        for (k, v) in self.params {
             map.insert(k.clone(), serde_json::Value::String(v.clone()));
         }
 

@@ -139,7 +139,7 @@ fn status_code_example() {
     println!("  503 Service Unavailable: {}", StatusCode::SERVICE_UNAVAILABLE.as_u16());
 }
 
-/// IntoResponse trait example / IntoResponse trait示例
+/// `IntoResponse` trait example / `IntoResponse` trait示例
 ///
 /// Demonstrates automatic conversion to Response.
 /// 演示自动转换为Response。
@@ -257,8 +257,8 @@ struct User {
 
 /// Example: GET /users/:id endpoint / 示例：获取用户端点
 ///
-/// This demonstrates a typical Spring @GetMapping equivalent.
-/// 这演示了典型的 Spring @GetMapping 等价物。
+/// This demonstrates a typical Spring @`GetMapping` equivalent.
+/// 这演示了典型的 Spring @`GetMapping` 等价物。
 ///
 /// ```java
 /// @GetMapping("/users/{id}")
@@ -286,8 +286,8 @@ fn example_get_user_handler(id: u64) -> Response {
 
 /// Example: POST /users endpoint / 示例：创建用户端点
 ///
-/// This demonstrates a typical Spring @PostMapping equivalent.
-/// 这演示了典型的 Spring @PostMapping 等价物。
+/// This demonstrates a typical Spring @`PostMapping` equivalent.
+/// 这演示了典型的 Spring @`PostMapping` 等价物。
 ///
 /// ```java
 /// @PostMapping("/users")

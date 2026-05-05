@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 /// Delivery mode
 /// 传递模式
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum DeliveryMode {
     /// Transient (not persisted)
     /// 瞬态（不持久化）
+    #[default]
     Transient = 1,
 
     /// Persistent (survives broker restart)
@@ -16,11 +18,6 @@ pub enum DeliveryMode {
     Persistent = 2,
 }
 
-impl Default for DeliveryMode {
-    fn default() -> Self {
-        Self::Transient
-    }
-}
 
 /// Message properties
 /// 消息属性
@@ -35,6 +32,7 @@ impl Default for DeliveryMode {
 ///     .build();
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct MessageProperties {
     /// Content type
     /// 内容类型
@@ -102,25 +100,6 @@ pub struct MessageProperties {
     pub headers: std::collections::HashMap<String, serde_json::Value>,
 }
 
-impl Default for MessageProperties {
-    fn default() -> Self {
-        Self {
-            content_type: None,
-            content_encoding: None,
-            delivery_mode: DeliveryMode::default(),
-            priority: None,
-            correlation_id: None,
-            reply_to: None,
-            expiration: None,
-            message_id: None,
-            timestamp: None,
-            message_type: None,
-            user_id: None,
-            app_id: None,
-            headers: std::collections::HashMap::new(),
-        }
-    }
-}
 
 impl MessageProperties {
     /// Create new message properties
@@ -298,8 +277,8 @@ impl AmqpMessage {
     pub fn new(message: Message) -> Self {
         Self {
             message,
-            exchange: "".to_string(),
-            routing_key: "".to_string(),
+            exchange: String::new(),
+            routing_key: String::new(),
             delivery_tag: 0,
             redelivered: false,
         }

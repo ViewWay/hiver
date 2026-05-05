@@ -7,8 +7,8 @@ use async_trait::async_trait;
 /// Transaction manager trait
 /// 事务管理器trait
 ///
-/// Equivalent to Spring's PlatformTransactionManager interface.
-/// 等价于Spring的PlatformTransactionManager接口。
+/// Equivalent to Spring's `PlatformTransactionManager` interface.
+/// `等价于Spring的PlatformTransactionManager接口`。
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -50,8 +50,8 @@ pub trait TransactionManager: Send + Sync {
 /// Defines transaction attributes.
 /// 定义事务属性。
 ///
-/// Equivalent to Spring's TransactionDefinition.
-/// 等价于Spring的TransactionDefinition。
+/// Equivalent to Spring's `TransactionDefinition`.
+/// `等价于Spring的TransactionDefinition`。
 #[derive(Debug, Clone)]
 pub struct TransactionDefinition {
     /// Transaction name
@@ -126,8 +126,8 @@ impl Default for TransactionDefinition {
 /// Transaction manager builder
 /// 事务管理器构建器
 ///
-/// Equivalent to Spring's TransactionManagerCustomizer.
-/// 等价于Spring的TransactionManagerCustomizer。
+/// Equivalent to Spring's `TransactionManagerCustomizer`.
+/// `等价于Spring的TransactionManagerCustomizer`。
 #[derive(Debug, Clone)]
 pub struct TransactionManagerBuilder {
     /// Default timeout

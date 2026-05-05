@@ -3,9 +3,9 @@
 //!
 //! # Equivalent to Spring Cloud / 等价于 Spring Cloud
 //!
-//! - `@EnableDiscoveryClient` - EnableDiscoveryClient
-//! - `DiscoveryClient` - DiscoveryClient
-//! - `ServiceRegistry` - ServiceRegistry
+//! - `@EnableDiscoveryClient` - `EnableDiscoveryClient`
+//! - `DiscoveryClient` - `DiscoveryClient`
+//! - `ServiceRegistry` - `ServiceRegistry`
 //! - Eureka, Consul, etcd support
 //!
 //! # Spring Equivalent / Spring等价物
@@ -34,8 +34,8 @@ use crate::load_balancer::LoadBalancer;
 /// Service discovery
 /// 服务发现
 ///
-/// Equivalent to Spring's DiscoveryClient.
-/// 等价于Spring的DiscoveryClient。
+/// Equivalent to Spring's `DiscoveryClient`.
+/// `等价于Spring的DiscoveryClient`。
 #[async_trait]
 pub trait ServiceDiscovery: Send + Sync {
     /// Get all service instances for a service
@@ -57,8 +57,8 @@ pub trait ServiceDiscovery: Send + Sync {
 /// Represents a registered service instance.
 /// 表示已注册的服务实例。
 ///
-/// Equivalent to Spring's ServiceInstance.
-/// 等价于Spring的ServiceInstance。
+/// Equivalent to Spring's `ServiceInstance`.
+/// `等价于Spring的ServiceInstance`。
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ServiceInstance {
     /// Service ID
@@ -170,8 +170,8 @@ impl ServiceInstance {
 /// Service registry
 /// 服务注册表
 ///
-/// Equivalent to Spring's ServiceRegistry.
-/// 等价于Spring的ServiceRegistry。
+/// Equivalent to Spring's `ServiceRegistry`.
+/// `等价于Spring的ServiceRegistry`。
 #[async_trait]
 pub trait ServiceRegistry: Send + Sync {
     /// Register a service instance
@@ -198,8 +198,8 @@ pub trait ServiceRegistry: Send + Sync {
 /// In-memory service registry (for development/testing)
 /// 内存服务注册表（用于开发/测试）
 ///
-/// Equivalent to Spring's SimpleDiscoveryClient.
-/// 等价于Spring的SimpleDiscoveryClient。
+/// Equivalent to Spring's `SimpleDiscoveryClient`.
+/// `等价于Spring的SimpleDiscoveryClient`。
 pub struct InMemoryServiceRegistry {
     /// Registered services
     /// 已注册服务
@@ -291,8 +291,8 @@ impl ServiceRegistry for InMemoryServiceRegistry {
 /// Simple discovery client
 /// 简单发现客户端
 ///
-/// Implements ServiceDiscovery using a registry.
-/// 使用注册表实现ServiceDiscovery。
+/// Implements `ServiceDiscovery` using a registry.
+/// `使用注册表实现ServiceDiscovery`。
 pub struct SimpleDiscoveryClient {
     /// Service registry
     /// 服务注册表
@@ -333,7 +333,7 @@ impl ServiceDiscovery for SimpleDiscoveryClient {
 
     async fn get_instance(&self, service_id: &str) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
-        let healthy: Vec<_> = instances.into_iter().filter(|i| i.is_healthy()).collect();
+        let healthy: Vec<_> = instances.into_iter().filter(ServiceInstance::is_healthy).collect();
 
         if healthy.is_empty() {
             return None;

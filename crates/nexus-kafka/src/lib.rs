@@ -3,12 +3,12 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@KafkaListener` - ConsumerListener
+//! - `@KafkaListener` - `ConsumerListener`
 //! - `KafkaTemplate` - Producer
-//! - `@TopicPartition` - TopicPartition
-//! - `@Header` - MessageHeader
-//! - `ConsumerConfig` - ConsumerProperties
-//! - `ProducerConfig` - ProducerProperties
+//! - `@TopicPartition` - `TopicPartition`
+//! - `@Header` - `MessageHeader`
+//! - `ConsumerConfig` - `ConsumerProperties`
+//! - `ProducerConfig` - `ProducerProperties`
 //!
 //! # Example / 示例
 //!
@@ -33,6 +33,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 #![allow(dead_code)]
+
+#[cfg(test)]
+mod tests;
 
 mod config;
 mod producer;

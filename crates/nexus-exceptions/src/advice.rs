@@ -1,8 +1,8 @@
 //! Controller advice - global exception handling
 //! Controller advice - 全局异常处理
 //!
-//! # Equivalent to Spring's @ControllerAdvice
-//! # 等价于 Spring 的 @ControllerAdvice
+//! # Equivalent to Spring's @`ControllerAdvice`
+//! # 等价于 Spring 的 @`ControllerAdvice`
 
 use crate::handler::ExceptionHandler;
 use nexus_http::Response;
@@ -50,8 +50,8 @@ use std::fmt::Debug;
 /// ```
 #[derive(Default)]
 pub struct ControllerAdvice {
-    /// Registry of exception handlers by TypeId
-    /// 异常处理器的注册表，按 TypeId 索引
+    /// Registry of exception handlers by `TypeId`
+    /// 异常处理器的注册表，按 `TypeId` 索引
     handlers: HashMap<TypeId, Box<dyn HandlerWrapper>>,
 }
 
@@ -190,8 +190,8 @@ impl ControllerAdvice {
     }
 }
 
-/// Default exception handlers (equivalent to ResponseEntityExceptionHandler)
-/// 默认异常处理器（等价于 ResponseEntityExceptionHandler）
+/// Default exception handlers (equivalent to `ResponseEntityExceptionHandler`)
+/// 默认异常处理器（等价于 `ResponseEntityExceptionHandler`）
 impl ControllerAdvice {
     /// Create a default controller advice with standard handlers
     /// 创建带有标准处理器的默认 controller advice

@@ -1,10 +1,10 @@
-//! TechEmpower Benchmark Example
-//! TechEmpower 基准测试示例
+//! `TechEmpower` Benchmark Example
+//! `TechEmpower` 基准测试示例
 //!
-//! This example implements the TechEmpower benchmark tests for Nexus framework.
-//! For more information, see: https://tfb-status.techempower.com/
+//! This example implements the `TechEmpower` benchmark tests for Nexus framework.
+//! For more information, see: <https://tfb-status.techempower.com>/
 //!
-//! 此示例为 Nexus 框架实现 TechEmpower 基准测试。
+//! 此示例为 Nexus 框架实现 `TechEmpower` 基准测试。
 //! 更多信息请参阅：https://tfb-status.techempower.com/
 
 use nexus_http::Response;

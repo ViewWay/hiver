@@ -3,13 +3,13 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@SpringBootTest` - NexusTest
-//! - `@WebMvcTest` - WebTest
-//! - `@MockBean` - MockBean
-//! - `TestRestTemplate` - TestClient
-//! - `MockMvc` - TestClient
-//! - `@TestConfiguration` - TestConfig
-//! - `@TestMethodOrder` - TestOrder
+//! - `@SpringBootTest` - `NexusTest`
+//! - `@WebMvcTest` - `WebTest`
+//! - `@MockBean` - `MockBean`
+//! - `TestRestTemplate` - `TestClient`
+//! - `MockMvc` - `TestClient`
+//! - `@TestConfiguration` - `TestConfig`
+//! - `@TestMethodOrder` - `TestOrder`
 //!
 //! # Example / 示例
 //!
@@ -32,6 +32,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 #![allow(dead_code)]
+
+#[cfg(test)]
+mod tests;
 
 mod test_client;
 mod test_context;
@@ -60,8 +63,8 @@ pub const DEFAULT_TEST_TIMEOUT_SECS: u64 = 30;
 /// 默认测试服务器端口（0表示随机可用端口）
 pub const DEFAULT_TEST_PORT: u16 = 0;
 
-/// NexusTest marker trait
-/// NexusTest 标记 trait
+/// `NexusTest` marker trait
+/// `NexusTest` 标记 trait
 ///
 /// # Spring Equivalent / Spring等价物
 ///
