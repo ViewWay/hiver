@@ -19,8 +19,11 @@ sea-orm = ["dep:sea-orm"]
 # Diesel integration (optional)
 diesel = ["dep:diesel"]
 
+# SQLx integration (optional)
+sqlx = ["dep:sqlx"]
+
 # All ORM integrations
-all = ["sea-orm", "diesel"]
+all = ["sea-orm", "diesel", "sqlx"]
 
 [dependencies]
 # Data commons
@@ -40,6 +43,9 @@ sea-orm = { version = "2.0.0-rc", optional = true, features = ["runtime-tokio-ru
 
 # Diesel (optional)
 diesel = { version = "2.2", optional = true, features = ["postgres", "mysql", "sqlite"] }
+
+# SQLx (optional)
+sqlx = { workspace = true, optional = true }
 
 # Error handling
 thiserror = { workspace = true }

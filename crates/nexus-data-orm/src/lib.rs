@@ -15,6 +15,8 @@
 //! - Active Record pattern / Active Record 模式
 //! - Query Builder / 查询构建器
 //! - Sea ORM integration / Sea ORM 集成
+//! - Diesel integration (schema DSL, QueryDSL) / Diesel 集成
+//! - SQLx integration (async queries, compile-time checks) / SQLx 集成
 //! - Type-safe queries / 类型安全查询
 //! - Relationship management / 关系管理
 //!
@@ -66,6 +68,10 @@ pub mod migrations;
 pub mod connection;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
+#[cfg(feature = "diesel")]
+pub mod diesel;
+#[cfg(feature = "sqlx")]
+pub mod sqlx;
 
 // Re-export the Model derive macro
 pub use nexus_data_macros::Model;
@@ -91,6 +97,12 @@ pub mod prelude {
         QueryBuilder, WhereClause,
         OrmRepository, DefaultOrmRepository,
     };
+
+    #[cfg(feature = "diesel")]
+    pub use super::diesel::{DieselSchema, DieselQuery, DieselColumnType, OrderDirection};
+
+    #[cfg(feature = "sqlx")]
+    pub use super::sqlx::{SqlxQuery, SqlxOrder, FromRow, VerifiedQuery};
 }
 
 // Re-export nexus-data-commons for convenience
