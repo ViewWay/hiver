@@ -344,7 +344,7 @@ fn default_max_poll_records() -> i32 {
 }
 
 fn default_max_poll_interval() -> u32 {
-    300000
+    300_000
 }
 
 fn default_auto_offset_reset() -> AutoOffsetReset {
@@ -356,7 +356,7 @@ fn default_fetch_min_bytes() -> i32 {
 }
 
 fn default_fetch_max_bytes() -> i32 {
-    52428800
+    52_428_800
 }
 
 fn default_fetch_max_wait() -> u32 {

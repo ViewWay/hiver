@@ -42,7 +42,7 @@ impl Producer {
 
     /// Send record
     /// 发送记录
-    pub async fn send(
+    pub fn send(
         &self,
         topic: &str,
         key: Option<&str>,
@@ -61,7 +61,7 @@ impl Producer {
 
     /// Send with options
     /// 使用选项发送
-    pub async fn send_with_options(
+    pub fn send_with_options(
         &self,
         record: &Record,
         _options: &ProduceOptions,
@@ -76,7 +76,7 @@ impl Producer {
 
     /// Send JSON
     /// 发送JSON
-    pub async fn send_json<T: serde::Serialize>(
+    pub fn send_json<T: serde::Serialize>(
         &self,
         topic: &str,
         key: Option<&str>,
@@ -84,18 +84,18 @@ impl Producer {
     ) -> Result<i64, String> {
         let json = serde_json::to_vec(value)
             .map_err(|e| format!("Failed to serialize JSON: {}", e))?;
-        self.send(topic, key, &json).await
+        self.send(topic, key, &json)
     }
 
     /// Send to default topic
     /// 发送到默认主题
-    pub async fn send_default(&self, key: Option<&str>, value: &[u8]) -> Result<i64, String> {
-        self.send("", key, value).await
+    pub fn send_default(&self, key: Option<&str>, value: &[u8]) -> Result<i64, String> {
+        self.send("", key, value)
     }
 
     /// Flush pending messages
     /// 刷新待处理消息
-    pub async fn flush(&self) -> Result<(), String> {
+    pub fn flush(&self) -> Result<(), String> {
         tracing::debug!("Flushing producer");
         Ok(())
     }

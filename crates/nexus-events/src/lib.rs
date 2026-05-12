@@ -70,14 +70,28 @@ pub mod publisher;
 pub mod listener;
 pub mod registry;
 pub mod annotation;
+pub mod condition;
+pub mod transactional_listener;
 
 pub use event::{
     ApplicationEvent, Event, EventPayload, EventResult,
     ContextRefreshedEvent, PayloadApplicationEvent,
 };
 pub use publisher::{ApplicationEventPublisher, PublishStrategy};
-pub use listener::{EventListener, AsyncEventListener, EventConsumer};
+pub use listener::{
+    EventListener, AsyncEventListener, EventConsumer, ListenerConfig, ListenerBuilder,
+    ConditionFilter,
+};
 pub use registry::{EventRegistry, EventSubscription, EventFilter};
+pub use condition::{
+    EventCondition, ConditionParser, PropertyCondition, CompareOp, CompositeCondition,
+    ConditionPropertyProvider, AlwaysMatchCondition, NeverMatchCondition, ConditionParseError,
+    evaluate_condition,
+};
+pub use transactional_listener::{
+    TransactionPhase, TransactionalEventListener, TransactionalEventListenerConfig,
+    TransactionalEventPublisher, TransactionalEventBridge,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
@@ -85,6 +99,11 @@ pub mod prelude {
     pub use super::{
         ApplicationEvent, ApplicationEventPublisher, EventListener, AsyncEventListener,
         Event, EventPayload, EventResult, EventRegistry, EventSubscription, PublishStrategy,
+        EventCondition, ConditionParser, PropertyCondition, CompareOp, CompositeCondition,
+        ConditionPropertyProvider, evaluate_condition,
+        TransactionPhase, TransactionalEventListener, TransactionalEventListenerConfig,
+        TransactionalEventPublisher, TransactionalEventBridge,
+        ListenerConfig, ListenerBuilder, ConditionFilter,
     };
 }
 

@@ -161,9 +161,11 @@ impl AmqpConfig {
         }
 
         let protocol = if self.ssl { "amqps" } else { "amqp" };
+        let username = urlencoding::encode(&self.username);
+        let password = urlencoding::encode(&self.password);
         format!(
             "{}://{}:{}@{}:{}{}",
-            protocol, self.username, self.password, self.host, self.port, self.vhost
+            protocol, username, password, self.host, self.port, self.vhost
         )
     }
 }
@@ -241,7 +243,7 @@ fn default_channel_max() -> u16 {
 }
 
 fn default_frame_max() -> u32 {
-    131072
+    131_072
 }
 
 fn default_auto_recovery() -> bool {

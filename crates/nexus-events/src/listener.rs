@@ -8,7 +8,10 @@
 //! | `EventListener` | `@EventListener` |
 //! | `AsyncEventListener` | `@EventListener + @Async` |
 //! | `TransactionalEventListener` | `@TransactionalEventListener` |
+//! | `ListenerConfig` | `@EventListener` attributes |
+//! | `ListenerBuilder` | Programmatic listener configuration |
 
+use crate::condition::{ConditionParser, EventCondition};
 use crate::event::ApplicationEvent;
 use std::any::{Any, TypeId};
 use std::fmt;
@@ -397,6 +400,7 @@ impl BoxedEventConsumer {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl fmt::Debug for BoxedEventConsumer {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("BoxedEventConsumer")
@@ -561,9 +565,257 @@ where
     }
 }
 
+// ---------------------------------------------------------------------------
+// ListenerConfig
+// ---------------------------------------------------------------------------
+
+/// Configuration for an event listener
+/// 事件监听器的配置
+///
+/// Holds metadata such as execution order, condition expression, and ID.
+/// Used by `ListenerBuilder` and the registry to configure listener behavior.
+///
+/// 持有执行顺序、条件表达式和ID等元数据。
+/// 由 `ListenerBuilder` 和注册表用于配置监听器行为。
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @EventListener(condition = "#event.success", order = 10)
+/// public void handleEvent(MyEvent event) { }
+/// ```
+#[derive(Debug, Clone)]
+pub struct ListenerConfig {
+    /// Listener ID for identification
+    /// 用于标识的监听器ID
+    pub id: Option<String>,
+
+    /// Execution order (lower = higher priority)
+    /// 执行顺序（数值越小优先级越高）
+    pub order: i32,
+
+    /// Optional condition expression (parsed at registration time)
+    /// 可选条件表达式（在注册时解析）
+    pub condition: Option<String>,
+}
+
+impl Default for ListenerConfig {
+    fn default() -> Self {
+        Self {
+            id: None,
+            order: 0,
+            condition: None,
+        }
+    }
+}
+
+impl ListenerConfig {
+    /// Create a new default configuration
+    /// 创建新的默认配置
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the listener ID
+    /// 设置监听器ID
+    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+        self.id = Some(id.into());
+        self
+    }
+
+    /// Set the execution order
+    /// 设置执行顺序
+    pub fn with_order(mut self, order: i32) -> Self {
+        self.order = order;
+        self
+    }
+
+    /// Set the condition expression
+    /// 设置条件表达式
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
+        self.condition = Some(condition.into());
+        self
+    }
+
+    /// Parse the condition expression into an `EventCondition`, if present
+    /// 将条件表达式解析为 `EventCondition`（如果存在）
+    ///
+    /// Returns `None` if no condition is configured.
+    /// Returns `Err` if the condition expression is syntactically invalid.
+    /// 如果没有配置条件则返回 `None`。
+    /// 如果条件表达式语法无效则返回 `Err`。
+    pub fn build_condition(&self) -> Option<Result<Box<dyn EventCondition>, crate::condition::ConditionParseError>> {
+        self.condition.as_ref().map(|expr| ConditionParser::parse(expr))
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ListenerBuilder
+// ---------------------------------------------------------------------------
+
+/// Builder for constructing event listeners with configuration
+/// 用于构建带配置的事件监听器的构建器
+///
+/// Provides a fluent API for registering listeners with conditions, ordering,
+/// and custom IDs.
+///
+/// 提供流式API，用于注册带有条件、排序和自定义ID的监听器。
+///
+/// # Examples / 示例
+///
+/// ```rust,ignore
+/// use nexus_events::listener::ListenerBuilder;
+///
+/// let listener = ListenerBuilder::new(|event: &MyEvent| {
+///     println!("Received: {:?}", event);
+///     Ok(())
+/// })
+/// .with_id("my_listener")
+/// .with_order(5)
+/// .with_condition("status == 'active'")
+/// .build();
+/// ```
+pub struct ListenerBuilder<E, F>
+where
+    E: Send + Sync + 'static,
+    F: Fn(&E) -> Result<(), String> + Send + Sync,
+{
+    /// The handler function
+    /// 处理函数
+    handler: F,
+
+    /// Listener configuration
+    /// 监听器配置
+    config: ListenerConfig,
+
+    /// Phantom data for event type
+    /// 事件类型的幻影数据
+    _phantom: PhantomData<E>,
+}
+
+impl<E, F> ListenerBuilder<E, F>
+where
+    E: Send + Sync + 'static,
+    F: Fn(&E) -> Result<(), String> + Send + Sync,
+{
+    /// Create a new listener builder with the given handler
+    /// 使用给定的处理函数创建新的监听器构建器
+    pub fn new(handler: F) -> Self {
+        Self {
+            handler,
+            config: ListenerConfig::default(),
+            _phantom: PhantomData,
+        }
+    }
+
+    /// Set the listener ID
+    /// 设置监听器ID
+    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+        self.config.id = Some(id.into());
+        self
+    }
+
+    /// Set the execution order
+    /// 设置执行顺序
+    pub fn with_order(mut self, order: i32) -> Self {
+        self.config.order = order;
+        self
+    }
+
+    /// Set a condition expression for event filtering
+    /// 设置用于事件过滤的条件表达式
+    ///
+    /// Only events matching this condition will be dispatched to the listener.
+    /// 仅匹配此条件的事件才会被分发到监听器。
+    ///
+    /// # Expression Syntax / 表达式语法
+    ///
+    /// - `"status == 'active'"` -- property equality
+    /// - `"priority > 5"` -- numeric comparison
+    /// - `"name contains 'test'"` -- string containment
+    /// - `"a == 'x' and b > 1"` -- logical AND
+    /// - `"a == 'x' or a == 'y'"` -- logical OR
+    /// - `"not a == 'z'"` -- logical NOT
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
+        self.config.condition = Some(condition.into());
+        self
+    }
+
+    /// Build the `ListenerFn` from this builder
+    /// 从此构建器构建 `ListenerFn`
+    pub fn build(self) -> ListenerFn<E, F> {
+        let mut listener_fn = ListenerFn::new(self.handler);
+        if let Some(id) = self.config.id {
+            listener_fn = listener_fn.with_id(id);
+        }
+        listener_fn = listener_fn.with_order(self.config.order);
+        listener_fn
+    }
+
+    /// Get a reference to the configuration
+    /// 获取配置的引用
+    pub fn config(&self) -> &ListenerConfig {
+        &self.config
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ConditionFilter adapter
+// ---------------------------------------------------------------------------
+
+/// A filter adapter that wraps an `EventCondition` for use with the existing
+/// `EventFilter` trait in the registry.
+///
+/// 将 `EventCondition` 包装为注册表中现有 `EventFilter` trait 使用的过滤器适配器。
+///
+/// Generic over the event type `E`. When `E` implements `ConditionPropertyProvider`,
+/// property-based conditions (e.g., `"status == 'active'"`) are evaluated correctly.
+///
+/// 泛型于事件类型 `E`。当 `E` 实现了 `ConditionPropertyProvider` 时，
+/// 基于属性的条件（例如 `"status == 'active'"`）会被正确求值。
+pub struct ConditionFilter<E> {
+    /// The underlying condition
+    /// 底层条件
+    condition: Box<dyn EventCondition>,
+    /// Phantom data for event type
+    /// 事件类型的幻影数据
+    _phantom: PhantomData<E>,
+}
+
+impl<E> ConditionFilter<E> {
+    /// Create a new condition filter from an `EventCondition`
+    /// 从 `EventCondition` 创建新的条件过滤器
+    pub fn new(condition: Box<dyn EventCondition>) -> Self {
+        Self {
+            condition,
+            _phantom: PhantomData,
+        }
+    }
+
+    /// Create a condition filter by parsing an expression string
+    /// 通过解析表达式字符串创建条件过滤器
+    pub fn parse(expression: &str) -> Result<Self, crate::condition::ConditionParseError> {
+        let condition = ConditionParser::parse(expression)?;
+        Ok(Self {
+            condition,
+            _phantom: PhantomData,
+        })
+    }
+}
+
+impl<E: crate::condition::ConditionPropertyProvider + Any + Send + Sync>
+    crate::registry::EventFilter<E> for ConditionFilter<E>
+{
+    fn should_process(&self, event: &E) -> bool {
+        crate::condition::evaluate_condition(self.condition.as_ref(), event)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::condition::ConditionPropertyProvider;
+    use crate::registry::EventFilter;
     use std::sync::atomic::{AtomicU32, Ordering};
 
     #[derive(Clone, Debug)]
@@ -644,7 +896,7 @@ mod tests {
         let listener = TestListener::new();
         let event = TestEvent { value: 123 };
 
-        listener.on_event(&event).unwrap();
+        assert!(listener.on_event(&event).is_ok());
 
         assert_eq!(listener.count(), 1);
     }
@@ -663,5 +915,149 @@ mod tests {
 
         assert!(result.is_ok());
         assert_eq!(listener.count(), 1);
+    }
+
+    // --- ListenerConfig Tests ---
+
+    #[test]
+    fn test_listener_config_default() {
+        let config = ListenerConfig::default();
+        assert!(config.id.is_none());
+        assert_eq!(config.order, 0);
+        assert!(config.condition.is_none());
+    }
+
+    #[test]
+    fn test_listener_config_builder() {
+        let config = ListenerConfig::new()
+            .with_id("my_listener")
+            .with_order(5)
+            .with_condition("status == 'active'");
+
+        assert_eq!(config.id.as_deref(), Some("my_listener"));
+        assert_eq!(config.order, 5);
+        assert_eq!(config.condition.as_deref(), Some("status == 'active'"));
+    }
+
+    #[test]
+    fn test_listener_config_build_condition() {
+        let config = ListenerConfig::new().with_condition("status == 'active'");
+        let result = config.build_condition();
+        assert!(result.is_some());
+        let condition_result = result.unwrap();
+        assert!(condition_result.is_ok());
+    }
+
+    #[test]
+    fn test_listener_config_no_condition() {
+        let config = ListenerConfig::new();
+        assert!(config.build_condition().is_none());
+    }
+
+    #[test]
+    fn test_listener_config_invalid_condition() {
+        let config = ListenerConfig::new().with_condition("!!!invalid!!!");
+        let result = config.build_condition();
+        assert!(result.is_some());
+        assert!(result.unwrap().is_err());
+    }
+
+    // --- ListenerBuilder Tests ---
+
+    #[test]
+    fn test_listener_builder_basic() {
+        let listener = ListenerBuilder::new(|_event: &TestEvent| {
+            Ok(())
+        })
+        .build();
+
+        let event = TestEvent { value: 42 };
+        assert!(listener.on_event(&event).is_ok());
+    }
+
+    #[test]
+    fn test_listener_builder_with_id_and_order() {
+        let listener = ListenerBuilder::new(|event: &TestEvent| {
+            Ok(())
+        })
+        .with_id("ordered_listener")
+        .with_order(42)
+        .build();
+
+        assert_eq!(listener.consumer_id(), "ordered_listener");
+        assert_eq!(listener.order(), 42);
+    }
+
+    #[test]
+    fn test_listener_builder_with_condition() {
+        let builder = ListenerBuilder::new(|_event: &TestEvent| {
+            Ok(())
+        })
+        .with_condition("value > 10");
+
+        let config = builder.config();
+        assert_eq!(config.condition.as_deref(), Some("value > 10"));
+    }
+
+    // --- ConditionFilter Tests ---
+
+    #[derive(Clone, Debug)]
+    struct FilterableEvent {
+        status: String,
+    }
+
+    impl ApplicationEvent for FilterableEvent {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+            chrono::Utc::now()
+        }
+
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+    }
+
+    impl ConditionPropertyProvider for FilterableEvent {
+        fn get_property(&self, path: &str) -> Option<String> {
+            match path {
+                "status" => Some(self.status.clone()),
+                _ => None,
+            }
+        }
+    }
+
+    #[test]
+    fn test_condition_filter_parse() {
+        let filter: ConditionFilter<FilterableEvent> =
+            ConditionFilter::parse("status == 'active'").unwrap();
+
+        let event = FilterableEvent {
+            status: "active".to_string(),
+        };
+        assert!(filter.should_process(&event));
+
+        let event2 = FilterableEvent {
+            status: "inactive".to_string(),
+        };
+        assert!(!filter.should_process(&event2));
+    }
+
+    #[test]
+    fn test_condition_filter_with_event_condition() {
+        let condition = Box::new(crate::condition::PropertyCondition::new(
+            "status",
+            crate::condition::CompareOp::Eq,
+            "active",
+        ));
+        let filter: ConditionFilter<FilterableEvent> = ConditionFilter::new(condition);
+
+        let event = FilterableEvent {
+            status: "active".to_string(),
+        };
+        assert!(filter.should_process(&event));
+
+        let event2 = FilterableEvent {
+            status: "inactive".to_string(),
+        };
+        assert!(!filter.should_process(&event2));
     }
 }

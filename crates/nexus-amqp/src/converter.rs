@@ -26,7 +26,7 @@ pub trait MessageConverter: Send + Sync {
 
     /// Convert from message
     /// 从消息转换
-    fn from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String>;
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String>;
 }
 
 /// JSON message converter
@@ -78,7 +78,7 @@ impl MessageConverter for JsonMessageConverter {
         })
     }
 
-    fn from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize JSON: {}", e))
     }
@@ -150,7 +150,7 @@ impl MessageConverter for StringMessageConverter {
         })
     }
 
-    fn from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize: {}", e))
     }
@@ -171,7 +171,7 @@ impl MessageConverter for BytesMessageConverter {
         Ok(Message::new(payload))
     }
 
-    fn from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize: {}", e))
     }

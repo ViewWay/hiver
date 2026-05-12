@@ -67,7 +67,7 @@ impl Consumer {
 
     /// Poll for messages
     /// 轮询消息
-    pub async fn poll(&self, _timeout_ms: u32) -> Result<Option<KafkaMessage>, String> {
+    pub fn poll(&self, _timeout_ms: u32) -> Result<Option<KafkaMessage>, String> {
         // Mock implementation
         // 模拟实现
         Ok(None)
@@ -75,7 +75,7 @@ impl Consumer {
 
     /// Commit offsets
     /// 提交偏移
-    pub async fn commit(&self, offsets: &[ConsumerOffset]) -> Result<(), String> {
+    pub fn commit(&self, offsets: &[ConsumerOffset]) -> Result<(), String> {
         for offset in offsets {
             tracing::debug!(
                 "Committed offset: topic={}, partition={}, offset={}",
@@ -89,7 +89,7 @@ impl Consumer {
 
     /// Seek to offset
     /// 跳转到偏移
-    pub async fn seek(&self, offset: &ConsumerOffset) -> Result<(), String> {
+    pub fn seek(&self, offset: &ConsumerOffset) -> Result<(), String> {
         tracing::debug!(
             "Seeking: topic={}, partition={}, offset={}",
             offset.topic,

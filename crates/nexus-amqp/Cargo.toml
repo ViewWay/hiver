@@ -60,6 +60,7 @@ tracing = { workspace = true }
 
 # Utilities / 工具
 once_cell = { workspace = true }
+urlencoding = "2"
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

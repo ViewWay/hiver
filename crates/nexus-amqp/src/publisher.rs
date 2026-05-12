@@ -164,7 +164,7 @@ impl Publisher {
 
     /// Publish message
     /// 发布消息
-    pub async fn publish(
+    pub fn publish(
         &self,
         exchange: &str,
         routing_key: &str,
@@ -185,7 +185,7 @@ impl Publisher {
 
     /// Publish message with options
     /// 使用选项发布消息
-    pub async fn publish_with_options(
+    pub fn publish_with_options(
         &self,
         exchange: &str,
         routing_key: &str,
@@ -203,7 +203,7 @@ impl Publisher {
 
     /// Publish message as JSON
     /// 发布JSON消息
-    pub async fn publish_json<T: serde::Serialize>(
+    pub fn publish_json<T: serde::Serialize>(
         &self,
         exchange: &str,
         routing_key: &str,
@@ -211,33 +211,33 @@ impl Publisher {
     ) -> Result<(), String> {
         let json = serde_json::to_vec(payload)
             .map_err(|e| format!("Failed to serialize JSON: {}", e))?;
-        self.publish(exchange, routing_key, &json).await
+        self.publish(exchange, routing_key, &json)
     }
 
     /// Convert and send (like Spring's convertAndSend)
     /// 转换并发送（类似Spring的convertAndSend）
-    pub async fn convert_and_send<T: serde::Serialize>(
+    pub fn convert_and_send<T: serde::Serialize>(
         &self,
         exchange: &str,
         routing_key: &str,
         payload: &T,
     ) -> Result<(), String> {
-        self.publish_json(exchange, routing_key, payload).await
+        self.publish_json(exchange, routing_key, payload)
     }
 
     /// Send to default exchange
     /// 发送到默认交换机
-    pub async fn send(&self, routing_key: &str, payload: &[u8]) -> Result<(), String> {
-        self.publish("", routing_key, payload).await
+    pub fn send(&self, routing_key: &str, payload: &[u8]) -> Result<(), String> {
+        self.publish("", routing_key, payload)
     }
 
     /// Send to default exchange with JSON
     /// 发送JSON到默认交换机
-    pub async fn send_json<T: serde::Serialize>(
+    pub fn send_json<T: serde::Serialize>(
         &self,
         routing_key: &str,
         payload: &T,
     ) -> Result<(), String> {
-        self.publish_json("", routing_key, payload).await
+        self.publish_json("", routing_key, payload)
     }
 }

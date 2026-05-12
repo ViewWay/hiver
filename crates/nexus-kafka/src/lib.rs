@@ -93,7 +93,7 @@ pub const DEFAULT_FETCH_MIN_BYTES: i32 = 1;
 
 /// Default fetch max bytes
 /// 默认最大拉取字节数
-pub const DEFAULT_FETCH_MAX_BYTES: i32 = 52428800;
+pub const DEFAULT_FETCH_MAX_BYTES: i32 = 52_428_800;
 
 /// Default fetch max wait (milliseconds)
 /// 默认最大拉取等待时间（毫秒）
