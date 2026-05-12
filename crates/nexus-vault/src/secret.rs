@@ -36,8 +36,10 @@ pub struct SecretResponse {
     /// Lease info / 租约信息
     #[serde(rename = "lease_id", skip_serializing_if = "Option::is_none")]
     pub lease_id: Option<String>,
+    /// Lease duration in seconds / 租约时长（秒）
     #[serde(rename = "lease_duration", skip_serializing_if = "Option::is_none")]
     pub lease_duration: Option<i64>,
+    /// Whether the lease is renewable / 租约是否可续订
     #[serde(skip_serializing_if = "Option::is_none")]
     pub renewable: Option<bool>,
 }
@@ -61,7 +63,6 @@ impl From<SecretResponse> for Secret {
 ///
 /// 提供对 Vault 密钥的通用增删改查操作。等价于 Spring Vault 的
 /// `VaultTemplate.read()`、`VaultTemplate.write()` 等。
-
 /// Read a secret at the given path / 读取指定路径的密钥
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.read(path)`.

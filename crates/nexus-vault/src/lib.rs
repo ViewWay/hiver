@@ -32,7 +32,7 @@
 //!         .token("my-root-token")
 //!         .build()?;
 //!
-//!     let client = VaultClient::connect(config).await?;
+//!     let client = VaultClient::connect(config)?;
 //!
 //!     // Read a secret / 读取密钥
 //!     let secret = client.kv_v2("secret")

@@ -161,7 +161,7 @@ impl ChainId {
             Self::Avalanche => 43114,
             Self::Fantom => 250,
             Self::PolygonZkEvm => 1101,
-            Self::Sepolia => 11155111,
+            Self::Sepolia => 11_155_111,
             Self::Goerli => 5,
             Self::Custom(id) => id,
         }
@@ -224,7 +224,7 @@ impl ChainId {
             43114 => Self::Avalanche,
             250 => Self::Fantom,
             1101 => Self::PolygonZkEvm,
-            11155111 => Self::Sepolia,
+            11_155_111 => Self::Sepolia,
             5 => Self::Goerli,
             _ => Self::Custom(id),
         }
@@ -408,10 +408,10 @@ impl ChainConfig {
     /// Get Sepolia testnet config
     /// 获取Sepolia测试网配置
     pub fn sepolia() -> Self {
-        Self::new(11155111u64, "Sepolia Testnet")
+        Self::new(11_155_111_u64, "Sepolia Testnet")
             .with_rpc_urls(vec![
                 "https://rpc.sepolia.org".to_string(),
-                "https://sepolia.infura.io/v3/YOUR-INFURA-KEY".to_string(),
+                "https://ethereum-sepolia-rpc.publicnode.com".to_string(),
             ])
             .with_explorer("https://sepolia.etherscan.io")
             .with_native_currency("ETH", 18, "Ether")

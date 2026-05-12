@@ -3,7 +3,6 @@
 //!
 //! Provides lease renewal and revocation operations.
 /// 提供租约续订和撤销操作。
-
 use serde::{Deserialize, Serialize};
 
 use crate::client::VaultClient;

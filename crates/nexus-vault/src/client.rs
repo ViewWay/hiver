@@ -197,7 +197,7 @@ struct VaultClientInner {
 ///         .token("root")
 ///         .build()?;
 ///
-///     let client = VaultClient::connect(config).await?;
+///     let client = VaultClient::connect(config)?;
 ///     println!("Connected to Vault!");
 ///     Ok(())
 /// }
@@ -209,7 +209,7 @@ pub struct VaultClient {
 
 impl VaultClient {
     /// Connect to Vault with the given configuration / 使用给定配置连接 Vault
-    pub async fn connect(config: VaultConfig) -> VaultResult<Self> {
+    pub fn connect(config: VaultConfig) -> VaultResult<Self> {
         let mut builder = reqwest::Client::builder()
             .timeout(config.timeout)
             .danger_accept_invalid_certs(config.skip_verify);
@@ -276,8 +276,12 @@ impl VaultClient {
 
     /// Set the authentication token / 设置认证 Token
     pub fn set_token(&self, token: &str) {
-        if let Ok(mut guard) = self.inner.token.lock() {
-            *guard = Some(token.to_string());
+        match self.inner.token.lock() {
+            Ok(mut guard) => *guard = Some(token.to_string()),
+            Err(e) => {
+                tracing::warn!("Token lock poisoned, recovering: {}", e);
+                *e.into_inner() = Some(token.to_string());
+            }
         }
     }
 
@@ -355,7 +359,9 @@ impl VaultClient {
     /// Perform a LIST request to Vault / 向 Vault 执行 LIST 请求
     pub async fn list(&self, path: &str) -> VaultResult<reqwest::Response> {
         let url = self.url(path)?;
-        let mut req = self.inner.http.request(reqwest::Method::from_bytes(b"LIST").expect("unexpected error"), url);
+        let method = reqwest::Method::from_bytes(b"LIST")
+            .map_err(|e| VaultError::Other(format!("Invalid HTTP method: {e}")))?;
+        let mut req = self.inner.http.request(method, url);
         req = self.add_auth(req)?;
         let resp = req.send().await?;
         self.check_response(resp).await

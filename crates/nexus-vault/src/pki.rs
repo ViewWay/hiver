@@ -3,7 +3,6 @@
 //!
 //! The PKI secrets engine generates dynamic TLS certificates.
 /// PKI 密钥引擎生成动态 TLS 证书。
-
 use serde::{Deserialize, Serialize};
 
 use crate::client::VaultClient;

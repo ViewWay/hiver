@@ -3,7 +3,6 @@
 //!
 //! Supports both KV v1 (simple key-value store) and KV v2 (versioned secrets).
 /// 支持 KV v1（简单键值存储）和 KV v2（版本化密钥）。
-
 use serde::{Deserialize, Serialize};
 
 use crate::client::VaultClient;
@@ -146,6 +145,7 @@ struct KvV2ResponseInner {
 
 /// Patch request for KV v2 / KV v2 的补丁请求
 #[derive(Debug, Clone, Serialize)]
+#[allow(dead_code)]
 struct KvV2PatchRequest {
     data: serde_json::Value,
 }

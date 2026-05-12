@@ -430,6 +430,7 @@ pub mod address {
 
         /// Convert to checksummed address (EIP-55)
         /// 转换为校验和地址（EIP-55）
+        #[allow(clippy::indexing_slicing)]
         pub fn checksum(&self) -> String {
             let addr_hex = hex::encode(self.0);
             let hash = keccak256(addr_hex.as_bytes());
@@ -537,15 +538,14 @@ pub mod address {
     /// Derive public key from private key (simplified placeholder)
     /// 从私钥派生公钥（简化的占位符）
     fn derive_public_key(private_key: &[u8; 32]) -> [u8; 65] {
-        // This is a simplified placeholder
-        // In production, use secp256k1 library for actual key derivation
+        // SECURITY: Do NOT use this in production — this is a deterministic
+        // but cryptographically incorrect placeholder used only for testing.
+        // Use the `secp256k1` crate for real key derivation.
+        let hash = keccak256(private_key);
         let mut pub_key = [0u8; 65];
-        pub_key[0] = 4; // Uncompressed public key prefix
-        // Derive public key from private key (simplified)
-        for i in 0..32 {
-            pub_key[i + 1] = private_key[i];
-            pub_key[i + 33] = private_key[31 - i];
-        }
+        pub_key[0] = 4;
+        pub_key[1..33].copy_from_slice(&hash);
+        pub_key[33..65].copy_from_slice(&hash);
         pub_key
     }
 

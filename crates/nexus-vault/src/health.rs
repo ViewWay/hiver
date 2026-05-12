@@ -3,7 +3,6 @@
 //!
 //! Provides health check and seal status operations for Vault.
 /// 提供 Vault 的健康检查和封印状态操作。
-
 use serde::{Deserialize, Serialize};
 
 use crate::client::VaultClient;
