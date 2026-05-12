@@ -32,6 +32,9 @@ nexus-data-commons = { path = "../nexus-data-commons", features = ["query"] }
 # Async runtime
 nexus-runtime = { path = "../nexus-runtime" }
 
+# Tokio async mutex for transaction handling
+tokio = { version = "1", features = ["sync"] }
+
 # SQLx for reactive database access
 sqlx = { version = "0.8", features = ["chrono"] }
 

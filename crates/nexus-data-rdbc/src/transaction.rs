@@ -17,13 +17,18 @@ use std::sync::Arc;
 /// Transaction isolation level
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum IsolationLevel {
+    /// Read uncommitted isolation level
     ReadUncommitted,
+    /// Read committed isolation level
     ReadCommitted,
+    /// Repeatable read isolation level
     RepeatableRead,
+    /// Serializable isolation level
     Serializable,
 }
 
 impl IsolationLevel {
+    /// Returns the SQL string for this isolation level
     pub fn as_sql(&self) -> &str {
         match self {
             IsolationLevel::ReadUncommitted => "READ UNCOMMITTED",
@@ -39,17 +44,21 @@ pub(crate) trait TransactionInner: Send + Sync {
     fn execute(
         &self,
         sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> BoxFuture<'_, std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>>;
     fn fetch_all(
         &self,
         sql: &str,
-    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> BoxFuture<'_, std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>>;
     fn fetch_one(
         &self,
         sql: &str,
-    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
-    fn commit(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
-    fn rollback(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
+    ) -> BoxFuture<'_, std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>>;
+    fn commit(
+        &self,
+    ) -> BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>>;
+    fn rollback(
+        &self,
+    ) -> BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>>;
     fn isolation_level(&self) -> IsolationLevel;
     fn is_committed(&self) -> bool;
     fn is_rolled_back(&self) -> bool;
@@ -74,6 +83,8 @@ impl Clone for Transaction {
 }
 
 impl Transaction {
+    /// Creates a new transaction wrapping the given inner implementation
+    #[allow(private_interfaces)]
     pub fn new(inner: Arc<dyn TransactionInner>) -> Self {
         Self {
             inner,
@@ -82,6 +93,7 @@ impl Transaction {
         }
     }
 
+    /// Returns true if the transaction is still active
     pub fn is_active(&self) -> bool {
         !self.committed
             && !self.rolled_back
@@ -89,60 +101,73 @@ impl Transaction {
             && !self.inner.is_rolled_back()
     }
 
+    /// Returns true if the transaction has been committed
     pub fn is_committed(&self) -> bool {
         self.committed || self.inner.is_committed()
     }
 
+    /// Returns true if the transaction has been rolled back
     pub fn is_rolled_back(&self) -> bool {
         self.rolled_back || self.inner.is_rolled_back()
     }
 
+    /// Returns the isolation level of this transaction
     pub fn isolation_level(&self) -> IsolationLevel {
         self.inner.isolation_level()
     }
 
+    /// Executes a SQL statement within this transaction
     pub async fn execute(&self, sql: &str) -> Result<u64> {
         if !self.is_active() {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
             .execute(sql)
+            .await
             .map_err(|e| Error::Transaction(e.to_string()))
     }
 
+    /// Fetches all rows matching the given SQL query within this transaction
     pub async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>> {
         if !self.is_active() {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
             .fetch_all(sql)
+            .await
             .map_err(|e| Error::Transaction(e.to_string()))
     }
 
+    /// Fetches a single row matching the given SQL query within this transaction
     pub async fn fetch_one(&self, sql: &str) -> Result<Option<Row>> {
         if !self.is_active() {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
             .fetch_one(sql)
+            .await
             .map_err(|e| Error::Transaction(e.to_string()))
     }
 
+    /// Commits this transaction
     pub async fn commit(&self) -> Result<()> {
         if !self.is_active() {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
             .commit()
+            .await
             .map_err(|e| Error::Transaction(e.to_string()))
     }
 
+    /// Rolls back this transaction
     pub async fn rollback(&self) -> Result<()> {
         if !self.is_active() {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
             .rollback()
+            .await
             .map_err(|e| Error::Transaction(e.to_string()))
     }
 }
@@ -150,7 +175,8 @@ impl Transaction {
 impl Drop for Transaction {
     fn drop(&mut self) {
         if self.is_active() {
-            let _ = self.inner.rollback();
+            self.committed = true;
+            // The underlying sqlx transaction will be rolled back on drop automatically.
         }
     }
 }
@@ -159,10 +185,12 @@ impl Drop for Transaction {
 pub struct TransactionManager;
 
 impl TransactionManager {
+    /// Creates a new transaction manager
     pub fn new() -> Self {
         Self
     }
 
+    /// Executes a closure within a transaction with the given isolation level
     pub async fn execute_in_transaction<F, T, C>(
         &self,
         _isolation: IsolationLevel,

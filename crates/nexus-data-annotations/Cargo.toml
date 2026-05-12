@@ -42,7 +42,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 
 # Async runtime / 异步运行时
-tokio = { workspace = true, features = ["sync"] }
+tokio = { workspace = true, features = ["sync", "time"] }
 async-trait = { workspace = true }
 
 # Random / 随机数

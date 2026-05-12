@@ -269,6 +269,7 @@ pub struct Column {
 /// Column type
 /// 列类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(missing_docs)]
 pub enum ColumnType {
     Bool,
     I8,

@@ -95,6 +95,7 @@ mod pre_authorize_macro;
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_entity(attr, item)
 }
@@ -119,6 +120,7 @@ pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_table(attr, item)
 }
@@ -148,6 +150,7 @@ pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_id(attr, item)
 }
@@ -168,6 +171,7 @@ pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_generated_value(attr, item)
 }
@@ -198,6 +202,7 @@ pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
     column::impl_column(attr, item)
 }
@@ -236,6 +241,7 @@ pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_query(attr, item)
 }
@@ -254,6 +260,7 @@ pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_insert(attr, item)
 }
@@ -272,6 +279,7 @@ pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_update(attr, item)
 }
@@ -290,6 +298,7 @@ pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_delete(attr, item)
 }
@@ -332,6 +341,7 @@ pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     transactional_macro::impl_transactional(attr, item)
 }

@@ -78,6 +78,7 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
 ///     pub username: String,
 /// }
 /// ```
+#[allow(clippy::needless_pass_by_value)]
 pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;

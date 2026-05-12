@@ -100,9 +100,17 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         let values: Vec<String> = map
             .values()
             .map(|v| match v {
-                serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''")),
+                serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''").replace('\0', "")),
                 serde_json::Value::Null => "NULL".to_string(),
                 serde_json::Value::Bool(b) => if *b { "TRUE" } else { "FALSE" }.to_string(),
+                serde_json::Value::Number(n) => n.to_string(),
+                serde_json::Value::Array(arr) => {
+                    let items: Vec<String> = arr.iter().map(|v| match v {
+                        serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''")),
+                        other => other.to_string(),
+                    }).collect();
+                    format!("({})", items.join(", "))
+                }
                 other => other.to_string(),
             })
             .collect();
@@ -149,6 +157,13 @@ impl<C: DatabaseClient> QueryExecutor<C> {
     }
 
     // ── SQL builders ─────────────────────────────────────────────────
+
+    fn validate_identifier(id: &str) -> Result<()> {
+        if id.is_empty() || !id.chars().all(|c| c.is_alphanumeric() || c == '_') {
+            return Err(Error::sql(format!("Invalid SQL identifier: '{id}'")));
+        }
+        Ok(())
+    }
 
     fn build_select_query(
         &self,
@@ -374,7 +389,6 @@ impl<C: DatabaseClient> QueryExecutor<C> {
                     let (inner_sql, _) = Self::build_where_clause(inner);
                     sql.push_str(&format!("({})", inner_sql));
                 },
-                _ => {},
             }
         }
 
@@ -383,6 +397,7 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 }
 
 /// Escape a value for SQL string literals
+#[allow(dead_code)]
 fn sql_escape(s: &str) -> String {
     s.replace('\'', "''")
 }

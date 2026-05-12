@@ -65,12 +65,12 @@ impl ToSql for f64 {
 }
 impl ToSql for &str {
     fn to_sql(&self) -> String {
-        format!("'{}'", self.replace('\'', "''"))
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
 impl ToSql for String {
     fn to_sql(&self) -> String {
-        format!("'{}'", self.replace('\'', "''"))
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
 impl ToSql for bool {
@@ -81,6 +81,7 @@ impl ToSql for bool {
 
 /// No-op client for testing SQL builders without a real database
 /// 无操作客户端，用于测试 SQL 构建器无需真实数据库
+#[allow(dead_code)]
 pub(crate) struct NoopClient;
 
 #[async_trait::async_trait]

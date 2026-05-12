@@ -106,7 +106,7 @@ impl DatabaseClient for SqlxPoolClient {
 
         Ok(crate::Transaction::new(std::sync::Arc::new(
             AnyTransactionInner {
-                inner: std::sync::Mutex::new(Some(tx)),
+                inner: std::sync::Arc::new(tokio::sync::Mutex::new(Some(tx))),
             },
         )))
     }
@@ -235,49 +235,126 @@ fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Resu
 
 // Transaction inner for sqlx Any
 
-use std::sync::Mutex;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 struct AnyTransactionInner {
-    inner: Mutex<Option<sqlx::Transaction<'static, Any>>>,
+    inner: Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
+}
+
+async fn take_tx(
+    inner: &Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
+) -> std::result::Result<sqlx::Transaction<'static, Any>, Box<dyn std::error::Error + Send + Sync>> {
+    inner
+        .lock()
+        .await
+        .take()
+        .ok_or_else(|| -> Box<dyn std::error::Error + Send + Sync> { "transaction already consumed".into() })
+}
+
+async fn put_tx(
+    inner: &Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
+    tx: sqlx::Transaction<'static, Any>,
+) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let mut guard = inner.lock().await;
+    *guard = Some(tx);
+    Ok(())
 }
 
 impl crate::transaction::TransactionInner for AnyTransactionInner {
     fn execute(
         &self,
-        _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Err("sync execute not supported for AnyTransactionInner".into())
+        sql: &str,
+    ) -> futures_util::future::BoxFuture<'_, std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>> {
+        let inner = self.inner.clone();
+        let sql = sql.to_string();
+        Box::pin(async move {
+            let mut tx = take_tx(&inner).await?;
+            let result = sqlx::query(&sql)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            put_tx(&inner, tx).await?;
+            Ok(result.rows_affected())
+        })
     }
     fn fetch_all(
         &self,
-        _sql: &str,
-    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
-        Err("sync fetch_all not supported for AnyTransactionInner".into())
+        sql: &str,
+    ) -> futures_util::future::BoxFuture<'_, std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>> {
+        let inner = self.inner.clone();
+        let sql = sql.to_string();
+        Box::pin(async move {
+            let mut tx = take_tx(&inner).await?;
+            let db_rows = sqlx::query(&sql)
+                .fetch_all(&mut *tx)
+                .await
+                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            let rows: std::result::Result<Vec<Row>, crate::error::Error> = db_rows
+                .iter()
+                .map(|r| any_row_to_nexus_row(r))
+                .collect();
+            let rows = rows.map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            put_tx(&inner, tx).await?;
+            Ok(rows)
+        })
     }
     fn fetch_one(
         &self,
-        _sql: &str,
-    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
-        Err("sync fetch_one not supported for AnyTransactionInner".into())
+        sql: &str,
+    ) -> futures_util::future::BoxFuture<'_, std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>> {
+        let inner = self.inner.clone();
+        let sql = sql.to_string();
+        Box::pin(async move {
+            let mut tx = take_tx(&inner).await?;
+            let db_row = sqlx::query(&sql)
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            let result = match db_row {
+                Some(row) => Ok(Some(any_row_to_nexus_row(&row)?)),
+                None => Ok(None),
+            };
+            put_tx(&inner, tx).await?;
+            result
+        })
     }
-    fn commit(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        Err("sync commit not supported for AnyTransactionInner".into())
+    fn commit(
+        &self,
+    ) -> futures_util::future::BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>> {
+        let inner = self.inner.clone();
+        Box::pin(async move {
+            let tx = take_tx(&inner).await?;
+            tx.commit()
+                .await
+                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })
+        })
     }
-    fn rollback(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        Err("sync rollback not supported for AnyTransactionInner".into())
+    fn rollback(
+        &self,
+    ) -> futures_util::future::BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>> {
+        let inner = self.inner.clone();
+        Box::pin(async move {
+            let tx = take_tx(&inner).await?;
+            tx.rollback()
+                .await
+                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })
+        })
     }
     fn isolation_level(&self) -> crate::transaction::IsolationLevel {
         crate::transaction::IsolationLevel::ReadCommitted
     }
     fn is_committed(&self) -> bool {
-        false
+        let guard = self.inner.try_lock();
+        guard.map_or(false, |tx| tx.is_none())
     }
     fn is_rolled_back(&self) -> bool {
-        false
+        let guard = self.inner.try_lock();
+        guard.map_or(false, |tx| tx.is_none())
     }
     fn clone_box(&self) -> Box<dyn crate::transaction::TransactionInner> {
         Box::new(AnyTransactionInner {
-            inner: Mutex::new(None),
+            inner: self.inner.clone(),
         })
     }
 }

@@ -146,6 +146,7 @@ pub trait R2dbcBaseRepository<T, ID, C: DatabaseClient>: Send + Sync {
 ///
 /// Provides CRUD operations for R2DBC repositories.
 /// 为 R2DBC Repository 提供 CRUD 操作。
+#[allow(async_fn_in_trait)]
 pub trait R2dbcCrudRepository<T, ID, C: DatabaseClient>: R2dbcBaseRepository<T, ID, C>
 where
     T: for<'de> serde::Deserialize<'de> + serde::Serialize,

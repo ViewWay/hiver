@@ -266,28 +266,14 @@ impl TransactionalExecutor {
         // 处理传播
         let context = self.current_context.read().await;
         let should_create_new = match (&*context, config.propagation) {
-            (None, Propagation::Required) => true,
-            (None, Propagation::RequiresNew) => true,
-            (None, Propagation::Supports) => false,
-            (None, Propagation::Mandatory) => {
+            (None, Propagation::Required | Propagation::RequiresNew) | (Some(_), Propagation::RequiresNew) => true,
+            (None, Propagation::Supports | Propagation::NotSupported | Propagation::Never) | (Some(_), Propagation::Required | Propagation::Supports | Propagation::Mandatory | Propagation::Nested) => false,
+            (None, Propagation::Mandatory | Propagation::Nested) => {
                 return Err(TransactionError::NoExistingTransaction);
             },
-            (None, Propagation::NotSupported) => false,
-            (None, Propagation::Never) => false,
-            (None, Propagation::Nested) => {
-                return Err(TransactionError::NoExistingTransaction);
-            },
-            (Some(_), Propagation::Required) => false,
-            (Some(_), Propagation::RequiresNew) => true,
-            (Some(_), Propagation::Supports) => false,
-            (Some(_), Propagation::Mandatory) => false,
-            (Some(_), Propagation::NotSupported) => {
+            (Some(_), Propagation::NotSupported | Propagation::Never) => {
                 return Err(TransactionError::ExistingTransaction);
             },
-            (Some(_), Propagation::Never) => {
-                return Err(TransactionError::ExistingTransaction);
-            },
-            (Some(_), Propagation::Nested) => false,
         };
         drop(context);
 
@@ -348,12 +334,10 @@ impl TransactionalExecutor {
         match &result {
             Ok(_) => {
                 tx.commit()
-                    .await
                     .map_err(|e| TransactionError::CommitFailed(e.to_string()))?;
             },
             Err(_) => {
                 tx.rollback()
-                    .await
                     .map_err(|e| TransactionError::RollbackFailed(e.to_string()))?;
             },
         }
@@ -397,8 +381,8 @@ impl TransactionalExecutor {
                 Err(e) if attempt < max_attempts && self.is_retryable_error(e) => {
                     // Retry
                     // 重试
-                    std::thread::sleep(std::time::Duration::from_millis(100));
-                    continue;
+                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+
                 },
                 _ => {
                     return result.map_err(TransactionError::ExecutionFailed);
@@ -510,7 +494,7 @@ impl From<TransactionalConfig> for TransactionConfig {
 impl Transaction {
     /// Commit the transaction
     /// 提交事务
-    pub(crate) async fn commit(&self) -> Result<(), String> {
+    pub(crate) fn commit(&self) -> Result<(), String> {
         // Placeholder
         // 占位符
         Ok(())
@@ -518,7 +502,7 @@ impl Transaction {
 
     /// Rollback the transaction
     /// 回滚事务
-    pub(crate) async fn rollback(&self) -> Result<(), String> {
+    pub(crate) fn rollback(&self) -> Result<(), String> {
         // Placeholder
         // 占位符
         Ok(())

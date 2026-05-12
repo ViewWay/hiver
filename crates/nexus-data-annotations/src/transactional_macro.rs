@@ -225,8 +225,6 @@ pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenS
 
     // Extract function parameters for the wrapper
     // 为包装器提取函数参数
-    let _inputs = &sig.inputs;
-    let _output = &sig.output;
     let generics = &sig.generics;
 
     // Generate wrapper function
@@ -269,9 +267,10 @@ pub(crate) fn get_transactional_executor() -> crate::transactional::Transactiona
     // from a dependency injection container or global context
     // 这是一个占位符 - 实际实现会从依赖注入容器或全局上下文获取执行器
 
-    // For now, create a dummy executor that just returns an error
-    // 现在创建一个虚拟执行器，只返回错误
-    todo!("Transactional executor not yet integrated with dependency injection")
+    // Placeholder: actual implementation would get the executor from DI container
+    // 占位符：实际实现会从DI容器获取执行器
+    // PANIC: Calling any transaction method will panic until DI integration is complete
+    unimplemented!("Transactional executor not yet integrated with dependency injection")
 }
 
 #[cfg(test)]

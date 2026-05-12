@@ -183,14 +183,16 @@ impl QueryMetadata {
                     if c == '$' {
                         while let Some(&next_c) = chars.peek() {
                             if next_c.is_numeric() {
-                                current_num.push(chars.next().unwrap());
+                                if let Some(c) = chars.next() {
+                                    current_num.push(c);
+                                }
                             } else {
                                 break;
                             }
                         }
                         if !current_num.is_empty() {
-                            let param_num: usize = current_num.parse().unwrap_or(0);
-                            let index = param_num - 1;
+                            let param_num: usize = current_num.parse().unwrap_or(1);
+                            let index = param_num.saturating_sub(1);
                             // Ensure vector is large enough
                             // 确保向量足够大
                             if params.len() <= index {
@@ -272,9 +274,9 @@ impl QueryMetadata {
             ParamStyle::MyBatis => {
                 // Replace #{param} with $1, $2, etc.
                 // 将 #{param} 替换为 $1, $2 等
-                let mut param_index = 1;
+                let _param_index = 1;
 
-                for param_name in &self.param_names {
+                for (param_index, param_name) in (1..).zip(self.param_names.iter()) {
                     let placeholder = format!("#{{{}}}", param_name);
                     let replacement = format!("${}", param_index);
 
@@ -285,8 +287,6 @@ impl QueryMetadata {
                     } else {
                         return Err(R2dbcError::sql(format!("Missing parameter: {}", param_name)));
                     }
-
-                    param_index += 1;
                 }
 
                 Ok((sql, values))
