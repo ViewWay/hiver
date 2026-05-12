@@ -66,6 +66,11 @@ pub mod repository;
 pub mod page;
 pub mod sort;
 pub mod method_name;
+pub mod specification;
+pub mod projection;
+pub mod auditing;
+pub mod optimistic_lock;
+pub mod part_tree;
 #[cfg(feature = "query")]
 pub mod query;
 
@@ -81,6 +86,28 @@ pub use entity::{
     TableName, ColumnName, Entity,
 };
 pub use method_name::MethodName;
+pub use specification::{
+    Specification as Spec, Predicate as SpecPredicate,
+    SpecValue, Specifications as SpecBuilder,
+    BuiltSpecification, JpaSpecificationExecutor,
+    SpecFactories, AlwaysSpec, SimpleSpec, AndSpec, OrSpec, NotSpec,
+};
+pub use projection::{
+    Projection, ProjectionField, ProjectionTransformer,
+    DtoProjection, ClosedProjection,
+};
+pub use auditing::{
+    CreatedDate, LastModifiedDate, CreatedBy, LastModifiedBy,
+    AuditorAware, AuditingEntity, AuditingHandler,
+};
+pub use optimistic_lock::{
+    OptimisticLockError, Version, Versioned as VersionedEntity,
+    VersionCheckedUpdate,
+};
+pub use part_tree::{
+    PartTree, Subject, Keyword, PartType, Part, OrderBy,
+    OrderDirection as PartTreeOrderDirection, AndOr,
+};
 #[cfg(feature = "query")]
 pub use query::{
     QueryWrapper, UpdateWrapper, Condition, QueryOrder,
