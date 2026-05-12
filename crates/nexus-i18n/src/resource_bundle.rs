@@ -123,6 +123,7 @@ impl ResourceBundleMessageSource {
 
     /// Check if cache needs reload
     /// 检查缓存是否需要重载
+    #[allow(dead_code)]
     async fn needs_reload(&self) -> bool {
         let last = *self.last_reload.read().await;
         tokio::time::Instant::now()
@@ -426,7 +427,7 @@ greeting=Hello, {0}!
 error.not.found=Resource not found: {0}
 "#;
 
-        let messages = source.parse_properties(content).unwrap();
+        let messages = source.parse_properties(content).expect("parse_properties should succeed");
         assert_eq!(messages.get("welcome"), Some(&"Welcome to our application!".to_string()));
         assert_eq!(messages.get("greeting"), Some(&"Hello, {0}!".to_string()));
     }

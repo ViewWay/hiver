@@ -320,6 +320,7 @@ impl FixedLocaleResolver {
 
     /// Create with default locale
     /// 使用默认语言环境创建
+    #[allow(clippy::should_implement_trait)]
     pub fn default() -> Self {
         Self::new(Locale::default_locale())
     }
@@ -541,13 +542,13 @@ mod tests {
 
     #[test]
     fn test_locale_parse() {
-        let locale = Locale::parse("en_US").unwrap();
+        let locale = Locale::parse("en_US").expect("parse en_US should succeed");
         assert_eq!(locale.to_string(), "en_US");
 
-        let locale = Locale::parse("zh-CN").unwrap();
+        let locale = Locale::parse("zh-CN").expect("parse zh-CN should succeed");
         assert_eq!(locale.to_string(), "zh_CN");
 
-        let locale = Locale::parse("en").unwrap();
+        let locale = Locale::parse("en").expect("parse en should succeed");
         assert_eq!(locale.to_string(), "en");
     }
 
@@ -573,7 +574,7 @@ mod tests {
     #[tokio::test]
     async fn test_fixed_locale_resolver() {
         let resolver = FixedLocaleResolver::new(Locale::china_chinese());
-        let locale = resolver.resolve().await.unwrap();
+        let locale = resolver.resolve().await.expect("resolve should succeed");
         assert_eq!(locale.to_string(), "zh_CN");
 
         // Should not allow changing
@@ -584,11 +585,11 @@ mod tests {
     #[test]
     fn test_parse_accept_language() {
         let header = "en-US,en;q=0.9,zh-CN;q=0.8";
-        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).unwrap();
+        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).expect("parse en-US header should succeed");
         assert_eq!(locale.to_string(), "en_US");
 
         let header = "zh-CN,zh;q=0.9";
-        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).unwrap();
+        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).expect("parse zh-CN header should succeed");
         assert_eq!(locale.to_string(), "zh_CN");
     }
 }
