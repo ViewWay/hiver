@@ -14,6 +14,7 @@
 
 use super::{
     bean::{Bean, BeanDefinition, Scope},
+    conditional::{Condition, ConditionContext},
     error::{Error, Result},
     extension::Extensions,
     reflect::ReflectContainer,
@@ -110,6 +111,24 @@ impl<T> BeanRegistration<T> {
     }
 }
 
+trait PreDestroyHook: Send + Sync {
+    fn invoke(&self, bean: &dyn Any) -> crate::error::Result<()>;
+}
+
+struct PreDestroyHookImpl<T> {
+    callback: Arc<dyn Fn(&T) -> crate::error::Result<()> + Send + Sync>,
+}
+
+impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T> {
+    fn invoke(&self, bean: &dyn Any) -> crate::error::Result<()> {
+        if let Some(typed) = bean.downcast_ref::<T>() {
+            (self.callback)(typed)
+        } else {
+            Ok(())
+        }
+    }
+}
+
 /// Internal bean storage
 /// 内部bean存储
 struct BeanStore {
@@ -132,6 +151,10 @@ struct BeanStore {
     /// Currently creating beans (for cycle detection)
     /// 正在创建的Bean（用于循环检测）
     creating: std::cell::RefCell<std::collections::HashSet<TypeId>>,
+
+    /// Type-erased pre-destroy hooks keyed by TypeId
+    /// 按TypeId键控的类型擦除销毁前回调
+    pre_destroy_hooks: HashMap<TypeId, Box<dyn PreDestroyHook>>,
 }
 
 impl BeanStore {
@@ -142,6 +165,7 @@ impl BeanStore {
             by_name: HashMap::new(),
             early_exposed: HashMap::new(),
             creating: std::cell::RefCell::new(std::collections::HashSet::new()),
+            pre_destroy_hooks: HashMap::new(),
         }
     }
 }
@@ -185,6 +209,7 @@ impl Container {
     /// 创建新容器
     pub fn new() -> Self {
         Self {
+            #[allow(clippy::arc_with_non_send_sync)]
             beans: Arc::new(RwLock::new(BeanStore::new())),
             extensions: Extensions::new(),
             reflect: Arc::new(ReflectContainer::new()),
@@ -235,6 +260,17 @@ impl Container {
         T: Bean + Send + Sync + 'static,
     {
         let type_id = TypeId::of::<T>();
+
+        if let Some(pre_destroy) = &registration.pre_destroy {
+            let hook = PreDestroyHookImpl {
+                callback: pre_destroy.clone(),
+            };
+            let mut beans = self
+                .beans
+                .write()
+                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            beans.pre_destroy_hooks.insert(type_id, Box::new(hook));
+        }
 
         let mut beans = self
             .beans
@@ -309,6 +345,70 @@ impl Container {
         F: Fn() -> T + Send + Sync + 'static,
     {
         self.register(move |_c| Ok(factory()))
+    }
+
+    /// Register a bean conditionally based on a [`Condition`].
+    /// 根据条件 [`Condition`] 有条件地注册Bean。
+    ///
+    /// Evaluates the condition against the current container state (registered
+    /// beans, bean names). If the condition matches, the bean is registered
+    /// with the provided factory function; otherwise, the registration is
+    /// silently skipped.
+    ///
+    /// 根据当前容器状态（已注册的Bean、Bean名称）评估条件。如果条件匹配，
+    /// 则使用提供的工厂函数注册Bean；否则，注册将被静默跳过。
+    ///
+    /// Equivalent to Spring Boot's `@Conditional` annotations.
+    /// 等价于Spring Boot的 `@Conditional` 注解。
+    ///
+    /// # Example / 示例
+    ///
+    /// ```rust,no_run,ignore
+    /// use nexus_core::Container;
+    /// use nexus_core::ConditionalOnMissingBean;
+    ///
+    /// let mut container = Container::new();
+    ///
+    /// // Only register InMemoryCache if no Cache bean is already present
+    /// // 仅在尚未存在Cache Bean时注册InMemoryCache
+    /// container.register_conditional::<InMemoryCache, _>(
+    ///     |c| Ok(InMemoryCache::new()),
+    ///     ConditionalOnMissingBean::of::<dyn Cache>(),
+    /// )?;
+    /// ```
+    pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: C) -> Result<()>
+    where
+        T: Bean + Send + Sync + 'static,
+        F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
+        C: Condition + 'static,
+    {
+        // Build a ConditionContext from the current container state
+        // 从当前容器状态构建ConditionContext
+        let context = {
+            let beans = self
+                .beans
+                .read()
+                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+
+            let registered_beans: Vec<TypeId> = beans
+                .registrations
+                .keys()
+                .chain(beans.singletons.keys())
+                .copied()
+                .collect();
+
+            let bean_names: HashMap<String, TypeId> = beans.by_name.clone();
+
+            ConditionContext::new()
+                .with_registered_beans(registered_beans)
+                .with_bean_names(bean_names)
+        };
+
+        if condition.matches(&context) {
+            self.register(factory)
+        } else {
+            Ok(())
+        }
     }
 
     /// Get a bean by type (resolving dependencies)
@@ -579,8 +679,13 @@ impl Container {
             .write()
             .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
-        // Clear all beans (they would have pre-destroy called first)
-        // 清除所有bean（它们会先调用销毁前回调）
+        let hooks: Vec<_> = beans.pre_destroy_hooks.drain().collect();
+        for (type_id, hook) in hooks {
+            if let Some(bean) = beans.singletons.get(&type_id) {
+                let _ = hook.invoke(bean.as_ref());
+            }
+        }
+
         beans.singletons.clear();
         beans.registrations.clear();
         beans.by_name.clear();

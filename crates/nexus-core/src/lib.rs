@@ -29,6 +29,7 @@
 mod tests;
 
 pub mod bean;
+pub mod conditional;
 pub mod container;
 pub mod context;
 pub mod error;
@@ -38,6 +39,10 @@ pub mod reflect;
 
 // Re-exports / 重新导出
 pub use bean::{Bean, BeanDefinition, BeanFactory, Scope};
+pub use conditional::{
+    AllConditions, AnyCondition, Condition, ConditionContext, ConditionalOnBean,
+    ConditionalOnMissingBean, ConditionalOnProperty, NotCondition, ProfileCondition,
+};
 pub use container::{ApplicationContext, Container};
 pub use error::{Error, ErrorKind, Result};
 pub use extension::Extensions;

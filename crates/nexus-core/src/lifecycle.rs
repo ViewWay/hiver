@@ -124,9 +124,9 @@ pub trait BeanPostProcessor: Send + Sync {
     /// # Arguments / 参数
     ///
     /// * `bean` — The raw bean instance to process.
-    ///            要处理的原始Bean实例。
+    ///   要处理的原始Bean实例。
     /// * `bean_name` — The name of the bean.
-    ///                  Bean的名称。
+    ///   Bean的名称。
     fn post_process_before_initialization(
         &self,
         bean: &mut dyn Any,
@@ -142,9 +142,9 @@ pub trait BeanPostProcessor: Send + Sync {
     /// # Arguments / 参数
     ///
     /// * `bean` — The raw bean instance to process.
-    ///            要处理的原始Bean实例。
+    ///   要处理的原始Bean实例。
     /// * `bean_name` — The name of the bean.
-    ///                  Bean的名称。
+    ///   Bean的名称。
     fn post_process_after_initialization(
         &self,
         bean: &mut dyn Any,
@@ -183,7 +183,7 @@ pub trait BeanFactoryPostProcessor: Send + Sync {
     /// # Arguments / 参数
     ///
     /// * `factory` — The bean factory (passed as `&mut dyn Any` for flexibility).
-    ///               Bean工厂（以 `&mut dyn Any` 传递以提供灵活性）。
+    ///   Bean工厂（以 `&mut dyn Any` 传递以提供灵活性）。
     fn post_process_bean_factory(&self, factory: &mut dyn Any);
 }
 
@@ -243,11 +243,11 @@ impl BeanFactoryPostProcessor for NoOpBeanFactoryPostProcessor {
 /// # Arguments / 参数
 ///
 /// * `bean` — The bean instance to initialize.
-///            要初始化的Bean实例。
+///   要初始化的Bean实例。
 /// * `bean_name` — The name of the bean.
-///                  Bean的名称。
+///   Bean的名称。
 /// * `processors` — Slice of `BeanPostProcessor`s to apply.
-///                   要应用的 `BeanPostProcessor` 切片。
+///   要应用的 `BeanPostProcessor` 切片。
 pub fn initialize_bean(
     bean: &mut dyn Any,
     bean_name: &str,

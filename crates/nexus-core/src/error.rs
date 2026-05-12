@@ -46,8 +46,7 @@ impl Error {
     /// that message is extracted and used as the error message.
     pub fn from_kind(kind: ErrorKind) -> Self {
         let message = match &kind {
-            ErrorKind::NotFound(s) => Some(s.clone()),
-            ErrorKind::Internal(s) => Some(s.clone()),
+            ErrorKind::NotFound(s) | ErrorKind::Internal(s) => Some(s.clone()),
             _ => None,
         };
         Self {
