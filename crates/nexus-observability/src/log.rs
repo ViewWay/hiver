@@ -40,6 +40,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+use std::fmt::Write;
 use std::sync::OnceLock;
 use tracing::Level;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
@@ -178,7 +179,7 @@ pub fn format_pattern(
                 Some('n') => {
                     formatted.push('\n');
                 }
-                Some('%') => {
+                Some('%') | None => {
                     formatted.push('%');
                 }
                 Some('X') => {
@@ -196,16 +197,13 @@ pub fn format_pattern(
                         if chars.next() == Some('}') {
                             // For now, just show [key] placeholder for MDC values
                             // 未来：实际从 MDC map 获取值
-                            formatted.push_str(&format!("[{}]", key));
+                            let _ = write!(formatted, "[{}]", key);
                         }
                     }
                 }
                 Some(other) => {
                     formatted.push('%');
                     formatted.push(other);
-                }
-                None => {
-                    formatted.push('%');
                 }
             }
         } else {
@@ -289,7 +287,6 @@ impl LogMode {
     /// 根据配置文件获取默认模式
     pub fn from_profile(profile: Option<&str>) -> Self {
         match profile {
-            Some("dev" | "development" | "test") => LogMode::Verbose,
             Some("prod" | "production") => LogMode::Simple,
             _ => LogMode::Verbose, // Default to verbose for unknown profiles
         }
@@ -401,7 +398,6 @@ impl Default for LoggerConfig {
             .to_lowercase()
             .as_str()
         {
-            "daily" => LogRotation::Daily,
             "hourly" => LogRotation::Hourly,
             "minutely" => LogRotation::Minutely,
             _ => LogRotation::Daily,
@@ -444,7 +440,7 @@ impl Logger {
     /// Logger::init().unwrap();
     /// ```
     pub fn init() -> Result<(), Box<dyn std::error::Error>> {
-        Logger::init_with_config(LoggerConfig::default())
+        Logger::init_with_config(&LoggerConfig::default())
     }
 
     /// Initialize the global logger with custom configuration
@@ -464,7 +460,7 @@ impl Logger {
     ///
     /// Logger::init_with_config(config).unwrap();
     /// ```
-    pub fn init_with_config(config: LoggerConfig) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn init_with_config(config: &LoggerConfig) -> Result<(), Box<dyn std::error::Error>> {
         let env_filter = create_env_filter(config.level);
 
         // Choose formatter based on LogMode first, then LogFormat
@@ -708,7 +704,7 @@ impl Logger {
                 config.custom_pattern = Some(pattern);
             }
 
-        Logger::init_with_config(config)
+        Logger::init_with_config(&config)
     }
 
     /// Initialize logging from nexus-config
@@ -810,12 +806,13 @@ impl Logger {
             }
         }
 
-        Logger::init_with_config(logger_config)
+        Logger::init_with_config(&logger_config)
     }
 }
 
 /// Create environment filter for log level
 /// 创建日志级别的环境过滤器
+#[allow(clippy::indexing_slicing)]
 fn create_env_filter(default_level: LogLevel) -> EnvFilter {
     let base_filter = if let Some(level) = default_level.to_tracing_level() {
         EnvFilter::builder()
@@ -855,6 +852,7 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter {
 
 /// Create rolling file appender
 /// 创建滚动文件附加器
+#[allow(clippy::indexing_slicing)]
 fn create_file_appender(
     path: &str,
     rotation: LogRotation,

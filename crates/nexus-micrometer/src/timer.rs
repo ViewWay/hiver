@@ -108,12 +108,8 @@ impl Timer {
     /// 获取平均时间
     pub fn average_time(&self) -> Option<Duration> {
         let count = self.count();
-        if count == 0 {
-            None
-        } else {
-            let total_ns = self.inner.total_time_ns.load(std::sync::atomic::Ordering::Relaxed);
-            Some(Duration::from_nanos(total_ns / count))
-        }
+        let total_ns = self.inner.total_time_ns.load(std::sync::atomic::Ordering::Relaxed);
+        total_ns.checked_div(count).map(Duration::from_nanos)
     }
 
     /// Get max time

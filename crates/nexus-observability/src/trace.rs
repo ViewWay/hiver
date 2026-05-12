@@ -59,6 +59,7 @@ impl IdGenerator {
 
     /// Generate next trace ID (128-bit)
     /// 生成下一个追踪ID（128位）
+    #[allow(clippy::expect_used)]
     fn next_trace_id(&self) -> TraceId {
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -122,6 +123,7 @@ impl TraceId {
 
     /// Get high 64 bits
     /// 获取高64位
+    #[allow(clippy::expect_used)]
     pub fn high(&self) -> u64 {
         u64::from_be_bytes(
             self.0[0..8]
@@ -132,12 +134,14 @@ impl TraceId {
 
     /// Get low 64 bits
     /// 获取低64位
+    #[allow(clippy::expect_used)]
     pub fn low(&self) -> u64 {
         u64::from_be_bytes(self.0[8..16].try_into().expect("slice has correct length"))
     }
 
     /// Convert to hex string
     /// 转换为十六进制字符串
+    #[allow(clippy::format_collect)]
     pub fn to_hex(&self) -> String {
         self.0.iter().map(|b| format!("{:02x}", b)).collect()
     }
@@ -204,6 +208,7 @@ impl SpanId {
 
     /// Convert to hex string
     /// 转换为十六进制字符串
+    #[allow(clippy::format_collect)]
     pub fn to_hex(&self) -> String {
         self.0.iter().map(|b| format!("{:02x}", b)).collect()
     }
@@ -390,6 +395,7 @@ impl Default for TraceContext {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl fmt::Debug for TraceContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TraceContext")
@@ -566,6 +572,7 @@ impl Span {
 
     /// Create a new span with a context
     /// 使用上下文创建新span
+    #[allow(clippy::expect_used)]
     pub fn with_context(name: impl Into<String>, context: TraceContext) -> Self {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -633,6 +640,7 @@ impl Span {
 
     /// Add an event to the span
     /// 向span添加事件
+    #[allow(clippy::unwrap_used)]
     pub fn add_event(&mut self, name: impl Into<String>) {
         if self.is_recording {
             let now = SystemTime::now()
@@ -650,6 +658,7 @@ impl Span {
 
     /// Add an event with attributes
     /// 添加带属性的事件
+    #[allow(clippy::unwrap_used)]
     pub fn add_event_with_attrs(&mut self, name: impl Into<String>, attrs: Vec<(String, String)>) {
         if self.is_recording {
             let now = SystemTime::now()
@@ -691,6 +700,7 @@ impl Span {
 
     /// End the span
     /// 结束span
+    #[allow(clippy::unwrap_used)]
     pub fn end(&mut self) {
         if self.is_active() {
             self.end_time = Some(
@@ -717,6 +727,7 @@ impl Span {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl fmt::Debug for Span {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Span")
@@ -892,6 +903,7 @@ static GLOBAL_TRACER: std::sync::LazyLock<std::sync::RwLock<Option<Tracer>>> =
 
 /// Initialize the global tracer
 /// 初始化全局追踪器
+#[allow(clippy::expect_used)]
 pub fn init_tracer(service_name: impl Into<String>) -> Tracer {
     let tracer = Tracer::new(service_name);
     *GLOBAL_TRACER.write().expect("lock poisoned") = Some(tracer.clone());
@@ -900,6 +912,7 @@ pub fn init_tracer(service_name: impl Into<String>) -> Tracer {
 
 /// Get the global tracer
 /// 获取全局追踪器
+#[allow(clippy::expect_used)]
 pub fn global_tracer() -> Option<Tracer> {
     GLOBAL_TRACER.read().expect("lock poisoned").as_ref().cloned()
 }

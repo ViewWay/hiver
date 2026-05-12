@@ -436,7 +436,7 @@ impl HistogramData {
         // Ensure buckets are sorted and end with +Inf
         let has_infinity = buckets.iter().any(Option::is_none);
         buckets.sort_by(|a, b| match (a, b) {
-            (Some(va), Some(vb)) => va.partial_cmp(vb).expect("unexpected error"),
+            (Some(va), Some(vb)) => va.partial_cmp(vb).unwrap_or(std::cmp::Ordering::Equal),
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
             (None, None) => std::cmp::Ordering::Equal,
@@ -461,8 +461,10 @@ impl HistogramData {
 
         // Find the appropriate bucket
         for (i, upper_bound) in self.buckets.iter().enumerate() {
-            if upper_bound.is_none_or(|ub| value <= ub) {
-                self.bucket_counts[i] += 1;
+            if upper_bound.is_none_or(|ub| value <= ub)
+                && let Some(count) = self.bucket_counts.get_mut(i)
+            {
+                    *count += 1;
             }
         }
     }
@@ -691,15 +693,13 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read()
-            && let Some(Metric::Counter(counter)) = metrics.get(&id) {
-                return counter.clone();
-            }
+        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        if let Some(Metric::Counter(counter)) = metrics.get(&id) {
+            return counter.clone();
+        }
 
         let counter = Counter::with_labels(name, all_labels);
-        if let Ok(mut metrics) = self.metrics.write() {
-            metrics.insert(id.clone(), Metric::Counter(counter.clone()));
-        }
+        metrics.insert(id, Metric::Counter(counter.clone()));
         counter
     }
 
@@ -722,15 +722,13 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read()
-            && let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
-                return gauge.clone();
-            }
+        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        if let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
+            return gauge.clone();
+        }
 
         let gauge = Gauge::with_labels(name, all_labels);
-        if let Ok(mut metrics) = self.metrics.write() {
-            metrics.insert(id.clone(), Metric::Gauge(gauge.clone()));
-        }
+        metrics.insert(id, Metric::Gauge(gauge.clone()));
         gauge
     }
 
@@ -753,15 +751,13 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        if let Ok(metrics) = self.metrics.read()
-            && let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
-                return histogram.clone();
-            }
+        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        if let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
+            return histogram.clone();
+        }
 
         let histogram = Histogram::with_labels(name, all_labels);
-        if let Ok(mut metrics) = self.metrics.write() {
-            metrics.insert(id.clone(), Metric::Histogram(histogram.clone()));
-        }
+        metrics.insert(id, Metric::Histogram(histogram.clone()));
         histogram
     }
 
@@ -873,7 +869,7 @@ fn export_metric_line(id: &MetricId, value: u64) -> String {
         .collect();
     if !labels.is_empty() && id.labels.len() != labels.len() {
         // Rebuild line without empty labels
-        line = id.name.clone();
+        line.clone_from(&id.name);
         line.push('{');
         let label_strings: Vec<String> = labels
             .iter()
@@ -883,7 +879,7 @@ fn export_metric_line(id: &MetricId, value: u64) -> String {
         line.push('}');
     } else if labels.is_empty() && !id.labels.is_empty() {
         // Only suffix labels, remove braces
-        line = id.name.clone();
+        line.clone_from(&id.name);
     }
 
     // Handle histogram suffixes

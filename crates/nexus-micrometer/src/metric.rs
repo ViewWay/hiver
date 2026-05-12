@@ -167,9 +167,9 @@ impl Tags {
         Self::default()
     }
 
-    /// Create from iterator
-    /// 从迭代器创建
-    pub fn from_iter<I>(iter: I) -> Result<Self>
+    /// Create from an iterator of tags
+    /// 从标签迭代器创建
+    pub fn from_tags<I>(iter: I) -> Result<Self>
     where
         I: IntoIterator<Item = Tag>,
     {

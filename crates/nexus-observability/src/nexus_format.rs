@@ -199,8 +199,7 @@ fn format_level(level: Level) -> (&'static str, &'static str) {
 /// 获取日志级别的 ANSI 颜色代码
 fn level_color(level: Level) -> &'static str {
     match level {
-        Level::TRACE => "\x1b[36m", // Cyan
-        Level::DEBUG => "\x1b[36m", // Cyan
+        Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
         Level::INFO => "\x1b[32m",  // Green
         Level::WARN => "\x1b[33m",  // Yellow
         Level::ERROR => "\x1b[31m", // Red
@@ -597,8 +596,7 @@ fn simple_level_str(level: Level) -> &'static str {
 /// 获取日志级别的 ANSI 颜色代码（精简模式）
 fn simple_level_color(level: Level) -> &'static str {
     match level {
-        Level::TRACE => "\x1b[36m", // Cyan
-        Level::DEBUG => "\x1b[36m", // Cyan
+        Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
         Level::INFO => "\x1b[32m",  // Green
         Level::WARN => "\x1b[33m",  // Yellow
         Level::ERROR => "\x1b[31m", // Red
