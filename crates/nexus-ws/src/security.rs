@@ -13,38 +13,50 @@ type HmacSha256 = Hmac<Sha256>;
 /// WS-Security header / WS-Security头部
 #[derive(Debug, Clone)]
 pub struct WsSecurityHeader {
+    /// Username token / 用户名令牌
     pub username: Option<String>,
+    /// Password token / 密码令牌
     pub password: Option<String>,
+    /// Timestamp token for message freshness / 消息新鲜度的时间戳令牌
     pub timestamp: Option<TimestampToken>,
+    /// Message signature / 消息签名
     pub signature: Option<String>,
 }
 
 /// Timestamp token for message freshness / 消息新鲜度的时间戳令牌
 #[derive(Debug, Clone)]
 pub struct TimestampToken {
+    /// Creation time in RFC 3339 / 创建时间（RFC 3339格式）
     pub created: String,
+    /// Expiration time in RFC 3339 / 过期时间（RFC 3339格式）
     pub expires: String,
 }
 
 /// Security configuration / 安全配置
 #[derive(Debug, Clone)]
 pub struct SecurityConfig {
+    /// Username for authentication / 认证用户名
     pub username: Option<String>,
+    /// Password for authentication / 认证密码
     pub password: Option<String>,
+    /// HMAC signing key / HMAC签名密钥
     pub signing_key: Option<Vec<u8>>,
 }
 
 impl SecurityConfig {
+    /// Create a new default security config / 创建默认安全配置
     pub fn new() -> Self {
         Self { username: None, password: None, signing_key: None }
     }
 
+    /// Set username and password credentials / 设置用户名和密码凭据
     pub fn with_credentials(mut self, user: &str, pass: &str) -> Self {
         self.username = Some(user.to_string());
         self.password = Some(pass.to_string());
         self
     }
 
+    /// Set the HMAC signing key / 设置HMAC签名密钥
     pub fn with_signing_key(mut self, key: &[u8]) -> Self {
         self.signing_key = Some(key.to_vec());
         self
@@ -53,6 +65,7 @@ impl SecurityConfig {
     /// Sign a message / 签名消息
     pub fn sign(&self, body: &str) -> Option<String> {
         self.signing_key.as_ref().map(|key| {
+            #[allow(clippy::expect_used)]
             let mut mac = HmacSha256::new_from_slice(key).expect("HMAC key");
             mac.update(body.as_bytes());
             general_purpose::STANDARD.encode(mac.finalize().into_bytes())
@@ -84,9 +97,9 @@ mod tests {
     #[test]
     fn test_security_config() {
         let config = SecurityConfig::new()
-            .with_credentials("admin", "secret")
-            .with_signing_key(b"my-secret-signing-key");
-        assert_eq!(config.username.as_deref(), Some("admin"));
+            .with_credentials("test-user", "test-password-not-real")
+            .with_signing_key(b"test-signing-key-not-for-production");
+        assert_eq!(config.username.as_deref(), Some("test-user"));
         assert!(config.signing_key.is_some());
     }
 

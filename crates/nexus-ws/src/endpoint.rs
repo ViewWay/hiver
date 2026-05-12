@@ -26,11 +26,14 @@ pub trait Endpoint: Send + Sync {
 /// `PayloadRoot注解` — 将端点映射到SOAP负载根元素
 #[derive(Debug, Clone)]
 pub struct PayloadRoot {
+    /// XML namespace of the payload root element / 负载根元素的XML命名空间
     pub namespace: String,
+    /// Local name of the payload root element / 负载根元素的本地名称
     pub local_part: String,
 }
 
 impl PayloadRoot {
+    /// Create a new `PayloadRoot` / 创建新的`PayloadRoot`
     pub fn new(namespace: &str, local_part: &str) -> Self {
         Self {
             namespace: namespace.to_string(),
@@ -43,10 +46,12 @@ impl PayloadRoot {
 /// `SoapAction注解` — 将端点映射到SOAP操作
 #[derive(Debug, Clone)]
 pub struct SoapAction {
+    /// SOAP action URI / SOAP操作URI
     pub action: String,
 }
 
 impl SoapAction {
+    /// Create a new `SoapAction` / 创建新的`SoapAction`
     pub fn new(action: &str) -> Self {
         Self {
             action: action.to_string(),

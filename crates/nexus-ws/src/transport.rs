@@ -7,22 +7,30 @@
 /// SOAP request / SOAP请求
 #[derive(Debug, Clone)]
 pub struct SoapRequest {
+    /// SOAP action header value / SOAP操作头部值
     pub soap_action: Option<String>,
+    /// Request body / 请求体
     pub body: String,
+    /// Additional HTTP headers / 附加HTTP头部
     pub headers: Vec<(String, String)>,
 }
 
 /// SOAP response / SOAP响应
 #[derive(Debug, Clone)]
 pub struct SoapResponse {
+    /// HTTP status code / HTTP状态码
     pub status: u16,
+    /// Response body / 响应体
     pub body: String,
+    /// Response headers / 响应头部
     pub headers: Vec<(String, String)>,
 }
 
 /// Transport trait / 传输trait
 pub trait Transport: Send + Sync {
+    /// Returns the list of supported protocols / 返回支持的协议列表
     fn supported_protocols(&self) -> Vec<&str>;
+    /// Send a SOAP request and return the response / 发送SOAP请求并返回响应
     fn send(&self, request: &SoapRequest) -> Result<SoapResponse, String>;
 }
 
@@ -33,10 +41,12 @@ pub struct HttpTransport {
 }
 
 impl HttpTransport {
+    /// Create a new HTTP transport / 创建新的HTTP传输
     pub fn new(url: &str) -> Self {
         Self { endpoint_url: url.to_string() }
     }
 
+    /// Get the endpoint URL / 获取端点URL
     pub fn url(&self) -> &str {
         &self.endpoint_url
     }

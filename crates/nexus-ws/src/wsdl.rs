@@ -4,24 +4,34 @@
 //! Equivalent to Spring WS WSDL generation
 //! 等价于 Spring WS WSDL生成
 
+use std::fmt::Write;
 use serde::{Deserialize, Serialize};
 
 /// WSDL definition / WSDL定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WsdlDefinition {
+    /// Target namespace / 目标命名空间
     pub target_namespace: String,
+    /// Service name / 服务名称
     pub service_name: String,
+    /// Port type name / 端口类型名称
     pub port_type_name: String,
+    /// List of operations / 操作列表
     pub operations: Vec<WsdlOperation>,
+    /// Optional embedded XSD types schema / 可选的内嵌XSD类型模式
     pub types_schema: Option<String>,
 }
 
 /// WSDL operation / WSDL操作
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WsdlOperation {
+    /// Operation name / 操作名称
     pub name: String,
+    /// Input message name / 输入消息名称
     pub input_message: String,
+    /// Output message name / 输出消息名称
     pub output_message: String,
+    /// SOAP action URI / SOAP操作URI
     pub soap_action: String,
 }
 
@@ -33,6 +43,7 @@ pub struct WsdlGenerator {
 }
 
 impl WsdlGenerator {
+    /// Create a new WSDL generator / 创建新的WSDL生成器
     pub fn new(namespace: &str, service: &str, location: &str) -> Self {
         Self {
             namespace: namespace.to_string(),
@@ -56,15 +67,16 @@ impl WsdlGenerator {
     pub fn to_xml(&self, def: &WsdlDefinition) -> String {
         let mut ops_xml = String::new();
         for op in &def.operations {
-            ops_xml.push_str(&format!(
+            let _ = write!(
+                ops_xml,
                 r#"  <wsdl:operation name="{}">
     <soap:operation soapAction="{}"/>
     <wsdl:input message="tns:{}"/>
     <wsdl:output message="tns:{}"/>
   </wsdl:operation>
 "#,
-                op.name, op.soap_action, op.input_message, op.output_message
-            ));
+                escape_xml(&op.name), escape_xml(&op.soap_action), escape_xml(&op.input_message), escape_xml(&op.output_message)
+            );
         }
 
         format!(
@@ -85,13 +97,28 @@ impl WsdlGenerator {
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>"#,
-            self.namespace, self.namespace,
-            def.port_type_name, ops_xml,
-            def.port_type_name, def.port_type_name,
-            def.service_name, def.port_type_name, def.port_type_name,
-            self.location
+            escape_xml(&self.namespace), escape_xml(&self.namespace),
+            escape_xml(&def.port_type_name), ops_xml,
+            escape_xml(&def.port_type_name), escape_xml(&def.port_type_name),
+            escape_xml(&def.service_name), escape_xml(&def.port_type_name), escape_xml(&def.port_type_name),
+            escape_xml(&self.location)
         )
     }
+}
+
+fn escape_xml(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            '"' => out.push_str("&quot;"),
+            '\'' => out.push_str("&apos;"),
+            _ => out.push(c),
+        }
+    }
+    out
 }
 
 #[cfg(test)]

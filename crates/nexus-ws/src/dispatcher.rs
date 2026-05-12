@@ -18,6 +18,7 @@ pub struct MessageDispatcher {
 }
 
 impl MessageDispatcher {
+    /// Create a new dispatcher / 创建新的调度器
     pub fn new() -> Self {
         Self::default()
     }
