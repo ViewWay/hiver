@@ -32,7 +32,7 @@ use syn::{Expr, ItemFn, parse_macro_input};
 ///     // Transaction logic
 /// }
 /// ```
-pub(crate) fn transactional_impl(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> TokenStream {
     // Parse attribute if not empty
     // 解析属性（如果不为空）
     let options = if attr.is_empty() {
@@ -157,7 +157,7 @@ struct TransactionalOptionsParsed {
 
 /// Parse transactional options from attribute token stream
 /// 从属性token流解析transactional选项
-fn parse_transactional_options_attr(attr: TokenStream) -> TransactionalOptionsParsed {
+fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsParsed {
     let mut options = TransactionalOptionsParsed::default();
 
     // Parse the attribute as a comma-separated list of name=value pairs
@@ -184,7 +184,7 @@ fn parse_transactional_options_attr(attr: TokenStream) -> TransactionalOptionsPa
                         "NESTED" => quote! { .propagation(Propagation::Nested) },
                         _ => quote! {},
                     };
-                    options.propagation = Some(syn::parse2(prop_expr).expect("unexpected error"));
+                    options.propagation = Some(syn::parse2(prop_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
                 "isolation" => {
                     let iso_expr = match value {
@@ -196,12 +196,12 @@ fn parse_transactional_options_attr(attr: TokenStream) -> TransactionalOptionsPa
                         "SERIALIZABLE" => quote! { .isolation(IsolationLevel::Serializable) },
                         _ => quote! {},
                     };
-                    options.isolation = Some(syn::parse2(iso_expr).expect("unexpected error"));
+                    options.isolation = Some(syn::parse2(iso_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
                 "timeout" | "timeout_secs" => {
                     if let Ok(timeout_val) = value.parse::<u64>() {
                         let timeout_expr = quote! { .timeout_secs(#timeout_val) };
-                        options.timeout_secs = Some(syn::parse2(timeout_expr).expect("unexpected error"));
+                        options.timeout_secs = Some(syn::parse2(timeout_expr).unwrap_or_else(|e| panic!("{}", e)));
                     }
                 },
                 "read_only" => {

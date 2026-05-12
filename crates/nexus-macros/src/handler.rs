@@ -81,7 +81,6 @@ pub(crate) fn handler_impl(_attr: TokenStream, item: TokenStream) -> TokenStream
     // Generate extraction statements for each parameter
     // 为每个参数生成提取语句
     let extract_statements = param_info.iter().map(|(pat, ty)| {
-        let ty = ty;
         quote! {
             let #pat: #ty = match <#ty as nexus_http::FromRequest>::from_request(&req).await {
                 Ok(val) => val,

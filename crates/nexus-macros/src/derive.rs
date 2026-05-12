@@ -31,7 +31,6 @@ use syn::{parse_macro_input, Data, DataStruct, DeriveInput, Fields};
 ///     age: u32,
 /// }
 /// ```
-#[proc_macro_derive(FromRequest)]
 pub fn from_request(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
@@ -93,7 +92,6 @@ pub fn from_request(input: TokenStream) -> TokenStream {
 ///     name: String,
 /// }
 /// ```
-#[proc_macro_derive(IntoResponse)]
 pub fn into_response(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;

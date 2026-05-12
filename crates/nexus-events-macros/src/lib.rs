@@ -31,6 +31,7 @@ use syn::{parse_macro_input, FnArg, ItemFn, Type};
 ///
 /// - `order`: Execution order (lower = higher priority), default 0
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
     let input_fn = parse_macro_input!(input as ItemFn);
 
@@ -87,6 +88,7 @@ pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> TokenStream {
     let input_fn = parse_macro_input!(input as ItemFn);
 
@@ -154,10 +156,8 @@ fn generate_async_listener(
     event_type: Option<Type>,
     order: i32,
 ) -> proc_macro2::TokenStream {
-    
-
-    match event_type {
-        Some(evt) => quote! {
+    if let Some(evt) = event_type {
+        quote! {
             // Original function (unchanged)
             #input_fn
 
@@ -167,11 +167,12 @@ fn generate_async_listener(
                 pub const ORDER: i32 = #order;
                 pub const EVENT_TYPE: &str = stringify!(#evt);
             }
-        },
-        None => quote! {
+        }
+    } else {
+        quote! {
             compile_error!("EventListener function must have an event parameter");
             #input_fn
-        },
+        }
     }
 }
 
@@ -185,10 +186,8 @@ fn generate_sync_listener(
     event_type: Option<Type>,
     order: i32,
 ) -> proc_macro2::TokenStream {
-    
-
-    match event_type {
-        Some(evt) => quote! {
+    if let Some(evt) = event_type {
+        quote! {
             // Original function (unchanged)
             #input_fn
 
@@ -197,11 +196,12 @@ fn generate_sync_listener(
                 pub const ORDER: i32 = #order;
                 pub const EVENT_TYPE: &str = stringify!(#evt);
             }
-        },
-        None => quote! {
+        }
+    } else {
+        quote! {
             compile_error!("EventListener function must have an event parameter");
             #input_fn
-        },
+        }
     }
 }
 
@@ -216,10 +216,8 @@ fn generate_transactional_listener_async(
     order: i32,
     _phase: String,
 ) -> proc_macro2::TokenStream {
-    
-
-    match event_type {
-        Some(_evt) => quote! {
+    if let Some(_evt) = event_type {
+        quote! {
             // Original function (unchanged)
             #input_fn
 
@@ -228,11 +226,12 @@ fn generate_transactional_listener_async(
                 pub const ORDER: i32 = #order;
                 pub const PHASE: &str = #_phase;
             }
-        },
-        None => quote! {
+        }
+    } else {
+        quote! {
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn
-        },
+        }
     }
 }
 
@@ -247,10 +246,8 @@ fn generate_transactional_listener_sync(
     order: i32,
     _phase: String,
 ) -> proc_macro2::TokenStream {
-    
-
-    match event_type {
-        Some(_evt) => quote! {
+    if let Some(_evt) = event_type {
+        quote! {
             // Original function (unchanged)
             #input_fn
 
@@ -259,11 +256,12 @@ fn generate_transactional_listener_sync(
                 pub const ORDER: i32 = #order;
                 pub const PHASE: &str = #_phase;
             }
-        },
-        None => quote! {
+        }
+    } else {
+        quote! {
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn
-        },
+        }
     }
 }
 
