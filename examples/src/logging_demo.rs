@@ -139,7 +139,7 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    Logger::init_with_config(config)
+    Logger::init_with_config(&config)
         .map_err(|e| anyhow::anyhow!("Failed to initialize logging: {}", e))?;
     Ok(())
 }
