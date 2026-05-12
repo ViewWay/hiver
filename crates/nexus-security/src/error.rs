@@ -104,6 +104,32 @@ pub enum SecurityError {
     Other(String),
 }
 
+impl SecurityError {
+    /// Create an IO error from a message
+    /// 从消息创建IO错误
+    pub fn io_error(msg: impl Into<String>) -> Self {
+        SecurityError::Other(msg.into())
+    }
+
+    /// Create an authentication error from a message
+    /// 从消息创建认证错误
+    pub fn authentication_error(msg: impl Into<String>) -> Self {
+        SecurityError::AuthenticationFailed(msg.into())
+    }
+
+    /// Create an invalid token error
+    /// 创建无效令牌错误
+    pub fn invalid_token(msg: impl Into<String>) -> Self {
+        SecurityError::InvalidToken(msg.into())
+    }
+
+    /// Create an expired token error
+    /// 创建过期令牌错误
+    pub fn expired_token(msg: impl Into<String>) -> Self {
+        SecurityError::TokenExpired(msg.into())
+    }
+}
+
 /// Security result type
 /// 安全结果类型
 pub type SecurityResult<T> = Result<T, SecurityError>;

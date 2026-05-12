@@ -52,6 +52,7 @@ mod tests;
 mod auth;
 mod authority;
 mod context;
+mod csrf;
 mod encoder;
 mod error;
 mod jwt;
@@ -65,7 +66,8 @@ mod user;
 
 pub use auth::{Authentication, AuthenticationManager};
 pub use authority::{Authority, GrantedAuthority};
-pub use context::SecurityContext;
+pub use context::{SecurityContext, SecurityContextGuard};
+pub use csrf::{CsrfProtectionConfig, CsrfToken, CsrfTokenRepository, InMemoryCsrfTokenRepository};
 pub use encoder::{BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder, StandardPasswordEncoder};
 pub use error::{SecurityError, SecurityResult};
 pub use jwt::{JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil};
@@ -90,8 +92,14 @@ pub mod prelude {
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,
         GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil, PasswordEncoder,
         Permission, PermissionEntry, PreAuthorize, RbacConfig, RbacManager, RoleEnum,
-        RolePermission, Roles, Secured, SecurityContext, SecurityExpression, User, UserDetails,
-        UserRole, UserService,
+        RolePermission, Roles, Secured, SecurityContext, SecurityContextGuard, SecurityExpression,
+        User, UserDetails, UserRole, UserService,
+    };
+
+    // CSRF re-exports / CSRF重新导出
+    pub use super::csrf::{
+        CookieCsrfTokenRepository, CsrfProtectionConfig, CsrfToken, CsrfTokenRepository,
+        CsrfValidator, InMemoryCsrfTokenRepository,
     };
 }
 
