@@ -382,6 +382,7 @@ where
 {
     file_path: String,
     headers: Option<Vec<String>>,
+    #[allow(clippy::type_complexity)]
     formatter: Box<dyn Fn(&T) -> Vec<String> + Send + Sync>,
     write_headers: bool,
     _phantom: std::marker::PhantomData<T>,
@@ -523,6 +524,7 @@ where
 
     /// Add writer to composite
     /// 向组合添加写入器
+    #[allow(clippy::should_implement_trait)]
     pub fn add<W>(mut self, writer: W) -> Self
     where
         W: ItemWriter<Item = T> + Send + Sync + 'static,

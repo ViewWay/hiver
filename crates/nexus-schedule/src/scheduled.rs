@@ -217,10 +217,10 @@ impl TaskScheduler {
 
         let handle = match task.schedule_type.clone() {
             ScheduleType::FixedRate(duration) => {
-                self.spawn_fixed_rate_task(task, duration).await
+                self.spawn_fixed_rate_task(task, duration)
             }
             ScheduleType::FixedDelay(duration) => {
-                self.spawn_fixed_delay_task(task, duration).await
+                self.spawn_fixed_delay_task(task, duration)
             }
             ScheduleType::Cron(_) => {
                 return Err("Cron scheduling not yet implemented".to_string());
@@ -234,7 +234,7 @@ impl TaskScheduler {
 
     /// Spawn a fixed rate task
     /// 生成固定速率任务
-    async fn spawn_fixed_rate_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
+    fn spawn_fixed_rate_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
         let task_name = task.name.clone();
         let running = self.running.clone();
 
@@ -258,7 +258,7 @@ impl TaskScheduler {
 
     /// Spawn a fixed delay task
     /// 生成固定延迟任务
-    async fn spawn_fixed_delay_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
+    fn spawn_fixed_delay_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
         let task_name = task.name.clone();
         let running = self.running.clone();
 
@@ -381,7 +381,7 @@ where
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub async fn schedule_fixed_rate_sync<F>(
+pub fn schedule_fixed_rate_sync<F>(
     interval_ms: u64,
     mut f: F,
 ) -> JoinHandle<()>
@@ -402,7 +402,7 @@ where
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub async fn schedule_fixed_delay_sync<F>(
+pub fn schedule_fixed_delay_sync<F>(
     delay_ms: u64,
     mut f: F,
 ) -> JoinHandle<()>

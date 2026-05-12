@@ -201,19 +201,21 @@ impl SpelKeyGenerator {
     pub(crate) fn generate_from_params(&self, params: &[&dyn KeyParam]) -> String {
         let expr = self.expression.trim();
 
-        if expr.starts_with("#p") {
+        if let Some(stripped) = expr.strip_prefix("#p") {
             // Parameter by index: #p0, #p1, etc.
-            if let Ok(index) = expr[2..].parse::<usize>()
+            if let Ok(index) = stripped.parse::<usize>()
                 && let Some(param) = params.get(index) {
                     return param.as_key_string();
                 }
         } else if let Some(param_name) = expr.strip_prefix('#') {
             // Parameter by name (simplified - just use first param)
             if !params.is_empty() {
+                #[allow(clippy::indexing_slicing)]
                 if param_name.contains('.') {
                     // Field access - simplified
                     return params[0].as_key_string();
                 }
+                #[allow(clippy::indexing_slicing)]
                 return params[0].as_key_string();
             }
         }

@@ -4,6 +4,8 @@
 //! Evaluates SpEL-like expressions for cache annotations
 //! 评估缓存注解的类似 `SpEL` 的表达式
 
+#![allow(clippy::indexing_slicing)]
+
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 
@@ -51,6 +53,7 @@ use std::collections::HashMap;
 /// let should_not_cache = evaluate_cache_condition("#result == null", &args, Some(&JsonValue::Null));
 /// assert!(should_not_cache);
 /// ```
+#[allow(clippy::implicit_hasher)]
 pub fn evaluate_cache_condition(
     expression: &str,
     args: &HashMap<String, JsonValue>,
@@ -80,35 +83,36 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle logical NOT
-    if expr.starts_with('!') {
-        let inner_expr = expr[1..].trim();
+    if let Some(inner) = expr.strip_prefix('!') {
+        let inner_expr = inner.trim();
         return !evaluate_cache_condition(inner_expr, args, result);
     }
 
     // Handle method calls like length() — must be checked BEFORE == operator
     // 处理像 length() 这样的方法调用 — 必须在 == 运算符之前检查
     if expr.contains(".length()") {
-        let param_part = expr.split(".length()").next().expect("unexpected error");
+        #[allow(clippy::expect_used)]
+        let param_part = expr.split(".length()").next().unwrap_or("");
         let method_end = param_part.len() + ".length()".len();
         let rest = &expr[method_end..];
 
         let value = get_value(param_part.trim(), args, result);
         let length = get_length(&value);
 
-        if rest.starts_with(" >") {
-            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
+        if let Some(stripped) = rest.strip_prefix(" >") {
+            let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) > threshold;
-        } else if rest.starts_with(" <") {
-            let threshold = rest[2..].trim().parse::<i64>().unwrap_or(0);
+        } else if let Some(stripped) = rest.strip_prefix(" <") {
+            let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) < threshold;
-        } else if rest.starts_with(" >=") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+        } else if let Some(stripped) = rest.strip_prefix(" >=") {
+            let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) >= threshold;
-        } else if rest.starts_with(" <=") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+        } else if let Some(stripped) = rest.strip_prefix(" <=") {
+            let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) <= threshold;
-        } else if rest.starts_with(" ==") {
-            let threshold = rest[3..].trim().parse::<i64>().unwrap_or(0);
+        } else if let Some(stripped) = rest.strip_prefix(" ==") {
+            let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return length == (threshold as usize);
         }
     }
@@ -264,7 +268,9 @@ fn get_value(
     }
 
     if let Ok(num) = expr.parse::<f64>() {
-        return JsonValue::Number(serde_json::Number::from_f64(num).expect("unexpected error"));
+        if let Some(n) = serde_json::Number::from_f64(num) {
+            return JsonValue::Number(n);
+        }
     }
 
     // Handle boolean literals

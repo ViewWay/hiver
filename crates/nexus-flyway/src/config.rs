@@ -104,8 +104,7 @@ impl Config {
                 "FLYWAY_URL or DATABASE_URL must be set".to_string(),
             ))?;
 
-        let mut config = Self::default();
-        config.datasource_url = url;
+        let mut config = Self { datasource_url: url, ..Default::default() };
 
         if let Ok(locations) = std::env::var("FLYWAY_LOCATIONS") {
             config.locations = locations.split(',').map(|s| s.to_string()).collect();
@@ -264,7 +263,7 @@ mod tests {
             .locations(vec!["db/migration".to_string()])
             .baseline_on_migrate(true)
             .build()
-            .unwrap();
+            .expect("build should succeed");
 
         assert_eq!(config.datasource_url, "postgresql://localhost/test");
         assert_eq!(config.locations.len(), 1);
@@ -279,7 +278,7 @@ mod tests {
         let config = Config::builder()
             .datasource_url("postgresql://localhost/test")
             .build()
-            .unwrap();
+            .expect("build should succeed");
         assert!(config.validate().is_ok());
     }
 
@@ -289,7 +288,7 @@ mod tests {
             .datasource_url("postgresql://localhost/test")
             .locations(vec!["custom/migrations".to_string()])
             .build()
-            .unwrap();
+            .expect("build should succeed");
 
         assert_eq!(config.migrations_dir(), PathBuf::from("custom/migrations"));
     }
