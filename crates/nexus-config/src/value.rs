@@ -162,6 +162,7 @@ impl Value {
 
     /// Get as float
     /// 获取浮点数值
+    #[allow(clippy::cast_precision_loss)]
     pub fn as_f64(&self) -> Option<f64> {
         match self {
             Value::Float(v) => Some(*v),

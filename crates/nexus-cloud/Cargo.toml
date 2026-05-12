@@ -26,7 +26,7 @@ workspace = true
 [dependencies]
 # Async runtime / 异步运行时
 nexus-runtime = { path = "../nexus-runtime" }
-tokio = { workspace = true, features = ["sync", "time"] }
+tokio = { workspace = true, features = ["sync", "time", "fs", "macros", "rt-multi-thread"] }
 
 # HTTP client / HTTP客户端
 hyper = { workspace = true }

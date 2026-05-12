@@ -3,6 +3,7 @@
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
+
 //! - `Environment` - Spring Environment
 //! - `Profile` - Spring @Profile
 //! - `ActiveProfiles` - Active profiles management
@@ -191,21 +192,21 @@ impl Environment {
     /// Add a property source
     /// 添加属性源
     pub fn add_property_source(&self, source: PropertySource) {
-        let mut sources = self.property_sources.write().expect("lock poisoned");
+        let mut sources = self.property_sources.write().unwrap_or_else(|e| e.into_inner());
         sources.push(source);
     }
 
     /// Add a property source as first (highest priority)
     /// 添加属性源到第一个（最高优先级）
     pub fn add_property_source_first(&self, source: PropertySource) {
-        let mut sources = self.property_sources.write().expect("lock poisoned");
+        let mut sources = self.property_sources.write().unwrap_or_else(|e| e.into_inner());
         sources.insert(0, source);
     }
 
     /// Get a property value
     /// 获取属性值
     pub fn get_property(&self, key: &str) -> Option<Value> {
-        let sources = self.property_sources.read().expect("lock poisoned");
+        let sources = self.property_sources.read().unwrap_or_else(|e| e.into_inner());
         for source in sources.iter() {
             if let Some(value) = source.get(key) {
                 return Some(value);
@@ -277,35 +278,35 @@ impl Environment {
     /// Get active profiles
     /// 获取活动配置文件
     pub fn get_active_profiles(&self) -> Vec<Profile> {
-        let profiles = self.active_profiles.read().expect("lock poisoned");
+        let profiles = self.active_profiles.read().unwrap_or_else(|e| e.into_inner());
         profiles.active().to_vec()
     }
 
     /// Set active profiles
     /// 设置活动配置文件
     pub fn set_active_profiles(&self, profiles: Vec<Profile>) {
-        let mut active = self.active_profiles.write().expect("lock poisoned");
+        let mut active = self.active_profiles.write().unwrap_or_else(|e| e.into_inner());
         active.set_active(profiles);
     }
 
     /// Add an active profile
     /// 添加活动配置文件
     pub fn add_active_profile(&self, profile: Profile) {
-        let mut active = self.active_profiles.write().expect("lock poisoned");
+        let mut active = self.active_profiles.write().unwrap_or_else(|e| e.into_inner());
         active.add_active(profile);
     }
 
     /// Check if a profile is active
     /// 检查配置文件是否活动
     pub fn accepts_profiles(&self, profiles: &[Profile]) -> bool {
-        let active = self.active_profiles.read().expect("lock poisoned");
+        let active = self.active_profiles.read().unwrap_or_else(|e| e.into_inner());
         profiles.iter().any(|p| active.is_active(p))
     }
 
     /// Get all property sources
     /// 获取所有属性源
     pub fn get_property_sources(&self) -> Vec<PropertySource> {
-        let sources = self.property_sources.read().expect("lock poisoned");
+        let sources = self.property_sources.read().unwrap_or_else(|e| e.into_inner());
         sources.clone()
     }
 

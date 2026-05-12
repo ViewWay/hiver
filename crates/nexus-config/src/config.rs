@@ -258,7 +258,7 @@ impl Config {
     /// Get loaded files
     /// 获取已加载的文件
     pub fn files(&self) -> Vec<PathBuf> {
-        self.files.read().expect("lock poisoned").clone()
+        self.files.read().unwrap_or_else(|e| e.into_inner()).clone()
     }
 
     /// Get reload strategy
@@ -405,7 +405,7 @@ impl Config {
     /// `将YAML值转换为我们的Value类型`
     fn yaml_to_value(yaml: &serde_yaml::Value) -> ConfigResult<Value> {
         Ok(match yaml {
-            serde_yaml::Value::Null => Value::Null,
+            serde_yaml::Value::Null | serde_yaml::Value::Tagged(_) => Value::Null,
             serde_yaml::Value::Bool(v) => Value::Bool(*v),
             serde_yaml::Value::Number(v) => {
                 if let Some(i) = v.as_i64() {
@@ -431,7 +431,6 @@ impl Config {
                     .filter_map(|(k, v)| v.map(|val| (k, val)))
                     .collect(),
             ),
-            _ => Value::Null,
         })
     }
 

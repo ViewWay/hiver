@@ -14,6 +14,7 @@
 //!
 //! - `discovery` - Service discovery (Eureka, Consul, etcd)
 //! - `config` - Distributed configuration (Spring Cloud Config)
+//! - `config_client` - Enhanced config client with composite sources
 //! - `gateway` - API Gateway (Spring Cloud Gateway)
 //! - `circuit_breaker` - Circuit breaker pattern
 //! - `load_balancer` - Client-side load balancing
@@ -27,23 +28,42 @@ mod tests;
 
 pub mod circuit_breaker;
 pub mod config;
+pub mod config_client;
 pub mod discovery;
 pub mod gateway;
 pub mod load_balancer;
 
 pub use circuit_breaker::{CircuitBreaker, CircuitState};
 pub use config::{ConfigClient, ConfigServerClient, RemoteConfigSource};
-pub use discovery::{ServiceDiscovery, ServiceInstance, ServiceRegistry};
-pub use gateway::{Gateway, GatewayFilter, GatewayRoute};
+pub use config_client::{
+    CompositeConfigSource, ConfigClientError, ConfigProvider, ConfigServerClient as EnhancedConfigClient,
+    ConfigSource, PollingConfigRefresher,
+};
+pub use discovery::{
+    AlwaysHealthyChecker, HealthCheckResult, HealthChecker, HeartbeatConfig, HttpHealthChecker,
+    InMemoryServiceRegistry, InstanceStatus, ServiceDiscovery, ServiceDiscoveryClient,
+    ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
+};
+pub use gateway::{
+    Filter as GatewayFilterDef, Gateway, GatewayConfig, GatewayFilter, GatewayRequest,
+    GatewayResponse, GatewayRoute, GatewayRouter, InMemoryRouteLocator, Predicate, Route,
+    RouteLocator,
+};
 pub use load_balancer::{LoadBalancer, RoundRobinLoadBalancer};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        CircuitBreaker, CircuitState, ConfigClient, ConfigServerClient, Gateway, GatewayFilter,
-        GatewayRoute, LoadBalancer, RemoteConfigSource, RoundRobinLoadBalancer, ServiceDiscovery,
-        ServiceInstance, ServiceRegistry,
+        AlwaysHealthyChecker, CircuitBreaker, CircuitState, CompositeConfigSource, ConfigClient,
+        ConfigClientError, ConfigProvider, ConfigServerClient, ConfigSource,
+        EnhancedConfigClient, Gateway, GatewayConfig, GatewayFilter, GatewayFilterDef,
+        GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter, HealthCheckResult,
+        HealthChecker, HeartbeatConfig, HttpHealthChecker, InMemoryRouteLocator,
+        InMemoryServiceRegistry, InstanceStatus, LoadBalancer, PollingConfigRefresher,
+        Predicate, RemoteConfigSource, Route, RouteLocator, RoundRobinLoadBalancer,
+        ServiceDiscovery, ServiceDiscoveryClient, ServiceInstance, ServiceRegistry,
+        SimpleDiscoveryClient,
     };
 }
 
