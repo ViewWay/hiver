@@ -50,7 +50,7 @@ impl WorkStealingScheduler {
     /// 返回错误如果：
     /// - Configuration is invalid / 配置无效
     /// - Worker thread creation fails / 工作线程创建失败
-    pub fn with_config(config: WorkStealingConfig) -> std::io::Result<Self> {
+    pub fn with_config(config: &WorkStealingConfig) -> std::io::Result<Self> {
         let num_workers = config.num_workers;
         let queue_size = config.queue_size;
         let thread_name = config.thread_name.clone();
@@ -78,7 +78,7 @@ impl WorkStealingScheduler {
             let thread_name = format!("{}-{}", thread_name, worker_id);
 
             let thread_handle = thread::Builder::new().name(thread_name).spawn(move || {
-                Self::run_worker(worker_id, queues, state_clone);
+                Self::run_worker(worker_id, &queues, &state_clone);
             })?;
 
             workers.push(WorkerContext {
@@ -94,8 +94,8 @@ impl WorkStealingScheduler {
     /// 运行特定工作器的工作循环
     fn run_worker(
         worker_id: usize,
-        queues: Vec<Arc<LocalQueue>>,
-        state: Arc<std::sync::atomic::AtomicU8>,
+        queues: &[Arc<LocalQueue>],
+        state: &std::sync::atomic::AtomicU8,
     ) {
         let my_queue = &queues[worker_id];
         let num_workers = queues.len();
@@ -253,7 +253,7 @@ impl WorkStealingConfig {
     /// Returns an error if scheduler initialization fails.
     /// 如果调度器初始化失败则返回错误。
     pub fn build(self) -> std::io::Result<WorkStealingScheduler> {
-        WorkStealingScheduler::with_config(self)
+        WorkStealingScheduler::with_config(&self)
     }
 }
 

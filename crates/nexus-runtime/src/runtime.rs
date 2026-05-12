@@ -226,7 +226,7 @@ impl Runtime {
         // Create the scheduler with the driver
         // 使用driver创建调度器
         let scheduler =
-            Scheduler::with_config_and_driver(config.scheduler.clone(), driver.clone())?;
+            Scheduler::with_config_and_driver(&config.scheduler, driver.clone())?;
 
         Ok(Self {
             scheduler,

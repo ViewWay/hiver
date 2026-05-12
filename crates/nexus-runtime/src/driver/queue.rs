@@ -311,7 +311,7 @@ impl CompletionEntry {
     ///
     /// Returns `Ok(bytes_transferred)` on success, `Err(error)` on failure.
     /// 成功返回 `Ok(bytes_transferred)`，失败返回 `Err(error)`。
-    #[must_use]
+    #[must_use = "the result of the operation should be checked"]
     pub fn into_result(self) -> std::io::Result<u32> {
         if self.result >= 0 {
             Ok(self.result as u32)

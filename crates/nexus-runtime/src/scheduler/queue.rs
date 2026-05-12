@@ -69,24 +69,28 @@ impl LocalQueue {
     /// 成功返回 `true`，队列已满返回 `false`。
     #[inline]
     pub fn push(&self, task: RawTask) -> bool {
-        let tail = self.tail.load(Ordering::Relaxed);
-        let head = self.head.load(Ordering::Acquire);
+        loop {
+            let tail = self.tail.load(Ordering::Relaxed);
+            let head = self.head.load(Ordering::Acquire);
 
-        // Check if queue is full
-        // 检查队列是否已满
-        if tail - head >= self.capacity {
-            return false;
+            // Check if queue is full
+            // 检查队列是否已满
+            if tail - head >= self.capacity {
+                return false;
+            }
+
+            let pos = tail & self.mask;
+            // SAFETY: pos is within bounds and we have exclusive access to this slot
+            // 通过环形缓冲区规则对此位置拥有独占访问权
+            unsafe {
+                self.buffer[pos].get().write(MaybeUninit::new(task));
+            }
+
+            match self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed) {
+                Ok(_) => return true,
+                Err(_) => continue,
+            }
         }
-
-        let pos = tail & self.mask;
-        // SAFETY: pos is within bounds and we have exclusive access to this slot
-        // 通过环形缓冲区规则对此位置拥有独占访问权
-        unsafe {
-            self.buffer[pos].get().write(MaybeUninit::new(task));
-        }
-
-        self.tail.store(tail + 1, Ordering::Release);
-        true
     }
 
     /// Pop a task from the front of the queue
@@ -96,22 +100,32 @@ impl LocalQueue {
     /// 有可用任务时返回 `Some(task)`，队列为空时返回 `None`。
     #[inline]
     pub fn pop(&self) -> Option<RawTask> {
-        let head = self.head.load(Ordering::Relaxed);
-        let tail = self.tail.load(Ordering::Acquire);
+        loop {
+            let head = self.head.load(Ordering::Relaxed);
+            let tail = self.tail.load(Ordering::Acquire);
 
-        if head == tail {
-            return None;
+            if head == tail {
+                return None;
+            }
+
+            let pos = head & self.mask;
+            // SAFETY: pos is within bounds and we have exclusive access to this slot
+            // The value was initialized by push, so assume_init is safe
+            // 通过环形缓冲区规则对此位置拥有独占访问权
+            // 该值由push初始化，因此assume_init是安全的
+            let task = unsafe { self.buffer[pos].get().read().assume_init() };
+
+            match self.head.compare_exchange(head, head + 1, Ordering::AcqRel, Ordering::Relaxed) {
+                Ok(_) => return Some(task),
+                Err(_) => {
+                    // Put the task back — another thread claimed this slot
+                    unsafe {
+                        self.buffer[pos].get().write(MaybeUninit::new(task));
+                    }
+                    continue;
+                }
+            }
         }
-
-        let pos = head & self.mask;
-        // SAFETY: pos is within bounds and we have exclusive access to this slot
-        // The value was initialized by push, so assume_init is safe
-        // 通过环形缓冲区规则对此位置拥有独占访问权
-        // 该值由push初始化，因此assume_init是安全的
-        let task = unsafe { self.buffer[pos].get().read().assume_init() };
-
-        self.head.store(head + 1, Ordering::Release);
-        Some(task)
     }
 
     /// Get the current length of the queue

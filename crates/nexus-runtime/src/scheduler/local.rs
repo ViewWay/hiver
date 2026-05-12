@@ -68,7 +68,7 @@ impl Scheduler {
     /// Returns an error if the wake channel cannot be created.
     /// 如果无法创建唤醒通道则返回错误。
     pub fn new() -> std::io::Result<Self> {
-        Self::with_config(SchedulerConfig::default())
+        Self::with_config(&SchedulerConfig::default())
     }
 
     /// Create a new scheduler with the specified configuration
@@ -80,7 +80,7 @@ impl Scheduler {
     /// 返回错误如果：
     /// - Configuration is invalid / 配置无效
     /// - Wake channel creation fails / 唤醒通道创建失败
-    pub fn with_config(config: SchedulerConfig) -> std::io::Result<Self> {
+    pub fn with_config(config: &SchedulerConfig) -> std::io::Result<Self> {
         let queue = Arc::new(LocalQueue::new(config.queue_size));
         let inject_queue = Arc::new(LocalQueue::new(config.queue_size));
         let wake = Arc::new(super::handle::WakeChannel::new()?);
@@ -95,13 +95,14 @@ impl Scheduler {
         let wake_clone = wake.clone();
         let state_clone = state.clone();
         let thread_name = config.thread_name.clone();
+        let cpu_affinity = config.cpu_affinity;
 
         // Spawn the worker thread
         // 生成工作线程
         let thread_handle = thread::Builder::new().name(thread_name).spawn(move || {
             // Set CPU affinity if specified
             // 如果指定了，设置CPU亲和性
-            if let Some(core) = config.cpu_affinity {
+            if let Some(core) = cpu_affinity {
                 Self::set_cpu_affinity(core);
             }
 
@@ -130,7 +131,7 @@ impl Scheduler {
     /// - Configuration is invalid / 配置无效
     /// - Wake channel creation fails / 唤醒通道创建失败
     pub fn with_config_and_driver(
-        config: SchedulerConfig,
+        config: &SchedulerConfig,
         _driver: Arc<dyn crate::driver::Driver>,
     ) -> std::io::Result<Self> {
         let queue = Arc::new(LocalQueue::new(config.queue_size));
@@ -147,13 +148,14 @@ impl Scheduler {
         let wake_clone = wake.clone();
         let state_clone = state.clone();
         let thread_name = config.thread_name.clone();
+        let cpu_affinity = config.cpu_affinity;
 
         // Spawn the worker thread
         // 生成工作线程
         let thread_handle = thread::Builder::new().name(thread_name).spawn(move || {
             // Set CPU affinity if specified
             // 如果指定了，设置CPU亲和性
-            if let Some(core) = config.cpu_affinity {
+            if let Some(core) = cpu_affinity {
                 Self::set_cpu_affinity(core);
             }
 
@@ -331,7 +333,7 @@ mod tests {
             thread_name: "test-worker".to_string(),
         };
 
-        let scheduler = Scheduler::with_config(config);
+        let scheduler = Scheduler::with_config(&config);
         assert!(scheduler.is_ok());
     }
 

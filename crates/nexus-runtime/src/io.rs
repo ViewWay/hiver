@@ -34,10 +34,12 @@
 
 use std::future::Future;
 use std::io;
-use std::net::{Shutdown, SocketAddr};
+use std::net::{IpAddr, Ipv4Addr, Shutdown, SocketAddr};
 use std::os::fd::{AsRawFd, FromRawFd, RawFd};
 use std::pin::Pin;
 use std::task::{Context, Poll};
+
+const DUMMY_ADDR: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 0);
 
 /// A TCP stream between a local and a remote socket
 /// 本地套接字和远程套接字之间的TCP流
@@ -96,16 +98,13 @@ impl TcpStream {
     /// }
     /// ```
     pub fn connect(addr: &str) -> ConnectFuture {
-        let addr = match addr.parse::<SocketAddr>() {
-            Ok(a) => a,
-            Err(_) => {
-                // Try to resolve as hostname
-                // For now, return error - DNS resolution will be added later
-                return ConnectFuture::Error(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "Invalid address format, use IP:PORT",
-                ));
-            },
+        let Ok(addr) = addr.parse::<SocketAddr>() else {
+            // Try to resolve as hostname
+            // For now, return error - DNS resolution will be added later
+            return ConnectFuture::Error(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Invalid address format, use IP:PORT",
+            ));
         };
 
         ConnectFuture::Connecting(Box::new(ConnectingState {
@@ -536,14 +535,11 @@ impl TcpListener {
     /// }
     /// ```
     pub fn bind(addr: &str) -> BindFuture {
-        let addr = match addr.parse::<SocketAddr>() {
-            Ok(a) => a,
-            Err(_) => {
-                return BindFuture::Error(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "Invalid address format, use IP:PORT",
-                ));
-            },
+        let Ok(addr) = addr.parse::<SocketAddr>() else {
+            return BindFuture::Error(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Invalid address format, use IP:PORT",
+            ));
         };
 
         BindFuture::Binding(BindingState { addr })
@@ -574,7 +570,7 @@ impl TcpListener {
 
             // Convert to SocketAddr (simplified)
             // 转换为SocketAddr（简化版）
-            Ok("0.0.0.0:0".parse().unwrap())
+            Ok(DUMMY_ADDR)
         }
 
         #[cfg(not(unix))]
@@ -826,7 +822,7 @@ impl Future for AcceptFuture<'_> {
             // Parse peer address (simplified)
             // 解析对端地址（简化版）
             let peer_addr = match self.listener.local_addr() {
-                Ok(_) => "0.0.0.0:0".parse().unwrap(),
+                Ok(_) => DUMMY_ADDR,
                 Err(_) => return Poll::Ready(Err(io::Error::last_os_error())),
             };
 
@@ -884,14 +880,11 @@ impl UdpSocket {
     /// }
     /// ```
     pub fn bind(addr: &str) -> BindUdpFuture {
-        let addr = match addr.parse::<SocketAddr>() {
-            Ok(a) => a,
-            Err(_) => {
-                return BindUdpFuture::Error(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "Invalid address format, use IP:PORT",
-                ));
-            },
+        let Ok(addr) = addr.parse::<SocketAddr>() else {
+            return BindUdpFuture::Error(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Invalid address format, use IP:PORT",
+            ));
         };
 
         BindUdpFuture::Binding(BindingUdpState { addr })

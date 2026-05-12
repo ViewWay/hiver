@@ -400,7 +400,7 @@ fn bench_work_stealing_scheduler(c: &mut Criterion) {
                 let config = WorkStealingConfig::new()
                     .worker_threads(num_cpus::get())
                     .queue_size(256);
-                let _scheduler = WorkStealingScheduler::with_config(config).unwrap();
+                let _scheduler = WorkStealingScheduler::with_config(&config).unwrap();
                 std::hint::black_box(*tasks);
             });
         });

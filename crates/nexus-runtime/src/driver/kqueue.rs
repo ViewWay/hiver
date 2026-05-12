@@ -247,7 +247,7 @@ impl KqueueDriver {
 
     /// Convert Interest to kqueue filter and flags
     /// 将Interest转换为kqueue过滤器和标志
-    fn interest_to_kqueue(&self, interest: &Interest) -> (i16, u16) {
+    fn interest_to_kqueue(&self, interest: Interest) -> (i16, u16) {
         let mut filter = 0;
         let mut flags = libc::EV_ADD | libc::EV_RECEIPT;
 
@@ -468,12 +468,23 @@ impl Driver for KqueueDriver {
             return None;
         }
 
-        let pos = self.submit_pos(tail);
-        // SAFETY: We have exclusive access to this position
-        // 我们对此位置有独占访问权
-        unsafe {
-            let submit_queue = &mut *self.submit_queue.get();
-            Some(&mut submit_queue[pos])
+        // Atomically claim this slot to prevent concurrent get_submission calls
+        // from returning the same position
+        match self
+            .state
+            .submit_tail
+            .compare_exchange(tail, next_tail, Ordering::AcqRel, Ordering::Acquire)
+        {
+            Ok(_) => {
+                let pos = self.submit_pos(tail);
+                // SAFETY: We have exclusive access to this position
+                // 我们对此位置有独占访问权
+                unsafe {
+                    let submit_queue = &mut *self.submit_queue.get();
+                    Some(&mut submit_queue[pos])
+                }
+            }
+            Err(_) => None,
         }
     }
 
@@ -509,7 +520,7 @@ impl Driver for KqueueDriver {
     }
 
     fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
-        let (filter, flags) = self.interest_to_kqueue(&interest);
+        let (filter, flags) = self.interest_to_kqueue(interest);
 
         let change = libc::kevent {
             ident: fd as libc::uintptr_t,
