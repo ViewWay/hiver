@@ -5,6 +5,7 @@
 //! Customizable prompt with colors, similar to Spring Shell's `PromptProvider`.
 
 use colored::Colorize;
+use std::fmt::Write;
 
 /// Prompt style configuration
 /// 提示符样式配置
@@ -171,7 +172,7 @@ impl Banner {
     }
 
     /// Create a custom banner / 创建自定义横幅
-    pub fn custom(lines: Vec<&str>) -> Self {
+    pub fn custom(lines: &[&str]) -> Self {
         Self {
             lines: lines.iter().map(ToString::to_string).collect(),
             enabled: true,
@@ -200,16 +201,18 @@ impl Banner {
 
         let mut output = self.lines.join("\n");
         output.push('\n');
-        output.push_str(&format!(
-            "  {} {}\n",
+        let _ = writeln!(
+            output,
+            "  {} {}",
             "Nexus Shell".cyan().bold(),
             "v0.1.0-alpha".dimmed()
-        ));
-        output.push_str(&format!(
-            "  {} {}\n",
+        );
+        let _ = writeln!(
+            output,
+            "  {} {}",
             "Type".dimmed(),
             "'help' for available commands.".dimmed()
-        ));
+        );
         output
     }
 }

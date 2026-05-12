@@ -132,7 +132,7 @@ pub struct TableResult {
 
 impl TableResult {
     /// Create a new table with headers / 创建带标题的新表格
-    pub fn new(headers: Vec<&str>) -> Self {
+    pub fn new(headers: &[&str]) -> Self {
         Self {
             headers: headers.iter().map(ToString::to_string).collect(),
             rows: Vec::new(),
@@ -140,7 +140,7 @@ impl TableResult {
     }
 
     /// Add a row / 添加行
-    pub fn row(mut self, values: Vec<&str>) -> Self {
+    pub fn row(mut self, values: &[&str]) -> Self {
         self.rows.push(values.iter().map(ToString::to_string).collect());
         self
     }
@@ -187,7 +187,7 @@ impl ShellOutput for TableResult {
         for row in &self.rows {
             for (i, cell) in row.iter().enumerate() {
                 if i < widths.len() {
-                    widths[i] = widths[i].max(cell.len());
+            widths[i] = widths[i].max(cell.len());
                 }
             }
         }
@@ -200,6 +200,7 @@ impl ShellOutput for TableResult {
             .iter()
             .enumerate()
             .map(|(i, h)| {
+                #[allow(clippy::indexing_slicing)]
                 let padded = format!("{:<width$}", h, width = widths[i]);
                 padded.bold().to_string()
             })

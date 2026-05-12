@@ -127,6 +127,7 @@ impl rustyline::highlight::Highlighter for ShellCompleter {
     fn highlight<'l>(&self, line: &'l str, _pos: usize) -> std::borrow::Cow<'l, str> {
         std::borrow::Cow::Borrowed(line)
     }
+    #[allow(single_use_lifetimes)]
     fn highlight_prompt<'b, 's: 'b, 'p: 'b>(
         &'s self,
         prompt: &'p str,

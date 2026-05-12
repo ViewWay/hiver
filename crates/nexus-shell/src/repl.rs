@@ -207,7 +207,6 @@ impl Repl {
                 Err(ReadlineError::Interrupted) => {
                     // Ctrl-C — just continue
                     println!("{}", "^C".dimmed());
-                    continue;
                 }
                 Err(ReadlineError::Eof) => {
                     // Ctrl-D — exit
@@ -246,6 +245,7 @@ impl Repl {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl std::fmt::Debug for Repl {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Repl")

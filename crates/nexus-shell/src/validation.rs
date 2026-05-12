@@ -69,7 +69,9 @@ impl InputValidator {
         }
 
         let parts: Vec<&str> = trimmed.split_whitespace().collect();
+        #[allow(clippy::indexing_slicing)]
         let command = parts[0].to_string();
+        #[allow(clippy::indexing_slicing)]
         let args: Vec<String> = parts[1..].iter().map(|s| (*s).to_string()).collect();
 
         // Validate command name / 验证命令名

@@ -304,7 +304,9 @@ impl CommandRegistry {
             return Ok(String::new());
         }
 
+        #[allow(clippy::indexing_slicing)]
         let cmd_name = parts[0];
+        #[allow(clippy::indexing_slicing)]
         let args = &parts[1..];
 
         match self.get(cmd_name) {

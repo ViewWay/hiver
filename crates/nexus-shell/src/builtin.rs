@@ -107,6 +107,7 @@ impl Command for HelpCommand {
         }
 
         // Help for a specific command
+        #[allow(clippy::indexing_slicing)]
         let cmd_name = args[0];
         let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         let msg = if state.history.is_empty() {
@@ -233,7 +234,14 @@ impl Command for ScriptCommand {
             )
         })?;
 
-        let content = std::fs::read_to_string(path).map_err(|e| {
+        let canonical = std::path::Path::new(path).canonicalize().map_err(|e| {
+            ShellError::Script(format!(
+                "Invalid script path '{}': {e} / 无法解析脚本路径 '{}': {e}",
+                path, path
+            ))
+        })?;
+
+        let content = std::fs::read_to_string(&canonical).map_err(|e| {
             ShellError::Script(format!(
                 "Failed to read script file '{}': {e} / \
                  无法读取脚本文件 '{}': {e}",

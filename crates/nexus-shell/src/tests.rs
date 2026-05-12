@@ -207,9 +207,9 @@ fn test_result_handler_error() {
 
 #[test]
 fn test_table_result_render() {
-    let table = TableResult::new(vec!["Name", "Age", "City"])
-        .row(vec!["Alice", "30", "NYC"])
-        .row(vec!["Bob", "25", "LA"]);
+    let table = TableResult::new(&["Name", "Age", "City"])
+        .row(&["Alice", "30", "NYC"])
+        .row(&["Bob", "25", "LA"]);
 
     let rendered = table.render_table();
     assert!(rendered.contains("Name"));
@@ -220,8 +220,8 @@ fn test_table_result_render() {
 
 #[test]
 fn test_table_result_json() {
-    let table = TableResult::new(vec!["Name", "Age"])
-        .row(vec!["Alice", "30"]);
+    let table = TableResult::new(&["Name", "Age"])
+        .row(&["Alice", "30"]);
 
     let json = table.render_json();
     assert!(json.contains("\"Name\""));
