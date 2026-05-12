@@ -356,13 +356,13 @@ pub async fn get_all_typed<T: serde::de::DeserializeOwned + Send + Sync>(
     let result = pipe.execute(&mut conn).await?;
 
     let mut output = Vec::with_capacity(keys.len());
-    for i in 0..keys.len() {
+    for (i, key) in keys.iter().enumerate() {
         let val = match result.get_optional_string(i) {
             Ok(Some(json)) => {
                 Some(serde_json::from_str(&json).map_err(|e| {
                     crate::RedisError::deserialization(format!(
                         "{} at key={}. JSON: {}",
-                        e, keys[i], json
+                        e, key, json
                     ))
                 })?)
             }

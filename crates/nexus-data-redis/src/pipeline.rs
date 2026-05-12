@@ -11,10 +11,14 @@ pub struct RedisPipeline {
 }
 
 impl RedisPipeline {
+    /// Create a new empty pipeline.
+    /// 创建新的空管道。
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Add a raw command to the pipeline.
+    /// 向管道添加原始命令。
     #[must_use]
     pub fn cmd(mut self, command: impl Into<String>, args: Vec<impl Into<Vec<u8>>>) -> Self {
         self.commands.push((
@@ -24,6 +28,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a SET command.
+    /// 添加 SET 命令。
     #[must_use]
     pub fn set(mut self, key: impl Into<String>, value: impl Into<Vec<u8>>) -> Self {
         self.commands.push((
@@ -33,6 +39,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a SETEX command (set with expiration).
+    /// 添加 SETEX 命令（带过期时间的设置）。
     #[must_use]
     pub fn set_ex(mut self, key: impl Into<String>, value: impl Into<Vec<u8>>, seconds: u64) -> Self {
         self.commands.push((
@@ -46,6 +54,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a GET command.
+    /// 添加 GET 命令。
     #[must_use]
     pub fn get(mut self, key: impl Into<String>) -> Self {
         self.commands
@@ -53,6 +63,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a DEL command.
+    /// 添加 DEL 命令。
     #[must_use]
     pub fn del(mut self, keys: Vec<impl Into<String>>) -> Self {
         let key_bytes: Vec<Vec<u8>> = keys.into_iter().map(|k| k.into().into_bytes()).collect();
@@ -60,6 +72,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an EXISTS command.
+    /// 添加 EXISTS 命令。
     #[must_use]
     pub fn exists(mut self, key: impl Into<String>) -> Self {
         self.commands
@@ -67,6 +81,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an EXPIRE command.
+    /// 添加 EXPIRE 命令。
     #[must_use]
     pub fn expire(mut self, key: impl Into<String>, seconds: u64) -> Self {
         self.commands.push((
@@ -76,6 +92,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an INCR command.
+    /// 添加 INCR 命令。
     #[must_use]
     pub fn incr(mut self, key: impl Into<String>) -> Self {
         self.commands
@@ -83,6 +101,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a DECR command.
+    /// 添加 DECR 命令。
     #[must_use]
     pub fn decr(mut self, key: impl Into<String>) -> Self {
         self.commands
@@ -90,6 +110,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an HSET command.
+    /// 添加 HSET 命令。
     #[must_use]
     pub fn hset(mut self, key: impl Into<String>, field: impl Into<String>, value: impl Into<Vec<u8>>) -> Self {
         self.commands.push((
@@ -99,6 +121,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an HGET command.
+    /// 添加 HGET 命令。
     #[must_use]
     pub fn hget(mut self, key: impl Into<String>, field: impl Into<String>) -> Self {
         self.commands.push((
@@ -108,6 +132,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add an SADD command.
+    /// 添加 SADD 命令。
     #[must_use]
     pub fn sadd(mut self, key: impl Into<String>, member: impl Into<String>) -> Self {
         self.commands.push((
@@ -117,6 +143,8 @@ impl RedisPipeline {
         self
     }
 
+    /// Add a ZADD command.
+    /// 添加 ZADD 命令。
     #[must_use]
     pub fn zadd(mut self, key: impl Into<String>, score: f64, member: impl Into<String>) -> Self {
         self.commands.push((
@@ -130,10 +158,14 @@ impl RedisPipeline {
         self
     }
 
+    /// Get the number of commands in the pipeline.
+    /// 获取管道中的命令数量。
     pub fn len(&self) -> usize {
         self.commands.len()
     }
 
+    /// Check if the pipeline is empty.
+    /// 检查管道是否为空。
     pub fn is_empty(&self) -> bool {
         self.commands.is_empty()
     }
@@ -173,13 +205,18 @@ impl RedisPipeline {
 #[derive(Debug, Clone)]
 #[derive(Default)]
 pub struct PipelineResult {
+    /// Raw Redis values returned by each command.
+    /// 每个命令返回的原始 Redis 值。
     pub results: Vec<redis::Value>,
+    /// Number of commands that were executed.
+    /// 已执行的命令数量。
     pub command_count: usize,
 }
 
 
 impl PipelineResult {
     /// Get result as string at index.
+    /// 获取指定索引的字符串结果。
     pub fn get_string(&self, index: usize) -> RedisResult<String> {
         self.results
             .get(index)
@@ -195,6 +232,7 @@ impl PipelineResult {
     }
 
     /// Get result as i64 at index.
+    /// 获取指定索引的 i64 结果。
     pub fn get_i64(&self, index: usize) -> RedisResult<i64> {
         self.results
             .get(index)
@@ -208,6 +246,7 @@ impl PipelineResult {
     }
 
     /// Get result as optional string at index.
+    /// 获取指定索引的可选字符串结果。
     pub fn get_optional_string(&self, index: usize) -> RedisResult<Option<String>> {
         match self.results.get(index) {
             Some(redis::Value::Nil) => Ok(None),

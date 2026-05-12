@@ -45,7 +45,7 @@ pub enum IndexDirection {
 }
 
 impl IndexDirection {
-    fn to_bson_value(&self) -> mongodb::bson::Bson {
+    fn to_bson_value(self) -> mongodb::bson::Bson {
         match self {
             Self::Ascending => mongodb::bson::Bson::Int32(1),
             Self::Descending => mongodb::bson::Bson::Int32(-1),

@@ -232,6 +232,19 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
         sql
     }
 
+    /// Get the collected parameter values (for parameterized execution).
+    /// 获取收集的参数值（用于参数化执行）。
+    ///
+    /// WARNING: Parameters are stored but the current `DatabaseClient` trait
+    /// only accepts raw SQL strings. When a parameterized execute API becomes
+    /// available, this method should be used to bind values. For now, the
+    /// `$1`, `$2` ... markers in `to_sql()` are placeholders only.
+    /// 警告：参数已存储但当前 `DatabaseClient` trait 仅接受原始 SQL 字符串。
+    /// 当参数化执行 API 可用时，应使用此方法绑定值。
+    pub fn params(&self) -> &[String] {
+        &self.params
+    }
+
     /// Execute the query and fetch all results.
     /// 执行查询并获取所有结果。
     pub async fn fetch_all<C: DatabaseClient>(self, client: &C) -> Result<Vec<M>> {
@@ -254,7 +267,13 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
     /// Execute the query and fetch at most one result.
     /// 执行查询并最多获取一个结果。
     pub async fn fetch_optional<C: DatabaseClient>(self, client: &C) -> Result<Option<M>> {
-        let sql = format!("{} LIMIT 1", self.to_sql());
+        // BUGFIX: Avoid double LIMIT if the query already has one.
+        let base_sql = self.to_sql();
+        let sql = if base_sql.contains("LIMIT") {
+            base_sql
+        } else {
+            format!("{} LIMIT 1", base_sql)
+        };
         let row = client
             .fetch_one(&sql)
             .await
@@ -266,7 +285,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
                     .deserialize()
                     .map_err(|e| crate::Error::validation(format!("Sqlx deserialize: {e}")))?;
                 Ok(Some(model))
-            }
+            },
             None => Ok(None),
         }
     }
@@ -379,7 +398,12 @@ impl VerifiedQuery {
         &self,
         client: &C,
     ) -> Result<Option<nexus_data_rdbc::Row>> {
-        let sql = format!("{} LIMIT 1", self.sql);
+        // BUGFIX: Avoid double LIMIT if the query already has one.
+        let sql = if self.sql.contains("LIMIT") {
+            self.sql.clone()
+        } else {
+            format!("{} LIMIT 1", self.sql)
+        };
         client
             .fetch_one(&sql)
             .await

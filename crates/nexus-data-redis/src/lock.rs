@@ -3,10 +3,10 @@
 //!
 //! # Overview / 概述
 //!
-//! Provides a distributed mutex using Redis SET NX + EX, with automatic
-//! renewal and safe release. Equivalent to Spring Integration's lock registry
-//! and Redisson-style distributed locks.
-//! 使用 Redis SET NX + EX 提供分布式互斥锁，具有自动续期和安全释放功能。
+//! Provides a distributed mutex using Redis SET NX + EX, with optional
+//! automatic renewal (TODO) and safe release. Equivalent to Spring Integration's
+//! lock registry and Redisson-style distributed locks.
+//! 使用 Redis SET NX + EX 提供分布式互斥锁，具有可选自动续期（TODO）和安全释放功能。
 //! 等价于 Spring Integration 的锁注册表和 Redisson 风格的分布式锁。
 //!
 //! # Example / 示例
@@ -22,7 +22,7 @@
 //! }
 //! ```
 
-use crate::{RedisClient, RedisResult};
+use crate::{RedisClient, RedisError, RedisResult};
 use redis::AsyncCommands;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
@@ -63,6 +63,10 @@ impl RedisLock {
     }
 
     /// Enable automatic renewal of the lock. / 启用锁的自动续期。
+    ///
+    /// TODO: Auto-renewal is not yet implemented. The `renew_interval_secs`
+    /// field is stored but no background task is spawned to periodically
+    /// extend the TTL. Call `renew()` manually if needed.
     ///
     /// The lock will be renewed at the specified interval (in seconds)
     /// until released. Must be less than `ttl_secs`.
@@ -148,12 +152,17 @@ impl RedisLock {
     /// 尝试获取锁，无限阻塞。
     pub async fn acquire_blocking(&self, retry_interval_ms: u64) -> RedisResult<RedisLockGuard> {
         let retry = Duration::from_millis(retry_interval_ms.min(1000));
-        loop {
+        let max_retries: u32 = 30;
+        for _ in 0..max_retries {
             if let Some(guard) = self.acquire().await? {
                 return Ok(guard);
             }
             tokio::time::sleep(retry).await;
         }
+        Err(RedisError::Other(format!(
+            "failed to acquire lock after {} retries",
+            max_retries,
+        )))
     }
 }
 
@@ -169,6 +178,7 @@ pub struct RedisLockGuard {
     key: String,
     token: String,
     ttl_secs: u64,
+    #[allow(dead_code)]
     renew_interval_secs: Option<u64>,
     acquired_at: Instant,
 }
@@ -248,6 +258,36 @@ impl RedisLockGuard {
         let mut conn = self.client.get_connection().await?;
         let result: i64 = conn.ttl(&self.key).await?;
         Ok(result)
+    }
+}
+
+impl Drop for RedisLockGuard {
+    fn drop(&mut self) {
+        // Best-effort release on drop. Since we cannot perform async operations
+        // in a Drop impl, we spawn a fire-and-forget task. For reliability,
+        // prefer calling `release()` explicitly before the guard goes out of scope.
+        let client = self.client.clone();
+        let key = std::mem::take(&mut self.key);
+        let token = std::mem::take(&mut self.token);
+        // Spawn a best-effort async release. If the runtime is gone, this is a no-op.
+        // Spawn a best-effort async release; the JoinHandle is intentionally
+        // discarded because we don't need to await it (fire-and-forget).
+        #[allow(clippy::let_underscore_future)]
+        let _ = tokio::spawn(async move {
+            let mut conn = match client.get_connection().await {
+                Ok(c) => c,
+                Err(_) => return,
+            };
+            let script = redis::Script::new(
+                r"
+                if redis.call('GET', KEYS[1]) == ARGV[1] then
+                    return redis.call('DEL', KEYS[1])
+                end
+                return 0
+                ",
+            );
+            let _: Result<i32, _> = script.key(&key).arg(&token).invoke_async(&mut conn).await;
+        });
     }
 }
 

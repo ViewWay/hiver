@@ -106,11 +106,18 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     /// 通过主键查找记录。
     async fn find_by_id<C: DatabaseClient>(id: impl Into<String> + Send, client: &C) -> Result<Option<Self>> {
         let id_str = id.into();
+        // SECURITY: Properly escape the id value to prevent SQL injection.
+        // Numeric IDs are safe to embed directly; string IDs are quoted with
+        // single-quote escaping and null-byte stripping.
+        let id_sql = if id_str.parse::<i64>().is_ok() {
+            id_str.clone()
+        } else {
+            format!("'{}'", id_str.replace('\'', "''").replace('\0', ""))
+        };
         let sql = format!(
             "SELECT * FROM {} WHERE id = {}",
             Self::table_name(),
-            // Simple quoting — numeric IDs work directly; strings need quoting
-if id_str.parse::<i64>().is_ok() { id_str.clone() } else { format!("'{}'", id_str.replace("'", "''")) }
+            id_sql
         );
         match client.fetch_one(&sql).await.map_err(|e| crate::Error::unknown(format!("find_by_id failed: {e}")))? {
             Some(row) => row.deserialize().map(Some).map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),

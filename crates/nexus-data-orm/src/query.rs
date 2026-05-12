@@ -33,6 +33,13 @@ use crate::{Error, Model, Result};
 use nexus_data_rdbc::DatabaseClient;
 use std::marker::PhantomData;
 
+fn validate_identifier(name: &str) -> bool {
+    !name.is_empty()
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_')
+}
+
 /// Trait for SQL parameter conversion
 /// SQL 参数转换的 trait
 pub trait ToSql: Send + Sync {
@@ -73,15 +80,17 @@ impl ToSql for f64 {
 
 impl ToSql for &str {
     fn to_sql(&self) -> String {
-        // Escape single-quotes for SQL safety: ' → ''
-        // Backslash is NOT a standard SQL escape — use doubled single quotes.
-        format!("'{}'", self.replace("'", "''"))
+        // SECURITY: Escape single-quotes for SQL safety: ' → ''
+        // and strip null bytes which can cause truncation attacks.
+        // NOTE: This is a fallback escaper — parameterized queries are preferred.
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
 
 impl ToSql for String {
     fn to_sql(&self) -> String {
-        format!("'{}'", self.replace("'", "''"))
+        // SECURITY: Same as &str — escape quotes and strip null bytes.
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
 
@@ -425,6 +434,9 @@ impl<M: Model> QueryBuilder<M> {
     ///     .where_("status = ?", &["active"])
     ///     .all().await?;
     /// ```
+    // SAFETY: `condition` is a raw SQL fragment that gets interpolated directly.
+    // Callers MUST use the `?` placeholder pattern for values and never concatenate
+    // untrusted user input into the condition string.
     #[must_use = "QueryBuilder is consumed by each method; chain calls or use the final result"]
     pub fn where_(mut self, condition: &str, params: &[&dyn ToSql]) -> Self {
         let mut params_vec = Vec::new();
@@ -449,6 +461,10 @@ impl<M: Model> QueryBuilder<M> {
     ///     .all().await?;
     /// ```
     pub fn order_by(self, column: &str) -> OrderByBuilder<M> {
+        assert!(
+            validate_identifier(column),
+            "order_by column must contain only alphanumeric characters and underscores, got: {column}"
+        );
         OrderByBuilder {
             query_builder: self,
             column: column.to_string(),
@@ -500,6 +516,10 @@ impl<M: Model> QueryBuilder<M> {
     /// ```
     #[must_use]
     pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self {
+        assert!(
+            validate_identifier(table),
+            "join table must contain only alphanumeric characters and underscores, got: {table}"
+        );
         self.joins.push(Join::new(join_type, table, on));
         self
     }
@@ -516,6 +536,12 @@ impl<M: Model> QueryBuilder<M> {
     /// ```
     #[must_use]
     pub fn select(mut self, columns: &[&str]) -> Self {
+        for col in columns {
+            assert!(
+                validate_identifier(col),
+                "select column must contain only alphanumeric characters and underscores, got: {col}"
+            );
+        }
         self.select = columns.iter().map(|s| s.to_string()).collect();
         self
     }
@@ -524,6 +550,12 @@ impl<M: Model> QueryBuilder<M> {
     /// 添加 GROUP BY 子句
     #[must_use]
     pub fn group_by(mut self, columns: &[&str]) -> Self {
+        for col in columns {
+            assert!(
+                validate_identifier(col),
+                "group_by column must contain only alphanumeric characters and underscores, got: {col}"
+            );
+        }
         self.group_by = columns.iter().map(|s| s.to_string()).collect();
         self
     }
@@ -532,6 +564,10 @@ impl<M: Model> QueryBuilder<M> {
     /// 添加 HAVING 子句
     #[must_use]
     pub fn having(mut self, condition: &str) -> Self {
+        assert!(
+            validate_identifier(condition),
+            "having column must contain only alphanumeric characters and underscores, got: {condition}"
+        );
         self.having = Some(condition.to_string());
         self
     }
@@ -721,7 +757,13 @@ impl<M: Model> QueryBuilder<M> {
     {
         let total = self.count(client).await?;
         let offset = ((page.max(1) - 1) * per_page) as usize;
-        let sql = format!("{} LIMIT {} OFFSET {}", self.to_sql(), per_page, offset);
+        // BUGFIX: Avoid double LIMIT/OFFSET if the query already has one.
+        let base_sql = self.to_sql();
+        let sql = if base_sql.contains("LIMIT") {
+            base_sql
+        } else {
+            format!("{} LIMIT {} OFFSET {}", base_sql, per_page, offset)
+        };
 
         let rows = client
             .fetch_all(&sql)

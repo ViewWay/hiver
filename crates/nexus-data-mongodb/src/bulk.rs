@@ -126,7 +126,7 @@ impl BulkOperations {
 
     /// Add an insert one operation from a serializable model.
     /// 从可序列化模型添加插入单文档操作。
-    #[must_use]
+    #[must_use = "insert_model returns a new BulkOperations builder"]
     pub fn insert_model<T: serde::Serialize>(self, model: &T) -> MongoResult<Self> {
         let doc = mongodb::bson::to_document(model)
             .map_err(|e| MongoError::data_conversion(e.to_string()))?;
@@ -222,6 +222,7 @@ impl BulkOperations {
     }
 
     /// Convert to MongoDB write models.
+    #[allow(dead_code)]
     fn to_write_models(&self) -> Vec<mongodb::bson::Document> {
         self.models
             .iter()
