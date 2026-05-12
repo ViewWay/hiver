@@ -39,17 +39,26 @@ mod tests;
 mod test_client;
 mod test_context;
 mod mock_bean;
+mod mockito_ext;
+mod test_application;
 mod test_config;
+mod web_test_client;
 
 pub use test_client::{TestClient, TestRequest, TestResponse};
 pub use test_context::{TestContext, TestApplicationContext, TestContextRegistry, global_test_registry};
 pub use mock_bean::{MockBean, MockRegistry, global_mock_registry};
+pub use mockito_ext::{MockBeanWrapper, MockInteraction, MockitoHelper};
+pub use test_application::{TestApplication, TestApplicationBuilder, TestApplicationError, TestAppResult};
 pub use test_config::{TestConfig, TestConfigHolder, TestMode, ServerConfig, DatabaseConfig, global_test_config};
+pub use web_test_client::{WebTestClient, RequestSpec, ResponseSpec};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
-    pub use super::{TestClient, TestConfig, TestContext, MockRegistry};
+    pub use super::{
+        MockBeanWrapper, MockitoHelper, TestApplicationBuilder, TestApplicationError,
+        TestClient, TestConfig, TestContext, MockRegistry, TestApplication, WebTestClient,
+    };
 }
 
 /// Version of the test module

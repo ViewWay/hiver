@@ -53,6 +53,18 @@ impl TestApplicationContext {
         beans.insert(name, Arc::new(bean));
     }
 
+    /// Register a boxed bean (from factory output)
+    /// 注册装箱的bean（来自工厂输出）
+    pub async fn register_boxed_bean(
+        &self,
+        name: impl Into<String>,
+        bean: Box<dyn std::any::Any + Send + Sync>,
+    ) {
+        let name = name.into();
+        let mut beans = self.beans.write().await;
+        beans.insert(name, Arc::from(bean));
+    }
+
     /// Get a bean by type
     /// 按类型获取bean
     pub async fn get_bean<T: 'static + Send + Sync + Clone>(&self) -> Option<T> {
@@ -121,6 +133,12 @@ impl TestApplicationContext {
     pub async fn clear_beans(&self) {
         let mut beans = self.beans.write().await;
         beans.clear();
+    }
+
+    /// Get mutable access to the beans map
+    /// 获取bean映射的可变访问
+    pub async fn beans_mut(&self) -> tokio::sync::RwLockWriteGuard<'_, HashMap<String, Arc<dyn std::any::Any + Send + Sync>>> {
+        self.beans.write().await
     }
 
     /// Clear all configuration
