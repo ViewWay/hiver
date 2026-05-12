@@ -50,7 +50,7 @@ pub struct Event {
 
     /// Event name/type (optional)
     /// 事件名称/类型（可选）
-    event: Option<String>,
+    event_type: Option<String>,
 
     /// Event data
     /// 事件数据
@@ -67,7 +67,7 @@ impl Event {
     pub fn data(data: impl Into<String>) -> Self {
         Self {
             id: None,
-            event: None,
+            event_type: None,
             data: vec![data.into()],
             retry: None,
         }
@@ -78,7 +78,7 @@ impl Event {
     pub fn comment(comment: impl Into<String>) -> Self {
         Self {
             id: None,
-            event: None,
+            event_type: None,
             data: vec![format!(":{}", comment.into())],
             retry: None,
         }
@@ -94,7 +94,7 @@ impl Event {
     /// Set event type
     /// 设置事件类型
     pub fn event(mut self, event: impl Into<String>) -> Self {
-        self.event = Some(event.into());
+        self.event_type = Some(event.into());
         self
     }
 
@@ -123,7 +123,7 @@ impl Event {
             output.push('\n');
         }
 
-        if let Some(ref event) = self.event {
+        if let Some(ref event) = self.event_type {
             output.push_str("event: ");
             output.push_str(event);
             output.push('\n');
@@ -253,7 +253,7 @@ impl Sse {
             .map(Event::to_sse_format)
             .collect::<String>();
 
-        builder.body(Body::from(body)).expect("unexpected error")
+        builder.body(Body::from(body)).unwrap_or_else(|_| Response::new(crate::StatusCode::INTERNAL_SERVER_ERROR))
     }
 
     /// Create a simple event (shorthand)

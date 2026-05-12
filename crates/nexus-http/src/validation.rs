@@ -11,9 +11,9 @@
 //! - `#[Valid]` attribute for automatic validation
 //! - `#[Valid]` 属性用于自动验证
 //! - Integration with nexus-validation-annotations
-//! 与 nexus-validation-annotations 集成
+//!   与 nexus-validation-annotations 集成
 //! - Type-safe validation errors
-//! 类型安全的验证错误
+//!   类型安全的验证错误
 
 use crate::{body::HttpBody, error::Error, request::Request};
 use regex;
@@ -118,7 +118,8 @@ impl ValidationErrors {
 impl std::fmt::Display for ValidationErrors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.errors.len() == 1 {
-            write!(f, "{}", self.errors[0])
+            let first = self.errors.get(0).ok_or_else(|| std::fmt::Error)?;
+            write!(f, "{}", first)
         } else {
             let messages: Vec<String> = self.errors.iter().map(ToString::to_string).collect();
             write!(f, "Multiple validation errors: {}", messages.join(", "))
@@ -307,7 +308,7 @@ where
 {
     /// Extract and validate JSON from request body
     /// 从请求体中提取并验证 JSON
-    pub async fn from_request(req: &Request) -> Result<Validated<T>, Error> {
+    pub fn from_request(req: &Request) -> Result<Validated<T>, Error> {
         // Extract JSON body
         let json_bytes = req
             .body()
@@ -360,11 +361,11 @@ impl ValidationMiddleware {
 
     /// Process a request through validation
     /// 通过验证处理请求
-    pub async fn validate_request<T>(&self, req: &Request) -> Result<Validated<T>, Error>
+    pub fn validate_request<T>(&self, req: &Request) -> Result<Validated<T>, Error>
     where
         T: Validatable + for<'de> Deserialize<'de> + Send + Sync,
     {
-        JsonValidator::from_request(req).await
+        JsonValidator::from_request(req)
     }
 }
 

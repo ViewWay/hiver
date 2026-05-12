@@ -232,9 +232,8 @@ impl ErrorCode {
             Self::InternalError => "Internal error",
             Self::FlowControlError => "Flow control limits exceeded",
             Self::SettingsTimeout => "Settings not acknowledged",
-            Self::StreamClosed => "Stream not processed",
+            Self::StreamClosed | Self::RefusedStream => "Stream not processed",
             Self::FrameSizeError => "Frame size error",
-            Self::RefusedStream => "Stream not processed",
             Self::Cancel => "Stream cancelled",
             Self::StreamStateError => "Stream state error",
             Self::ConnectError => "Error processing TLS",
@@ -428,7 +427,7 @@ impl Http2Config {
     /// Set maximum frame size
     /// 设置最大帧大小
     pub fn with_max_frame_size(mut self, size: u32) -> Self {
-        self.max_frame_size = size.clamp(16384, 16777215);
+        self.max_frame_size = size.clamp(16_384, 16_777_215);
         self
     }
 

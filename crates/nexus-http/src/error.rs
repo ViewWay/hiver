@@ -102,7 +102,6 @@ impl Error {
             Error::NotFound(_) => 404,
             Error::Timeout(_) => 408,
             Error::Parse(_) => 422,
-            Error::Internal(_) => 500,
             Error::Custom(code, _) => *code,
             _ => 500,
         }

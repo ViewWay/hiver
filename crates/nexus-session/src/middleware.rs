@@ -26,6 +26,7 @@ use std::sync::Arc;
 pub struct SessionMiddleware<S> {
     /// Inner service
     /// 内部服务
+    #[allow(dead_code)]
     inner: S,
 
     /// Session store

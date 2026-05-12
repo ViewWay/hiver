@@ -73,7 +73,7 @@ impl IntoHeaderVal for &'static str {
 /// 使用 `try_from` 为 String 实现（如果无效可能失败）
 impl IntoHeaderVal for String {
     fn into_header_val(self) -> HeaderValue {
-        HeaderValue::try_from(self).expect("Invalid header value string")
+        HeaderValue::try_from(self).unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
     }
 }
 
@@ -81,7 +81,7 @@ impl IntoHeaderVal for String {
 /// 使用 `try_from` 为 `&String` 实现
 impl IntoHeaderVal for &String {
     fn into_header_val(self) -> HeaderValue {
-        HeaderValue::try_from(self.as_str()).expect("Invalid header value string")
+        HeaderValue::try_from(self.as_str()).unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
     }
 }
 
@@ -242,7 +242,12 @@ impl From<Response> for http::Response<Body> {
             }
         }
 
-        builder.body(resp.body).expect("unexpected error")
+        builder.body(resp.body).unwrap_or_else(|_| {
+            http::Response::builder()
+                .status(resp.status)
+                .body(Body::default())
+                .unwrap()
+        })
     }
 }
 
@@ -414,7 +419,7 @@ impl IntoResponse for &'static str {
         Response::builder()
             .header("content-type", "text/plain; charset=utf-8")
             .body(self)
-            .unwrap()
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
@@ -423,7 +428,7 @@ impl IntoResponse for String {
         Response::builder()
             .header("content-type", "text/plain; charset=utf-8")
             .body(self)
-            .unwrap()
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
@@ -432,32 +437,32 @@ impl IntoResponse for &'static [u8] {
         Response::builder()
             .header("content-type", "application/octet-stream")
             .body(self)
-            .unwrap()
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
 impl IntoResponse for Vec<u8> {
     fn into_response(self) -> Response {
-        Response::builder().body(self).expect("unexpected error")
+        Response::builder().body(self).unwrap_or_else(|_| Response::new())
     }
 }
 
 impl IntoResponse for Bytes {
     fn into_response(self) -> Response {
-        Response::builder().body(self).expect("unexpected error")
+        Response::builder().body(self).unwrap_or_else(|_| Response::new())
     }
 }
 
 impl IntoResponse for StatusCode {
     fn into_response(self) -> Response {
-        Response::builder().status(self).finish().expect("unexpected error")
+        Response::builder().status(self).finish().unwrap_or_else(|_| Response::new())
     }
 }
 
 /// Create a response with the given status code
 /// 使用给定状态码创建响应
 pub fn status(status: StatusCode) -> Response {
-    Response::builder().status(status).finish().expect("unexpected error")
+    Response::builder().status(status).finish().unwrap_or_else(|_| Response::new())
 }
 
 #[cfg(test)]

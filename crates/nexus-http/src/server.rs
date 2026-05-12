@@ -189,7 +189,7 @@ async fn handle_connection<S>(
             },
             Ok(n) => {
                 // Feed data to parser
-                if let Err(e) = parser.feed(&read_buf[..n]) {
+                if let Err(e) = parser.feed(read_buf.get(..n).unwrap_or(&[])) {
                     tracing::error!("Parse error from {}: {}", peer_addr, e);
                     break;
                 }
@@ -215,7 +215,7 @@ async fn handle_connection<S>(
                                     Response::builder()
                                         .status(status)
                                         .body(crate::Body::from(e.to_string()))
-                                        .unwrap()
+                                        .unwrap_or_else(|_| Response::new(crate::StatusCode::INTERNAL_SERVER_ERROR))
                                 },
                             };
 

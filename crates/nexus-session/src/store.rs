@@ -12,6 +12,7 @@ use tokio::sync::RwLock;
 /// Serializable session data for storage
 /// 可序列化的会话数据用于存储
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 struct SessionData {
     /// Session ID
     /// 会话ID
@@ -34,6 +35,7 @@ struct SessionData {
     pub attributes: HashMap<String, serde_json::Value>,
 }
 
+#[allow(dead_code)]
 impl SessionData {
     /// Create from Session
     /// 从Session创建
@@ -448,7 +450,7 @@ impl SessionStore for MongoSessionStore {
     }
 
     async fn delete(&self, id: &SessionId) -> Result<(), String> {
-        let filter = serde_json::json!({ "_id": id.as_str() });
+        let filter = serde_json::json!({ "id": id.as_str() });
         self.client
             .delete(&self.database, &self.collection, filter)
             .await

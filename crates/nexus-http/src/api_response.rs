@@ -447,6 +447,7 @@ impl<T> PageResponse<T> {
         size: u32,
         total_elements: u64,
     ) -> Self {
+        #[allow(clippy::cast_precision_loss)]
         let total_pages = if size == 0 {
             0
         } else {
@@ -496,10 +497,10 @@ fn format_timestamp() -> String {
 
     format!(
         "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
-        (1970 + secs / 31536000) % 10000,
-        ((secs % 31536000) / 2592000 + 1) % 13,
-        ((secs % 2592000) / 86400 + 1) % 32,
-        (secs % 86400) / 3600,
+        (1970 + secs / 31_536_000) % 10000,
+        ((secs % 31_536_000) / 2_592_000 + 1) % 13,
+        ((secs % 2_592_000) / 86_400 + 1) % 32,
+        (secs % 86_400) / 3600,
         (secs % 3600) / 60,
         secs % 60
     )

@@ -212,7 +212,7 @@ impl IntoResponse for String {
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
             .body(Body::from(self))
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -222,7 +222,7 @@ impl IntoResponse for &'static str {
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
             .body(Body::from(self))
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -231,7 +231,7 @@ impl IntoResponse for () {
         Response::builder()
             .status(StatusCode::NO_CONTENT)
             .body(Body::empty())
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -241,7 +241,7 @@ impl IntoResponse for std::borrow::Cow<'static, str> {
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
             .body(Body::from(self.into_owned()))
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -251,7 +251,7 @@ impl IntoResponse for Vec<u8> {
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, "application/octet-stream")
             .body(Body::from(self))
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -260,7 +260,7 @@ impl IntoResponse for StatusCode {
         Response::builder()
             .status(self)
             .body(Body::empty())
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
@@ -277,7 +277,7 @@ impl IntoResponse for ErrorResponse {
 
 impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E {
     fn into_response(self) -> Response {
-        self.into_error_response().to_response()
+        self.to_error_response().to_response()
     }
 }
 

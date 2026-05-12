@@ -37,7 +37,6 @@ impl From<&Method> for http::Method {
 impl From<&http::Method> for Method {
     fn from(method: &http::Method) -> Self {
         match method.as_str() {
-            "GET" => Method::GET,
             "POST" => Method::POST,
             "PUT" => Method::PUT,
             "PATCH" => Method::PATCH,
@@ -95,7 +94,9 @@ impl Request {
             .method(http_method)
             .uri(uri)
             .body(Body::empty())
-            .unwrap();
+            .unwrap_or_else(|e| {
+                panic!("Failed to build request for {method:?} {uri}: {e}")
+            });
 
         Self::new(inner)
     }

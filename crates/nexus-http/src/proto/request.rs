@@ -63,9 +63,8 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
     // Parse version
     let version = match req.version {
         Some(0) => HttpVersion::Http10,
-        Some(1) => HttpVersion::Http11,
+        Some(1) | None => HttpVersion::Http11,
         Some(v) => return Err(Error::InvalidRequest(format!("Unsupported HTTP version: {}", v))),
-        None => HttpVersion::Http11,
     };
 
     // Build the http::Request
@@ -86,7 +85,7 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
 
     // Extract the body if present
     if bytes_used < data.len() {
-        let body_data = &data[bytes_used..];
+        let body_data = data.get(bytes_used..).unwrap_or(&[]);
         if !body_data.is_empty() {
             // Update the request with the actual body
             let content_length = request
@@ -95,7 +94,8 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
                 .unwrap_or(body_data.len());
 
             let actual_body_len = body_data.len().min(content_length);
-            let body = Body::from(Bytes::copy_from_slice(&body_data[..actual_body_len]));
+            let body_slice = body_data.get(..actual_body_len).unwrap_or(&[]);
+            let body = Body::from(Bytes::copy_from_slice(body_slice));
 
             // Rebuild with body
             let mut http_builder = http::Request::builder()

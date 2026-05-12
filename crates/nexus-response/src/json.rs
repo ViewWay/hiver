@@ -42,11 +42,11 @@ impl<T: Serialize> IntoResponse for Json<T> {
             Ok(json) => Response::builder()
                 .header("content-type", "application/json")
                 .body(json)
-                .unwrap(),
+                .unwrap_or_else(|_| Response::new()),
             Err(_) => Response::builder()
                 .status(http::StatusCode::INTERNAL_SERVER_ERROR)
                 .body("Failed to serialize JSON")
-                .unwrap(),
+                .unwrap_or_else(|_| Response::new()),
         }
     }
 }

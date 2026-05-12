@@ -178,95 +178,80 @@ impl UriBuilder {
     pub fn from_uri(uri: &str) -> Self {
         let mut builder = Self::new();
 
-        // Parse scheme
         if let Some((scheme, rest)) = uri.split_once("://") {
             builder = builder.scheme(scheme);
             let mut remaining = rest;
 
-            // Parse user info if present
-            if let Some(at_pos) = remaining.find('@') {
-                let before_host = &remaining[..at_pos];
-                let (user_info, _host_part) =
-                    before_host.split_once(':').unwrap_or((before_host, ""));
-                builder = builder.user_info(user_info);
-                remaining = &remaining[at_pos + 1..];
-            }
+            remaining = Self::parse_user_info(remaining, &mut builder);
+            remaining = Self::parse_host_port(remaining, &mut builder);
 
-            // Parse host and port
-            let (host_part, path_part) = remaining.split_once('/').unwrap_or((remaining, ""));
-            if let Some((host, port_str)) = host_part.split_once(':') {
-                builder = builder.host(host);
-                if let Ok(port) = port_str.parse::<u16>() {
-                    builder = builder.port(port);
-                }
-            } else {
-                builder = builder.host(host_part);
-            }
-
-            let remaining = if path_part.is_empty() { "" } else { path_part };
-
-            // Parse fragment first
-            let fragment_result = remaining.split_once('#');
-            if let Some((before_fragment, frag)) = fragment_result {
-                builder = builder.fragment(frag);
-                let to_parse = before_fragment;
-
-                // Then parse query from before fragment
-                if let Some((path, q)) = to_parse.split_once('?') {
-                    if !path.is_empty() {
-                        builder.path = path
-                            .split('/')
-                            .filter(|s: &&str| !s.is_empty())
-                            .map(ToString::to_string)
-                            .collect();
-                    }
-                    for pair in q.split('&') {
-                        let parts: Vec<&str> = pair.splitn(2, '=').collect();
-                        if parts.len() == 2 {
-                            builder = builder.query_param(parts[0], parts[1]);
-                        }
-                    }
-                } else if !to_parse.is_empty() {
-                    builder.path = to_parse
-                        .split('/')
-                        .filter(|s: &&str| !s.is_empty())
-                        .map(ToString::to_string)
-                        .collect();
-                }
-            } else {
-                // No fragment, parse query from remaining
-                if let Some((path, q)) = remaining.split_once('?') {
-                    if !path.is_empty() {
-                        builder.path = path
-                            .split('/')
-                            .filter(|s: &&str| !s.is_empty())
-                            .map(ToString::to_string)
-                            .collect();
-                    }
-                    for pair in q.split('&') {
-                        let parts: Vec<&str> = pair.splitn(2, '=').collect();
-                        if parts.len() == 2 {
-                            builder = builder.query_param(parts[0], parts[1]);
-                        }
-                    }
-                } else if !remaining.is_empty() {
-                    builder.path = remaining
-                        .split('/')
-                        .filter(|s: &&str| !s.is_empty())
-                        .map(ToString::to_string)
-                        .collect();
-                }
-            }
+            Self::parse_path_query_fragment(remaining, &mut builder);
         } else {
-            // No scheme, treat as path
-            builder.path = uri
-                .split('/')
-                .filter(|s: &&str| !s.is_empty())
-                .map(ToString::to_string)
-                .collect();
+            builder.path = Self::split_segments(uri);
         }
 
         builder
+    }
+
+    fn parse_user_info<'a>(remaining: &'a str, builder: &mut Self) -> &'a str {
+        if let Some(at_pos) = remaining.find('@') {
+            let before_host = &remaining[..at_pos];
+            let (user_info, _) = before_host.split_once(':').unwrap_or((before_host, ""));
+            *builder = std::mem::take(builder).user_info(user_info);
+            &remaining[at_pos + 1..]
+        } else {
+            remaining
+        }
+    }
+
+    fn parse_host_port<'a>(remaining: &'a str, builder: &mut Self) -> &'a str {
+        let (host_part, path_part) = remaining.split_once('/').unwrap_or((remaining, ""));
+        if let Some((host, port_str)) = host_part.split_once(':') {
+            *builder = std::mem::take(builder).host(host);
+            if let Ok(port) = port_str.parse::<u16>() {
+                *builder = std::mem::take(builder).port(port);
+            }
+        } else {
+            *builder = std::mem::take(builder).host(host_part);
+        }
+        if path_part.is_empty() { "" } else { path_part }
+    }
+
+    fn parse_path_query_fragment(remaining: &str, builder: &mut Self) {
+        let (before_fragment, has_fragment) = match remaining.split_once('#') {
+            Some((bf, f)) => {
+                *builder = std::mem::take(builder).fragment(f);
+                (bf, true)
+            }
+            None => (remaining, false),
+        };
+
+        let _ = has_fragment;
+
+        if let Some((path, q)) = before_fragment.split_once('?') {
+            if !path.is_empty() {
+                builder.path = Self::split_segments(path);
+            }
+            Self::parse_query_pairs(q, builder);
+        } else if !before_fragment.is_empty() {
+            builder.path = Self::split_segments(before_fragment);
+        }
+    }
+
+    fn split_segments(s: &str) -> Vec<String> {
+        s.split('/')
+            .filter(|seg| !seg.is_empty())
+            .map(ToString::to_string)
+            .collect()
+    }
+
+    fn parse_query_pairs(query: &str, builder: &mut Self) {
+        for pair in query.split('&') {
+            let parts: Vec<&str> = pair.splitn(2, '=').collect();
+            if let (Some(key), Some(val)) = (parts.first(), parts.get(1)) {
+                *builder = std::mem::take(builder).query_param(*key, *val);
+            }
+        }
     }
 
     /// Set the scheme (e.g., http, https)
@@ -396,17 +381,17 @@ impl UriBuilder {
 
         // Scheme
         if let Some(scheme) = &self.scheme {
-            write!(result, "{}://", scheme).expect("unexpected error");
+            let _ = write!(result, "{}://", scheme);
         }
 
         // User info
         if let Some(user_info) = &self.user_info {
-            write!(result, "{}@", user_info).expect("unexpected error");
+            let _ = write!(result, "{}@", user_info);
         }
 
         // Host
         if let Some(host) = &self.host {
-            write!(result, "{}", host).expect("unexpected error");
+            let _ = write!(result, "{}", host);
         }
 
         // Port (only if non-standard for the scheme)
@@ -418,7 +403,7 @@ impl UriBuilder {
                 _ => None,
             };
             if standard_port != Some(port) {
-                write!(result, ":{}", port).expect("unexpected error");
+                let _ = write!(result, ":{}", port);
             }
         }
 
@@ -458,13 +443,13 @@ impl UriBuilder {
                 if i > 0 {
                     result.push('&');
                 }
-                write!(result, "{}={}", name, value).expect("unexpected error");
+                write!(result, "{}={}", name, value).unwrap_or_default();
             }
         }
 
         // Fragment
         if let Some(fragment) = &self.fragment {
-            write!(result, "#{}", fragment).expect("unexpected error");
+            let _ = write!(result, "#{}", fragment);
         }
 
         Uri { uri: result }

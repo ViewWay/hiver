@@ -27,7 +27,7 @@
 //! }
 //!
 //! impl IntoErrorResponse for UserNotFound {
-//!     fn into_error_response(&self) -> ErrorResponse {
+//!     fn to_error_response(&self) -> ErrorResponse {
 //!         ErrorResponse::not_found()
 //!             .code("USER_NOT_FOUND")
 //!             .message(&format!("User with id {} not found", self.id))
@@ -220,12 +220,12 @@ impl Default for ErrorResponse {
 pub trait IntoErrorResponse: Send + Sync {
     /// Convert this error into an `ErrorResponse`
     /// 将此错误转换为 `ErrorResponse`
-    fn into_error_response(&self) -> ErrorResponse;
+    fn to_error_response(&self) -> ErrorResponse;
 
     /// Get the HTTP status code for this error
     /// 获取此错误的 HTTP 状态码
     fn status_code(&self) -> u16 {
-        self.into_error_response().status
+        self.to_error_response().status
     }
 }
 
@@ -284,7 +284,7 @@ impl ExceptionHandlerRegistry {
         } else {
             // Use the default conversion
             // 使用默认转换
-            error.into_error_response()
+            error.to_error_response()
         }
     }
 
@@ -368,7 +368,7 @@ impl std::fmt::Display for ApplicationException {
 impl std::error::Error for ApplicationException {}
 
 impl IntoErrorResponse for ApplicationException {
-    fn into_error_response(&self) -> ErrorResponse {
+    fn to_error_response(&self) -> ErrorResponse {
         ErrorResponse::new(self.status, &self.code, &self.message)
     }
 }
@@ -422,7 +422,7 @@ impl std::fmt::Display for ResourceNotFoundException {
 impl std::error::Error for ResourceNotFoundException {}
 
 impl IntoErrorResponse for ResourceNotFoundException {
-    fn into_error_response(&self) -> ErrorResponse {
+    fn to_error_response(&self) -> ErrorResponse {
         ErrorResponse::not_found()
             .code("RESOURCE_NOT_FOUND")
             .message(format!(
@@ -530,7 +530,7 @@ impl std::fmt::Display for ValidationException {
 impl std::error::Error for ValidationException {}
 
 impl IntoErrorResponse for ValidationException {
-    fn into_error_response(&self) -> ErrorResponse {
+    fn to_error_response(&self) -> ErrorResponse {
         let mut error_response = ErrorResponse::unprocessable_entity()
             .code("VALIDATION_ERROR")
             .message(&self.message);
@@ -566,10 +566,10 @@ fn format_timestamp() -> String {
         // Extract year, month, day, hour, minute, second
         // This is a simplified calculation
         // 这是简化的计算
-        (1970 + secs / 31536000) % 10000,
-        ((secs % 31536000) / 2592000 + 1) % 13,
-        ((secs % 2592000) / 86400 + 1) % 32,
-        (secs % 86400) / 3600,
+        (1970 + secs / 31_536_000) % 10000,
+        ((secs % 31_536_000) / 2_592_000 + 1) % 13,
+        ((secs % 2_592_000) / 86_400 + 1) % 32,
+        (secs % 86_400) / 3600,
         (secs % 3600) / 60,
         secs % 60
     )
@@ -618,7 +618,7 @@ mod tests {
     #[test]
     fn test_application_exception() {
         let exc = ApplicationException::not_found("USER_NOT_FOUND", "User not found");
-        let error = exc.into_error_response();
+        let error = exc.to_error_response();
 
         assert_eq!(error.status, 404);
         assert_eq!(error.code, "USER_NOT_FOUND");
@@ -627,7 +627,7 @@ mod tests {
     #[test]
     fn test_resource_not_found_exception() {
         let exc = ResourceNotFoundException::user("123");
-        let error = exc.into_error_response();
+        let error = exc.to_error_response();
 
         assert_eq!(error.status, 404);
         assert_eq!(error.code, "RESOURCE_NOT_FOUND");
@@ -642,7 +642,7 @@ mod tests {
             FieldError::new("email", "INVALID", "Email is invalid"),
         ];
         let exc = ValidationException::new(field_errors);
-        let error = exc.into_error_response();
+        let error = exc.to_error_response();
 
         assert_eq!(error.status, 422);
         assert_eq!(error.code, "VALIDATION_ERROR");

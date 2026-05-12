@@ -223,7 +223,7 @@ where
     T: Serialize,
 {
     fn into_response(self) -> Response {
-        let _status = StatusCode::from_u16(self.code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+        let _ = StatusCode::from_u16(self.code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
 
         Json(self).into_response()
     }
@@ -246,6 +246,7 @@ pub struct PageResult<T> {
 
 impl<T> PageResult<T> {
     /// 创建分页结果 / Create paginated result
+    #[allow(clippy::cast_precision_loss)]
     pub fn new(content: Vec<T>, page: u32, size: u32, total_elements: u64) -> Self {
         let total_pages = if size == 0 {
             0
