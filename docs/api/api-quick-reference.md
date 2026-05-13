@@ -6,19 +6,25 @@
 ### Application / 应用
 
 ```rust,ignore
-use nexus::prelude::*;
+use nexus_http::{Body, Response, Server, StatusCode};
+use nexus_router::Router;
+use nexus_runtime::Runtime;
 
-// Create and run application
-#[tokio::main]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = Runtime::new()?;
+
     let app = Router::new()
         .get("/", || async { "Hello" })
         .get("/users/:id", get_user);
 
-    Server::bind("0.0.0.0:8080")
-        .serve(app)
-        .await
-        .unwrap();
+    runtime.block_on(async {
+        Server::bind("0.0.0.0:8080")
+            .run(app)
+            .await
+            .unwrap();
+    });
+
+    Ok(())
 }
 ```
 
@@ -35,44 +41,41 @@ let app = Router::new()
     // Path parameters
     .get("/users/:id", get_user)
     .get("/posts/:post_id/comments/:comment_id", get_comment)
-    // Wildcard
-    .get("/files/*path", serve_file)
     // Middleware
     .middleware(logger)
-    .nest("/api", api_routes)
+    // State
     .with_state(state);
 ```
 
 ### Request / 请求
 
 ```rust,ignore
-use nexus::Request;
+use nexus_http::Request;
 
 pub async fn handler(req: Request) -> Response {
     let method = req.method();
-    let uri = req.uri();
+    let path = req.path();
     let headers = req.headers();
-    let body = req.body();
+    let id = req.param("id"); // path parameter
 }
 ```
 
 ### Response / 响应
 
 ```rust,ignore
-use nexus::Response;
-use nexus::response::Json;
+use nexus_http::{Body, Response, StatusCode};
 
-// JSON response
-Json(user).into_response()
+// Convenience constructors
+Response::ok()                         // 200 OK, no body
+Response::created()                    // 201 Created
+Response::not_found()                  // 404 Not Found
+Response::internal_server_error()      // 500 Internal Server Error
 
-// Status with body
-(StatusCode::OK, "Hello").into_response()
-
-// Builder
+// Builder pattern
 Response::builder()
-    .status(200)
-    .header("Content-Type", "application/json")
-    .body(body.into())
+    .status(StatusCode::OK)
+    .header("content-type", "application/json")
+    .body(Body::from(r#"{"id": 1}"#))
     .unwrap()
 ```
 
@@ -84,33 +87,32 @@ Response::builder()
 
 ```rust,ignore
 #[get("/users/:id")]
-async fn get_user(id: String) -> Json<User> {
-    Json(user_service.find_by_id(&id).await)
-}
-
-// Typed parameter
-#[get("/posts/:id")]
-async fn get_post(id: u64) -> Json<Post> {
-    Json(post_service.find(id).await)
+async fn get_user(#[path_variable] id: String) -> Response {
+    // id extracted from path
+    let user = user_service.find_by_id(&id).await;
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&user).unwrap()))
+        .unwrap()
 }
 ```
 
 ### Query / 查询参数
 
 ```rust,ignore
+use nexus_macros::{get, request_param};
+
 #[get("/search")]
-async fn search(
-    #[query] q: String,
-    #[query] page: Option<u32>,
-    #[query(default = 10)] limit: u32,
-) -> Json<Results> {
-    Json(search(q, page.unwrap_or(1), limit).await)
+async fn search(#[request_param] q: String) -> Response {
+    // q extracted from query string
 }
 ```
 
 ### JSON Body / JSON 请求体
 
 ```rust,ignore
+use nexus_macros::{post, request_body};
+
 #[derive(Deserialize)]
 struct CreateUser {
     username: String,
@@ -118,41 +120,44 @@ struct CreateUser {
 }
 
 #[post("/users")]
-async fn create_user(#[request_body] user: CreateUser) -> Json<User> {
-    Json(user_service.create(user).await)
+async fn create_user(#[request_body] user: CreateUser) -> Response {
+    // user deserialized from JSON body
+    let saved = user_service.create(user).await;
+    Response::builder()
+        .status(StatusCode::CREATED)
+        .body(Body::from(serde_json::to_string(&saved).unwrap()))
+        .unwrap()
 }
 ```
 
 ### Headers / 请求头
 
 ```rust,ignore
-#[get("/info")]
-async fn info(#[request_header] user_agent: String) -> String {
-    format!("User-Agent: {}", user_agent)
-}
+use nexus_macros::{get, request_header};
 
-// Optional header
-#[get("/auth")]
-async fn auth(#[request_header] auth: Option<String>) -> Status {
-    if auth.is_some() {
-        Status::OK
-    } else {
-        Status::UNAUTHORIZED
-    }
+#[get("/info")]
+async fn info(#[request_header] user_agent: String) -> Response {
+    // user_agent extracted from request headers
+    Response::ok()
 }
 ```
 
 ### State / 状态
 
 ```rust,ignore
+use nexus_router::State;
+
 #[derive(Clone)]
 struct AppState {
     db: Arc<Database>,
 }
 
-#[get("/users")]
-async fn list_users(#[state] state: Arc<AppState>) -> Json<Vec<User>> {
-    Json(state.db.find_users().await)
+async fn list_users(req: Request, state: State<AppState>) -> Response {
+    let users = state.db.find_users().await;
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&users).unwrap()))
+        .unwrap()
 }
 ```
 
@@ -164,25 +169,31 @@ async fn list_users(#[state] state: Arc<AppState>) -> Json<Vec<User>> {
 
 ```rust,ignore
 use nexus_middleware::{Middleware, Next};
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::Arc;
 
 struct MyMiddleware;
 
-impl Middleware for MyMiddleware {
-    async fn call(
+impl<S: Send + Sync + 'static> Middleware<S> for MyMiddleware {
+    fn call(
         &self,
         req: Request,
-        next: Next,
-    ) -> Result<Response, Error> {
-        // Before handler
-        println!("Request: {:?}", req.uri());
-        
-        // Call next
-        let response = next.run(req).await?;
-        
-        // After handler
-        println!("Response: {:?}", response.status());
-        
-        Ok(response)
+        state: Arc<S>,
+        next: Next<'_>,
+    ) -> Pin<Box<dyn Future<Output = Result<Response, Error>> + Send + '_>> {
+        Box::pin(async move {
+            // Before handler
+            println!("Request: {:?}", req.uri());
+
+            // Call next
+            let response = next.call(req, state).await?;
+
+            // After handler
+            println!("Response: {:?}", response.status());
+
+            Ok(response)
+        })
     }
 }
 ```
@@ -216,6 +227,8 @@ use nexus_middleware::*;
 ### Custom Error / 自定义错误
 
 ```rust,ignore
+use nexus_http::{Body, Response, StatusCode};
+
 #[derive(Debug)]
 enum AppError {
     NotFound(String),
@@ -223,16 +236,14 @@ enum AppError {
     BadRequest(String),
 }
 
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        let (status, message) = match self {
+impl From<AppError> for nexus_http::Error {
+    fn from(err: AppError) -> Self {
+        let (status, message) = match err {
             AppError::NotFound(id) => (StatusCode::NOT_FOUND, format!("{} not found", id)),
             AppError::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_string()),
             AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg),
         };
-
-        let body = Json(json!({ "error": message }));
-        (status, body).into_response()
+        nexus_http::Error::new(status, message)
     }
 }
 ```
@@ -240,11 +251,15 @@ impl IntoResponse for AppError {
 ### Result Response / 结果响应
 
 ```rust,ignore
-#[get("/users/:id")]
-async fn get_user(id: String) -> Result<Json<User>, AppError> {
-    let user = user_service.find_by_id(&id).await
-        .ok_or_else(|| AppError::NotFound(id))?;
-    Ok(Json(user))
+async fn get_user(req: Request) -> Result<Response, nexus_http::Error> {
+    let id = req.param("id").unwrap_or("unknown");
+    let user = user_service.find_by_id(id).await
+        .ok_or_else(|| AppError::NotFound(id.to_string()))?;
+
+    Ok(Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&user).unwrap()))
+        .unwrap())
 }
 ```
 
@@ -263,9 +278,6 @@ struct AppConfig {
     port: u16,
     debug: bool,
 }
-
-// Load from application.toml or environment
-let config = AppConfig::load()?;
 ```
 
 ### Environment Variables / 环境变量
@@ -380,15 +392,15 @@ async fn refresh_cache() {
 ### Circuit Breaker / 熔断器
 
 ```rust,ignore
-use nexus_resilience::circuit::{CircuitBreaker, CircuitConfig};
+use nexus_resilience::CircuitBreaker;
 
 let breaker = CircuitBreaker::new(
-    CircuitConfig::new()
-        .failure_threshold(5)
-        .timeout(Duration::from_secs(60))
+    "external-api",  // name
+    5,               // failure threshold
+    10000,           // timeout ms
 );
 
-let result = breaker.call("api", || async {
+let result = breaker.call(|| async {
     api_call().await
 }).await?;
 ```
@@ -396,15 +408,14 @@ let result = breaker.call("api", || async {
 ### Retry / 重试
 
 ```rust,ignore
-use nexus_resilience::retry::{Retry, RetryConfig};
+use nexus_resilience::RetryPolicy;
 
-let retry = Retry::new(
-    RetryConfig::exponential()
-        .max_attempts(3)
-        .initial_delay(Duration::from_millis(100))
+let retry = RetryPolicy::exponential_backoff(
+    3,    // max retries
+    100,  // base delay ms
 );
 
-let result = retry.call(|| async {
+let result = retry.retry(|| async {
     api_call().await
 }).await?;
 ```
@@ -456,26 +467,20 @@ histogram.observe(0.042);
 ## Quick Imports / 快速导入
 
 ```rust,ignore
-// Prelude - most common types
-use nexus::prelude::*;
+// HTTP types
+use nexus_http::{Body, Request, Response, Server, StatusCode};
 
-// All macros
+// Routing
+use nexus_router::Router;
+
+// Macros (controller, get, post, service, etc.)
 use nexus_macros::*;
-
-// Extractors
-use nexus::extractors::*;
 
 // Middleware
 use nexus_middleware::*;
 
-// Error handling
-use nexus::error::*;
-
-// Response types
-use nexus::response::*;
-
 // Runtime
-use nexus_runtime::*;
+use nexus_runtime::Runtime;
 
 // Observability
 use nexus_observability::*;
@@ -494,53 +499,75 @@ use nexus_web3::*;
 ### REST CRUD
 
 ```rust,ignore
+use nexus_http::{Body, Request, Response, StatusCode};
+use nexus_macros::{controller, get, post, put, delete, request_body, path_variable};
+
 #[controller]
 struct UserController;
 
 #[get("/users")]
-async fn list(#[query] page: Option<u32>) -> Json<Vec<User>> { /* ... */ }
+async fn list(req: Request) -> Response {
+    let users = user_service.list().await;
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&users).unwrap()))
+        .unwrap()
+}
 
 #[get("/users/:id")]
-async fn get(id: String) -> Result<Json<User>, Error> { /* ... */ }
+async fn get(#[path_variable] id: String) -> Response {
+    let user = user_service.find_by_id(&id).await;
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&user).unwrap()))
+        .unwrap()
+}
 
 #[post("/users")]
-async fn create(#[request_body] user: CreateUser) -> Result<Json<User>, Error> { /* ... */ }
-
-#[put("/users/:id")]
-async fn update(id: String, #[request_body] user: UpdateUser) -> Result<Json<User>, Error> { /* ... */ }
-
-#[delete("/users/:id")]
-async fn delete(id: String) -> Result<Status, Error> { /* ... */ }
+async fn create(#[request_body] user: CreateUser) -> Response {
+    let saved = user_service.create(user).await;
+    Response::builder()
+        .status(StatusCode::CREATED)
+        .body(Body::from(serde_json::to_string(&saved).unwrap()))
+        .unwrap()
+}
 ```
 
 ### With Authentication / 带认证
 
 ```rust,ignore
+use nexus_macros::{get, request_header, pre_authorize};
+
+#[pre_authorize("isAuthenticated()")]
 #[get("/profile")]
-async fn profile(
-    #[request_header] auth: String,
-) -> Result<Json<User>, Error> {
+async fn profile(#[request_header] auth: String) -> Response {
     let claims = auth_service.validate(&auth)?;
     let user = user_service.find_by_id(&claims.sub).await?;
-    Ok(Json(user))
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(serde_json::to_string(&user).unwrap()))
+        .unwrap()
 }
 ```
 
 ### With Validation / 带校验
 
 ```rust,ignore
-#[derive(Deserialize, Validate)]
+use nexus_macros::{post, validated, request_body};
+
+#[derive(Deserialize)]
 struct CreateUser {
-    #[validate(length(min = 3))]
     username: String,
-    #[validate(email)]
     email: String,
 }
 
 #[post("/users")]
-async fn create_user(#[validated] user: CreateUser) -> Result<Json<User>, Error> {
-    user.validate()?;
-    Ok(Json(user_service.create(user).await?))
+async fn create_user(#[validated] #[request_body] user: CreateUser) -> Response {
+    let saved = user_service.create(user).await;
+    Response::builder()
+        .status(StatusCode::CREATED)
+        .body(Body::from(serde_json::to_string(&saved).unwrap()))
+        .unwrap()
 }
 ```
 

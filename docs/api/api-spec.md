@@ -29,233 +29,140 @@
 
 ## 1. Core APIs / 核心API
 
-### 1.1 Application / 应用
+### 1.1 Application Entry Point / 应用入口
+
+Nexus uses `Router` + `Server` as separate types (no `Application` struct). Compose them to create your application:
+Nexus 使用 `Router` + `Server` 作为独立类型（没有 `Application` 结构体）。组合它们来创建应用：
 
 ```rust
-/// Main application builder / 主应用构建器
-///
-/// # Example / 示例
-/// ```rust,no_run
-/// use nexus::prelude::*;
-/// use nexus::Router;
-///
-/// #[tokio::main]
-/// async fn main() {
-///     let app = Router::new()
-///         .get("/", || async { "Hello, World!" })
-///         .with_state(AppState { db: Arc::new(Database::new()) });
-///
-///     Server::bind("0.0.0.0:3000")
-///         .serve(app)
-///         .await
-///         .unwrap();
-/// }
-/// ```
-pub struct Application<S = ()> {
-    /// Router / 路由器
-    router: Router<S>,
+use nexus_http::{Server, Body, Response, StatusCode};
+use nexus_router::Router;
+use nexus_runtime::Runtime;
 
-    /// Application state / 应用状态
-    state: Arc<S>,
+fn main() -> std::io::Result<()> {
+    let mut runtime = Runtime::new()?;
 
-    /// Server configuration / 服务器配置
-    config: ServerConfig,
-}
+    let app = Router::new()
+        .get("/", |req| {
+            Box::pin(async move {
+                Ok(Response::builder()
+                    .status(StatusCode::OK)
+                    .body(Body::from("Hello, Nexus!"))
+                    .unwrap())
+            })
+        });
 
-impl<S> Application<S> {
-    /// Create a new application / 创建新应用
-    pub fn new() -> Self
-    where
-        S: Default;
-
-    /// Set the application state / 设置应用状态
-    pub fn with_state(mut self, state: S) -> Application<S> {
-        Application {
-            router: self.router.into_state(state),
-            state: Arc::new(state),
-            config: self.config,
-        }
-    }
-
-    /// Run the server / 运行服务器
-    pub async fn run(self, addr: impl Into<ServerAddr>) -> Result<(), Error>;
-
-    /// Run until shutdown signal / 运行直到关闭信号
-    pub async fn run_until_shutdown(self, addr: impl Into<ServerAddr>) -> Result<(), Error>;
-}
-
-impl Default for Application {
-    fn default() -> Self {
-        Self::new()
-    }
+    runtime.block_on(async {
+        Server::bind("127.0.0.1:8080")
+            .run(app)
+            .await
+    })
 }
 ```
 
 ### 1.2 Router / 路由器
 
 ```rust
-/// HTTP router with composable middleware and extractors
-/// 可组合中间件和提取器的HTTP路由器
+/// HTTP router with middleware support.
+/// 支持中间件的HTTP路由器。
 ///
 /// # Route Patterns / 路由模式
-///
 /// - `/` - Root path / 根路径
 /// - `/users` - Static path / 静态路径
 /// - `/users/:id` - Path parameter / 路径参数
-/// - `/users/:id/posts/:post_id` - Multiple parameters / 多个参数
-/// - `/files/*path` - Wildcard match / 通配符匹配
-pub struct Router<S = ()> {
-    // Private fields / 私有字段
-    routes: Arc<RouteTable<S>>,
-    middleware: Arc<Vec<Arc<dyn Middleware>>>>,
-}
+pub struct Router<S = ()> { /* private fields */ }
 
 impl<S> Router<S> {
-    /// Create a new router / 创建新路由器
-    pub fn new() -> Self {
-        Self::default()
-    }
+    /// Create a new stateless router / 创建无状态路由器
+    pub fn new() -> Self;
 
-    /// Add a GET route / 添加GET路由
-    ///
-    /// # Arguments / 参数
-    /// * `path`: Route path with optional parameters / 带可选参数的路由路径
-    /// * `handler`: Request handler / 请求处理器
-    pub fn get<H, T>(self, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a POST route / 添加POST路由
-    pub fn post<H, T>(self, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a PUT route / 添加PUT路由
-    pub fn put<H, T>(self, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a DELETE route / 添加DELETE路由
-    pub fn delete<H, T>(self, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a PATCH route / 添加PATCH路由
-    pub fn patch<H, T>(self, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a route with any HTTP method / 添加任意HTTP方法的路由
-    pub fn route<H, T>(self, method: Method, path: &str, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
+    /// Create a router with state / 创建带状态的路由器
+    pub fn with_state(state: S) -> Self;
 
     /// Add middleware to all routes / 为所有路由添加中间件
-    pub fn layer<M>(self, middleware: M) -> Self
-    where
-        M: Middleware<S>;
+    pub fn middleware(self, mw: Arc<dyn Middleware<S>>) -> Self;
 
-    /// Add middleware to a specific route / 为特定路由添加中间件
-    pub fn route_layer<M>(self, path: &str, middleware: M) -> Self
-    where
-        M: Middleware<S>;
+    /// Add a GET route / 添加GET路由
+    pub fn get(self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self;
 
-    /// Set application state / 设置应用状态
-    pub fn with_state<T>(self, state: T) -> Router<T>;
+    /// Add a POST route / 添加POST路由
+    pub fn post(self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self;
 
-    /// Merge another router / 合并另一个路由器
-    ///
-    /// # Example / 示例
-    /// ```rust
-    /// let api = Router::new()
-    ///     .get("/users", list_users)
-    ///     .post("/users", create_user);
-    ///
-    /// let app = Router::new()
-    ///     .get("/", index)
-    ///     .merge(api);
-    /// ```
-    pub fn merge(self, other: Router<S>) -> Self;
+    /// Add a PUT route / 添加PUT路由
+    pub fn put(self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self;
 
-    /// Nest a router under a path / 将路由器嵌套在路径下
-    ///
-    /// # Example / 示例
-    /// ```rust
-    /// let api = Router::new()
-    ///     .get("/users", list_users)
-    ///     .get("/posts", list_posts);
-    ///
-    /// let app = Router::new()
-    ///     .nest("/api", api);
-    /// // Results in: /api/users, /api/posts
-    /// ```
-    pub fn nest(self, base: &str, router: Router<S>) -> Self;
+    /// Add a DELETE route / 添加DELETE路由
+    pub fn delete(self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self;
 
-    /// Add a fallback handler for unmatched routes / 添加未匹配路由的fallback处理器
-    pub fn fallback<H, T>(self, handler: H) -> Self
-    where
-        H: Handler<T>,
-        T: FromRequest + 'static;
-
-    /// Add a WebSocket route / 添加WebSocket路由
-    pub fn websocket<F>(self, path: &str, handler: F) -> Self
-    where
-        F: WebSocketHandler;
-}
-
-impl Default for Router {
-    fn default() -> Self {
-        Self::new()
-    }
+    /// Add a PATCH route / 添加PATCH路由
+    pub fn patch(self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self;
 }
 ```
 
-### 1.3 Handler Trait / Handler Trait
+**Example / 示例:**
 
 ```rust
-/// Trait for handling HTTP requests
-/// 处理HTTP请求的trait
-///
-/// # Implemented For / 适用于
-///
-/// - Functions that match the handler signature / 匹配handler签名的函数
-/// - Closures with matching signature / 匹配签名的闭包
-/// - Types implementing `Handler` manually / 手动实现`Handler`的类型
-pub trait Handler<T>: Clone + Send + Sync + 'static {
-    /// Call the handler with extracted arguments
-    /// 使用提取的参数调用handler
-    fn call(&self, args: T) -> impl Future<Output = Response>;
+use std::sync::Arc;
+use nexus_router::Router;
 
-    /// Convert to an `Arc<dyn Handler>` for type erasure
-    /// 转换为`Arc<dyn Handler>`进行类型擦除
-    fn into_arc_handler(self) -> Arc<dyn Handler<T>>
-    where
-        Self: Sized + 'static,
-    {
-        Arc::new(self)
-    }
-}
+// Stateless router / 无状态路由器
+let app = Router::new()
+    .get("/", home_handler)
+    .post("/users", create_user_handler)
+    .delete("/users/:id", delete_user_handler);
 
-// Blanket implementation for functions / 函数的blanket实现
-impl<F, Fut, Res, T> Handler<T> for F
-where
-    F: Fn(T) -> Fut + Clone + Send + Sync + 'static,
-    Fut: Future<Output = Res> + Send,
-    Res: IntoResponse,
-    T: FromRequest + 'static,
-{
-    fn call(&self, args: T) -> impl Future<Output = Response> {
-        async move {
-            self(args).await.into_response()
-        }
-    }
+// With middleware / 带中间件
+let app = Router::new()
+    .middleware(Arc::new(LoggerMiddleware))
+    .get("/api/health", health_handler);
+
+// With state / 带状态
+struct AppState { db: Database }
+let app = Router::with_state(AppState { db: Database::new() })
+    .get("/users", list_users_handler);
+```
+
+### 1.3 Handler Enum / Handler 枚举
+
+`Handler` is an enum (not a trait) in Nexus. It supports multiple handler variants:
+`Handler` 在 Nexus 中是枚举（不是 trait）。支持多种处理器变体：
+
+```rust
+/// Route handler variants / 路由处理器变体
+pub enum Handler {
+    /// Synchronous function handler / 同步函数处理器
+    Fn(HandlerFn),
+
+    /// Async function handler / 异步函数处理器
+    Async(AsyncHandlerFn),
+
+    /// Boxed async handler (type-erased) / 装箱异步处理器（类型擦除）
+    BoxedAsync(BoxedAsyncHandler),
+
+    /// Static string response / 静态字符串响应
+    Static(&'static str),
+
+    /// Static bytes response / 静态字节响应
+    StaticBytes(&'static [u8]),
+
+    /// Returns 501 Not Implemented / 返回 501 未实现
+    Unimplemented,
 }
+```
+
+Handlers are created via `impl Into<Handler<S>>` — closures and functions convert automatically:
+处理器通过 `impl Into<Handler<S>>` 创建 — 闭包和函数自动转换：
+
+```rust
+use nexus_http::{Request, Response, Body, StatusCode, Result as HttpResult};
+use std::sync::Arc;
+
+// Closure handler (boxed async) / 闭包处理器
+Router::new().get("/hello", |req: Request| {
+    Box::pin(async move {
+        Ok(Response::ok())
+    })
+});
 ```
 
 ### 1.4 IntoResponse Trait / IntoResponse Trait
@@ -420,35 +327,38 @@ pub struct Response {
 
 impl Response {
     /// Create a new response builder / 创建新响应构建器
-    pub fn builder() -> ResponseBuilder {
-        ResponseBuilder::new()
-    }
+    pub fn builder() -> ResponseBuilder;
 
     /// Create a response with status code / 创建带状态码的响应
-    pub fn new(status: StatusCode) -> Self {
-        Self {
-            status,
-            ..Default::default()
-        }
-    }
+    pub fn new(status: StatusCode) -> Self;
 
-    /// Set response header / 设置响应头
-    pub fn header(mut self, name: impl IntoHeaderName, value: impl IntoHeaderValue) -> Self {
-        self.headers.insert(name.into(), value.into());
-        self
-    }
+    // Convenience constructors (no body) / 便捷构造器（无体）
+    pub fn ok() -> Self;                              // 200
+    pub fn created() -> Self;                         // 201
+    pub fn no_content() -> Self;                      // 204
+    pub fn bad_request() -> Self;                     // 400
+    pub fn unauthorized() -> Self;                    // 401
+    pub fn forbidden() -> Self;                       // 403
+    pub fn not_found() -> Self;                       // 404
+    pub fn internal_server_error() -> Self;           // 500
 
-    /// Set response body / 设置响应体
-    pub fn body(mut self, body: impl Into<Body>) -> Self {
-        self.body = body.into();
-        self
-    }
+    // Convenience builders (with body via BodyBuilder) / 便捷构建器
+    pub fn build_ok() -> BodyBuilder;
+    pub fn build_created() -> BodyBuilder;
+    pub fn build_not_found() -> BodyBuilder;
+    pub fn build_internal_server_error() -> BodyBuilder;
 
-    /// Set content type / 设置内容类型
-    pub fn content_type(mut self, content_type: impl Into<Mime>) -> Self {
-        self.headers.insert("content-type", content_type.into().to_string());
-        self
-    }
+    // JSON helper / JSON 辅助
+    pub fn json<T: Serialize>(value: &T) -> Self;
+
+    // Field access / 字段访问
+    pub fn status(&self) -> StatusCode;
+    pub fn header(&self, name: &str) -> Option<&str>;
+    pub fn headers(&self) -> &HashMap<String, String>;
+    pub fn body(&self) -> &Body;
+    pub fn into_body(self) -> Body;
+    pub fn with_body(self, body: Body) -> Self;
+    pub fn insert_header(&mut self, name: impl Into<String>, value: impl Into<String>);
 }
 
 /// Response builder for fluent construction
@@ -477,14 +387,15 @@ impl ResponseBuilder {
         self
     }
 
-    /// Set body / 设置体
-    pub fn body(mut self, body: impl Into<Body>) -> Self {
+    /// Set body and build the response / 设置体并构建响应
+    /// Returns `Result<Response>` — can fail if headers are invalid.
+    /// 返回 `Result<Response>` — 如果头无效会失败。
+    pub fn body(mut self, body: impl Into<Body>) -> Result<Response> {
         self.response.body = body.into();
-        self
+        Ok(self.response)
     }
 
-    /// Build the response / 构建响应
-    pub fn build(self) -> Response {
+    /// Build the response (alias) / 构建响应（别名）
         self.response
     }
 }
@@ -585,134 +496,74 @@ impl From<String> for Body {
 /// impl<S> Middleware<S> for LoggingMiddleware {
 ///     type Output = Response;
 ///
-///     fn call(&self, req: Request, next: Next<S>) -> Self::Output {
-///         let start = Instant::now();
-///         let method = req.method().clone();
-///         let path = req.path().to_string();
-///
-///         let response = next.run(req).await;
-///
-///         let duration = start.elapsed();
-///         tracing::info!(
-///             method = %method,
-///             path = %path,
-///             status = %response.status(),
-///             duration_ms = duration.as_millis(),
-///             "Request completed"
-///         );
-///
-///         response
+///     fn call(&self, req: Request, state: Arc<S>, next: Next<S>) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+///         Box::pin(async move {
+///             let start = Instant::now();
+///             let response = next.call(req, state).await;
+///             let duration = start.elapsed();
+///             tracing::info!(duration_ms = duration.as_millis(), "Request completed");
+///             response
+///         })
 ///     }
 /// }
 /// ```
-pub trait Middleware<S>: Clone + Send + Sync + 'static {
-    /// The output type / 输出类型
-    type Output;
-
+pub trait Middleware<S>: Send + Sync {
     /// Process the request / 处理请求
-    fn call(&self, req: Request, next: Next<S>) -> Self::Output;
-}
-
-/// Simplified middleware for async functions
-/// 异步函数的简化中间件
-pub trait AsyncMiddleware<S>: Clone + Send + Sync + 'static {
-    /// Process the request asynchronously / 异步处理请求
-    async fn call(&self, req: Request, next: Next<S>) -> Response;
-}
-
-impl<S, M> Middleware<S> for M
-where
-    M: AsyncMiddleware<S>,
-{
-    type Output = Response;
-
-    fn call(&self, req: Request, next: Next<S>) -> Self::Output {
-        self.call(req, next)
-    }
+    /// Takes `req`, `state`, and `next`. Returns a pinned boxed future.
+    /// 接收 `req`、`state` 和 `next`。返回 pinned boxed future。
+    fn call(
+        &self,
+        req: Request,
+        state: Arc<S>,
+        next: Next<S>,
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>;
 }
 ```
 
 ### 3.2 Next / Next
 
 ```rust
-/// The remainder of the middleware chain
-/// 中间件链的剩余部分
-pub struct Next<S> {
-    /// Next middleware or handler in chain
-    /// 链中的下一个中间件或handler
-    next: Arc<dyn Middleware<S>>,
-}
+/// The remainder of the middleware chain.
+/// 中间件链的剩余部分。
+pub struct Next<S> { /* private fields */ }
 
 impl<S> Next<S> {
-    /// Run the next middleware/handler in the chain
-    /// 运行链中的下一个中间件/handler
-    pub async fn run(self, req: Request) -> Response {
-        self.next.call(req, self).await
-    }
+    /// Call the next middleware/handler in the chain.
+    /// 调用链中的下一个中间件/handler。
+    pub async fn call(self, req: Request, state: Arc<S>) -> Result<Response>;
 }
 ```
 
 ### 3.3 Built-in Middleware / 内置中间件
 
+All built-in middleware live in `nexus-middleware`:
+所有内置中间件位于 `nexus-middleware`：
+
+| Middleware | Description / 描述 |
+|-----------|-------------------|
+| `CorsMiddleware` | CORS handling / CORS 处理 |
+| `CompressionMiddleware` | Gzip/Deflate/Brotli compression / 压缩 |
+| `LoggerMiddleware` | Request logging / 请求日志 |
+| `TimeoutMiddleware` | Request timeout / 请求超时 |
+| `JwtAuthenticationMiddleware` | JWT authentication / JWT 认证 |
+| `StaticFiles` | Static file serving / 静态文件服务 |
+
 ```rust
-/// CORS middleware configuration / CORS中间件配置
-pub struct CorsConfig {
-    /// Allowed origins / 允许的来源
-    pub allowed_origins: OriginSetting,
+use nexus_middleware::{
+    CorsMiddleware, CorsConfig,
+    CompressionMiddleware,
+    LoggerMiddleware,
+    TimeoutMiddleware,
+};
 
-    /// Allowed methods / 允许的方法
-    pub allowed_methods: Vec<Method>,
-
-    /// Allowed headers / 允许的头
-    pub allowed_headers: Vec<String>,
-
-    /// Exposed headers / 暴露的头
-    pub exposed_headers: Vec<String>,
-
-    /// Allow credentials / 允许凭证
-    pub allow_credentials: bool,
-
-    /// Max age for preflight / 预检最大年龄
-    pub max_age: Option<Duration>,
-}
-
-pub enum OriginSetting {
-    /// Allow all origins / 允许所有来源
-    Any,
-
-    /// Allow specific origins / 允许特定来源
-    Specific(Vec<String>),
-
-    /// Allow origins matching pattern / 允许匹配模式的来源
-    Pattern(String),
-}
-
-/// CORS middleware / CORS中间件
-pub struct CorsLayer {
-    config: CorsConfig,
-}
-
-impl CorsLayer {
-    /// Create a new CORS middleware / 创建新的CORS中间件
-    pub fn new(config: CorsConfig) -> Self {
-        Self { config }
-    }
-
-    /// Allow all origins / 允许所有来源
-    pub fn any() -> Self {
-        Self::new(CorsConfig {
-            allowed_origins: OriginSetting::Any,
-            allowed_methods: vec![Method::GET, Method::POST, Method::PUT, Method::DELETE],
-            allowed_headers: vec!["*".to_string()],
-            exposed_headers: vec![],
-            allow_credentials: false,
-            max_age: None,
-        })
-    }
-}
-
-/// Compression middleware / 压缩中间件
-pub struct CompressionLayer {
+// Add middleware to router / 添加中间件到路由器
+let app = Router::new()
+    .middleware(Arc::new(LoggerMiddleware))
+    .middleware(Arc::new(CorsMiddleware::new(CorsConfig::default())))
+    .middleware(Arc::new(CompressionMiddleware::new()))
+    .middleware(Arc::new(TimeoutMiddleware::new(30)))
+    .get("/api/health", health_handler);
+```
     /// Compression level / 压缩级别
     level: CompressionLevel,
 
@@ -736,36 +587,6 @@ pub enum CompressionAlgorithm {
     Brotli,
     Zstd,
 }
-
-impl CompressionLayer {
-    /// Create a new compression middleware / 创建新的压缩中间件
-    pub fn new() -> Self {
-        Self {
-            level: CompressionLevel::Default,
-            min_size: 1024,
-            algorithms: vec![CompressionAlgorithm::Gzip],
-        }
-    }
-
-    /// Set compression level / 设置压缩级别
-    pub fn level(mut self, level: CompressionLevel) -> Self {
-        self.level = level;
-        self
-    }
-
-    /// Set minimum size to compress / 设置压缩最小大小
-    pub fn min_size(mut self, size: usize) -> Self {
-        self.min_size = size;
-        self
-    }
-}
-
-impl Default for CompressionLayer {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-```
 
 ---
 
