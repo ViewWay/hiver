@@ -57,6 +57,7 @@ serde_json = { workspace = true }
 
 # Runtime / 运行时
 nexus-runtime = { path = "../nexus-runtime" }
+inventory = { workspace = true }
 
 [lints]
 workspace = true

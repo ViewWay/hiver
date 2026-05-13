@@ -10,6 +10,7 @@ pub mod bean_factory_post_processor;
 pub mod bean_post_processor;
 pub mod condition_evaluator;
 pub mod container;
+pub mod registry;
 pub mod scanner;
 pub mod condition;
 pub mod config;
@@ -71,6 +72,11 @@ pub use container::{
     BeanDefinition,
     ComponentRegistry,
 };
+pub use registry::{
+    BeanDescriptor, BeanScope, PostConstruct, PreDestroy, always_true, to_bean_name,
+    topological_sort,
+};
+
 
 pub use scanner::ComponentScanner;
 pub use condition::{

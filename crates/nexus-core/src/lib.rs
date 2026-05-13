@@ -35,6 +35,7 @@ pub mod context;
 pub mod error;
 pub mod extension;
 pub mod lifecycle;
+pub mod reactive;
 pub mod reflect;
 
 // Re-exports / 重新导出
@@ -46,4 +47,5 @@ pub use conditional::{
 pub use container::{ApplicationContext, Container};
 pub use error::{Error, ErrorKind, Result};
 pub use extension::Extensions;
+pub use reactive::{Flux, Mono};
 pub use reflect::{ContainerReflectExt, ReflectContainer};

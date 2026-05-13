@@ -4,12 +4,27 @@
 //! Auto-configures data source and transaction management.
 
 use crate::core::{AutoConfiguration, ApplicationContext};
+use std::sync::Arc;
+use nexus_tx::{NoopTransactionManager, set_global_tx_manager};
+#[cfg(feature = "sqlx")]
+use nexus_tx::SqlxTransactionManager;
 
 // Re-export data types
 // 重新导出数据类型
 pub use nexus_data_rdbc::{
-    ConnectionPool, DatabaseClient, TransactionManager, PoolConfig, DatabaseType,
+    DatabaseClient, TransactionManager, PoolConfig,
 };
+pub use nexus_data_rdbc::connection::ConnectionPool;
+
+/// Database type detected from JDBC-style URL.
+/// 从 JDBC 风格 URL 检测的数据库类型。
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DatabaseType {
+    PostgreSQL,
+    MySQL,
+    SQLite,
+    H2,
+}
 
 // ============================================================================
 // DataSourceConfig / 数据源配置
@@ -238,14 +253,40 @@ impl AutoConfiguration for TransactionAutoConfiguration {
     fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
         tracing::info!("Configuring Transaction Manager");
 
-        // Create and register TransactionManager
-        // 创建并注册 TransactionManager
         let tm = TransactionManager::new();
         ctx.register_bean(tm);
         tracing::info!("Registered TransactionManager bean");
 
+        set_global_tx_manager(Arc::new(NoopTransactionManager::default()));
+        tracing::info!("Registered global NoopTransactionManager (override in start() when datasource present)");
+
         Ok(())
     }
+}
+
+
+/// Register a real SQLx transaction manager when a datasource URL is configured.
+/// 当配置了数据源 URL 时注册真实的 SQLx 事务管理器。
+pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyhow::Result<()> {
+    let Some(cfg) = ctx.get_bean::<DataSourceConfig>() else {
+        return Ok(());
+    };
+
+    #[cfg(feature = "sqlx")]
+    {
+        let mgr = SqlxTransactionManager::connect(&cfg.url).await
+            .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?;
+        set_global_tx_manager(Arc::new(mgr));
+        tracing::info!("Registered global SqlxTransactionManager");
+    }
+
+    #[cfg(not(feature = "sqlx"))]
+    {
+        let _ = cfg;
+        tracing::warn!("sqlx feature disabled; keeping NoopTransactionManager");
+    }
+
+    Ok(())
 }
 
 // ============================================================================

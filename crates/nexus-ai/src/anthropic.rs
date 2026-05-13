@@ -366,24 +366,30 @@ impl ChatModel for AnthropicChatModel {
             return Err(Self::handle_error_response(response).await);
         }
 
-        let model_name = self.config.model.clone();
+        // Use the resolved model from the request body so per-request overrides
+        // are reflected in every ChatChunk, consistent with complete().
+        // 使用请求体中解析出的模型名，使逐请求覆盖反映在每个 ChatChunk 中，与 complete() 保持一致。
+        let model_name = body.model.clone();
 
-        // Convert the byte stream into a ChatChunk stream
-        // 将字节流转换为 ChatChunk 流
+        // Convert the byte stream into a ChatChunk stream.
+        // Use (buffer, model_name) as scan state so the closure owns model_name.
+        // 将字节流转换为 ChatChunk 流。
+        // 使用 (buffer, model_name) 作为 scan 状态，使闭包拥有 model_name。
         let stream = response
             .bytes_stream()
-            .scan(String::new(), |buffer, chunk_result| {
+            .scan((String::new(), model_name), |(buffer, model_name), chunk_result| {
                 let chunk = match chunk_result {
                     Ok(c) => c,
                     Err(e) => {
                         tracing::error!("Stream read error: {e}");
-                        return std::future::ready(Some(None));
+                        let empty: Vec<ChatChunk> = Vec::new();
+                        return std::future::ready(Some(empty));
                     }
                 };
 
                 buffer.push_str(&String::from_utf8_lossy(&chunk));
 
-                let mut results: Vec<Option<ChatChunk>> = Vec::new();
+                let mut results: Vec<ChatChunk> = Vec::new();
 
                 while let Some(pos) = buffer.find('\n') {
                     let line = buffer[..pos].trim().to_string();
@@ -400,18 +406,18 @@ impl ChatModel for AnthropicChatModel {
                                     if let Some(delta) = event.delta {
                                         let text = delta.text.unwrap_or_default();
                                         if !text.is_empty() {
-                                            results.push(Some(ChatChunk {
+                                            results.push(ChatChunk {
                                                 content: text,
                                                 model: model_name.clone(),
                                                 finish_reason: None,
-                                            }));
+                                            });
                                         }
                                         if let Some(reason) = delta.stop_reason {
-                                            results.push(Some(ChatChunk {
+                                            results.push(ChatChunk {
                                                 content: String::new(),
                                                 model: model_name.clone(),
                                                 finish_reason: Some(reason),
-                                            }));
+                                            });
                                         }
                                     }
                                 }
@@ -426,7 +432,6 @@ impl ChatModel for AnthropicChatModel {
                 std::future::ready(Some(results))
             })
             .flat_map(futures::stream::iter)
-            .filter_map(|chunk| std::future::ready(chunk))
             .map(Ok);
 
         Ok(Box::pin(stream))

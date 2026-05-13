@@ -78,12 +78,14 @@ pub fn impl_no_args(input: DeriveInput) -> TokenStream {
         }
     };
 
-    // Get field names
-    // 获取字段名
+    // Get field names and types
+    // 获取字段名和类型
     let field_names: Vec<_> = fields
         .iter()
         .filter_map(|f| f.ident.as_ref())
         .collect();
+
+    let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
     // Generate constructor with Default::default() for each field
     // 为每个字段生成使用 Default::default() 的构造函数
@@ -106,7 +108,7 @@ pub fn impl_no_args(input: DeriveInput) -> TokenStream {
     let default_expanded = quote! {
         impl #impl_generics Default for #struct_name #ty_generics #where_clause
         where
-            #(#field_names: Default,)*
+            #(#field_types: Default,)*
         {
             #[inline]
             fn default() -> Self {

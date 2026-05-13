@@ -368,22 +368,25 @@ impl ChatModel for OpenAiChatModel {
 
         let model_name = self.config.model.clone();
 
-        // Convert the byte stream into a ChatChunk stream
-        // 将字节流转换为 ChatChunk 流
+        // Convert the byte stream into a ChatChunk stream.
+        // Use (buffer, model_name) as scan state so the closure owns model_name.
+        // 将字节流转换为 ChatChunk 流。
+        // 使用 (buffer, model_name) 作为 scan 状态，使闭包拥有 model_name。
         let stream = response
             .bytes_stream()
-            .scan(String::new(), |buffer, chunk_result| {
+            .scan((String::new(), model_name), |(buffer, model_name), chunk_result| {
                 let chunk = match chunk_result {
                     Ok(c) => c,
                     Err(e) => {
                         tracing::error!("Stream read error: {e}");
-                        return std::future::ready(Some(None));
+                        let empty: Vec<ChatChunk> = Vec::new();
+                        return std::future::ready(Some(empty));
                     }
                 };
 
                 buffer.push_str(&String::from_utf8_lossy(&chunk));
 
-                let mut results: Vec<Option<ChatChunk>> = Vec::new();
+                let mut results: Vec<ChatChunk> = Vec::new();
 
                 while let Some(pos) = buffer.find('\n') {
                     let line = buffer[..pos].trim().to_string();
@@ -399,14 +402,14 @@ impl ChatModel for OpenAiChatModel {
                                 if let Some(choice) = chunk.choices.first() {
                                     let content = choice.delta.content.clone().unwrap_or_default();
                                     if !content.is_empty() || choice.finish_reason.is_some() {
-                                        results.push(Some(ChatChunk {
+                                        results.push(ChatChunk {
                                             content,
                                             model: chunk
                                                 .model
                                                 .clone()
                                                 .unwrap_or_else(|| model_name.clone()),
                                             finish_reason: choice.finish_reason.clone(),
-                                        }));
+                                        });
                                     }
                                 }
                             }
@@ -420,7 +423,6 @@ impl ChatModel for OpenAiChatModel {
                 std::future::ready(Some(results))
             })
             .flat_map(futures::stream::iter)
-            .filter_map(|chunk| std::future::ready(chunk))
             .map(Ok);
 
         Ok(Box::pin(stream))

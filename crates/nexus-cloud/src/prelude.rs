@@ -18,8 +18,8 @@ pub use crate::discovery::{
     ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
 };
 pub use crate::gateway::{
-    Filter as GatewayFilterDef, Gateway, GatewayConfig, GatewayFilter, GatewayRequest,
-    GatewayResponse, GatewayRoute, GatewayRouter, InMemoryRouteLocator, Predicate, Route,
-    RouteLocator,
+    Filter as GatewayFilterDef, Gateway, GatewayCircuitBreaker, GatewayCbState, GatewayConfig,
+    GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
+    InMemoryRouteLocator, Predicate, Route, RouteLocator, TokenBucketRateLimiter,
 };
 pub use crate::load_balancer::{LoadBalancer, RoundRobinLoadBalancer};

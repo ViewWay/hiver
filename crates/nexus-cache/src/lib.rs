@@ -53,6 +53,7 @@
 #![allow(dead_code)]
 
 mod cache;
+mod global_cache;
 mod cache_config;
 mod cache_evict;
 mod cache_manager;
@@ -73,6 +74,7 @@ pub use caching::{Caching, CachingBuilder, CachingExec};
 pub use condition_evaluator::evaluate_cache_condition;
 pub use key_generator::{DefaultKeyGenerator, HashKeyGenerator, KeyGenerator};
 pub use resolver::{CacheResolver, SimpleCacheResolver};
+pub use global_cache::{cache_evict_key, cache_get, cache_put, global_cache_manager};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

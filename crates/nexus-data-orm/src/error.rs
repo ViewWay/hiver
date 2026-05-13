@@ -48,6 +48,10 @@ pub enum OrmError {
     /// 数据库错误
     Database(Box<dyn std::error::Error + Send + Sync>),
 
+    /// Optimistic lock conflict — another caller already updated this version
+    /// 乐观锁冲突 — 另一个调用者已经更新了此版本
+    OptimisticLockConflict(String),
+
     /// Unknown error
     /// 未知错误
     Unknown(String),
@@ -90,6 +94,18 @@ impl OrmError {
         Self::Duplicate(msg.into())
     }
 
+    /// Create an optimistic lock conflict error
+    /// 创建乐观锁冲突错误
+    pub fn optimistic_lock_conflict(msg: impl Into<String>) -> Self {
+        Self::OptimisticLockConflict(msg.into())
+    }
+
+    /// Check if this is an optimistic lock conflict
+    /// 检查是否为乐观锁冲突
+    pub fn is_optimistic_lock_conflict(&self) -> bool {
+        matches!(self, Self::OptimisticLockConflict(_))
+    }
+
     /// Create an unknown error
     /// 创建未知错误
     pub fn unknown(msg: impl Into<String>) -> Self {
@@ -126,6 +142,7 @@ impl OrmError {
             Self::Duplicate(_) => "duplicate",
             Self::DataCommons(_) => "data_commons",
             Self::Database(_) => "database",
+            Self::OptimisticLockConflict(_) => "optimistic_lock_conflict",
             Self::Unknown(_) => "unknown",
         }
     }
@@ -142,6 +159,7 @@ impl fmt::Display for OrmError {
             Self::Duplicate(msg) => write!(f, "Duplicate: {}", msg),
             Self::DataCommons(err) => write!(f, "Data commons error: {}", err),
             Self::Database(err) => write!(f, "Database error: {}", err),
+            Self::OptimisticLockConflict(msg) => write!(f, "Optimistic lock conflict: {}", msg),
             Self::Unknown(msg) => write!(f, "Unknown error: {}", msg),
         }
     }

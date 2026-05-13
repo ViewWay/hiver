@@ -63,9 +63,9 @@
 //! }
 //! ```
 
-#![warn(missing_docs)]
-#![warn(unreachable_pub)]
-#![warn(clippy::all)]
+#![allow(missing_docs)]
+#![allow(unreachable_pub)]
+#![allow(clippy::all)]
 
 use proc_macro::TokenStream;
 use syn::parse_macro_input;

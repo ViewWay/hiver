@@ -55,8 +55,12 @@ metrics = { workspace = true }
 
 # Async runtime / 异步运行时 (for tokio::sync types)
 tokio = { workspace = true, features = ["sync"] }
+dashmap = { workspace = true }
+once_cell = { workspace = true }
 
 [dev-dependencies]
 # Testing / 测试
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+dashmap = { workspace = true }
+once_cell = { workspace = true }
 criterion = { workspace = true }

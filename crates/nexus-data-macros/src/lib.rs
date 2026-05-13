@@ -104,6 +104,8 @@ struct FieldAttrs {
     max_length: Option<usize>,
     column: Option<String>,
     ignore: bool,
+    /// Marks this field as the optimistic-lock version field (@Version equivalent)
+    version: bool,
 }
 
 /// Struct-level model attributes
@@ -137,6 +139,8 @@ fn parse_field_attrs(attrs: &[syn::Attribute]) -> FieldAttrs {
                     result.nullable = true;
                 } else if nested == "ignore" {
                     result.ignore = true;
+                } else if nested == "version" {
+                    result.version = true;
                 } else if nested.contains('=') {
                     let parts: Vec<&str> = nested.splitn(2, '=').collect();
                     if parts.len() == 2 {
@@ -213,6 +217,7 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     let mut column_definitions = Vec::new();
     let mut primary_keys = Vec::new();
     let mut field_names = Vec::new();
+    let mut version_field: Option<Ident> = None;
 
     if let Data::Struct(DataStruct { fields, .. }) = &input.data
         && let Fields::Named(named_fields) = fields {
@@ -230,6 +235,10 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
 
                 if field_attrs.primary_key {
                     primary_keys.push(field_name_str.clone());
+                }
+
+                if field_attrs.version {
+                    version_field = Some(field_name.clone());
                 }
 
                 // Get the type
@@ -282,6 +291,23 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
         Ident::new("id", Span::call_site())
     };
 
+    // Generate OptimisticLock impl if a version field was detected
+    let optimistic_lock_impl = if let Some(ver_field) = &version_field {
+        let ver_field_str = ver_field.to_string();
+        quote! {
+            impl #vis nexus_data_orm::OptimisticLock for #struct_name {
+                fn version(&self) -> i64 {
+                    self.#ver_field as i64
+                }
+                fn version_column() -> &'static str {
+                    #ver_field_str
+                }
+            }
+        }
+    } else {
+        quote! {}
+    };
+
     // Generate the Model implementation
     let expanded = quote! {
         // Implement Model trait
@@ -296,14 +322,14 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
             }
 
             fn set_primary_key(&mut self, value: String) -> nexus_data_orm::Result<()> {
-                // This is a simplified implementation
-                // In real use, you'd need to parse based on the field type
                 self.#pk_field = value.parse().map_err(|e| {
                     nexus_data_orm::Error::validation(format!("Invalid primary key: {}", e))
                 })?;
                 Ok(())
             }
         }
+
+        #optimistic_lock_impl
 
         // Add display implementation
         impl std::fmt::Display for #struct_name {

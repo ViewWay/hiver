@@ -51,7 +51,10 @@ web = ["nexus-http", "nexus-router", "nexus-middleware"]
 security = ["nexus-security", "web"]
 
 # 数据访问
-data = ["nexus-data-rdbc", "nexus-tx"]
+data = ["nexus-data-rdbc", "nexus-tx", "nexus-tx/sqlx", "dep:sqlx"]
+
+# SQLx integration (optional)
+sqlx = ["dep:sqlx"]
 
 # 缓存
 cache = ["nexus-cache"]
@@ -84,6 +87,7 @@ nexus-middleware = { path = "../nexus-middleware", optional = true }
 nexus-security = { path = "../nexus-security", optional = true }
 nexus-data-rdbc = { path = "../nexus-data-rdbc", optional = true }
 nexus-tx = { path = "../nexus-tx", optional = true }
+sqlx = { workspace = true, optional = true, features = ["runtime-tokio", "postgres"] }
 nexus-cache = { path = "../nexus-cache", optional = true }
 nexus-schedule = { path = "../nexus-schedule", optional = true }
 nexus-actuator = { path = "../nexus-actuator", optional = true }
@@ -96,6 +100,7 @@ anyhow = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
 once_cell = { workspace = true }
+inventory = { workspace = true }
 num_cpus = "1.16"
 
 # 配置解析

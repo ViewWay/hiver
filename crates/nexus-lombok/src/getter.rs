@@ -48,8 +48,11 @@ pub fn impl_getter(input: DeriveInput) -> TokenStream {
 
         Some(quote! {
             #[inline]
-            pub fn #field_name(&self) -> &#field_type {
-                &self.#field_name
+            pub fn #field_name(&self) -> #field_type
+            where
+                #field_type: ::std::clone::Clone,
+            {
+                self.#field_name.clone()
             }
         })
     });

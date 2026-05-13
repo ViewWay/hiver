@@ -49,6 +49,9 @@ mod tests;
 mod error;
 mod isolation;
 mod manager;
+pub mod synchronization;
+#[cfg(feature = "sqlx")]
+mod sqlx_manager;
 mod propagation;
 mod request_ext;
 mod status;
@@ -58,7 +61,7 @@ mod transactional;
 
 pub use error::{TransactionError, TransactionResult};
 pub use isolation::IsolationLevel;
-pub use manager::{TransactionManager, TransactionManagerBuilder};
+pub use manager::{NoopTransactionManager, TransactionDefinition, TransactionManager, TransactionManagerBuilder, global_tx_manager, set_global_tx_manager};
 pub use propagation::Propagation;
 pub use request_ext::{
     TransactionContextExt, get_transaction_from_request, has_active_transaction_in_request,
@@ -87,3 +90,6 @@ pub const DEFAULT_TX_TIMEOUT_SECS: u64 = 30;
 /// Default transaction name
 /// 默认事务名称
 pub const DEFAULT_TX_NAME: &str = "default";
+
+#[cfg(feature = "sqlx")]
+pub use sqlx_manager::SqlxTransactionManager;

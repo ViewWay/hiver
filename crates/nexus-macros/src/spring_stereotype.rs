@@ -68,6 +68,11 @@ pub fn nexus_main(_attr: TokenStream, item: TokenStream) -> TokenStream {
                     }
                 }
 
+                let rt = ::tokio::runtime::Runtime::new()?;
+                rt.block_on(async {
+                    ctx.start().await
+                })?;
+
                 let elapsed = start_time.elapsed().as_millis();
                 let class_name = "nexus.Application";
                 let timestamp = format_timestamp();
@@ -144,12 +149,16 @@ pub fn controller(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
 pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
-
     let name = &input.ident;
     let fields = &input.fields;
 
     let field_names: Vec<_> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
+
+    let bean_reg = crate::bean_register::generate_bean_registration(
+        &input,
+        quote! { ::nexus_starter::core::registry::BeanScope::Singleton },
+    );
 
     let expanded = quote! {
         #input
@@ -162,23 +171,34 @@ pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl Into<std::sync::Arc<Self>> for #name {
-            fn into(self) -> std::sync::Arc<Self> {
-                std::sync::Arc::new(self)
+        impl ::std::convert::Into<::std::sync::Arc<Self>> for #name {
+            fn into(self) -> ::std::sync::Arc<Self> {
+                ::std::sync::Arc::new(self)
             }
         }
+
+        #bean_reg
     };
 
     TokenStream::from(expanded)
 }
 
-pub fn repository(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn repository(attr: TokenStream, item: TokenStream) -> TokenStream {
+    if let Ok(input) = syn::parse::<ItemStruct>(item.clone()) {
+        let name = &input.ident;
+        let bean_reg = crate::bean_register::generate_bean_registration(
+            &input,
+            quote! { ::nexus_starter::core::registry::BeanScope::Singleton },
+        );
+        let expanded = quote! {
+            #input
+            #bean_reg
+        };
+        return TokenStream::from(expanded);
+    }
+
     let input = parse_macro_input!(item as ItemTrait);
-
-    let expanded = quote! {
-        #input
-    };
-
+    let expanded = quote! { #input };
     TokenStream::from(expanded)
 }
 
@@ -240,15 +260,23 @@ impl Parse for ConfigArgs {
 
 pub fn component(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
+    let name = &input.ident;
+
+    let bean_reg = crate::bean_register::generate_bean_registration(
+        &input,
+        quote! { ::nexus_starter::core::registry::BeanScope::Singleton },
+    );
 
     let expanded = quote! {
         #input
 
-        impl #input {
+        impl #name {
             pub fn init() -> Self {
-                Self::default()
+                ::std::default::Default::default()
             }
         }
+
+        #bean_reg
     };
 
     TokenStream::from(expanded)

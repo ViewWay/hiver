@@ -78,8 +78,11 @@ pub fn impl_data(input: DeriveInput) -> TokenStream {
     let getters: Vec<TokenStream> = field_names.iter().zip(field_types.iter()).map(|(name, ty)| {
         quote! {
             #[inline]
-            pub fn #name(&self) -> #ty {
-                self.#name
+            pub fn #name(&self) -> #ty
+            where
+                #ty: ::std::clone::Clone,
+            {
+                self.#name.clone()
             }
         }
     }).collect();
@@ -119,10 +122,28 @@ pub fn impl_data(input: DeriveInput) -> TokenStream {
         })
         .collect();
 
+    // Generate Default implementation for Data
+    // 为 Data 生成 Default 实现
+    let default_impl = quote! {
+        impl #impl_generics Default for #struct_name #ty_generics #where_clause
+        where
+            #(#field_types: Default,)*
+        {
+            #[inline]
+            fn default() -> Self {
+                Self {
+                    #(#field_names: Default::default()),*
+                }
+            }
+        }
+    };
+
     // Combine all expansions
     // 合并所有展开
     let expanded: TokenStream = quote! {
         #constructor
+
+        #default_impl
 
         impl #impl_generics #struct_name #ty_generics #where_clause {
             #(#getters)*

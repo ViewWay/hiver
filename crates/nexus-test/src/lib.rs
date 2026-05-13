@@ -43,6 +43,7 @@ mod mockito_ext;
 mod test_application;
 mod test_config;
 mod web_test_client;
+pub mod containers;
 
 pub use test_client::{TestClient, TestRequest, TestResponse};
 pub use test_context::{TestContext, TestApplicationContext, TestContextRegistry, global_test_registry};
@@ -51,6 +52,7 @@ pub use mockito_ext::{MockBeanWrapper, MockInteraction, MockitoHelper};
 pub use test_application::{TestApplication, TestApplicationBuilder, TestApplicationError, TestAppResult};
 pub use test_config::{TestConfig, TestConfigHolder, TestMode, ServerConfig, DatabaseConfig, global_test_config};
 pub use web_test_client::{WebTestClient, RequestSpec, ResponseSpec};
+pub use containers::{ContainerSet, KafkaContainer, PostgresContainer, RedisContainer};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

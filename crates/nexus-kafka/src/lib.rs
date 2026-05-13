@@ -43,11 +43,15 @@ mod consumer;
 mod topic;
 mod message;
 mod serialization;
+pub mod kafka_client;
 
 pub use config::{ProducerConfig, ConsumerConfig, ConsumerOffset};
 pub use producer::{Producer, Record, RecordHeader, ProduceOptions};
 pub use consumer::{Consumer, ConsumerGroup, ConsumerListener, MessageHandler, FnHandler};
 pub use topic::{TopicPartition, Offset, TopicPartitionBuilder};
+pub use kafka_client::{KafkaProducer, KafkaConsumer};
+#[cfg(feature = "rdkafka")]
+pub use kafka_client::KafkaError;
 pub use message::{KafkaMessage, MessageKey, MessageHeaders, MessageValue, MessageHeaderValue};
 pub use serialization::{
     Serializer, Deserializer, JsonSerializer, JsonDeserializer, BytesSerializer,

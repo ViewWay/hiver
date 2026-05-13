@@ -92,14 +92,8 @@ pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> Token
 
             // Get transaction manager via OnceLock lazy initialization
             // 通过 OnceLock 懒加载获取事务管理器
-            static TX_MANAGER: ::std::sync::OnceLock<::std::sync::Arc<dyn TransactionManager>> = ::std::sync::OnceLock::new();
-            let tx_mgr = TX_MANAGER.get_or_init(|| {
-                // In a full implementation, this would resolve from the DI container
-                // For now, we use a placeholder that panics at runtime if actually called
-                // 在完整实现中，这将从DI容器解析。
-                // 目前使用占位符，如果实际调用会在运行时panic。
-                ::std::sync::Arc::new(nexus_tx::NoopTransactionManager)
-            });
+            let tx_mgr = ::nexus_tx::global_tx_manager()
+                .unwrap_or_else(|| ::std::sync::Arc::new(::nexus_tx::NoopTransactionManager));
 
             // Create transaction definition
             // 创建事务定义
@@ -110,35 +104,41 @@ pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> Token
             #timeout_config
             #readonly_config
 
-            // Begin transaction
-            // 开始事务
-            let status = match tx_mgr.begin(&definition).await {
-                Ok(s) => s,
-                Err(e) => return Err(e.into()),
-            };
+            // Wrap the entire begin→execute→commit/rollback cycle in a task-local scope so
+            // that bind_transaction and take_transaction share the same HashMap.
+            // 将整个 begin→execute→commit/rollback 周期包裹在任务本地 scope 中，
+            // 使 bind_transaction 和 take_transaction 共享同一个 HashMap。
+            ::nexus_tx::synchronization::with_transaction_scope(async move {
+                // Begin transaction
+                // 开始事务
+                let status = match tx_mgr.begin(&definition).await {
+                    Ok(s) => s,
+                    Err(e) => return Err(e.into()),
+                };
 
-            // Execute the original function
-            // 执行原函数
-            let result = async move {
-                #fn_block
-            }.await;
+                // Execute the original function
+                // 执行原函数
+                let result = async move {
+                    #fn_block
+                }.await;
 
-            // Commit or rollback based on result
-            // 根据结果提交或回滚
-            match &result {
-                Ok(_) => {
-                    if let Err(e) = tx_mgr.commit(status).await {
-                        return Err(e.into());
+                // Commit or rollback based on result
+                // 根据结果提交或回滚
+                match &result {
+                    Ok(_) => {
+                        if let Err(e) = tx_mgr.commit(status).await {
+                            return Err(e.into());
+                        }
+                    }
+                    Err(_err) => {
+                        // Simplified: always rollback on error
+                        // 简化版：错误时总是回滚
+                        let _ = tx_mgr.rollback(status).await;
                     }
                 }
-                Err(_err) => {
-                    // Simplified: always rollback on error
-                    // 简化版：错误时总是回滚
-                    let _ = tx_mgr.rollback(status).await;
-                }
-            }
 
-            result
+                result
+            }).await
         }
     };
 

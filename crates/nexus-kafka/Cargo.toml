@@ -21,9 +21,9 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-default = []
+default = ["rdkafka"]
 
-# RdKafka client
+# RdKafka client (enabled by default)
 rdkafka = ["dep:rdkafka"]
 
 # SSL support

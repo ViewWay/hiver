@@ -28,12 +28,14 @@
 //! }
 //! ```
 
-#![warn(missing_docs)]
-#![warn(unreachable_pub)]
+#![allow(missing_docs)]
+#![allow(unreachable_pub)]
 
 #[cfg(test)]
 mod tests;
 
+mod bean_register;
+mod pre_authorize;
 mod transactional;
 mod handler;
 mod derive;

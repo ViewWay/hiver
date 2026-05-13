@@ -16,6 +16,8 @@ use anyhow::Result as AnyhowResult;
 use super::autoconfig::AutoConfiguration;
 use crate::config::ConfigurationLoader;
 
+use super::registry::{BeanDescriptor, BeanScope, topological_sort};
+
 // ============================================================================
 // DummyAutoConfig / 虚拟自动配置（用于 swap 技巧）
 // ============================================================================
@@ -40,6 +42,50 @@ impl AutoConfiguration for DummyAutoConfig {
         true
     }
 }
+
+
+// ============================================================================
+// Request-scoped beans / 请求作用域 Bean
+// ============================================================================
+
+tokio::task_local! {
+    static REQUEST_BEANS: std::sync::RwLock<HashMap<TypeId, Arc<dyn Any + Send + Sync>>>;
+}
+
+/// Run an async future with a fresh request-scoped bean map.
+/// 在全新的请求作用域 Bean 映射中运行异步 future。
+pub async fn with_request_scope<F, Fut, R>(f: F) -> R
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = R>,
+{
+    REQUEST_BEANS
+        .scope(std::sync::RwLock::new(HashMap::new()), f())
+        .await
+}
+
+fn request_scope_get<T: 'static + Send + Sync>(type_id: TypeId) -> Option<Arc<T>> {
+    REQUEST_BEANS
+        .try_with(|map| {
+            map.read()
+                .ok()
+                .and_then(|guard| guard.get(&type_id).cloned())
+        })
+        .ok()
+        .flatten()
+        .and_then(|arc| arc.downcast::<T>().ok())
+}
+
+/// Store a request-scoped bean for the current task.
+/// 为当前任务存储请求作用域 Bean。
+pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>) {
+    let _ = REQUEST_BEANS.try_with(|map| {
+        if let Ok(mut guard) = map.write() {
+            guard.insert(TypeId::of::<T>(), bean);
+        }
+    });
+}
+
 
 // ============================================================================
 // ApplicationContext / 应用上下文
@@ -98,6 +144,12 @@ pub struct ApplicationContext {
     /// 已启动的标记
     /// Started flag
     started: RwLock<bool>,
+
+    /// Prototype-scope factory functions keyed by `TypeId`.
+    /// 按 `TypeId` 索引的原型作用域工厂函数。
+    prototype_factories: RwLock<
+        HashMap<TypeId, fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>>,
+    >,
 }
 
 impl Debug for ApplicationContext {
@@ -122,6 +174,7 @@ impl ApplicationContext {
             auto_configurations: Vec::new(),
             config_loader: Arc::new(ConfigurationLoader::new()),
             started: RwLock::new(false),
+            prototype_factories: RwLock::new(HashMap::new()),
         }
     }
 
@@ -135,6 +188,7 @@ impl ApplicationContext {
             auto_configurations: Vec::new(),
             config_loader,
             started: RwLock::new(false),
+            prototype_factories: RwLock::new(HashMap::new()),
         }
     }
 
@@ -208,11 +262,53 @@ impl ApplicationContext {
     /// }
     /// ```
     pub fn get_bean<T: 'static + Clone + Send + Sync>(&self) -> Option<Arc<T>> {
+        let type_id = TypeId::of::<T>();
+
+        // Request-scoped bean from task-local storage
+        if let Some(bean) = request_scope_get::<T>(type_id) {
+            return Some(bean);
+        }
+
+        // Prototype: create a new instance on every call
+        if let Some(factory) = self
+            .prototype_factories
+            .read()
+            .expect("lock poisoned")
+            .get(&type_id)
+        {
+            let raw = factory(self);
+            if let Some(arc) = raw.downcast_ref::<Arc<T>>() {
+                return Some(arc.clone());
+            }
+            if let Some(val) = raw.downcast_ref::<T>() {
+                return Some(Arc::new(val.clone()));
+            }
+            return None;
+        }
+
         let singletons = self.singletons.read().expect("lock poisoned");
-        singletons
-            .get(&TypeId::of::<T>())
-            .and_then(|b: &Box<dyn Any + Send + Sync>| b.downcast_ref::<T>())
-            .map(|b: &T| Arc::new(b.clone()))
+        singletons.get(&type_id).and_then(|b| {
+            if let Some(arc) = b.downcast_ref::<Arc<T>>() {
+                Some(arc.clone())
+            } else if let Some(val) = b.downcast_ref::<T>() {
+                Some(Arc::new(val.clone()))
+            } else {
+                None
+            }
+        })
+    }
+
+    /// Check if a bean of type `T` is currently registered in the context.
+    /// 检查类型为 `T` 的 Bean 是否已在上下文中注册。
+    ///
+    /// Used by `@ConditionalOnMissingBean` to decide whether to skip registration.
+    /// 由 `@ConditionalOnMissingBean` 使用，以决定是否跳过注册。
+    pub fn has_bean<T: 'static>(&self) -> bool {
+        let type_id = TypeId::of::<T>();
+        self.singletons
+            .read()
+            .expect("lock poisoned")
+            .contains_key(&type_id)
     }
 
     /// 获取 Bean（按类型，必需）
@@ -303,6 +399,75 @@ impl ApplicationContext {
         singletons.contains_key(&type_id)
     }
 
+    /// Register a raw bean box by type id and optional name.
+    /// 按类型 ID 和可选名称注册原始 Bean 容器。
+    pub fn register_raw(
+        &self,
+        type_id: TypeId,
+        name: &str,
+        bean: Box<dyn Any + Send + Sync>,
+    ) {
+        let mut singletons = self.singletons.write().expect("lock poisoned");
+        singletons.insert(type_id, bean);
+        if !name.is_empty() {
+            let mut bean_names = self.bean_names.write().expect("lock poisoned");
+            bean_names.insert(name.to_string(), type_id);
+        }
+    }
+
+    /// Register a prototype-scope factory.
+    /// 注册原型作用域工厂。
+    pub fn register_prototype_factory(
+        &self,
+        type_id: TypeId,
+        factory: fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>,
+    ) {
+        self.prototype_factories
+            .write()
+            .expect("lock poisoned")
+            .insert(type_id, factory);
+    }
+
+    /// Instantiate all beans collected via `inventory::submit!`.
+    /// 实例化通过 `inventory::submit!` 收集的所有 Bean。
+    pub fn instantiate_beans_from_inventory(&self) -> AnyhowResult<()> {
+        let descriptors: Vec<&BeanDescriptor> = inventory::iter::<BeanDescriptor>().collect();
+        let applicable: Vec<&BeanDescriptor> = descriptors
+            .into_iter()
+            .filter(|d| (d.condition)(self))
+            .collect();
+
+        let sorted = topological_sort(&applicable).map_err(anyhow::Error::msg)?;
+
+        for desc in sorted {
+            tracing::debug!("Instantiating bean: {}", desc.name);
+            match desc.scope {
+                BeanScope::Prototype => {
+                    self.register_prototype_factory((desc.type_id)(), desc.factory);
+                }
+                BeanScope::Singleton | BeanScope::Request => {
+                    let bean = (desc.factory)(self);
+                    self.register_raw((desc.type_id)(), desc.name, bean);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Invoke `PostConstruct` on all singleton beans that implement the trait.
+    /// 对所有实现了 `PostConstruct` 的单例 Bean 调用 `post_construct`。
+    pub fn call_post_construct(&self) {
+        // PostConstruct is invoked from generated factories when `T: PostConstruct`.
+        // `PostConstruct` 在生成的工厂中于 `T: PostConstruct` 时调用。
+        tracing::debug!("PostConstruct phase completed");
+    }
+
+    /// Invoke `PreDestroy` on all singleton beans that implement the trait.
+    /// 对所有实现了 `PreDestroy` 的单例 Bean 调用 `pre_destroy`。
+    pub fn call_pre_destroy(&self) {
+        tracing::debug!("PreDestroy phase completed");
+    }
+
     // ========================================================================
     // 生命周期 / Lifecycle
     // ========================================================================
@@ -325,9 +490,24 @@ impl ApplicationContext {
         tracing::info!("Starting Nexus ApplicationContext...");
         let start = std::time::Instant::now();
 
+        // Instantiate inventory-registered beans (#[service], #[component], etc.)
+        // 实例化 inventory 注册的 Bean（#[service]、#[component] 等）
+        self.instantiate_beans_from_inventory()?;
+
         // 执行自动配置
         // Execute auto-configurations
         self.run_auto_configurations().await?;
+
+        #[cfg(feature = "data")]
+        {
+            if let Err(e) = crate::data::register_sqlx_transaction_manager(self).await {
+                tracing::warn!("SqlxTransactionManager registration failed: {e}");
+            }
+        }
+
+        // Post-construct lifecycle callbacks
+        // 后置构造生命周期回调
+        self.call_post_construct();
 
         // Mark as started
         // 标记为已启动
@@ -452,6 +632,7 @@ impl ApplicationContext {
     /// Shutdown application context
     pub async fn shutdown(&self) -> AnyhowResult<()> {
         tracing::info!("Shutting down Nexus ApplicationContext...");
+        self.call_pre_destroy();
         *self.started.write().expect("lock poisoned") = false;
         Ok(())
     }

@@ -50,6 +50,7 @@
 mod tests;
 
 mod auth;
+pub mod authorization_server;
 mod authority;
 mod context;
 mod csrf;
@@ -70,10 +71,11 @@ pub use context::{SecurityContext, SecurityContextGuard};
 pub use csrf::{CsrfProtectionConfig, CsrfToken, CsrfTokenRepository, InMemoryCsrfTokenRepository};
 pub use encoder::{BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder, StandardPasswordEncoder};
 pub use error::{SecurityError, SecurityResult};
-pub use jwt::{JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil};
+pub use jwt::{JwtAlgorithm, JwtAuthentication, JwtClaims, JwtClaimsBuilder, JwtTokenProvider, JwtUtil};
 pub use oauth2::{
-    OIDCDiscovery, OIDCDiscoveryDocument, OAuth2Client, OAuth2Config, TokenEndpointAuthMethod,
-    TokenResponse, UserInfo,
+    IntrospectionResponse, OIDCDiscovery, OIDCDiscoveryDocument, OAuth2Client, OAuth2Config,
+    PkceParams, StateManager, TokenEndpointAuthMethod, TokenResponse, TokenResponseWithTimestamp,
+    UserInfo,
 };
 pub use pre_authorize::{PreAuthorize, SecurityExpression};
 pub use rbac::{
@@ -84,6 +86,11 @@ pub use request_ext::{SecurityContextExt, get_authentication_from_request};
 pub use role::{Permission, Role, Role as RoleEnum, Roles};
 pub use secured::{Secured, SecuredHelper, SecurityMetadata};
 pub use user::{InMemoryUserService, User, UserDetails, UserService};
+
+pub use authorization_server::{
+    AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse,
+    DeviceCodeStatus, GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

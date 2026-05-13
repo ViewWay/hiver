@@ -88,12 +88,12 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
             #[doc = "Builds the struct.\n"]
             #[doc = "构建结构体。"]
             pub fn build(self) -> Result<#struct_name #ty_generics, String> {
-                #struct_name {
+                Ok(#struct_name {
                     #(
                         #field_names: self.#field_names
-                            .ok_or_else(|| concat!(stringify!(#field_names), " is required"))?,
+                            .ok_or_else(|| concat!(stringify!(#field_names), " is required").to_string())?,
                     )*
-                }
+                })
             }
         }
     };

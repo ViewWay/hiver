@@ -332,9 +332,12 @@ struct CacheEntry {
 fn flatten_json_value(value: &serde_json::Value) -> Result<HashMap<String, String>, ConfigClientError> {
     let mut map = HashMap::new();
 
-    // If the value is the Spring Cloud Config envelope, drill into propertySources
+    // If the value is the Spring Cloud Config envelope, drill into propertySources.
+    // Process in reverse order so the first source wins on duplicate keys.
+    // 如果值是Spring Cloud Config信封格式，深入propertySources。
+    // 反向处理以使第一个源的重复键优先。
     if let Some(sources) = value.get("propertySources").and_then(|v| v.as_array()) {
-        for source in sources {
+        for source in sources.iter().rev() {
             if let Some(obj) = source.get("source").and_then(|v| v.as_object()) {
                 flatten_object(obj, String::new(), &mut map);
             }

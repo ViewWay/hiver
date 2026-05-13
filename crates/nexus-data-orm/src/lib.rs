@@ -78,7 +78,7 @@ pub use nexus_data_macros::Model;
 
 pub use error::{OrmError, Error, Result, OrmResult};
 pub use model::{Model, ModelMeta, Column, ColumnType, SqlDialect};
-pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count};
+pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count, OptimisticLock};
 pub use query::{QueryBuilder, WhereClause, OrderBy, Limit, ToSql};
 pub use repository::{OrmRepository, DefaultOrmRepository};
 pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, Relation, RelationType, OnDelete};

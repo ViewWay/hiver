@@ -73,8 +73,11 @@ pub fn impl_value(input: DeriveInput) -> TokenStream {
     let getters: Vec<TokenStream> = field_names.iter().zip(field_types.iter()).map(|(name, ty)| {
         quote! {
             #[inline]
-            pub fn #name(&self) -> &#ty {
-                &self.#name
+            pub fn #name(&self) -> #ty
+            where
+                #ty: ::std::clone::Clone,
+            {
+                self.#name.clone()
             }
         }
     }).collect();

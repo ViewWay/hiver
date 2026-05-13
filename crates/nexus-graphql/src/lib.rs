@@ -6,9 +6,9 @@
 
 pub mod context;
 pub mod dataloader;
+pub mod engine;
 pub mod error;
 pub mod resolver;
-
 
 #[cfg(test)]
 mod tests;

@@ -47,7 +47,7 @@ pub mod template;
 pub use cache::{RedisCache, RedisCacheManager};
 pub use client::RedisClient;
 pub use error::{RedisError, RedisResult};
-pub use lock::{RedisLock, RedisLockGuard};
+pub use lock::{ReentrantRedisLock, RedisLock, RedisLockGuard, WatchdogGuard};
 pub use operations::{GeoUnit, HashOps, LuaScript};
 pub use pipeline::RedisPipeline;
 pub use template::RedisTemplate;

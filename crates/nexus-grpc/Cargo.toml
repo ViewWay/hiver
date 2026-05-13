@@ -1,0 +1,51 @@
+[package]
+name = "nexus-grpc"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+gRPC server/client support for Nexus framework (tonic + prost).
+Nexus框架的gRPC服务端/客户端支持（基于 tonic + prost）。
+Equivalent to: Spring Cloud gRPC
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+# gRPC transport layer / gRPC传输层
+tonic = { version = "0.12", features = ["transport", "tls"] }
+
+# Protocol buffer encoding / Protocol Buffer 编码
+prost = "0.13"
+prost-types = "0.13"
+
+# Async / 异步
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "net"] }
+tokio-stream = "0.1"
+futures = { workspace = true }
+async-trait = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+# HTTP/1.1 metadata bridge / HTTP metadata 桥接
+http = "1"
+
+# Tower middleware (re-exported by tonic) / Tower 中间件
+tower = { version = "0.4", features = ["util"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tonic = { version = "0.12", features = ["transport"] }

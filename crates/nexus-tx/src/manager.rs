@@ -308,3 +308,50 @@ mod tests {
         manager.commit(status).await.unwrap();
     }
 }
+
+use std::sync::{Arc, OnceLock};
+
+/// Global transaction manager installed at application startup.
+/// 应用启动时安装的全局事务管理器。
+static GLOBAL_TX_MANAGER: OnceLock<Arc<dyn TransactionManager>> = OnceLock::new();
+
+/// Install the global `TransactionManager`.
+/// 安装全局 `TransactionManager`。
+pub fn set_global_tx_manager(mgr: Arc<dyn TransactionManager>) {
+    let _ = GLOBAL_TX_MANAGER.set(mgr);
+}
+
+/// Get the global `TransactionManager` if registered.
+/// 获取已注册的全局 `TransactionManager`。
+pub fn global_tx_manager() -> Option<Arc<dyn TransactionManager>> {
+    GLOBAL_TX_MANAGER.get().cloned()
+}
+
+/// No-op transaction manager used when no datasource is configured.
+/// 未配置数据源时使用的空操作事务管理器。
+#[derive(Debug, Default)]
+pub struct NoopTransactionManager;
+
+#[async_trait::async_trait]
+impl TransactionManager for NoopTransactionManager {
+    async fn begin(
+        &self,
+        definition: &TransactionDefinition,
+    ) -> crate::TransactionResult<TransactionStatus> {
+        Ok(TransactionStatus::new(&definition.name))
+    }
+
+    async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+        status.mark_completed();
+        Ok(())
+    }
+
+    async fn rollback(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+        status.mark_completed();
+        Ok(())
+    }
+
+    fn name(&self) -> &str {
+        "noop"
+    }
+}

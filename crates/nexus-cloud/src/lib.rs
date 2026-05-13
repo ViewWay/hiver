@@ -30,8 +30,13 @@ pub mod circuit_breaker;
 pub mod config;
 pub mod config_client;
 pub mod discovery;
+pub mod feign;
 pub mod gateway;
 pub mod load_balancer;
+
+/// Re-export async_trait for use by generated feign client code.
+/// 为生成的 feign 客户端代码重新导出 async_trait。
+pub use async_trait;
 
 pub use circuit_breaker::{CircuitBreaker, CircuitState};
 pub use config::{ConfigClient, ConfigServerClient, RemoteConfigSource};
@@ -45,10 +50,11 @@ pub use discovery::{
     ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
 };
 pub use gateway::{
-    Filter as GatewayFilterDef, Gateway, GatewayConfig, GatewayFilter, GatewayRequest,
-    GatewayResponse, GatewayRoute, GatewayRouter, InMemoryRouteLocator, Predicate, Route,
-    RouteLocator,
+    Filter as GatewayFilterDef, Gateway, GatewayCircuitBreaker, GatewayCbState, GatewayConfig,
+    GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
+    InMemoryRouteLocator, Predicate, Route, RouteLocator, TokenBucketRateLimiter,
 };
+pub use feign::{FeignClientConfig, FeignError, FeignResult};
 pub use load_balancer::{LoadBalancer, RoundRobinLoadBalancer};
 
 /// Re-exports of commonly used types

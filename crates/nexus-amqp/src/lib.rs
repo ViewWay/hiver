@@ -44,6 +44,7 @@ mod exchange;
 mod binding;
 mod message;
 mod converter;
+pub mod rabbit_client;
 
 pub use config::{AmqpConfig, ConnectionConfig};
 pub use connection::{AmqpConnection, ConnectionManager};
@@ -54,6 +55,9 @@ pub use exchange::{Exchange, ExchangeBuilder, ExchangeType};
 pub use binding::{Binding, BindingBuilder};
 pub use message::{AmqpMessage, Message, MessageProperties, DeliveryMode};
 pub use converter::{MessageConverter, JsonMessageConverter};
+pub use rabbit_client::RabbitMqClient;
+#[cfg(feature = "lapin")]
+pub use rabbit_client::RabbitError;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

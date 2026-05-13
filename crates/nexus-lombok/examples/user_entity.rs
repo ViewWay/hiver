@@ -73,10 +73,19 @@ fn example_individual() {
 // Example 3: Constructors / 构造函数
 // ============================================================================
 
-/// User with explicit constructors
-/// 显式构造函数的用户
-#[derive(AllArgsConstructor, NoArgsConstructor, PartialEq, Debug)]
+/// Config with all-args constructor
+/// 全参数构造函数的 Config
+#[derive(AllArgsConstructor, PartialEq, Debug)]
 pub struct Config {
+    pub port: u16,
+    pub host: String,
+    pub timeout: u64,
+}
+
+/// Config with no-args constructor (uses Default)
+/// 无参数构造函数的 Config（使用 Default）
+#[derive(NoArgsConstructor, PartialEq, Debug)]
+pub struct DefaultConfig {
     pub port: u16,
     pub host: String,
     pub timeout: u64,
@@ -89,7 +98,7 @@ fn example_constructors() {
     println!("Config: {:?}", config);
 
     // No args (uses Default) / 无参数（使用 Default）
-    let config = Config::new();
+    let config = DefaultConfig::new();
     println!("Default config: {:?}", config);
 }
 
@@ -199,12 +208,13 @@ pub struct CompleteUser {
 #[allow(dead_code)]
 fn example_complete() {
     // Constructor / 构造函数
-    let user = CompleteUser::new(1, "alice".into(), "alice@example.com".into(), 25);
+    let mut user = CompleteUser::new(1, "alice".into(), "alice@example.com".into(), 25);
 
     // All Data methods available / 所有 Data 方法可用
     println!("ID: {}", user.id());
     user.set_username("bob".into());
     let user2 = user.with_age(30);
+    let _ = user2;
 }
 
 fn main() {
