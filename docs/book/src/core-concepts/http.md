@@ -36,15 +36,22 @@ async fn handle(req: Request) -> Response {
     // Access request properties / 访问请求属性
     let method = req.method();      // HTTP method / HTTP 方法
     let path = req.path();          // Request path / 请求路径
-    let query = req.query_string(); // Query string / 查询字符串
-    
+    let uri = req.uri();            // Full URI / 完整 URI
+
     // Access headers / 访问头部
     let content_type = req.header("content-type");
     let user_agent = req.header("user-agent");
-    
+
+    // Access query parameters / 访问查询参数
+    let page = req.param("page");   // Single query param / 单个查询参数
+    let params = req.params();      // All query params / 所有查询参数
+
+    // Access path variables / 访问路径变量
+    let id = req.path_var("id");    // Single path variable / 单个路径变量
+    let vars = req.path_vars();     // All path variables / 所有路径变量
+
     // Access body / 访问请求体
     let body = req.body();
-    let bytes = body.as_bytes();
     
     // ...
 }
@@ -63,10 +70,14 @@ let response = Response::builder()
     .body(Body::from(r#"{"message": "Hello"}"#))
     .unwrap();
 
-// Quick responses / 快速响应
-let ok = Response::ok("Success");
+// Quick responses (no arguments) / 快速响应（无参数）
+let ok = Response::ok();
+let created = Response::created();
 let not_found = Response::not_found();
-let error = Response::internal_error("Something went wrong");
+let error = Response::internal_server_error();
+
+// JSON helper / JSON 辅助方法
+let json_resp = Response::json(&value);
 ```
 
 ### Body / 请求体/响应体
@@ -115,8 +126,8 @@ Server::bind("127.0.0.1:8080")
 
 // With configuration / 带配置
 Server::bind("0.0.0.0:8080")
-    .workers(4)                    // Worker threads / 工作线程数
-    .keep_alive(Duration::from_secs(60))  // Keep-alive / 保活时间
+    .request_timeout(30)           // Request timeout in seconds / 请求超时时间（秒）
+    .keep_alive_timeout(60)        // Keep-alive timeout in seconds / 保活超时时间（秒）
     .max_connections(10000)        // Max connections / 最大连接数
     .run(handler)
     .await?;

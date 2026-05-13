@@ -119,7 +119,7 @@ let runtime = Runtime::new()?;
 
 // Or force specific driver / 或强制特定驱动
 let runtime = Runtime::builder()
-    .driver_type(DriverType::IoUring)
+    .driver_type(DriverType::IOUring)
     .build()?;
 ```
 
@@ -211,40 +211,6 @@ Each CPU core runs an independent task queue with no synchronization:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Work-Stealing Scheduler (Optional) / 工作窃取调度器（可选）
-
-For CPU-bound workloads, enable work-stealing:
-
-对于 CPU 密集型工作负载，启用工作窃取：
-
-```rust
-use nexus_runtime::Runtime;
-
-let runtime = Runtime::builder()
-    .enable_work_stealing(true)
-    .steal_attempts(3)      // Max steal attempts when idle
-    .build()?;
-```
-
-**When to use** / **何时使用**:
-- ✅ CPU-bound tasks with variable duration
-- ✅ Need dynamic load balancing
-- ✅ Some cores are heavily loaded
-
-**When NOT to use** / **何时不使用**:
-- ❌ I/O-bound tasks (default is better)
-- ❌ Need ultra-low, predictable latency
-- ❌ High-frequency short tasks
-
-**Performance comparison** / **性能对比**:
-
-| Workload | Thread-per-core | Work-stealing | Winner |
-|----------|----------------|---------------|--------|
-| Web server (I/O) | 1.0M QPS | 0.9M QPS | Thread-per-core ✅ |
-| Image processing | 80% CPU | 95% CPU | Work-stealing ✅ |
-| Chat server | 0.8ms P99 | 1.2ms P99 | Thread-per-core ✅ |
-| Data pipeline | 70% CPU | 92% CPU | Work-stealing ✅ |
-
 ---
 
 ## Timer Wheel / 时间轮
@@ -320,6 +286,7 @@ async fn timer_examples() {
 
 ```rust
 use nexus_runtime::{select_two, sleep, Duration};
+use nexus_runtime::select::SelectTwoOutput;
 
 async fn with_timeout() {
     let operation = async {
@@ -330,10 +297,10 @@ async fn with_timeout() {
     let timeout = sleep(Duration::from_secs(5));
     
     match select_two(operation, timeout).await {
-        (Some(result), _) => {
+        SelectTwoOutput::First(result) => {
             println!("Completed: {:?}", result);
         }
-        (_, _) => {
+        SelectTwoOutput::Second(_) => {
             println!("Timeout!");
         }
     }
@@ -510,7 +477,8 @@ Wait on multiple futures concurrently:
 ### Select Two / 选择两个
 
 ```rust
-use nexus_runtime::{select_two, bounded, SelectTwoOutput};
+use nexus_runtime::{select_two, bounded};
+use nexus_runtime::select::SelectTwoOutput;
 
 async fn select_demo() {
     let (tx1, rx1) = bounded::<i32>(1);
@@ -534,6 +502,7 @@ async fn select_demo() {
 
 ```rust
 use nexus_runtime::select_multiple;
+use nexus_runtime::select::SelectMultipleOutput;
 
 async fn select_many() {
     let futures = vec![
@@ -542,12 +511,10 @@ async fn select_many() {
         Box::pin(async { fetch_user(3).await }),
     ];
     
-    // Returns all completed results / 返回所有完成的结果
-    let results = select_multiple(futures).await;
-    
-    for result in results {
-        if let Some(user) = result {
-            println!("User: {:?}", user);
+    // Returns the first completed result / 返回第一个完成的结果
+    match select_multiple(futures).await {
+        SelectMultipleOutput::Completed(index, user) => {
+            println!("User at index {}: {:?}", index, user);
         }
     }
 }
@@ -659,17 +626,49 @@ let runtime = Runtime::builder()
     .thread_name("my-worker")       // Thread name prefix
     
     // ===== Driver Configuration / 驱动配置 =====
-    .driver_type(DriverType::Auto)  // Auto | IoUring | Epoll | Kqueue
+    .driver_type(DriverType::Auto)  // Auto | IOUring | Epoll | Kqueue
     .io_entries(2048)               // I/O queue depth (default: 256)
     
     // ===== Thread Parking / 线程休眠 =====
     .enable_parking(true)           // Allow threads to park when idle
     .park_timeout(Duration::from_millis(100))
     
-    // ===== Work-Stealing / 工作窃取 =====
-    .enable_work_stealing(false)    // Disable by default
-    .steal_attempts(3)              // Max steal attempts
-    
+    .build()?;
+```
+
+### Driver Configuration / 驱动配置
+
+The `DriverConfig` builder provides fine-grained control over I/O driver behavior:
+
+`DriverConfig` 构建器提供对 I/O 驱动器行为的精细控制：
+
+```rust
+use nexus_runtime::driver::DriverConfig;
+
+let config = DriverConfig::builder()
+    .entries(2048)              // SQ/CQ size (rounded to next power of 2)
+    .submit_wait(true)          // Wait for completion on submit (blocking mode)
+    .cpu_affinity(0)            // Pin driver thread to CPU core 0
+    .defer_wakeup(true)         // Enable deferred task wake-up
+    .max_ops_per_fd(64)         // Max concurrent operations per file descriptor
+    .build();
+```
+
+Then pass the config when building the runtime:
+
+然后在构建运行时时传入配置：
+
+```rust
+use nexus_runtime::{Runtime, RuntimeConfig, DriverType};
+
+// Build a RuntimeConfig with custom driver settings
+// 使用自定义驱动设置构建 RuntimeConfig
+let mut config = RuntimeConfig::default();
+config.driver_type = DriverType::IOUring;
+config.driver_io = driver_config;
+
+let mut runtime = Runtime::builder()
+    .config(config)
     .build()?;
 ```
 
@@ -680,7 +679,7 @@ let runtime = Runtime::builder()
 ```rust
 let runtime = Runtime::builder()
     .worker_threads(num_cpus::get())    // One thread per core
-    .driver_type(DriverType::IoUring)   // Use io-uring on Linux
+    .driver_type(DriverType::IOUring)   // Use io-uring on Linux
     .io_entries(1024)                   // Large I/O queue
     .enable_parking(false)              // Never park threads
     .build()?;
@@ -699,10 +698,21 @@ let runtime = Runtime::builder()
 **For CPU-bound workloads** / **CPU 密集型工作负载**:
 
 ```rust
+use nexus_runtime::driver::DriverConfig;
+
+let driver_config = DriverConfig::builder()
+    .entries(512)
+    .submit_wait(true)                  // Blocking submit for CPU efficiency
+    .cpu_affinity(0)                    // Pin to specific core
+    .defer_wakeup(false)                // Immediate wake-up
+    .build();
+
+let mut config = RuntimeConfig::default();
+config.driver_io = driver_config;
+
 let runtime = Runtime::builder()
     .worker_threads(num_cpus::get())
-    .enable_work_stealing(true)         // Enable work stealing
-    .steal_attempts(5)                  // Aggressive stealing
+    .config(config)
     .build()?;
 ```
 
@@ -714,15 +724,19 @@ let runtime = Runtime::builder()
 use nexus_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
-    .entries(2048)              // SQ/CQ size
-    .sq_poll(true)              // Kernel polling thread (lower latency)
-    .iopoll(true)               // Polling I/O (for NVMe)
-    .sq_thread_idle(1000)       // SQ thread idle timeout (ms)
+    .entries(2048)              // SQ/CQ size (rounded to next power of 2)
+    .submit_wait(false)         // Non-blocking submit for async
+    .cpu_affinity(0)            // Pin driver thread to core 0
+    .defer_wakeup(true)         // Batch wake-ups for efficiency
+    .max_ops_per_fd(64)         // More ops per FD for high throughput
     .build();
 
-let runtime = Runtime::builder()
-    .driver_type(DriverType::IoUring)
-    .driver_config(config)
+let mut runtime_config = RuntimeConfig::default();
+runtime_config.driver_type = DriverType::IOUring;
+runtime_config.driver_io = config;
+
+let mut runtime = Runtime::builder()
+    .config(runtime_config)
     .build()?;
 ```
 
@@ -805,19 +819,19 @@ async fn resource_example() {
 
 ## Performance Tips / 性能技巧
 
-### 1. Choose the Right Scheduler / 选择合适的调度器
+### 1. Choose the Right Driver / 选择合适的驱动
 
 ```rust
-// For web servers (I/O-bound) / Web服务器（I/O密集）
+// For web servers (I/O-bound) on Linux / Linux上的Web服务器（I/O密集）
 let runtime = Runtime::builder()
     .worker_threads(num_cpus::get())
-    .enable_work_stealing(false)    // Thread-per-core
+    .driver_type(DriverType::IOUring)  // Best for I/O-bound
     .build()?;
 
-// For data processing (CPU-bound) / 数据处理（CPU密集）
+// For systems without io-uring / 没有io-uring的系统
 let runtime = Runtime::builder()
     .worker_threads(num_cpus::get())
-    .enable_work_stealing(true)     // Work-stealing
+    .driver_type(DriverType::Epoll)     // Fallback on Linux
     .build()?;
 ```
 

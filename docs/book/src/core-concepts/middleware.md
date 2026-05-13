@@ -17,12 +17,20 @@ Response ←  Middleware 1  ←  Middleware 2  ←  Result
 
 ```rust
 use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response};
+use nexus_http::{Request, Response, Result};
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::Arc;
 
-pub trait Middleware: Clone + Send + Sync + 'static {
+pub trait Middleware<S>: Send + Sync + 'static {
     /// Process the request and call next middleware/handler
     /// 处理请求并调用下一个中间件/处理器
-    async fn call(&self, req: Request, next: Next) -> Response;
+    fn call(
+        &self,
+        req: Request,
+        state: Arc<S>,
+        next: Next<S>,
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>;
 }
 ```
 
@@ -32,10 +40,11 @@ pub trait Middleware: Clone + Send + Sync + 'static {
 
 ```rust
 use nexus_middleware::LoggerMiddleware;
+use std::sync::Arc;
 
 let router = Router::new()
     .get("/", handler)
-    .layer(LoggerMiddleware::new());
+    .middleware(Arc::new(LoggerMiddleware::new()));
 
 // Output: 
 // INFO  GET /api/users 200 OK 15ms
@@ -60,7 +69,7 @@ let cors = CorsMiddleware::new(CorsConfig {
 
 let router = Router::new()
     .get("/api/data", handler)
-    .layer(cors);
+    .middleware(Arc::new(cors));
 ```
 
 ### Timeout Middleware / 超时中间件
@@ -68,20 +77,22 @@ let router = Router::new()
 ```rust
 use nexus_middleware::TimeoutMiddleware;
 use std::time::Duration;
+use std::sync::Arc;
 
 let router = Router::new()
     .get("/api/slow", slow_handler)
-    .layer(TimeoutMiddleware::new(Duration::from_secs(30)));
+    .middleware(Arc::new(TimeoutMiddleware::new(Duration::from_secs(30))));
 ```
 
 ### Compression Middleware / 压缩中间件
 
 ```rust
 use nexus_middleware::CompressionMiddleware;
+use std::sync::Arc;
 
 let router = Router::new()
     .get("/api/data", handler)
-    .layer(CompressionMiddleware::new());
+    .middleware(Arc::new(CompressionMiddleware::new()));
 
 // Supports: gzip, deflate, br (brotli)
 ```
@@ -92,21 +103,22 @@ let router = Router::new()
 
 ```rust
 use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response};
+use nexus_http::{Request, Response, Result};
+use std::sync::Arc;
 
-async fn auth_middleware(req: Request, next: Next) -> Response {
+async fn auth_middleware<S>(req: Request, state: Arc<S>, next: Next<S>) -> Result<Response> {
     // Check authorization header / 检查授权头
     match req.header("authorization") {
         Some(token) if is_valid_token(token) => {
             // Continue to next middleware/handler
             // 继续到下一个中间件/处理器
-            next.run(req).await
+            next.call(req, state).await
         }
         _ => {
-            Response::builder()
+            Ok(Response::builder()
                 .status(StatusCode::UNAUTHORIZED)
                 .body(Body::from("Unauthorized"))
-                .unwrap()
+                .unwrap())
         }
     }
 }
@@ -116,29 +128,40 @@ async fn auth_middleware(req: Request, next: Next) -> Response {
 
 ```rust
 use std::time::Instant;
+use std::pin::Pin;
+use std::future::Future;
+use std::sync::Arc;
+use nexus_router::{Middleware, Next};
+use nexus_http::{Request, Response, Result};
 
-#[derive(Clone)]
 struct TimingMiddleware;
 
-impl Middleware for TimingMiddleware {
-    async fn call(&self, req: Request, next: Next) -> Response {
-        let start = Instant::now();
-        let method = req.method().to_string();
-        let path = req.path().to_string();
-        
-        // Call next middleware/handler / 调用下一个中间件/处理器
-        let response = next.run(req).await;
-        
-        let duration = start.elapsed();
-        tracing::info!(
-            method = %method,
-            path = %path,
-            status = %response.status(),
-            duration_ms = %duration.as_millis(),
-            "Request completed"
-        );
-        
-        response
+impl<S: Send + Sync + 'static> Middleware<S> for TimingMiddleware {
+    fn call(
+        &self,
+        req: Request,
+        state: Arc<S>,
+        next: Next<S>,
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+        Box::pin(async move {
+            let start = Instant::now();
+            let method = req.method().to_string();
+            let path = req.path().to_string();
+
+            // Call next middleware/handler / 调用下一个中间件/处理器
+            let response = next.call(req, state).await?;
+
+            let duration = start.elapsed();
+            tracing::info!(
+                method = %method,
+                path = %path,
+                status = %response.status(),
+                duration_ms = %duration.as_millis(),
+                "Request completed"
+            );
+
+            Ok(response)
+        })
     }
 }
 ```
@@ -146,7 +169,14 @@ impl Middleware for TimingMiddleware {
 ### Middleware with State / 带状态的中间件
 
 ```rust
-#[derive(Clone)]
+use std::pin::Pin;
+use std::future::Future;
+use std::sync::Arc;
+use std::collections::HashMap;
+use tokio::sync::RwLock;
+use nexus_router::{Middleware, Next};
+use nexus_http::{Request, Response, Result, Body, StatusCode};
+
 struct RateLimitMiddleware {
     requests_per_second: u32,
     limiter: Arc<RwLock<HashMap<String, u32>>>,
@@ -161,28 +191,37 @@ impl RateLimitMiddleware {
     }
 }
 
-impl Middleware for RateLimitMiddleware {
-    async fn call(&self, req: Request, next: Next) -> Response {
-        let ip = req.remote_addr()
-            .map(|a| a.to_string())
-            .unwrap_or_default();
-        
-        // Check rate limit / 检查速率限制
-        {
-            let mut limiter = self.limiter.write().await;
-            let count = limiter.entry(ip.clone()).or_insert(0);
-            
-            if *count >= self.requests_per_second {
-                return Response::builder()
-                    .status(StatusCode::TOO_MANY_REQUESTS)
-                    .body(Body::from("Rate limit exceeded"))
-                    .unwrap();
+impl<S: Send + Sync + 'static> Middleware<S> for RateLimitMiddleware {
+    fn call(
+        &self,
+        req: Request,
+        state: Arc<S>,
+        next: Next<S>,
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+        let limiter = self.limiter.clone();
+        let rps = self.requests_per_second;
+        Box::pin(async move {
+            let ip = req.remote_addr()
+                .map(|a| a.to_string())
+                .unwrap_or_default();
+
+            // Check rate limit / 检查速率限制
+            {
+                let mut limiter_guard = limiter.write().await;
+                let count = limiter_guard.entry(ip.clone()).or_insert(0);
+
+                if *count >= rps {
+                    return Ok(Response::builder()
+                        .status(StatusCode::TOO_MANY_REQUESTS)
+                        .body(Body::from("Rate limit exceeded"))
+                        .unwrap());
+                }
+
+                *count += 1;
             }
-            
-            *count += 1;
-        }
-        
-        next.run(req).await
+
+            next.call(req, state).await
+        })
     }
 }
 ```
@@ -194,11 +233,13 @@ Middleware is applied in the order it's added, but executed in reverse order for
 中间件按添加顺序应用，但响应按相反顺序执行：
 
 ```rust
+use std::sync::Arc;
+
 let router = Router::new()
     .get("/", handler)
-    .layer(LoggerMiddleware::new())    // 1st added, outermost
-    .layer(CorsMiddleware::any())      // 2nd added
-    .layer(TimeoutMiddleware::new(30s)); // 3rd added, innermost
+    .middleware(Arc::new(LoggerMiddleware::new()))    // 1st added, outermost
+    .middleware(Arc::new(CorsMiddleware::any()))      // 2nd added
+    .middleware(Arc::new(TimeoutMiddleware::new(30s))); // 3rd added, innermost
 
 // Request flow:  Logger → CORS → Timeout → Handler
 // Response flow: Handler → Timeout → CORS → Logger
@@ -212,7 +253,7 @@ let router = Router::new()
 | `HandlerInterceptor` | `Middleware` trait | Handler interception |
 | `@CrossOrigin` | `CorsMiddleware` | CORS configuration |
 | `OncePerRequestFilter` | - | Single execution per request |
-| Filter chain | `.layer()` chaining | Middleware composition |
+| Filter chain | `.middleware()` chaining | Middleware composition |
 
 ## Best Practices / 最佳实践
 
@@ -243,6 +284,7 @@ use nexus_middleware::{
     CompressionMiddleware,
 };
 use std::time::Duration;
+use std::sync::Arc;
 
 fn build_router() -> Router {
     // Public routes / 公共路由
@@ -254,17 +296,17 @@ fn build_router() -> Router {
     let api = Router::new()
         .get("/users", list_users)
         .post("/users", create_user)
-        .layer(auth_middleware);  // Auth only for API
+        .middleware(Arc::new(AuthMiddleware));  // Auth only for API
     
     // Build main router / 构建主路由
     Router::new()
         .merge(public)
         .nest("/api", api)
         // Global middleware / 全局中间件
-        .layer(LoggerMiddleware::new())
-        .layer(CorsMiddleware::any())
-        .layer(CompressionMiddleware::new())
-        .layer(TimeoutMiddleware::new(Duration::from_secs(30)))
+        .middleware(Arc::new(LoggerMiddleware::new()))
+        .middleware(Arc::new(CorsMiddleware::any()))
+        .middleware(Arc::new(CompressionMiddleware::new()))
+        .middleware(Arc::new(TimeoutMiddleware::new(Duration::from_secs(30))))
 }
 ```
 

@@ -5,6 +5,25 @@ Extractors in Nexus provide a type-safe way to extract data from HTTP requests, 
 
 Nexus 中的提取器提供了一种类型安全的方式从 HTTP 请求中提取数据，类似于 Spring 的 `@PathVariable`、`@RequestParam`、`@RequestBody` 等。
 
+> **Important Disclaimers / 重要说明**
+>
+> **1. Two `FromRequest` traits / 两个 `FromRequest` trait**
+>
+> The codebase defines **two separate** `FromRequest` traits that serve different layers:
+>
+> - **`nexus_http::FromRequest`** (in `nexus-http`): Uses `async fn from_request(req: &Request) -> Result<Self>`. This is the trait used by the `#[handler]` proc-macro to perform automatic parameter extraction.
+> - **`nexus_extractors::FromRequest`** (in `nexus-extractors`): Uses `fn from_request(req: &Request) -> ExtractorFuture<Self>` where `ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorError>> + Send>>`. This is the trait used when implementing custom extractors manually with the extractor infrastructure.
+>
+> When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use `nexus_extractors::FromRequest` unless noted otherwise.
+>
+> **2. Extractor-style handler signatures require the proc-macro system / 提取器风格的处理器签名需要过程宏系统**
+>
+> Handler function signatures with multiple extractor parameters (e.g., `async fn handler(Path(id): Path<u64>, Query(params): Query<Params>)`) **only work** when the function is decorated with the `#[handler]` attribute macro from `nexus-macros`. The `#[handler]` macro generates a wrapper that accepts a raw `Request`, calls `FromRequest::from_request()` for each parameter, and then invokes the original function.
+>
+> Plain handler functions registered via `Router::get()` (or `.post()`, etc.) have the signature `fn(Request, Arc<S>) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>` and must manually extract data from the `Request`.
+>
+> The route-attribute macros (`#[get]`, `#[post]`, etc. from `nexus-macros`) register a raw function with the router and do **not** perform parameter extraction on their own. To get automatic extraction, combine `#[handler]` with a route attribute, or use `#[handler]` and register the wrapper manually.
+
 ## Overview / 概述
 
 ```rust
