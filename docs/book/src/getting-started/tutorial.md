@@ -13,9 +13,9 @@ This tutorial will guide you through building a complete REST API application wi
 3. [Routing / 路由](#3-routing-路由)
 4. [Request Handling / 请求处理](#4-request-handling-请求处理)
 5. [Middleware / 中间件](#5-middleware-中间件)
-6. [Error Handling / 错误处理](#7-error-handling-错误处理)
-7. [Database Integration / 数据库集成](#8-database-integration-数据库集成)
-8. [Testing / 测试](#9-testing-测试)
+6. [Error Handling / 错误处理](#6-error-handling-错误处理)
+7. [Database Integration / 数据库集成](#7-database-integration-数据库集成)
+8. [Testing / 测试](#8-testing-测试)
 
 ---
 
@@ -30,7 +30,7 @@ cd my-api
 
 # Add Nexus dependencies / 添加Nexus依赖
 cargo add nexus-runtime nexus-http nexus-router nexus-extractors
-cargo add tokio --features full
+cargo add nexus-runtime
 ```
 
 ### Update Cargo.toml / 更新Cargo.toml
@@ -41,7 +41,7 @@ nexus-runtime = "0.1"
 nexus-http = "0.1"
 nexus-router = "0.1"
 nexus-extractors = "0.1"
-tokio = { version = "1", features = ["full"] }
+nexus-runtime = "0.1.0-alpha"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ```
@@ -56,16 +56,18 @@ serde_json = "1"
 use nexus_http::Server;
 use nexus_router::Router;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let app = Router::new()
-        .get("/", || async { "Hello, Nexus!" });
+fn main() -> std::io::Result<()> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let app = Router::new()
+            .get("/", || async { "Hello, Nexus!" });
 
-    Server::bind("127.0.0.1:8080")
-        .run(app)
-        .await?;
+        Server::bind("127.0.0.1:8080")
+            .run(app)
+            .await?;
 
-    Ok(())
+        Ok(())
+    })
 }
 ```
 
@@ -114,11 +116,15 @@ let app = Router::new()
 
 ```rust
 let app = Router::new()
-    .nest("/api/v1", Router::new()
-        .get("/users", list_users)
-        .post("/users", create_user)
-        .get("/posts", list_posts)
-    );
+    // Note: Router::nest() not yet implemented
+    // Planned API: .nest("/api/v1", Router::new()
+    //     .get("/users", list_users)
+    //     .post("/users", create_user)
+    //     .get("/posts", list_posts)
+    // );
+    .get("/api/v1/users", list_users)
+    .post("/api/v1/users", create_user)
+    .get("/api/v1/posts", list_posts);
 ```
 
 ---
@@ -185,43 +191,26 @@ async fn get_auth_user(Header(authorization): Header<String>) -> Response {
 
 ```rust
 use nexus_middleware::Middleware;
-use nexus_http::{Request, Response};
-use std::task::{Context, Poll};
-use std::future::Future;
+use nexus_http::Request;
+use std::sync::Arc;
 
 struct Logger;
 
-impl<M> Middleware<M> for Logger
-where
-    M: 'static + Send + Sync,
-{
-    type Output = LoggerWrapped<M>;
-
-    fn wrap(&self, inner: M) -> Self::Output {
-        LoggerWrapped(inner)
-    }
-}
-
-struct LoggerWrapped<M>(M);
-
-impl<M, B> Service<Request<B>> for LoggerWrapped<M>
-where
-    M: Service<Request<B>, Response = Response> + Send + Sync + 'static,
-    M::Future: Send + 'static,
-{
-    type Response = M::Response;
-    type Error = M::Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
-
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.0.poll_ready(cx)
-    }
-
-    fn call(&mut self, req: Request<B>) -> Self::Future {
+impl Middleware for Logger {
+    fn handle(
+        &self,
+        req: Request,
+        next: nexus_middleware::Next,
+    ) -> nexus_middleware::BoxFuture<'static, Result<Response, nexus_http::Error>> {
         println!("{} {}", req.method(), req.uri());
-        Box::pin(self.0.call(req))
+        next.run(req)
     }
 }
+
+// Applying middleware / 应用中间件
+let app = Router::new()
+    .middleware(std::sync::Arc::new(Logger))
+    .get("/", handler);
 ```
 
 ### CORS Middleware / CORS中间件
@@ -230,11 +219,11 @@ where
 use nexus_middleware::Cors;
 
 let app = Router::new()
-    .layer(
+    .middleware(std::sync::Arc::new(
         Cors::new()
             .allow_origin("*")
             .allow_methods(["GET", "POST", "PUT", "DELETE"])
-    )
+    ))
     .get("/", handler);
 ```
 
@@ -293,30 +282,35 @@ cargo add sqlx --features postgres,runtime-tokio
 
 ```rust
 use sqlx::PgPool;
+use std::sync::Arc;
 
+// Stateful handlers receive (Request, Arc<S>) / 有状态处理器接收 (Request, Arc<S>)
 async fn list_users(
-    State(pool): State<PgPool>
+    req: Request,
+    state: Arc<PgPool>,
 ) -> Result<Json<Vec<User>>, AppError> {
     let users = sqlx::query_as::<_, User>("SELECT * FROM users")
-        .fetch_all(&pool)
+        .fetch_all(&*state)
         .await?;
 
     Ok(Json(users))
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let pool = PgPool::connect("postgres://localhost/mydb").await?;
+fn main() -> std::io::Result<()> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let pool = PgPool::connect("postgres://localhost/mydb").await?;
 
-    let app = Router::new()
-        .get("/users", list_users)
-        .with_state(pool);
+        let app = Router::new()
+            .get("/users", list_users)
+            .with_state(pool);
 
-    Server::bind("127.0.0.1:8080")
-        .run(app)
-        .await?;
+        Server::bind("127.0.0.1:8080")
+            .run(app)
+            .await?;
 
-    Ok(())
+        Ok(())
+    })
 }
 ```
 
@@ -332,16 +326,21 @@ mod tests {
     use super::*;
     use nexus_http::Request;
 
-    #[tokio::test]
-    async fn test_hello_world() {
-        let req = Request::builder()
-            .uri("/")
-            .body(())
-            .unwrap();
+    #[test]
+    fn test_hello_world() -> std::io::Result<()> {
+        let runtime = nexus_runtime::Runtime::new()?;
+        runtime.block_on(async {
+            let req = Request::builder()
+                .uri("/")
+                .body(())
+                .unwrap();
 
-        let response = hello_world(req).await;
+            let response = hello_world(req).await;
 
-        assert_eq!(response.status(), StatusCode::OK);
+            assert_eq!(response.status(), StatusCode::OK);
+
+            Ok(())
+        })
     }
 }
 ```
@@ -353,20 +352,25 @@ mod tests {
 use nexus_http::Server;
 use nexus_router::Router;
 
-#[tokio::test]
-async fn test_api_endpoint() {
-    let app = Router::new()
-        .get("/api/health", || async { {"status": "ok"} });
+#[test]
+fn test_api_endpoint() -> std::io::Result<()> {
+    let runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let app = Router::new()
+            .get("/api/health", || async { {"status": "ok"} });
 
-    let server = Server::bind("127.0.0.1:0")
-        .run(app)
-        .await?;
+        let server = Server::bind("127.0.0.1:0")
+            .run(app)
+            .await?;
 
-    let addr = server.local_addr();
-    let url = format!("http://{}/api/health", addr);
+        let addr = server.addr();
+        let url = format!("http://{}/api/health", addr);
 
-    let response = reqwest::get(&url).await.unwrap();
-    assert_eq!(response.status(), 200);
+        let response = reqwest::get(&url).await.unwrap();
+        assert_eq!(response.status(), 200);
+
+        Ok(())
+    })
 }
 ```
 
@@ -421,21 +425,23 @@ async fn health() -> &'static str {
     "OK"
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let app = Router::new()
-        .get("/health", health)
-        .get("/users", list_users)
-        .post("/users", create_user)
-        .get("/users/:id", get_user);
+fn main() -> std::io::Result<()> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let app = Router::new()
+            .get("/health", health)
+            .get("/users", list_users)
+            .post("/users", create_user)
+            .get("/users/:id", get_user);
 
-    println!("Starting server on http://127.0.0.1:8080");
+        println!("Starting server on http://127.0.0.1:8080");
 
-    Server::bind("127.0.0.1:8080")
-        .run(app)
-        .await?;
+        Server::bind("127.0.0.1:8080")
+            .run(app)
+            .await?;
 
-    Ok(())
+        Ok(())
+    })
 }
 ```
 

@@ -161,7 +161,7 @@ async fn create_user(_req: nexus_http::Request) -> Response {
 ## JSON Response Example / JSON 响应示例
 
 ```rust
-use nexus_http::{Body, Json, Response, StatusCode, IntoResponse};
+use nexus_http::{Body, Response, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]
