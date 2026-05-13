@@ -1,8 +1,8 @@
 # Nexus Documentation Index
 # Nexus 文档索引
 
-**Last Updated**: 2026-01-25
-**最后更新**: 2026-01-25
+**Last Updated**: 2026-05-13
+**最后更新**: 2026-05-13
 
 ---
 
@@ -10,6 +10,7 @@
 
 ```
 docs/
+├── CODEMAP.md        # Full crate reference, macro index, dependency graph
 ├── design/           # Project design documents / 项目设计文档
 ├── api/              # API specifications and references / API 规范和参考
 ├── reports/          # Development reports / 开发报告

@@ -13,8 +13,9 @@ This index provides a structured overview of all Nexus documentation.
 ### For New Users / 新用户
 
 1. **[CLAUDE.md](../CLAUDE.md)** - Project instructions for contributors / 贡献者项目说明
-2. **[STRATEGY-OVERVIEW.md](./STRATEGY-OVERVIEW.md)** - Visual strategy and roadmap / 可视化战略和路线图
-3. **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** - Migrating from Spring Boot to Nexus / 从 Spring Boot 迁移到 Nexus
+2. **[CODEMAP.md](./CODEMAP.md)** - Full crate reference, macro index, dependency graph / 完整 crate 参考、宏索引、依赖图
+3. **[STRATEGY-OVERVIEW.md](./STRATEGY-OVERVIEW.md)** - Visual strategy and roadmap / 可视化战略和路线图
+4. **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** - Migrating from Spring Boot to Nexus / 从 Spring Boot 迁移到 Nexus
 
 ### For Chinese Developers / 中国开发者
 

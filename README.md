@@ -29,11 +29,17 @@ Nexus is a production-grade, high-availability web framework written in Rust wit
 ## 🎯 Features
 
 - **Custom Runtime** - Thread-per-core architecture with io-uring support
+- **Spring-like Annotations** - `#[controller]`, `#[service]`, `#[repository]`, `#[autowired]`, `#[transactional]`, `@Cacheable`, `@PreAuthorize`, and 40+ more
+- **Data Layer** - R2DBC, ORM (ActiveRecord), Redis, MongoDB, Flyway migrations, JPA-style `#[Entity]`/`#[Table]`/`#[Id]`/`#[Column]`
+- **AI Integration** - OpenAI, Anthropic, Ollama chat models; embeddings; vector store; function calling
+- **Messaging** - Kafka, AMQP/RabbitMQ, Spring Events, Spring Integration EIP patterns
+- **Cloud** - Service discovery, load balancer, gateway, config server, Feign client
+- **Security** - JWT, OAuth2 Authorization Server, RBAC, CSRF, `@PreAuthorize`, `@Secured`
 - **High Availability** - Circuit breakers, rate limiters, retry logic
-- **Web3 Native** - Built-in blockchain and smart contract support
-- **Observability** - OpenTelemetry-compatible tracing/metrics
-- **Type Safety** - Leverages Rust's type system
-- **Spring-like** - Familiar patterns for Spring Boot developers
+- **Web3 Native** - Built-in blockchain and smart contract support (ERC20/ERC721)
+- **Observability** - Distributed tracing, Micrometer-compatible metrics, OpenAPI/Swagger
+- **Enterprise** - Batch processing, state machine, LDAP, Vault, SOAP WS, GraphQL, gRPC, i18n
+- **Tooling** - Lombok-style derive macros, Spring Shell REPL, test containers, mock beans
 
 ## ⚡️ Quick Start
 
@@ -476,33 +482,33 @@ Nexus is designed for high performance from the ground up:
 
 | Resource | Link |
 |----------|------|
+| **Codemap** | [CODEMAP.md](docs/CODEMAP.md) — Full crate reference, macro index, dependency graph |
 | **Book** | [docs.nexusframework.com](https://docs.nexusframework.com) |
 | **API Docs** | [docs.rs/nexus](https://docs.rs/nexus) |
 | **Design Spec** | [design-spec.md](docs/design-spec.md) |
 | **Implementation Plan** | [implementation-plan.md](docs/design/implementation-plan.md) |
+| **Docs Index** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
 | **Examples** | [examples/](examples/) |
 
 ## 🏗️ Architecture
 
+**59 crates** across 10 functional domains. See [CODEMAP.md](docs/CODEMAP.md) for the full reference.
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Application Layer                         │
-├─────────────────────────────────────────────────────────────┤
-│  Handlers  │  Middleware  │  Extractors  │  Response        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Runtime                            │
-├─────────────────────────────────────────────────────────────┤
-│  Task Scheduler  │  I/O Driver  │  Timer  │  Executor       │
-│  (Thread-per-Core)  │  (io-uring)   │                          │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                     System Layer                             │
-├─────────────────────────────────────────────────────────────┤
-│       io-uring (Linux) / epoll / kqueue                      │
-└─────────────────────────────────────────────────────────────┘
+nexus-starter (Spring Boot auto-configuration)
+    │
+    ├── Web:      nexus-http, nexus-router, nexus-extractors, nexus-middleware,
+    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi
+    ├── Data:     nexus-data-commons, nexus-data-rdbc, nexus-data-orm, nexus-data-redis,
+    │             nexus-data-mongodb, nexus-data-annotations, nexus-flyway
+    ├── Security: nexus-security, nexus-session
+    ├── AOP:      nexus-aop, nexus-tx
+    ├── Messaging:nexus-events, nexus-kafka, nexus-amqp, nexus-integration, nexus-websocket-stomp
+    ├── Infra:    nexus-runtime, nexus-core, nexus-macros, nexus-lombok
+    ├── Cloud:    nexus-cloud, nexus-ai, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
+    ├── Resilience:nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator
+    ├── Enterprise:nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws, nexus-i18n
+    └── Tooling:  nexus-test, nexus-shell, nexus-benches, nexus-validation, nexus-cache
 ```
 
 ## 🛠️ Development
@@ -532,7 +538,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha Version**
 >
-> Nexus is currently in **Phase 7: Production Ready** (100% complete). All phases 0-7 have been completed, including the custom async runtime, HTTP server, middleware system, resilience patterns, observability, Web3 support, and performance benchmarking.
+> Nexus is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **58 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
 
 | Phase | Status | Description |
 |-------|--------|-------------|
@@ -544,6 +550,7 @@ cargo clippy --workspace -- -D warnings
 | Phase 5 | ✅ Complete | Observability |
 | Phase 6 | ✅ Complete | Web3 Integration |
 | Phase 7 | ✅ Complete | Performance & Hardening |
+| Phase 8 | 🔄 In Progress | Data Layer (R2DBC, ORM, Redis, MongoDB, Flyway) |
 
 See [implementation plan](docs/design/implementation-plan.md) for details.
 
