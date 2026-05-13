@@ -437,8 +437,9 @@ impl Middleware for AuthMiddleware {
 ```rust,ignore
 use nexus::prelude::*;
 
-#[tokio::main]
-async fn main() {
+fn main() -> std::io::Result<()> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
     let app = Router::new()
         .get("/public", public_handler)
         .nest("/api", protected_routes())
@@ -446,9 +447,10 @@ async fn main() {
         .middleware(Arc::new(AuthMiddleware::new()));
 
     Server::bind("0.0.0.0:8080")
-        .serve(app)
+        .run(app)
         .await
         .unwrap();
+    })
 }
 
 fn protected_routes() -> Router {
@@ -508,8 +510,9 @@ struct AppState {
     config: Arc<AppConfig>,
 }
 
-#[tokio::main]
-async fn main() {
+fn main() -> std::io::Result<()> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
     let state = AppState {
         db: Arc::new(Database::connect("postgresql://...").await),
         cache: Arc::new(Cache::new()),
@@ -521,9 +524,10 @@ async fn main() {
         .get("/users/:id", get_user);
 
     Server::bind("0.0.0.0:8080")
-        .serve(app)
+        .run(app)
         .await
         .unwrap();
+    })
 }
 
 #[get("/users")]
@@ -748,7 +752,7 @@ use reqwest::Client;
 #[tokio::test]
 async fn test_get_users() {
     let app = Router::new().get("/users", list_users);
-    let server = Server::bind("127.0.0.1:0").serve(app).spawn();
+    let server = Server::bind("127.0.0.1:0").run(app).spawn();
     let url = format!("http://{}/users", server.addr());
 
     let response = Client::new()
@@ -763,7 +767,7 @@ async fn test_get_users() {
 #[tokio::test]
 async fn test_create_user() {
     let app = Router::new().post("/users", create_user);
-    let server = Server::bind("127.0.0.1:0").serve(app).spawn();
+    let server = Server::bind("127.0.0.1:0").run(app).spawn();
     let url = format!("http://{}/users", server.addr());
 
     let user = CreateUser {
@@ -814,4 +818,4 @@ use nexus_core::*;     // IoC container
 
 ---
 
-**Continue to: [API Reference](api-reference.md) | [Migration Guide](migration-guide.md)**
+**Continue to: [API Reference](../api/api-spec.md) | [Migration Guide](migration-guide.md)**

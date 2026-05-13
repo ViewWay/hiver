@@ -125,4 +125,4 @@ async fn get_user(id: String) -> Json<User> {
 
 ---
 
-**Continue to: [User Guide](user-guide.md) | [API Reference](api-reference.md)**
+**Continue to: [User Guide](user-guide.md) | [API Reference](../api/api-spec.md)**
