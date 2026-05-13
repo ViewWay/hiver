@@ -19,9 +19,9 @@
 
 > **⚠️ Alpha Version / Alpha版本**
 >
-> This project is currently in **Phase 1: Runtime Core** (completed). The async runtime is fully functional. HTTP Core (Phase 2) is in development.
+> This project has completed Phases 0–7 (Runtime, HTTP, Router, Middleware, Resilience, Observability, Web3, Production Hardening) and is currently in **Phase 8: Data Layer**. The framework spans **59 crates** covering the full Spring Boot feature set.
 >
-> 本项目目前处于 **第1阶段：运行时核心**（已完成）。异步运行时已完全可用。HTTP 核心（第2阶段）正在开发中。
+> 本项目已完成阶段 0–7（运行时、HTTP、路由、中间件、弹性、可观测性、Web3、生产加固），当前处于 **第 8 阶段：数据层**。框架包含 **59 个 crate**，覆盖完整的 Spring Boot 功能集。
 
 ## Table of Contents / 目录
 
@@ -49,8 +49,9 @@
 ## Documentation / 文档
 
 - [API Documentation](https://docs.rs/nexus) / [API 文档](https://docs.rs/nexus)
-- [Design Specification](../../design-spec.md) / [设计规范](../../design-spec.md)
-- [Implementation Plan](../../implementation-plan.md) / [实施计划](../../implementation-plan.md)
+- [Design Specification](../design/design-spec.md) / [设计规范](../design/design-spec.md)
+- [Implementation Plan](../design/implementation-plan.md) / [实施计划](../design/implementation-plan.md)
+- [Codemap](../CODEMAP.md) / [代码地图](../CODEMAP.md)
 
 ## License / 许可证
 

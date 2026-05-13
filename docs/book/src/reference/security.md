@@ -65,8 +65,17 @@ async fn get_profile() -> Result<Profile, Error> {
 
 ```rust
 use nexus_security::PasswordEncoder;
+// or use BcryptPasswordEncoder directly:
+// 或直接使用 BcryptPasswordEncoder：
+use nexus_security::BcryptPasswordEncoder;
 
-let encoder = PasswordEncoder::bcrypt(10);
+// Use PasswordEncoder with default bcrypt
+// 使用带默认 bcrypt 的 PasswordEncoder
+let encoder = PasswordEncoder::bcrypt();
+
+// Or with custom cost
+// 或使用自定义 cost
+let encoder = BcryptPasswordEncoder::with_cost(12);
 
 // Encode password / 编码密码
 let encoded = encoder.encode("password123")?;

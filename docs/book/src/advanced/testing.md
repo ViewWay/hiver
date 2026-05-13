@@ -29,12 +29,16 @@ Testing strategies:
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nexus_http::test::TestClient;
+    use nexus_test::TestClient;
 
-    #[tokio::test]
-    async fn test_handler() {
-        let response = handler(Request::default()).await;
-        assert_eq!(response.status(), StatusCode::OK);
+    #[test]
+    fn test_handler() -> std::io::Result<()> {
+        let runtime = nexus_runtime::Runtime::new()?;
+        runtime.block_on(async {
+            let response = handler(Request::default()).await;
+            assert_eq!(response.status(), StatusCode::OK);
+            Ok(())
+        })
     }
 }
 ```
@@ -42,14 +46,18 @@ mod tests {
 ### Testing Extractors / 测试提取器
 
 ```rust
-#[tokio::test]
-async fn test_path_extractor() {
-    let req = Request::builder()
-        .uri("/users/123")
-        .build();
-    
-    let id: Path<u64> = Path::from_request(&req).await.unwrap();
-    assert_eq!(id.0, 123);
+#[test]
+fn test_path_extractor() -> std::io::Result<()> {
+    let runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let req = Request::builder()
+            .uri("/users/123")
+            .build();
+
+        let id: Path<u64> = Path::from_request(&req).await.unwrap();
+        assert_eq!(id.0, 123);
+        Ok(())
+    })
 }
 ```
 
@@ -60,23 +68,28 @@ async fn test_path_extractor() {
 ### Test Client / 测试客户端
 
 ```rust
-use nexus_http::test::TestClient;
+use nexus_test::TestClient;
 
-#[tokio::test]
-async fn test_api() {
-    let app = create_app();
-    let client = TestClient::new(app);
-    
-    // Test GET / 测试 GET
-    let response = client.get("/api/users").send().await;
-    assert_eq!(response.status(), 200);
-    
-    // Test POST / 测试 POST
-    let response = client.post("/api/users")
-        .json(&user_data)
-        .send()
-        .await;
-    assert_eq!(response.status(), 201);
+#[test]
+fn test_api() -> std::io::Result<()> {
+    let runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let app = create_app();
+        let client = TestClient::new(app);
+
+        // Test GET / 测试 GET
+        let response = client.get("/api/users").send().await;
+        assert_eq!(response.status(), 200);
+
+        // Test POST / 测试 POST
+        let response = client.post("/api/users")
+            .json(&user_data)
+            .send()
+            .await;
+        assert_eq!(response.status(), 201);
+
+        Ok(())
+    })
 }
 ```
 
@@ -85,21 +98,26 @@ async fn test_api() {
 ## E2E Testing / 端到端测试
 
 ```rust
-#[tokio::test]
-async fn test_full_flow() {
-    // Start test server / 启动测试服务器
-    let server = start_test_server().await;
-    
-    // Test complete flow / 测试完整流程
-    let client = reqwest::Client::new();
-    let response = client
-        .post("http://localhost:8080/api/users")
-        .json(&create_user_request)
-        .send()
-        .await
-        .unwrap();
-    
-    assert_eq!(response.status(), 201);
+#[test]
+fn test_full_flow() -> std::io::Result<()> {
+    let runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        // Start test server / 启动测试服务器
+        let server = start_test_server().await;
+
+        // Test complete flow / 测试完整流程
+        let client = reqwest::Client::new();
+        let response = client
+            .post("http://localhost:8080/api/users")
+            .json(&create_user_request)
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), 201);
+
+        Ok(())
+    })
 }
 ```
 

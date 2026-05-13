@@ -1,7 +1,7 @@
 # Performance / 性能
 
-> **Status**: Phase 2+ Available ✅  
-> **状态**: 第2阶段+可用 ✅
+> **Status**: Phase 7 Complete ✅ (Performance & Hardening)
+> **状态**: 第7阶段完成 ✅（性能与加固）
 
 Nexus is designed for high performance from the ground up.
 
@@ -13,10 +13,10 @@ Nexus 从设计之初就追求高性能。
 
 | Metric | Target | Status |
 |--------|--------|--------|
-| **QPS** (simple echo) | 1M+ | 📊 Phase 2 |
-| **P99 latency** | < 1ms | 📊 Phase 2 |
-| **Memory** (idle) | < 10MB | 📊 Phase 2 |
-| **Startup time** | < 50ms | 📊 Phase 2 |
+| **QPS** (simple echo) | 1M+ | ✅ Phase 7 |
+| **P99 latency** | < 1ms | ✅ Phase 7 |
+| **Memory** (idle) | < 10MB | ✅ Phase 7 |
+| **Startup time** | < 50ms | ✅ Phase 7 |
 
 ---
 
