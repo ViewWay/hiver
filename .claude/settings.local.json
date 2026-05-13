@@ -102,7 +102,12 @@
       "Bash(jq:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)"
+      "Bash(gh pr diff:*)",
+      "Bash(awk '{pass+=$4; fail+=$6} END {print \"Total passed:\", pass, \"Total failed:\", fail}')",
+      "Bash(awk '-F[; ]' '{for\\(i=1;i<=NF;i++\\){if\\($i~/^[0-9]+$/\\){pass+=$i}; if\\($i==\"failed;\"\\){getline; fail+=$i}}} END{print \"passed:\", pass, \"failed:\", fail+0}')",
+      "Bash(awk '{split\\($0,a,\" \"\\); for\\(i=1;i<=NF;i++\\){if\\($i~/^[0-9]+$/\\){s+=$i}}} END{print \"Total tests:\", s}')",
+      "Bash(awk -F' passed' '{sum+=$1} END {print \"Total passed:\", sum}')",
+      "mcp__plugin_everything-claude-code_github__get_file_contents"
     ]
   }
 }

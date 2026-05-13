@@ -48,6 +48,7 @@ members = [
     "crates/nexus-integration",
     "crates/nexus-state-machine",
     "crates/nexus-graphql",
+    "crates/nexus-grpc",
     "crates/nexus-hateoas",
     "crates/nexus-data-annotations",
     "crates/nexus-ldap",
@@ -55,6 +56,8 @@ members = [
     "crates/nexus-shell",
     "crates/nexus-shell-macros",
     "crates/nexus-ws",
+    "crates/nexus-ai",
+    "crates/nexus-lombok",
     "tests",
     "examples",
 ]
@@ -274,6 +277,7 @@ tokio-test = "0.4"
 # Utilities / 工具
 itertools = "0.14"
 indexmap = { version = "2.13.0", features = ["serde"] }
+inventory = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 time = { version = "0.3.46", features = ["serde", "local-offset"] }
 uuid = { version = "1.12", features = ["v4", "serde"] }
