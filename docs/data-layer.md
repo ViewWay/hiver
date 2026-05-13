@@ -91,6 +91,80 @@ Procedural macros for the data layer:
 - `#[derive(Model)]` - 自动实现 Model trait
 - `#[model]` 属性 - 配置模型元数据
 
+### nexus-data-mongodb
+
+MongoDB integration equivalent to Spring Data MongoDB:
+- `MongoTemplate` - Template for MongoDB operations
+- `MongoRepository` - Repository pattern for MongoDB
+- `Aggregation` - Aggregation pipeline support
+- `BulkOperations` - Bulk write operations
+
+MongoDB 集成，等价于 Spring Data MongoDB：
+- `MongoTemplate` - MongoDB 操作模板
+- `MongoRepository` - MongoDB 仓储模式
+- `Aggregation` - 聚合管道支持
+- `BulkOperations` - 批量写入操作
+
+### nexus-data-redis
+
+Redis integration equivalent to Spring Data Redis:
+- `RedisTemplate` - Template for Redis operations
+- `RedisLock` - Distributed lock with reentrant and watchdog support
+- `RedisCache` - Cache abstraction backed by Redis
+- `RedisPipeline` - Pipeline for batching Redis commands
+
+Redis 集成，等价于 Spring Data Redis：
+- `RedisTemplate` - Redis 操作模板
+- `RedisLock` - 支持可重入和看门狗的分布式锁
+- `RedisCache` - 基于 Redis 的缓存抽象
+- `RedisPipeline` - Redis 命令批处理管道
+
+### nexus-data-annotations
+
+Data layer annotation macros equivalent to Spring Data / JPA annotations:
+- `#[Entity]` - Mark a struct as a database entity
+- `#[Table]` - Specify database table metadata
+- `#[Id]` - Mark a field as the primary key
+- `#[Column]` - Configure column mapping
+- `#[Query]` - Define custom query methods
+- `#[Transactional]` - Mark a method as transactional
+
+数据层注解宏，等价于 Spring Data / JPA 注解：
+- `#[Entity]` - 将结构体标记为数据库实体
+- `#[Table]` - 指定数据库表元数据
+- `#[Id]` - 标记字段为主键
+- `#[Column]` - 配置列映射
+- `#[Query]` - 定义自定义查询方法
+- `#[Transactional]` - 标记方法为事务性操作
+
+### nexus-tx
+
+Transaction management equivalent to Spring Transaction:
+- `TransactionManager` - Transaction lifecycle management
+- `TransactionTemplate` - Programmatic transaction demarcation
+- `IsolationLevel` - Transaction isolation levels
+- `Propagation` - Transaction propagation behaviors
+
+事务管理，等价于 Spring Transaction：
+- `TransactionManager` - 事务生命周期管理
+- `TransactionTemplate` - 编程式事务划分
+- `IsolationLevel` - 事务隔离级别
+- `Propagation` - 事务传播行为
+
+### nexus-flyway
+
+Database migration framework equivalent to Flyway:
+- Versioned migrations with checksums
+- Repeatable migrations
+- Baseline and repair support
+- CLI and programmatic API
+
+数据库迁移框架，等价于 Flyway：
+- 带校验和的版本化迁移
+- 可重复迁移
+- 基线和修复支持
+- CLI 和编程式 API
+
 ## Usage Examples / 使用示例
 
 ### Defining a Model / 定义模型
@@ -155,7 +229,7 @@ let users = User::query()
     .where_("email LIKE ?", &["%@example.com"])
     .order_by("created_at DESC")
     .limit(10)
-    .all()
+    .all(&client)
     .await?;
 ```
 
@@ -190,6 +264,6 @@ let users = User::query()
 - [x] ORM integration (orm)
 - [x] Model derive macro (macros)
 - [ ] Database integration tests
-- [ ] MongoDB support (nexus-data-mongodb)
-- [ ] Redis support (nexus-data-redis)
+- [x] MongoDB support (nexus-data-mongodb)
+- [x] Redis support (nexus-data-redis)
 - [ ] Sea ORM sqlx 0.8.6 compatibility fix

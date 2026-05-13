@@ -6,27 +6,28 @@
 
 **预计时间：** 4-6 个月
 
-### 8.1 nexus-data-jdbc (1.5 个月) / JDBC 简化操作
+### 8.1 nexus-data-rdbc (1.5 个月) / 响应式数据库
 
-**目标：** 类似 Spring Data JDBC，提供简化的数据库操作
+**目标：** 类似 Spring Data R2DBC，提供响应式数据库操作
 
 ```rust
 // 目标 API
-use nexus_data_jdbc::{JdbcTemplate, RowMapper, ResultSetExtractor};
+use nexus_data_rdbc::{DatabaseClient, RowMapper, ResultSetExtractor};
 
-#[tokio::main]
-async fn main() {
-    let template = JdbcTemplate::new("postgresql://...").await.unwrap();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+        let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
     // 查询
-    let users: Vec<User> = template.query(
-        "SELECT * FROM users WHERE email = ?",
+    let users: Vec<User> = client.query(
+        "SELECT * FROM users WHERE email = $1",
         &["user@example.com"]
     ).await.unwrap();
 
     // 插入
-    let rows = template.update(
-        "INSERT INTO users (name, email) VALUES (?, ?)",
+    let rows = client.execute(
+        "INSERT INTO users (name, email) VALUES ($1, $2)",
         &["Alice", "alice@example.com"]
     ).await.unwrap();
 
@@ -35,15 +36,17 @@ async fn main() {
         ("Bob", "bob@example.com"),
         ("Charlie", "charlie@example.com")
     ];
-    template.batch_update(
-        "INSERT INTO users (name, email) VALUES (?, ?)",
+    client.batch_execute(
+        "INSERT INTO users (name, email) VALUES ($1, $2)",
         &batches
     ).await.unwrap();
+    });
+    Ok(())
 }
 ```
 
 **实现内容：**
-1. ✅ JdbcTemplate 核心实现
+1. ✅ DatabaseClient 核心实现
 2. ✅ RowMapper trait
 3. ✅ ResultSetExtractor trait
 4. ✅ 参数化查询（防止 SQL 注入）
@@ -54,63 +57,67 @@ async fn main() {
 
 **文件结构：**
 ```
-crates/nexus-data-jdbc/
+crates/nexus-data-rdbc/
 ├── src/
 │   ├── lib.rs              # 公共 API
-│   ├── template.rs         # JdbcTemplate
-│   ├── query.rs            # 查询操作
-│   ├── update.rs           # 更新操作
-│   ├── transaction.rs      # 事务集成
+│   ├── client.rs           # DatabaseClient
+│   ├── connection.rs       # 连接管理
 │   ├── pool.rs             # 连接池
-│   └── error.rs            # 错误类型
+│   ├── transaction.rs      # 事务集成
+│   ├── error.rs            # 错误类型
+│   └── row_mapper.rs       # RowMapper trait
 ├── tests/
 │   ├── integration_test.rs
 │   └── transaction_test.rs
 └── Cargo.toml
 ```
 
-### 8.2 nexus-orm (2 个月) / ORM 集成
+### 8.2 nexus-data-orm (2 个月) / ORM 集成
 
 **目标：** 集成主流 Rust ORM，提供统一抽象
 
 ```rust
-// 目标 API（SeaORM 版本）
-use nexus_orm::seaorm::*;
-use sea_orm::{EntityTrait, Database};
+// 目标 API（ActiveRecord 版本）
+use nexus_data_orm::{Model, ActiveRecord};
+use nexus_data_rdbc::DatabaseClient;
 
-#[tokio::main]
-async fn main() {
-    let db = Database::connect("postgresql://...").await.unwrap();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+    let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
     // 查询所有
-    let users: Vec<User> = User::find().all(&db).await.unwrap();
+    let users: Vec<User> = User::find().all(&client).await.unwrap();
 
     // 条件查询
-    let user: Option<User> = User::find_by_id(1).one(&db).await.unwrap();
+    let user: Option<User> = User::find_by_id(1).one(&client).await.unwrap();
 
     // 分页
     let page: Page<User> = User::find()
-        .paginate(&db, Pages::new(1, 10))
+        .paginate(&client, Pages::new(1, 10))
         .await.unwrap();
 
     // 事务
-    let txn = db.begin().await.unwrap();
+    let txn = client.begin().await.unwrap();
     User::insert(user).exec(&txn).await.unwrap();
     txn.commit().await.unwrap();
+    });
+    Ok(())
 }
 ```
 
 **实现内容：**
 
-#### 8.2.1 SeaORM 集成 (1 个月)
-1. ✅ Entity trait 封装
-2. ✅ 查询构建器
-3. ✅ 分页支持
-4. ✅ 事务支持
-5. ✅ 关联关系（OneToOne, OneToMany, ManyToMany）
+#### 8.2.1 ActiveRecord 实现 (1 个月)
+1. ✅ Model trait 封装
+2. ✅ ActiveRecord 模式
+3. ✅ 查询构建器
+4. ✅ 分页支持
+5. ✅ 事务支持
+6. ✅ 关联关系（HasMany, HasOne, BelongsTo, BelongsToMany）
 
-#### 8.2.2 Diesel 集成 (0.5 个月)
-1. ✅ Diesel schema 集成
+#### 8.2.2 SeaORM 桥接 (0.5 个月)
+1. ✅ SeaORM Entity trait 桥接
 2. ✅ 查询 DSL 封装
 
 #### 8.2.3 SQLx 集成 (0.5 个月)
@@ -119,97 +126,60 @@ async fn main() {
 
 **文件结构：**
 ```
-crates/nexus-orm/
+crates/nexus-data-orm/
 ├── src/
 │   ├── lib.rs              # 公共 API
-│   ├── seaorm/
-│   │   ├── mod.rs
-│   │   ├── entity.rs       # Entity trait
-│   │   ├── query.rs        # 查询构建器
-│   │   ├── pagination.rs   # 分页
-│   │   └── relations.rs    # 关联关系
-│   ├── diesel/
-│   │   ├── mod.rs
-│   │   └── query.rs
-│   └── sqlx/
-│       ├── mod.rs
-│       └── query.rs
+│   ├── model.rs            # Model trait
+│   ├── active_record.rs    # ActiveRecord
+│   ├── query_builder.rs    # 查询构建器
+│   ├── relations.rs        # 关联关系
+│   └── pagination.rs       # 分页
 ├── tests/
-│   ├── seaorm_test.rs
-│   └── diesel_test.rs
+│   ├── model_test.rs
+│   └── query_test.rs
 └── Cargo.toml
 ```
 
-### 8.3 nexus-data (2.5 个月) / Repository 抽象
+### 8.3 nexus-data-commons (2.5 个月) / Repository 抽象
 
 **目标：** 类似 Spring Data JPA，提供声明式 Repository
 
 ```rust
 // 目标 API
-use nexus_data::{Repository, Crud, Query};
-use nexus_data::prelude::*;
+use nexus_data_commons::{CrudRepository, PageRequest, Page};
+use nexus_data_rdbc::DatabaseClient;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct User {
-    id: i32,
-    username: String,
-    email: String,
-}
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
+    let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
-// 声明式 Repository（最简单的使用方式）
-#[Repository]
-trait UserRepository: Crud<User, i32> {
-    // 自动继承：save(), findById(), findAll(), deleteById()
-
-    // 自定义查询方法
-    async fn findByUsername(&self, username: &str) -> Result<Option<User>, Error>;
-
-    async fn findByEmailAndActive(
-        &self,
-        email: &str,
-        active: bool
-    ) -> Result<Vec<User>, Error>;
-
-    // 分页查询
-    async fn findByAgeGreaterThan(
-        &self,
-        age: i32,
-        page: PageRequest
-    ) -> Result<Page<User>, Error>;
-
-    // 更新查询
-    @Query("UPDATE users SET last_login = ? WHERE id = ?")
-    async fn updateLastLogin(&self, user_id: i32, timestamp: DateTime) -> Result<u64, Error>;
-}
-
-#[tokio::main]
-async fn main() {
-    let repo = UserRepositoryImpl::new("postgresql://...");
-
-    // 使用继承的 CRUD 方法
+    // CRUD 操作
     let user = User { id: 0, username: "alice".into(), email: "alice@example.com".into() };
     let saved = repo.save(user).await.unwrap();
 
-    // 使用自定义查询方法
-    let found = repo.findByUsername("alice").await.unwrap();
+    // 查询方法
+    let found = repo.find_by_username("alice").await.unwrap();
 
     // 分页查询
-    let page = repo.findByAgeGreaterThan(18, PageRequest::new(0, 20)).await.unwrap();
+    let page = repo.find_by_age_greater_than(18, PageRequest::new(0, 20)).await.unwrap();
     println!("Total: {}, Page {} of {}",
-        page.total_elements,
-        page.number + 1,
-        page.total_pages
+        page.total_elements(),
+        page.number() + 1,
+        page.total_pages()
     );
+    });
+    Ok(())
 }
 ```
 
 **实现内容：**
 
-#### 8.3.1 Repository Macro (1 个月)
-1. ✅ #[Repository] 过程宏
-2. ✅ Crud trait 自动实现
-3. ✅ 方法名解析（findByXxxAndYyy）
-4. ✅ @Query 注解宏
+#### 8.3.1 Repository Traits (1 个月)
+1. ✅ Repository trait
+2. ✅ CrudRepository trait
+3. ✅ PagingAndSortingRepository trait
+4. ✅ 方法名解析（findByXxxAndYyy）— `MethodName::parse()`
 5. ✅ 分页支持
 
 #### 8.3.2 Query DSL (1 个月)
@@ -219,52 +189,41 @@ async fn main() {
 4. ✅ 分页（Pageable）
 5. ✅ 动态查询（Specification）
 
-#### 8.3.3 Pagination (0.5 个月)
-1. ✅ Page<T> 结构
-2. ✅ PageRequest
-3. ✅ Slice<T>
-4. ✅ List<T>
+#### 8.3.3 Entity Metadata (0.5 个月)
+1. ✅ Entity traits: AggregateRoot, Auditable, Versioned, SoftDeletable
+2. ✅ Page<T> 结构
+3. ✅ PageRequest
+4. ✅ Sort
 
 **文件结构：**
 ```
-crates/nexus-data/
+crates/nexus-data-commons/
 ├── src/
 │   ├── lib.rs                    # 公共 API
-│   ├── repository.rs             # Repository trait
-│   ├── crud.rs                   # Crud trait
-│   ├── query.rs                  # Query trait
+│   ├── repository.rs             # Repository traits
+│   ├── crud.rs                   # CrudRepository
 │   ├── pagination.rs             # 分页支持
 │   ├── sort.rs                   # 排序
 │   ├── specification.rs          # 动态查询
-│   └── macros/
-│       ├── mod.rs
-│       ├── repository.rs         # #[Repository] 宏
-│       ├── query.rs              # @Query 宏
-│       └── crud.rs               # Crud derive 宏
-├── nexus-data-macros/
-│   ├── src/
-│   │   ├── lib.rs
-│   │   ├── repository_derive.rs
-│   │   ├── query_attr.rs
-│   │   └── method_parser.rs      # 方法名解析
-│   └── Cargo.toml
+│   └── entity.rs                 # Entity traits
 ├── tests/
 │   ├── repository_test.rs
 │   ├── pagination_test.rs
-│   └── macro_test.rs
+│   └── method_name_test.rs
 └── Cargo.toml
 ```
 
-### 8.4 nexus-migration (1 个月) / 数据库迁移
+### 8.4 nexus-flyway (1 个月) / 数据库迁移
 
 **目标：** 类似 Flyway/Liquibase，管理数据库版本
 
 ```rust
 // 目标 API
-use nexus_migration::{Migration, Migrator};
+use nexus_flyway::{Migration, Migrator};
 
-#[tokio::main]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = nexus_runtime::Runtime::new()?;
+    runtime.block_on(async {
     let migrator = Migrator::new("postgresql://...").await.unwrap();
 
     // 自动执行迁移
@@ -274,6 +233,8 @@ async fn main() {
     migrator.pending().await.unwrap();  // 查看待执行的迁移
     migrator.up().await.unwrap();       // 向上迁移
     migrator.down().await.unwrap();     // 向下迁移
+    });
+    Ok(())
 }
 ```
 
@@ -351,10 +312,10 @@ CREATE TABLE users (
 | 阶段 | Crates | 时间 | 优先级 |
 |------|--------|------|--------|
 | **Phase 8** | | **6 个月** | **P0** |
-| 8.1 | nexus-data-jdbc | 1.5 个月 | P0 |
-| 8.2 | nexus-orm | 2 个月 | P0 |
-| 8.3 | nexus-data | 2.5 个月 | P0 |
-| 8.4 | nexus-migration | 1 个月 | P1 |
+| 8.1 | nexus-data-rdbc | 1.5 个月 | P0 |
+| 8.2 | nexus-data-orm | 2 个月 | P0 |
+| 8.3 | nexus-data-commons | 2.5 个月 | P0 |
+| 8.4 | nexus-flyway | 1 个月 | P1 |
 | **Phase 9** | | **8.5 个月** | **P1** |
 | 9.1 | nexus-data-redis | 1 个月 | P1 |
 | 9.2 | nexus-cache-annotations | 0.5 个月 | P1 |
@@ -369,18 +330,18 @@ CREATE TABLE users (
 
 ## 🎯 里程碑 / 里程碑
 
-### Milestone 1: JDBC 基础（1.5 个月）
-- ✅ nexus-data-jdbc 完成
+### Milestone 1: RDBC 基础（1.5 个月）
+- ✅ nexus-data-rdbc 完成
 - ✅ 可以进行基础的 CRUD 操作
 - ✅ 示例：用户管理 API
 
 ### Milestone 2: ORM 集成（3.5 个月）
-- ✅ nexus-orm 完成
-- ✅ 可以使用 SeaORM/Diesel/SQLx
+- ✅ nexus-data-orm 完成
+- ✅ 可以使用 ActiveRecord 模式
 - ✅ 示例：博客系统（含关联关系）
 
 ### Milestone 3: Repository 抽象（6 个月）
-- ✅ nexus-data 完成
+- ✅ nexus-data-commons 完成
 - ✅ 可以使用声明式 Repository
 - ✅ 示例：电商系统（完整 CRUD）
 
@@ -408,24 +369,22 @@ CREATE TABLE users (
 
 ## 🚀 立即行动计划 / 立即行动计划
 
-### 第 1 步：创建 nexus-data-jdbc（本周）
-- [ ] 创建 crate 目录结构
-- [ ] 实现 JdbcTemplate 基础
-- [ ] 添加查询方法
-- [ ] 添加更新方法
-- [ ] 集成事务管理
-- [ ] 编写集成测试
+### 第 1 步：创建 nexus-data-rdbc（本周）
+- [x] 创建 crate 目录结构
+- [x] 实现 DatabaseClient 基础
+- [x] 添加查询方法
+- [x] 添加更新方法
+- [x] 集成事务管理
+- [x] 编写集成测试
 
 ### 第 2 步：创建 CRUD 示例（第 2 周）
-- [ ] 用户表 CRUD
-- [ ] 分页查询
-- [ ] 条件查询
-- [ ] 事务示例
+- [x] 用户表 CRUD
+- [x] 分页查询
+- [x] 条件查询
+- [x] 事务示例
 
 ### 第 3 步：完善文档（第 3 周）
-- [ ] 快速开始指南
-- [ ] API 文档
-- [ ] 示例代码
+- [x] 快速开始指南
+- [x] API 文档
+- [x] 示例代码
 - [ ] 最佳实践
-
-**要不要我立即开始实现 nexus-data-jdbc？**
