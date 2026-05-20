@@ -198,7 +198,7 @@ tokio-postgres = "0.7"
 # Security / 安全
 # Equivalent to: Spring Security
 # Using aws_lc_rs feature for crypto (secure alternative to rust_crypto)
-jsonwebtoken = { version = "10.3", features = ["aws_lc_rs"] }
+jsonwebtoken = { version = "10.4", features = ["aws_lc_rs"] }
 bcrypt = "0.18.0"
 rand = "0.9.3"
 hmac = "0.12"
