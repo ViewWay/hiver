@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779285273507,
+  "projectRoot": "/Users/yimiliya/RustroverProjects/nexus",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Rust",
+        "version": "1.93",
+        "confidence": "high",
+        "markers": [
+          "Cargo.toml"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "cargo",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "cargo build",
+    "testCommand": "cargo test",
+    "lintCommand": "cargo clippy",
+    "devCommand": "cargo run",
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "examples",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "crates": {
+      "path": "crates",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779285273494,
+      "keyFiles": []
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 9,
+      "lastAccessed": 1779285273496,
+      "keyFiles": [
+        "CODEMAP.md",
+        "DOCS-INDEX.md",
+        "DOCUMENTATION-REORGANIZATION-REPORT.md",
+        "INDEX.md",
+        "SECURITY_AUDIT.md"
+      ]
+    },
+    "examples": {
+      "path": "examples",
+      "purpose": "Example code",
+      "fileCount": 14,
+      "lastAccessed": 1779285273499,
+      "keyFiles": [
+        "Cargo.toml",
+        "EXAMPLES.md",
+        "README.md",
+        "cache_example.rs",
+        "cache_with_conditions.rs"
+      ]
+    },
+    "fuzzers": {
+      "path": "fuzzers",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1779285273500,
+      "keyFiles": [
+        "Cargo.toml",
+        "README.md"
+      ]
+    },
+    "target": {
+      "path": "target",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1779285273502,
+      "keyFiles": [
+        "CACHEDIR.TAG"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 2,
+      "lastAccessed": 1779285273503,
+      "keyFiles": [
+        "Cargo.toml",
+        "lib.rs"
+      ]
+    },
+    "docs/api": {
+      "path": "docs/api",
+      "purpose": "API routes",
+      "fileCount": 3,
+      "lastAccessed": 1779285273504,
+      "keyFiles": [
+        "annotations-reference.md",
+        "api-quick-reference.md",
+        "api-spec.md"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}
