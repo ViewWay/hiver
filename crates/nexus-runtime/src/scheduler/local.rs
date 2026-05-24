@@ -161,8 +161,12 @@ impl Scheduler {
 
             // Run the scheduler loop with driver
             // 运行带driver的调度器循环
-            // TODO: Integrate driver for I/O events
-            // TODO: 与driver集成以处理I/O事件
+            // Driver is stored by Runtime and used in its block_on event loop.
+            // Scheduler worker handles task polling; Runtime handles I/O events
+            // and wakes tasks via waker → re-enqueue → wake channel notification.
+            // Driver由Runtime持有并在block_on事件循环中使用。
+            // Scheduler worker负责任务轮询；Runtime处理I/O事件，
+            // 通过waker → 重新入队 → wake通道通知来唤醒任务。
             Self::run_scheduler(&queue_clone, &inject_queue_clone, &wake_clone, &state_clone);
         })?;
 
@@ -213,7 +217,7 @@ impl Scheduler {
     fn run_scheduler(
         local_queue: &LocalQueue,
         inject_queue: &LocalQueue,
-        _wake: &super::handle::WakeChannel,
+        wake: &super::handle::WakeChannel,
         state: &std::sync::atomic::AtomicU8,
     ) {
         while state.load(std::sync::atomic::Ordering::Relaxed) == STATE_RUNNING {
@@ -226,17 +230,21 @@ impl Scheduler {
             });
 
             if let Some(task) = task {
-                // Execute the task
-                // 执行任务
-                // TODO: Actually execute the future (Phase 1: placeholder)
-                // TODO: 实际执行 future（第1阶段：占位符）
-                let _ = task;
+                // Execute the task by polling its future via the vtable
+                // 通过vtable轮询其future来执行任务
+                let completed = unsafe { crate::task::raw_task::poll_raw_task(task) };
+                if completed {
+                    // Task finished, consume queue ref
+                    unsafe {
+                        crate::task::raw_task::deallocate_completed_task(task);
+                    }
+                }
+                // If Pending: waker holds the ref and will re-enqueue when ready
+                // 如果Pending：waker持有引用，就绪时会重新入队
             } else {
-                // No tasks available, park the scheduler
-                // 没有可用任务，暂停调度器
-                // TODO: Integrate with driver for I/O events (Phase 1: placeholder)
-                // TODO: 与driver集成以处理I/O事件（第1阶段：占位符）
-                thread::sleep(Duration::from_millis(1));
+                // No tasks available, block on wake channel with timeout
+                // 没有可用任务，带超时阻塞在唤醒通道上
+                wake.recv_timeout(Duration::from_millis(10));
             }
         }
 

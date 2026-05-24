@@ -32,6 +32,12 @@ use crate::driver::{Driver, DriverFactory, DriverType};
 use crate::scheduler::{Scheduler, SchedulerConfig, SchedulerHandle};
 use crate::time::{Duration, Instant};
 
+/// Thread-local storage for the current runtime handle
+/// 当前运行时句柄的线程本地存储
+thread_local! {
+    static CURRENT_HANDLE: std::cell::RefCell<Option<Handle>> = std::cell::RefCell::new(None);
+}
+
 /// Runtime configuration / 运行时配置
 ///
 /// Configuration for the async runtime including scheduler and driver settings.
@@ -259,6 +265,13 @@ impl Runtime {
     /// });
     /// ```
     pub fn block_on<F: Future<Output = ()>>(&mut self, future: F) -> io::Result<()> {
+        // Set the current runtime handle for this thread
+        // 为当前线程设置运行时句柄
+        let handle = Handle {
+            scheduler_handle: self.scheduler.handle(),
+        };
+        Handle::set_current(Some(handle));
+
         // Pin the future
         // Pin future
         let mut future = Box::pin(future);
@@ -272,7 +285,7 @@ impl Runtime {
 
         // Run the event loop
         // 运行事件循环
-        loop {
+        let result = loop {
             // Poll the future
             // 轮询future
             match Pin::new(&mut future).poll(&mut context) {
@@ -280,7 +293,7 @@ impl Runtime {
                     // Future completed, flush any remaining events
                     // Future完成，刷新任何剩余事件
                     let _ = self.flush_events();
-                    return Ok(());
+                    break Ok(());
                 },
                 Poll::Pending => {
                     // Future is not ready, run the event loop
@@ -288,7 +301,13 @@ impl Runtime {
                     self.run_once()?;
                 },
             }
-        }
+        };
+
+        // Clear the thread-local handle
+        // 清除线程本地句柄
+        Handle::set_current(None);
+
+        result
     }
 
     /// Run a single iteration of the event loop
@@ -397,11 +416,23 @@ impl Handle {
     /// Panics if called outside of a runtime context.
     /// 如果在运行时上下文之外调用则恐慌。
     pub fn current() -> Self {
-        // TODO: Implement thread-local storage for current runtime handle
-        // TODO: 为当前运行时句柄实现线程本地存储
-        Self {
-            scheduler_handle: SchedulerHandle::new_default(),
-        }
+        CURRENT_HANDLE.with(|h| {
+            h.borrow()
+                .clone()
+                .expect("Handle::current() called outside of a runtime context")
+        })
+    }
+
+    /// Try to get a handle to the current runtime. Returns None if outside a runtime.
+    /// 尝试获取当前运行时的句柄。如果在运行时外部则返回None。
+    pub fn try_current() -> Option<Self> {
+        CURRENT_HANDLE.with(|h| h.borrow().clone())
+    }
+
+    /// Set the current runtime handle for this thread
+    /// 为当前线程设置运行时句柄
+    fn set_current(handle: Option<Handle>) {
+        CURRENT_HANDLE.with(|h| *h.borrow_mut() = handle);
     }
 
     /// Get the scheduler handle
@@ -461,5 +492,91 @@ mod tests {
         {
             assert!(runtime.is_ok());
         }
+    }
+
+    #[test]
+    fn test_block_on_simple() {
+        let mut runtime = Runtime::new().unwrap();
+        let result = runtime.block_on(async {});
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_spawn_executes_through_scheduler() {
+        use std::sync::atomic::{AtomicI32, Ordering};
+        use std::sync::Arc;
+
+        let mut runtime = Runtime::new().unwrap();
+        let counter = Arc::new(AtomicI32::new(0));
+        let counter_clone = counter.clone();
+
+        runtime
+            .block_on(async move {
+                let handle = crate::task::spawn(async move {
+                    counter_clone.store(42, Ordering::SeqCst);
+                });
+                let _ = handle.wait().await;
+            })
+            .unwrap();
+
+        assert_eq!(counter.load(Ordering::SeqCst), 42);
+    }
+
+    #[test]
+    fn test_spawn_returns_value() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async { 42i32 });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, 42);
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_multiple_spawns() {
+        use std::sync::atomic::{AtomicI32, Ordering};
+        use std::sync::Arc;
+
+        let mut runtime = Runtime::new().unwrap();
+        let counter = Arc::new(AtomicI32::new(0));
+
+        runtime
+            .block_on(async {
+                let mut handles = vec![];
+                for _ in 0..10 {
+                    let c = counter.clone();
+                    handles.push(crate::task::spawn(async move {
+                        c.fetch_add(1, Ordering::SeqCst);
+                    }));
+                }
+                for h in handles {
+                    let _ = h.wait().await;
+                }
+            })
+            .unwrap();
+
+        assert_eq!(counter.load(Ordering::SeqCst), 10);
+    }
+
+    #[test]
+    fn test_spawn_with_async_computation() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let h1 = crate::task::spawn(async { 1i32 });
+                let h2 = crate::task::spawn(async { 2i32 });
+                let h3 = crate::task::spawn(async { 3i32 });
+
+                let sum = h1.wait().await.unwrap()
+                    + h2.wait().await.unwrap()
+                    + h3.wait().await.unwrap();
+
+                assert_eq!(sum, 6);
+            })
+            .unwrap();
     }
 }

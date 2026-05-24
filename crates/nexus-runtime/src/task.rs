@@ -15,8 +15,9 @@
 
 #![allow(private_interfaces)]
 
+pub mod raw_task;
+
 use std::future::Future;
-use std::panic;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 use std::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
@@ -254,12 +255,14 @@ unsafe fn raw_waker_wake_by_ref(data: *const ()) {
 
     // Try to transition from Waiting to Running
     // 尝试从Waiting转换到Running
-    if let Err(_) = inner.state.compare_exchange(
+    if inner.state.compare_exchange(
         TaskState::Waiting as u8,
         TaskState::Running as u8,
         Ordering::Release,
         Ordering::Relaxed,
-    ) {
+    )
+    .is_err()
+    {
         return; // Not in waiting state
     }
 
@@ -291,39 +294,54 @@ unsafe fn raw_waker_drop(data: *const ()) {
 /// Allows awaiting task completion and retrieving the result.
 /// 允许等待任务完成并检索结果。
 pub struct JoinHandle<T> {
-    inner: Arc<TaskInner<T>>,
+    inner: Option<Arc<TaskInner<T>>>,
+    raw_core: Option<raw_task::TaskRef>,
 }
 
 impl<T> JoinHandle<T> {
-    /// Create a new join handle
-    /// 创建新的join句柄
-    #[allow(dead_code)]
-    pub(crate) fn new(inner: Arc<TaskInner<T>>) -> Self {
-        Self { inner }
-    }
-
     /// Get the task ID
     /// 获取任务ID
     #[must_use]
     pub fn id(&self) -> TaskId {
-        self.inner.id
+        if let Some(refs) = &self.raw_core {
+            if let Some(core) = refs.core() {
+                return core.id();
+            }
+        }
+        self.inner.as_ref().map(|i| i.id).unwrap_or(0)
     }
 
-    /// Check if the task has finished
-    /// 检查任务是否已完成
+    /// Check if the task has finished (completed, cancelled, or panicked).
+    /// 检查任务是否已完成（成功完成、已取消或发生panic）。
     #[must_use]
     pub fn is_finished(&self) -> bool {
-        if let Some(state) = TaskState::from_u8(self.inner.state.load(Ordering::Acquire)) {
-            state.is_finished()
-        } else {
-            false
+        if let Some(refs) = &self.raw_core {
+            if let Some(core) = refs.core() {
+                return core.is_completed();
+            }
         }
+        self.inner.as_ref()
+            .and_then(|i| TaskState::from_u8(i.state.load(Ordering::Acquire)))
+            .map(|s| s.is_finished())
+            .unwrap_or(false)
     }
 
-    /// Wait for the task to complete
-    /// 等待任务完成
+    /// Wait for the task to complete and retrieve its result.
+    /// 等待任务完成并获取其结果。
     pub async fn wait(self) -> Result<T, JoinError> {
-        WaitForTask::new(self.inner).await
+        if let Some(refs) = &self.raw_core {
+            if let Some(core) = refs.core() {
+                while !core.is_completed() {
+                    std::hint::spin_loop();
+                    std::future::pending::<()>().await;
+                }
+                return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
+            }
+        }
+        if let Some(inner) = self.inner {
+            return WaitForTask::new(inner).await;
+        }
+        Err(JoinError::TaskCancelled)
     }
 }
 
@@ -443,13 +461,30 @@ where
     F: Future<Output = T> + Send + 'static,
     T: Send + 'static,
 {
-    use std::thread;
+    // Try to use the scheduler if a runtime context is available
+    // 如果运行时上下文可用，尝试使用调度器
+    if let Some(handle) = crate::runtime::Handle::try_current() {
+        let (raw_task, task_ref) =
+            raw_task::allocate_task(future, handle.scheduler().clone());
 
-    // For Phase 2, we'll use a simple thread-based executor
-    // Each spawned task gets its own thread that runs the future to completion
-    // 第2阶段，我们使用简单的基于线程的执行器
-    // 每个生成的任务都有自己的线程来运行future到完成
+        let id = task_ref.core().map(|c| c.id()).unwrap_or(0);
+        let _ = handle.scheduler().submit(raw_task);
 
+        return JoinHandle {
+            inner: Some(Arc::new(TaskInner {
+                id,
+                state: AtomicU8::new(TaskState::Running as u8),
+                ref_count: AtomicUsize::new(1),
+                scheduler: handle.scheduler().clone(),
+                raw_task: AtomicUsize::new(0),
+                output: lock::OptionalCell::new(),
+            })),
+            raw_core: Some(task_ref),
+        };
+    }
+
+    // Fallback: thread-per-task executor (when no runtime context)
+    // 回退：每任务一线程执行器（无运行时上下文时）
     let id = gen_task_id();
     let inner = Arc::new(TaskInner {
         id,
@@ -462,42 +497,30 @@ where
 
     let inner_clone = inner.clone();
 
-    // Spawn a thread to run the future
-    // 生成一个线程来运行future
-    thread::spawn(move || {
-        // Pin the future and poll it to completion
-        // Pin future并轮询它到完成
+    std::thread::spawn(move || {
         let mut future = Box::pin(future);
-
-        // Create a no-op waker for now (Phase 2)
-        // 目前创建一个空操作的waker（第2阶段）
         let waker = Waker::noop();
         let mut context = Context::from_waker(waker);
 
-        // Simple polling loop - this will block the thread
-        // 简单轮询循环 - 这将阻塞线程
-        // Phase 3 will integrate with the runtime scheduler
-        // 第3阶段将与运行时调度器集成
         let result = loop {
             match Pin::new(&mut future).poll(&mut context) {
                 Poll::Ready(value) => break value,
                 Poll::Pending => {
-                    // For Phase 2, just yield briefly
-                    // Phase 2暂时只需要短暂yield
-                    thread::sleep(std::time::Duration::from_millis(1));
+                    std::thread::sleep(std::time::Duration::from_millis(1));
                 },
             }
         };
 
-        // Store the result
-        // 存储结果
         inner_clone.output.set(result);
         inner_clone
             .state
             .store(TaskState::Completed as u8, Ordering::Release);
     });
 
-    JoinHandle { inner }
+    JoinHandle {
+        inner: Some(inner),
+        raw_core: None,
+    }
 }
 
 /// Block on a future to completion

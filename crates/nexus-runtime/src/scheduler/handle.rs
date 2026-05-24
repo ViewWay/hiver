@@ -110,6 +110,39 @@ impl WakeChannel {
         }
     }
 
+    /// Block until a notification arrives or timeout elapses
+    /// 阻塞直到收到通知或超时
+    ///
+    /// Returns `true` if a notification was received, `false` on timeout.
+    /// 如果收到通知返回 `true`，超时返回 `false`。
+    pub(crate) fn recv_timeout(&self, timeout: std::time::Duration) -> bool {
+        let mut tv = libc::timeval {
+            tv_sec: timeout.as_secs() as _,
+            tv_usec: timeout.subsec_micros() as _,
+        };
+
+        unsafe {
+            let mut fdset: libc::fd_set = std::mem::zeroed();
+            libc::FD_ZERO(&mut fdset);
+            libc::FD_SET(self.read_fd, &mut fdset);
+
+            let n = libc::select(
+                self.read_fd + 1,
+                &mut fdset,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                &mut tv,
+            );
+
+            if n > 0 {
+                self.drain();
+                true
+            } else {
+                false
+            }
+        }
+    }
+
     /// Get the file descriptor for epoll/kqueue registration
     /// 获取用于epoll/kqueue注册的文件描述符
     #[must_use]
@@ -303,5 +336,25 @@ mod tests {
         // 测试通知和排空
         wake.notify();
         wake.drain();
+    }
+
+    #[test]
+    fn test_recv_timeout_no_notification() {
+        let wake = WakeChannel::new().unwrap();
+        let start = std::time::Instant::now();
+        let received = wake.recv_timeout(std::time::Duration::from_millis(10));
+        assert!(!received);
+        // Should have waited approximately 10ms, not returned immediately
+        // 应该等待约10ms，而不是立即返回
+        assert!(start.elapsed() >= std::time::Duration::from_millis(5));
+    }
+
+    #[test]
+    fn test_recv_timeout_with_notification() {
+        let wake = WakeChannel::new().unwrap();
+        wake.notify();
+
+        let received = wake.recv_timeout(std::time::Duration::from_secs(1));
+        assert!(received);
     }
 }

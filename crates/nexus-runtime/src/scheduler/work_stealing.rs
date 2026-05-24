@@ -116,11 +116,14 @@ impl WorkStealingScheduler {
             });
 
             if let Some(task) = task {
-                // Execute the task
-                // 执行任务
-                // TODO: Actually execute the future (Phase 1: placeholder)
-                // TODO: 实际执行 future（第1阶段：占位符）
-                let _ = task;
+                // Execute the task by polling its future via the vtable
+                // 通过vtable轮询其future来执行任务
+                let completed = unsafe { crate::task::raw_task::poll_raw_task(task) };
+                if completed {
+                    unsafe {
+                        crate::task::raw_task::deallocate_completed_task(task);
+                    }
+                }
             } else {
                 // No tasks available, park briefly
                 // 没有可用任务，短暂暂停
