@@ -711,6 +711,8 @@ fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<
 mod tests {
     use super::*;
 
+    // ── Helpers / 辅助函数 ──
+
     fn make_server() -> AuthorizationServer {
         AuthorizationServer::builder()
             .issuer("https://auth.test")
@@ -719,8 +721,11 @@ mod tests {
                 RegisteredClient::new("app")
                     .secret("s3cr3t")
                     .redirect_uri("https://app.test/cb")
+                    .redirect_uri("https://app.test/cb2")
                     .scope("openid")
                     .scope("profile")
+                    .scope("read")
+                    .scope("write")
                     .grant_type(GrantType::ClientCredentials)
                     .grant_type(GrantType::DeviceCode)
                     .grant_type(GrantType::RefreshToken),
@@ -728,103 +733,1037 @@ mod tests {
             .build()
     }
 
+    /// Server with a public client (no secret).
+    /// 使用公开客户端（无密钥）的服务器。
+    fn make_server_with_public_client() -> AuthorizationServer {
+        AuthorizationServer::builder()
+            .issuer("https://auth.test")
+            .jwt_secret("test-secret-key-32-bytes-long-abc")
+            .register_client(
+                RegisteredClient::new("public-app")
+                    .redirect_uri("https://public.test/cb")
+                    .scope("openid"),
+            )
+            .build()
+    }
+
+    /// Server with no clients registered.
+    /// 没有注册客户端的服务器。
+    fn make_empty_server() -> AuthorizationServer {
+        AuthorizationServer::builder()
+            .issuer("https://auth.test")
+            .jwt_secret("test-secret-key-32-bytes-long-abc")
+            .build()
+    }
+
+    fn compute_pkce_challenge(verifier: &str) -> String {
+        let d = Sha256::digest(verifier.as_bytes());
+        base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(d)
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RegisteredClient tests / RegisteredClient 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_registered_client_new_defaults() {
+        let client = RegisteredClient::new("my-client");
+        assert_eq!(client.client_id, "my-client");
+        assert!(client.client_secret_hash.is_none());
+        assert!(client.redirect_uris.is_empty());
+        assert!(client.grant_types.contains(&GrantType::AuthorizationCode));
+        assert!(client.scopes.contains(&"openid".to_string()));
+        assert_eq!(client.access_token_ttl, Duration::from_secs(3600));
+        assert_eq!(client.refresh_token_ttl, Duration::from_secs(86400 * 30));
+    }
+
+    #[test]
+    fn test_registered_client_secret_hashed() {
+        let client = RegisteredClient::new("c").secret("hunter2");
+        assert!(client.client_secret_hash.is_some());
+        // The hash should be SHA-256 of "hunter2"
+        let expected = format!("{:x}", Sha256::digest(b"hunter2"));
+        assert_eq!(client.client_secret_hash.as_deref(), Some(expected.as_str()));
+    }
+
+    #[test]
+    fn test_registered_client_verify_secret_correct() {
+        let client = RegisteredClient::new("c").secret("pass123");
+        assert!(client.verify_secret("pass123"));
+    }
+
+    #[test]
+    fn test_registered_client_verify_secret_wrong() {
+        let client = RegisteredClient::new("c").secret("pass123");
+        assert!(!client.verify_secret("wrong"));
+    }
+
+    #[test]
+    fn test_registered_client_verify_secret_public_client() {
+        // Public client (no secret) always verifies true
+        let client = RegisteredClient::new("c");
+        assert!(client.verify_secret("anything"));
+        assert!(client.verify_secret(""));
+    }
+
+    #[test]
+    fn test_registered_client_builder_chain() {
+        let client = RegisteredClient::new("c")
+            .secret("s")
+            .redirect_uri("https://a.com/cb")
+            .redirect_uri("https://a.com/cb2")
+            .scope("read")
+            .scope("write")
+            .grant_type(GrantType::ClientCredentials)
+            .grant_type(GrantType::RefreshToken)
+            .access_token_ttl(Duration::from_secs(7200));
+
+        assert_eq!(client.redirect_uris.len(), 2);
+        assert_eq!(client.scopes.len(), 3); // openid + read + write
+        assert_eq!(client.grant_types.len(), 3); // AuthorizationCode + ClientCredentials + RefreshToken
+        assert_eq!(client.access_token_ttl, Duration::from_secs(7200));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GrantType tests / GrantType 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_grant_type_equality() {
+        assert_eq!(GrantType::AuthorizationCode, GrantType::AuthorizationCode);
+        assert_ne!(GrantType::AuthorizationCode, GrantType::ClientCredentials);
+        assert_ne!(GrantType::DeviceCode, GrantType::RefreshToken);
+    }
+
+    #[test]
+    fn test_grant_type_serialization() {
+        let json = serde_json::to_string(&GrantType::AuthorizationCode).unwrap();
+        assert_eq!(json, "\"authorization_code\"");
+        let json = serde_json::to_string(&GrantType::ClientCredentials).unwrap();
+        assert_eq!(json, "\"client_credentials\"");
+        let json = serde_json::to_string(&GrantType::DeviceCode).unwrap();
+        assert_eq!(json, "\"device_code\"");
+        let json = serde_json::to_string(&GrantType::RefreshToken).unwrap();
+        assert_eq!(json, "\"refresh_token\"");
+    }
+
+    #[test]
+    fn test_grant_type_deserialization() {
+        let gt: GrantType = serde_json::from_str("\"authorization_code\"").unwrap();
+        assert_eq!(gt, GrantType::AuthorizationCode);
+        let gt: GrantType = serde_json::from_str("\"device_code\"").unwrap();
+        assert_eq!(gt, GrantType::DeviceCode);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DeviceCodeStatus tests / DeviceCodeStatus 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_device_code_status_equality() {
+        assert_eq!(DeviceCodeStatus::Pending, DeviceCodeStatus::Pending);
+        assert_ne!(DeviceCodeStatus::Pending, DeviceCodeStatus::Approved);
+        assert_ne!(DeviceCodeStatus::Denied, DeviceCodeStatus::Expired);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Builder tests / 构建器测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_builder_default_issuer() {
+        let server = AuthorizationServerBuilder::default()
+            .jwt_secret("secret")
+            .build();
+        // Default issuer should be https://localhost
+        // Default issuer should be set
+    }
+
+    #[test]
+    fn test_builder_custom_issuer() {
+        let server = AuthorizationServer::builder()
+            .issuer("https://my-auth.example.com")
+            .jwt_secret("key")
+            .build();
+        // Server was built successfully with custom issuer
+    }
+
+    #[test]
+    fn test_builder_auto_generates_jwt_secret() {
+        let server = AuthorizationServerBuilder::default()
+            .issuer("https://test")
+            .build();
+        // Should not panic even without explicit jwt_secret
+    }
+
+    #[test]
+    fn test_builder_registers_multiple_clients() {
+        let server = AuthorizationServer::builder()
+            .issuer("https://test")
+            .jwt_secret("key")
+            .register_client(RegisteredClient::new("c1").secret("s1"))
+            .register_client(RegisteredClient::new("c2").secret("s2"))
+            .build();
+        // Two clients registered successfully
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Authorization Code flow — success / 授权码流程 — 成功
+    // ═══════════════════════════════════════════════════════════════════════════
+
     #[tokio::test]
-    async fn test_authorization_code_flow() {
+    async fn test_auth_code_basic_flow() {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "user1", None, None)
             .await
             .unwrap();
+
         let token = server
             .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
             .await
             .unwrap();
+
         assert_eq!(token.token_type, "Bearer");
         assert!(!token.access_token.is_empty());
+        assert_eq!(token.scope, "openid");
+        assert!(token.refresh_token.is_some());
+        // openid scope triggers id_token
         assert!(token.id_token.is_some());
     }
 
     #[tokio::test]
-    async fn test_pkce_s256_flow() {
+    async fn test_auth_code_without_openid_scope_no_id_token() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "read", "user1", None, None)
+            .await
+            .unwrap();
+
+        let token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+
+        assert!(token.id_token.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_auth_code_alternate_redirect_uri() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb2", "openid", "user1", None, None)
+            .await
+            .unwrap();
+
+        let token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb2", None)
+            .await
+            .unwrap();
+
+        assert!(!token.access_token.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_auth_code_public_client_no_secret() {
+        let server = make_server_with_public_client();
+        let code = server
+            .authorize("public-app", "https://public.test/cb", "openid", "anon", None, None)
+            .await
+            .unwrap();
+
+        // Public client: no secret needed
+        let token = server
+            .token_from_code(&code, "public-app", None, "https://public.test/cb", None)
+            .await
+            .unwrap();
+
+        assert!(!token.access_token.is_empty());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Authorization Code flow — errors / 授权码流程 — 错误
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_authorize_unknown_client_rejected() {
+        let server = make_server();
+        let result = server
+            .authorize("unknown", "https://app.test/cb", "openid", "u", None, None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("unknown client"));
+    }
+
+    #[tokio::test]
+    async fn test_authorize_bad_redirect_uri_rejected() {
+        let server = make_server();
+        let result = server
+            .authorize("app", "https://evil.com/callback", "openid", "u", None, None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("redirect_uri"));
+    }
+
+    #[tokio::test]
+    async fn test_authorize_client_missing_code_grant_type() {
+        let server = AuthorizationServer::builder()
+            .issuer("https://auth.test")
+            .jwt_secret("key")
+            .register_client(
+                RegisteredClient::new("credsonly")
+                    .secret("s")
+                    .grant_type(GrantType::ClientCredentials),
+            )
+            .build();
+
+        let result = server
+            .authorize("credsonly", "https://x.com/cb", "openid", "u", None, None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("authorization_code"));
+    }
+
+    #[tokio::test]
+    async fn test_token_from_code_invalid_code_rejected() {
+        let server = make_server();
+        let result = server
+            .token_from_code("nonexistent-code", "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("invalid or expired"));
+    }
+
+    #[tokio::test]
+    async fn test_token_from_code_client_id_mismatch() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", None, None)
+            .await
+            .unwrap();
+
+        let result = server
+            .token_from_code(&code, "wrong-client", Some("s3cr3t"), "https://app.test/cb", None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("mismatch"));
+    }
+
+    #[tokio::test]
+    async fn test_token_from_code_redirect_uri_mismatch() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", None, None)
+            .await
+            .unwrap();
+
+        let result = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://wrong.test/cb", None)
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_token_from_code_wrong_secret() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", None, None)
+            .await
+            .unwrap();
+
+        let result = server
+            .token_from_code(&code, "app", Some("wrong-secret"), "https://app.test/cb", None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("client_secret"));
+    }
+
+    #[tokio::test]
+    async fn test_token_from_code_already_used_rejected() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", None, None)
+            .await
+            .unwrap();
+
+        // First use succeeds
+        let _token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+
+        // Second use fails (code consumed)
+        let result = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await;
+        assert!(result.is_err());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PKCE tests / PKCE 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_pkce_s256_success() {
         let server = make_server();
         let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        let challenge = {
-            let d = Sha256::digest(verifier.as_bytes());
-            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(d)
-        };
+        let challenge = compute_pkce_challenge(verifier);
+
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u2", Some(&challenge), Some("S256"))
             .await
             .unwrap();
+
         let token = server
             .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some(verifier))
             .await
             .unwrap();
+
         assert!(!token.access_token.is_empty());
     }
 
     #[tokio::test]
     async fn test_pkce_wrong_verifier_rejected() {
         let server = make_server();
-        let verifier = "correct_verifier";
-        let challenge = {
-            let d = Sha256::digest(verifier.as_bytes());
-            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(d)
-        };
+        let verifier = "correct_verifier_value";
+        let challenge = compute_pkce_challenge(verifier);
+
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u", Some(&challenge), Some("S256"))
             .await
             .unwrap();
-        assert!(
-            server.token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some("wrong"))
-                .await
-                .is_err()
-        );
+
+        let result = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some("wrong_verifier"))
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("PKCE"));
     }
 
     #[tokio::test]
-    async fn test_client_credentials() {
+    async fn test_pkce_missing_verifier_rejected() {
+        let server = make_server();
+        let verifier = "some_value";
+        let challenge = compute_pkce_challenge(verifier);
+
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", Some(&challenge), Some("S256"))
+            .await
+            .unwrap();
+
+        // No code_verifier provided when code was issued with PKCE challenge
+        let result = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("code_verifier required"));
+    }
+
+    #[tokio::test]
+    async fn test_pkce_plain_method_success() {
+        let server = make_server();
+        let verifier = "plain_verifier_abc";
+
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", Some(verifier), Some("plain"))
+            .await
+            .unwrap();
+
+        let token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some(verifier))
+            .await
+            .unwrap();
+
+        assert!(!token.access_token.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_pkce_plain_method_wrong_verifier() {
+        let server = make_server();
+        let verifier = "correct_plain";
+
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u", Some(verifier), Some("plain"))
+            .await
+            .unwrap();
+
+        let result = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some("wrong"))
+            .await;
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_verify_pkce_unsupported_method() {
+        let result = verify_pkce("v", "c", "S512");
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("unsupported"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Client Credentials flow / 客户端凭证流程
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_client_credentials_success() {
         let server = make_server();
         let token = server
             .token_from_client_credentials("app", "s3cr3t", "openid profile")
             .await
             .unwrap();
+
         assert!(!token.access_token.is_empty());
+        assert_eq!(token.token_type, "Bearer");
+        assert!(token.refresh_token.is_some());
+        assert_eq!(token.scope, "openid profile");
     }
 
     #[tokio::test]
-    async fn test_device_flow() {
+    async fn test_client_credentials_no_openid_no_id_token() {
         let server = make_server();
-        let resp = server.device_authorize("app", "openid").await.unwrap();
-        assert!(!resp.device_code.is_empty());
-        assert_eq!(resp.user_code.len(), 9);
+        let token = server
+            .token_from_client_credentials("app", "s3cr3t", "read write")
+            .await
+            .unwrap();
 
-        server.device_approve(&resp.user_code, "alice").await.unwrap();
-        let token = server.token_from_device_code(&resp.device_code, "app").await.unwrap();
-        assert!(!token.access_token.is_empty());
+        assert!(token.id_token.is_none());
     }
 
     #[tokio::test]
-    async fn test_device_flow_pending() {
+    async fn test_client_credentials_unknown_client() {
         let server = make_server();
-        let resp = server.device_authorize("app", "openid").await.unwrap();
-        assert!(server.token_from_device_code(&resp.device_code, "app").await.is_err());
+        let result = server
+            .token_from_client_credentials("nonexistent", "secret", "openid")
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("unknown client"));
     }
 
     #[tokio::test]
-    async fn test_introspection() {
+    async fn test_client_credentials_wrong_secret() {
         let server = make_server();
-        let token = server.token_from_client_credentials("app", "s3cr3t", "read").await.unwrap();
-        let result = server.introspect(&token.access_token).await;
-        assert!(result.active);
+        let result = server
+            .token_from_client_credentials("app", "wrong-secret", "openid")
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("client_secret"));
     }
 
     #[tokio::test]
-    async fn test_refresh_token() {
+    async fn test_client_credentials_grant_type_not_allowed() {
+        let server = AuthorizationServer::builder()
+            .issuer("https://auth.test")
+            .jwt_secret("key")
+            .register_client(
+                RegisteredClient::new("code-only")
+                    .secret("s"),
+            )
+            .build();
+
+        let result = server
+            .token_from_client_credentials("code-only", "s", "openid")
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("client_credentials"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Refresh Token flow / 刷新令牌流程
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_refresh_token_success() {
         let server = make_server();
-        let first = server.token_from_client_credentials("app", "s3cr3t", "openid").await.unwrap();
+        let first = server
+            .token_from_client_credentials("app", "s3cr3t", "openid")
+            .await
+            .unwrap();
+
         let rt = first.refresh_token.unwrap();
         let second = server.token_from_refresh(&rt, "app").await.unwrap();
+
         assert!(!second.access_token.is_empty());
+        assert!(second.refresh_token.is_some());
+    }
+
+    #[tokio::test]
+    async fn test_refresh_token_invalid_token() {
+        let server = make_server();
+        let result = server.token_from_refresh("bogus-token", "app").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("refresh token"));
+    }
+
+    #[tokio::test]
+    async fn test_refresh_token_client_id_mismatch() {
+        let server = make_server();
+        let first = server
+            .token_from_client_credentials("app", "s3cr3t", "openid")
+            .await
+            .unwrap();
+
+        let rt = first.refresh_token.unwrap();
+        let result = server.token_from_refresh(&rt, "wrong-client").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("mismatch"));
+    }
+
+    #[tokio::test]
+    async fn test_refresh_token_single_use() {
+        let server = make_server();
+        let first = server
+            .token_from_client_credentials("app", "s3cr3t", "openid")
+            .await
+            .unwrap();
+
+        let rt = first.refresh_token.unwrap();
+
+        // First refresh succeeds
+        let _second = server.token_from_refresh(&rt, "app").await.unwrap();
+
+        // Second use of same refresh token fails
+        let result = server.token_from_refresh(&rt, "app").await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_refresh_from_auth_code_flow() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "user1", None, None)
+            .await
+            .unwrap();
+
+        let token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+
+        let rt = token.refresh_token.unwrap();
+        let refreshed = server.token_from_refresh(&rt, "app").await.unwrap();
+        assert!(!refreshed.access_token.is_empty());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Device Authorization flow — success / 设备授权流程 — 成功
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_device_authorize_response_format() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "openid").await.unwrap();
+
+        assert!(!resp.device_code.is_empty());
+        assert_eq!(resp.user_code.len(), 9); // "XXXX-XXXX"
+        assert!(resp.user_code.contains('-'));
+        assert!(resp.verification_uri.contains("/device"));
+        assert!(resp.verification_uri_complete.contains(&resp.user_code));
+        assert_eq!(resp.expires_in, 1800);
+        assert_eq!(resp.interval, 5);
+    }
+
+    #[tokio::test]
+    async fn test_device_flow_full_lifecycle() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "read").await.unwrap();
+
+        // Before approval, polling returns pending
+        let poll_result = server.token_from_device_code(&resp.device_code, "app").await;
+        assert!(poll_result.is_err());
+        let err = poll_result.unwrap_err().to_string();
+        assert!(err.contains("authorization_pending"));
+
+        // Approve the device code
+        server.device_approve(&resp.user_code, "alice").await.unwrap();
+
+        // Now polling should succeed
+        let token = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await
+            .unwrap();
+        assert!(!token.access_token.is_empty());
+        assert_eq!(token.scope, "read");
+    }
+
+    #[tokio::test]
+    async fn test_device_flow_approved_token_contains_refresh() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "openid").await.unwrap();
+        server.device_approve(&resp.user_code, "bob").await.unwrap();
+
+        let token = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await
+            .unwrap();
+
+        assert!(token.refresh_token.is_some());
+        assert!(token.id_token.is_some()); // openid scope
+    }
+
+    #[tokio::test]
+    async fn test_device_flow_code_consumed_after_approval() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "openid").await.unwrap();
+        server.device_approve(&resp.user_code, "carol").await.unwrap();
+
+        let _token = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await
+            .unwrap();
+
+        // Second poll should fail (device code removed)
+        let result = server.token_from_device_code(&resp.device_code, "app").await;
+        assert!(result.is_err());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Device Authorization flow — errors / 设备授权流程 — 错误
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_device_authorize_unknown_client() {
+        let server = make_server();
+        let result = server.device_authorize("ghost", "openid").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("unknown client"));
+    }
+
+    #[tokio::test]
+    async fn test_device_authorize_grant_type_not_supported() {
+        let server = AuthorizationServer::builder()
+            .issuer("https://test")
+            .jwt_secret("key")
+            .register_client(
+                RegisteredClient::new("no-device")
+                    .secret("s")
+                    .grant_type(GrantType::AuthorizationCode),
+            )
+            .build();
+
+        let result = server.device_authorize("no-device", "openid").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("device_code"));
+    }
+
+    #[tokio::test]
+    async fn test_device_approve_unknown_user_code() {
+        let server = make_server();
+        let result = server.device_approve("BAD-CODE", "alice").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("user_code"));
+    }
+
+    #[tokio::test]
+    async fn test_device_token_invalid_device_code() {
+        let server = make_server();
+        let result = server.token_from_device_code("invalid-code", "app").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("device_code"));
+    }
+
+    #[tokio::test]
+    async fn test_device_token_client_id_mismatch() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "openid").await.unwrap();
+
+        let result = server
+            .token_from_device_code(&resp.device_code, "wrong-client")
+            .await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("mismatch"));
+    }
+
+    #[tokio::test]
+    async fn test_device_flow_denied_status() {
+        let server = make_server();
+        let resp = server.device_authorize("app", "openid").await.unwrap();
+
+        // Simulate denial by directly modifying status
+        {
+            let mut codes = server.device_codes.write().await;
+            if let Some(entry) = codes.get_mut(&resp.device_code) {
+                entry.status = DeviceCodeStatus::Denied;
+            }
+        }
+
+        let result = server.token_from_device_code(&resp.device_code, "app").await;
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("access_denied"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Token Introspection / 令牌自省
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_introspect_active_token() {
+        let server = make_server();
+        let token = server
+            .token_from_client_credentials("app", "s3cr3t", "read")
+            .await
+            .unwrap();
+
+        let result = server.introspect(&token.access_token).await;
+        assert!(result.active);
+        assert!(result.sub.is_some());
+        assert!(result.exp.is_some());
+        assert!(result.scope.is_some());
+        assert_eq!(result.scope.as_deref(), Some("read"));
+    }
+
+    #[tokio::test]
+    async fn test_introspect_active_token_has_client_id() {
+        let server = make_server();
+        let token = server
+            .token_from_client_credentials("app", "s3cr3t", "openid")
+            .await
+            .unwrap();
+
+        let result = server.introspect(&token.access_token).await;
+        assert!(result.active);
+        assert_eq!(result.client_id.as_deref(), Some("app"));
+    }
+
+    #[tokio::test]
+    async fn test_introspect_garbage_token_inactive() {
+        let server = make_server();
+        let result = server.introspect("not-a-valid-jwt").await;
+        assert!(!result.active);
+        assert!(result.sub.is_none());
+        assert!(result.exp.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_introspect_empty_string_inactive() {
+        let server = make_server();
+        let result = server.introspect("").await;
+        assert!(!result.active);
+    }
+
+    #[tokio::test]
+    async fn test_introspect_openid_scope_includes_id_token_fields() {
+        let server = make_server();
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "introspect-user", None, None)
+            .await
+            .unwrap();
+        let token = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+
+        let result = server.introspect(&token.access_token).await;
+        assert!(result.active);
+        assert_eq!(result.sub.as_deref(), Some("introspect-user"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // IssuedTokenResponse serialization / 序列化
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_issued_token_response_serialization() {
+        let resp = IssuedTokenResponse {
+            access_token: "at123".to_string(),
+            token_type: "Bearer".to_string(),
+            expires_in: 3600,
+            refresh_token: Some("rt456".to_string()),
+            scope: "openid".to_string(),
+            id_token: None,
+        };
+        let json = serde_json::to_string(&resp).unwrap();
+        assert!(json.contains("\"access_token\":\"at123\""));
+        assert!(json.contains("\"token_type\":\"Bearer\""));
+        assert!(json.contains("\"refresh_token\":\"rt456\""));
+        // id_token is None so should be skipped
+        assert!(!json.contains("id_token"));
+    }
+
+    #[test]
+    fn test_issued_token_response_with_id_token_serialization() {
+        let resp = IssuedTokenResponse {
+            access_token: "at".to_string(),
+            token_type: "Bearer".to_string(),
+            expires_in: 3600,
+            refresh_token: None,
+            scope: "openid".to_string(),
+            id_token: Some("idt".to_string()),
+        };
+        let json = serde_json::to_string(&resp).unwrap();
+        assert!(json.contains("\"id_token\":\"idt\""));
+        assert!(!json.contains("refresh_token"));
+    }
+
+    #[test]
+    fn test_introspection_result_serialization() {
+        let result = IntrospectionResult {
+            active: true,
+            sub: Some("user1".to_string()),
+            aud: Some(vec!["app".to_string()]),
+            exp: Some(1234567890),
+            scope: Some("read".to_string()),
+            client_id: Some("app".to_string()),
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("\"active\":true"));
+
+        let inactive = IntrospectionResult {
+            active: false,
+            sub: None,
+            aud: None,
+            exp: None,
+            scope: None,
+            client_id: None,
+        };
+        let json2 = serde_json::to_string(&inactive).unwrap();
+        assert!(json2.contains("\"active\":false"));
+        assert!(!json2.contains("sub"));
+    }
+
+    #[test]
+    fn test_device_authorization_response_serialization() {
+        let resp = DeviceAuthorizationResponse {
+            device_code: "dc".to_string(),
+            user_code: "ABCD-EFGH".to_string(),
+            verification_uri: "https://auth.test/device".to_string(),
+            verification_uri_complete: "https://auth.test/device?user_code=ABCD-EFGH".to_string(),
+            expires_in: 1800,
+            interval: 5,
+        };
+        let json = serde_json::to_string(&resp).unwrap();
+        assert!(json.contains("\"device_code\":\"dc\""));
+        assert!(json.contains("\"user_code\":\"ABCD-EFGH\""));
+        assert!(json.contains("\"expires_in\":1800"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Helper function tests / 辅助函数测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_random_token_uniqueness() {
+        let a = random_token(32);
+        let b = random_token(32);
+        assert_ne!(a, b);
+        assert_eq!(a.len(), 43); // 32 bytes -> URL_SAFE_NO_PAD base64
+    }
+
+    #[test]
+    fn test_random_user_code_format() {
+        let code = random_user_code();
+        assert_eq!(code.len(), 9); // "XXXX-XXXX"
+        assert!(code.chars().nth(4) == Some('-'));
+        // All chars should be uppercase consonants (no vowels to avoid real words)
+        for (i, c) in code.chars().enumerate() {
+            if i == 4 {
+                assert_eq!(c, '-');
+            } else {
+                assert!("BCDFGHJKLMNPQRSTVWXZ".contains(c));
+            }
+        }
+    }
+
+    #[test]
+    fn test_random_user_codes_differ() {
+        let codes: std::collections::HashSet<String> = (0..10)
+            .map(|_| random_user_code())
+            .collect();
+        // 10 random codes should produce at least 9 unique values
+        assert!(codes.len() >= 9);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Cross-flow integration / 跨流程集成
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_multiple_flows_same_server() {
+        let server = make_server();
+
+        // Authorization code flow
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "user_a", None, None)
+            .await
+            .unwrap();
+        let token_a = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+
+        // Client credentials flow
+        let token_b = server
+            .token_from_client_credentials("app", "s3cr3t", "read")
+            .await
+            .unwrap();
+
+        // Device flow
+        let device = server.device_authorize("app", "openid").await.unwrap();
+        server.device_approve(&device.user_code, "user_c").await.unwrap();
+        let token_c = server.token_from_device_code(&device.device_code, "app").await.unwrap();
+
+        // All tokens are distinct
+        assert_ne!(token_a.access_token, token_b.access_token);
+        assert_ne!(token_b.access_token, token_c.access_token);
+
+        // All introspect as active
+        assert!(server.introspect(&token_a.access_token).await.active);
+        assert!(server.introspect(&token_b.access_token).await.active);
+        assert!(server.introspect(&token_c.access_token).await.active);
+    }
+
+    #[tokio::test]
+    async fn test_refresh_after_each_flow() {
+        let server = make_server();
+
+        // Authorization code -> refresh
+        let code = server
+            .authorize("app", "https://app.test/cb", "openid", "u1", None, None)
+            .await
+            .unwrap();
+        let t1 = server
+            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
+            .await
+            .unwrap();
+        let r1 = server.token_from_refresh(&t1.refresh_token.unwrap(), "app").await.unwrap();
+        assert!(r1.access_token.len() > 10);
+
+        // Client credentials -> refresh
+        let t2 = server
+            .token_from_client_credentials("app", "s3cr3t", "openid")
+            .await
+            .unwrap();
+        let r2 = server.token_from_refresh(&t2.refresh_token.unwrap(), "app").await.unwrap();
+        assert!(r2.access_token.len() > 10);
+    }
+
+    #[tokio::test]
+    async fn test_empty_server_rejects_all_requests() {
+        let server = make_empty_server();
+
+        assert!(server.authorize("any", "https://x.com/cb", "openid", "u", None, None).await.is_err());
+        assert!(server.token_from_client_credentials("any", "s", "openid").await.is_err());
+        assert!(server.device_authorize("any", "openid").await.is_err());
+        assert!(server.token_from_device_code("any", "any").await.is_err());
+        assert!(server.token_from_refresh("any", "any").await.is_err());
     }
 }

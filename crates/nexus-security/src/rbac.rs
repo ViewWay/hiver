@@ -749,135 +749,802 @@ impl Default for RbacManager {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
-    #[tokio::test]
-    async fn test_rbac_config() {
+    // ── Helper: create a user role mapping / 辅助函数：创建用户角色映射 ──
+
+    fn make_user_role(user_id: &str, roles: &[&str]) -> UserRole {
+        UserRole {
+            user_id: user_id.to_string(),
+            roles: roles.iter().map(|r| r.to_string()).collect(),
+            direct_permissions: HashSet::new(),
+            expires_at: None,
+        }
+    }
+
+    fn make_user_role_with_permissions(
+        user_id: &str,
+        roles: &[&str],
+        permissions: &[&str],
+    ) -> UserRole {
+        UserRole {
+            user_id: user_id.to_string(),
+            roles: roles.iter().map(|r| r.to_string()).collect(),
+            direct_permissions: permissions.iter().map(|p| p.to_string()).collect(),
+            expires_at: None,
+        }
+    }
+
+    fn make_expired_user_role(user_id: &str, roles: &[&str]) -> UserRole {
+        UserRole {
+            user_id: user_id.to_string(),
+            roles: roles.iter().map(|r| r.to_string()).collect(),
+            direct_permissions: HashSet::new(),
+            expires_at: Some(Utc::now() - chrono::Duration::seconds(1)),
+        }
+    }
+
+    /// Capturing audit logger for test assertions.
+    /// 用于测试断言的捕获型审计日志器。
+    #[derive(Debug)]
+    struct CapturingAuditLogger {
+        entries: Arc<RwLock<Vec<AuditLog>>>,
+    }
+
+    impl CapturingAuditLogger {
+        fn new() -> Self {
+            Self {
+                entries: Arc::new(RwLock::new(Vec::new())),
+            }
+        }
+
+        async fn logged_entries(&self) -> Vec<AuditLog> {
+            self.entries.read().await.clone()
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl AuditLogger for CapturingAuditLogger {
+        async fn log(&self, entry: AuditLog) -> SecurityResult<()> {
+            self.entries.write().await.push(entry);
+            Ok(())
+        }
+    }
+
+    /// Audit logger that counts invocations.
+    /// 统计调用次数的审计日志器。
+    struct CountingAuditLogger {
+        count: AtomicUsize,
+    }
+
+    impl CountingAuditLogger {
+        fn new() -> Self {
+            Self {
+                count: AtomicUsize::new(0),
+            }
+        }
+
+        fn invocation_count(&self) -> usize {
+            self.count.load(Ordering::SeqCst)
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl AuditLogger for CountingAuditLogger {
+        async fn log(&self, _entry: AuditLog) -> SecurityResult<()> {
+            self.count.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RbacConfig tests / RbacConfig 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_config_default_values() {
         let config = RbacConfig::default();
         assert!(config.enable_cache);
         assert!(config.enable_audit);
         assert!(config.enable_hierarchy);
+        assert_eq!(config.cache_ttl, 300);
     }
 
-    #[tokio::test]
-    async fn test_rbac_manager() {
-        let manager = RbacManager::new(RbacConfig::default().enable_audit(false));
+    #[test]
+    fn test_config_default_hierarchy() {
+        let config = RbacConfig::default();
+        // ADMIN inherits MODERATOR, USER, GUEST
+        let admin_children = config.role_hierarchy.get("ADMIN").unwrap();
+        assert!(admin_children.contains(&"MODERATOR".to_string()));
+        assert!(admin_children.contains(&"USER".to_string()));
+        assert!(admin_children.contains(&"GUEST".to_string()));
 
-        // Add user role
-        manager
-            .add_user_role(UserRole {
-                user_id: "user1".to_string(),
-                roles: {
-                    let mut set = HashSet::new();
-                    set.insert("USER".to_string());
-                    set
-                },
-                direct_permissions: HashSet::new(),
-                expires_at: None,
-            })
-            .await
-            .unwrap();
+        // MODERATOR inherits USER, GUEST
+        let mod_children = config.role_hierarchy.get("MODERATOR").unwrap();
+        assert!(mod_children.contains(&"USER".to_string()));
+        assert!(mod_children.contains(&"GUEST".to_string()));
 
-        // Add role permission
-        manager
-            .add_role_permission("USER".to_string(), vec!["user.read".to_string()])
-            .await
-            .unwrap();
-
-        // Check permission
-        assert!(
-            manager
-                .check_permission("user1", "user.read")
-                .await
-                .unwrap()
-        );
-        assert!(
-            !manager
-                .check_permission("user1", "user.write")
-                .await
-                .unwrap()
-        );
+        // USER inherits GUEST
+        let user_children = config.role_hierarchy.get("USER").unwrap();
+        assert!(user_children.contains(&"GUEST".to_string()));
     }
 
-    #[tokio::test]
-    async fn test_role_hierarchy() {
-        let config = RbacConfig::default()
-            .enable_hierarchy(true)
+    #[test]
+    fn test_config_builder_chain() {
+        let config = RbacConfig::new()
             .enable_cache(false)
-            .enable_audit(false);
+            .enable_audit(false)
+            .enable_hierarchy(false)
+            .cache_ttl(Duration::from_secs(600));
 
-        let manager = RbacManager::new(config);
+        assert!(!config.enable_cache);
+        assert!(!config.enable_audit);
+        assert!(!config.enable_hierarchy);
+        assert_eq!(config.cache_ttl, 600);
+    }
 
-        // Add user with ADMIN role
-        manager
-            .add_user_role(UserRole {
-                user_id: "admin1".to_string(),
-                roles: {
-                    let mut set = HashSet::new();
-                    set.insert("ADMIN".to_string());
-                    set
-                },
-                direct_permissions: HashSet::new(),
-                expires_at: None,
-            })
-            .await
-            .unwrap();
+    #[test]
+    fn test_config_custom_role_hierarchy() {
+        let mut custom = HashMap::new();
+        custom.insert("SUPER".to_string(), vec!["OPERATOR".to_string()]);
 
-        // Add permission to USER (lower level)
-        manager
-            .add_role_permission("USER".to_string(), vec!["user.read".to_string()])
-            .await
-            .unwrap();
+        let config = RbacConfig::new().role_hierarchy(custom);
+        let children = config.role_hierarchy.get("SUPER").unwrap();
+        assert!(children.contains(&"OPERATOR".to_string()));
+        assert!(config.role_hierarchy.get("ADMIN").is_none());
+    }
 
-        // ADMIN should inherit USER's permission via hierarchy
-        assert!(
-            manager
-                .check_permission("admin1", "user.read")
-                .await
-                .unwrap()
-        );
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PermissionEntry tests / PermissionEntry 测试
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_permission_entry_new() {
+        let entry = PermissionEntry::new("p1", "user:read", "Read users", "user", "read");
+        assert_eq!(entry.id, "p1");
+        assert_eq!(entry.name, "user:read");
+        assert_eq!(entry.description, "Read users");
+        assert_eq!(entry.resource, "user");
+        assert_eq!(entry.action, "read");
+        assert!(entry.roles.is_empty());
+    }
+
+    #[test]
+    fn test_permission_entry_add_roles() {
+        let entry = PermissionEntry::new("p1", "doc:write", "Write docs", "doc", "write")
+            .add_role("ADMIN")
+            .add_role("EDITOR");
+        assert_eq!(entry.roles, vec!["ADMIN", "EDITOR"]);
+    }
+
+    #[test]
+    fn test_permission_entry_serialization() {
+        let entry = PermissionEntry::new("p1", "user:delete", "Delete users", "user", "delete")
+            .add_role("ADMIN");
+        let json = serde_json::to_string(&entry).unwrap();
+        let deserialized: PermissionEntry = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.id, entry.id);
+        assert_eq!(deserialized.name, entry.name);
+        assert_eq!(deserialized.roles, entry.roles);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Role assignment & revocation / 角色分配与撤销
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_assign_role_to_new_user() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("alice", "USER").await.unwrap();
+
+        let roles = mgr.get_user_roles("alice").await.unwrap();
+        assert!(roles.contains("USER"));
     }
 
     #[tokio::test]
-    async fn test_cache() {
-        let manager = RbacManager::new(
-            RbacConfig::default()
-                .enable_audit(true),
+    async fn test_assign_multiple_roles() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("bob", "USER").await.unwrap();
+        mgr.assign_role("bob", "MODERATOR").await.unwrap();
+
+        let roles = mgr.get_user_roles("bob").await.unwrap();
+        assert!(roles.contains("USER"));
+        assert!(roles.contains("MODERATOR"));
+        assert_eq!(roles.len(), 2);
+    }
+
+    #[tokio::test]
+    async fn test_assign_duplicate_role_is_idempotent() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("carol", "USER").await.unwrap();
+        mgr.assign_role("carol", "USER").await.unwrap();
+
+        let roles = mgr.get_user_roles("carol").await.unwrap();
+        assert_eq!(roles.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_revoke_role() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("dave", "USER").await.unwrap();
+        mgr.assign_role("dave", "ADMIN").await.unwrap();
+
+        mgr.revoke_role("dave", "ADMIN").await.unwrap();
+        let roles = mgr.get_user_roles("dave").await.unwrap();
+        assert!(!roles.contains("ADMIN"));
+        assert!(roles.contains("USER"));
+    }
+
+    #[tokio::test]
+    async fn test_revoke_nonexistent_role_is_noop() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("eve", "USER").await.unwrap();
+        // Revoking a role the user doesn't have should succeed silently
+        mgr.revoke_role("eve", "SUPERADMIN").await.unwrap();
+        let roles = mgr.get_user_roles("eve").await.unwrap();
+        assert!(roles.contains("USER"));
+    }
+
+    #[tokio::test]
+    async fn test_revoke_from_nonexistent_user_is_noop() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.revoke_role("ghost", "USER").await.unwrap();
+        let roles = mgr.get_user_roles("ghost").await.unwrap();
+        assert!(roles.is_empty());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Permission checking / 权限检查
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_check_permission_granted() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("u1", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["doc.read".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("u1", "doc.read").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_check_permission_denied() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("u2", &["GUEST"])).await.unwrap();
+        mgr.add_role_permission("GUEST".to_string(), vec!["doc.read".to_string()])
+            .await
+            .unwrap();
+
+        assert!(!mgr.check_permission("u2", "doc.write").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_check_permission_unknown_user_denied() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        assert!(!mgr.check_permission("nobody", "any.thing").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_direct_permissions() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role_with_permissions("u3", &["GUEST"], &["special.perm"]))
+            .await
+            .unwrap();
+        mgr.add_role_permission("GUEST".to_string(), vec!["guest.read".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("u3", "special.perm").await.unwrap());
+        assert!(mgr.check_permission("u3", "guest.read").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Role checking / 角色检查
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_check_role_direct() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.assign_role("u10", "EDITOR").await.unwrap();
+
+        assert!(mgr.check_role("u10", "EDITOR").await.unwrap());
+        assert!(!mgr.check_role("u10", "ADMIN").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_check_role_via_hierarchy() {
+        // Default hierarchy: ADMIN > MODERATOR > USER > GUEST
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(true).enable_cache(false).enable_audit(false));
+        mgr.assign_role("admin_user", "ADMIN").await.unwrap();
+
+        // ADMIN inherits USER via hierarchy
+        assert!(mgr.check_role("admin_user", "USER").await.unwrap());
+        // ADMIN inherits GUEST via hierarchy
+        assert!(mgr.check_role("admin_user", "GUEST").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_check_role_hierarchy_disabled() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(false).enable_cache(false).enable_audit(false));
+        mgr.assign_role("mod_user", "MODERATOR").await.unwrap();
+
+        assert!(mgr.check_role("mod_user", "MODERATOR").await.unwrap());
+        // Without hierarchy, MODERATOR does NOT inherit USER
+        assert!(!mgr.check_role("mod_user", "USER").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Role hierarchy — permission inheritance / 角色层级 — 权限继承
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_admin_inherits_user_permissions() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(true).enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("admin1", &["ADMIN"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["profile.read".to_string()])
+            .await
+            .unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["admin.panel".to_string()])
+            .await
+            .unwrap();
+
+        // ADMIN gets its own permission
+        assert!(mgr.check_permission("admin1", "admin.panel").await.unwrap());
+        // ADMIN inherits USER's permission through hierarchy
+        assert!(mgr.check_permission("admin1", "profile.read").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_moderator_inherits_user_and_guest_permissions() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(true).enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("mod1", &["MODERATOR"])).await.unwrap();
+        mgr.add_role_permission("GUEST".to_string(), vec!["public.read".to_string()])
+            .await
+            .unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["profile.read".to_string()])
+            .await
+            .unwrap();
+        mgr.add_role_permission("MODERATOR".to_string(), vec!["mod.ban".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("mod1", "mod.ban").await.unwrap());
+        assert!(mgr.check_permission("mod1", "profile.read").await.unwrap());
+        assert!(mgr.check_permission("mod1", "public.read").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_leaf_role_does_not_inherit_parent() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(true).enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("guest1", &["GUEST"])).await.unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["admin.super".to_string()])
+            .await
+            .unwrap();
+
+        // GUEST is at the bottom of the hierarchy, cannot access ADMIN permission
+        assert!(!mgr.check_permission("guest1", "admin.super").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_multi_level_inheritance_chain() {
+        // ADMIN > MODERATOR > USER > GUEST
+        let mgr = RbacManager::new(RbacConfig::new().enable_hierarchy(true).enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("super_admin", &["ADMIN"])).await.unwrap();
+        mgr.add_role_permission("GUEST".to_string(), vec!["guest.view".to_string()])
+            .await
+            .unwrap();
+
+        // ADMIN should traverse MODERATOR -> USER -> GUEST and get guest.view
+        assert!(mgr.check_permission("super_admin", "guest.view").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Expiration / 过期
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_expired_user_role_returns_no_roles() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
+            .await
+            .unwrap();
+
+        let roles = mgr.get_user_roles("expired_user").await.unwrap();
+        assert!(roles.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_expired_user_role_denies_permission() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
+            .await
+            .unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["admin.read".to_string()])
+            .await
+            .unwrap();
+
+        assert!(!mgr.check_permission("expired_user", "admin.read").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_expired_user_role_check_role_fails() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
+            .await
+            .unwrap();
+
+        assert!(!mgr.check_role("expired_user", "ADMIN").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Caching / 缓存
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_cache_hit_returns_same_result() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("cached_user", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["cache.perm".to_string()])
+            .await
+            .unwrap();
+
+        // First call populates cache
+        assert!(mgr.check_permission("cached_user", "cache.perm").await.unwrap());
+        // Second call uses cache
+        assert!(mgr.check_permission("cached_user", "cache.perm").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_cache_invalidated_on_role_assignment() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["p1".to_string()])
+            .await
+            .unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["p2".to_string()])
+            .await
+            .unwrap();
+
+        // Populate cache with USER permissions
+        assert!(mgr.check_permission("u", "p1").await.unwrap());
+        assert!(!mgr.check_permission("u", "p2").await.unwrap());
+
+        // Promote user to ADMIN — should invalidate cache
+        mgr.assign_role("u", "ADMIN").await.unwrap();
+        assert!(mgr.check_permission("u", "p2").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_cache_invalidated_on_role_revocation() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["USER", "ADMIN"])).await.unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["admin.x".to_string()])
+            .await
+            .unwrap();
+
+        // Populate cache
+        assert!(mgr.check_permission("u", "admin.x").await.unwrap());
+
+        // Revoke ADMIN — cache should be invalidated
+        mgr.revoke_role("u", "ADMIN").await.unwrap();
+        assert!(!mgr.check_permission("u", "admin.x").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_cache_invalidated_on_add_user_role() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["p1".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("u", "p1").await.unwrap());
+
+        // Replace the user role entirely — cache invalidated
+        mgr.add_user_role(make_user_role("u", &["GUEST"])).await.unwrap();
+        assert!(!mgr.check_permission("u", "p1").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_add_role_permission_clears_all_cache() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("a", &["USER"])).await.unwrap();
+        mgr.add_user_role(make_user_role("b", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["old.perm".to_string()])
+            .await
+            .unwrap();
+
+        // Populate cache for both users
+        assert!(mgr.check_permission("a", "old.perm").await.unwrap());
+        assert!(mgr.check_permission("b", "old.perm").await.unwrap());
+
+        // Add new permission to USER role — clears ALL cache
+        mgr.add_role_permission("USER".to_string(), vec!["new.perm".to_string()])
+            .await
+            .unwrap();
+
+        // old.perm should no longer be granted (role permissions replaced)
+        assert!(!mgr.check_permission("a", "old.perm").await.unwrap());
+        assert!(mgr.check_permission("a", "new.perm").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_clear_cache_manual() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["p".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("u", "p").await.unwrap());
+        mgr.clear_cache().await;
+        // After manual clear, should still work (re-fetches from data)
+        assert!(mgr.check_permission("u", "p").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_clear_user_cache_targeted() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
+        mgr.add_user_role(make_user_role("u1", &["USER"])).await.unwrap();
+        mgr.add_user_role(make_user_role("u2", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["shared.perm".to_string()])
+            .await
+            .unwrap();
+
+        assert!(mgr.check_permission("u1", "shared.perm").await.unwrap());
+        assert!(mgr.check_permission("u2", "shared.perm").await.unwrap());
+
+        // Clear only u1's cache
+        mgr.clear_user_cache("u1").await;
+        // u1 can still get permission (cache miss -> re-fetch)
+        assert!(mgr.check_permission("u1", "shared.perm").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_no_cache_mode() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["p".to_string()])
+            .await
+            .unwrap();
+
+        // Should still work without caching
+        assert!(mgr.check_permission("u", "p").await.unwrap());
+        assert!(mgr.check_permission("u", "p").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Audit logging / 审计日志
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_audit_log_records_granted() {
+        let logger = Arc::new(CapturingAuditLogger::new());
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
+            .with_audit_logger(logger.clone());
+        mgr.add_user_role(make_user_role("audit_user", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["file.read".to_string()])
+            .await
+            .unwrap();
+
+        mgr.check_permission("audit_user", "file.read").await.unwrap();
+
+        let entries = logger.logged_entries().await;
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].user_id, "audit_user");
+        assert_eq!(entries[0].permission, "file.read");
+        assert!(entries[0].granted);
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_records_denied() {
+        let logger = Arc::new(CapturingAuditLogger::new());
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
+            .with_audit_logger(logger.clone());
+        mgr.add_user_role(make_user_role("audit_user", &["USER"])).await.unwrap();
+
+        mgr.check_permission("audit_user", "secret.write").await.unwrap();
+
+        let entries = logger.logged_entries().await;
+        assert_eq!(entries.len(), 1);
+        assert!(!entries[0].granted);
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_with_context() {
+        let logger = Arc::new(CapturingAuditLogger::new());
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
+            .with_audit_logger(logger.clone());
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["res.read".to_string()])
+            .await
+            .unwrap();
+
+        mgr.check_permission_with_context(
+            "u",
+            "res.read",
+            Some("doc/123".to_string()),
+            Some("10.0.0.1".to_string()),
+            Some("TestAgent/1.0".to_string()),
         )
-        .with_audit_logger(Arc::new(ConsoleAuditLogger));
+        .await
+        .unwrap();
 
-        manager
-            .add_user_role(UserRole {
-                user_id: "user1".to_string(),
-                roles: {
-                    let mut set = HashSet::new();
-                    set.insert("USER".to_string());
-                    set
-                },
-                direct_permissions: HashSet::new(),
-                expires_at: None,
-            })
+        let entries = logger.logged_entries().await;
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].resource.as_deref(), Some("doc/123"));
+        assert_eq!(entries[0].ip_address.as_deref(), Some("10.0.0.1"));
+        assert_eq!(entries[0].user_agent.as_deref(), Some("TestAgent/1.0"));
+    }
+
+    #[tokio::test]
+    async fn test_audit_disabled_no_logs() {
+        let logger = Arc::new(CountingAuditLogger::new());
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false))
+            .with_audit_logger(logger.clone());
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+
+        mgr.check_permission("u", "any.perm").await.unwrap();
+
+        assert_eq!(logger.invocation_count(), 0);
+    }
+
+    #[tokio::test]
+    async fn test_audit_log_timestamp_is_recent() {
+        let logger = Arc::new(CapturingAuditLogger::new());
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
+            .with_audit_logger(logger.clone());
+        mgr.add_user_role(make_user_role("u", &["USER"])).await.unwrap();
+        mgr.add_role_permission("USER".to_string(), vec!["x".to_string()])
             .await
             .unwrap();
 
-        manager
-            .add_role_permission("USER".to_string(), vec!["user.read".to_string()])
+        let before = Utc::now();
+        mgr.check_permission("u", "x").await.unwrap();
+        let after = Utc::now();
+
+        let entries = logger.logged_entries().await;
+        assert!(entries[0].timestamp >= before);
+        assert!(entries[0].timestamp <= after);
+    }
+
+    #[tokio::test]
+    async fn test_console_audit_logger_does_not_error() {
+        let logger = ConsoleAuditLogger::new();
+        let entry = AuditLog {
+            timestamp: Utc::now(),
+            user_id: "test".to_string(),
+            permission: "test.perm".to_string(),
+            resource: None,
+            granted: true,
+            reason: None,
+            ip_address: None,
+            user_agent: None,
+        };
+        assert!(logger.log(entry).await.is_ok());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Permission definitions / 权限定义
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_add_and_store_permission_entry() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        let perm = PermissionEntry::new("p.x", "x:do", "Do X", "x", "do")
+            .add_role("OPERATOR");
+        mgr.add_permission(perm).await.unwrap();
+        // Permission was stored; no error means success
+    }
+
+    #[tokio::test]
+    async fn test_load_permissions_from_db_populates_defaults() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.load_permissions_from_db().await.unwrap();
+
+        // Default setup grants USER the user.read permission
+        mgr.add_user_role(make_user_role("default_user", &["USER"])).await.unwrap();
+        assert!(mgr.check_permission("default_user", "user.read").await.unwrap());
+        assert!(!mgr.check_permission("default_user", "user.write").await.unwrap());
+
+        // ADMIN should get both user.read and user.write
+        mgr.add_user_role(make_user_role("default_admin", &["ADMIN"])).await.unwrap();
+        assert!(mgr.check_permission("default_admin", "user.read").await.unwrap());
+        assert!(mgr.check_permission("default_admin", "user.write").await.unwrap());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RbacManager construction / RbacManager 构造
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_manager_default_construction() {
+        let mgr = RbacManager::default();
+        let debug = format!("{:?}", mgr);
+        assert!(debug.contains("RbacManager"));
+    }
+
+    #[test]
+    fn test_manager_debug_format() {
+        let mgr = RbacManager::new(RbacConfig::new());
+        let debug = format!("{:?}", mgr);
+        assert!(debug.contains("config"));
+        assert!(debug.contains("<hidden>"));
+    }
+
+    #[test]
+    fn test_manager_with_audit_logger_debug() {
+        let mgr = RbacManager::new(RbacConfig::new())
+            .with_audit_logger(Arc::new(ConsoleAuditLogger::new()));
+        let debug = format!("{:?}", mgr);
+        assert!(debug.contains("<logger>"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // UserRole / RolePermission serialization / 序列化
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[test]
+    fn test_user_role_serialization() {
+        let role = make_user_role("alice", &["ADMIN", "USER"]);
+        let json = serde_json::to_string(&role).unwrap();
+        let deserialized: UserRole = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.user_id, "alice");
+        assert!(deserialized.roles.contains("ADMIN"));
+    }
+
+    #[test]
+    fn test_role_permission_serialization() {
+        let rp = RolePermission {
+            role: "EDITOR".to_string(),
+            permissions: {
+                let mut s = HashSet::new();
+                s.insert("doc.edit".to_string());
+                s.insert("doc.read".to_string());
+                s
+            },
+        };
+        let json = serde_json::to_string(&rp).unwrap();
+        let deserialized: RolePermission = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.role, "EDITOR");
+        assert!(deserialized.permissions.contains("doc.edit"));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Edge cases / 边界情况
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    #[tokio::test]
+    async fn test_user_with_no_roles_gets_no_permissions() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("empty_user", &[])).await.unwrap();
+        assert!(!mgr.check_permission("empty_user", "anything").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_role_with_no_permissions() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("u", &["EMPTY_ROLE"])).await.unwrap();
+        mgr.add_role_permission("EMPTY_ROLE".to_string(), vec![]).await.unwrap();
+        assert!(!mgr.check_permission("u", "any.perm").await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_multiple_users_isolated() {
+        let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
+        mgr.add_user_role(make_user_role("alice", &["ADMIN"])).await.unwrap();
+        mgr.add_user_role(make_user_role("bob", &["GUEST"])).await.unwrap();
+        mgr.add_role_permission("ADMIN".to_string(), vec!["admin.panel".to_string()])
+            .await
+            .unwrap();
+        mgr.add_role_permission("GUEST".to_string(), vec!["guest.view".to_string()])
             .await
             .unwrap();
 
-        // First check - cache miss
-        assert!(
-            manager
-                .check_permission("user1", "user.read")
-                .await
-                .unwrap()
-        );
-
-        // Second check - cache hit
-        assert!(
-            manager
-                .check_permission("user1", "user.read")
-                .await
-                .unwrap()
-        );
+        assert!(mgr.check_permission("alice", "admin.panel").await.unwrap());
+        assert!(!mgr.check_permission("alice", "guest.view").await.unwrap());
+        assert!(!mgr.check_permission("bob", "admin.panel").await.unwrap());
+        assert!(mgr.check_permission("bob", "guest.view").await.unwrap());
     }
 }
