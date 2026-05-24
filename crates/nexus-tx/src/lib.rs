@@ -53,6 +53,7 @@ pub mod synchronization;
 #[cfg(feature = "sqlx")]
 mod sqlx_manager;
 mod propagation;
+mod registry;
 mod request_ext;
 mod status;
 mod template;
@@ -63,6 +64,7 @@ pub use error::{TransactionError, TransactionResult};
 pub use isolation::IsolationLevel;
 pub use manager::{NoopTransactionManager, TransactionDefinition, TransactionManager, TransactionManagerBuilder, global_tx_manager, set_global_tx_manager};
 pub use propagation::Propagation;
+pub use registry::{DelegatingTransactionManager, TransactionManagerRegistry};
 pub use request_ext::{
     TransactionContextExt, get_transaction_from_request, has_active_transaction_in_request,
 };
@@ -75,8 +77,9 @@ pub use transactional::{Transactional, TransactionalOptions};
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        IsolationLevel, Propagation, Transaction, TransactionError, TransactionManager,
-        TransactionResult, TransactionStatus, TransactionTemplate, Transactional,
+        DelegatingTransactionManager, IsolationLevel, Propagation, Transaction,
+        TransactionError, TransactionManager, TransactionManagerRegistry, TransactionResult,
+        TransactionStatus, TransactionTemplate, Transactional,
     };
 }
 
@@ -92,4 +95,7 @@ pub const DEFAULT_TX_TIMEOUT_SECS: u64 = 30;
 pub const DEFAULT_TX_NAME: &str = "default";
 
 #[cfg(feature = "sqlx")]
-pub use sqlx_manager::SqlxTransactionManager;
+pub use sqlx_manager::{
+    DatabaseType, MySqlTransactionManager, PostgresTransactionManager, SqliteTransactionManager,
+    SqlxTransactionManager,
+};
