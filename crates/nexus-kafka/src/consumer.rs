@@ -240,3 +240,179 @@ where
         (self.handler)(message)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::message::MessageValue;
+
+    /// Test consumer creation with config
+    /// 测试使用配置创建消费者
+    #[tokio::test]
+    async fn test_consumer_new() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+        assert_eq!(consumer.config().group_id, "test-group");
+    }
+
+    /// Test consumer subscribe and subscription tracking
+    /// 测试消费者订阅和订阅跟踪
+    #[tokio::test]
+    async fn test_consumer_subscribe() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+
+        consumer.subscribe(&["topic-a", "topic-b"]).await.unwrap();
+        let subs = consumer.subscription().await;
+        assert_eq!(subs.len(), 2);
+        assert!(subs.contains(&"topic-a".to_string()));
+        assert!(subs.contains(&"topic-b".to_string()));
+    }
+
+    /// Test consumer duplicate subscription is idempotent
+    /// 测试消费者重复订阅是幂等的
+    #[tokio::test]
+    async fn test_consumer_subscribe_idempotent() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+
+        consumer.subscribe(&["topic-a"]).await.unwrap();
+        consumer.subscribe(&["topic-a"]).await.unwrap();
+        let subs = consumer.subscription().await;
+        assert_eq!(subs.len(), 1);
+    }
+
+    /// Test consumer unsubscribe clears all topics
+    /// 测试消费者取消订阅清除所有主题
+    #[tokio::test]
+    async fn test_consumer_unsubscribe() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+
+        consumer.subscribe(&["topic-x", "topic-y"]).await.unwrap();
+        assert_eq!(consumer.subscription().await.len(), 2);
+
+        consumer.unsubscribe().await.unwrap();
+        assert!(consumer.subscription().await.is_empty());
+    }
+
+    /// Test consumer poll returns None (mock)
+    /// 测试消费者轮询返回空（模拟）
+    #[test]
+    fn test_consumer_poll_returns_none() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+        let result = consumer.poll(1000).unwrap();
+        assert!(result.is_none());
+    }
+
+    /// Test consumer commit offsets
+    /// 测试消费者提交偏移
+    #[test]
+    fn test_consumer_commit() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+        let offsets = vec![
+            ConsumerOffset::new("topic-a", 0, 100),
+            ConsumerOffset::new("topic-a", 1, 200),
+        ];
+        let result = consumer.commit(&offsets);
+        assert!(result.is_ok());
+    }
+
+    /// Test consumer seek to offset
+    /// 测试消费者跳转到偏移
+    #[test]
+    fn test_consumer_seek() {
+        let config = ConsumerConfig::new("test-group");
+        let consumer = Consumer::new("localhost:9092", &config);
+        let offset = ConsumerOffset::new("topic-a", 0, 50);
+        let result = consumer.seek(&offset);
+        assert!(result.is_ok());
+    }
+
+    // ── ConsumerGroup tests ───────────────────────────────────────────
+
+    /// Test consumer group creation and member management
+    /// 测试消费者组创建和成员管理
+    #[test]
+    fn test_consumer_group_with_members() {
+        let group = ConsumerGroup::new("my-group")
+            .with_member("consumer-1")
+            .with_member("consumer-2");
+        assert_eq!(group.group_id, "my-group");
+        assert_eq!(group.members.len(), 2);
+        assert_eq!(group.members[0], "consumer-1");
+        assert_eq!(group.members[1], "consumer-2");
+    }
+
+    /// Test consumer group clone
+    /// 测试消费者组克隆
+    #[test]
+    fn test_consumer_group_clone() {
+        let group = ConsumerGroup::new("group-1").with_member("c1");
+        let cloned = group.clone();
+        assert_eq!(cloned.group_id, group.group_id);
+        assert_eq!(cloned.members.len(), group.members.len());
+    }
+
+    // ── ConsumerListener tests ────────────────────────────────────────
+
+    /// Test listener start and stop lifecycle
+    /// 测试监听器启动和停止生命周期
+    #[tokio::test]
+    async fn test_listener_lifecycle() {
+        let listener = ConsumerListener::new(
+            "listener-1",
+            vec!["topic-a".to_string()],
+            "my-group",
+        );
+        assert!(!listener.is_running().await);
+
+        listener.start().await.unwrap();
+        assert!(listener.is_running().await);
+
+        listener.stop().await.unwrap();
+        assert!(!listener.is_running().await);
+    }
+
+    /// Test listener properties
+    /// 测试监听器属性
+    #[test]
+    fn test_listener_properties() {
+        let listener = ConsumerListener::new(
+            "my-listener",
+            vec!["t1".to_string(), "t2".to_string()],
+            "group-42",
+        );
+        assert_eq!(listener.id, "my-listener");
+        assert_eq!(listener.topics, vec!["t1", "t2"]);
+        assert_eq!(listener.group_id, "group-42");
+    }
+
+    // ── FnHandler tests ───────────────────────────────────────────────
+
+    /// Test function-based message handler
+    /// 测试基于函数的消息处理器
+    #[test]
+    fn test_fn_handler_success() {
+        let handler = FnHandler {
+            handler: |_msg: KafkaMessage| Ok(()),
+        };
+        let msg = KafkaMessage::new("topic", 0, 0, MessageValue::String("hello".to_string()));
+        assert!(handler.handle(msg).is_ok());
+    }
+
+    /// Test function-based message handler returns error
+    /// 测试基于函数的消息处理器返回错误
+    #[test]
+    fn test_fn_handler_error() {
+        let handler = FnHandler {
+            handler: |_msg: KafkaMessage| Err("processing failed".to_string()),
+        };
+        let msg = KafkaMessage::new("topic", 0, 0, MessageValue::Null);
+        let result = handler.handle(msg);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "processing failed");
+    }
+}

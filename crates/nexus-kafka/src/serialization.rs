@@ -207,3 +207,178 @@ impl Serializer for KeySerializer {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── SerializeData tests ───────────────────────────────────────────
+
+    /// Test SerializeData for &str
+    /// 测试 &str 的 SerializeData
+    #[test]
+    fn test_serialize_data_str() {
+        let data: &str = "hello";
+        assert_eq!(data.as_bytes(), Some(b"hello".as_slice()));
+        assert_eq!(data.as_string(), Some("hello"));
+    }
+
+    /// Test SerializeData for String
+    /// 测试 String 的 SerializeData
+    #[test]
+    fn test_serialize_data_string() {
+        let data = String::from("world");
+        assert_eq!(data.as_bytes(), Some(b"world".as_slice()));
+        assert_eq!(data.as_string(), Some("world"));
+    }
+
+    /// Test SerializeData for &[u8]
+    /// 测试 &[u8] 的 SerializeData
+    #[test]
+    fn test_serialize_data_bytes_slice() {
+        let data: &[u8] = &[1, 2, 3];
+        assert_eq!(data.as_bytes(), Some(&[1u8, 2, 3][..]));
+        assert!(data.as_string().is_none());
+    }
+
+    /// Test SerializeData for Vec<u8>
+    /// 测试 Vec<u8> 的 SerializeData
+    #[test]
+    fn test_serialize_data_bytes_vec() {
+        let data = vec![10, 20, 30];
+        assert_eq!(data.as_bytes(), Some(&[10u8, 20, 30][..]));
+        assert!(data.as_string().is_none());
+    }
+
+    // ── BytesSerializer tests ─────────────────────────────────────────
+
+    /// Test BytesSerializer with string data
+    /// 测试 BytesSerializer 序列化字符串数据
+    #[test]
+    fn test_bytes_serializer_string() {
+        let serializer = BytesSerializer;
+        let result = serializer.serialize(&"hello".to_string()).unwrap();
+        assert_eq!(result, b"hello".to_vec());
+    }
+
+    /// Test BytesSerializer with bytes data
+    /// 测试 BytesSerializer 序列化字节数据
+    #[test]
+    fn test_bytes_serializer_bytes() {
+        let serializer = BytesSerializer;
+        let data = vec![1u8, 2, 3];
+        let result = serializer.serialize(&data).unwrap();
+        assert_eq!(result, vec![1u8, 2, 3]);
+    }
+
+    // ── JsonSerializer tests ──────────────────────────────────────────
+
+    /// Test JsonSerializer with string data
+    /// 测试 JsonSerializer 序列化字符串数据
+    #[test]
+    fn test_json_serializer_string() {
+        let serializer = JsonSerializer;
+        let result = serializer.serialize(&"test-value".to_string()).unwrap();
+        // JSON-serialized string includes quotes
+        assert_eq!(result, b"\"test-value\"".to_vec());
+    }
+
+    /// Test JsonSerializer with valid UTF-8 bytes
+    /// 测试 JsonSerializer 序列化有效UTF-8字节
+    #[test]
+    fn test_json_serializer_utf8_bytes() {
+        let serializer = JsonSerializer;
+        let data: Vec<u8> = b"hello".to_vec();
+        let result = serializer.serialize(&data).unwrap();
+        assert_eq!(result, b"\"hello\"".to_vec());
+    }
+
+    /// Test JsonSerializer with invalid UTF-8 bytes fails
+    /// 测试 JsonSerializer 序列化无效UTF-8字节失败
+    #[test]
+    fn test_json_serializer_invalid_utf8_fails() {
+        let serializer = JsonSerializer;
+        let data: Vec<u8> = vec![0xFF, 0xFE];
+        let result = serializer.serialize(&data);
+        assert!(result.is_err());
+    }
+
+    // ── JsonDeserializer tests ────────────────────────────────────────
+
+    /// Test JsonDeserializer with string
+    /// 测试 JsonDeserializer 反序列化字符串
+    #[test]
+    fn test_json_deserializer_string() {
+        let deserializer = JsonDeserializer;
+        let bytes = b"\"hello\"";
+        let result: String = deserializer.deserialize(bytes).unwrap();
+        assert_eq!(result, "hello");
+    }
+
+    /// Test JsonDeserializer with struct
+    /// 测试 JsonDeserializer 反序列化结构体
+    #[test]
+    fn test_json_deserializer_struct() {
+        let deserializer = JsonDeserializer;
+        #[derive(serde::Deserialize)]
+        struct TestData {
+            name: String,
+            value: i32,
+        }
+        let bytes = br#"{"name":"test","value":42}"#;
+        let result: TestData = deserializer.deserialize(bytes).unwrap();
+        assert_eq!(result.name, "test");
+        assert_eq!(result.value, 42);
+    }
+
+    /// Test JsonDeserializer with invalid JSON fails
+    /// 测试 JsonDeserializer 反序列化无效JSON失败
+    #[test]
+    fn test_json_deserializer_invalid_json() {
+        let deserializer = JsonDeserializer;
+        let result: Result<String, String> = deserializer.deserialize(b"not json");
+        assert!(result.is_err());
+    }
+
+    // ── KeySerializer tests ───────────────────────────────────────────
+
+    /// Test KeySerializer in string mode with string data
+    /// 测试字符串模式下 KeySerializer 序列化字符串
+    #[test]
+    fn test_key_serializer_string_mode() {
+        let serializer = KeySerializer::new();
+        assert!(serializer.use_string);
+        let result = serializer.serialize(&"my-key".to_string()).unwrap();
+        assert_eq!(result, b"my-key".to_vec());
+    }
+
+    /// Test KeySerializer in string mode rejects bytes
+    /// 测试字符串模式下 KeySerializer 拒绝字节
+    #[test]
+    fn test_key_serializer_string_mode_rejects_bytes() {
+        let serializer = KeySerializer::new();
+        let data = vec![1u8, 2, 3];
+        let result = serializer.serialize(&data);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Key must be a string"));
+    }
+
+    /// Test KeySerializer in bytes mode
+    /// 测试字节模式下 KeySerializer
+    #[test]
+    fn test_key_serializer_bytes_mode() {
+        let serializer = KeySerializer::new().with_string(false);
+        assert!(!serializer.use_string);
+        let data = vec![10u8, 20];
+        let result = serializer.serialize(&data).unwrap();
+        assert_eq!(result, vec![10u8, 20]);
+    }
+
+    /// Test KeySerializer default
+    /// 测试 KeySerializer 默认值
+    #[test]
+    fn test_key_serializer_default() {
+        let serializer = KeySerializer::default();
+        assert!(serializer.use_string);
+    }
+}

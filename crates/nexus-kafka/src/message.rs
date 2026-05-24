@@ -230,3 +230,152 @@ impl KafkaMessage {
         &self.payload
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test KafkaMessage construction and accessors
+    /// 测试 KafkaMessage 构造和访问器
+    #[test]
+    fn test_kafka_message_construction() {
+        let msg = KafkaMessage::new("test-topic", 2, 42, MessageValue::String("hello".to_string()));
+        assert_eq!(msg.topic(), "test-topic");
+        assert_eq!(msg.partition(), 2);
+        assert_eq!(msg.offset(), 42);
+        assert!(msg.key().is_none());
+        assert_eq!(msg.timestamp, 0);
+    }
+
+    /// Test KafkaMessage with key
+    /// 测试带键的 KafkaMessage
+    #[test]
+    fn test_kafka_message_with_key() {
+        let mut msg = KafkaMessage::new("t", 0, 0, MessageValue::Null);
+        msg.key = Some(MessageKey::String("my-key".to_string()));
+        assert!(msg.key().is_some());
+        let key = msg.key().unwrap();
+        assert_eq!(key.as_bytes(), Some(b"my-key".as_slice()));
+    }
+
+    // ── MessageKey tests ──────────────────────────────────────────────
+
+    /// Test MessageKey variants and as_bytes
+    /// 测试 MessageKey 变体和 as_bytes
+    #[test]
+    fn test_message_key_as_bytes() {
+        let string_key = MessageKey::String("key".to_string());
+        assert_eq!(string_key.as_bytes(), Some(b"key".as_slice()));
+
+        let bytes_key = MessageKey::Bytes(vec![1, 2, 3]);
+        assert_eq!(bytes_key.as_bytes(), Some(&[1u8, 2, 3][..]));
+
+        let null_key = MessageKey::Null;
+        assert!(null_key.as_bytes().is_none());
+    }
+
+    // ── MessageValue tests ────────────────────────────────────────────
+
+    /// Test MessageValue as_bytes for all variants
+    /// 测试所有变体的 MessageValue as_bytes
+    #[test]
+    fn test_message_value_as_bytes() {
+        let string_val = MessageValue::String("hello".to_string());
+        assert_eq!(string_val.as_bytes(), Some(b"hello".as_slice()));
+
+        let bytes_val = MessageValue::Bytes(vec![10, 20, 30]);
+        assert_eq!(bytes_val.as_bytes(), Some(&[10u8, 20, 30][..]));
+
+        let null_val = MessageValue::Null;
+        assert!(null_val.as_bytes().is_none());
+    }
+
+    /// Test MessageValue as_string for all variants
+    /// 测试所有变体的 MessageValue as_string
+    #[test]
+    fn test_message_value_as_string() {
+        let string_val = MessageValue::String("world".to_string());
+        assert_eq!(string_val.as_string(), Some("world".to_string()));
+
+        let bytes_val = MessageValue::Bytes(b"valid-utf8".to_vec());
+        assert_eq!(bytes_val.as_string(), Some("valid-utf8".to_string()));
+
+        let invalid_utf8 = MessageValue::Bytes(vec![0xFF, 0xFE]);
+        assert!(invalid_utf8.as_string().is_none());
+
+        let null_val = MessageValue::Null;
+        assert!(null_val.as_string().is_none());
+    }
+
+    // ── MessageHeaders tests ──────────────────────────────────────────
+
+    /// Test MessageHeaders add and get
+    /// 测试 MessageHeaders 添加和获取
+    #[test]
+    fn test_message_headers_add_get() {
+        let headers = MessageHeaders::new()
+            .with_header("trace-id", MessageHeaderValue::String("abc-123".to_string()))
+            .with_header("retry-count", MessageHeaderValue::Int(3));
+
+        assert!(headers.get("trace-id").is_some());
+        assert!(headers.get("retry-count").is_some());
+        assert!(headers.get("missing").is_none());
+
+        match headers.get("trace-id") {
+            Some(MessageHeaderValue::String(v)) => assert_eq!(v, "abc-123"),
+            _ => panic!("expected string header"),
+        }
+        match headers.get("retry-count") {
+            Some(MessageHeaderValue::Int(v)) => assert_eq!(*v, 3),
+            _ => panic!("expected int header"),
+        }
+    }
+
+    /// Test MessageHeaders default is empty
+    /// 测试 MessageHeaders 默认为空
+    #[test]
+    fn test_message_headers_default_empty() {
+        let headers = MessageHeaders::default();
+        assert!(headers.headers.is_empty());
+    }
+
+    // ── Serialization round-trip ──────────────────────────────────────
+
+    /// Test KafkaMessage serde round-trip
+    /// 测试 KafkaMessage 序列化往返
+    #[test]
+    fn test_kafka_message_serde_roundtrip() {
+        let msg = KafkaMessage {
+            topic: "serde-topic".to_string(),
+            partition: 1,
+            offset: 99,
+            key: Some(MessageKey::Bytes(vec![1, 2])),
+            payload: MessageValue::String("data".to_string()),
+            headers: MessageHeaders::new()
+                .with_header("h1", MessageHeaderValue::String("v1".to_string())),
+            timestamp: 1700000000,
+        };
+        let json = serde_json::to_string(&msg).unwrap();
+        let restored: KafkaMessage = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored.topic, msg.topic);
+        assert_eq!(restored.partition, msg.partition);
+        assert_eq!(restored.offset, msg.offset);
+        assert_eq!(restored.timestamp, msg.timestamp);
+    }
+
+    /// Test MessageHeaderValue serialization
+    /// 测试 MessageHeaderValue 序列化
+    #[test]
+    fn test_message_header_value_serde() {
+        let vals = vec![
+            MessageHeaderValue::String("s".to_string()),
+            MessageHeaderValue::Bytes(vec![1, 2]),
+            MessageHeaderValue::Int(-42),
+        ];
+        for v in &vals {
+            let json = serde_json::to_string(v).unwrap();
+            let restored: MessageHeaderValue = serde_json::from_str(&json).unwrap();
+            assert_eq!(*v, restored);
+        }
+    }
+}

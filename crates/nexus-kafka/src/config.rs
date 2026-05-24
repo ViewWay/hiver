@@ -362,3 +362,141 @@ fn default_fetch_max_bytes() -> i32 {
 fn default_fetch_max_wait() -> u32 {
     500
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── ProducerConfig tests ──────────────────────────────────────────
+
+    /// Test default producer config values
+    /// 测试默认生产者配置值
+    #[test]
+    fn test_producer_config_default_values() {
+        let config = ProducerConfig::default();
+        assert_eq!(config.bootstrap_servers, "localhost:9092");
+        assert_eq!(config.client_id, "nexus-kafka");
+        assert_eq!(config.acks, "all");
+        assert!(config.idempotent);
+        assert_eq!(config.compression_type, CompressionType::None);
+        assert_eq!(config.linger_ms, 0);
+        assert_eq!(config.batch_size, 16384);
+        assert_eq!(config.request_timeout_ms, 30000);
+        assert_eq!(config.max_in_flight_requests_per_connection, 5);
+        assert!(!config.ssl);
+    }
+
+    /// Test producer config builder methods
+    /// 测试生产者配置构建器方法
+    #[test]
+    fn test_producer_config_builder() {
+        let config = ProducerConfig::new()
+            .with_bootstrap_servers("kafka://broker1:9092,broker2:9092")
+            .with_client_id("test-client")
+            .with_acks("1")
+            .with_compression(CompressionType::Gzip);
+
+        assert_eq!(config.bootstrap_servers, "kafka://broker1:9092,broker2:9092");
+        assert_eq!(config.client_id, "test-client");
+        assert_eq!(config.acks, "1");
+        assert_eq!(config.compression_type, CompressionType::Gzip);
+    }
+
+    /// Test producer config serialization round-trip
+    /// 测试生产者配置序列化往返
+    #[test]
+    fn test_producer_config_serde_roundtrip() {
+        let config = ProducerConfig::new()
+            .with_bootstrap_servers("localhost:9092")
+            .with_compression(CompressionType::Lz4);
+        let json = serde_json::to_string(&config).expect("serialize failed");
+        let deserialized: ProducerConfig = serde_json::from_str(&json).expect("deserialize failed");
+        assert_eq!(config.bootstrap_servers, deserialized.bootstrap_servers);
+        assert_eq!(config.compression_type, deserialized.compression_type);
+        assert_eq!(config.acks, deserialized.acks);
+    }
+
+    // ── ConsumerConfig tests ──────────────────────────────────────────
+
+    /// Test consumer config with custom group id
+    /// 测试带自定义组ID的消费者配置
+    #[test]
+    fn test_consumer_config_custom_group() {
+        let config = ConsumerConfig::new("my-group");
+        assert_eq!(config.group_id, "my-group");
+        assert_eq!(config.bootstrap_servers, "localhost:9092");
+        assert!(config.enable_auto_commit);
+        assert_eq!(config.auto_commit_interval_ms, 5000);
+        assert_eq!(config.session_timeout_ms, 30000);
+        assert_eq!(config.max_poll_records, 500);
+        assert_eq!(config.max_poll_interval_ms, 300_000);
+        assert_eq!(config.auto_offset_reset, AutoOffsetReset::Latest);
+        assert!(!config.ssl);
+    }
+
+    /// Test consumer config builder methods
+    /// 测试消费者配置构建器方法
+    #[test]
+    fn test_consumer_config_builder() {
+        let config = ConsumerConfig::new("test-group")
+            .with_bootstrap_servers("broker.example.com:9093");
+        assert_eq!(config.group_id, "test-group");
+        assert_eq!(config.bootstrap_servers, "broker.example.com:9093");
+    }
+
+    /// Test consumer config serialization round-trip
+    /// 测试消费者配置序列化往返
+    #[test]
+    fn test_consumer_config_serde_roundtrip() {
+        let config = ConsumerConfig::new("serde-group");
+        let json = serde_json::to_string(&config).expect("serialize failed");
+        let deserialized: ConsumerConfig = serde_json::from_str(&json).expect("deserialize failed");
+        assert_eq!(config.group_id, deserialized.group_id);
+        assert_eq!(config.bootstrap_servers, deserialized.bootstrap_servers);
+        assert_eq!(config.enable_auto_commit, deserialized.enable_auto_commit);
+    }
+
+    // ── CompressionType tests ─────────────────────────────────────────
+
+    /// Test all compression type variants
+    /// 测试所有压缩类型变体
+    #[test]
+    fn test_compression_type_variants() {
+        assert_eq!(CompressionType::default(), CompressionType::None);
+
+        let variants = vec![
+            CompressionType::None,
+            CompressionType::Gzip,
+            CompressionType::Snappy,
+            CompressionType::Lz4,
+            CompressionType::Zstd,
+        ];
+        // Verify all are distinct
+        for i in 0..variants.len() {
+            for j in (i + 1)..variants.len() {
+                assert_ne!(variants[i], variants[j]);
+            }
+        }
+    }
+
+    // ── AutoOffsetReset tests ─────────────────────────────────────────
+
+    /// Test auto offset reset default and variants
+    /// 测试自动偏移重置默认值和变体
+    #[test]
+    fn test_auto_offset_reset_default() {
+        assert_eq!(AutoOffsetReset::default(), AutoOffsetReset::Latest);
+    }
+
+    // ── ConsumerOffset tests ──────────────────────────────────────────
+
+    /// Test consumer offset construction
+    /// 测试消费者偏移构造
+    #[test]
+    fn test_consumer_offset_new() {
+        let offset = ConsumerOffset::new("my-topic", 2, 42);
+        assert_eq!(offset.topic, "my-topic");
+        assert_eq!(offset.partition, 2);
+        assert_eq!(offset.offset, 42);
+    }
+}
