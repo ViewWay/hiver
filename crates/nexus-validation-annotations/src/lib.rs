@@ -588,59 +588,110 @@ fn extract_fields_with_size(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident
 
             f.ident.as_ref().and_then(|id| {
                 size_attr.and_then(|attr| {
-                    // Parse min/max from #[size(min = X, max = Y)]
-                    // 解析 #[size(min = X, max = Y)] 中的 min/max
-                    let mut min = 0u32;
-                    let mut max = std::u32::MAX;
-
-                    // Parse attributes
-                    // 解析属性
-                    attr.parse_nested_meta().ok().and_then(|meta| {
-                        if let syn::Meta::List(meta_list) = meta {
-                            for pair in meta_list.nested.iter() {
-                                if let Some(key) = pair.key().ident {
-                                    if key == "min" {
-                                        if let Ok(value) = parse_value_from_meta(&pair.value) {
-                                            min = value;
-                                        }
-                                    } else if key == "max" {
-                                        if let Ok(value) = parse_value_from_meta(&pair.value) {
-                                            max = value;
-                                        }
-                                    }
-                                }
-                            }
-                            Some(())
-                        } else {
-                            None
-                        }
-                    }).unwrap_or_else(|| (min, max));
-
-                    Some((id, min, max))
+                    parse_min_max_attr(attr).map(|(min, max)| (id.clone(), min, max))
                 })
             })
         })
         .collect()
 }
 
-/// Parse value from meta item
-/// 从 meta 项中解析值
+/// Parse a single numeric value from an attribute like `#[name(5)]` or `#[name(value = 5)]`.
+/// 从属性中解析单个数值，支持 `#[name(5)]` 和 `#[name(value = 5)]` 两种写法。
 ///
-/// Note: In syn 2.x, NestedMeta was replaced with Meta. We use darling's NestedMeta
-/// for compatibility with the attribute parsing macros.
-/// 注意：在 syn 2.x 中，NestedMeta 被 Meta 替换。我们使用 darling 的 NestedMeta
-///       以保持与属性解析宏的兼容性。
-fn parse_value_from_meta(meta: &darling::ast::NestedMeta) -> Option<u32> {
-    match meta {
-        darling::ast::NestedMeta::Lit(syn::Lit::Int(lit)) => {
-            lit.base10_parse().ok()
+/// For bare value form `#[min(5)]`, reads the literal directly.
+/// For named form `#[min(value = 5)]`, looks up the `key_name` parameter.
+/// 对于裸值形式 `#[min(5)]`，直接读取字面量。
+/// 对于命名形式 `#[min(value = 5)]`，查找 `key_name` 参数。
+fn parse_single_numeric_attr(attr: &Attribute, key_name: &str) -> Option<u32> {
+    let mut result: Option<u32> = None;
+
+    // Try named form first: `#[min(value = 5)]`
+    // 先尝试命名形式：`#[min(value = 5)]`
+    let parsed = attr.parse_nested_meta(|meta| {
+        if meta.path.is_ident(key_name) {
+            let value: syn::LitInt = meta.value()?.parse()?;
+            result = value.base10_parse().ok();
         }
-        _ => None,
+        Ok(())
+    });
+
+    if parsed.is_ok() && result.is_some() {
+        return result;
     }
+
+    // Fallback: bare literal form `#[min(5)]`
+    // 回退：裸字面量形式 `#[min(5)]`
+    if let Ok(lit) = attr.parse_args::<syn::LitInt>() {
+        return lit.base10_parse().ok();
+    }
+
+    None
+}
+
+/// Parse a single string value from an attribute like `#[name("...")]` or `#[name(key = "...")]`.
+/// 从属性中解析单个字符串值，支持 `#[name("...")]` 和 `#[name(key = "...")]` 两种写法。
+fn parse_single_string_attr(attr: &Attribute, key_name: &str) -> Option<String> {
+    let mut result: Option<String> = None;
+
+    // Try named form first: `#[pattern(regex = "...")]`
+    // 先尝试命名形式：`#[pattern(regex = "...")]`
+    let parsed = attr.parse_nested_meta(|meta| {
+        if meta.path.is_ident(key_name) {
+            let value: syn::LitStr = meta.value()?.parse()?;
+            result = Some(value.value());
+        }
+        Ok(())
+    });
+
+    if parsed.is_ok() && result.is_some() {
+        return result;
+    }
+
+    // Fallback: bare literal form `#[pattern("...")]`
+    // 回退：裸字面量形式 `#[pattern("...")]`
+    if let Ok(lit) = attr.parse_args::<syn::LitStr>() {
+        return Some(lit.value());
+    }
+
+    None
+}
+
+/// Parse min/max pair from an attribute like `#[length(min = 3, max = 20)]`.
+/// 从属性中解析 min/max 对，例如 `#[length(min = 3, max = 20)]`。
+///
+/// Both min and max are optional; defaults are 0 and `u32::MAX` respectively.
+/// min 和 max 均为可选，默认值分别为 0 和 `u32::MAX`。
+fn parse_min_max_attr(attr: &Attribute) -> Option<(u32, u32)> {
+    let mut min: u32 = 0;
+    let mut max: u32 = u32::MAX;
+
+    let parsed = attr.parse_nested_meta(|meta| {
+        if meta.path.is_ident("min") {
+            let value: syn::LitInt = meta.value()?.parse()?;
+            if let Ok(v) = value.base10_parse::<u32>() {
+                min = v;
+            }
+        } else if meta.path.is_ident("max") {
+            let value: syn::LitInt = meta.value()?.parse()?;
+            if let Ok(v) = value.base10_parse::<u32>() {
+                max = v;
+            }
+        }
+        Ok(())
+    });
+
+    if parsed.is_ok() {
+        return Some((min, max));
+    }
+
+    None
 }
 
 /// Extract fields with #[min] attribute
 /// 提取带有 #[min] 属性的字段
+///
+/// Supports both `#[min(5)]` and `#[min(value = 5)]` forms.
+/// 同时支持 `#[min(5)]` 和 `#[min(value = 5)]` 两种写法。
 fn extract_fields_with_min(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, u32)> {
     let fields = match &input.data {
         Data::Struct(DataStruct {
@@ -662,10 +713,8 @@ fn extract_fields_with_min(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
             });
 
             f.ident.as_ref().and_then(|id| {
-                min_attr.map(|_| {
-                    // For now, use a default value of 0
-                    // In a full implementation, you'd parse the attribute to get the actual value
-                    (id.clone(), 0)
+                min_attr.and_then(|attr| {
+                    parse_single_numeric_attr(attr, "value").map(|val| (id.clone(), val))
                 })
             })
         })
@@ -674,6 +723,9 @@ fn extract_fields_with_min(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
 
 /// Extract fields with #[max] attribute
 /// 提取带有 #[max] 属性的字段
+///
+/// Supports both `#[max(100)]` and `#[max(value = 100)]` forms.
+/// 同时支持 `#[max(100)]` 和 `#[max(value = 100)` 两种写法。
 fn extract_fields_with_max(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, u32)> {
     let fields = match &input.data {
         Data::Struct(DataStruct {
@@ -695,10 +747,8 @@ fn extract_fields_with_max(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
             });
 
             f.ident.as_ref().and_then(|id| {
-                max_attr.map(|_| {
-                    // For now, use a default value of u32::MAX
-                    // In a full implementation, you'd parse the attribute to get the actual value
-                    (id.clone(), std::u32::MAX)
+                max_attr.and_then(|attr| {
+                    parse_single_numeric_attr(attr, "value").map(|val| (id.clone(), val))
                 })
             })
         })
@@ -707,6 +757,9 @@ fn extract_fields_with_max(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
 
 /// Extract fields with #[pattern] attribute
 /// 提取带有 #[pattern] 属性的字段
+///
+/// Supports `#[pattern("^[a-z]+$")]` and `#[pattern(regex = "^[a-z]+$")]`.
+/// 支持 `#[pattern("^[a-z]+$")]` 和 `#[pattern(regex = "^[a-z]+$")]` 两种写法。
 fn extract_fields_with_pattern(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, String)> {
     let fields = match &input.data {
         Data::Struct(DataStruct {
@@ -728,10 +781,8 @@ fn extract_fields_with_pattern(input: &syn::DeriveInput) -> Vec<(proc_macro2::Id
             });
 
             f.ident.as_ref().and_then(|id| {
-                pattern_attr.map(|_| {
-                    // For now, use a default pattern
-                    // In a full implementation, you'd parse the attribute to get the actual regex
-                    (id.clone(), r".*".to_string())
+                pattern_attr.and_then(|attr| {
+                    parse_single_string_attr(attr, "regex").map(|val| (id.clone(), val))
                 })
             })
         })
@@ -740,6 +791,9 @@ fn extract_fields_with_pattern(input: &syn::DeriveInput) -> Vec<(proc_macro2::Id
 
 /// Extract fields with #[length] attribute
 /// 提取带有 #[length] 属性的字段
+///
+/// Supports `#[length(min = 3, max = 20)]` with optional min/max.
+/// 支持 `#[length(min = 3, max = 20)]`，min 和 max 均为可选。
 fn extract_fields_with_length(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, u32, u32)> {
     let fields = match &input.data {
         Data::Struct(DataStruct {
@@ -761,10 +815,8 @@ fn extract_fields_with_length(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ide
             });
 
             f.ident.as_ref().and_then(|id| {
-                length_attr.map(|_| {
-                    // For now, use default values
-                    // In a full implementation, you'd parse min and max from the attribute
-                    (id.clone(), 0, std::u32::MAX)
+                length_attr.and_then(|attr| {
+                    parse_min_max_attr(attr).map(|(min, max)| (id.clone(), min, max))
                 })
             })
         })
