@@ -15,6 +15,8 @@ Equivalent to: Spring Boot Samples, Spring PetClinic
 workspace = true
 
 # Binary targets / 二进制目标
+
+
 [[bin]]
 name = "core_example"
 path = "src/core_example.rs"
@@ -65,6 +67,21 @@ nexus-macros = { path = "../crates/nexus-macros" }
 
 # Observability / 可观测性
 nexus-observability = { path = "../crates/nexus-observability", features = ["nexus-format"] }
+
+# Cache / 缓存
+nexus-cache = { path = "../crates/nexus-cache" }
+
+# Security / 安全
+nexus-security = { path = "../crates/nexus-security" }
+
+# Data / 数据
+nexus-data-annotations = { path = "../crates/nexus-data-annotations" }
+
+# Web3 / 区块链
+nexus-web3 = { path = "../crates/nexus-web3" }
+
+# gRPC
+nexus-grpc = { path = "../crates/nexus-grpc" }
 
 # Async runtime / 异步运行时
 tokio = { workspace = true, features = ["full"] }
