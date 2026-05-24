@@ -19,7 +19,7 @@
 //!
 //! // Build a query
 //! let users = SqlxQuery::<User>::select()
-//!     .where_("active = $1", &[&true])
+//!     .where_("active = ?", &[QueryParam::Bool(true)])
 //!     .order_by("created_at DESC")
 //!     .limit(10)
 //!     .fetch_all(&client).await?;
@@ -114,7 +114,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
     /// real SQLx would use proper parameter binding.
     /// 使用 `$1`, `$2` ... 标记（如 PostgreSQL/SQLx）。
     #[must_use]
-    pub fn where_(mut self, condition: impl Into<String>, params: &[&dyn crate::query::ToSql]) -> Self {
+    pub fn where_(mut self, condition: impl Into<String>, params: &[nexus_data_rdbc::QueryParam]) -> Self {
         let mut cond = condition.into();
         for param in params {
             self.param_counter += 1;
@@ -123,7 +123,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
             if let Some(pos) = cond.find('?') {
                 cond.replace_range(pos..pos + 1, &marker);
             }
-            self.params.push(param.to_sql());
+            self.params.push(param.to_sql_literal());
         }
         self.conditions.push(cond);
         self
@@ -470,8 +470,8 @@ mod tests {
     #[test]
     fn test_sqlx_query_with_conditions() {
         let sql = SqlxQuery::<Product>::select()
-            .where_("active = ?", &[&true])
-            .where_("price > ?", &[&100.0_f64])
+            .where_("active = ?", &[nexus_data_rdbc::QueryParam::Bool(true)])
+            .where_("price > ?", &[nexus_data_rdbc::QueryParam::F64(100.0)])
             .to_sql();
 
         assert!(sql.contains("SELECT * FROM products"));
@@ -484,7 +484,7 @@ mod tests {
     fn test_sqlx_query_full() {
         let sql = SqlxQuery::<Product>::select()
             .columns(&["name", "price"])
-            .where_("active = ?", &[&true])
+            .where_("active = ?", &[nexus_data_rdbc::QueryParam::Bool(true)])
             .group_by(&["category"])
             .having("COUNT(*) > 5")
             .order_by_dir("price", SqlxOrder::Desc)

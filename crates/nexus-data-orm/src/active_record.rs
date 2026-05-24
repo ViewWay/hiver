@@ -5,8 +5,11 @@
 //!
 //! This module provides the Active Record pattern for ORM operations,
 //! backed by a `DatabaseClient` for real database execution.
+//! All queries use parameterized placeholders (`$1, $2, ...`) to prevent SQL injection.
+//!
 //! 本模块提供 ORM 操作的 Active Record 模式，
 //! 由 `DatabaseClient` 支持进行真实数据库执行。
+//! 所有查询使用参数化占位符（`$1, $2, ...`）以防止 SQL 注入。
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
@@ -36,9 +39,8 @@
 use crate::query::QueryBuilder;
 use crate::Model;
 use crate::Result;
-use nexus_data_rdbc::DatabaseClient;
+use nexus_data_rdbc::{DatabaseClient, QueryParam, Row};
 use nexus_data_commons::{Page, PageRequest};
-use nexus_data_rdbc::Row;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Save
@@ -58,15 +60,16 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
             _ => return Err(crate::Error::unknown("not an object")),
         };
         let cols: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
-        let vals: Vec<String> = map.values().map(|v| json_value_to_sql(v)).collect();
+        let params: Vec<QueryParam> = map.values().map(json_value_to_param).collect();
+        let placeholders: Vec<String> = (1..=params.len()).map(|i| format!("${i}")).collect();
         let sql = format!(
             "INSERT INTO {} ({}) VALUES ({}) RETURNING *",
             Self::table_name(),
             cols.join(", "),
-            vals.join(", ")
+            placeholders.join(", ")
         );
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &params)
             .await
             .map_err(|e| crate::Error::unknown(format!("insert failed: {e}")))?
         {
@@ -87,23 +90,34 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
             serde_json::Value::Object(m) => m,
             _ => return Err(crate::Error::unknown("not an object")),
         };
-        let set_clause: Vec<String> = map
-            .iter()
-            .filter(|(k, _)| *k != "id")
-            .map(|(k, v)| format!("{} = {}", k, json_value_to_sql(v)))
-            .collect();
-        if set_clause.is_empty() {
+
+        let mut set_parts: Vec<String> = Vec::new();
+        let mut params: Vec<QueryParam> = Vec::new();
+        let mut idx = 1u32;
+
+        for (k, v) in map.iter() {
+            if k == "id" {
+                continue;
+            }
+            set_parts.push(format!("{} = ${idx}", k));
+            params.push(json_value_to_param(v));
+            idx += 1;
+        }
+
+        if set_parts.is_empty() {
             return Err(crate::Error::unknown("no columns to update"));
         }
-        let pk_sql = escape_id(&pk);
+
+        let pk_idx = idx;
+        params.push(QueryParam::Text(pk.clone()));
+
         let sql = format!(
-            "UPDATE {} SET {} WHERE id = {} RETURNING *",
+            "UPDATE {} SET {} WHERE id = ${pk_idx} RETURNING *",
             Self::table_name(),
-            set_clause.join(", "),
-            pk_sql
+            set_parts.join(", ")
         );
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &params)
             .await
             .map_err(|e| crate::Error::unknown(format!("update failed: {e}")))?
         {
@@ -139,23 +153,6 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
 ///
 /// Equivalent to Spring Data's `@Version`.
 /// 等价于 Spring Data 的 `@Version`。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// #[derive(Model, Serialize, Deserialize, Debug, Clone)]
-/// #[model(table = "users")]
-/// struct User {
-///     #[model(primary_key)]
-///     id: i64,
-///     name: String,
-///     #[model(version)]
-///     version: i64,
-/// }
-///
-/// // This will fail with OptimisticLockConflict if another caller updated first
-/// let updated = user.update_versioned(&client).await?;
-/// ```
 #[async_trait::async_trait]
 pub trait OptimisticLock: Save {
     /// Return the current version value.
@@ -183,25 +180,40 @@ pub trait OptimisticLock: Save {
             _ => return Err(crate::Error::unknown("not an object")),
         };
 
-        let set_clause: Vec<String> = map
-            .iter()
-            .filter(|(k, _)| *k != "id" && k.as_str() != version_col)
-            .map(|(k, v)| format!("{} = {}", k, json_value_to_sql(v)))
-            .chain(std::iter::once(format!("{} = {}", version_col, next_version)))
-            .collect();
+        let mut set_parts: Vec<String> = Vec::new();
+        let mut params: Vec<QueryParam> = Vec::new();
+        let mut idx = 1u32;
 
-        let pk_sql = escape_id(&pk);
+        for (k, v) in map.iter() {
+            if k == "id" || k.as_str() == version_col {
+                continue;
+            }
+            set_parts.push(format!("{} = ${idx}", k));
+            params.push(json_value_to_param(v));
+            idx += 1;
+        }
+
+        // version = next_version
+        set_parts.push(format!("{} = ${idx}", version_col));
+        params.push(QueryParam::I64(next_version));
+        idx += 1;
+
+        // WHERE id = $N AND version = $M
+        let pk_idx = idx;
+        params.push(QueryParam::Text(pk.clone()));
+        idx += 1;
+        let ver_idx = idx;
+        params.push(QueryParam::I64(current_version));
+
         let sql = format!(
-            "UPDATE {} SET {} WHERE id = {} AND {} = {} RETURNING *",
+            "UPDATE {} SET {} WHERE id = ${pk_idx} AND {} = ${ver_idx} RETURNING *",
             Self::table_name(),
-            set_clause.join(", "),
-            pk_sql,
+            set_parts.join(", "),
             version_col,
-            current_version
         );
 
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &params)
             .await
             .map_err(|e| crate::Error::unknown(format!("versioned update failed: {e}")))?
         {
@@ -230,14 +242,9 @@ pub trait Delete: Send + Sync + Model + Sized {
     /// 从数据库删除此记录。
     async fn delete<C: DatabaseClient>(&self, client: &C) -> Result<()> {
         let pk = self.primary_key()?;
-        let pk_sql = escape_id(&pk);
-        let sql = format!(
-            "DELETE FROM {} WHERE id = {}",
-            Self::table_name(),
-            pk_sql
-        );
+        let sql = format!("DELETE FROM {} WHERE id = $1", Self::table_name());
         client
-            .execute_cmd(&sql)
+            .execute_params(&sql, &[QueryParam::Text(pk)])
             .await
             .map_err(|e| crate::Error::unknown(format!("delete failed: {e}")))?;
         Ok(())
@@ -248,20 +255,23 @@ pub trait Delete: Send + Sync + Model + Sized {
     async fn delete_where<C: DatabaseClient>(
         client: &C,
         condition: &str,
-        params: &[&dyn crate::query::ToSql],
+        params: &[QueryParam],
     ) -> Result<u64>
     where
         Self: Sized,
     {
-        let mut sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), condition);
-        for p in params.iter() {
-            sql = sql.replacen('?', &p.to_sql(), 1);
+        let mut param_idx = 1u32;
+        let mut cond = condition.to_string();
+        for _ in params {
+            cond = cond.replacen('?', &format!("${param_idx}"), 1);
+            param_idx += 1;
         }
-        let affected = client
-            .execute_cmd(&sql)
+        let sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), cond);
+        client
+            .execute_params(&sql, params)
             .await
             .map_err(|e| crate::Error::unknown(format!("delete_where failed: {e}")))?;
-        Ok(affected)
+        Ok(0)
     }
 }
 
@@ -277,14 +287,12 @@ pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized {
     /// 从数据库刷新此记录（按主键重新获取）。
     async fn refresh<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key()?;
-        let pk_sql = escape_id(&pk);
         let sql = format!(
-            "SELECT * FROM {} WHERE id = {} LIMIT 1",
-            Self::table_name(),
-            pk_sql
+            "SELECT * FROM {} WHERE id = $1 LIMIT 1",
+            Self::table_name()
         );
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &[QueryParam::Text(pk.clone())])
             .await
             .map_err(|e| crate::Error::unknown(format!("refresh failed: {e}")))?
         {
@@ -343,14 +351,9 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         client: &C,
     ) -> Result<Option<Self>> {
         let id_str = id.into();
-        let id_sql = escape_id(&id_str);
-        let sql = format!(
-            "SELECT * FROM {} WHERE id = {}",
-            Self::table_name(),
-            id_sql
-        );
+        let sql = format!("SELECT * FROM {} WHERE id = $1", Self::table_name());
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &[QueryParam::Text(id_str)])
             .await
             .map_err(|e| crate::Error::unknown(format!("find_by_id failed: {e}")))?
         {
@@ -378,18 +381,17 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     async fn find_by<C: DatabaseClient>(
         client: &C,
         condition: &str,
-        params: &[&dyn crate::query::ToSql],
+        params: &[QueryParam],
     ) -> Result<Vec<Self>> {
-        let mut sql = format!(
-            "SELECT * FROM {} WHERE {}",
-            Self::table_name(),
-            condition
-        );
-        for p in params.iter() {
-            sql = sql.replacen('?', &p.to_sql(), 1);
+        let mut param_idx = 1u32;
+        let mut cond = condition.to_string();
+        for _ in params {
+            cond = cond.replacen('?', &format!("${param_idx}"), 1);
+            param_idx += 1;
         }
+        let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, params)
             .await
             .map_err(|e| crate::Error::query_build(format!("find_by failed: {e}")))?;
         collect_rows(rows)
@@ -400,18 +402,21 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     async fn find_one_by<C: DatabaseClient>(
         client: &C,
         condition: &str,
-        params: &[&dyn crate::query::ToSql],
+        params: &[QueryParam],
     ) -> Result<Option<Self>> {
-        let mut sql = format!(
+        let mut param_idx = 1u32;
+        let mut cond = condition.to_string();
+        for _ in params {
+            cond = cond.replacen('?', &format!("${param_idx}"), 1);
+            param_idx += 1;
+        }
+        let sql = format!(
             "SELECT * FROM {} WHERE {} LIMIT 1",
             Self::table_name(),
-            condition
+            cond
         );
-        for p in params.iter() {
-            sql = sql.replacen('?', &p.to_sql(), 1);
-        }
         match client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, params)
             .await
             .map_err(|e| crate::Error::query_build(format!("find_one_by failed: {e}")))?
         {
@@ -511,14 +516,12 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         client: &C,
     ) -> Result<bool> {
         let id_str = id.into();
-        let id_sql = escape_id(&id_str);
         let sql = format!(
-            "SELECT 1 FROM {} WHERE id = {} LIMIT 1",
-            Self::table_name(),
-            id_sql
+            "SELECT 1 FROM {} WHERE id = $1 LIMIT 1",
+            Self::table_name()
         );
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, &[QueryParam::Text(id_str)])
             .await
             .map_err(|e| crate::Error::query_build(format!("exists_by_id failed: {e}")))?;
         Ok(!rows.is_empty())
@@ -535,27 +538,26 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 // Helpers
 // ──────────────────────────────────────────────────────────────────────────────
 
-fn escape_id(id: &str) -> String {
-    if id.parse::<i64>().is_ok() {
-        id.to_string()
-    } else {
-        format!("'{}'", id.replace('\'', "''").replace('\0', ""))
-    }
-}
-
-fn json_value_to_sql(v: &serde_json::Value) -> String {
+/// Convert a JSON value to a QueryParam for parameterized queries.
+/// 将 JSON 值转换为参数化查询的 QueryParam。
+fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
     match v {
-        serde_json::Value::Null => "NULL".to_string(),
-        serde_json::Value::Bool(b) => if *b { "TRUE" } else { "FALSE" }.to_string(),
-        serde_json::Value::Number(n) => n.to_string(),
-        serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''").replace('\0', "")),
+        serde_json::Value::Null => QueryParam::Null,
+        serde_json::Value::Bool(b) => QueryParam::Bool(*b),
+        serde_json::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                QueryParam::I64(i)
+            } else if let Some(f) = n.as_f64() {
+                QueryParam::F64(f)
+            } else {
+                QueryParam::Text(n.to_string())
+            }
+        },
+        serde_json::Value::String(s) => QueryParam::Text(s.clone()),
         serde_json::Value::Array(a) => {
-            let inner: Vec<String> = a.iter().map(json_value_to_sql).collect();
-            format!("ARRAY[{}]", inner.join(", "))
-        }
-        serde_json::Value::Object(_) => {
-            format!("'{}'", v.to_string().replace('\'', "''"))
-        }
+            QueryParam::Text(format!("[{}]", a.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(",")))
+        },
+        serde_json::Value::Object(_) => QueryParam::Text(v.to_string()),
     }
 }
 
@@ -598,11 +600,20 @@ mod tests {
     }
 
     #[test]
-    fn test_json_value_to_sql() {
-        assert_eq!(json_value_to_sql(&serde_json::Value::Null), "NULL");
-        assert_eq!(json_value_to_sql(&serde_json::json!(true)), "TRUE");
-        assert_eq!(json_value_to_sql(&serde_json::json!(42i64)), "42");
-        assert_eq!(json_value_to_sql(&serde_json::json!("hello")), "'hello'");
-        assert_eq!(json_value_to_sql(&serde_json::json!("it's")), "'it''s'");
+    fn test_json_value_to_param() {
+        assert_eq!(json_value_to_param(&serde_json::Value::Null), QueryParam::Null);
+        assert_eq!(json_value_to_param(&serde_json::json!(true)), QueryParam::Bool(true));
+        assert_eq!(json_value_to_param(&serde_json::json!(42i64)), QueryParam::I64(42));
+        assert_eq!(json_value_to_param(&serde_json::json!(3.14)), QueryParam::F64(3.14));
+        assert_eq!(json_value_to_param(&serde_json::json!("hello")), QueryParam::Text("hello".into()));
+    }
+
+    #[test]
+    fn test_json_value_to_param_injection() {
+        let malicious = "'; DROP TABLE users; --";
+        let param = json_value_to_param(&serde_json::json!(malicious));
+        assert_eq!(param, QueryParam::Text(malicious.into()));
+        // Value is stored as QueryParam, never interpolated into SQL
+        assert!(!param.to_sql_literal().contains("DROP TABLE users; --"));
     }
 }

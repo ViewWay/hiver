@@ -30,7 +30,7 @@
 //! ```
 
 use crate::{Error, Model, Result};
-use nexus_data_rdbc::DatabaseClient;
+use nexus_data_rdbc::{DatabaseClient, QueryParam};
 use std::marker::PhantomData;
 
 fn validate_identifier(name: &str) -> bool {
@@ -111,13 +111,13 @@ impl ToSql for bool {
 /// 表示 WHERE 子句中的条件。
 #[derive(Debug, Clone)]
 pub struct WhereClause {
-    /// The condition SQL
-    /// 条件 SQL
+    /// The condition SQL (with `?` placeholders)
+    /// 条件 SQL（使用 `?` 占位符）
     pub condition: String,
 
     /// Parameters for the condition
     /// 条件的参数
-    pub params: Vec<String>,
+    pub params: Vec<QueryParam>,
 }
 
 impl WhereClause {
@@ -132,17 +132,15 @@ impl WhereClause {
 
     /// Add a parameter
     /// 添加参数
-    pub fn param(mut self, value: impl ToSql) -> Self {
-        self.params.push(value.to_sql());
+    pub fn param(mut self, value: impl Into<QueryParam>) -> Self {
+        self.params.push(value.into());
         self
     }
 
     /// Add multiple parameters
     /// 添加多个参数
-    pub fn params(mut self, values: &[&dyn ToSql]) -> Self {
-        for &value in values {
-            self.params.push(value.to_sql());
-        }
+    pub fn params(mut self, values: &[QueryParam]) -> Self {
+        self.params.extend(values.iter().cloned());
         self
     }
 }
@@ -430,22 +428,18 @@ impl<M: Model> QueryBuilder<M> {
     ///
     /// ```rust,no_run,ignore
     /// let users = User::query()
-    ///     .where_("age > ?", &["18"])
-    ///     .where_("status = ?", &["active"])
+    ///     .where_("age > ?", &[QueryParam::I32(18)])
+    ///     .where_("status = ?", &[QueryParam::Text("active".into())])
     ///     .all().await?;
     /// ```
     // SAFETY: `condition` is a raw SQL fragment that gets interpolated directly.
     // Callers MUST use the `?` placeholder pattern for values and never concatenate
     // untrusted user input into the condition string.
     #[must_use = "QueryBuilder is consumed by each method; chain calls or use the final result"]
-    pub fn where_(mut self, condition: &str, params: &[&dyn ToSql]) -> Self {
-        let mut params_vec = Vec::new();
-        for &param in params {
-            params_vec.push(param.to_sql());
-        }
+    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
         self.wheres.push(WhereClause {
             condition: condition.to_string(),
-            params: params_vec,
+            params: params.to_vec(),
         });
         self
     }
@@ -580,10 +574,15 @@ impl<M: Model> QueryBuilder<M> {
         self
     }
 
-    /// Build the SQL query
-    /// 构建 SQL 查询
-    pub fn to_sql(&self) -> String {
+    /// Build parameterized SQL query
+    /// 构建参数化 SQL 查询
+    ///
+    /// Returns `(sql, params)` where `sql` uses `$1, $2, ...` placeholders
+    /// and `params` contains the corresponding parameter values.
+    pub fn build(&self) -> (String, Vec<QueryParam>) {
         let mut sql = String::new();
+        let mut params = Vec::new();
+        let mut param_idx = 1u32;
 
         // SELECT clause
         sql.push_str("SELECT ");
@@ -614,7 +613,7 @@ impl<M: Model> QueryBuilder<M> {
             sql.push_str(&join.on);
         }
 
-        // WHERE clause
+        // WHERE clause — replace ? with $N
         if !self.wheres.is_empty() {
             sql.push_str(" WHERE ");
             let conditions: Vec<String> = self
@@ -623,11 +622,13 @@ impl<M: Model> QueryBuilder<M> {
                 .map(|w| {
                     let mut condition = w.condition.clone();
                     for param in &w.params {
-                        condition = condition.replacen('?', param, 1);
+                        condition = condition.replacen('?', &format!("${param_idx}"), 1);
+                        param_idx += 1;
                     }
                     condition
                 })
                 .collect();
+            params.extend(self.wheres.iter().flat_map(|w| w.params.iter().cloned()));
             sql.push_str(&conditions.join(" AND "));
         }
 
@@ -664,21 +665,30 @@ impl<M: Model> QueryBuilder<M> {
             sql.push_str(&format!(" OFFSET {}", offset));
         }
 
-        sql
+        (sql, params)
+    }
+
+    /// Build SQL with inline values (backward compatible)
+    /// 构建带内联值的 SQL（向后兼容）
+    pub fn to_sql(&self) -> String {
+        let (sql, params) = self.build();
+        let mut result = sql;
+        for (i, param) in params.iter().enumerate() {
+            let placeholder = format!("${}", i + 1);
+            result = result.replace(&placeholder, &param.to_sql_literal());
+        }
+        result
     }
 
     /// Execute the query and return all results.
     /// 执行查询并返回所有结果。
-    ///
-    /// Requires the model to implement `serde::de::DeserializeOwned` so rows
-    /// can be deserialised via the JSON intermediate.
     pub async fn all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<M>>
     where
         M: serde::de::DeserializeOwned,
     {
-        let sql = self.to_sql();
+        let (sql, params) = self.build();
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, &params)
             .await
             .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
@@ -697,9 +707,9 @@ impl<M: Model> QueryBuilder<M> {
     where
         M: serde::de::DeserializeOwned,
     {
-        let sql = self.to_sql();
+        let (sql, params) = self.build();
         let row = client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &params)
             .await
             .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
         match row {
@@ -714,18 +724,22 @@ impl<M: Model> QueryBuilder<M> {
     /// Execute a COUNT query and return the count.
     /// 执行 COUNT 查询并返回计数。
     pub async fn count<C: DatabaseClient>(&self, client: &C) -> Result<i64> {
+        let (_, where_params) = self.build();
+
         let mut count_sql = String::from("SELECT COUNT(*) AS cnt FROM ");
         count_sql.push_str(&M::table_name());
 
         if !self.wheres.is_empty() {
             count_sql.push_str(" WHERE ");
+            let mut param_idx = 1u32;
             let conditions: Vec<String> = self
                 .wheres
                 .iter()
                 .map(|w| {
                     let mut condition = w.condition.clone();
-                    for param in &w.params {
-                        condition = condition.replacen('?', param, 1);
+                    for _ in &w.params {
+                        condition = condition.replacen('?', &format!("${param_idx}"), 1);
+                        param_idx += 1;
                     }
                     condition
                 })
@@ -734,7 +748,7 @@ impl<M: Model> QueryBuilder<M> {
         }
 
         let rows = client
-            .fetch_all(&count_sql)
+            .fetch_all_params(&count_sql, &where_params)
             .await
             .map_err(|e| Error::query_build(format!("Count query failed: {e}")))?;
         let cnt = rows
@@ -757,8 +771,7 @@ impl<M: Model> QueryBuilder<M> {
     {
         let total = self.count(client).await?;
         let offset = ((page.max(1) - 1) * per_page) as usize;
-        // BUGFIX: Avoid double LIMIT/OFFSET if the query already has one.
-        let base_sql = self.to_sql();
+        let (base_sql, params) = self.build();
         let sql = if base_sql.contains("LIMIT") {
             base_sql
         } else {
@@ -766,7 +779,7 @@ impl<M: Model> QueryBuilder<M> {
         };
 
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, &params)
             .await
             .map_err(|e| Error::query_build(format!("Pagination query failed: {e}")))?;
         let records: Vec<M> = rows
@@ -853,12 +866,26 @@ mod tests {
     #[test]
     fn test_query_builder_basic() {
         let query = QueryBuilder::<User>::new()
-            .where_("age > ?", &[&18i32])
+            .where_("age > ?", &[QueryParam::I32(18)])
             .to_sql();
 
         assert!(query.contains("SELECT * FROM users"));
         assert!(query.contains("WHERE"));
         assert!(query.contains("age > 18"));
+    }
+
+    #[test]
+    fn test_query_builder_build_parameterized() {
+        let (sql, params) = QueryBuilder::<User>::new()
+            .where_("age > ?", &[QueryParam::I32(18)])
+            .where_("name = ?", &[QueryParam::Text("Alice".into())])
+            .build();
+
+        assert!(sql.contains("$1"));
+        assert!(sql.contains("$2"));
+        assert_eq!(params.len(), 2);
+        assert_eq!(params[0], QueryParam::I32(18));
+        assert_eq!(params[1], QueryParam::Text("Alice".into()));
     }
 
     #[test]
@@ -895,10 +922,25 @@ mod tests {
 
     #[test]
     fn test_to_sql_for_various_types() {
-        assert_eq!(42i32.to_sql(), "42");
-        assert_eq!("hello".to_sql(), "'hello'");
-        assert_eq!("it's".to_sql(), "'it''s'");
-        assert_eq!(true.to_sql(), "TRUE");
-        assert_eq!(false.to_sql(), "FALSE");
+        assert_eq!(QueryParam::I32(42).to_sql_literal(), "42");
+        assert_eq!(QueryParam::Text("hello".into()).to_sql_literal(), "'hello'");
+        assert_eq!(QueryParam::Text("it's".into()).to_sql_literal(), "'it''s'");
+        assert_eq!(QueryParam::Bool(true).to_sql_literal(), "TRUE");
+        assert_eq!(QueryParam::Bool(false).to_sql_literal(), "FALSE");
+    }
+
+    #[test]
+    fn test_build_sql_injection_prevention() {
+        let malicious = "'; DROP TABLE users; --";
+        let (sql, params) = QueryBuilder::<User>::new()
+            .where_("name = ?", &[QueryParam::Text(malicious.into())])
+            .build();
+
+        // SQL uses $1 placeholder, not inline value
+        assert!(sql.contains("$1"));
+        assert!(!sql.contains("DROP TABLE"));
+        // The malicious content is only in params, never in SQL
+        assert_eq!(params.len(), 1);
+        assert_eq!(params[0], QueryParam::Text(malicious.into()));
     }
 }

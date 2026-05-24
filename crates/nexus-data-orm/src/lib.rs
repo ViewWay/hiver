@@ -46,7 +46,7 @@
 //!
 //! // Query Builder
 //! let users = User::query()
-//!     .where_("email LIKE ?", &["%@example.com"])
+//!     .where_("email LIKE ?", &[QueryParam::Text("%@example.com".into())])
 //!     .order_by("created_at DESC")
 //!     .limit(10)
 //!     .all().await?;
@@ -80,6 +80,7 @@ pub use error::{OrmError, Error, Result, OrmResult};
 pub use model::{Model, ModelMeta, Column, ColumnType, SqlDialect};
 pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count, OptimisticLock};
 pub use query::{QueryBuilder, WhereClause, OrderBy, Limit, ToSql};
+pub use nexus_data_rdbc::QueryParam;
 pub use repository::{OrmRepository, DefaultOrmRepository};
 pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, Relation, RelationType, OnDelete};
 pub use migrations::{Migration, Migrator, MigrationDirection, Schema};

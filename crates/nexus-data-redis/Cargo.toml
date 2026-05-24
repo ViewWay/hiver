@@ -66,4 +66,4 @@ tracing = { workspace = true }
 futures-util = "0.3"
 
 # Tokio for async runtime
-tokio = { workspace = true, features = ["sync"] }
+tokio = { workspace = true, features = ["sync", "rt", "time"] }

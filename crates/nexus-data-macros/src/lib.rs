@@ -719,97 +719,225 @@ fn extract_query_attr(attrs: &[syn::Attribute]) -> Option<String> {
     None
 }
 
-/// Generate a custom query method implementation
+/// Convert `?` placeholders to `$N` positional markers.
+fn convert_placeholders(sql: &str) -> String {
+    let mut result = String::with_capacity(sql.len());
+    let mut n = 0;
+    for ch in sql.chars() {
+        if ch == '?' {
+            n += 1;
+            result.push_str(&format!("${n}"));
+        } else {
+            result.push(ch);
+        }
+    }
+    result
+}
+
+/// Extract typed argument identifiers from a trait method signature (skips &self / self).
+fn extract_args(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>) -> Vec<proc_macro2::TokenStream> {
+    inputs.iter().filter_map(|arg| {
+        if let syn::FnArg::Typed(pt) = arg {
+            if let syn::Pat::Ident(pi) = &*pt.pat {
+                let ident = &pi.ident;
+                return Some(quote!(#ident));
+            }
+        }
+        None
+    }).collect()
+}
+
+/// Generate a custom @Query method implementation.
 fn generate_query_method(
     method: &syn::TraitItemFn,
     sql: &str,
-    _entity_type: &proc_macro2::TokenStream,
+    entity_type: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     let method_sig = &method.sig;
+    let return_type_str = quote!(#method_sig.output).to_string();
+    let args = extract_args(&method.sig.inputs);
+    let converted_sql = convert_placeholders(sql);
+
+    let returns_option = return_type_str.contains("Option");
+    let returns_vec = return_type_str.contains("Vec");
+
+    let params_build = quote! {
+        let params: Vec<nexus_data_rdbc::QueryParam> = vec![
+            #(nexus_data_rdbc::QueryParam::from(#args)),*
+        ];
+    };
+
+    let implementation = if sql.trim().to_uppercase().starts_with("SELECT") {
+        if returns_option {
+            quote! {
+                let sql: &str = #converted_sql;
+                #params_build
+                let row = self.client.fetch_one_params(sql, &params).await
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                match row {
+                    Some(r) => {
+                        let entity: #entity_type = r.deserialize()
+                            .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                        Ok(Some(entity))
+                    }
+                    None => Ok(None),
+                }
+            }
+        } else if returns_vec {
+            quote! {
+                let sql: &str = #converted_sql;
+                #params_build
+                let rows = self.client.fetch_all_params(sql, &params).await
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let mut results = Vec::with_capacity(rows.len());
+                for row in &rows {
+                    results.push(row.deserialize()
+                        .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?);
+                }
+                Ok(results)
+            }
+        } else {
+            quote! {
+                let sql: &str = #converted_sql;
+                #params_build
+                let rows = self.client.fetch_all_params(sql, &params).await
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let mut results = Vec::with_capacity(rows.len());
+                for row in &rows {
+                    results.push(row.deserialize()
+                        .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?);
+                }
+                Ok(results)
+            }
+        }
+    } else {
+        quote! {
+            let sql: &str = #converted_sql;
+            #params_build
+            let _affected = self.client.execute_params(sql, &params).await
+                .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+            Ok(_affected as usize)
+        }
+    };
 
     quote! {
         #method_sig {
-            let query = #sql;
-            // Execute query using the client
-            // This is a simplified implementation
-            // In production, you'd parse parameters and bind them properly
-            Err(nexus_data_commons::Error::not_implemented(format!("Custom query: {}", query)))
+            #implementation
         }
     }
 }
 
-/// Generate a derived query method implementation
+/// Generate a derived query method implementation from method name conventions.
 fn generate_derived_query_method(
     method: &syn::TraitItemFn,
     table_name: &str,
-    _entity_type: &proc_macro2::TokenStream,
+    entity_type: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     let method_sig = &method.sig;
     let method_name_str = method.sig.ident.to_string();
     let return_type_str = quote!(#method_sig.output).to_string();
 
-    // Parse method name to extract conditions
     let (operation, conditions) = parse_method_name(&method_name_str);
+    let args = extract_args(&method.sig.inputs);
 
-    // Build WHERE clause from conditions
+    // Build WHERE clause with $N placeholders
     let where_clause = if conditions.is_empty() {
         String::new()
     } else {
         let parts: Vec<String> = conditions
             .iter()
-            .map(|c| format!("{} = ?", to_snake_case(c)))
+            .enumerate()
+            .map(|(i, c)| format!("{} = ${}", to_snake_case(c), i + 1))
             .collect();
         format!("WHERE {}", parts.join(" AND "))
     };
 
     let sql = match operation.as_str() {
-        "find" => format!("SELECT * FROM {} {}", table_name, where_clause),
-        "count" => format!("SELECT COUNT(*) FROM {} {}", table_name, where_clause),
-        "exists" => format!("SELECT EXISTS(SELECT 1 FROM {} {}) AS exists", table_name, where_clause),
+        "find" | "find_all" => format!("SELECT * FROM {} {}", table_name, where_clause),
+        "count" => format!("SELECT COUNT(*) AS cnt FROM {} {}", table_name, where_clause),
+        "exists" => format!("SELECT EXISTS(SELECT 1 FROM {} {}) AS ex", table_name, where_clause),
         "delete" => format!("DELETE FROM {} {}", table_name, where_clause),
-        "find_all" => format!("SELECT * FROM {} {}", table_name, where_clause),
         _ => format!("SELECT * FROM {} {}", table_name, where_clause),
     };
 
-    // Determine return type
     let returns_option = return_type_str.contains("Option");
     let returns_vec = return_type_str.contains("Vec");
     let returns_bool = return_type_str.contains("bool");
-    let returns_usize = return_type_str.contains("usize");
+    let returns_usize = return_type_str.contains("usize") || return_type_str.contains("i64");
 
-    let implementation = if returns_bool {
-        // exists or delete method returning bool
-        quote! {
-            let query = #sql;
-            // Execute query
-            Err(nexus_data_commons::Error::not_implemented(format!("Query: {}", query)))
+    let params_build = quote! {
+        let params: Vec<nexus_data_rdbc::QueryParam> = vec![
+            #(nexus_data_rdbc::QueryParam::from(#args)),*
+        ];
+    };
+
+    let implementation = if operation == "delete" {
+        if returns_bool {
+            quote! {
+                let sql: &str = #sql;
+                #params_build
+                let n = self.client.execute_params(sql, &params).await
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(n > 0)
+            }
+        } else {
+            quote! {
+                let sql: &str = #sql;
+                #params_build
+                let n = self.client.execute_params(sql, &params).await
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                Ok(n as usize)
+            }
         }
-    } else if returns_usize {
-        // count method
+    } else if operation == "count" {
         quote! {
-            let query = #sql;
-            // Execute count query
-            Err(nexus_data_commons::Error::not_implemented(format!("Query: {}", query)))
+            let sql: &str = #sql;
+            #params_build
+            let rows = self.client.fetch_all_params(sql, &params).await
+                .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+            let cnt = rows.first()
+                .and_then(|r| r.get_as::<i64>("cnt").ok())
+                .unwrap_or(0);
+            Ok(cnt as usize)
+        }
+    } else if operation == "exists" {
+        quote! {
+            let sql: &str = #sql;
+            #params_build
+            let rows = self.client.fetch_all_params(sql, &params).await
+                .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+            let ex = rows.first()
+                .and_then(|r| r.get_as::<bool>("ex").ok())
+                .unwrap_or(false);
+            Ok(ex)
         }
     } else if returns_option {
-        // find_by returning Option<Entity>
         quote! {
-            let query = #sql;
-            // Execute query returning Option
-            Err(nexus_data_commons::Error::not_implemented(format!("Query: {}", query)))
-        }
-    } else if returns_vec {
-        // find_all_by returning Vec<Entity>
-        quote! {
-            let query = #sql;
-            // Execute query returning Vec
-            Err(nexus_data_commons::Error::not_implemented(format!("Query: {}", query)))
+            let sql: &str = #sql;
+            #params_build
+            let row = self.client.fetch_one_params(sql, &params).await
+                .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+            match row {
+                Some(r) => {
+                    let entity: #entity_type = r.deserialize()
+                        .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                    Ok(Some(entity))
+                }
+                None => Ok(None),
+            }
         }
     } else {
         quote! {
-            let query = #sql;
-            // Execute query
-            Err(nexus_data_commons::Error::not_implemented(format!("Query: {}", query)))
+            let sql: &str = #sql;
+            #params_build
+            let rows = self.client.fetch_all_params(sql, &params).await
+                .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+            let mut results = Vec::with_capacity(rows.len());
+            for row in &rows {
+                results.push(row.deserialize()
+                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?);
+            }
+            Ok(results)
         }
     };
 

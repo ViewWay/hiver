@@ -133,7 +133,7 @@ fn any_row_to_nexus_row(row: &AnyRow) -> Result<Row> {
 
     for col in columns {
         let name = col.name().to_string();
-        let type_name = format!("{}", col.type_info()).to_lowercase();
+        let type_name = col.type_info().to_string().to_lowercase();
 
         let value = extract_any_column_value(row, col.ordinal(), &type_name)?;
         nexus_row = nexus_row.with_column(name, value);

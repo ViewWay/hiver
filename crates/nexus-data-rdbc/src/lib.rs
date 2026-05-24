@@ -37,7 +37,7 @@ pub use connection::{Connection, PoolConfig};
 pub use transaction::{IsolationLevel, Transaction, TransactionManager};
 
 // Client types
-pub use client::{DatabaseClient, ToSql};
+pub use client::{DatabaseClient, QueryParam, ToSql};
 
 // Pool types
 pub use pool::{PgPoolClient, SqlxPoolClient};

@@ -429,7 +429,7 @@ mod tests {
     #[test]
     fn test_optimistic_lock_error_display() {
         let err = OptimisticLockError::new("User", "42", 1, 3);
-        let msg = format!("{}", err);
+        let msg = err.to_string();
         assert!(msg.contains("User"));
         assert!(msg.contains("42"));
         assert!(msg.contains("1"));

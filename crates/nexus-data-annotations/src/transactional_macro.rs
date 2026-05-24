@@ -166,111 +166,72 @@ impl Parse for TransactionalAttrs {
 /// ```
 pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
-    let _func_name = &input.sig.ident;
     let attrs = &input.attrs;
     let vis = &input.vis;
     let sig = &input.sig;
     let block = &input.block;
 
-    // Parse transactional attributes
-    // 解析事务属性
     let transactional_attrs = parse_macro_input!(attr as TransactionalAttrs);
-
-    // Build configuration
-    // 构建配置
     let isolation = transactional_attrs.isolation;
     let timeout = transactional_attrs.timeout;
     let propagation = transactional_attrs.propagation;
     let read_only = transactional_attrs.read_only;
-    let max_retries = transactional_attrs.max_retries;
 
-    // Generate config builder code
-    // 生成配置构建器代码
-    let mut config_builder = quote! {
-        ::nexus_data_annotations::transactional::TransactionalConfig::new()
-    };
-
+    // Build TransactionDefinition configuration
+    let mut def_config = quote! {};
     if let Some(iso) = isolation {
-        let _iso_str = format!("{:?}", iso).to_uppercase();
-        config_builder = quote! {
-            #config_builder.isolation(::nexus_data_annotations::transactional::IsolationLevel::#iso)
+        def_config = quote! {
+            #def_config
+            __nexus_tx_def.isolation = ::nexus_tx::IsolationLevel::#iso;
         };
     }
-
     if let Some(to) = timeout {
         let to_value = to.base10_parse::<u64>().unwrap_or(30);
-        config_builder = quote! {
-            #config_builder.timeout(#to_value)
+        def_config = quote! {
+            #def_config
+            __nexus_tx_def.timeout_secs = Some(#to_value);
         };
     }
-
     if let Some(prop) = propagation {
-        config_builder = quote! {
-            #config_builder.propagation(::nexus_data_annotations::transactional::Propagation::#prop)
+        def_config = quote! {
+            #def_config
+            __nexus_tx_def.propagation = ::nexus_tx::Propagation::#prop;
         };
     }
-
     if let Some(ro) = read_only {
-        config_builder = quote! {
-            #config_builder.read_only(#ro)
+        def_config = quote! {
+            #def_config
+            __nexus_tx_def.read_only = #ro;
         };
     }
 
-    if let Some(mr) = max_retries {
-        let mr_value = mr.base10_parse::<u32>().unwrap_or(3);
-        config_builder = quote! {
-            #config_builder.max_retries(#mr_value)
-        };
-    }
-
-    // Extract function parameters for the wrapper
-    // 为包装器提取函数参数
-    let generics = &sig.generics;
-
-    // Generate wrapper function
-    // 生成包装器函数
     let expanded = quote! {
         #(#attrs)*
-        #vis #sig #generics {
-            // Get transactional executor from context or create default
-            // 从上下文获取事务执行器或创建默认值
-            let executor = ::nexus_data_annotations::transactional::get_transactional_executor();
-
-            // Build transactional configuration
-            // 构建事务配置
-            let config = #config_builder;
-
-            // Execute the function within a transaction
-            // 在事务中执行函数
-            let result = executor.execute(config, || async move {
-                #block
-            }).await;
-
-            result
+        #vis #sig {
+            let mut __nexus_tx_def = ::nexus_tx::TransactionDefinition::new("transactional");
+            #def_config
+            match ::nexus_tx::global_tx_manager() {
+                Some(__nexus_tx_mgr) => {
+                    let __nexus_tx_status = match __nexus_tx_mgr.begin(&__nexus_tx_def).await {
+                        Ok(s) => s,
+                        Err(e) => panic!("Failed to begin transaction: {}", e),
+                    };
+                    let __nexus_tx_result = async { #block }.await;
+                    if __nexus_tx_result.is_ok() {
+                        let _ = __nexus_tx_mgr.commit(__nexus_tx_status).await;
+                    } else {
+                        let _ = __nexus_tx_mgr.rollback(__nexus_tx_status).await;
+                    }
+                    __nexus_tx_result
+                }
+                None => {
+                    #block
+                }
+            }
         }
     };
 
     TokenStream::from(expanded)
-}
-
-/// Get the transactional executor
-/// 获取事务执行器
-///
-/// This is a helper function that should be replaced with actual
-/// executor retrieval from a dependency injection container.
-///
-/// 这是一个辅助函数，应该被从依赖注入容器中获取实际执行器的代码替换。
-#[doc(hidden)]
-pub(crate) fn get_transactional_executor() -> crate::transactional::TransactionalExecutor
-{
-    // This is a placeholder - actual implementation would get the executor
-    // from a dependency injection container or global context
-    // 这是一个占位符 - 实际实现会从依赖注入容器或全局上下文获取执行器
-
-    // Placeholder: actual implementation would get the executor from DI container
-    // 占位符：实际实现会从DI容器获取执行器
-    // PANIC: Calling any transaction method will panic until DI integration is complete
-    unimplemented!("Transactional executor not yet integrated with dependency injection")
 }
 
 #[cfg(test)]

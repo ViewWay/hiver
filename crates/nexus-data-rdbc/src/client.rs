@@ -9,6 +9,70 @@
 use crate::error::{Error, Result};
 use crate::row::Row;
 
+/// Type-safe SQL parameter value
+/// 类型安全的 SQL 参数值
+///
+/// Used for parameterized queries (`$1, $2, ...`) to prevent SQL injection.
+/// 用于参数化查询（`$1, $2, ...`）以防止 SQL 注入。
+#[derive(Debug, Clone, PartialEq)]
+pub enum QueryParam {
+    /// NULL value / NULL 值
+    Null,
+    /// Boolean value / 布尔值
+    Bool(bool),
+    /// 32-bit integer / 32 位整数
+    I32(i32),
+    /// 64-bit integer / 64 位整数
+    I64(i64),
+    /// 64-bit float / 64 位浮点数
+    F64(f64),
+    /// Text string / 文本字符串
+    Text(String),
+    /// Binary data / 二进制数据
+    Bytes(Vec<u8>),
+}
+
+impl QueryParam {
+    /// Convert to an inline SQL literal (fallback for non-parameterized clients)
+    /// 转换为内联 SQL 字面量（非参数化客户端的回退）
+    pub fn to_sql_literal(&self) -> String {
+        match self {
+            Self::Null => "NULL".to_string(),
+            Self::Bool(b) => if *b { "TRUE" } else { "FALSE" }.to_string(),
+            Self::I32(n) => n.to_string(),
+            Self::I64(n) => n.to_string(),
+            Self::F64(n) => n.to_string(),
+            Self::Text(s) => format!("'{}'", s.replace('\'', "''").replace('\0', "")),
+            Self::Bytes(b) => {
+                let hex: String = b.iter().map(|byte| format!("{byte:02x}")).collect();
+                format!("'\\x{hex}'")
+            }
+        }
+    }
+}
+
+impl From<i32> for QueryParam {
+    fn from(v: i32) -> Self { Self::I32(v) }
+}
+impl From<i64> for QueryParam {
+    fn from(v: i64) -> Self { Self::I64(v) }
+}
+impl From<f64> for QueryParam {
+    fn from(v: f64) -> Self { Self::F64(v) }
+}
+impl From<bool> for QueryParam {
+    fn from(v: bool) -> Self { Self::Bool(v) }
+}
+impl From<String> for QueryParam {
+    fn from(v: String) -> Self { Self::Text(v) }
+}
+impl From<&str> for QueryParam {
+    fn from(v: &str) -> Self { Self::Text(v.to_string()) }
+}
+impl From<u64> for QueryParam {
+    fn from(v: u64) -> Self { Self::I64(v as i64) }
+}
+
 /// Database client trait
 /// 数据库客户端 trait
 ///
@@ -28,6 +92,27 @@ pub trait DatabaseClient: Send + Sync {
     /// 执行命令（INSERT, UPDATE, DELETE）并返回受影响行数
     async fn execute_cmd(&self, sql: &str) -> Result<u64>;
 
+    /// Execute a parameterized query and return all rows
+    /// 执行参数化查询并返回所有行
+    async fn fetch_all_params(&self, sql: &str, params: &[QueryParam]) -> Result<Vec<Row>> {
+        let interpolated = interpolate_params(sql, params);
+        self.fetch_all(&interpolated).await
+    }
+
+    /// Execute a parameterized query and return the first row
+    /// 执行参数化查询并返回第一行
+    async fn fetch_one_params(&self, sql: &str, params: &[QueryParam]) -> Result<Option<Row>> {
+        let interpolated = interpolate_params(sql, params);
+        self.fetch_one(&interpolated).await
+    }
+
+    /// Execute a parameterized command and return affected rows
+    /// 执行参数化命令并返回受影响行数
+    async fn execute_params(&self, sql: &str, params: &[QueryParam]) -> Result<u64> {
+        let interpolated = interpolate_params(sql, params);
+        self.execute_cmd(&interpolated).await
+    }
+
     /// Begin a transaction
     /// 开始事务
     async fn begin_transaction(&self) -> Result<crate::Transaction>;
@@ -39,6 +124,17 @@ pub trait DatabaseClient: Send + Sync {
     /// Close the client
     /// 关闭客户端
     async fn close(&self) -> Result<()>;
+}
+
+/// Replace `$1, $2, ...` placeholders with SQL literals
+/// 将 `$1, $2, ...` 占位符替换为 SQL 字面量
+fn interpolate_params(sql: &str, params: &[QueryParam]) -> String {
+    let mut result = sql.to_string();
+    for (i, param) in params.iter().enumerate() {
+        let placeholder = format!("${}", i + 1);
+        result = result.replace(&placeholder, &param.to_sql_literal());
+    }
+    result
 }
 
 /// Trait for SQL parameter conversion
@@ -117,5 +213,48 @@ mod tests {
         assert_eq!("it's".to_sql(), "'it''s'");
         assert_eq!(true.to_sql(), "TRUE");
         assert_eq!(false.to_sql(), "FALSE");
+    }
+
+    #[test]
+    fn test_query_param_sql_literal() {
+        assert_eq!(QueryParam::Null.to_sql_literal(), "NULL");
+        assert_eq!(QueryParam::Bool(true).to_sql_literal(), "TRUE");
+        assert_eq!(QueryParam::I32(42).to_sql_literal(), "42");
+        assert_eq!(QueryParam::I64(100).to_sql_literal(), "100");
+        assert_eq!(QueryParam::F64(3.14).to_sql_literal(), "3.14");
+        assert_eq!(QueryParam::Text("hello".into()).to_sql_literal(), "'hello'");
+        assert_eq!(QueryParam::Text("it's".into()).to_sql_literal(), "'it''s'");
+        assert_eq!(QueryParam::Bytes(vec![0xDE, 0xAD]).to_sql_literal(), "'\\xdead'");
+    }
+
+    #[test]
+    fn test_query_param_from_conversions() {
+        assert_eq!(QueryParam::from(42i32), QueryParam::I32(42));
+        assert_eq!(QueryParam::from(100i64), QueryParam::I64(100));
+        assert_eq!(QueryParam::from(true), QueryParam::Bool(true));
+        assert_eq!(QueryParam::from("hello"), QueryParam::Text("hello".into()));
+        assert_eq!(QueryParam::from(String::from("hi")), QueryParam::Text("hi".into()));
+    }
+
+    #[test]
+    fn test_interpolate_params() {
+        let sql = "SELECT * FROM users WHERE id = $1 AND name = $2";
+        let params = vec![QueryParam::I64(1), QueryParam::Text("Alice".into())];
+        let result = interpolate_params(sql, &params);
+        assert_eq!(result, "SELECT * FROM users WHERE id = 1 AND name = 'Alice'");
+    }
+
+    #[test]
+    fn test_interpolate_params_sql_injection_safe() {
+        let malicious = "'; DROP TABLE users; --";
+        let sql = "SELECT * FROM users WHERE name = $1";
+        let params = vec![QueryParam::Text(malicious.into())];
+        let result = interpolate_params(sql, &params);
+        // Single quotes are escaped, so the injection is neutralized
+        assert_eq!(
+            result,
+            "SELECT * FROM users WHERE name = '''; DROP TABLE users; --'"
+        );
+        assert!(!result.contains("DROP TABLE users; --'"));
     }
 }

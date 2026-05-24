@@ -16,7 +16,7 @@ pub trait OrmRepository<M: Model + 'static>: Send + Sync {
     async fn find_by(
         &self,
         _condition: &str,
-        _params: &[&dyn crate::query::ToSql],
+        _params: &[nexus_data_rdbc::QueryParam],
     ) -> Result<Vec<M>> {
         Err(Error::unknown("Not implemented"))
     }
@@ -25,7 +25,7 @@ pub trait OrmRepository<M: Model + 'static>: Send + Sync {
     async fn find_one_by(
         &self,
         _condition: &str,
-        _params: &[&dyn crate::query::ToSql],
+        _params: &[nexus_data_rdbc::QueryParam],
     ) -> Result<Option<M>> {
         Err(Error::unknown("Not implemented"))
     }
@@ -34,7 +34,7 @@ pub trait OrmRepository<M: Model + 'static>: Send + Sync {
     async fn count_by(
         &self,
         _condition: &str,
-        _params: &[&dyn crate::query::ToSql],
+        _params: &[nexus_data_rdbc::QueryParam],
     ) -> Result<i64> {
         Err(Error::unknown("Not implemented"))
     }

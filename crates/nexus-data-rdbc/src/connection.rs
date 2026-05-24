@@ -8,6 +8,7 @@
 
 #![allow(dead_code)] // pub(crate) scaffolding items for future use; 内部脚手架，后续使用
 
+use crate::row::Row;
 use crate::{DatabaseType, R2dbcError, R2dbcResult};
 use std::sync::Arc;
 use std::time::Duration;
@@ -141,14 +142,15 @@ impl Clone for Connection {
 /// Trait for database connection operations
 /// 数据库连接操作的 trait
 pub(crate) trait ConnectionInner: Send + Sync {
-    /// Execute a query and return the first row (placeholder - returns count for now)
-    /// 执行查询并返回第一行（占位符 - 现在返回计数）
+    /// Execute a query and return the first row
+    /// 执行查询并返回第一行
     fn fetch_one(&self, sql: &str)
-    -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
-    /// Execute a query and return all rows (placeholder - returns count for now)
-    /// 执行查询并返回所有行（占位符 - 现在返回计数）
-    fn fetch_all(&self, sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    /// Execute a query and return all rows
+    /// 执行查询并返回所有行
+    fn fetch_all(&self, sql: &str)
+    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
@@ -183,17 +185,17 @@ impl Connection {
         self.database_type
     }
 
-    /// Execute a query and return the first row (placeholder - returns count for now)
-    /// 执行查询并返回第一行（占位符 - 现在返回计数）
-    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<u64> {
+    /// Execute a query and return the first row
+    /// 执行查询并返回第一行
+    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>> {
         self.inner
             .fetch_one(sql)
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
     }
 
-    /// Execute a query and return all rows (placeholder - returns count for now)
-    /// 执行查询并返回所有行（占位符 - 现在返回计数）
-    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<u64> {
+    /// Execute a query and return all rows
+    /// 执行查询并返回所有行
+    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>> {
         self.inner
             .fetch_all(sql)
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -251,14 +253,15 @@ pub(crate) trait PoolInner: Send + Sync {
     /// 从连接池获取连接
     fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>>;
 
-    /// Execute a query using a connection from the pool (placeholder - returns count for now)
-    /// 使用池中的连接执行查询（占位符 - 现在返回计数）
+    /// Execute a query using a connection from the pool and return the first row
+    /// 使用池中的连接执行查询并返回第一行
     fn fetch_one(&self, sql: &str)
-    -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
-    /// Execute a query and return all rows (placeholder - returns count for now)
-    /// 执行查询并返回所有行（占位符 - 现在返回计数）
-    fn fetch_all(&self, sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    /// Execute a query and return all rows
+    /// 执行查询并返回所有行
+    fn fetch_all(&self, sql: &str)
+    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
@@ -410,17 +413,17 @@ impl ConnectionPool {
             .map_err(|e| R2dbcError::Pool(e.to_string()))
     }
 
-    /// Execute a query using a connection from the pool (placeholder - returns count for now)
-    /// 使用池中的连接执行查询（占位符 - 现在返回计数）
-    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<u64> {
+    /// Execute a query using a connection from the pool and return the first row
+    /// 使用池中的连接执行查询并返回第一行
+    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>> {
         self.inner
             .fetch_one(sql)
             .map_err(|e| R2dbcError::Sql(e.to_string()))
     }
 
-    /// Execute a query and return all rows (placeholder - returns count for now)
-    /// 执行查询并返回所有行（占位符 - 现在返回计数）
-    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<u64> {
+    /// Execute a query and return all rows
+    /// 执行查询并返回所有行
+    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>> {
         self.inner
             .fetch_all(sql)
             .map_err(|e| R2dbcError::Sql(e.to_string()))
@@ -483,12 +486,13 @@ impl PoolInner for PostgresPoolWrapper {
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    fn fetch_all(&self, _sql: &str)
+    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(Vec::new())
     }
 
     fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
@@ -513,12 +517,13 @@ impl PoolInner for MySqlPoolWrapper {
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    fn fetch_all(&self, _sql: &str)
+    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(Vec::new())
     }
 
     fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
@@ -543,12 +548,13 @@ impl PoolInner for SqlitePoolWrapper {
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(0)
+    fn fetch_all(&self, _sql: &str)
+    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(Vec::new())
     }
 
     fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {

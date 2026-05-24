@@ -1265,13 +1265,13 @@ mod tests {
     #[test]
     fn test_part_display() {
         let part = Part::new("age", PartType::GreaterThan);
-        assert_eq!(format!("{}", part), "age GREATER_THAN");
+        assert_eq!(part.to_string(), "age GREATER_THAN");
     }
 
     #[test]
     fn test_order_by_display() {
         let ob = OrderBy::new("name", OrderDirection::Desc);
-        assert_eq!(format!("{}", ob), "name DESC");
+        assert_eq!(ob.to_string(), "name DESC");
     }
 
     #[test]
@@ -1284,16 +1284,16 @@ mod tests {
 
     #[test]
     fn test_subject_display() {
-        assert_eq!(format!("{}", Subject::Find), "FIND");
-        assert_eq!(format!("{}", Subject::Count), "COUNT");
-        assert_eq!(format!("{}", Subject::Delete), "DELETE");
+        assert_eq!(Subject::Find.to_string(), "FIND");
+        assert_eq!(Subject::Count.to_string(), "COUNT");
+        assert_eq!(Subject::Delete.to_string(), "DELETE");
     }
 
     #[test]
     fn test_keyword_display() {
-        assert_eq!(format!("{}", Keyword::Distinct), "DISTINCT");
-        assert_eq!(format!("{}", Keyword::First(10)), "FIRST 10");
-        assert_eq!(format!("{}", Keyword::Top(5)), "TOP 5");
+        assert_eq!(Keyword::Distinct.to_string(), "DISTINCT");
+        assert_eq!(Keyword::First(10).to_string(), "FIRST 10");
+        assert_eq!(Keyword::Top(5).to_string(), "TOP 5");
     }
 
     // === Complex real-world tests / 复杂真实场景测试 ===

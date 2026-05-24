@@ -64,9 +64,9 @@ impl fmt::Display for SpecValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::String(s) => write!(f, "'{}'", s.replace('\'', "''")),
-            Self::I64(n) => write!(f, "{}", n),
-            Self::F64(n) => write!(f, "{}", n),
-            Self::Bool(b) => write!(f, "{}", b),
+            Self::I64(n) => write!(f, "{n}"),
+            Self::F64(n) => write!(f, "{n}"),
+            Self::Bool(b) => write!(f, "{b}"),
             Self::Null => write!(f, "NULL"),
         }
     }

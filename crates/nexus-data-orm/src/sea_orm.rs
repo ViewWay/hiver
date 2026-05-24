@@ -76,7 +76,7 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
             // SECURITY: Use ? placeholders instead of interpolating values directly.
             // Values are collected separately for parameterized binding.
             let placeholders: Vec<&str> = (0..map.len()).map(|_| "?").collect();
-            let param_values: Vec<String> = map.values().map(|v| format!("{}", v)).collect();
+            let param_values: Vec<String> = map.values().map(|v| v.to_string()).collect();
             let sql = format!(
                 "INSERT INTO {} ({}) VALUES ({})",
                 M::table_name(),

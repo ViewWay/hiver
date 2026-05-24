@@ -166,7 +166,7 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T> {
     pub fn query(&self) -> crate::QueryBuilder<T> {
         crate::QueryBuilder::new().where_(
             &format!("{} = ?", self.foreign_key),
-            &[&self.parent_id.as_str()],
+            &[nexus_data_rdbc::QueryParam::Text(self.parent_id.clone())],
         )
     }
 }

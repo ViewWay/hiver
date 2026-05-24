@@ -47,27 +47,26 @@ pub struct PreAuthorizeAttrs {
 pub fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
 
-    // Parse the attribute as a simple string literal
-    // 将属性解析为简单的字符串字面量
     let attr_str = attr.to_string();
     let expression = attr_str
         .trim_matches('"')
         .to_string();
 
-    // 生成包装代码 / Generate wrapper code
     let visibility = &input.vis;
     let sig = &input.sig;
     let block = &input.block;
     let attrs = &input.attrs;
 
-    // 生成权限检查代码 / Generate permission check code
     let expanded = quote! {
         #(#attrs)*
         #visibility #sig {
-            // TODO: Implement permission check using nexus_security
-            // TODO: 使用 nexus_security 实现权限检查
-            // For now, just execute the original function
-            // 现在只执行原始函数
+            let __nexus_sec_ctx = ::nexus_security::context::get_security_context()
+                .unwrap_or_else(|| std::sync::Arc::new(::nexus_security::SecurityContext::new()));
+            let __nexus_sec_opts = ::nexus_security::pre_authorize::PreAuthorizeOptions::new()
+                .add_expression_string(#expression);
+            if !__nexus_sec_opts.evaluate(__nexus_sec_ctx.as_ref()).await {
+                panic!("Access denied by @PreAuthorize: {}", #expression);
+            }
             #block
         }
     };
