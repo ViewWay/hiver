@@ -8,10 +8,15 @@ license.workspace = true
 repository.workspace = true
 publish = false
 
+[features]
+default = []
+# Integration tests that require Docker / 需要 Docker 的集成测试
+integration-tests = []
+
 [dev-dependencies]
 # Nexus data crates
 nexus-data-commons = { path = "../crates/nexus-data-commons" }
-nexus-data-rdbc = { path = "../crates/nexus-data-rdbc" }
+nexus-data-rdbc = { path = "../crates/nexus-data-rdbc", features = ["postgres", "mysql"] }
 nexus-data-orm = { path = "../crates/nexus-data-orm" }
 nexus-data-macros = { path = "../crates/nexus-data-macros" }
 
@@ -19,7 +24,7 @@ nexus-data-macros = { path = "../crates/nexus-data-macros" }
 tokio = { workspace = true, features = ["full"] }
 
 # Database
-sqlx = { workspace = true, features = ["runtime-tokio", "sqlite"] }
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "postgres", "mysql", "chrono"] }
 
 # Error handling
 thiserror = { workspace = true }
@@ -28,6 +33,60 @@ anyhow = { workspace = true }
 # Async trait
 async-trait = { workspace = true }
 
+# Testcontainers for Docker-based integration tests / 基于 Docker 的集成测试容器
+testcontainers = "0.23"
+testcontainers-modules = { version = "0.11", features = ["postgres", "redis", "kafka", "rabbitmq"] }
+
+# Redis client
+redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }
+
+# Kafka client
+rdkafka = { version = "0.36", features = ["cmake-build", "tokio"] }
+
+# AMQP/RabbitMQ client
+lapin = "2.5"
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# UUID
+uuid = { version = "1.12", features = ["v4", "serde"] }
+
+# Chrono
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = { workspace = true }
+
+# Futures
+futures = { workspace = true }
+
 [[test]]
 name = "data_integration"
 path = "lib.rs"
+
+[[test]]
+name = "postgres_integration"
+path = "integration/postgres_tests.rs"
+required-features = ["integration-tests"]
+
+[[test]]
+name = "mysql_integration"
+path = "integration/mysql_tests.rs"
+required-features = ["integration-tests"]
+
+[[test]]
+name = "redis_integration"
+path = "integration/redis_tests.rs"
+required-features = ["integration-tests"]
+
+[[test]]
+name = "kafka_integration"
+path = "integration/kafka_tests.rs"
+required-features = ["integration-tests"]
+
+[[test]]
+name = "rabbitmq_integration"
+path = "integration/rabbitmq_tests.rs"
+required-features = ["integration-tests"]
