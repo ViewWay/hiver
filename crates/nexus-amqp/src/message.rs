@@ -330,3 +330,152 @@ impl From<Message> for AmqpMessage {
         Self::new(message)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test DeliveryMode default is Transient / 测试 DeliveryMode 默认为 Transient
+    #[test]
+    fn test_delivery_mode_default() {
+        assert_eq!(DeliveryMode::default(), DeliveryMode::Transient);
+        assert_eq!(DeliveryMode::Transient as u8, 1);
+        assert_eq!(DeliveryMode::Persistent as u8, 2);
+    }
+
+    /// Test MessageProperties builder chain / 测试 MessageProperties 构建器链式调用
+    #[test]
+    fn test_message_properties_builder() {
+        let props = MessageProperties::new()
+            .with_content_type("application/json")
+            .with_content_encoding("utf-8")
+            .with_delivery_mode(DeliveryMode::Persistent)
+            .with_priority(5)
+            .with_correlation_id("corr-123")
+            .with_reply_to("reply_queue")
+            .with_expiration("60000")
+            .with_header("x-trace-id", serde_json::json!("abc"));
+
+        assert_eq!(props.content_type.as_deref(), Some("application/json"));
+        assert_eq!(props.content_encoding.as_deref(), Some("utf-8"));
+        assert_eq!(props.delivery_mode, DeliveryMode::Persistent);
+        assert_eq!(props.priority, Some(5));
+        assert_eq!(props.correlation_id.as_deref(), Some("corr-123"));
+        assert_eq!(props.reply_to.as_deref(), Some("reply_queue"));
+        assert_eq!(props.expiration.as_deref(), Some("60000"));
+        assert_eq!(props.headers.len(), 1);
+    }
+
+    /// Test MessageProperties priority is clamped to 9 / 测试优先级最大值为 9
+    #[test]
+    fn test_message_properties_priority_clamped() {
+        let props = MessageProperties::new().with_priority(15);
+        assert_eq!(props.priority, Some(9));
+    }
+
+    /// Test Message::new and payload_as_string / 测试 Message::new 和 payload_as_string
+    #[test]
+    fn test_message_new_and_payload_string() {
+        let msg = Message::new(b"hello world".to_vec());
+        assert_eq!(msg.payload, b"hello world");
+        assert_eq!(msg.payload_as_string(), "hello world");
+    }
+
+    /// Test Message::from_string / 测试 Message::from_string
+    #[test]
+    fn test_message_from_string() {
+        let msg = Message::from_string("test payload");
+        assert_eq!(msg.payload_as_string(), "test payload");
+    }
+
+    /// Test Message::with_properties / 测试 Message::with_properties
+    #[test]
+    fn test_message_with_properties() {
+        let props = MessageProperties::new()
+            .with_content_type("text/plain")
+            .with_delivery_mode(DeliveryMode::Persistent);
+        let msg = Message::from_string("data").with_properties(props);
+        assert_eq!(msg.properties.content_type.as_deref(), Some("text/plain"));
+        assert_eq!(msg.properties.delivery_mode, DeliveryMode::Persistent);
+    }
+
+    /// Test Message From conversions / 测试 Message 的 From 转换
+    #[test]
+    fn test_message_from_conversions() {
+        let from_vec: Message = b"bytes".to_vec().into();
+        assert_eq!(from_vec.payload_as_string(), "bytes");
+
+        let from_string: Message = "hello".to_string().into();
+        assert_eq!(from_string.payload_as_string(), "hello");
+
+        let from_str: Message = "world".into();
+        assert_eq!(from_str.payload_as_string(), "world");
+    }
+
+    /// Test AmqpMessage ack and reject / 测试 AmqpMessage 确认和拒绝
+    #[test]
+    fn test_amqp_message_ack_reject() {
+        let inner = Message::from_string("test");
+        let msg = AmqpMessage {
+            message: inner,
+            exchange: "ex".to_string(),
+            routing_key: "rk".to_string(),
+            delivery_tag: 42,
+            redelivered: false,
+        };
+        assert!(msg.ack().is_ok());
+        assert!(msg.reject(true).is_ok());
+        assert!(msg.nack(false).is_ok());
+    }
+
+    /// Test AmqpMessage::new defaults / 测试 AmqpMessage::new 默认值
+    #[test]
+    fn test_amqp_message_new_defaults() {
+        let msg = AmqpMessage::new(Message::from_string("body"));
+        assert!(msg.exchange.is_empty());
+        assert!(msg.routing_key.is_empty());
+        assert_eq!(msg.delivery_tag, 0);
+        assert!(!msg.redelivered);
+    }
+
+    /// Test AmqpMessage::payload and payload_as_string / 测试 AmqpMessage 的 payload 方法
+    #[test]
+    fn test_amqp_message_payload_accessors() {
+        let msg = AmqpMessage::new(Message::from_string("content"));
+        assert_eq!(msg.payload(), b"content");
+        assert_eq!(msg.payload_as_string(), "content");
+    }
+
+    /// Test AmqpMessage From<Message> conversion / 测试 AmqpMessage 从 Message 转换
+    #[test]
+    fn test_amqp_message_from_message() {
+        let msg: AmqpMessage = Message::from_string("converted").into();
+        assert_eq!(msg.payload_as_string(), "converted");
+    }
+
+    /// Test Message serialization round-trip / 测试 Message 序列化往返
+    #[test]
+    fn test_message_serde_roundtrip() {
+        let msg = Message::from_string("hello")
+            .with_properties(
+                MessageProperties::new()
+                    .with_content_type("text/plain")
+                    .with_delivery_mode(DeliveryMode::Persistent),
+            );
+        let json = serde_json::to_string(&msg).unwrap();
+        let deserialized: Message = serde_json::from_str(&json).unwrap();
+        assert_eq!(msg.payload, deserialized.payload);
+        assert_eq!(msg.properties.delivery_mode, deserialized.properties.delivery_mode);
+    }
+
+    /// Test MessageProperties serialization skips None fields / 测试 MessageProperties 序列化跳过 None 字段
+    #[test]
+    fn test_message_properties_skip_none_serialization() {
+        let props = MessageProperties::new()
+            .with_content_type("application/json");
+        let json = serde_json::to_string(&props).unwrap();
+        assert!(json.contains("content_type"));
+        assert!(!json.contains("content_encoding"));
+        assert!(!json.contains("correlation_id"));
+    }
+}

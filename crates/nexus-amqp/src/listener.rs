@@ -207,3 +207,96 @@ impl Listener {
         self.containers.read().await.len()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{AmqpConfig, AmqpConnection, AmqpMessage, Message};
+    use std::sync::Arc;
+
+    /// Helper to create a Listener for testing / 创建测试用 Listener 的辅助函数
+    fn create_listener() -> Listener {
+        let config = AmqpConfig::default();
+        let conn = AmqpConnection::new(config);
+        Listener::new(Arc::new(conn))
+    }
+
+    /// Helper to create a ListenerContainer for testing / 创建测试用 ListenerContainer 的辅助函数
+    fn create_container(queue: &str) -> ListenerContainer {
+        let config = AmqpConfig::default();
+        let conn = AmqpConnection::new(config);
+        ListenerContainer::new(Arc::new(conn), queue)
+    }
+
+    /// Test ListenerContainer starts and stops / 测试 ListenerContainer 启动和停止
+    #[tokio::test]
+    async fn test_container_start_stop() {
+        let container = create_container("test_queue");
+        assert!(!container.is_running().await);
+        assert_eq!(container.queue(), "test_queue");
+
+        container.start().await.unwrap();
+        assert!(container.is_running().await);
+
+        container.stop().await.unwrap();
+        assert!(!container.is_running().await);
+    }
+
+    /// Test ListenerContainer queue accessor / 测试 ListenerContainer queue 访问器
+    #[tokio::test]
+    async fn test_container_queue_accessor() {
+        let container = create_container("orders_queue");
+        assert_eq!(container.queue(), "orders_queue");
+    }
+
+    /// Test Listener::listen_fn registers a container / 测试 Listener::listen_fn 注册监听器
+    #[tokio::test]
+    async fn test_listener_listen_fn() {
+        let listener = create_listener();
+        assert_eq!(listener.listener_count().await, 0);
+
+        listener
+            .listen_fn("my_queue", |_msg| Ok(()))
+            .await
+            .unwrap();
+        assert_eq!(listener.listener_count().await, 1);
+    }
+
+    /// Test Listener::stop_all stops all containers / 测试 Listener::stop_all 停止所有容器
+    #[tokio::test]
+    async fn test_listener_stop_all() {
+        let listener = create_listener();
+        listener
+            .listen_fn("queue_a", |_msg| Ok(()))
+            .await
+            .unwrap();
+        listener
+            .listen_fn("queue_b", |_msg| Ok(()))
+            .await
+            .unwrap();
+        assert_eq!(listener.listener_count().await, 2);
+
+        listener.stop_all().await.unwrap();
+    }
+
+    /// Test FnHandler delegates to closure / 测试 FnHandler 委托给闭包
+    #[test]
+    fn test_fn_handler_delegates() {
+        let handler = FnHandler {
+            handler: |msg: AmqpMessage| {
+                let body = msg.payload_as_string();
+                if body.contains("error") {
+                    Err("simulated error".to_string())
+                } else {
+                    Ok(())
+                }
+            },
+        };
+
+        let ok_msg = AmqpMessage::new(Message::from_string("good message"));
+        assert!(handler.handle(ok_msg).is_ok());
+
+        let err_msg = AmqpMessage::new(Message::from_string("has error"));
+        assert!(handler.handle(err_msg).is_err());
+    }
+}

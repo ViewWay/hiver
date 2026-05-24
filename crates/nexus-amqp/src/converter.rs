@@ -176,3 +176,86 @@ impl MessageConverter for BytesMessageConverter {
             .map_err(|e| format!("Failed to deserialize: {}", e))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::DeliveryMode;
+
+    /// Test JsonMessageConverter::to_message sets content type / 测试 JsonMessageConverter::to_message 设置内容类型
+    #[test]
+    fn test_json_converter_to_message() {
+        let converter = JsonMessageConverter::new();
+        #[derive(serde::Serialize)]
+        struct User { name: String, age: u32 }
+        let user = User { name: "Alice".to_string(), age: 30 };
+
+        let msg = converter.to_message(&user).unwrap();
+        assert_eq!(msg.properties.content_type.as_deref(), Some("application/json"));
+        let body: serde_json::Value = serde_json::from_slice(&msg.payload).unwrap();
+        assert_eq!(body["name"], "Alice");
+        assert_eq!(body["age"], 30);
+    }
+
+    /// Test JsonMessageConverter::convert_from_message / 测试 JsonMessageConverter::convert_from_message
+    #[test]
+    fn test_json_converter_from_message() {
+        #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq)]
+        struct Item { id: u64, name: String }
+        let item = Item { id: 42, name: "widget".to_string() };
+
+        let converter = JsonMessageConverter::new();
+        let msg = converter.to_message(&item).unwrap();
+        let deserialized: Item = converter.convert_from_message(&msg).unwrap();
+        assert_eq!(deserialized, item);
+    }
+
+    /// Test JsonMessageConverter round-trip with complex data / 测试 JsonMessageConverter 复杂数据往返
+    #[test]
+    fn test_json_converter_complex_roundtrip() {
+        let data = serde_json::json!({
+            "orders": [
+                {"id": 1, "items": ["a", "b"]},
+                {"id": 2, "items": ["c"]}
+            ],
+            "total": 99.99
+        });
+
+        let converter = JsonMessageConverter::new();
+        let msg = converter.to_message(&data).unwrap();
+        let result: serde_json::Value = converter.convert_from_message(&msg).unwrap();
+        assert_eq!(result["total"], 99.99);
+        assert_eq!(result["orders"].as_array().unwrap().len(), 2);
+    }
+
+    /// Test JsonMessageConverter with custom content type / 测试 JsonMessageConverter 自定义内容类型
+    #[test]
+    fn test_json_converter_custom_content_type() {
+        let converter = JsonMessageConverter::new()
+            .with_content_type("application/vnd.api+json");
+        let msg = converter.to_message(&"data").unwrap();
+        assert_eq!(msg.properties.content_type.as_deref(), Some("application/vnd.api+json"));
+    }
+
+    /// Test JsonMessageConverter handles deserialization errors / 测试 JsonMessageConverter 处理反序列化错误
+    #[test]
+    fn test_json_converter_deserialization_error() {
+        let converter = JsonMessageConverter::new();
+        let msg = Message::new(b"not valid json".to_vec());
+        let result: Result<serde_json::Value, _> = converter.convert_from_message(&msg);
+        assert!(result.is_err());
+    }
+
+    /// Test MessageConverter trait object usage / 测试 MessageConverter trait 对象使用
+    #[test]
+    fn test_message_converter_trait_object() {
+        let converter: Box<dyn MessageConverter> = Box::new(JsonMessageConverter::new());
+        #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
+        struct Point { x: f64, y: f64 }
+        let p = Point { x: 1.0, y: 2.0 };
+
+        let msg = converter.to_message(&p).unwrap();
+        let back: Point = converter.convert_from_message(&msg).unwrap();
+        assert_eq!(back, p);
+    }
+}

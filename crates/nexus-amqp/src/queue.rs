@@ -248,3 +248,111 @@ impl QueueBuilder {
         self.queue
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test Queue::new sets correct defaults / 测试 Queue::new 设置正确的默认值
+    #[test]
+    fn test_queue_new_defaults() {
+        let q = Queue::new("test_queue");
+        assert_eq!(q.name, "test_queue");
+        assert!(q.durable);
+        assert!(!q.exclusive);
+        assert!(!q.auto_delete);
+        assert_eq!(q.queue_type, QueueType::Classic);
+        assert!(q.arguments.is_empty());
+    }
+
+    /// Test QueueType default is Classic / 测试 QueueType 默认为 Classic
+    #[test]
+    fn test_queue_type_default() {
+        assert_eq!(QueueType::default(), QueueType::Classic);
+    }
+
+    /// Test Queue::durable creates a durable queue / 测试 Queue::durable 创建持久化队列
+    #[test]
+    fn test_queue_durable_constructor() {
+        let q = Queue::durable("my_queue");
+        assert!(q.durable);
+    }
+
+    /// Test Queue::temporary creates non-durable, auto-delete queue / 测试 Queue::temporary 创建非持久化自动删除队列
+    #[test]
+    fn test_queue_temporary_constructor() {
+        let q = Queue::temporary("tmp_queue");
+        assert!(!q.durable);
+        assert!(q.auto_delete);
+    }
+
+    /// Test Queue::exclusive sets exclusive flag / 测试 Queue::exclusive 设置独占标志
+    #[test]
+    fn test_queue_exclusive_constructor() {
+        let q = Queue::exclusive("ex_queue");
+        assert!(q.exclusive);
+    }
+
+    /// Test Queue builder chain with arguments / 测试队列构建器链式调用带参数
+    #[test]
+    fn test_queue_builder_chain_with_arguments() {
+        let q = Queue::new("orders")
+            .with_durable(true)
+            .with_queue_type(QueueType::Quorum)
+            .with_max_length(10000)
+            .with_message_ttl(60000)
+            .with_queue_ttl(300000)
+            .with_dead_letter_exchange("dlx")
+            .with_dead_letter_routing_key("dlq")
+            .with_max_priority(5);
+
+        assert!(q.durable);
+        assert_eq!(q.queue_type, QueueType::Quorum);
+        assert_eq!(q.arguments.len(), 6);
+        assert_eq!(q.arguments.get("x-max-length").unwrap(), &serde_json::json!(10000));
+        assert_eq!(q.arguments.get("x-message-ttl").unwrap(), &serde_json::json!(60000));
+        assert_eq!(q.arguments.get("x-expires").unwrap(), &serde_json::json!(300000));
+        assert_eq!(q.arguments.get("x-dead-letter-exchange").unwrap(), &serde_json::json!("dlx"));
+        assert_eq!(q.arguments.get("x-dead-letter-routing-key").unwrap(), &serde_json::json!("dlq"));
+        assert_eq!(q.arguments.get("x-max-priority").unwrap(), &serde_json::json!(5));
+    }
+
+    /// Test QueueBuilder produces correct queue / 测试 QueueBuilder 生成正确的队列
+    #[test]
+    fn test_queue_builder() {
+        let q = QueueBuilder::durable("built_queue")
+            .exclusive()
+            .auto_delete()
+            .with_type(QueueType::Stream)
+            .with_argument("x-custom", serde_json::json!("value"))
+            .build();
+
+        assert_eq!(q.name, "built_queue");
+        assert!(q.durable);
+        assert!(q.exclusive);
+        assert!(q.auto_delete);
+        assert_eq!(q.queue_type, QueueType::Stream);
+        assert_eq!(q.arguments.len(), 1);
+    }
+
+    /// Test QueueBuilder::non_durable / 测试 QueueBuilder::non_durable
+    #[test]
+    fn test_queue_builder_non_durable() {
+        let q = QueueBuilder::non_durable("temp").build();
+        assert!(!q.durable);
+    }
+
+    /// Test Queue serialization round-trip / 测试 Queue 序列化往返
+    #[test]
+    fn test_queue_serde_roundtrip() {
+        let q = Queue::durable("orders")
+            .with_max_length(500)
+            .with_queue_type(QueueType::Quorum);
+        let json = serde_json::to_string(&q).unwrap();
+        let deserialized: Queue = serde_json::from_str(&json).unwrap();
+        assert_eq!(q.name, deserialized.name);
+        assert_eq!(q.durable, deserialized.durable);
+        assert_eq!(q.queue_type, deserialized.queue_type);
+        assert_eq!(q.arguments.len(), deserialized.arguments.len());
+    }
+}

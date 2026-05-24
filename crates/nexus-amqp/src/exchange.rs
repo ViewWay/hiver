@@ -247,3 +247,116 @@ impl ExchangeBuilder {
         self.exchange
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test ExchangeType Display formatting / 测试 ExchangeType Display 格式化
+    #[test]
+    fn test_exchange_type_display() {
+        assert_eq!(ExchangeType::Direct.to_string(), "direct");
+        assert_eq!(ExchangeType::Fanout.to_string(), "fanout");
+        assert_eq!(ExchangeType::Topic.to_string(), "topic");
+        assert_eq!(ExchangeType::Headers.to_string(), "headers");
+    }
+
+    /// Test ExchangeType default is Direct / 测试 ExchangeType 默认为 Direct
+    #[test]
+    fn test_exchange_type_default() {
+        assert_eq!(ExchangeType::default(), ExchangeType::Direct);
+    }
+
+    /// Test Exchange::new sets correct defaults / 测试 Exchange::new 设置正确的默认值
+    #[test]
+    fn test_exchange_new() {
+        let ex = Exchange::new("test_exchange", ExchangeType::Topic);
+        assert_eq!(ex.name, "test_exchange");
+        assert_eq!(ex.exchange_type, ExchangeType::Topic);
+        assert!(ex.durable);
+        assert!(!ex.auto_delete);
+        assert!(!ex.internal);
+        assert!(ex.arguments.is_empty());
+    }
+
+    /// Test Exchange convenience constructors / 测试 Exchange 便捷构造方法
+    #[test]
+    fn test_exchange_convenience_constructors() {
+        let direct = Exchange::direct("d");
+        assert_eq!(direct.exchange_type, ExchangeType::Direct);
+        assert_eq!(direct.name, "d");
+
+        let fanout = Exchange::fanout("f");
+        assert_eq!(fanout.exchange_type, ExchangeType::Fanout);
+
+        let topic = Exchange::topic("t");
+        assert_eq!(topic.exchange_type, ExchangeType::Topic);
+
+        let headers = Exchange::headers("h");
+        assert_eq!(headers.exchange_type, ExchangeType::Headers);
+    }
+
+    /// Test default exchange has empty name and Direct type / 测试默认交换机名称为空且类型为 Direct
+    #[test]
+    fn test_default_exchange() {
+        let ex = Exchange::default_exchange();
+        assert!(ex.name.is_empty());
+        assert_eq!(ex.exchange_type, ExchangeType::Direct);
+    }
+
+    /// Test Exchange builder chain methods / 测试 Exchange 构建器链式方法
+    #[test]
+    fn test_exchange_builder_chain() {
+        let ex = Exchange::direct("my_ex")
+            .with_durable(false)
+            .with_auto_delete(true)
+            .with_internal(true)
+            .with_argument("alternate-exchange", serde_json::json!("dlx"));
+
+        assert!(!ex.durable);
+        assert!(ex.auto_delete);
+        assert!(ex.internal);
+        assert_eq!(ex.arguments.len(), 1);
+    }
+
+    /// Test ExchangeBuilder produces correct exchange / 测试 ExchangeBuilder 生成正确的交换机
+    #[test]
+    fn test_exchange_builder() {
+        let ex = ExchangeBuilder::topic("events")
+            .durable()
+            .auto_delete()
+            .with_argument("x-delayed-type", serde_json::json!("direct"))
+            .build();
+
+        assert_eq!(ex.name, "events");
+        assert_eq!(ex.exchange_type, ExchangeType::Topic);
+        assert!(ex.durable);
+        assert!(ex.auto_delete);
+        assert_eq!(ex.arguments.len(), 1);
+    }
+
+    /// Test with_alternate_exchange convenience method / 测试 with_alternate_exchange 便捷方法
+    #[test]
+    fn test_exchange_alternate_exchange() {
+        let ex = Exchange::direct("primary")
+            .with_alternate_exchange("fallback");
+        assert_eq!(
+            ex.arguments.get("alternate-exchange").unwrap(),
+            &serde_json::json!("fallback")
+        );
+    }
+
+    /// Test Exchange serialization round-trip / 测试 Exchange 序列化往返
+    #[test]
+    fn test_exchange_serde_roundtrip() {
+        let ex = Exchange::topic("events")
+            .with_durable(true)
+            .with_argument("x-max-length", serde_json::json!(1000));
+        let json = serde_json::to_string(&ex).unwrap();
+        let deserialized: Exchange = serde_json::from_str(&json).unwrap();
+        assert_eq!(ex.name, deserialized.name);
+        assert_eq!(ex.exchange_type, deserialized.exchange_type);
+        assert_eq!(ex.durable, deserialized.durable);
+        assert_eq!(ex.arguments.len(), deserialized.arguments.len());
+    }
+}

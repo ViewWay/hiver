@@ -177,3 +177,101 @@ impl BindingBuilder {
         self.binding
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ExchangeType;
+
+    /// Test Binding::bind_queue creates correct binding / 测试 Binding::bind_queue 创建正确的绑定
+    #[test]
+    fn test_binding_bind_queue() {
+        let queue = crate::Queue::durable("my_queue");
+        let exchange = Exchange::direct("my_exchange");
+        let binding = Binding::bind_queue(queue, exchange, "orders.create");
+
+        assert_eq!(binding.routing_key, "orders.create");
+        assert_eq!(binding.source_name(), "my_exchange");
+        assert_eq!(binding.destination_name(), "my_queue");
+        assert!(binding.arguments.is_empty());
+    }
+
+    /// Test Binding::bind_exchange creates correct binding / 测试 Binding::bind_exchange 创建正确的绑定
+    #[test]
+    fn test_binding_bind_exchange() {
+        let source = Exchange::fanout("main_exchange");
+        let binding = Binding::bind_exchange("child_exchange", source, "events.#");
+
+        assert_eq!(binding.routing_key, "events.#");
+        assert_eq!(binding.source_name(), "main_exchange");
+        assert_eq!(binding.destination_name(), "child_exchange");
+    }
+
+    /// Test BindingDestination matches / 测试 BindingDestination 匹配
+    #[test]
+    fn test_binding_destination_variants() {
+        let queue_dest = BindingDestination::Queue(crate::Queue::durable("q"));
+        match &queue_dest {
+            BindingDestination::Queue(q) => assert_eq!(q.name, "q"),
+            BindingDestination::Exchange(_) => panic!("Expected Queue variant"),
+        }
+
+        let exchange_dest = BindingDestination::Exchange("ex".to_string());
+        match &exchange_dest {
+            BindingDestination::Queue(_) => panic!("Expected Exchange variant"),
+            BindingDestination::Exchange(name) => assert_eq!(name, "ex"),
+        }
+    }
+
+    /// Test Binding::with_argument / 测试 Binding::with_argument
+    #[test]
+    fn test_binding_with_argument() {
+        let queue = crate::Queue::durable("q");
+        let exchange = Exchange::topic("ex");
+        let binding = Binding::bind_queue(queue, exchange, "rk")
+            .with_argument("x-match", serde_json::json!("all"))
+            .with_argument("x-custom", serde_json::json!(42));
+
+        assert_eq!(binding.arguments.len(), 2);
+        assert_eq!(binding.arguments.get("x-match").unwrap(), &serde_json::json!("all"));
+    }
+
+    /// Test BindingBuilder full chain / 测试 BindingBuilder 完整链式调用
+    #[test]
+    fn test_binding_builder_queue() {
+        let binding = BindingBuilder::bind_queue(crate::Queue::durable("orders"))
+            .to(Exchange::topic("events"))
+            .with("order.created")
+            .with_argument("x-priority", serde_json::json!(10))
+            .build();
+
+        assert_eq!(binding.destination_name(), "orders");
+        assert_eq!(binding.source_name(), "events");
+        assert_eq!(binding.routing_key, "order.created");
+        assert_eq!(binding.arguments.len(), 1);
+    }
+
+    /// Test BindingBuilder for exchange-to-exchange / 测试 BindingBuilder 交换机到交换机绑定
+    #[test]
+    fn test_binding_builder_exchange() {
+        let binding = BindingBuilder::bind_exchange("target_exchange")
+            .to(Exchange::fanout("source_exchange"))
+            .with("routing.key")
+            .build();
+
+        assert_eq!(binding.destination_name(), "target_exchange");
+        assert_eq!(binding.source_name(), "source_exchange");
+    }
+
+    /// Test source_name and destination_name / 测试 source_name 和 destination_name
+    #[test]
+    fn test_binding_name_accessors() {
+        let binding = Binding::bind_queue(
+            crate::Queue::new("q1"),
+            Exchange::new("e1", ExchangeType::Direct),
+            "key1",
+        );
+        assert_eq!(binding.source_name(), "e1");
+        assert_eq!(binding.destination_name(), "q1");
+    }
+}

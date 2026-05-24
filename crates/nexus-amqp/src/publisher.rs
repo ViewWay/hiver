@@ -241,3 +241,128 @@ impl Publisher {
         self.publish_json("", routing_key, payload)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::DeliveryMode;
+    use std::sync::Arc;
+
+    /// Helper to create a Publisher for testing / 创建测试用 Publisher 的辅助函数
+    fn create_publisher() -> Publisher {
+        let config = crate::AmqpConfig::default();
+        let conn = crate::AmqpConnection::new(config);
+        Publisher::new(Arc::new(conn))
+    }
+
+    /// Test PublishingOptions defaults / 测试 PublishingOptions 默认值
+    #[test]
+    fn test_publishing_options_defaults() {
+        let opts = PublishingOptions::default();
+        assert!(opts.exchange.is_empty());
+        assert!(opts.routing_key.is_empty());
+        assert!(!opts.mandatory);
+        assert!(!opts.immediate);
+        assert!(opts.delivery_mode.is_none());
+        assert!(opts.priority.is_none());
+        assert!(opts.expiration.is_none());
+        assert!(opts.message_id.is_none());
+        assert!(opts.correlation_id.is_none());
+        assert!(opts.reply_to.is_none());
+        assert!(opts.content_type.is_none());
+    }
+
+    /// Test PublishingOptions builder chain / 测试 PublishingOptions 构建器链式调用
+    #[test]
+    fn test_publishing_options_builder() {
+        let opts = PublishingOptions::new()
+            .with_exchange("my_exchange")
+            .with_routing_key("my.key")
+            .with_delivery_mode(DeliveryMode::Persistent)
+            .with_priority(7)
+            .with_expiration("30000")
+            .with_correlation_id("corr-456")
+            .with_reply_to("reply_q")
+            .with_content_type("application/json");
+
+        assert_eq!(opts.exchange, "my_exchange");
+        assert_eq!(opts.routing_key, "my.key");
+        assert_eq!(opts.delivery_mode, Some(DeliveryMode::Persistent));
+        assert_eq!(opts.priority, Some(7));
+        assert_eq!(opts.expiration.as_deref(), Some("30000"));
+        assert_eq!(opts.correlation_id.as_deref(), Some("corr-456"));
+        assert_eq!(opts.reply_to.as_deref(), Some("reply_q"));
+        assert_eq!(opts.content_type.as_deref(), Some("application/json"));
+    }
+
+    /// Test PublishingOptions priority clamped to 9 / 测试优先级最大值为 9
+    #[test]
+    fn test_publishing_options_priority_clamped() {
+        let opts = PublishingOptions::new().with_priority(20);
+        assert_eq!(opts.priority, Some(9));
+    }
+
+    /// Test Publisher::publish sends to exchange / 测试 Publisher::publish 发送到交换机
+    #[test]
+    fn test_publisher_publish() {
+        let pub_ = create_publisher();
+        let result = pub_.publish("my_exchange", "routing.key", b"hello");
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::publish_with_options / 测试 Publisher::publish_with_options
+    #[test]
+    fn test_publisher_publish_with_options() {
+        let pub_ = create_publisher();
+        let opts = PublishingOptions::new()
+            .with_delivery_mode(DeliveryMode::Persistent);
+        let result = pub_.publish_with_options("ex", "rk", b"data", &opts);
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::publish_json serializes and publishes / 测试 Publisher::publish_json 序列化并发布
+    #[test]
+    fn test_publisher_publish_json() {
+        let pub_ = create_publisher();
+        #[derive(serde::Serialize)]
+        struct Order { id: u64, item: String }
+        let order = Order { id: 1, item: "widget".to_string() };
+        let result = pub_.publish_json("orders", "order.created", &order);
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::convert_and_send delegates to publish_json / 测试 convert_and_send 委托给 publish_json
+    #[test]
+    fn test_publisher_convert_and_send() {
+        let pub_ = create_publisher();
+        let data = vec!["a", "b", "c"];
+        let result = pub_.convert_and_send("ex", "rk", &data);
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::send to default exchange / 测试 Publisher::send 发送到默认交换机
+    #[test]
+    fn test_publisher_send() {
+        let pub_ = create_publisher();
+        let result = pub_.send("my_queue", b"payload");
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::send_json to default exchange / 测试 Publisher::send_json 发送到默认交换机
+    #[test]
+    fn test_publisher_send_json() {
+        let pub_ = create_publisher();
+        let result = pub_.send_json("my_queue", &"hello");
+        assert!(result.is_ok());
+    }
+
+    /// Test Publisher::with_options sets default options / 测试 Publisher::with_options 设置默认选项
+    #[test]
+    fn test_publisher_with_options() {
+        let pub_ = create_publisher();
+        let opts = PublishingOptions::new()
+            .with_exchange("default_ex")
+            .with_routing_key("default.rk");
+        let _pub_with_opts = pub_.with_options(opts);
+    }
+}

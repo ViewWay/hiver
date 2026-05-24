@@ -261,3 +261,117 @@ fn default_prefetch() -> u16 {
 fn default_confirm_timeout() -> u64 {
     30
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test default AmqpConfig values / 测试默认 AmqpConfig 值
+    #[test]
+    fn test_amqp_config_defaults() {
+        let config = AmqpConfig::default();
+        assert_eq!(config.host, "localhost");
+        assert_eq!(config.port, 5672);
+        assert_eq!(config.username, "guest");
+        assert_eq!(config.password, "guest");
+        assert_eq!(config.vhost, "/");
+        assert!(!config.ssl);
+        assert_eq!(config.connection_timeout_secs, 10);
+        assert_eq!(config.heartbeat_secs, 60);
+        assert_eq!(config.channel_max, 2047);
+        assert_eq!(config.frame_max, 131_072);
+        assert!(config.automatic_recovery);
+        assert_eq!(config.network_recovery_interval_ms, 5000);
+    }
+
+    /// Test AmqpConfig builder pattern / 测试 AmqpConfig 构建器模式
+    #[test]
+    fn test_amqp_config_builder() {
+        let config = AmqpConfig::new()
+            .with_host("rabbit.example.com", 5673)
+            .with_credentials("admin", "secret")
+            .with_vhost("/production");
+
+        assert_eq!(config.host, "rabbit.example.com");
+        assert_eq!(config.port, 5673);
+        assert_eq!(config.username, "admin");
+        assert_eq!(config.password, "secret");
+        assert_eq!(config.vhost, "/production");
+    }
+
+    /// Test build_url generates correct AMQP URL / 测试 build_url 生成正确的 AMQP URL
+    #[test]
+    fn test_amqp_config_build_url() {
+        let config = AmqpConfig::new()
+            .with_host("rabbit.example.com", 5672)
+            .with_credentials("admin", "secret");
+
+        let url = config.build_url();
+        assert!(url.starts_with("amqp://"));
+        assert!(url.contains("admin:secret@"));
+        assert!(url.contains("rabbit.example.com:5672"));
+    }
+
+    /// Test SSL changes protocol to amqps and port to 5671 / 测试 SSL 将协议改为 amqps 并将端口改为 5671
+    #[test]
+    fn test_amqp_config_ssl() {
+        let config = AmqpConfig::default().with_ssl(true);
+        assert!(config.ssl);
+        assert_eq!(config.port, 5671);
+
+        let url = config.build_url();
+        assert!(url.starts_with("amqps://"));
+    }
+
+    /// Test build_url returns raw URL when already amqp:// / 测试已有 amqp:// URL 时直接返回
+    #[test]
+    fn test_amqp_config_build_url_passthrough() {
+        let config = AmqpConfig::default().with_url("amqp://custom:9999/vhost");
+        assert_eq!(config.build_url(), "amqp://custom:9999/vhost");
+    }
+
+    /// Test build_url URL-encodes special characters in credentials / 测试 build_url 对凭据中的特殊字符进行 URL 编码
+    #[test]
+    fn test_amqp_config_build_url_encodes_credentials() {
+        let config = AmqpConfig::new()
+            .with_credentials("user@domain", "p@ss:w0rd");
+        let url = config.build_url();
+        // '@' and ':' should be percent-encoded in the user/password portion
+        assert!(url.contains("user%40domain"));
+        assert!(url.contains("p%40ss%3Aw0rd"));
+    }
+
+    /// Test ConnectionConfig defaults / 测试 ConnectionConfig 默认值
+    #[test]
+    fn test_connection_config_defaults() {
+        let config = ConnectionConfig::default();
+        assert_eq!(config.prefetch_count, 1);
+        assert!(!config.publisher_confirms);
+        assert_eq!(config.confirm_timeout_secs, 30);
+    }
+
+    /// Test ConnectionConfig builder / 测试 ConnectionConfig 构建器
+    #[test]
+    fn test_connection_config_builder() {
+        let config = ConnectionConfig::new()
+            .with_prefetch(10)
+            .with_publisher_confirms(true);
+        assert_eq!(config.prefetch_count, 10);
+        assert!(config.publisher_confirms);
+    }
+
+    /// Test AmqpConfig serialization round-trip / 测试 AmqpConfig 序列化往返
+    #[test]
+    fn test_amqp_config_serde_roundtrip() {
+        let config = AmqpConfig::new()
+            .with_host("broker.local", 5672)
+            .with_credentials("user", "pass")
+            .with_vhost("/test");
+        let json = serde_json::to_string(&config).unwrap();
+        let deserialized: AmqpConfig = serde_json::from_str(&json).unwrap();
+        assert_eq!(config.host, deserialized.host);
+        assert_eq!(config.port, deserialized.port);
+        assert_eq!(config.username, deserialized.username);
+        assert_eq!(config.vhost, deserialized.vhost);
+    }
+}

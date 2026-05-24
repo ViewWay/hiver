@@ -178,3 +178,98 @@ impl From<AmqpConfig> for ConnectionManager {
         Self::new(config)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test AmqpConnection initial state is Disconnected / 测试 AmqpConnection 初始状态为 Disconnected
+    #[tokio::test]
+    async fn test_amqp_connection_initial_state() {
+        let config = AmqpConfig::default();
+        let conn = AmqpConnection::new(config);
+        assert!(matches!(conn.state().await, ConnectionState::Disconnected));
+        assert!(!conn.is_connected().await);
+    }
+
+    /// Test AmqpConnection::url delegates to config / 测试 AmqpConnection::url 委托给 config
+    #[tokio::test]
+    async fn test_amqp_connection_url() {
+        let config = AmqpConfig::new()
+            .with_host("rabbit.local", 5672)
+            .with_credentials("user", "pass");
+        let conn = AmqpConnection::new(config.clone());
+        let url = conn.url();
+        assert!(url.contains("rabbit.local"));
+        assert!(url.contains("user:pass"));
+    }
+
+    /// Test ConnectionManager::create_connection / 测试 ConnectionManager::create_connection
+    #[tokio::test]
+    async fn test_connection_manager_create_connection() {
+        let config = AmqpConfig::default();
+        let manager = ConnectionManager::new(config);
+        assert_eq!(manager.connection_count().await, 0);
+
+        let conn = manager.create_connection().await.unwrap();
+        assert_eq!(manager.connection_count().await, 1);
+        assert!(matches!(conn.state().await, ConnectionState::Disconnected));
+    }
+
+    /// Test ConnectionManager::close_all / 测试 ConnectionManager::close_all
+    #[tokio::test]
+    async fn test_connection_manager_close_all() {
+        let config = AmqpConfig::default();
+        let manager = ConnectionManager::new(config);
+        manager.create_connection().await.unwrap();
+        manager.create_connection().await.unwrap();
+        assert_eq!(manager.connection_count().await, 2);
+
+        manager.close_all().await;
+        assert_eq!(manager.connection_count().await, 0);
+    }
+
+    /// Test ConnectionManager::with_connection_config / 测试 ConnectionManager::with_connection_config
+    #[tokio::test]
+    async fn test_connection_manager_with_connection_config() {
+        let config = AmqpConfig::default();
+        let conn_config = ConnectionConfig::new()
+            .with_prefetch(50)
+            .with_publisher_confirms(true);
+
+        let manager = ConnectionManager::new(config)
+            .with_connection_config(conn_config);
+
+        assert_eq!(manager.connection_config().prefetch_count, 50);
+        assert!(manager.connection_config().publisher_confirms);
+    }
+
+    /// Test ConnectionManager::config accessor / 测试 ConnectionManager::config 访问器
+    #[tokio::test]
+    async fn test_connection_manager_config_accessor() {
+        let config = AmqpConfig::new().with_host("broker.test", 5673);
+        let manager = ConnectionManager::new(config);
+        assert_eq!(manager.config().host, "broker.test");
+        assert_eq!(manager.config().port, 5673);
+    }
+
+    /// Test ConnectionManager From<AmqpConfig> / 测试 ConnectionManager 的 From<AmqpConfig> 转换
+    #[tokio::test]
+    async fn test_connection_manager_from_config() {
+        let config = AmqpConfig::new().with_host("from-config.test", 5672);
+        let manager = ConnectionManager::from(config);
+        assert_eq!(manager.config().host, "from-config.test");
+    }
+
+    /// Test ConnectionState debug output / 测试 ConnectionState debug 输出
+    #[test]
+    fn test_connection_state_debug() {
+        let disconnected = ConnectionState::Disconnected;
+        assert!(format!("{:?}", disconnected).contains("Disconnected"));
+
+        let failed = ConnectionState::Failed {
+            error: "timeout".to_string(),
+        };
+        assert!(format!("{:?}", failed).contains("timeout"));
+    }
+}
