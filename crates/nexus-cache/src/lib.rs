@@ -64,6 +64,11 @@ mod condition_evaluator;
 mod key_generator;
 mod resolver;
 
+#[cfg(feature = "redis")]
+mod redis_cache;
+#[cfg(feature = "redis")]
+mod redis_cache_manager;
+
 pub use cache::{Cache, CacheBuilder, CacheConfig, CacheStats, MemoryCache};
 pub use cache_config::CacheConfig as CacheSettings;
 pub use cache_evict::{CacheEvict, CacheEvictExec, CacheEvictOptions, EvictPolicy};
@@ -76,6 +81,11 @@ pub use key_generator::{DefaultKeyGenerator, HashKeyGenerator, KeyGenerator};
 pub use resolver::{CacheResolver, SimpleCacheResolver};
 pub use global_cache::{cache_evict_key, cache_get, cache_put, global_cache_manager};
 
+#[cfg(feature = "redis")]
+pub use redis_cache::{RedisCache, RedisConfig, SerializationFormat};
+#[cfg(feature = "redis")]
+pub use redis_cache_manager::{RedisCacheManager, RedisCacheWorker};
+
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
@@ -83,6 +93,9 @@ pub mod prelude {
         Cache, CacheBuilder, CacheConfig, CacheEvict, CacheManager, CacheManagerBuilder, CachePut,
         Cacheable, Cached,
     };
+
+    #[cfg(feature = "redis")]
+    pub use super::{RedisCache, RedisCacheManager, RedisConfig};
 }
 
 /// Version of the cache module
