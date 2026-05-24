@@ -1018,3 +1018,8 @@ mod tests {
         assert_eq!(config.timeout_secs, crate::DEFAULT_HEARTBEAT_SECS * 3);
     }
 }
+
+/// Consul-based service discovery backend.
+/// 基于 Consul 的服务发现后端。
+#[cfg(feature = "consul")]
+pub mod consul;

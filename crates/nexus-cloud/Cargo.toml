@@ -76,3 +76,4 @@ all = ["consul", "etcd"]
 [dev-dependencies]
 # Testing / 测试
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+mockito = { workspace = true }

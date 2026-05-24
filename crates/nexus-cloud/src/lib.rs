@@ -49,6 +49,9 @@ pub use discovery::{
     InMemoryServiceRegistry, InstanceStatus, ServiceDiscovery, ServiceDiscoveryClient,
     ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
 };
+
+#[cfg(feature = "consul")]
+pub use discovery::consul::{ConsulConfig, ConsulServiceRegistry};
 pub use gateway::{
     Filter as GatewayFilterDef, Gateway, GatewayCircuitBreaker, GatewayCbState, GatewayConfig,
     GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
@@ -71,6 +74,9 @@ pub mod prelude {
         ServiceDiscovery, ServiceDiscoveryClient, ServiceInstance, ServiceRegistry,
         SimpleDiscoveryClient,
     };
+
+    #[cfg(feature = "consul")]
+    pub use super::{ConsulConfig, ConsulServiceRegistry};
 }
 
 /// Version of the cloud module
