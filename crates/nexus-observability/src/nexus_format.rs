@@ -171,7 +171,7 @@ where
 
         // Add file info for ERROR/WARN levels
         if let Some(info) = file_info {
-            write!(writer, "{}", info)?;
+            write!(writer, "{info}")?;
         }
 
         writeln!(writer)?;

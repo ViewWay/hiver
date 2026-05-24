@@ -894,12 +894,7 @@ fn export_metric_line(id: &MetricId, value: u64) -> String {
     }
 
     // Format value
-    let formatted_value = if line.ends_with("_sum") || line.ends_with("_count") {
-        // Histogram sum/count are still u64 internally
-        format!("{}", value)
-    } else {
-        format!("{}", value)
-    };
+    let formatted_value = value.to_string();
 
     line.push(' ');
     line.push_str(&formatted_value);
