@@ -504,4 +504,363 @@ mod tests {
         let items = a.concat(b).collect::<Vec<_>>().await;
         assert_eq!(items, vec![1, 2, 3, 4]);
     }
+
+    // ── Additional Mono tests / 额外Mono测试 ──────────────────────────
+
+    #[tokio::test]
+    async fn test_mono_from_future() {
+        let mono = Mono::from_future(async { 42 });
+        assert_eq!(mono.block().await, Some(42));
+    }
+
+    #[tokio::test]
+    async fn test_mono_from_future_opt_some() {
+        let mono = Mono::from_future_opt(async { Some("hello") });
+        assert_eq!(mono.block().await, Some("hello"));
+    }
+
+    #[tokio::test]
+    async fn test_mono_from_future_opt_none() {
+        let mono: Mono<String> = Mono::from_future_opt(async { None });
+        assert_eq!(mono.block().await, None);
+    }
+
+    #[tokio::test]
+    async fn test_mono_defer() {
+        let mono = Mono::defer(|| async { 99 });
+        assert_eq!(mono.block().await, Some(99));
+    }
+
+    #[tokio::test]
+    async fn test_mono_map_on_empty() {
+        let result: Option<i32> = Mono::<i32>::empty().map(|x| x * 2).block().await;
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test]
+    async fn test_mono_flat_map_on_empty() {
+        let result: Option<i32> = Mono::<i32>::empty()
+            .flat_map(|x| Mono::just(x + 1))
+            .block()
+            .await;
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test]
+    async fn test_mono_block_or_default_with_value() {
+        let val: i32 = Mono::just(42).block_or_default().await;
+        assert_eq!(val, 42);
+    }
+
+    #[tokio::test]
+    async fn test_mono_chained_map() {
+        let result = Mono::just(2)
+            .map(|x| x + 3)
+            .map(|x| x * 10)
+            .block()
+            .await;
+        assert_eq!(result, Some(50));
+    }
+
+    #[tokio::test]
+    async fn test_mono_chained_flat_map() {
+        let result = Mono::just(1)
+            .flat_map(|x| Mono::just(x * 10))
+            .flat_map(|x| Mono::just(x + 5))
+            .block()
+            .await;
+        assert_eq!(result, Some(15));
+    }
+
+    #[test]
+    fn test_mono_debug_format() {
+        let mono = Mono::just(42);
+        let debug = format!("{:?}", mono);
+        assert!(debug.contains("Mono"));
+    }
+
+    // ── Additional Flux tests / 额外Flux测试 ──────────────────────────
+
+    #[tokio::test]
+    async fn test_flux_just_single() {
+        let items = Flux::just(42).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![42]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_empty() {
+        let items = Flux::<i32>::empty().collect::<Vec<_>>().await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_skip() {
+        let items = Flux::from_iter(0..6).skip(3).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![3, 4, 5]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_skip_more_than_available() {
+        let items = Flux::from_iter(vec![1, 2]).skip(10).collect::<Vec<_>>().await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_take_zero() {
+        let items = Flux::from_iter(vec![1, 2, 3]).take(0).collect::<Vec<_>>().await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_take_more_than_available() {
+        let items = Flux::from_iter(vec![1, 2]).take(100).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![1, 2]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_filter_map() {
+        let items = Flux::from_iter(vec![1, 2, 3, 4])
+            .filter_map(|x| if x % 2 == 0 { Some(x * 10) } else { None })
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![20, 40]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_then_async() {
+        let items = Flux::from_iter(vec![1, 2, 3])
+            .then(|x| async move { x * 100 })
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![100, 200, 300]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_reduce() {
+        let sum = Flux::from_iter(vec![1, 2, 3, 4])
+            .reduce(0, |acc, x| acc + x)
+            .await;
+        assert_eq!(sum, 10);
+    }
+
+    #[tokio::test]
+    async fn test_flux_reduce_empty() {
+        let result = Flux::<i32>::empty().reduce(42, |acc, x| acc + x).await;
+        assert_eq!(result, 42);
+    }
+
+    #[tokio::test]
+    async fn test_flux_reduce_string() {
+        let result = Flux::from_iter(vec!["a", "b", "c"])
+            .reduce(String::new(), |mut acc, x| {
+                acc.push_str(x);
+                acc
+            })
+            .await;
+        assert_eq!(result, "abc");
+    }
+
+    #[tokio::test]
+    async fn test_flux_into_vec() {
+        let vec = Flux::from_iter(vec![10, 20, 30]).into_vec().await;
+        assert_eq!(vec, vec![10, 20, 30]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_next_on_empty() {
+        let first = Flux::<i32>::empty().next().block().await;
+        assert_eq!(first, None);
+    }
+
+    #[tokio::test]
+    async fn test_flux_from_stream() {
+        use futures::stream;
+        let s = stream::iter(vec![5, 6, 7]);
+        let items = Flux::from_stream(s).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![5, 6, 7]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_into_stream() {
+        use futures::StreamExt;
+        let flux = Flux::from_iter(vec![1, 2, 3]);
+        let mut stream = flux.into_stream();
+        let mut items = Vec::new();
+        while let Some(item) = stream.next().await {
+            items.push(item);
+        }
+        assert_eq!(items, vec![1, 2, 3]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_concat_empty_left() {
+        let a = Flux::<i32>::empty();
+        let b = Flux::from_iter(vec![1, 2]);
+        let items = a.concat(b).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![1, 2]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_concat_empty_right() {
+        let a = Flux::from_iter(vec![1, 2]);
+        let b = Flux::<i32>::empty();
+        let items = a.concat(b).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![1, 2]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_count_empty() {
+        let n = Flux::<i32>::empty().count().await;
+        assert_eq!(n, 0);
+    }
+
+    #[test]
+    fn test_flux_debug_format() {
+        let flux = Flux::just(1);
+        let debug = format!("{:?}", flux);
+        assert!(debug.contains("Flux"));
+    }
+
+    #[tokio::test]
+    async fn test_flux_chained_operators() {
+        let items = Flux::from_iter(0..10)
+            .filter(|x| x % 2 == 0)
+            .map(|x| x * 3)
+            .take(3)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![0, 6, 12]);
+    }
+
+    #[tokio::test]
+    async fn test_mono_into_flux_empty() {
+        let items: Vec<i32> = Mono::<i32>::empty().into_flux().collect().await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_flat_map_empty() {
+        let items = Flux::from_iter(Vec::<i32>::new())
+            .flat_map(|x| Flux::just(x))
+            .collect::<Vec<_>>()
+            .await;
+        assert!(items.is_empty());
+    }
+
+    // ── Additional edge case tests / 额外边界测试 ─────────────────────
+
+    #[tokio::test]
+    async fn test_mono_just_string() {
+        let result = Mono::just("hello".to_string()).block().await;
+        assert_eq!(result, Some("hello".to_string()));
+    }
+
+    #[tokio::test]
+    async fn test_mono_just_vec() {
+        let result = Mono::just(vec![1, 2, 3]).block().await;
+        assert_eq!(result, Some(vec![1, 2, 3]));
+    }
+
+    #[tokio::test]
+    async fn test_mono_map_changes_type() {
+        let result = Mono::just(42i32)
+            .map(|x| x.to_string())
+            .block()
+            .await;
+        assert_eq!(result, Some("42".to_string()));
+    }
+
+    #[tokio::test]
+    async fn test_mono_flat_map_changes_type() {
+        let result = Mono::just(5i32)
+            .flat_map(|x| Mono::just(vec![x; 3]))
+            .block()
+            .await;
+        assert_eq!(result, Some(vec![5, 5, 5]));
+    }
+
+    #[tokio::test]
+    async fn test_mono_block_or_default_with_string() {
+        let val = Mono::just("test".to_string()).block_or_default().await;
+        assert_eq!(val, "test");
+    }
+
+    #[tokio::test]
+    async fn test_mono_block_or_default_empty_string() {
+        let val: String = Mono::empty().block_or_default().await;
+        assert_eq!(val, "");
+    }
+
+    #[tokio::test]
+    async fn test_flux_from_iter_empty() {
+        let items: Vec<i32> = Flux::from_iter(Vec::new()).collect().await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_from_iter_single() {
+        let items = Flux::from_iter(vec![99]).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![99]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_filter_none_match() {
+        let items = Flux::from_iter(vec![1, 3, 5])
+            .filter(|x| x % 2 == 0)
+            .collect::<Vec<_>>()
+            .await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_filter_all_match() {
+        let items = Flux::from_iter(vec![2, 4, 6])
+            .filter(|x| x % 2 == 0)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![2, 4, 6]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_concat_three() {
+        let a = Flux::from_iter(vec![1]);
+        let b = Flux::from_iter(vec![2]);
+        let c = Flux::from_iter(vec![3]);
+        let items = a.concat(b).concat(c).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![1, 2, 3]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_then_with_async_delay() {
+        let items = Flux::from_iter(vec![1u32, 2, 3])
+            .then(|x| async move { x * 2 })
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![2, 4, 6]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_filter_map_none_match() {
+        let items = Flux::from_iter(vec![1, 3, 5])
+            .filter_map(|x| if x > 10 { Some(x) } else { None })
+            .collect::<Vec<_>>()
+            .await;
+        assert!(items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_mono_into_flux_then_operators() {
+        let items = Mono::just(10)
+            .into_flux()
+            .map(|x| x + 5)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![15]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_skip_zero() {
+        let items = Flux::from_iter(vec![1, 2, 3]).skip(0).collect::<Vec<_>>().await;
+        assert_eq!(items, vec![1, 2, 3]);
+    }
 }

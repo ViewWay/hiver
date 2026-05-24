@@ -94,3 +94,209 @@ pub trait HasExtensions {
     /// 获取扩展的可变引用
     fn extensions_mut(&mut self) -> &mut Extensions;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── Extensions basic operations / Extensions基本操作 ─────────────────
+
+    #[test]
+    fn test_extensions_new() {
+        let ext = Extensions::new();
+        assert!(!ext.contains::<i32>());
+    }
+
+    #[test]
+    fn test_extensions_default() {
+        let ext = Extensions::default();
+        assert!(!ext.contains::<String>());
+    }
+
+    #[test]
+    fn test_extensions_insert_and_get() {
+        let mut ext = Extensions::new();
+        ext.insert(42i32);
+        assert_eq!(ext.get::<i32>(), Some(&42));
+    }
+
+    #[test]
+    fn test_extensions_get_missing_type() {
+        let mut ext = Extensions::new();
+        ext.insert(42i32);
+        assert_eq!(ext.get::<String>(), None);
+    }
+
+    #[test]
+    fn test_extensions_get_mut() {
+        let mut ext = Extensions::new();
+        ext.insert(100i32);
+        if let Some(v) = ext.get_mut::<i32>() {
+            *v = 200;
+        }
+        assert_eq!(ext.get::<i32>(), Some(&200));
+    }
+
+    #[test]
+    fn test_extensions_get_mut_missing() {
+        let mut ext = Extensions::new();
+        assert!(ext.get_mut::<String>().is_none());
+    }
+
+    #[test]
+    fn test_extensions_remove() {
+        let mut ext = Extensions::new();
+        ext.insert("hello".to_string());
+        let removed = ext.remove::<String>();
+        assert_eq!(removed, Some("hello".to_string()));
+        assert!(!ext.contains::<String>());
+    }
+
+    #[test]
+    fn test_extensions_remove_missing() {
+        let mut ext = Extensions::new();
+        let removed: Option<i32> = ext.remove::<i32>();
+        assert!(removed.is_none());
+    }
+
+    #[test]
+    fn test_extensions_contains() {
+        let mut ext = Extensions::new();
+        assert!(!ext.contains::<i32>());
+        ext.insert(1i32);
+        assert!(ext.contains::<i32>());
+    }
+
+    #[test]
+    fn test_extensions_clear() {
+        let mut ext = Extensions::new();
+        ext.insert(1i32);
+        ext.insert("hello".to_string());
+        ext.insert(3.14f64);
+        assert!(ext.contains::<i32>());
+        assert!(ext.contains::<String>());
+        assert!(ext.contains::<f64>());
+        ext.clear();
+        assert!(!ext.contains::<i32>());
+        assert!(!ext.contains::<String>());
+        assert!(!ext.contains::<f64>());
+    }
+
+    #[test]
+    fn test_extensions_overwrite_same_type() {
+        let mut ext = Extensions::new();
+        ext.insert(1i32);
+        ext.insert(2i32); // Overwrites / 覆盖
+        assert_eq!(ext.get::<i32>(), Some(&2));
+    }
+
+    #[test]
+    fn test_extensions_multiple_types() {
+        let mut ext = Extensions::new();
+        ext.insert(42i32);
+        ext.insert("text".to_string());
+        ext.insert(vec![1u8, 2, 3]);
+        assert_eq!(ext.get::<i32>(), Some(&42));
+        assert_eq!(ext.get::<String>(), Some(&"text"));
+        assert_eq!(ext.get::<Vec<u8>>(), Some(&vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_extensions_clone_is_empty() {
+        // Clone creates empty HashMap per implementation / Clone创建空HashMap（按实现）
+        let mut ext = Extensions::new();
+        ext.insert(99i32);
+        let cloned = ext.clone();
+        assert!(!cloned.contains::<i32>());
+        // Original still intact / 原始数据仍然完整
+        assert!(ext.contains::<i32>());
+    }
+
+    #[test]
+    fn test_extensions_insert_and_remove_cycle() {
+        let mut ext = Extensions::new();
+        ext.insert(10i32);
+        assert!(ext.contains::<i32>());
+        ext.remove::<i32>();
+        assert!(!ext.contains::<i32>());
+        ext.insert(20i32);
+        assert_eq!(ext.get::<i32>(), Some(&20));
+    }
+
+    #[test]
+    fn test_extensions_type_isolation() {
+        // Different types with same value / 不同类型但相同值
+        let mut ext = Extensions::new();
+        ext.insert(42i32);
+        ext.insert(42i64);
+        ext.insert(42u32);
+        assert_eq!(ext.get::<i32>(), Some(&42i32));
+        assert_eq!(ext.get::<i64>(), Some(&42i64));
+        assert_eq!(ext.get::<u32>(), Some(&42u32));
+        // Remove one type, others remain / 移除一个类型，其余保留
+        ext.remove::<i64>();
+        assert!(ext.contains::<i32>());
+        assert!(!ext.contains::<i64>());
+        assert!(ext.contains::<u32>());
+    }
+
+    #[test]
+    fn test_extensions_custom_type() {
+        #[derive(Debug, PartialEq)]
+        struct Config {
+            host: String,
+            port: u16,
+        }
+        let mut ext = Extensions::new();
+        ext.insert(Config {
+            host: "localhost".to_string(),
+            port: 8080,
+        });
+        assert_eq!(
+            ext.get::<Config>(),
+            Some(&Config {
+                host: "localhost".to_string(),
+                port: 8080,
+            })
+        );
+    }
+
+    // ── HasExtensions trait tests / HasExtensions trait测试 ─────────────
+
+    struct MockHolder {
+        extensions: Extensions,
+    }
+
+    impl HasExtensions for MockHolder {
+        fn extensions(&self) -> &Extensions {
+            &self.extensions
+        }
+        fn extensions_mut(&mut self) -> &mut Extensions {
+            &mut self.extensions
+        }
+    }
+
+    #[test]
+    fn test_has_extensions_trait() {
+        let mut holder = MockHolder {
+            extensions: Extensions::new(),
+        };
+        holder.extensions_mut().insert(123i32);
+        assert_eq!(holder.extensions().get::<i32>(), Some(&123));
+    }
+
+    #[test]
+    fn test_has_extensions_modify_via_trait() {
+        let mut holder = MockHolder {
+            extensions: Extensions::new(),
+        };
+        holder.extensions_mut().insert("initial".to_string());
+        if let Some(s) = holder.extensions_mut().get_mut::<String>() {
+            s.push_str("-modified");
+        }
+        assert_eq!(
+            holder.extensions().get::<String>().unwrap(),
+            "initial-modified"
+        );
+    }
+}
