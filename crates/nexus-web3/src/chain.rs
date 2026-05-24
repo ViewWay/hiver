@@ -570,7 +570,7 @@ impl fmt::Display for BlockNumber {
         match self {
             Self::Latest => write!(f, "latest"),
             Self::Pending => write!(f, "pending"),
-            Self::Number(n) => write!(f, "{}", n),
+            Self::Number(n) => write!(f, "{n}"),
         }
     }
 }
