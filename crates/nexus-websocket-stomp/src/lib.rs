@@ -50,7 +50,10 @@ pub mod handler;
 pub use error::{Result, StompError};
 pub use frame::{StompCommand, StompFrame};
 pub use session::{
-    AckMode, HeartbeatConfig, MemoryBroker, StompBroker, StompSession, Subscription,
-    SubscriptionId, TransactionState,
+    AckMode, AckId, HeartbeatConfig, MemoryBroker, PendingAck, StompBroker, StompSession,
+    Subscription, SubscriptionId, TransactionState,
 };
-pub use handler::{StompConfig, StompHandler};
+pub use handler::{
+    DeadLetterHandler, LogDeadLetterHandler, NoOpAuthenticator, SimpleAuthenticator,
+    StompAuthenticator, StompConfig, StompHandler,
+};

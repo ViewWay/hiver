@@ -6,6 +6,78 @@ use crate::frame::StompFrame;
 use bytes::Bytes;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
+use std::time::Instant;
+
+/// Acknowledgment ID
+/// 确认 ID
+pub type AckId = String;
+
+/// Tracks a message pending client acknowledgment.
+/// 跟踪等待客户端确认的消息。
+#[derive(Debug, Clone)]
+pub struct PendingAck {
+    /// The ack/message ID assigned when the MESSAGE was sent.
+    /// 发送 MESSAGE 时分配的确认/消息 ID。
+    pub ack_id: AckId,
+
+    /// Subscription ID this message was delivered on.
+    /// 此消息投递到的订阅 ID。
+    pub subscription_id: SubscriptionId,
+
+    /// Destination the message was sent to.
+    /// 消息发送到的目标。
+    pub destination: Destination,
+
+    /// The original MESSAGE frame body.
+    /// 原始 MESSAGE 帧主体。
+    pub body: Bytes,
+
+    /// Extra headers from the original MESSAGE frame (excluding ack-id / message-id).
+    /// 原始 MESSAGE 帧的额外头部（不含 ack-id / message-id）。
+    pub headers: HashMap<String, String>,
+
+    /// How many times delivery has been attempted.
+    /// 已尝试投递的次数。
+    pub delivery_count: u32,
+
+    /// Maximum delivery attempts before dead-letter.
+    /// 死信前的最大投递尝试次数。
+    pub max_deliveries: u32,
+
+    /// Timestamp when the message was first dispatched.
+    /// 消息首次分发时的时间戳。
+    pub dispatched_at: Instant,
+}
+
+impl PendingAck {
+    /// Create a new pending acknowledgment entry.
+    /// 创建新的待确认条目。
+    pub fn new(
+        ack_id: impl Into<String>,
+        subscription_id: impl Into<String>,
+        destination: impl Into<String>,
+        body: Bytes,
+        headers: HashMap<String, String>,
+        max_deliveries: u32,
+    ) -> Self {
+        Self {
+            ack_id: ack_id.into(),
+            subscription_id: subscription_id.into(),
+            destination: destination.into(),
+            body,
+            headers,
+            delivery_count: 1,
+            max_deliveries,
+            dispatched_at: Instant::now(),
+        }
+    }
+
+    /// Whether this message has exceeded its maximum delivery attempts.
+    /// 此消息是否已超过最大投递尝试次数。
+    pub fn is_exhausted(&self) -> bool {
+        self.delivery_count >= self.max_deliveries
+    }
+}
 
 /// Subscription ID
 /// 订阅 ID
@@ -42,6 +114,14 @@ pub struct StompSession {
     /// Heartbeat configuration
     /// 心跳配置
     heartbeat: Arc<RwLock<HeartbeatConfig>>,
+
+    /// Messages pending acknowledgment (ack-id -> PendingAck).
+    /// 待确认的消息（ack-id -> PendingAck）。
+    pending_acks: Arc<RwLock<HashMap<AckId, PendingAck>>>,
+
+    /// Authenticated user principal, if any.
+    /// 已认证的用户主体（如果有）。
+    authenticated_user: Arc<RwLock<Option<String>>>,
 }
 
 /// Subscription information
@@ -147,6 +227,8 @@ impl StompSession {
             subscriptions: Arc::new(RwLock::new(HashMap::new())),
             transactions: Arc::new(RwLock::new(HashMap::new())),
             heartbeat: Arc::new(RwLock::new(HeartbeatConfig::default())),
+            pending_acks: Arc::new(RwLock::new(HashMap::new())),
+            authenticated_user: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -279,6 +361,79 @@ impl StompSession {
     /// 生成消息 ID
     pub fn generate_message_id(&self) -> String {
         format!("{}-{}", self.id, uuid::Uuid::new_v4())
+    }
+
+    // ---- Pending acknowledgment management ----
+    // ---- 待确认消息管理 ----
+
+    /// Register a message as pending acknowledgment.
+    /// 注册一条待确认的消息。
+    pub fn track_pending_ack(&self, pending: PendingAck) {
+        let mut acks = self.pending_acks.write().expect("lock poisoned");
+        acks.insert(pending.ack_id.clone(), pending);
+    }
+
+    /// Remove and return a pending acknowledgment by ack-id.
+    /// 通过 ack-id 移除并返回待确认消息。
+    pub fn take_pending_ack(&self, ack_id: &str) -> Option<PendingAck> {
+        let mut acks = self.pending_acks.write().expect("lock poisoned");
+        acks.remove(ack_id)
+    }
+
+    /// Get a reference to a pending acknowledgment without removing it.
+    /// 获取待确认消息的引用（不移除）。
+    pub fn get_pending_ack(&self, ack_id: &str) -> Option<PendingAck> {
+        let acks = self.pending_acks.read().expect("lock poisoned");
+        acks.get(ack_id).cloned()
+    }
+
+    /// Increment delivery count and re-register for redelivery.
+    /// 增加投递计数并重新注册以进行重新投递。
+    ///
+    /// Returns `true` if the message can be redelivered, `false` if
+    /// the maximum delivery count has been exhausted.
+    /// 如果消息可以重新投递则返回 `true`，如果已耗尽最大投递次数则返回 `false`。
+    pub fn requeue_for_redelivery(&self, ack_id: &str) -> Option<PendingAck> {
+        let mut acks = self.pending_acks.write().expect("lock poisoned");
+        if let Some(pending) = acks.get_mut(ack_id) {
+            pending.delivery_count += 1;
+            if pending.is_exhausted() {
+                // Remove and return so caller can dead-letter it.
+                // 移除并返回，以便调用方可以将其发送到死信队列。
+                return acks.remove(ack_id);
+            }
+            // Return a clone for the caller to build the redelivery frame.
+            // 返回克隆，供调用方构建重新投递帧。
+            return Some(acks.get(ack_id).cloned().unwrap());
+        }
+        None
+    }
+
+    /// Number of messages currently pending acknowledgment.
+    /// 当前待确认的消息数量。
+    pub fn pending_ack_count(&self) -> usize {
+        self.pending_acks.read().expect("lock poisoned").len()
+    }
+
+    /// Remove all pending acknowledgments (used on disconnect).
+    /// 移除所有待确认消息（断开连接时使用）。
+    pub fn clear_pending_acks(&self) {
+        self.pending_acks.write().expect("lock poisoned").clear();
+    }
+
+    // ---- Authentication state ----
+    // ---- 认证状态 ----
+
+    /// Set the authenticated user for this session.
+    /// 设置此会话的已认证用户。
+    pub fn set_authenticated_user(&self, username: Option<String>) {
+        *self.authenticated_user.write().expect("lock poisoned") = username;
+    }
+
+    /// Get the authenticated user for this session, if any.
+    /// 获取此会话的已认证用户（如果有）。
+    pub fn authenticated_user(&self) -> Option<String> {
+        self.authenticated_user.read().expect("lock poisoned").clone()
     }
 }
 
