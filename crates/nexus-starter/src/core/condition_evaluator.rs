@@ -312,7 +312,7 @@ mod tests {
     #[test]
     fn test_applicable_config_display() {
         let config = ApplicableConfig::new("MyConfig", -10);
-        let display = format!("{}", config);
+        let display = config.to_string();
         assert!(display.contains("MyConfig"));
         assert!(display.contains("-10"));
     }

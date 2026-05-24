@@ -896,11 +896,11 @@ mod tests {
 
     #[test]
     fn test_transaction_phase_display() {
-        assert_eq!(format!("{}", TransactionPhase::BeforeCommit), "before_commit");
-        assert_eq!(format!("{}", TransactionPhase::AfterCommit), "after_commit");
-        assert_eq!(format!("{}", TransactionPhase::AfterRollback), "after_rollback");
+        assert_eq!(TransactionPhase::BeforeCommit.to_string(), "before_commit");
+        assert_eq!(TransactionPhase::AfterCommit.to_string(), "after_commit");
+        assert_eq!(TransactionPhase::AfterRollback.to_string(), "after_rollback");
         assert_eq!(
-            format!("{}", TransactionPhase::AfterCompletion),
+            TransactionPhase::AfterCompletion.to_string(),
             "after_completion"
         );
     }

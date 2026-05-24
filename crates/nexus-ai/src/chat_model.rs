@@ -376,7 +376,7 @@ mod tests {
 
     #[test]
     fn test_role_display() {
-        assert_eq!(format!("{}", Role::User), "user");
+        assert_eq!(Role::User.to_string(), "user");
     }
 
     #[test]

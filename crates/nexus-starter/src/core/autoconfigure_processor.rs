@@ -315,7 +315,7 @@ impl AutoConfigurationProcessor {
                     );
                 }
                 Err(e) => {
-                    let error_msg = format!("{}", e);
+                    let error_msg = e.to_string();
                     tracing::warn!(
                         "Auto-configuration '{}' failed: {}",
                         entry.name(),
@@ -761,7 +761,7 @@ mod tests {
             skipped_count: 2,
             total_candidates: 7,
         };
-        let display = format!("{}", result);
+        let display = result.to_string();
         assert!(display.contains("applied=5"));
         assert!(display.contains("skipped=2"));
         assert!(display.contains("total=7"));

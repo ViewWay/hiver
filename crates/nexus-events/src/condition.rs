@@ -748,8 +748,8 @@ mod tests {
 
     #[test]
     fn test_compare_op_display() {
-        assert_eq!(format!("{}", CompareOp::Eq), "==");
-        assert_eq!(format!("{}", CompareOp::Contains), "contains");
+        assert_eq!(CompareOp::Eq.to_string(), "==");
+        assert_eq!(CompareOp::Contains.to_string(), "contains");
     }
 
     // --- PropertyCondition Tests ---
