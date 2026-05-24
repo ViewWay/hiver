@@ -311,3 +311,235 @@ impl Default for PropertySource {
         Self::new("default")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ============================================================
+    // PropertySourceType tests / 属性源类型测试
+    // ============================================================
+
+    /// Test default order for each source type
+    /// 测试每种源类型的默认顺序
+    #[test]
+    fn test_source_type_default_order() {
+        assert_eq!(PropertySourceType::CommandLine.default_order(), 100);
+        assert_eq!(PropertySourceType::SystemEnvironment.default_order(), 200);
+        assert_eq!(PropertySourceType::SystemProperties.default_order(), 300);
+        assert_eq!(PropertySourceType::ApplicationProperties.default_order(), 400);
+        assert_eq!(PropertySourceType::ApplicationYaml.default_order(), 500);
+        assert_eq!(PropertySourceType::ApplicationToml.default_order(), 600);
+        assert_eq!(PropertySourceType::External.default_order(), 700);
+        assert_eq!(PropertySourceType::Custom.default_order(), 800);
+    }
+
+    /// Test that CommandLine has the highest priority (lowest order number)
+    /// 测试CommandLine具有最高优先级（最低顺序号）
+    #[test]
+    fn test_source_type_priority_ordering() {
+        assert!(PropertySourceType::CommandLine.default_order() < PropertySourceType::SystemEnvironment.default_order());
+        assert!(PropertySourceType::SystemEnvironment.default_order() < PropertySourceType::ApplicationProperties.default_order());
+        assert!(PropertySourceType::ApplicationProperties.default_order() < PropertySourceType::Custom.default_order());
+    }
+
+    // ============================================================
+    // PropertySource creation and operations tests / PropertySource创建和操作测试
+    // ============================================================
+
+    /// Test creating a new PropertySource and verify inferred type
+    /// 测试创建新的PropertySource并验证推断的类型
+    #[test]
+    fn test_new_property_source() {
+        let source = PropertySource::new("test-source");
+        assert_eq!(source.name(), "test-source");
+        assert_eq!(source.source_type(), PropertySourceType::Custom);
+        assert!(source.is_empty());
+        assert_eq!(source.len(), 0);
+        assert!(source.file_path().is_none());
+    }
+
+    /// Test infer source type from name: command line
+    /// 测试从名称推断源类型：命令行
+    #[test]
+    fn test_infer_source_type_command_line() {
+        let source = PropertySource::new("commandArgs");
+        assert_eq!(source.source_type(), PropertySourceType::CommandLine);
+    }
+
+    /// Test infer source type from name: environment
+    /// 测试从名称推断源类型：环境变量
+    #[test]
+    fn test_infer_source_type_environment() {
+        let source = PropertySource::new("envVars");
+        assert_eq!(source.source_type(), PropertySourceType::SystemEnvironment);
+    }
+
+    /// Test infer source type from name: YAML
+    /// 测试从名称推断源类型：YAML
+    #[test]
+    fn test_infer_source_type_yaml() {
+        let source = PropertySource::new("application-yaml");
+        assert_eq!(source.source_type(), PropertySourceType::ApplicationYaml);
+    }
+
+    /// Test infer source type from name: TOML
+    /// 测试从名称推断源类型：TOML
+    #[test]
+    fn test_infer_source_type_toml() {
+        let source = PropertySource::new("config.toml");
+        assert_eq!(source.source_type(), PropertySourceType::ApplicationToml);
+    }
+
+    /// Test infer source type from name: properties
+    /// 测试从名称推断源类型：properties
+    #[test]
+    fn test_infer_source_type_properties() {
+        let source = PropertySource::new("app-properties");
+        assert_eq!(source.source_type(), PropertySourceType::ApplicationProperties);
+    }
+
+    /// Test infer source type from name: external
+    /// 测试从名称推断源类型：external
+    #[test]
+    fn test_infer_source_type_external() {
+        let source = PropertySource::new("external-config");
+        assert_eq!(source.source_type(), PropertySourceType::External);
+    }
+
+    /// Test PropertySource::with_map creation
+    /// 测试PropertySource::with_map创建
+    #[test]
+    fn test_with_map() {
+        let mut map = HashMap::new();
+        map.insert("key1".to_string(), Value::string("value1"));
+        map.insert("key2".to_string(), Value::integer(42));
+
+        let source = PropertySource::with_map("test-map", map);
+        assert_eq!(source.len(), 2);
+        assert!(source.contains_key("key1"));
+        assert!(source.contains_key("key2"));
+        assert_eq!(source.get("key1").unwrap().as_str(), Some("value1"));
+        assert_eq!(source.get("key2").unwrap().as_i64(), Some(42));
+    }
+
+    /// Test put, get, contains_key, remove operations
+    /// 测试put、get、contains_key、remove操作
+    #[test]
+    fn test_put_get_remove() {
+        let mut source = PropertySource::new("test");
+        assert!(!source.contains_key("name"));
+
+        source.put("name", "nexus");
+        assert!(source.contains_key("name"));
+        assert_eq!(source.get("name").unwrap().as_str(), Some("nexus"));
+
+        // Overwrite existing key
+        source.put("name", "updated");
+        assert_eq!(source.get("name").unwrap().as_str(), Some("updated"));
+
+        // Remove key
+        let removed = source.remove("name");
+        assert_eq!(removed.unwrap().as_str(), Some("updated"));
+        assert!(!source.contains_key("name"));
+    }
+
+    /// Test keys and iter methods
+    /// 测试keys和iter方法
+    #[test]
+    fn test_keys_and_iter() {
+        let mut source = PropertySource::new("test");
+        source.put("a", 1);
+        source.put("b", 2);
+        source.put("c", 3);
+
+        let keys: Vec<&String> = source.keys().collect();
+        assert_eq!(keys.len(), 3);
+
+        let entries: Vec<_> = source.iter().collect();
+        assert_eq!(entries.len(), 3);
+    }
+
+    /// Test set_order and set_file_path
+    /// 测试set_order和set_file_path
+    #[test]
+    fn test_order_and_file_path() {
+        let mut source = PropertySource::new("test");
+        assert_eq!(source.order(), PropertySourceType::Custom.default_order());
+
+        source.set_order(50);
+        assert_eq!(source.order(), 50);
+
+        source.set_file_path(PathBuf::from("/etc/nexus/app.yaml"));
+        assert_eq!(source.file_path(), Some(&PathBuf::from("/etc/nexus/app.yaml")));
+    }
+
+    /// Test merge of two property sources
+    /// 测试两个属性源的合并
+    #[test]
+    fn test_merge() {
+        let mut source1 = PropertySource::new("source1");
+        source1.put("shared", "from_source1");
+        source1.put("only_in_1", "value1");
+
+        let mut source2 = PropertySource::new("source2");
+        source2.put("shared", "from_source2");
+        source2.put("only_in_2", "value2");
+
+        source1.merge(source2);
+        // Merged source should have 3 keys
+        assert_eq!(source1.len(), 3);
+        // source2's "shared" overwrites source1's "shared"
+        assert_eq!(source1.get("shared").unwrap().as_str(), Some("from_source2"));
+        assert_eq!(source1.get("only_in_1").unwrap().as_str(), Some("value1"));
+        assert_eq!(source1.get("only_in_2").unwrap().as_str(), Some("value2"));
+    }
+
+    /// Test Default trait for PropertySource
+    /// 测试PropertySource的Default trait
+    #[test]
+    fn test_default() {
+        let source = PropertySource::default();
+        assert_eq!(source.name(), "default");
+        assert!(source.is_empty());
+    }
+
+    // ============================================================
+    // PropertySourceBuilder tests / 属性源构建器测试
+    // ============================================================
+
+    /// Test PropertySourceBuilder fluent API
+    /// 测试PropertySourceBuilder流畅API
+    #[test]
+    fn test_builder_basic() {
+        let source = PropertySourceBuilder::new("built-source")
+            .source_type(PropertySourceType::CommandLine)
+            .order(50)
+            .file_path(PathBuf::from("/tmp/config"))
+            .build();
+
+        assert_eq!(source.name(), "built-source");
+        assert_eq!(source.source_type(), PropertySourceType::CommandLine);
+        assert_eq!(source.order(), 50);
+        assert_eq!(source.file_path(), Some(&PathBuf::from("/tmp/config")));
+    }
+
+    /// Test PropertySourceBuilder put and put_all
+    /// 测试PropertySourceBuilder的put和put_all方法
+    #[test]
+    fn test_builder_put_properties() {
+        let mut builder = PropertySourceBuilder::new("props");
+        builder.put("key1", "value1");
+        builder.put("key2", 42);
+
+        let mut extra = HashMap::new();
+        extra.insert("key3".to_string(), Value::bool(true));
+        builder.put_all(extra);
+
+        let source = builder.build();
+        assert_eq!(source.len(), 3);
+        assert_eq!(source.get("key1").unwrap().as_str(), Some("value1"));
+        assert_eq!(source.get("key2").unwrap().as_i64(), Some(42));
+        assert_eq!(source.get("key3").unwrap().as_bool(), Some(true));
+    }
+}

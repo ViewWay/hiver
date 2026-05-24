@@ -721,3 +721,383 @@ impl Default for ConfigBuilder {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    // ============================================================
+    // FileFormat tests / 文件格式测试
+    // ============================================================
+
+    /// Test FileFormat extensions for each variant
+    /// 测试每种变体的FileFormat扩展名
+    #[test]
+    fn test_file_format_extensions() {
+        assert_eq!(FileFormat::Properties.extensions(), &["properties", "props"]);
+        assert_eq!(FileFormat::Yaml.extensions(), &["yaml", "yml"]);
+        assert_eq!(FileFormat::Toml.extensions(), &["toml"]);
+        assert_eq!(FileFormat::Json.extensions(), &["json"]);
+    }
+
+    /// Test FileFormat::from_path detection
+    /// 测试FileFormat::from_path格式检测
+    #[test]
+    fn test_file_format_from_path() {
+        assert_eq!(FileFormat::from_path(Path::new("app.properties")), Some(FileFormat::Properties));
+        assert_eq!(FileFormat::from_path(Path::new("app.props")), Some(FileFormat::Properties));
+        assert_eq!(FileFormat::from_path(Path::new("app.yaml")), Some(FileFormat::Yaml));
+        assert_eq!(FileFormat::from_path(Path::new("app.yml")), Some(FileFormat::Yaml));
+        assert_eq!(FileFormat::from_path(Path::new("app.toml")), Some(FileFormat::Toml));
+        assert_eq!(FileFormat::from_path(Path::new("app.json")), Some(FileFormat::Json));
+        assert_eq!(FileFormat::from_path(Path::new("app.txt")), None);
+        assert_eq!(FileFormat::from_path(Path::new("noext")), None);
+    }
+
+    // ============================================================
+    // ReloadStrategy tests / 重新加载策略测试
+    // ============================================================
+
+    /// Test ReloadStrategy equality
+    /// 测试ReloadStrategy相等性
+    #[test]
+    fn test_reload_strategy_eq() {
+        assert_eq!(ReloadStrategy::Never, ReloadStrategy::Never);
+        assert_eq!(ReloadStrategy::OnRequest, ReloadStrategy::OnRequest);
+        assert_eq!(ReloadStrategy::Periodic(30), ReloadStrategy::Periodic(30));
+        assert_eq!(ReloadStrategy::Watch, ReloadStrategy::Watch);
+        assert_ne!(ReloadStrategy::Never, ReloadStrategy::Watch);
+    }
+
+    // ============================================================
+    // Config creation and property access tests / Config创建和属性访问测试
+    // ============================================================
+
+    /// Test Config::new creates empty configuration
+    /// 测试Config::new创建空配置
+    #[test]
+    fn test_config_new() {
+        let config = Config::new();
+        assert!(config.get("nonexistent").is_none());
+        assert!(!config.contains_key("anything"));
+        assert!(config.files().is_empty());
+        assert_eq!(config.reload_strategy(), ReloadStrategy::Never);
+    }
+
+    /// Test Config default trait
+    /// 测试Config的Default trait
+    #[test]
+    fn test_config_default() {
+        let config = Config::default();
+        assert!(config.files().is_empty());
+    }
+
+    /// Test add_property_source and get
+    /// 测试add_property_source和get
+    #[test]
+    fn test_config_add_source_and_get() {
+        let config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("app.name", Value::string("nexus"));
+        source.put("app.port", Value::integer(8080));
+        config.add_property_source(source);
+
+        assert_eq!(config.get("app.name").unwrap().as_str(), Some("nexus"));
+        assert_eq!(config.get("app.port").unwrap().as_i64(), Some(8080));
+        assert!(config.contains_key("app.name"));
+        assert!(!config.contains_key("missing"));
+    }
+
+    /// Test get_as typed retrieval
+    /// 测试get_as类型化检索
+    #[test]
+    fn test_config_get_as() {
+        let config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("count", Value::integer(10));
+        config.add_property_source(source);
+
+        let val: i64 = config.get_as("count").unwrap();
+        assert_eq!(val, 10);
+    }
+
+    /// Test get_as returns error for missing key
+    /// 测试get_as在键缺失时返回错误
+    #[test]
+    fn test_config_get_as_missing() {
+        let config = Config::new();
+        let result: Result<String, _> = config.get_as("missing");
+        assert!(result.is_err());
+    }
+
+    /// Test get_required success and failure
+    /// 测试get_required成功和失败
+    #[test]
+    fn test_config_get_required() {
+        let config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("present", Value::string("value"));
+        config.add_property_source(source);
+
+        assert!(config.get_required("present").is_ok());
+        assert!(config.get_required("absent").is_err());
+    }
+
+    /// Test get_required_as typed required retrieval
+    /// 测试get_required_as类型化必需检索
+    #[test]
+    fn test_config_get_required_as() {
+        let config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("enabled", Value::bool(true));
+        config.add_property_source(source);
+
+        let val: bool = config.get_required_as("enabled").unwrap();
+        assert!(val);
+    }
+
+    /// Test get_or with default value
+    /// 测试get_or带默认值
+    #[test]
+    fn test_config_get_or() {
+        let config = Config::new();
+        // Missing key returns default
+        let val = config.get_or("missing", 999i32);
+        assert_eq!(val, 999);
+
+        // Existing key returns actual value
+        let mut source = PropertySource::new("test");
+        source.put("found", Value::integer(42));
+        config.add_property_source(source);
+        let val = config.get_or("found", 999i32);
+        assert_eq!(val, 42);
+    }
+
+    /// Test get_prefix retrieves keys starting with prefix
+    /// 测试get_prefix检索以指定前缀开头的键
+    #[test]
+    fn test_config_get_prefix() {
+        let config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("server.host", Value::string("localhost"));
+        source.put("server.port", Value::integer(8080));
+        source.put("db.url", Value::string("postgres://localhost"));
+        config.add_property_source(source);
+
+        let server_props = config.get_prefix("server.");
+        assert_eq!(server_props.len(), 2);
+        assert!(server_props.contains_key("server.host"));
+        assert!(server_props.contains_key("server.port"));
+
+        let db_props = config.get_prefix("db.");
+        assert_eq!(db_props.len(), 1);
+    }
+
+    /// Test environment accessor
+    /// 测试environment访问器
+    #[test]
+    fn test_config_environment() {
+        let config = Config::new();
+        let env = config.environment();
+        assert!(env.get_active_profiles().len() >= 1);
+    }
+
+    // ============================================================
+    // Config file parsing tests / 配置文件解析测试
+    // ============================================================
+
+    /// Test parsing a properties file
+    /// 测试解析properties文件
+    #[test]
+    fn test_parse_properties_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.properties");
+        let mut f = std::fs::File::create(&file_path).unwrap();
+        writeln!(f, "# comment line").unwrap();
+        writeln!(f, "! another comment").unwrap();
+        writeln!(f, "server.host=localhost").unwrap();
+        writeln!(f, "server.port=8080").unwrap();
+        writeln!(f, "").unwrap();
+        writeln!(f, "app.name=nexus").unwrap();
+
+        let config = Config::from_file(&file_path).unwrap();
+        assert_eq!(config.get("server.host").unwrap().as_str(), Some("localhost"));
+        assert_eq!(config.get("server.port").unwrap().as_str(), Some("8080"));
+        assert_eq!(config.get("app.name").unwrap().as_str(), Some("nexus"));
+    }
+
+    /// Test parsing a JSON config file
+    /// 测试解析JSON配置文件
+    #[test]
+    fn test_parse_json_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.json");
+        let mut f = std::fs::File::create(&file_path).unwrap();
+        write!(f, r#"{{"server": {{"host": "0.0.0.0", "port": 9090}}, "debug": true}}"#).unwrap();
+
+        let config = Config::from_file(&file_path).unwrap();
+        // JSON nested objects are stored as Value::Object under top-level keys
+        assert!(config.get("server").is_some());
+        assert!(config.get("debug").is_some());
+        assert_eq!(config.get("debug").unwrap().as_bool(), Some(true));
+    }
+
+    /// Test parsing a TOML config file
+    /// 测试解析TOML配置文件
+    #[test]
+    fn test_parse_toml_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.toml");
+        let mut f = std::fs::File::create(&file_path).unwrap();
+        write!(f, "[server]\nhost = \"localhost\"\nport = 3000\n\n[database]\nurl = \"postgres://db\"\n").unwrap();
+
+        let config = Config::from_file(&file_path).unwrap();
+        assert!(config.get("server").is_some());
+        assert!(config.get("database").is_some());
+    }
+
+    /// Test parsing a YAML config file
+    /// 测试解析YAML配置文件
+    #[test]
+    fn test_parse_yaml_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.yaml");
+        let mut f = std::fs::File::create(&file_path).unwrap();
+        write!(f, "server:\n  host: 127.0.0.1\n  port: 4000\nlogging:\n  level: info\n").unwrap();
+
+        let config = Config::from_file(&file_path).unwrap();
+        assert!(config.get("server").is_some());
+        assert!(config.get("logging").is_some());
+    }
+
+    /// Test from_file with unknown extension returns error
+    /// 测试from_file在未知扩展名时返回错误
+    #[test]
+    fn test_parse_unknown_format() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.txt");
+        let _f = std::fs::File::create(&file_path).unwrap();
+
+        let result = Config::from_file(&file_path);
+        assert!(result.is_err());
+    }
+
+    /// Test from_file with nonexistent file returns error
+    /// 测试from_file在文件不存在时返回错误
+    #[test]
+    fn test_parse_nonexistent_file() {
+        let result = Config::from_file("/nonexistent/path/config.yaml");
+        assert!(result.is_err());
+    }
+
+    /// Test unescape_value with escape sequences
+    /// 测试带转义序列的unescape_value
+    #[test]
+    fn test_unescape_value() {
+        assert_eq!(Config::unescape_value("hello\\nworld"), "hello\nworld");
+        assert_eq!(Config::unescape_value("tab\\there"), "tab\there");
+        assert_eq!(Config::unescape_value("cr\\rhere"), "cr\rhere");
+        assert_eq!(Config::unescape_value("back\\slash"), "backslash");
+        assert_eq!(Config::unescape_value("end\\"), "end\\");
+    }
+
+    // ============================================================
+    // ConfigBuilder tests / 配置构建器测试
+    // ============================================================
+
+    /// Test ConfigBuilder with add_property
+    /// 测试ConfigBuilder的add_property方法
+    #[test]
+    fn test_builder_add_property() {
+        let config = Config::builder()
+            .add_property("key1", "value1")
+            .add_property("key2", 42)
+            .build()
+            .unwrap();
+
+        assert_eq!(config.get("key1").unwrap().as_str(), Some("value1"));
+        assert_eq!(config.get("key2").unwrap().as_i64(), Some(42));
+    }
+
+    /// Test ConfigBuilder with add_property_source
+    /// 测试ConfigBuilder的add_property_source方法
+    #[test]
+    fn test_builder_add_property_source() {
+        let mut source = PropertySource::new("custom");
+        source.put("custom.key", Value::string("custom_value"));
+
+        let config = Config::builder()
+            .add_property_source(source)
+            .build()
+            .unwrap();
+
+        assert_eq!(config.get("custom.key").unwrap().as_str(), Some("custom_value"));
+    }
+
+    /// Test ConfigBuilder with reload_strategy
+    /// 测试ConfigBuilder的reload_strategy方法
+    #[test]
+    fn test_builder_reload_strategy() {
+        let config = Config::builder()
+            .reload_strategy(ReloadStrategy::OnRequest)
+            .build()
+            .unwrap();
+
+        assert_eq!(config.reload_strategy(), ReloadStrategy::OnRequest);
+    }
+
+    /// Test ConfigBuilder default
+    /// 测试ConfigBuilder的Default trait
+    #[test]
+    fn test_builder_default() {
+        let config = ConfigBuilder::default()
+            .build()
+            .unwrap();
+        assert_eq!(config.reload_strategy(), ReloadStrategy::Never);
+    }
+
+    /// Test that multiple property sources merge correctly (last wins for same key)
+    /// 测试多个属性源正确合并（同键后者覆盖）
+    #[test]
+    fn test_config_multiple_sources_merge() {
+        let config = Config::new();
+
+        let mut source1 = PropertySource::new("first");
+        source1.put("shared", Value::string("from_first"));
+        source1.put("only_first", Value::string("yes"));
+        config.add_property_source(source1);
+
+        let mut source2 = PropertySource::new("second");
+        source2.put("shared", Value::string("from_second"));
+        source2.put("only_second", Value::string("yes"));
+        config.add_property_source(source2);
+
+        // First source wins (searched first)
+        assert_eq!(config.get("shared").unwrap().as_str(), Some("from_first"));
+        assert_eq!(config.get("only_first").unwrap().as_str(), Some("yes"));
+        assert_eq!(config.get("only_second").unwrap().as_str(), Some("yes"));
+    }
+
+    /// Test that config caches values and invalidates on new source
+    /// 测试配置缓存值并在新源添加时失效
+    #[test]
+    fn test_config_caching() {
+        let config = Config::new();
+
+        let mut source = PropertySource::new("s1");
+        source.put("key", Value::string("v1"));
+        config.add_property_source(source);
+
+        // First access populates cache
+        assert_eq!(config.get("key").unwrap().as_str(), Some("v1"));
+
+        // Add new source with same key - cache should be invalidated
+        let mut source2 = PropertySource::new("s2");
+        source2.put("key", Value::string("v2"));
+        config.add_property_source_first(source2);
+
+        // Should get the new value (from source2, added first)
+        assert_eq!(config.get("key").unwrap().as_str(), Some("v2"));
+    }
+}

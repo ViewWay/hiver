@@ -382,11 +382,152 @@ mod tests {
         assert!(registry.is_empty());
     }
 
+    /// Test registry get returns registered config
+    /// 测试注册表get返回已注册的配置
+    #[test]
+    fn test_registry_get() {
+        let registry = PropertiesConfigRegistry::new();
+        let config = TestConfig {
+            value: "hello".to_string(),
+        };
+        registry.register(config);
+
+        let retrieved = registry.get::<TestConfig>();
+        assert!(retrieved.is_some());
+        assert_eq!(retrieved.unwrap().value, "hello");
+    }
+
+    /// Test registry get returns None for unregistered type
+    /// 测试注册表get对未注册类型返回None
+    #[test]
+    fn test_registry_get_unregistered() {
+        let registry = PropertiesConfigRegistry::new();
+        assert!(registry.get::<TestConfig>().is_none());
+    }
+
+    /// Test registry remove
+    /// 测试注册表移除
+    #[test]
+    fn test_registry_remove() {
+        let registry = PropertiesConfigRegistry::new();
+        registry.register(TestConfig {
+            value: "to_remove".to_string(),
+        });
+        assert!(registry.contains::<TestConfig>());
+        assert!(registry.remove::<TestConfig>());
+        assert!(!registry.contains::<TestConfig>());
+    }
+
+    /// Test registry remove returns false for absent type
+    /// 测试注册表移除不存在的类型返回false
+    #[test]
+    fn test_registry_remove_absent() {
+        let registry = PropertiesConfigRegistry::new();
+        assert!(!registry.remove::<TestConfig>());
+    }
+
+    /// Test registry len and is_empty
+    /// 测试注册表len和is_empty
+    #[test]
+    fn test_registry_len_and_empty() {
+        let registry = PropertiesConfigRegistry::new();
+        assert!(registry.is_empty());
+        assert_eq!(registry.len(), 0);
+
+        registry.register(TestConfig { value: "a".to_string() });
+        assert!(!registry.is_empty());
+        assert_eq!(registry.len(), 1);
+
+        registry.register(TestConfig { value: "b".to_string() });
+        // Same TypeId, so overwrites
+        assert_eq!(registry.len(), 1);
+    }
+
+    /// Test registry default trait
+    /// 测试注册表Default trait
+    #[test]
+    fn test_registry_default() {
+        let registry = PropertiesConfigRegistry::default();
+        assert!(registry.is_empty());
+    }
+
     #[test]
     fn test_nested_properties() {
         assert_eq!(NestedProperties::flatten_key("server.port"), "server_port");
         assert_eq!(NestedProperties::nest_key("server_port"), "server.port");
         assert_eq!(NestedProperties::extract_prefix("server.port"), Some("server".to_string()));
         assert_eq!(NestedProperties::extract_suffix("server.port"), Some("port".to_string()));
+    }
+
+    /// Test NestedProperties::extract_prefix on key without dot
+    /// 测试NestedProperties::extract_prefix对无点号键的处理
+    #[test]
+    fn test_nested_properties_no_dot() {
+        assert_eq!(NestedProperties::extract_prefix("simple"), None);
+        assert_eq!(NestedProperties::extract_suffix("simple"), Some("simple".to_string()));
+    }
+
+    /// Test NestedProperties with deeply nested keys
+    /// 测试NestedProperties对深层嵌套键的处理
+    #[test]
+    fn test_nested_properties_deep() {
+        assert_eq!(
+            NestedProperties::extract_prefix("a.b.c"),
+            Some("a.b".to_string())
+        );
+        assert_eq!(
+            NestedProperties::extract_suffix("a.b.c"),
+            Some("c".to_string())
+        );
+        assert_eq!(
+            NestedProperties::flatten_key("a.b.c"),
+            "a_b_c".to_string()
+        );
+    }
+
+    /// Test PropertiesConfigBuilder::new and default
+    /// 测试PropertiesConfigBuilder::new和default
+    #[test]
+    fn test_properties_config_builder_new() {
+        let builder: PropertiesConfigBuilder<TestConfig> = PropertiesConfigBuilder::new();
+        // Just verify construction succeeds
+        assert!(format!("{:?}", std::any::type_name::<PropertiesConfigBuilder<TestConfig>>()).len() > 0);
+    }
+
+    /// Test PropertiesConfig load_from_config returns error for empty config
+    /// 测试空配置时PropertiesConfig load_from_config返回错误
+    #[test]
+    fn test_properties_config_load_from_config_empty() {
+        let config = Config::new();
+        let result = TestConfig::load_from_config(&config);
+        assert!(result.is_err());
+    }
+
+    /// Test PropertiesConfig load_or_default with a Default-able type
+    /// 测试带Default能力的类型的PropertiesConfig load_or_default
+    #[test]
+    fn test_properties_config_load_or_default_with_default() {
+        #[derive(Debug, Clone, Default)]
+        struct DefaultableConfig {
+            name: String,
+        }
+
+        impl PropertiesConfig for DefaultableConfig {
+            fn prefix() -> &'static str {
+                "defaultable"
+            }
+        }
+
+        let config = Config::new();
+        let result = DefaultableConfig::load_or_default(&config);
+        assert_eq!(result.name, "");
+    }
+
+    /// Test PropertiesConfig validate default implementation returns Ok
+    /// 测试PropertiesConfig validate默认实现返回Ok
+    #[test]
+    fn test_properties_config_validate() {
+        let tc = TestConfig { value: "test".to_string() };
+        assert!(tc.validate().is_ok());
     }
 }

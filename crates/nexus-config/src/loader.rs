@@ -542,4 +542,145 @@ mod tests {
 
         assert_eq!(loader.profiles.len(), 2); // "default" + "test"
     }
+
+    /// Test ConfigLoader::new has sensible defaults
+    /// 测试ConfigLoader::new有合理的默认值
+    #[test]
+    fn test_loader_new_defaults() {
+        let loader = ConfigLoader::new();
+        assert_eq!(loader.search_paths.len(), 3);
+        assert_eq!(loader.file_names.len(), 1);
+        assert_eq!(loader.file_names[0], "application");
+        assert_eq!(loader.profiles.len(), 1);
+        assert_eq!(loader.profiles[0], "default");
+        assert!(loader.load_env);
+        assert!(loader.load_args);
+    }
+
+    /// Test ConfigLoader default trait
+    /// 测试ConfigLoader的Default trait
+    #[test]
+    fn test_loader_default() {
+        let loader = ConfigLoader::default();
+        assert_eq!(loader.search_paths.len(), 3);
+    }
+
+    /// Test ConfigLoaderBuilder search_paths bulk add
+    /// 测试ConfigLoaderBuilder批量添加搜索路径
+    #[test]
+    fn test_loader_builder_search_paths() {
+        let loader = ConfigLoaderBuilder::new()
+            .search_paths(vec![PathBuf::from("/a"), PathBuf::from("/b")])
+            .build();
+        // Default 3 paths + 2 added = 5
+        assert!(loader.search_paths.len() >= 5);
+    }
+
+    /// Test ConfigLoaderBuilder file_names bulk add
+    /// 测试ConfigLoaderBuilder批量添加文件名
+    #[test]
+    fn test_loader_builder_file_names() {
+        let loader = ConfigLoaderBuilder::new()
+            .file_names(vec!["custom".to_string(), "override".to_string()])
+            .build();
+        // Default 1 name + 2 added = 3
+        assert!(loader.file_names.len() >= 3);
+    }
+
+    /// Test ConfigLoaderBuilder profiles bulk add
+    /// 测试ConfigLoaderBuilder批量添加配置文件
+    #[test]
+    fn test_loader_builder_profiles() {
+        let loader = ConfigLoaderBuilder::new()
+            .profiles(vec!["staging".to_string(), "prod".to_string()])
+            .build();
+        // Default "default" + 2 = 3
+        assert!(loader.profiles.len() >= 3);
+    }
+
+    /// Test ConfigLoaderBuilder load_env(false) and load_args(false)
+    /// 测试ConfigLoaderBuilder禁用环境变量和命令行参数
+    #[test]
+    fn test_loader_builder_disable_env_and_args() {
+        let loader = ConfigLoaderBuilder::new()
+            .load_env(false)
+            .load_args(false)
+            .build();
+        assert!(!loader.load_env);
+        assert!(!loader.load_args);
+    }
+
+    /// Test ConfigLoader add methods chain correctly
+    /// 测试ConfigLoader的add方法链式调用
+    #[test]
+    fn test_loader_add_methods() {
+        let loader = ConfigLoader::new()
+            .add_search_path("/custom/path")
+            .add_file_name("myapp")
+            .add_profile("dev");
+
+        assert!(loader.search_paths.len() > 3);
+        assert!(loader.file_names.contains(&"myapp".to_string()));
+        assert!(loader.profiles.contains(&"dev".to_string()));
+    }
+
+    /// Test ConfigLoaderBuilder::new() default
+    /// 测试ConfigLoaderBuilder的Default trait
+    #[test]
+    fn test_loader_builder_default() {
+        let loader = ConfigLoaderBuilder::default().build();
+        assert_eq!(loader.search_paths.len(), 3);
+    }
+
+    /// Test RequiredValidator post-processor succeeds when all keys present
+    /// 测试RequiredValidator后处理器在所有键都存在时成功
+    #[test]
+    fn test_required_validator_pass() {
+        let mut config = Config::new();
+        let mut source = PropertySource::new("test");
+        source.put("db.url", Value::string("postgres://localhost"));
+        source.put("db.user", Value::string("admin"));
+        config.add_property_source(source);
+
+        let validator = StandardPostProcessors::required_validator(vec![
+            "db.url".to_string(),
+            "db.user".to_string(),
+        ]);
+        assert!(validator.post_process(&mut config).is_ok());
+    }
+
+    /// Test RequiredValidator post-processor fails when key missing
+    /// 测试RequiredValidator后处理器在键缺失时失败
+    #[test]
+    fn test_required_validator_fail() {
+        let mut config = Config::new();
+        let source = PropertySource::new("test");
+        config.add_property_source(source);
+
+        let validator = StandardPostProcessors::required_validator(vec![
+            "missing.key".to_string(),
+        ]);
+        assert!(validator.post_process(&mut config).is_err());
+    }
+
+    /// Test PlaceholderExpander post-processor runs without error
+    /// 测试PlaceholderExpander后处理器无错误运行
+    #[test]
+    fn test_placeholder_expander() {
+        let mut config = Config::new();
+        let expander = StandardPostProcessors::placeholder_expander();
+        assert!(expander.post_process(&mut config).is_ok());
+    }
+
+    /// Test ConfigLoader load with no existing files succeeds (graceful)
+    /// 测试ConfigLoader在无现有文件时加载成功（优雅处理）
+    #[test]
+    fn test_loader_load_no_files() {
+        let result = ConfigLoaderBuilder::new()
+            .search_path("/nonexistent_nexus_path")
+            .load_env(false)
+            .load_args(false)
+            .load();
+        assert!(result.is_ok());
+    }
 }

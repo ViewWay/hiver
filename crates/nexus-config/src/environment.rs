@@ -322,3 +322,318 @@ impl Default for Environment {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ============================================================
+    // Profile tests / Profile测试
+    // ============================================================
+
+    /// Test Profile creation and name accessor
+    /// 测试Profile创建和名称访问器
+    #[test]
+    fn test_profile_new() {
+        let p = Profile::new("custom");
+        assert_eq!(p.name(), "custom");
+        assert!(!p.is_default());
+    }
+
+    /// Test Profile preset constructors
+    /// 测试Profile预设构造函数
+    #[test]
+    fn test_profile_presets() {
+        assert_eq!(Profile::dev().name(), "dev");
+        assert_eq!(Profile::test().name(), "test");
+        assert_eq!(Profile::staging().name(), "staging");
+        assert_eq!(Profile::prod().name(), "prod");
+    }
+
+    /// Test Profile::is_default
+    /// 测试Profile::is_default
+    #[test]
+    fn test_profile_is_default() {
+        assert!(Profile::new("default").is_default());
+        assert!(!Profile::dev().is_default());
+    }
+
+    /// Test Profile Display trait
+    /// 测试Profile的Display trait
+    #[test]
+    fn test_profile_display() {
+        assert_eq!(format!("{}", Profile::dev()), "dev");
+        assert_eq!(format!("{}", Profile::new("staging")), "staging");
+    }
+
+    /// Test Profile From<String> and From<&str>
+    /// 测试Profile的From<String>和From<&str>
+    #[test]
+    fn test_profile_from() {
+        let p1: Profile = "test".into();
+        let p2: Profile = String::from("prod").into();
+        assert_eq!(p1.name(), "test");
+        assert_eq!(p2.name(), "prod");
+    }
+
+    /// Test Profile equality and ordering
+    /// 测试Profile的相等性和排序
+    #[test]
+    fn test_profile_eq_and_ord() {
+        assert_eq!(Profile::dev(), Profile::new("dev"));
+        assert_ne!(Profile::dev(), Profile::prod());
+        assert!(Profile::dev() < Profile::prod());
+    }
+
+    // ============================================================
+    // ActiveProfiles tests / ActiveProfiles测试
+    // ============================================================
+
+    /// Test ActiveProfiles default starts with dev
+    /// 测试ActiveProfiles默认以dev开始
+    #[test]
+    fn test_active_profiles_default() {
+        let ap = ActiveProfiles::new();
+        assert_eq!(ap.active().len(), 1);
+        assert_eq!(ap.active()[0], Profile::dev());
+    }
+
+    /// Test set_active replaces profiles
+    /// 测试set_active替换配置文件
+    #[test]
+    fn test_active_profiles_set_active() {
+        let mut ap = ActiveProfiles::new();
+        ap.set_active(vec![Profile::prod()]);
+        assert_eq!(ap.active().len(), 1);
+        assert_eq!(ap.active()[0], Profile::prod());
+    }
+
+    /// Test add_active does not duplicate
+    /// 测试add_active不会重复添加
+    #[test]
+    fn test_active_profiles_add_no_duplicate() {
+        let mut ap = ActiveProfiles::new();
+        ap.add_active(Profile::dev());
+        assert_eq!(ap.active().len(), 1); // Still just dev
+    }
+
+    /// Test add_active adds new profile
+    /// 测试add_active添加新配置文件
+    #[test]
+    fn test_active_profiles_add_new() {
+        let mut ap = ActiveProfiles::new();
+        ap.add_active(Profile::prod());
+        assert_eq!(ap.active().len(), 2);
+    }
+
+    /// Test is_active checks both active and default profiles
+    /// 测试is_active同时检查活动配置文件和默认配置文件
+    #[test]
+    fn test_active_profiles_is_active() {
+        let ap = ActiveProfiles::new();
+        assert!(ap.is_active(&Profile::dev()));
+        assert!(ap.is_active(&Profile::new("default"))); // default profile
+        assert!(!ap.is_active(&Profile::prod()));
+    }
+
+    /// Test set_defaults and defaults
+    /// 测试set_defaults和defaults
+    #[test]
+    fn test_active_profiles_defaults() {
+        let mut ap = ActiveProfiles::new();
+        assert_eq!(ap.defaults().len(), 1);
+        assert_eq!(ap.defaults()[0], Profile::new("default"));
+
+        ap.set_defaults(vec![Profile::new("base")]);
+        assert_eq!(ap.defaults().len(), 1);
+        assert_eq!(ap.defaults()[0], Profile::new("base"));
+    }
+
+    // ============================================================
+    // Environment tests / Environment测试
+    // ============================================================
+
+    /// Test Environment creation
+    /// 测试Environment创建
+    #[test]
+    fn test_environment_new() {
+        let env = Environment::new();
+        assert!(env.get_active_profiles().len() >= 1); // default dev
+        assert!(env.get_property_sources().is_empty());
+    }
+
+    /// Test add_property_source and get_property
+    /// 测试add_property_source和get_property
+    #[test]
+    fn test_environment_add_and_get() {
+        let env = Environment::new();
+        let mut source = PropertySource::new("test");
+        source.put("server.port", Value::integer(8080));
+        source.put("server.host", Value::string("localhost"));
+        env.add_property_source(source);
+
+        assert_eq!(env.get_property("server.port").unwrap().as_i64(), Some(8080));
+        assert_eq!(env.get_property("server.host").unwrap().as_str(), Some("localhost"));
+        assert!(env.get_property("nonexistent").is_none());
+    }
+
+    /// Test add_property_source_first gives highest priority
+    /// 测试add_property_source_first给予最高优先级
+    #[test]
+    fn test_environment_add_first_priority() {
+        let env = Environment::new();
+
+        let mut source1 = PropertySource::new("source1");
+        source1.put("key", Value::string("from_source1"));
+        env.add_property_source(source1);
+
+        let mut source2 = PropertySource::new("source2");
+        source2.put("key", Value::string("from_source2"));
+        env.add_property_source_first(source2);
+
+        // source2 was added first, so it should be found first
+        assert_eq!(env.get_property("key").unwrap().as_str(), Some("from_source2"));
+    }
+
+    /// Test get_property_as with type conversion
+    /// 测试带类型转换的get_property_as
+    #[test]
+    fn test_environment_get_property_as() {
+        let env = Environment::new();
+        let mut source = PropertySource::new("test");
+        source.put("count", Value::integer(42));
+        env.add_property_source(source);
+
+        let result: i64 = env.get_property_as("count").unwrap();
+        assert_eq!(result, 42);
+    }
+
+    /// Test get_property_as error on missing key
+    /// 测试键缺失时get_property_as返回错误
+    #[test]
+    fn test_environment_get_property_as_missing() {
+        let env = Environment::new();
+        let result: Result<i64, _> = env.get_property_as("missing");
+        assert!(result.is_err());
+    }
+
+    /// Test get_required_property success and failure
+    /// 测试get_required_property成功和失败
+    #[test]
+    fn test_environment_required_property() {
+        let env = Environment::new();
+        let mut source = PropertySource::new("test");
+        source.put("present", Value::string("here"));
+        env.add_property_source(source);
+
+        assert!(env.get_required_property("present").is_ok());
+        assert!(env.get_required_property("absent").is_err());
+    }
+
+    /// Test contains_property
+    /// 测试contains_property
+    #[test]
+    fn test_environment_contains_property() {
+        let env = Environment::new();
+        assert!(!env.contains_property("key"));
+
+        let mut source = PropertySource::new("test");
+        source.put("key", Value::string("value"));
+        env.add_property_source(source);
+        assert!(env.contains_property("key"));
+    }
+
+    /// Test resolve_placeholders replaces ${key} with property value
+    /// 测试resolve_placeholders将${key}替换为属性值
+    #[test]
+    fn test_environment_resolve_placeholders() {
+        let env = Environment::new();
+        let mut source = PropertySource::new("test");
+        source.put("host", Value::string("localhost"));
+        source.put("port", Value::string("8080"));
+        env.add_property_source(source);
+
+        let result = env.resolve_placeholders("server at ${host}:${port}");
+        assert_eq!(result, "server at localhost:8080");
+    }
+
+    /// Test resolve_placeholders leaves unresolved placeholders as-is
+    /// 测试resolve_placeholders保留未解析的占位符不变
+    #[test]
+    fn test_environment_resolve_placeholders_unresolved() {
+        let env = Environment::new();
+        let result = env.resolve_placeholders("missing ${no.key} stays");
+        assert_eq!(result, "missing stays");
+    }
+
+    /// Test set_active_profiles and get_active_profiles
+    /// 测试set_active_profiles和get_active_profiles
+    #[test]
+    fn test_environment_profiles() {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::prod(), Profile::staging()]);
+
+        let profiles = env.get_active_profiles();
+        assert_eq!(profiles.len(), 2);
+        assert!(profiles.contains(&Profile::prod()));
+        assert!(profiles.contains(&Profile::staging()));
+    }
+
+    /// Test add_active_profile
+    /// 测试add_active_profile
+    #[test]
+    fn test_environment_add_profile() {
+        let env = Environment::new();
+        env.add_active_profile(Profile::test());
+
+        let profiles = env.get_active_profiles();
+        assert!(profiles.contains(&Profile::test()));
+    }
+
+    /// Test accepts_profiles
+    /// 测试accepts_profiles
+    #[test]
+    fn test_environment_accepts_profiles() {
+        let env = Environment::new();
+        assert!(env.accepts_profiles(&[Profile::dev()]));
+        assert!(!env.accepts_profiles(&[Profile::prod()]));
+    }
+
+    /// Test get_property_sources returns all sources
+    /// 测试get_property_sources返回所有源
+    #[test]
+    fn test_environment_get_property_sources() {
+        let env = Environment::new();
+        let source1 = PropertySource::new("s1");
+        let source2 = PropertySource::new("s2");
+        env.add_property_source(source1);
+        env.add_property_source(source2);
+
+        let sources = env.get_property_sources();
+        assert_eq!(sources.len(), 2);
+    }
+
+    /// Test get_env retrieves system environment variable
+    /// 测试get_env获取系统环境变量
+    #[test]
+    fn test_environment_get_env() {
+        let env = Environment::new();
+        // PATH should exist on any system
+        assert!(env.get_env("PATH").is_some());
+        // A made-up variable should not exist
+        assert!(env.get_env("NEXUS_TEST_NONEXISTENT_VAR_12345").is_none());
+    }
+
+    /// Test get_required_property_as with typed value
+    /// 测试带类型值的get_required_property_as
+    #[test]
+    fn test_environment_get_required_property_as() {
+        let env = Environment::new();
+        let mut source = PropertySource::new("test");
+        source.put("ratio", Value::float(2.5));
+        env.add_property_source(source);
+
+        let result: f64 = env.get_required_property_as("ratio").unwrap();
+        assert!((result - 2.5).abs() < f64::EPSILON);
+    }
+}
