@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 tokio = { workspace = true, features = ["full"] }
-sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "postgres", "mysql", "chrono"] }
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "postgres", "mysql", "chrono", "any"] }
 async-trait = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 chrono = { workspace = true }

@@ -40,6 +40,7 @@
 #[cfg(test)]
 mod tests;
 
+pub mod dialect;
 pub mod error;
 pub mod migration;
 pub mod config;
@@ -47,6 +48,7 @@ pub mod flyway;
 pub mod info;
 
 pub use config::{Config, ConfigBuilder};
+pub use dialect::DatabaseType;
 pub use error::{FlywayError, Result};
 pub use flyway::Flyway;
 pub use info::{MigrationEntry, MigrationResult, Info};

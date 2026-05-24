@@ -94,9 +94,9 @@ impl Migration {
         }
     }
 
-    /// Execute the migration
-    /// 执行迁移
-    pub async fn execute(&self, tx: &mut sqlx::Transaction<'_, sqlx::Postgres>) -> crate::Result<()> {
+    /// Execute the migration on a database-agnostic transaction
+    /// 在数据库无关的事务上执行迁移
+    pub async fn execute_on(&self, tx: &mut sqlx::Transaction<'_, sqlx::Any>) -> crate::Result<()> {
         match self {
             Migration::Sql(m) => {
                 sqlx::query(&m.sql)

@@ -2,12 +2,13 @@
 //! Flyway - 数据库迁移执行器
 
 use crate::{
+    dialect::DatabaseType,
     info::{BaselineInfo, Info, MigrationEntry, MigrationResult},
     migration::{Migration, MigrationType, SqlMigration},
     Config, MigratedVersion, Result,
 };
 use chrono::Utc;
-use sqlx::{Pool, Postgres, Row};
+use sqlx::{Any, Pool, Row};
 use std::time::Instant;
 use tracing::{debug, info, warn};
 
@@ -56,7 +57,8 @@ type MigrationVec = Vec<Migration>;
 /// ```
 pub struct Flyway {
     config: Config,
-    pool: Pool<Postgres>,
+    pool: Pool<Any>,
+    db_type: DatabaseType,
 }
 
 impl Flyway {
@@ -65,17 +67,24 @@ impl Flyway {
     pub async fn new(config: Config) -> Result<Self> {
         config.validate()?;
 
-        let pool = Pool::<Postgres>::connect(&config.datasource_url)
+        let db_type = config.database_type;
+        let pool = Pool::<Any>::connect(&config.datasource_url)
             .await
             .map_err(crate::FlywayError::ConnectionError)?;
 
-        Ok(Self { config, pool })
+        Ok(Self { config, pool, db_type })
     }
 
     /// Create from environment variables
     /// 从环境变量创建
     pub async fn from_env() -> Result<Self> {
         Self::new(Config::from_env()?).await
+    }
+
+    /// Get the detected database type
+    /// 获取检测到的数据库类型
+    pub fn database_type(&self) -> DatabaseType {
+        self.db_type
     }
 
     /// Migrate to the latest version
@@ -87,7 +96,7 @@ impl Flyway {
     /// flyway.migrate();
     /// ```
     pub async fn migrate(&self) -> Result<MigrationResult> {
-        info!("Starting database migration");
+        info!("Starting database migration on {}", self.db_type);
 
         let start = Instant::now();
 
@@ -279,8 +288,8 @@ impl Flyway {
         #[cfg(debug_assertions)]
         {
             warn!("Cleaning database - dropping all objects");
-            // Implementation would drop all tables, sequences, etc.
-            sqlx::query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
+            let ddl = self.db_type.clean_ddl();
+            sqlx::query(ddl)
                 .execute(&self.pool)
                 .await
                 .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
@@ -309,45 +318,21 @@ impl Flyway {
             return Ok(());
         }
 
-        let create_table = format!(
-            r#"
-            CREATE TABLE {} (
-                installed_rank INT NOT NULL,
-                version VARCHAR(50),
-                description VARCHAR(200) NOT NULL,
-                type VARCHAR(20) NOT NULL,
-                script VARCHAR(1000) NOT NULL,
-                checksum INTEGER,
-                installed_by VARCHAR(100),
-                installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                execution_time INTEGER NOT NULL,
-                success BOOLEAN NOT NULL,
-                CONSTRAINT {}_pk PRIMARY KEY (installed_rank)
-            )
-            "#,
-            self.config.table, self.config.table
-        );
+        let create_table = self.db_type.create_schema_history_ddl(&self.config.table);
 
         sqlx::query(&create_table)
             .execute(&self.pool)
             .await
             .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
 
-        info!("Created schema history table: {}", self.config.table);
+        info!("Created schema history table: {} ({})", self.config.table, self.db_type);
         Ok(())
     }
 
     /// Check if schema history table exists
     /// 检查历史表是否存在
     async fn schema_history_table_exists(&self) -> Result<bool> {
-        let query = format!(
-            "SELECT EXISTS (
-                SELECT FROM information_schema.tables
-                WHERE table_schema = 'public'
-                AND table_name = '{}'
-            )",
-            self.config.table
-        );
+        let query = self.db_type.table_exists_sql(&self.config.table);
 
         let exists: bool = sqlx::query_scalar(&query)
             .fetch_one(&self.pool)
@@ -359,6 +344,14 @@ impl Flyway {
 
     /// Load migrations from file system
     /// 从文件系统加载迁移
+    ///
+    /// Supports database-specific migration files with naming convention:
+    /// 支持数据库特定的迁移文件命名约定：
+    ///
+    /// - `V1__init.sql` - runs on all databases (所有数据库)
+    /// - `V1__init.postgresql.sql` - runs only on PostgreSQL (仅 PostgreSQL)
+    /// - `V1__init.mysql.sql` - runs only on MySQL (仅 MySQL)
+    /// - `V1__init.sqlite.sql` - runs only on SQLite (仅 SQLite)
     fn load_migrations(&self) -> Result<MigrationVec> {
         let migrations_dir = self.config.migrations_dir();
 
@@ -368,33 +361,74 @@ impl Flyway {
         }
 
         let mut migrations = Vec::new();
+        let target_suffix = self.db_type.file_suffix();
 
-        // Read SQL files from directory
-        let entries = std::fs::read_dir(&migrations_dir)
-            .map_err(|_e| crate::FlywayError::FileNotFound(migrations_dir.clone()))?;
+        // Track which base versions have been overridden by a dialect-specific file
+        // 跟踪被方言特定文件覆盖的基础版本
+        let mut dialect_overrides = std::collections::HashSet::new();
 
-        for entry in entries {
-            let entry = entry
-                .map_err(crate::FlywayError::Io)?;
+        let entries: Vec<_> = std::fs::read_dir(&migrations_dir)
+            .map_err(|_e| crate::FlywayError::FileNotFound(migrations_dir.clone()))?
+            .filter_map(|e| e.ok())
+            .collect();
+
+        // First pass: identify dialect-specific overrides
+        // 第一遍：识别方言特定的覆盖
+        for entry in &entries {
             let path = entry.path();
+            if path.is_dir() {
+                continue;
+            }
+            let file_name = path.file_name().unwrap().to_string_lossy().to_string();
+            if let Some((base_name, _desc)) = parse_migration_filename_with_dialect(&file_name) {
+                if let Some(dialect) = extract_dialect_suffix(&base_name) {
+                    if dialect == target_suffix {
+                        // This dialect-specific file matches our DB
+                        // 此方言特定文件匹配我们的数据库
+                        let base_version = strip_dialect_suffix(&base_name);
+                        dialect_overrides.insert(base_version);
+                    }
+                }
+            }
+        }
 
-            // Skip directories and hidden files
+        // Second pass: collect applicable migrations
+        // 第二遍：收集适用的迁移
+        for entry in &entries {
+            let path = entry.path();
             if path.is_dir() || path.file_name().is_none() {
                 continue;
             }
 
-            let file_name = path
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .to_string();
+            let file_name = path.file_name().unwrap().to_string_lossy().to_string();
 
-            // Parse Flyway naming convention: V1__Description.sql or V1.1__Description.sql
-            if let Some((version, description)) = parse_migration_filename(&file_name) {
+            if let Some((base_name, description)) = parse_migration_filename_with_dialect(&file_name) {
+                let (effective_name, applicable) = if let Some(dialect) = extract_dialect_suffix(&base_name) {
+                    // Dialect-specific file: only applicable if dialect matches
+                    // 方言特定文件：仅当方言匹配时适用
+                    let applicable = dialect == target_suffix;
+                    let effective_name = strip_dialect_suffix(&base_name);
+                    (effective_name, applicable)
+                } else {
+                    // Generic file: applicable unless overridden by a dialect-specific file
+                    // 通用文件：除非被方言特定文件覆盖，否则适用
+                    let overridden = dialect_overrides.contains(&base_name);
+                    (base_name, !overridden)
+                };
+
+                if !applicable {
+                    debug!("Skipping migration {} (not applicable for {})", file_name, self.db_type);
+                    continue;
+                }
+
                 let sql = std::fs::read_to_string(&path)
                     .map_err(crate::FlywayError::Io)?;
 
-                let migration: Migration = SqlMigration::new(version, description, sql).into();
+                let migration: Migration = SqlMigration::new(
+                    effective_name,
+                    description,
+                    sql,
+                ).into();
                 migrations.push(migration);
             }
         }
@@ -424,6 +458,14 @@ impl Flyway {
         let mut applied = std::collections::HashMap::new();
 
         for row in rows {
+            let success_val: bool = if self.db_type == DatabaseType::Sqlite {
+                // SQLite stores booleans as integers
+                let int_val: i32 = row.get("success");
+                int_val != 0
+            } else {
+                row.get("success")
+            };
+
             let entry = MigrationEntry {
                 installed_rank: row.get("installed_rank"),
                 version: row.get("version"),
@@ -435,9 +477,9 @@ impl Flyway {
                 },
                 checksum: row.get("checksum"),
                 installed_by: row.get("installed_by"),
-                installed_on: row.get("installed_on"),
+                installed_on: row.get::<Option<String>, _>("installed_on").and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok().map(|d| d.with_timezone(&chrono::Utc))),
                 execution_time: row.get("execution_time"),
-                success: row.get("success"),
+                success: success_val,
             };
             applied.insert(entry.version.clone(), entry);
         }
@@ -478,9 +520,9 @@ impl Flyway {
         // Begin transaction
         let mut tx = self.pool.begin().await?;
 
-        // Execute migration
+        // Execute migration SQL
         migration
-            .execute(&mut tx)
+            .execute_on(&mut tx)
             .await?;
 
         // Record migration in history
@@ -502,37 +544,54 @@ impl Flyway {
     /// 在历史表中记录迁移
     async fn record_migration(
         &self,
-        tx: &mut sqlx::Transaction<'_, Postgres>,
+        tx: &mut sqlx::Transaction<'_, Any>,
         migration: &Migration,
         execution_time: i64,
     ) -> Result<()> {
         // Get next installed rank
-        let rank_query = format!("SELECT COALESCE(MAX(installed_rank), -1) + 1 FROM {}", self.config.table);
+        let rank_query = self.db_type.next_rank_sql(&self.config.table);
         let next_rank: i32 = sqlx::query_scalar(&rank_query)
             .fetch_one(&mut **tx)
             .await
             .unwrap_or(0);
 
-        let insert_query = format!(
-            "INSERT INTO {} (installed_rank, version, description, type, checksum,
-                              installed_by, installed_on, execution_time, success)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-            self.config.table
-        );
+        let (insert_query, _) = self.db_type.record_migration_sql(&self.config.table);
 
-        sqlx::query(&insert_query)
-            .bind(next_rank)
-            .bind(migration.version())
-            .bind(migration.description())
-            .bind(migration.migration_type().to_string())
-            .bind(migration.checksum())
-            .bind("nexus-flyway")
-            .bind(Utc::now())
-            .bind(execution_time)
-            .bind(true)
-            .execute(&mut **tx)
-            .await
-            .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+        // SQLite does not support chrono::DateTime directly; convert to string
+        // SQLite 不直接支持 chrono::DateTime；转换为字符串
+        let now = Utc::now();
+        match self.db_type {
+            DatabaseType::Sqlite => {
+                sqlx::query(&insert_query)
+                    .bind(next_rank)
+                    .bind(migration.version())
+                    .bind(migration.description())
+                    .bind(migration.migration_type().to_string())
+                    .bind(migration.checksum())
+                    .bind("nexus-flyway")
+                    .bind(now.to_rfc3339())
+                    .bind(execution_time)
+                    .bind(1i32) // SQLite: 1 = true
+                    .execute(&mut **tx)
+                    .await
+                    .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+            }
+            DatabaseType::Postgres | DatabaseType::Mysql => {
+                sqlx::query(&insert_query)
+                    .bind(next_rank)
+                    .bind(migration.version())
+                    .bind(migration.description())
+                    .bind(migration.migration_type().to_string())
+                    .bind(migration.checksum())
+                    .bind("nexus-flyway")
+                                        .bind(now.to_rfc3339())
+                    .bind(execution_time)
+                    .bind(true)
+                    .execute(&mut **tx)
+                    .await
+                    .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+            }
+        }
 
         Ok(())
     }
@@ -540,53 +599,103 @@ impl Flyway {
     /// Insert baseline record
     /// 插入基线记录
     async fn insert_baseline(&self, baseline: &BaselineInfo) -> Result<()> {
-        let query = format!(
-            "INSERT INTO {} (installed_rank, version, description, type, script,
-                              installed_by, installed_on, execution_time, success)
-             VALUES (0, $1, $2, 'BASELINE', $3, $4, $5, 0, true)",
-            self.config.table
-        );
+        let query = self.db_type.baseline_insert_sql(&self.config.table);
 
-        sqlx::query(&query)
-            .bind(&baseline.version)
-            .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
-            .bind("<< Flyway Baseline >>".to_string())
-            .bind("nexus-flyway")
-            .bind(Utc::now())
-            .execute(&self.pool)
-            .await
-            .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+        let now = Utc::now();
+        match self.db_type {
+            DatabaseType::Sqlite => {
+                sqlx::query(&query)
+                    .bind(&baseline.version)
+                    .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
+                    .bind("<< Flyway Baseline >>")
+                    .bind("nexus-flyway")
+                    .bind(now.to_rfc3339())
+                    .execute(&self.pool)
+                    .await
+                    .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+            }
+            DatabaseType::Postgres | DatabaseType::Mysql => {
+                sqlx::query(&query)
+                    .bind(&baseline.version)
+                    .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
+                    .bind("<< Flyway Baseline >>")
+                    .bind("nexus-flyway")
+                                        .bind(now.to_rfc3339())
+                    .execute(&self.pool)
+                    .await
+                    .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
+            }
+        }
 
         Ok(())
     }
 }
 
-/// Parse Flyway migration filename
-/// 解析 Flyway 迁移文件名
+/// Parse Flyway migration filename with optional database dialect suffix
+/// 解析带可选数据库方言后缀的 Flyway 迁移文件名
 ///
 /// # Format / 格式
 ///
-/// - `V1__Description.sql` - Versioned migration
+/// - `V1__Description.sql` - Generic migration (通用迁移)
+/// - `V1__Description.postgresql.sql` - PostgreSQL-specific (PostgreSQL 专用)
+/// - `V1__Description.mysql.sql` - MySQL-specific (MySQL 专用)
+/// - `V1__Description.sqlite.sql` - SQLite-specific (SQLite 专用)
 /// - `V1.1__Description.sql` - Versioned migration with sub-version
 /// - `R__Description.sql` - Repeatable migration
-fn parse_migration_filename(filename: &str) -> Option<(String, String)> {
-    let filename = filename.strip_suffix(".sql")?;
+fn parse_migration_filename_with_dialect(filename: &str) -> Option<(String, String)> {
+    // Must end with .sql
+    if !filename.ends_with(".sql") {
+        return None;
+    }
 
-    if filename.starts_with("V") {
-        // Versioned migration: V1__Description or V1.1__Description
-        let parts: Vec<&str> = filename.splitn(2, "__").collect();
+    let without_ext = &filename[..filename.len() - 4];
+
+    if without_ext.starts_with("V") {
+        // Versioned migration: V1__Description or V1__Description.postgresql
+        let parts: Vec<&str> = without_ext.splitn(2, "__").collect();
         if parts.len() == 2 {
             Some((parts[0].to_string(), parts[1].to_string()))
         } else {
             None
         }
-    } else if filename.starts_with("R__") {
-        // Repeatable migration: R__Description
-        let description = filename.strip_prefix("R__")?;
+    } else if without_ext.starts_with("R__") {
+        let description = without_ext.strip_prefix("R__")?;
         Some(("R__".to_string(), description.to_string()))
     } else {
         None
     }
+}
+
+/// Extract the dialect suffix from a base name like "V1.postgresql"
+/// 从基础名称（如 "V1.postgresql"）中提取方言后缀
+fn extract_dialect_suffix(base_name: &str) -> Option<&str> {
+    // Known dialect suffixes
+    // 已知的方言后缀
+    let suffixes = ["postgresql", "mysql", "sqlite"];
+
+    for suffix in suffixes {
+        if base_name.ends_with(suffix) && base_name.as_bytes().get(base_name.len() - suffix.len() - 1) == Some(&b'.') {
+            return Some(suffix);
+        }
+    }
+    None
+}
+
+/// Strip the dialect suffix from a base name: "V1.postgresql" -> "V1"
+/// 去除基础名称中的方言后缀
+fn strip_dialect_suffix(base_name: &str) -> String {
+    if let Some(dialect) = extract_dialect_suffix(base_name) {
+        let end = base_name.len() - dialect.len() - 1; // -1 for the dot
+        base_name[..end].to_string()
+    } else {
+        base_name.to_string()
+    }
+}
+
+/// Parse Flyway migration filename (original simple version)
+/// 解析 Flyway 迁移文件名（原始简单版本）
+fn parse_migration_filename(filename: &str) -> Option<(String, String)> {
+    parse_migration_filename_with_dialect(filename)
 }
 
 #[cfg(test)]
@@ -612,5 +721,43 @@ mod tests {
 
         assert!(parse_migration_filename("invalid.sql").is_none());
         assert!(parse_migration_filename("README.md").is_none());
+    }
+
+    #[test]
+    fn test_parse_migration_filename_with_dialect() {
+        // PostgreSQL-specific migration
+        assert_eq!(
+            parse_migration_filename_with_dialect("V1__Create_users_table.postgresql.sql"),
+            Some(("V1".to_string(), "Create_users_table.postgresql".to_string()))
+        );
+
+        // MySQL-specific migration
+        assert_eq!(
+            parse_migration_filename_with_dialect("V1__Create_users_table.mysql.sql"),
+            Some(("V1".to_string(), "Create_users_table.mysql".to_string()))
+        );
+
+        // SQLite-specific migration
+        assert_eq!(
+            parse_migration_filename_with_dialect("V2__Add_index.sqlite.sql"),
+            Some(("V2".to_string(), "Add_index.sqlite".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_extract_dialect_suffix() {
+        assert_eq!(extract_dialect_suffix("V1"), None);
+        assert_eq!(extract_dialect_suffix("V1.postgresql"), Some("postgresql"));
+        assert_eq!(extract_dialect_suffix("V2.mysql"), Some("mysql"));
+        assert_eq!(extract_dialect_suffix("V3.sqlite"), Some("sqlite"));
+        assert_eq!(extract_dialect_suffix("V1.1"), None);
+    }
+
+    #[test]
+    fn test_strip_dialect_suffix() {
+        assert_eq!(strip_dialect_suffix("V1.postgresql"), "V1");
+        assert_eq!(strip_dialect_suffix("V2.mysql"), "V2");
+        assert_eq!(strip_dialect_suffix("V1.1"), "V1.1");
+        assert_eq!(strip_dialect_suffix("R__"), "R__");
     }
 }

@@ -1,6 +1,7 @@
 //! Flyway configuration
 //! Flyway 配置
 
+use crate::dialect::DatabaseType;
 use crate::{FlywayError, Result};
 use std::path::PathBuf;
 use std::time::Duration;
@@ -26,6 +27,10 @@ pub struct Config {
     /// Database connection URL
     /// 数据库连接URL
     pub datasource_url: String,
+
+    /// Detected database type
+    /// 检测到的数据库类型
+    pub database_type: DatabaseType,
 
     /// Migration locations (directories)
     /// 迁移位置（目录）
@@ -68,6 +73,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             datasource_url: String::new(),
+            database_type: DatabaseType::Postgres,
             locations: vec!["db/migration".to_string()],
             table: "flyway_schema_history".to_string(),
             baseline_on_migrate: false,
@@ -104,7 +110,18 @@ impl Config {
                 "FLYWAY_URL or DATABASE_URL must be set".to_string(),
             ))?;
 
-        let mut config = Self { datasource_url: url, ..Default::default() };
+        let database_type = DatabaseType::from_url(&url).ok_or_else(|| {
+            FlywayError::ConfigError(format!(
+                "Cannot detect database type from URL: {}. Supported: postgresql://, mysql://, sqlite://",
+                url
+            ))
+        })?;
+
+        let mut config = Self {
+            datasource_url: url,
+            database_type,
+            ..Default::default()
+        };
 
         if let Ok(locations) = std::env::var("FLYWAY_LOCATIONS") {
             config.locations = locations.split(',').map(|s| s.to_string()).collect();
@@ -176,8 +193,21 @@ impl ConfigBuilder {
 
     /// Set database URL
     /// 设置数据库URL
+    ///
+    /// Automatically detects the database type from the URL scheme.
+    /// 自动从 URL scheme 检测数据库类型。
     pub fn datasource_url(mut self, url: impl Into<String>) -> Self {
-        self.config.datasource_url = url.into();
+        let url_str = url.into();
+        self.config.database_type = DatabaseType::from_url(&url_str)
+            .unwrap_or(DatabaseType::Postgres);
+        self.config.datasource_url = url_str;
+        self
+    }
+
+    /// Set database type explicitly
+    /// 显式设置数据库类型
+    pub fn database_type(mut self, db_type: DatabaseType) -> Self {
+        self.config.database_type = db_type;
         self
     }
 
