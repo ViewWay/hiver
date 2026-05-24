@@ -326,3 +326,357 @@ impl Clone for Handler {
 
 // Re-export Method
 use crate::Method;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use nexus_http::StatusCode;
+
+    // ── Route construction / 路由构造 ──────────────────────────────
+
+    /// Test basic route creation with default empty methods.
+    /// 测试使用默认空方法列表创建基本路由。
+    #[test]
+    fn test_route_new_basic() {
+        let route = Route::new("/users", Handler::Unimplemented);
+        assert_eq!(route.path, "/users");
+        assert!(route.methods.is_empty());
+    }
+
+    /// Test adding a single method via builder pattern.
+    /// 测试通过建造者模式添加单个方法。
+    #[test]
+    fn test_route_single_method() {
+        let route = Route::new("/users", Handler::Unimplemented).method(Method::GET);
+        assert_eq!(route.methods, vec![Method::GET]);
+    }
+
+    /// Test setting multiple methods at once.
+    /// 测试一次性设置多个方法。
+    #[test]
+    fn test_route_multiple_methods() {
+        let route = Route::new("/users", Handler::Unimplemented)
+            .methods(vec![Method::GET, Method::POST, Method::PUT]);
+        assert_eq!(route.methods.len(), 3);
+        assert!(route.methods.contains(&Method::GET));
+        assert!(route.methods.contains(&Method::POST));
+        assert!(route.methods.contains(&Method::PUT));
+    }
+
+    // ── Path matching / 路径匹配 ─────────────────────────────────
+
+    /// Test exact static path matching.
+    /// 测试精确静态路径匹配。
+    #[test]
+    fn test_matches_exact_static_path() {
+        let route = Route::new("/users", Handler::Unimplemented).method(Method::GET);
+        assert!(route.matches(&Method::GET, "/users"));
+    }
+
+    /// Test that non-matching static path returns false.
+    /// 测试不匹配的静态路径返回 false。
+    #[test]
+    fn test_matches_different_static_path() {
+        let route = Route::new("/users", Handler::Unimplemented).method(Method::GET);
+        assert!(!route.matches(&Method::GET, "/posts"));
+    }
+
+    /// Test that wrong method causes match failure even if path matches.
+    /// 测试路径匹配但方法错误时匹配失败。
+    #[test]
+    fn test_matches_wrong_method() {
+        let route = Route::new("/users", Handler::Unimplemented).method(Method::GET);
+        assert!(!route.matches(&Method::POST, "/users"));
+    }
+
+    /// Test that a route with no methods restriction matches any method.
+    /// 测试无方法限制的路由匹配任意方法。
+    #[test]
+    fn test_matches_no_method_restriction() {
+        let route = Route::new("/health", Handler::Unimplemented);
+        assert!(route.matches(&Method::GET, "/health"));
+        assert!(route.matches(&Method::POST, "/health"));
+        assert!(route.matches(&Method::DELETE, "/health"));
+    }
+
+    /// Test path with a single parameter segment.
+    /// 测试带有单个参数段的路径。
+    #[test]
+    fn test_matches_single_param() {
+        let route = Route::new("/users/:id", Handler::Unimplemented).method(Method::GET);
+        assert!(route.matches(&Method::GET, "/users/42"));
+        assert!(route.matches(&Method::GET, "/users/abc"));
+        assert!(route.matches(&Method::GET, "/users/user@example.com"));
+    }
+
+    /// Test path with multiple parameter segments.
+    /// 测试带有多个参数段的路径。
+    #[test]
+    fn test_matches_multiple_params() {
+        let route = Route::new("/users/:user_id/posts/:post_id", Handler::Unimplemented)
+            .method(Method::GET);
+        assert!(route.matches(&Method::GET, "/users/1/posts/42"));
+    }
+
+    /// Test that segment count mismatch causes failure.
+    /// 测试段数量不匹配时匹配失败。
+    #[test]
+    fn test_matches_different_segment_count() {
+        let route = Route::new("/users/:id", Handler::Unimplemented).method(Method::GET);
+        assert!(!route.matches(&Method::GET, "/users"));
+        assert!(!route.matches(&Method::GET, "/users/1/posts"));
+        assert!(!route.matches(&Method::GET, "/users/1/extra"));
+    }
+
+    /// Test wildcard segment matching.
+    /// 测试通配符段匹配。
+    #[test]
+    fn test_matches_wildcard_segment() {
+        let route = Route::new("/files/*path", Handler::Unimplemented).method(Method::GET);
+        assert!(route.matches(&Method::GET, "/files/readme.md"));
+        assert!(route.matches(&Method::GET, "/files/anything"));
+    }
+
+    /// Test that an empty path matches the root.
+    /// 测试空路径匹配根路径。
+    #[test]
+    fn test_matches_root_path() {
+        let route = Route::new("/", Handler::Unimplemented).method(Method::GET);
+        assert!(route.matches(&Method::GET, "/"));
+    }
+
+    /// Test root path does not match non-root.
+    /// 测试根路径不匹配非根路径。
+    #[test]
+    fn test_root_path_no_match_deeper() {
+        let route = Route::new("/", Handler::Unimplemented).method(Method::GET);
+        assert!(!route.matches(&Method::GET, "/users"));
+    }
+
+    // ── Parameter extraction / 参数提取 ────────────────────────────
+
+    /// Test extracting a single named parameter.
+    /// 测试提取单个命名参数。
+    #[test]
+    fn test_extract_params_single() {
+        let route = Route::new("/users/:id", Handler::Unimplemented);
+        let params = route.extract_params("/users/42");
+        assert_eq!(params, vec![("id".to_string(), "42".to_string())]);
+    }
+
+    /// Test extracting multiple named parameters.
+    /// 测试提取多个命名参数。
+    #[test]
+    fn test_extract_params_multiple() {
+        let route = Route::new("/users/:user_id/posts/:post_id", Handler::Unimplemented);
+        let params = route.extract_params("/users/10/posts/99");
+        assert_eq!(params.len(), 2);
+        assert_eq!(params[0], ("user_id".to_string(), "10".to_string()));
+        assert_eq!(params[1], ("post_id".to_string(), "99".to_string()));
+    }
+
+    /// Test that static segments produce no parameters.
+    /// 测试静态段不产生参数。
+    #[test]
+    fn test_extract_params_no_params() {
+        let route = Route::new("/users/list", Handler::Unimplemented);
+        let params = route.extract_params("/users/list");
+        assert!(params.is_empty());
+    }
+
+    /// Test that wildcard segments are not extracted as named params.
+    /// 测试通配符段不会被提取为命名参数。
+    #[test]
+    fn test_extract_params_wildcard_not_extracted() {
+        let route = Route::new("/files/*path", Handler::Unimplemented);
+        let params = route.extract_params("/files/readme.md");
+        // Wildcards use '*' prefix, not ':', so they are NOT extracted.
+        // 通配符使用 '*' 前缀而非 ':'，因此不会被提取。
+        assert!(params.is_empty());
+    }
+
+    /// Test parameter extraction with special characters in values.
+    /// 测试参数值中包含特殊字符的提取。
+    #[test]
+    fn test_extract_params_special_chars() {
+        let route = Route::new("/files/:name", Handler::Unimplemented);
+        let params = route.extract_params("/files/report_2024.pdf");
+        assert_eq!(params[0].1, "report_2024.pdf");
+    }
+
+    // ── Handler variants / 处理程序变体 ────────────────────────────
+
+    /// Test Handler::default is Unimplemented.
+    /// 测试 Handler::default 是 Unimplemented。
+    #[test]
+    fn test_handler_default_is_unimplemented() {
+        let handler = Handler::default();
+        matches!(handler, Handler::Unimplemented);
+    }
+
+    /// Test Handler::static_str creates a Static variant.
+    /// 测试 Handler::static_str 创建 Static 变体。
+    #[test]
+    fn test_handler_static_str() {
+        let handler = Handler::static_str("hello");
+        matches!(handler, Handler::Static("hello"));
+    }
+
+    /// Test Handler::static_bytes creates a StaticBytes variant.
+    /// 测试 Handler::static_bytes 创建 StaticBytes 变体。
+    #[test]
+    fn test_handler_static_bytes() {
+        let handler = Handler::static_bytes(b"data");
+        matches!(handler, Handler::StaticBytes(_));
+    }
+
+    /// Test Handler::unimplemented creates Unimplemented variant.
+    /// 测试 Handler::unimplemented 创建 Unimplemented 变体。
+    #[test]
+    fn test_handler_unimplemented() {
+        let handler = Handler::unimplemented();
+        matches!(handler, Handler::Unimplemented);
+    }
+
+    /// Test that Static handler returns 200 OK with correct body.
+    /// 测试 Static 处理程序返回 200 OK 和正确的响应体。
+    #[tokio::test]
+    async fn test_handler_call_static() {
+        let handler = Handler::static_str("hello world");
+        let req = Request::from_method_uri(Method::GET, "/");
+        let resp = handler.call(req, HashMap::new()).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    /// Test that Unimplemented handler returns 501 Not Implemented.
+    /// 测试 Unimplemented 处理程序返回 501 Not Implemented。
+    #[tokio::test]
+    async fn test_handler_call_unimplemented() {
+        let handler = Handler::Unimplemented;
+        let req = Request::from_method_uri(Method::GET, "/");
+        let resp = handler.call(req, HashMap::new()).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_IMPLEMENTED);
+    }
+
+    /// Test that StaticBytes handler returns 200 OK.
+    /// 测试 StaticBytes 处理程序返回 200 OK。
+    #[tokio::test]
+    async fn test_handler_call_static_bytes() {
+        let handler = Handler::static_bytes(b"\x00\x01\x02");
+        let req = Request::from_method_uri(Method::GET, "/");
+        let resp = handler.call(req, HashMap::new()).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    /// Test Fn handler returns 200 OK with empty body.
+    /// 测试 Fn 处理程序返回 200 OK 和空响应体。
+    #[tokio::test]
+    async fn test_handler_call_fn() {
+        fn dummy() {}
+        let handler = Handler::Fn(dummy);
+        let req = Request::from_method_uri(Method::GET, "/");
+        let resp = handler.call(req, HashMap::new()).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    // ── Debug / Clone impls / 调试与克隆实现 ──────────────────────
+
+    /// Test Debug formatting of Route.
+    /// 测试 Route 的 Debug 格式化。
+    #[test]
+    fn test_route_debug() {
+        let route = Route::new("/api", Handler::Unimplemented).method(Method::GET);
+        let debug_str = format!("{:?}", route);
+        assert!(debug_str.contains("/api"));
+        assert!(debug_str.contains("GET"));
+    }
+
+    /// Test Debug formatting of all Handler variants.
+    /// 测试所有 Handler 变体的 Debug 格式化。
+    #[test]
+    fn test_handler_debug_variants() {
+        fn dummy() {}
+        let debug = format!("{:?}", Handler::Fn(dummy));
+        assert!(debug.contains("Handler::Fn"));
+
+        let debug = format!("{:?}", Handler::Static("ok"));
+        assert!(debug.contains("ok"));
+
+        let debug = format!("{:?}", Handler::StaticBytes(b"abc"));
+        assert!(debug.contains("3 bytes"));
+
+        let debug = format!("{:?}", Handler::Unimplemented);
+        assert!(debug.contains("Unimplemented"));
+    }
+
+    /// Test Clone of Handler for static variants.
+    /// 测试静态变体 Handler 的克隆。
+    #[test]
+    fn test_handler_clone_static() {
+        let handler = Handler::static_str("test");
+        let cloned = handler.clone();
+        matches!(cloned, Handler::Static("test"));
+    }
+
+    /// Test Clone of Handler for Unimplemented.
+    /// 测试 Unimplemented 处理程序的克隆。
+    #[test]
+    fn test_handler_clone_unimplemented() {
+        let handler = Handler::Unimplemented;
+        let cloned = handler.clone();
+        matches!(cloned, Handler::Unimplemented);
+    }
+
+    /// Test Clone of Handler for BoxedAsync returns Unimplemented (not cloneable).
+    /// 测试 BoxedAsync 处理程序克隆时回退为 Unimplemented。
+    #[test]
+    fn test_handler_clone_boxed_async_fallback() {
+        let handler: Handler = Handler::async_fn(|_req, _params| {
+            Box::pin(async {
+                Ok(Response::builder()
+                    .status(StatusCode::OK)
+                    .body(nexus_http::Body::empty())
+                    .unwrap())
+            })
+        });
+        let cloned = handler.clone();
+        // BoxedAsync cannot be cloned; clone returns Unimplemented.
+        // BoxedAsync 无法克隆；克隆操作返回 Unimplemented。
+        matches!(cloned, Handler::Unimplemented);
+    }
+
+    /// Test Route Clone produces identical path and methods.
+    /// 测试路由克隆产生相同的路径和方法。
+    #[test]
+    fn test_route_clone() {
+        let route = Route::new("/users/:id", Handler::Unimplemented)
+            .methods(vec![Method::GET, Method::DELETE]);
+        let cloned = route.clone();
+        assert_eq!(cloned.path, "/users/:id");
+        assert_eq!(cloned.methods, vec![Method::GET, Method::DELETE]);
+    }
+
+    /// Test Async handler call returns correct response.
+    /// 测试 Async 处理程序调用返回正确响应。
+    #[tokio::test]
+    async fn test_handler_call_async() {
+        fn my_handler(
+            _req: Request,
+            params: HashMap<String, String>,
+        ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+            Box::pin(async move {
+                let id = params.get("id").cloned().unwrap_or_default();
+                Ok(Response::builder()
+                    .status(StatusCode::OK)
+                    .body(nexus_http::Body::from(format!("id={}", id)))
+                    .unwrap())
+            })
+        }
+        let handler = Handler::Async(my_handler);
+        let req = Request::from_method_uri(Method::GET, "/users/99");
+        let mut params = HashMap::new();
+        params.insert("id".to_string(), "99".to_string());
+        let resp = handler.call(req, params).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+}

@@ -391,7 +391,7 @@ impl UriBuilder {
 
         // Host
         if let Some(host) = &self.host {
-            let _ = write!(result, "{}", host);
+            let _ = write!(result, "{host}");
         }
 
         // Port (only if non-standard for the scheme)
