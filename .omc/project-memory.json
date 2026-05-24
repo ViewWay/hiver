@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1779285273507,
+  "lastScanned": 1779589966419,
   "projectRoot": "/Users/yimiliya/RustroverProjects/nexus",
   "techStack": {
     "languages": [
@@ -18,7 +18,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build",
+    "buildCommand": "cargo build --workspace 2>&1 | grep \"warning.*generated\" | tail -5",
     "testCommand": "cargo test",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
@@ -49,14 +49,14 @@
       "path": "crates",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1779285273494,
+      "lastAccessed": 1779589966406,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 9,
-      "lastAccessed": 1779285273496,
+      "lastAccessed": 1779589966406,
       "keyFiles": [
         "CODEMAP.md",
         "DOCS-INDEX.md",
@@ -69,7 +69,7 @@
       "path": "examples",
       "purpose": "Example code",
       "fileCount": 14,
-      "lastAccessed": 1779285273499,
+      "lastAccessed": 1779589966406,
       "keyFiles": [
         "Cargo.toml",
         "EXAMPLES.md",
@@ -82,7 +82,7 @@
       "path": "fuzzers",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1779285273500,
+      "lastAccessed": 1779589966407,
       "keyFiles": [
         "Cargo.toml",
         "README.md"
@@ -92,7 +92,7 @@
       "path": "target",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1779285273502,
+      "lastAccessed": 1779589966407,
       "keyFiles": [
         "CACHEDIR.TAG"
       ]
@@ -101,7 +101,7 @@
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 2,
-      "lastAccessed": 1779285273503,
+      "lastAccessed": 1779589966407,
       "keyFiles": [
         "Cargo.toml",
         "lib.rs"
@@ -111,7 +111,7 @@
       "path": "docs/api",
       "purpose": "API routes",
       "fileCount": 3,
-      "lastAccessed": 1779285273504,
+      "lastAccessed": 1779589966407,
       "keyFiles": [
         "annotations-reference.md",
         "api-quick-reference.md",
@@ -119,6 +119,307 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "crates/nexus-runtime/src/task.rs",
+      "accessCount": 13,
+      "lastAccessed": 1779621112069,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-websocket-stomp/src/handler.rs",
+      "accessCount": 11,
+      "lastAccessed": 1779619714734,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-macros/src/lib.rs",
+      "accessCount": 8,
+      "lastAccessed": 1779590434172,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/connection.rs",
+      "accessCount": 8,
+      "lastAccessed": 1779616586735,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-tx/src/lib.rs",
+      "accessCount": 8,
+      "lastAccessed": 1779620771954,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/query.rs",
+      "accessCount": 7,
+      "lastAccessed": 1779620567600,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-security/src/lib.rs",
+      "accessCount": 7,
+      "lastAccessed": 1779620772056,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/active_record.rs",
+      "accessCount": 7,
+      "lastAccessed": 1779622199027,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/client.rs",
+      "accessCount": 6,
+      "lastAccessed": 1779590340997,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/scheduler/handle.rs",
+      "accessCount": 6,
+      "lastAccessed": 1779622112681,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/sqlx.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779464268026,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-router/src/route.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779619601097,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-ldap/src/repository.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779619858838,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-core/src/container.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779620553535,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-core/src/reactive.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779620573833,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/lib.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779620583460,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/lib.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779620647992,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/lib.rs",
+      "accessCount": 5,
+      "lastAccessed": 1779620648051,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-websocket-stomp/src/lib.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779619714270,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/scheduler/local.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779620543110,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-core/src/bean.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779620553045,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-core/src/extension.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779620553199,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/runtime.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779620583540,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/pool.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779621011785,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-security/src/rbac.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779619582017,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-router/src/params.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779619601030,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-security/src/authorization_server.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779619727453,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-ldap/Cargo.toml",
+      "accessCount": 3,
+      "lastAccessed": 1779619813512,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-ldap/src/lib.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779619813566,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/scheduler/work_stealing.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620546326,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-router/src/lib.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620550608,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-resilience/src/lib.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620550843,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/task/raw_task.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620596916,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/scheduler/mod.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620626086,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/driver/mod.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779620626106,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-commons/src/part_tree.rs",
+      "accessCount": 3,
+      "lastAccessed": 1779621060146,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/relationships.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779464144549,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-orm/src/repository.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779464174691,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-annotations/src/transactional_macro.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779591560612,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-annotations/src/pre_authorize_macro.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779591600829,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-security/src/context.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779619446597,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-resilience/src/timeout.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779619527130,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-tx/src/manager.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779620019639,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-tx/src/template.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779620019738,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-annotations/src/lib.rs",
+      "accessCount": 2,
+      "lastAccessed": 1779620648030,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-commons/src/method_name.rs",
+      "accessCount": 1,
+      "lastAccessed": 1779464646217,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-annotations/src/transactional.rs",
+      "accessCount": 1,
+      "lastAccessed": 1779591026846,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-security/src/pre_authorize.rs",
+      "accessCount": 1,
+      "lastAccessed": 1779591053764,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/row.rs",
+      "accessCount": 1,
+      "lastAccessed": 1779616458759,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/error.rs",
+      "accessCount": 1,
+      "lastAccessed": 1779616480724,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

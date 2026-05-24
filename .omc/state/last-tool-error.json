@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"sed -i '' '/^impl TransactionManagerRegistry {/i\\\\\\nimpl std::fmt::Debug for TransactionManagerRegistry {\\\\\\n    fn fmt(\\\\&self, f: \\\\&mut std::fmt::Formatter<'_>) -> std::fmt::Result {\\\\\\...",
+  "error": "Exit code 1\n(eval):3: parse error near `)'",
+  "timestamp": "2026-05-24T12:02:08.748Z",
+  "retry_count": 1
+}

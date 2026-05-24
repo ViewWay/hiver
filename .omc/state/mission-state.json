@@ -1,0 +1,351 @@
+{
+  "updatedAt": "2026-05-24T12:14:58.897Z",
+  "missions": [
+    {
+      "id": "session:006e127e-e527-42e6-950c-6ef99ab8b632:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-05-24T10:42:04.171Z",
+      "updatedAt": "2026-05-24T12:14:58.897Z",
+      "status": "running",
+      "workerCount": 26,
+      "taskCounts": {
+        "total": 26,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 2,
+        "completed": 24,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "backend-developer:ad82942",
+          "role": "backend-developer",
+          "ownership": "ad829426274a46a2b",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T12:14:58.897Z"
+        },
+        {
+          "name": "backend-developer:a80e620",
+          "role": "backend-developer",
+          "ownership": "a80e6202e460b5a53",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:50:31.249Z"
+        },
+        {
+          "name": "backend-developer:a6ac305",
+          "role": "backend-developer",
+          "ownership": "a6ac305924ed32b31",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:51:54.663Z"
+        },
+        {
+          "name": "backend-developer:ae08dcf",
+          "role": "backend-developer",
+          "ownership": "ae08dcff01d1ede0e",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:48:56.479Z"
+        },
+        {
+          "name": "backend-developer:aa054b0",
+          "role": "backend-developer",
+          "ownership": "aa054b0c0b69edbe7",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:45:47.722Z"
+        },
+        {
+          "name": "backend-developer:a4432d3",
+          "role": "backend-developer",
+          "ownership": "a4432d35e399aee1e",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:46:55.203Z"
+        },
+        {
+          "name": "backend-developer:a0f74b7",
+          "role": "backend-developer",
+          "ownership": "a0f74b7b78af01e23",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:57:47.376Z"
+        },
+        {
+          "name": "backend-developer:a672700",
+          "role": "backend-developer",
+          "ownership": "a672700ffd1c24d73",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:58:12.266Z"
+        },
+        {
+          "name": "backend-developer:a2d711c",
+          "role": "backend-developer",
+          "ownership": "a2d711c065e5b32ca",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:57:02.435Z"
+        },
+        {
+          "name": "backend-developer:a8de9b9",
+          "role": "backend-developer",
+          "ownership": "a8de9b94c8546e9b6",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:59:20.027Z"
+        },
+        {
+          "name": "backend-developer:af5beb9",
+          "role": "backend-developer",
+          "ownership": "af5beb9da845f4755",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:56:52.169Z"
+        },
+        {
+          "name": "backend-developer:a63245a",
+          "role": "backend-developer",
+          "ownership": "a63245a9cb693bc27",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T10:58:46.604Z"
+        },
+        {
+          "name": "backend-developer:a7399be",
+          "role": "backend-developer",
+          "ownership": "a7399be475756ded5",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:07:56.535Z"
+        },
+        {
+          "name": "backend-developer:a92dfad",
+          "role": "backend-developer",
+          "ownership": "a92dfad6ba43ebeb2",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:09:17.006Z"
+        },
+        {
+          "name": "backend-developer:ad29907",
+          "role": "backend-developer",
+          "ownership": "ad299075f3cdc03e5",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:08:19.690Z"
+        },
+        {
+          "name": "backend-developer:a28b60d",
+          "role": "backend-developer",
+          "ownership": "a28b60df3741332c7",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:01:41.415Z"
+        },
+        {
+          "name": "backend-developer:a8f4f94",
+          "role": "backend-developer",
+          "ownership": "a8f4f9415b269bf11",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:06:05.924Z"
+        },
+        {
+          "name": "backend-developer:a482920",
+          "role": "backend-developer",
+          "ownership": "a4829209db2e59828",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:05:16.549Z"
+        },
+        {
+          "name": "backend-developer:aa07c8e",
+          "role": "backend-developer",
+          "ownership": "aa07c8e2f9e34fcc1",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:01:41.620Z"
+        },
+        {
+          "name": "backend-developer:a03d733",
+          "role": "backend-developer",
+          "ownership": "a03d7332c0fb6da98",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:09:08.543Z"
+        },
+        {
+          "name": "backend-developer:a79175c",
+          "role": "backend-developer",
+          "ownership": "a79175caf454dc71e",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:08:28.332Z"
+        },
+        {
+          "name": "backend-developer:ad26f48",
+          "role": "backend-developer",
+          "ownership": "ad26f4841af8b47ad",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:14:22.723Z"
+        },
+        {
+          "name": "backend-developer:ae571e1",
+          "role": "backend-developer",
+          "ownership": "ae571e11a734409b3",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:06:27.392Z"
+        },
+        {
+          "name": "backend-developer:a3db480",
+          "role": "backend-developer",
+          "ownership": "a3db480fc3c819615",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:19:22.196Z"
+        },
+        {
+          "name": "backend-developer:a1a08df",
+          "role": "backend-developer",
+          "ownership": "a1a08dfbf8435f00e",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:23:05.074Z"
+        },
+        {
+          "name": "backend-developer:a24edaf",
+          "role": "backend-developer",
+          "ownership": "a24edaf3baa409171",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-24T11:20:37.486Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-stop:aca3828c6090bac6f:2026-05-24T11:16:16.041Z",
+          "at": "2026-05-24T11:16:16.041Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad82942",
+          "detail": "completed",
+          "sourceKey": "session-stop:aca3828c6090bac6f"
+        },
+        {
+          "id": "session-start:a1a08dfbf8435f00e:2026-05-24T11:18:46.775Z",
+          "at": "2026-05-24T11:18:46.775Z",
+          "kind": "update",
+          "agent": "backend-developer:a1a08df",
+          "detail": "started backend-developer:a1a08df",
+          "sourceKey": "session-start:a1a08dfbf8435f00e"
+        },
+        {
+          "id": "session-start:a24edaf3baa409171:2026-05-24T11:18:46.843Z",
+          "at": "2026-05-24T11:18:46.843Z",
+          "kind": "update",
+          "agent": "backend-developer:a24edaf",
+          "detail": "started backend-developer:a24edaf",
+          "sourceKey": "session-start:a24edaf3baa409171"
+        },
+        {
+          "id": "session-stop:a3db480fc3c819615:2026-05-24T11:19:22.196Z",
+          "at": "2026-05-24T11:19:22.196Z",
+          "kind": "completion",
+          "agent": "backend-developer:a3db480",
+          "detail": "completed",
+          "sourceKey": "session-stop:a3db480fc3c819615"
+        },
+        {
+          "id": "session-stop:a24edaf3baa409171:2026-05-24T11:20:37.486Z",
+          "at": "2026-05-24T11:20:37.486Z",
+          "kind": "completion",
+          "agent": "backend-developer:a24edaf",
+          "detail": "completed",
+          "sourceKey": "session-stop:a24edaf3baa409171"
+        },
+        {
+          "id": "session-stop:aa887135b5e5c6f59:2026-05-24T11:22:07.193Z",
+          "at": "2026-05-24T11:22:07.193Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad82942",
+          "detail": "completed",
+          "sourceKey": "session-stop:aa887135b5e5c6f59"
+        },
+        {
+          "id": "session-stop:a1a08dfbf8435f00e:2026-05-24T11:23:05.074Z",
+          "at": "2026-05-24T11:23:05.074Z",
+          "kind": "completion",
+          "agent": "backend-developer:a1a08df",
+          "detail": "completed",
+          "sourceKey": "session-stop:a1a08dfbf8435f00e"
+        },
+        {
+          "id": "session-stop:a987b4337b8377cbb:2026-05-24T12:14:58.897Z",
+          "at": "2026-05-24T12:14:58.897Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad82942",
+          "detail": "completed",
+          "sourceKey": "session-stop:a987b4337b8377cbb"
+        }
+      ]
+    }
+  ]
+}
