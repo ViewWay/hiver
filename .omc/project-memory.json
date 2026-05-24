@@ -19,7 +19,7 @@
   },
   "build": {
     "buildCommand": "cargo build --workspace 2>&1 | grep \"warning.*generated\" | tail -5",
-    "testCommand": "cargo test",
+    "testCommand": "cargo test -p nexus-config 2>&1 | grep \"test result:\" | head -5",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -121,9 +121,21 @@
   },
   "hotPaths": [
     {
+      "path": "crates/nexus-core/src/container.rs",
+      "accessCount": 38,
+      "lastAccessed": 1779631048508,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-runtime/src/task.rs",
       "accessCount": 13,
       "lastAccessed": 1779621112069,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-core/src/reactive.rs",
+      "accessCount": 12,
+      "lastAccessed": 1779631070344,
       "type": "file"
     },
     {
@@ -181,6 +193,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-core/src/extension.rs",
+      "accessCount": 6,
+      "lastAccessed": 1779631053042,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-orm/src/sqlx.rs",
       "accessCount": 5,
       "lastAccessed": 1779464268026,
@@ -196,18 +214,6 @@
       "path": "crates/nexus-ldap/src/repository.rs",
       "accessCount": 5,
       "lastAccessed": 1779619858838,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-core/src/container.rs",
-      "accessCount": 5,
-      "lastAccessed": 1779620553535,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-core/src/reactive.rs",
-      "accessCount": 5,
-      "lastAccessed": 1779620573833,
       "type": "file"
     },
     {
@@ -247,12 +253,6 @@
       "type": "file"
     },
     {
-      "path": "crates/nexus-core/src/extension.rs",
-      "accessCount": 4,
-      "lastAccessed": 1779620553199,
-      "type": "file"
-    },
-    {
       "path": "crates/nexus-runtime/src/runtime.rs",
       "accessCount": 4,
       "lastAccessed": 1779620583540,
@@ -262,6 +262,12 @@
       "path": "crates/nexus-data-rdbc/src/pool.rs",
       "accessCount": 4,
       "lastAccessed": 1779621011785,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-resilience/src/timeout.rs",
+      "accessCount": 4,
+      "lastAccessed": 1779631235179,
       "type": "file"
     },
     {
@@ -364,12 +370,6 @@
       "path": "crates/nexus-security/src/context.rs",
       "accessCount": 2,
       "lastAccessed": 1779619446597,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-resilience/src/timeout.rs",
-      "accessCount": 2,
-      "lastAccessed": 1779619527130,
       "type": "file"
     },
     {

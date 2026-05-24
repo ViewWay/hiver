@@ -229,10 +229,19 @@
       "status": "completed",
       "completed_at": "2026-05-24T11:20:37.486Z",
       "duration_ms": 110643
+    },
+    {
+      "agent_id": "ad1a2cd4c74c6798f",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-24T13:44:56.929Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-24T14:04:41.334Z",
+      "duration_ms": 1184405
     }
   ],
-  "total_spawned": 17,
-  "total_completed": 24,
+  "total_spawned": 18,
+  "total_completed": 25,
   "total_failed": 0,
-  "last_updated": "2026-05-24T12:14:58.998Z"
+  "last_updated": "2026-05-24T14:04:41.437Z"
 }

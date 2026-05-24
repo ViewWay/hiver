@@ -531,6 +531,7 @@ impl ConfigPostProcessor for RequiredValidator {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{PropertySource, Value};
 
     #[test]
     fn test_loader_builder() {

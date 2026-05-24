@@ -610,8 +610,8 @@ mod tests {
         let config = TimeoutConfig::new().with_timeout(Duration::from_secs(1));
         let t = Timeout::new("result-type", config);
 
-        let result: std::result::Result<i32, &str> = t.call(|| async { Ok(100) }).await;
-        assert_eq!(result.unwrap(), Ok(100));
+        let result = t.call(|| async { 100i32 }).await;
+        assert_eq!(result.unwrap(), 100);
     }
 
     #[tokio::test]

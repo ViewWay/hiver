@@ -125,6 +125,7 @@ impl AmqpConfig {
     pub fn with_host(mut self, host: impl Into<String>, port: u16) -> Self {
         self.host = host.into();
         self.port = port;
+        self.url.clear();
         self
     }
 
@@ -133,6 +134,7 @@ impl AmqpConfig {
     pub fn with_credentials(mut self, username: impl Into<String>, password: impl Into<String>) -> Self {
         self.username = username.into();
         self.password = password.into();
+        self.url.clear();
         self
     }
 
@@ -150,6 +152,7 @@ impl AmqpConfig {
         if ssl && self.port == 5672 {
             self.port = 5671;
         }
+        self.url.clear();
         self
     }
 

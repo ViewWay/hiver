@@ -3,7 +3,7 @@
 
 #[cfg(test)]
 mod tests {
-    use nexus_kafka::{
+    use crate::{
         Producer, Consumer, ProducerConfig, ConsumerConfig, ConsumerOffset,
         Record, ProduceOptions, ConsumerGroup, ConsumerListener,
         TopicPartition, TopicPartitionBuilder, Offset,
@@ -56,7 +56,7 @@ mod tests {
     /// 测试带自定义压缩配置的生产者
     #[test]
     fn test_producer_custom_compression() {
-        use nexus_kafka::CompressionType;
+        use crate::config::CompressionType;
         let config = ProducerConfig::new()
             .with_bootstrap_servers("kafka.prod:9093")
             .with_compression(CompressionType::Zstd);
@@ -132,8 +132,8 @@ mod tests {
         assert_eq!(restored.timestamp, 1700000000);
 
         let key = restored.key().unwrap();
-        assert_eq!(key.as_bytes(), Some(b"order-123".as_slice()));
-        assert_eq!(restored.payload().as_bytes(), Some(b"binary-payload".as_slice()));
+        assert_eq!(key.as_bytes(), Some(&b"order-123"[..]));
+        assert_eq!(restored.payload().as_bytes(), Some(&b"binary-payload"[..]));
 
         let h = restored.headers.get("trace-id").unwrap();
         if let MessageHeaderValue::String(v) = h {
@@ -251,7 +251,7 @@ mod tests {
     /// 测试 RecordHeader 结构
     #[test]
     fn test_record_header() {
-        use nexus_kafka::RecordHeader;
+        use crate::RecordHeader;
         let header = RecordHeader {
             key: "content-type".to_string(),
             value: b"application/json".to_vec(),

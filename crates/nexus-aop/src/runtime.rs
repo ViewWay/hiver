@@ -798,7 +798,8 @@ mod tests {
         let aspect = registry.get_aspect("TestAspect").await;
         assert!(aspect.is_some());
 
-        let downcast = aspect.unwrap().downcast_ref::<&str>();
+        let arc = aspect.unwrap();
+        let downcast = arc.as_ref().downcast_ref::<&str>();
         assert!(downcast.is_some());
         assert_eq!(*downcast.unwrap(), "test_aspect");
     }

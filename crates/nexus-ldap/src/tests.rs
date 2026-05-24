@@ -9,13 +9,13 @@
 
 #[cfg(test)]
 mod tests {
-    use nexus_ldap::*;
-    use nexus_ldap::context::LdapContextSourceBuilder;
-    use nexus_ldap::mapper::AttrMap;
-    use nexus_ldap::odm::{AttributeMapping, ObjectDirectoryMapper, Dn, build_dn, parse_rdn_value};
-    use nexus_ldap::pool::{LdapPool, PoolConfig};
-    use nexus_ldap::query::LdapQueryBuilder;
-    use nexus_ldap::repository::{TypedLdapRepository, EntryMapper, EntrySerializer, IdExtractor};
+    use crate::*;
+    use crate::context::LdapContextSourceBuilder;
+    use crate::mapper::{self, AttrMap};
+    use crate::odm::{self, AttributeMapping, ObjectDirectoryMapper, Dn, build_dn, parse_rdn_value};
+    use crate::pool::{LdapPool, PoolConfig};
+    use crate::query::LdapQueryBuilder;
+    use crate::repository::{TypedLdapRepository, EntryMapper, EntrySerializer, IdExtractor};
 
     // ============================================================
     // Domain types for testing / 用于测试的领域类型

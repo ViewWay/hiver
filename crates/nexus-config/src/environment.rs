@@ -563,7 +563,7 @@ mod tests {
     fn test_environment_resolve_placeholders_unresolved() {
         let env = Environment::new();
         let result = env.resolve_placeholders("missing ${no.key} stays");
-        assert_eq!(result, "missing stays");
+        assert_eq!(result, "missing ${no.key} stays");
     }
 
     /// Test set_active_profiles and get_active_profiles

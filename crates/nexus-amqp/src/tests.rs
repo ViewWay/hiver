@@ -3,7 +3,7 @@
 
 #[cfg(test)]
 mod tests {
-    use nexus_amqp::*;
+    use crate::*;
 
     // ── Constants tests / 常量测试 ───────────────────────────────
 

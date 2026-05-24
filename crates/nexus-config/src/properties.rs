@@ -355,7 +355,7 @@ mod tests {
 
     // Test config type for registry tests
     // 用于注册表测试的配置类型
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Clone, serde::Deserialize)]
     struct TestConfig {
         value: String,
     }
@@ -507,7 +507,7 @@ mod tests {
     /// 测试带Default能力的类型的PropertiesConfig load_or_default
     #[test]
     fn test_properties_config_load_or_default_with_default() {
-        #[derive(Debug, Clone, Default)]
+        #[derive(Debug, Clone, Default, serde::Deserialize)]
         struct DefaultableConfig {
             name: String,
         }

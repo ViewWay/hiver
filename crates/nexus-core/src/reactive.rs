@@ -651,9 +651,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_reduce_string() {
-        let result = Flux::from_iter(vec!["a", "b", "c"])
+        let result = Flux::from_iter(vec!["a".to_string(), "b".to_string(), "c".to_string()])
             .reduce(String::new(), |mut acc, x| {
-                acc.push_str(x);
+                acc.push_str(&x);
                 acc
             })
             .await;
@@ -793,7 +793,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_from_iter_empty() {
-        let items: Vec<i32> = Flux::from_iter(Vec::new()).collect().await;
+        let items: Vec<i32> = Flux::from_iter(Vec::<i32>::new()).collect().await;
         assert!(items.is_empty());
     }
 

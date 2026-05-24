@@ -170,11 +170,17 @@ impl Deserializer for JsonDeserializer {
 ///     return new StringSerializer();
 /// }
 /// ```
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct KeySerializer {
     /// Use string keys
     /// 使用字符串键
     pub use_string: bool,
+}
+
+impl Default for KeySerializer {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl KeySerializer {
@@ -219,7 +225,7 @@ mod tests {
     #[test]
     fn test_serialize_data_str() {
         let data: &str = "hello";
-        assert_eq!(data.as_bytes(), Some(b"hello".as_slice()));
+        assert_eq!(SerializeData::as_bytes(data), Some(&b"hello"[..]));
         assert_eq!(data.as_string(), Some("hello"));
     }
 
@@ -228,7 +234,7 @@ mod tests {
     #[test]
     fn test_serialize_data_string() {
         let data = String::from("world");
-        assert_eq!(data.as_bytes(), Some(b"world".as_slice()));
+        assert_eq!(SerializeData::as_bytes(&data), Some(&b"world"[..]));
         assert_eq!(data.as_string(), Some("world"));
     }
 

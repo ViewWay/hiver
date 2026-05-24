@@ -197,7 +197,7 @@ mod tests {
         ext.insert("text".to_string());
         ext.insert(vec![1u8, 2, 3]);
         assert_eq!(ext.get::<i32>(), Some(&42));
-        assert_eq!(ext.get::<String>(), Some(&"text"));
+        assert_eq!(ext.get::<String>(), Some(&"text".to_string()));
         assert_eq!(ext.get::<Vec<u8>>(), Some(&vec![1, 2, 3]));
     }
 

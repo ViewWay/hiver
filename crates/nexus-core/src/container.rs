@@ -1083,7 +1083,7 @@ mod tests {
     #[test]
     fn test_container_clone_independent() {
         let mut container = Container::new();
-        container.register::<EmailService>(|_| Ok(EmailService::default())).unwrap();
+        container.register(|_| Ok(EmailService::default())).unwrap();
         // Clone shares underlying Arc<RwLock<>> so beans are shared / Clone共享底层Arc<RwLock<>>
         let cloned = container.clone();
         assert!(cloned.has_bean::<EmailService>());
@@ -1095,7 +1095,7 @@ mod tests {
     fn test_register_and_get_bean() {
         let mut container = Container::new();
         container
-            .register::<UserRepository>(|_| Ok(UserRepository::default()))
+            .register(|_| Ok(UserRepository::default()))
             .unwrap();
         let bean = container.get_bean::<UserRepository>().unwrap();
         assert!(!bean.initialized);
@@ -1105,7 +1105,7 @@ mod tests {
     fn test_register_factory_creates_instance() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 42 }))
+            .register(|_| Ok(UserService { user_count: 42 }))
             .unwrap();
         let bean = container.get_bean::<UserService>().unwrap();
         assert_eq!(bean.user_count, 42);
@@ -1122,7 +1122,7 @@ mod tests {
     fn test_get_bean_singleton_identity() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 1 }))
+            .register(|_| Ok(UserService { user_count: 1 }))
             .unwrap();
         let first = container.get_bean::<UserService>().unwrap();
         let second = container.get_bean::<UserService>().unwrap();
@@ -1176,7 +1176,7 @@ mod tests {
     fn test_has_bean_true_after_register() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         assert!(container.has_bean::<UserService>());
     }
@@ -1194,7 +1194,7 @@ mod tests {
     fn test_has_bean_false_for_unregistered_type() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         assert!(!container.has_bean::<EmailService>());
     }
@@ -1205,7 +1205,7 @@ mod tests {
     fn test_get_bean_by_name() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 7 }))
+            .register(|_| Ok(UserService { user_count: 7 }))
             .unwrap();
         let type_name = std::any::type_name::<UserService>();
         let bean = container.get_bean_by_name::<UserService>(type_name).unwrap();
@@ -1304,10 +1304,10 @@ mod tests {
     fn test_dependency_injection() {
         let mut container = Container::new();
         container
-            .register::<UserRepository>(|_| Ok(UserRepository::default()))
+            .register(|_| Ok(UserRepository::default()))
             .unwrap();
         container
-            .register::<UserService>(|c| {
+            .register(|c| {
                 let _repo = c.get_bean::<UserRepository>()?;
                 Ok(UserService { user_count: 0 })
             })
@@ -1322,7 +1322,7 @@ mod tests {
     fn test_shutdown_clears_beans() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         container.get_bean::<UserService>().unwrap();
         container.shutdown().unwrap();
@@ -1342,7 +1342,7 @@ mod tests {
     fn test_initialize_no_error() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         container.initialize().unwrap();
     }
@@ -1381,7 +1381,7 @@ mod tests {
         let mut container = Container::new();
         let cond = ConditionalOnMissingBean::of::<CacheService>();
         container
-            .register_conditional::<CacheService, _>(
+            .register_conditional(
                 |_| Ok(CacheService { hits: 0 }),
                 cond,
             )
@@ -1394,14 +1394,14 @@ mod tests {
         let mut container = Container::new();
         // First register / 先注册
         container
-            .register::<CacheService>(|_| Ok(CacheService { hits: 10 }))
+            .register(|_| Ok(CacheService { hits: 10 }))
             .unwrap();
         container.get_bean::<CacheService>().unwrap();
         // Second conditional should still register (registrations are independent)
         // 第二次条件注册仍会注册（注册是独立的）
         let cond = ConditionalOnMissingBean::of::<CacheService>();
         container
-            .register_conditional::<CacheService, _>(
+            .register_conditional(
                 |_| Ok(CacheService { hits: 20 }),
                 cond,
             )
@@ -1412,11 +1412,11 @@ mod tests {
     fn test_register_conditional_on_bean_registers_when_present() {
         let mut container = Container::new();
         container
-            .register::<UserRepository>(|_| Ok(UserRepository::default()))
+            .register(|_| Ok(UserRepository::default()))
             .unwrap();
         let cond = ConditionalOnBean::of::<UserRepository>();
         container
-            .register_conditional::<UserService, _>(
+            .register_conditional(
                 |_| Ok(UserService { user_count: 0 }),
                 cond,
             )
@@ -1480,7 +1480,7 @@ mod tests {
     #[test]
     fn test_application_context_register_with_factory() {
         let mut ctx = ApplicationContext::new();
-        ctx.register_with::<UserService>(|_| Ok(UserService { user_count: 5 }))
+        ctx.register_with(|_| Ok(UserService { user_count: 5 }))
             .unwrap();
         let bean = ctx.get_bean::<UserService>().unwrap();
         assert_eq!(bean.user_count, 5);
@@ -1497,7 +1497,7 @@ mod tests {
     #[test]
     fn test_application_context_get_bean_by_name() {
         let mut ctx = ApplicationContext::new();
-        ctx.register_with::<UserService>(|_| Ok(UserService { user_count: 3 }))
+        ctx.register_with(|_| Ok(UserService { user_count: 3 }))
             .unwrap();
         let type_name = std::any::type_name::<UserService>();
         let bean = ctx.get_bean_by_name::<UserService>(type_name).unwrap();
@@ -1515,7 +1515,7 @@ mod tests {
     #[test]
     fn test_application_context_refresh() {
         let mut ctx = ApplicationContext::new();
-        ctx.register_with::<UserService>(|_| Ok(UserService { user_count: 1 }))
+        ctx.register_with(|_| Ok(UserService { user_count: 1 }))
             .unwrap();
         ctx.start().unwrap();
         ctx.refresh().unwrap();
@@ -1525,13 +1525,13 @@ mod tests {
     #[test]
     fn test_application_context_container_access() {
         let mut ctx = ApplicationContext::new();
-        ctx.register_with::<UserService>(|_| Ok(UserService { user_count: 0 }))
+        ctx.register_with(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         // Immutable access / 不可变访问
         assert!(ctx.container().has_bean::<UserService>());
         // Mutable access / 可变访问
         ctx.container_mut()
-            .register::<EmailService>(|_| Ok(EmailService::default()))
+            .register(|_| Ok(EmailService::default()))
             .unwrap();
         assert!(ctx.container().has_bean::<EmailService>());
     }
@@ -1602,13 +1602,13 @@ mod tests {
     fn test_register_multiple_different_types() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 1 }))
+            .register(|_| Ok(UserService { user_count: 1 }))
             .unwrap();
         container
-            .register::<EmailService>(|_| Ok(EmailService { sent_count: 2 }))
+            .register(|_| Ok(EmailService { sent_count: 2 }))
             .unwrap();
         container
-            .register::<CacheService>(|_| Ok(CacheService { hits: 3 }))
+            .register(|_| Ok(CacheService { hits: 3 }))
             .unwrap();
         let user = container.get_bean::<UserService>().unwrap();
         let email = container.get_bean::<EmailService>().unwrap();
@@ -1622,7 +1622,7 @@ mod tests {
     fn test_get_bean_after_shutdown_returns_error() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         container.get_bean::<UserService>().unwrap();
         container.shutdown().unwrap();
@@ -1632,7 +1632,7 @@ mod tests {
 
     #[test]
     fn test_bean_registration_builder() {
-        let reg = BeanRegistration::new("test_svc")
+        let reg: BeanRegistration<UserService> = BeanRegistration::new("test_svc")
             .scope(Scope::Prototype)
             .primary(true)
             .lazy(true);
@@ -1674,10 +1674,10 @@ mod tests {
     fn test_register_factory_with_container_access() {
         let mut container = Container::new();
         container
-            .register::<UserRepository>(|_| Ok(UserRepository { initialized: true }))
+            .register(|_| Ok(UserRepository { initialized: true }))
             .unwrap();
         container
-            .register::<UserService>(|c| {
+            .register(|c| {
                 let repo = c.get_bean::<UserRepository>()?;
                 Ok(UserService {
                     user_count: if repo.initialized { 100 } else { 0 },
@@ -1725,7 +1725,7 @@ mod tests {
     fn test_shutdown_twice() {
         let mut container = Container::new();
         container
-            .register::<UserService>(|_| Ok(UserService { user_count: 0 }))
+            .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         container.get_bean::<UserService>().unwrap();
         container.shutdown().unwrap();
@@ -1737,7 +1737,7 @@ mod tests {
     fn test_get_bean_by_name_after_lazy_creation() {
         let mut container = Container::new();
         container
-            .register::<CacheService>(|_| Ok(CacheService { hits: 42 }))
+            .register(|_| Ok(CacheService { hits: 42 }))
             .unwrap();
         // First get by name triggers creation / 首次按名称获取触发创建
         let type_name = std::any::type_name::<CacheService>();
@@ -1763,7 +1763,7 @@ mod tests {
         // UserService not registered, so conditional should skip / UserService未注册，条件应跳过
         let cond = ConditionalOnBean::of::<UserService>();
         container
-            .register_conditional::<EmailService, _>(
+            .register_conditional(
                 |_| Ok(EmailService { sent_count: 0 }),
                 cond,
             )
@@ -1780,13 +1780,13 @@ mod tests {
             let count = i;
             match i % 3 {
                 0 => container
-                    .register::<UserService>(move |_| Ok(UserService { user_count: count }))
+                    .register(move |_| Ok(UserService { user_count: count }))
                     .unwrap(),
                 1 => container
-                    .register::<EmailService>(move |_| Ok(EmailService { sent_count: count as u32 }))
+                    .register(move |_| Ok(EmailService { sent_count: count as u32 }))
                     .unwrap(),
                 _ => container
-                    .register::<CacheService>(move |_| Ok(CacheService { hits: count as u64 }))
+                    .register(move |_| Ok(CacheService { hits: count as u64 }))
                     .unwrap(),
             }
         }

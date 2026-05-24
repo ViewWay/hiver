@@ -559,6 +559,7 @@ impl ValueExtractor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{Environment, PropertySource};
 
     // ============================================================
     // Value creation tests / Value创建测试
@@ -955,7 +956,7 @@ mod tests {
     /// 测试从环境提取字符串值
     #[test]
     fn test_extract_string_present() {
-        use crate::Environment;
+
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("greeting", Value::string("hello"));
@@ -987,7 +988,7 @@ mod tests {
     /// 测试从环境提取布尔值
     #[test]
     fn test_extract_bool() {
-        use crate::Environment;
+
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("debug", Value::bool(true));
@@ -1010,7 +1011,7 @@ mod tests {
     /// 测试从环境提取整数值
     #[test]
     fn test_extract_int() {
-        use crate::Environment;
+
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("port", Value::integer(9090));
@@ -1033,7 +1034,7 @@ mod tests {
     /// 测试泛型extract方法
     #[test]
     fn test_extract_generic() {
-        use crate::Environment;
+
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("count", Value::integer(7));
