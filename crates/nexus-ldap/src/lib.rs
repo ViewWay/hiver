@@ -16,6 +16,14 @@
 //! - `ContextSource`: Connection source with pooling
 //! - ODM: Object-Directory Mapping
 //! - Repository: Spring Data style repositories
+//!
+//! # Feature flags / 功能标志
+//!
+//! - `ldap`: Enables real LDAP connectivity via the `ldap3` crate.
+//!   Without this flag, all operations return safe defaults (stubs).
+//!
+//! - `ldap`: 通过 `ldap3` crate 启用真实LDAP连接。
+//!   没有此标志时，所有操作返回安全的默认值（存根）。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -33,11 +41,13 @@ pub mod repository;
 pub mod template;
 
 // Re-exports
-pub use context::{ContextSource, LdapContextSource};
+pub use context::{ContextSource, LdapConnection, LdapContextSource};
 pub use error::{LdapError, LdapResult};
-pub use mapper::{AttributesMapper, ContextMapper};
-pub use odm::{Dn, OdmEntry, ObjectDirectoryMapper};
+pub use mapper::{AttrMap, AttributesMapper, ContextMapper};
+pub use odm::{Dn, OdmEntry, ObjectDirectoryMapper, AttributeMapping, DnMapper,
+             build_dn, parse_rdn_value};
 pub use pool::{LdapPool, PoolConfig, PoolStats};
 pub use query::LdapQueryBuilder;
-pub use repository::LdapRepository;
+pub use repository::{LdapRepository, SimpleLdapRepository, TypedLdapRepository,
+                     EntryMapper, EntrySerializer, IdExtractor};
 pub use template::LdapTemplate;

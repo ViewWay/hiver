@@ -42,3 +42,11 @@ serde_json = { workspace = true }
 
 # Utilities / 工具
 parking_lot = { workspace = true }
+
+# LDAP client (optional) / LDAP客户端（可选）
+ldap3 = { version = "0.11", optional = true }
+
+[features]
+default = []
+# Enable real LDAP connectivity via ldap3 / 通过ldap3启用真实LDAP连接
+ldap = ["ldap3"]
