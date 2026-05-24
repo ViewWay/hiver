@@ -13,7 +13,11 @@ nexus-http = { path = "../nexus-http" }
 nexus-runtime = { path = "../nexus-runtime" }
 nexus-router = { path = "../nexus-router" }
 nexus-extractors = { path = "../nexus-extractors" }
+nexus-security = { path = "../nexus-security" }
+nexus-data-orm = { path = "../nexus-data-orm" }
 criterion = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
 
 [[bench]]
 name = "http_server"
@@ -29,3 +33,23 @@ path = "router.rs"
 name = "extractors"
 harness = false
 path = "extractors.rs"
+
+[[bench]]
+name = "runtime_driver"
+harness = false
+path = "runtime_driver.rs"
+
+[[bench]]
+name = "http_techpower"
+harness = false
+path = "http_techpower.rs"
+
+[[bench]]
+name = "data_orm"
+harness = false
+path = "data_orm.rs"
+
+[[bench]]
+name = "security"
+harness = false
+path = "security.rs"
