@@ -78,7 +78,7 @@ pub struct Certificate {
 }
 
 /// Certificate role configuration / 证书角色配置
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CertificateRole {
     /// Allowed domains / 允许的域名
     #[serde(rename = "allowed_domains", skip_serializing_if = "Option::is_none")]
