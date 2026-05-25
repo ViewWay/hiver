@@ -112,6 +112,8 @@ pub mod repository;
 pub mod launcher;
 pub mod execution;
 pub mod context;
+pub mod partition;
+pub mod flow;
 
 // Prelude module for convenient imports
 pub mod prelude {
