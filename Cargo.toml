@@ -58,6 +58,7 @@ members = [
     "crates/nexus-ws",
     "crates/nexus-ai",
     "crates/nexus-lombok",
+    "crates/nexus-spel",
     "tests",
     "examples",
 ]

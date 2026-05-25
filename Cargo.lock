@@ -7091,6 +7091,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-spel"
+version = "0.1.0-alpha"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "nexus-starter"
 version = "0.1.0"
 dependencies = [

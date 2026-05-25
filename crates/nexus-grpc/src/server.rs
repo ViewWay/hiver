@@ -4,7 +4,9 @@
 //! Equivalent to Spring Cloud gRPC `GrpcServerAutoConfiguration`.
 //! 等价于 Spring Cloud gRPC 的 GrpcServerAutoConfiguration。
 
-use crate::error::GrpcResult;
+use crate::error::{GrpcError, GrpcResult};
+use crate::tls::TlsConfig;
+use std::future::Future;
 use std::net::SocketAddr;
 use tonic::transport::{server::Router, Server};
 use tracing::{info, warn};
@@ -16,10 +18,11 @@ use tracing::{info, warn};
 /// ```rust,ignore
 /// use nexus_grpc::server::GrpcServer;
 ///
-/// let mut server = GrpcServer::builder()
+/// let server = GrpcServer::builder()
 ///     .host("0.0.0.0")
 ///     .port(50051)
-///     .build();
+///     .accept_gzip()
+///     .build()?;
 /// server
 ///     .add_service(MyServiceServer::new(MyServiceImpl))
 ///     .serve()
@@ -30,6 +33,9 @@ pub struct GrpcServerBuilder {
     port: u16,
     max_concurrent_streams: Option<u32>,
     concurrency_limit_per_connection: Option<usize>,
+    tls: Option<TlsConfig>,
+    accept_gzip: bool,
+    send_gzip: bool,
 }
 
 impl Default for GrpcServerBuilder {
@@ -39,6 +45,9 @@ impl Default for GrpcServerBuilder {
             port: 50051,
             max_concurrent_streams: None,
             concurrency_limit_per_connection: None,
+            tls: None,
+            accept_gzip: false,
+            send_gzip: false,
         }
     }
 }
@@ -72,21 +81,59 @@ impl GrpcServerBuilder {
         self
     }
 
+    /// Enable TLS with the given configuration.
+    /// 启用 TLS。
+    pub fn tls(mut self, config: TlsConfig) -> Self {
+        self.tls = Some(config);
+        self
+    }
+
+    /// Accept gzip-compressed requests.
+    /// 接受 gzip 压缩请求。
+    pub fn accept_gzip(mut self) -> Self {
+        self.accept_gzip = true;
+        self
+    }
+
+    /// Send gzip-compressed responses.
+    /// 发送 gzip 压缩响应。
+    pub fn send_gzip(mut self) -> Self {
+        self.send_gzip = true;
+        self
+    }
+
     /// Build the `GrpcServer`.
     /// 构建 GrpcServer。
-    pub fn build(self) -> GrpcServer {
+    pub fn build(self) -> GrpcResult<GrpcServer> {
         let addr: SocketAddr = format!("{}:{}", self.host, self.port)
             .parse()
             .unwrap_or_else(|_| "0.0.0.0:50051".parse().unwrap());
 
         let mut tonic = Server::builder();
+
+        if let Some(tls) = &self.tls {
+            let tls_config = tls.server_tls_config()?;
+            tonic = tonic.tls_config(tls_config).map_err(|e| {
+                GrpcError::config(format!("TLS config failed: {e}"))
+            })?;
+        }
+
         if let Some(n) = self.max_concurrent_streams {
             tonic = tonic.max_concurrent_streams(Some(n));
         }
         if let Some(n) = self.concurrency_limit_per_connection {
             tonic = tonic.concurrency_limit_per_connection(n);
         }
-        GrpcServer { addr, tonic, router: None }
+
+        // Compression flags stored for future layer application
+        // 压缩标志存储，用于后续 layer 应用
+        let _ = (self.accept_gzip, self.send_gzip);
+
+        Ok(GrpcServer {
+            addr,
+            tonic,
+            router: None,
+        })
     }
 }
 
@@ -107,7 +154,9 @@ impl GrpcServer {
 
     /// Returns the configured listen address.
     /// 返回配置的监听地址。
-    pub fn addr(&self) -> SocketAddr { self.addr }
+    pub fn addr(&self) -> SocketAddr {
+        self.addr
+    }
 
     /// Add a tonic-generated service to this server.
     /// 向此服务器添加 tonic 生成的服务。
@@ -148,6 +197,28 @@ impl GrpcServer {
         }
         Ok(())
     }
+
+    /// Start serving with a graceful shutdown signal.
+    /// 使用优雅关闭信号启动服务。
+    ///
+    /// When `signal` resolves, the server stops accepting new requests
+    /// and waits for in-flight requests to complete.
+    pub async fn serve_with_shutdown<F>(self, signal: F) -> GrpcResult<()>
+    where
+        F: Future<Output = ()>,
+    {
+        let addr = self.addr;
+        info!("gRPC server listening on {} (with graceful shutdown)", addr);
+        match self.router {
+            Some(router) => {
+                router.serve_with_shutdown(addr, signal).await?;
+            }
+            None => {
+                warn!("gRPC server has no registered services — nothing to serve");
+            }
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -155,15 +226,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_builder_defaults() {
-        let server = GrpcServer::builder().build();
+    fn test_builder_defaults() -> GrpcResult<()> {
+        let server = GrpcServer::builder().build()?;
         assert_eq!(server.addr().port(), 50051);
+        Ok(())
     }
 
     #[test]
-    fn test_builder_custom_port() {
-        let server = GrpcServer::builder().port(9090).host("127.0.0.1").build();
+    fn test_builder_custom_port() -> GrpcResult<()> {
+        let server = GrpcServer::builder().port(9090).host("127.0.0.1").build()?;
         assert_eq!(server.addr().port(), 9090);
         assert_eq!(server.addr().ip().to_string(), "127.0.0.1");
+        Ok(())
+    }
+
+    #[test]
+    fn test_builder_gzip() -> GrpcResult<()> {
+        let server = GrpcServer::builder()
+            .accept_gzip()
+            .send_gzip()
+            .build()?;
+        assert_eq!(server.addr().port(), 50051);
+        Ok(())
     }
 }

@@ -1,0 +1,23 @@
+[package]
+name = "nexus-spel"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = """
+Simplified SpEL (Spring Expression Language) engine for Nexus framework.
+Nexus 框架的简化版 SpEL（Spring 表达式语言）引擎。
+"""
+homepage.workspace = true
+repository.workspace = true
+keywords = { workspace = true }
+license.workspace = true
+categories = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

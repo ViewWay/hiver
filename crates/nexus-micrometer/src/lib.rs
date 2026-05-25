@@ -46,6 +46,7 @@ pub mod counter;
 pub mod gauge;
 pub mod timer;
 pub mod registry;
+pub mod prometheus;
 
 pub use error::{MicrometerError, Result};
 pub use metric::{MetricId, MetricName, MetricType, Tag, Tags};

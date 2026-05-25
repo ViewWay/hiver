@@ -9,6 +9,7 @@ pub mod dataloader;
 pub mod engine;
 pub mod error;
 pub mod resolver;
+pub mod subscription;
 
 #[cfg(test)]
 mod tests;

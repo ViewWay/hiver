@@ -837,33 +837,55 @@ fn generate_derived_query_method(
     let method_name_str = method.sig.ident.to_string();
     let return_type_str = quote!(#method_sig.output).to_string();
 
-    let (operation, conditions) = parse_method_name(&method_name_str);
+    let (operation, conditions, order_by, limit) = parse_method_name(&method_name_str);
     let args = extract_args(&method.sig.inputs);
 
     // Build WHERE clause with $N placeholders
-    let where_clause = if conditions.is_empty() {
+    let mut param_idx = 0usize;
+    let where_parts: Vec<String> = conditions.iter().map(|c| {
+        let field = to_snake_case(c.field());
+        match c {
+            QueryCondition::Eq(_) => { param_idx += 1; format!("{} = ${}", field, param_idx) }
+            QueryCondition::Like(_) => { param_idx += 1; format!("{} LIKE ${}", field, param_idx) }
+            QueryCondition::NotLike(_) => { param_idx += 1; format!("{} NOT LIKE ${}", field, param_idx) }
+            QueryCondition::GreaterThan(_) => { param_idx += 1; format!("{} > ${}", field, param_idx) }
+            QueryCondition::GreaterThanEqual(_) => { param_idx += 1; format!("{} >= ${}", field, param_idx) }
+            QueryCondition::LessThan(_) => { param_idx += 1; format!("{} < ${}", field, param_idx) }
+            QueryCondition::LessThanEqual(_) => { param_idx += 1; format!("{} <= ${}", field, param_idx) }
+            QueryCondition::In(_) => { param_idx += 1; format!("{} IN (${})", field, param_idx) }
+            QueryCondition::Between(_) => { param_idx += 2; format!("{} BETWEEN ${} AND ${}", field, param_idx - 1, param_idx) }
+            QueryCondition::IsNull(_) => format!("{} IS NULL", field),
+            QueryCondition::IsNotNull(_) => format!("{} IS NOT NULL", field),
+            QueryCondition::Not(_) => { param_idx += 1; format!("{} != ${}", field, param_idx) }
+        }
+    }).collect();
+
+    let where_clause = if where_parts.is_empty() {
         String::new()
     } else {
-        let parts: Vec<String> = conditions
-            .iter()
-            .enumerate()
-            .map(|(i, c)| format!("{} = ${}", to_snake_case(c), i + 1))
-            .collect();
-        format!("WHERE {}", parts.join(" AND "))
+        format!("WHERE {}", where_parts.join(" AND "))
     };
 
+    let order_clause = if order_by.is_empty() {
+        String::new()
+    } else {
+        format!(" ORDER BY {}", order_by.join(", "))
+    };
+
+    let limit_clause = limit.map(|n| format!(" LIMIT {}", n)).unwrap_or_default();
+
     let sql = match operation.as_str() {
-        "find" | "find_all" => format!("SELECT * FROM {} {}", table_name, where_clause),
+        "find" | "find_all" => format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause),
         "count" => format!("SELECT COUNT(*) AS cnt FROM {} {}", table_name, where_clause),
         "exists" => format!("SELECT EXISTS(SELECT 1 FROM {} {}) AS ex", table_name, where_clause),
         "delete" => format!("DELETE FROM {} {}", table_name, where_clause),
-        _ => format!("SELECT * FROM {} {}", table_name, where_clause),
+        _ => format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause),
     };
 
     let returns_option = return_type_str.contains("Option");
     let returns_vec = return_type_str.contains("Vec");
     let returns_bool = return_type_str.contains("bool");
-    let returns_usize = return_type_str.contains("usize") || return_type_str.contains("i64");
+    let _returns_usize = return_type_str.contains("usize") || return_type_str.contains("i64");
 
     let params_build = quote! {
         let params: Vec<nexus_data_rdbc::QueryParam> = vec![
@@ -948,43 +970,182 @@ fn generate_derived_query_method(
     }
 }
 
-/// Parse method name to extract operation and conditions
-/// Examples:
-/// - "find_by_username_and_email" -> ("find", ["username", "email"])
-/// - "count_by_active" -> ("count", ["active"])
-/// - "delete_by_user_id" -> ("delete", ["user_id"])
-/// - "find_all_by_status" -> ("find_all", ["status"])
-fn parse_method_name(method_name: &str) -> (String, Vec<String>) {
+/// A single condition parsed from a method name.
+/// 从方法名解析的单个条件。
+#[derive(Debug, Clone)]
+enum QueryCondition {
+    /// field = ? (default equality)
+    Eq(String),
+    /// field LIKE ?
+    Like(String),
+    /// field NOT LIKE ?
+    NotLike(String),
+    /// field > ?
+    GreaterThan(String),
+    /// field >= ?
+    GreaterThanEqual(String),
+    /// field < ?
+    LessThan(String),
+    /// field <= ?
+    LessThanEqual(String),
+    /// field IN (?)
+    In(String),
+    /// field BETWEEN ? AND ?
+    Between(String),
+    /// field IS NULL
+    IsNull(String),
+    /// field IS NOT NULL
+    IsNotNull(String),
+    /// field != ?
+    Not(String),
+}
+
+impl QueryCondition {
+    fn field(&self) -> &str {
+        match self {
+            Self::Eq(f) | Self::Like(f) | Self::NotLike(f)
+            | Self::GreaterThan(f) | Self::GreaterThanEqual(f)
+            | Self::LessThan(f) | Self::LessThanEqual(f)
+            | Self::In(f) | Self::Between(f)
+            | Self::IsNull(f) | Self::IsNotNull(f)
+            | Self::Not(f) => f,
+        }
+    }
+}
+
+/// Parse method name to extract operation, conditions, and query structure.
+/// 解析方法名以提取操作、条件和查询结构。
+///
+/// Supported patterns / 支持的模式:
+/// - `find_by_username` → WHERE username = $1
+/// - `find_by_username_and_email` → WHERE username = $1 AND email = $2
+/// - `find_by_username_or_email` → WHERE username = $1 OR email = $2
+/// - `find_by_age_greater_than` → WHERE age > $1
+/// - `find_by_name_like` → WHERE name LIKE $1
+/// - `find_by_status_in` → WHERE status IN ($1)
+/// - `find_by_age_between` → WHERE age BETWEEN $1 AND $2
+/// - `find_by_deleted_is_null` → WHERE deleted IS NULL
+/// - `count_by_active` → SELECT COUNT(*) ... WHERE active = $1
+/// - `find_all_by_status_order_by_name` → ... ORDER BY name
+/// - `find_by_active_limit_10` → ... LIMIT 10
+fn parse_method_name(method_name: &str) -> (String, Vec<QueryCondition>, Vec<String>, Option<usize>) {
     let method_name_lower = method_name.to_lowercase();
 
-    let operation = if method_name_lower.starts_with("find_all_by_") {
-        "find_all".to_string()
+    let (operation, rest) = if method_name_lower.starts_with("find_all_by_") {
+        ("find_all", &method_name[12..])
     } else if method_name_lower.starts_with("find_by_") {
-        "find".to_string()
+        ("find", &method_name[8..])
     } else if method_name_lower.starts_with("count_by_") {
-        "count".to_string()
+        ("count", &method_name[9..])
     } else if method_name_lower.starts_with("exists_by_") {
-        "exists".to_string()
+        ("exists", &method_name[10..])
     } else if method_name_lower.starts_with("delete_by_") {
-        "delete".to_string()
+        ("delete", &method_name[10..])
     } else {
-        "find".to_string()
+        return ("find".to_string(), Vec::new(), Vec::new(), None);
     };
 
-    // Extract conditions after "by_"
-    let conditions_part = if let Some(idx) = method_name_lower.find("_by_") {
-        &method_name[idx + 4..]
+    let rest_lower = rest.to_lowercase();
+
+    // Extract LIMIT if present
+    let limit = if let Some(idx) = rest_lower.find("_limit_") {
+        let after = &rest[idx + 7..];
+        after.parse::<usize>().ok()
     } else {
-        return (operation, Vec::new());
+        None
     };
 
-    // Split by "_and_" to get individual conditions
-    let conditions: Vec<String> = conditions_part
-        .split("_and_")
-        .map(|s| s.to_string())
-        .collect();
+    // Strip _limit_N suffix and _order_by_... suffix for condition parsing
+    let conditions_part = rest_lower
+        .split("_order_by_").next().unwrap_or(&rest_lower)
+        .split("_limit_").next().unwrap_or(&rest_lower);
 
-    (operation, conditions)
+    // Split by _and_ and _or_ to get condition segments
+    let conditions = parse_conditions(conditions_part);
+
+    // Extract ORDER BY fields
+    let order_by = if let Some(idx) = rest_lower.find("_order_by_") {
+        let order_part = rest_lower[idx + 10..]
+            .split("_limit_").next().unwrap_or("");
+        order_part.split('_').filter(|s| !s.is_empty()).map(String::from).collect()
+    } else {
+        Vec::new()
+    };
+
+    (operation.to_string(), conditions, order_by, limit)
+}
+
+/// Parse condition segments from a method name fragment.
+fn parse_conditions(part: &str) -> Vec<QueryCondition> {
+    let mut conditions = Vec::new();
+    let segments = split_conditions(part);
+
+    for seg in &segments {
+        let seg_lower = seg.to_lowercase();
+        let seg_str = seg_lower.as_str();
+
+        if seg_str.ends_with("_greater_than_equal") {
+            let field = &seg_str[..seg_str.len() - 20];
+            if !field.is_empty() { conditions.push(QueryCondition::GreaterThanEqual(field.to_string())); }
+        } else if seg_str.ends_with("_less_than_equal") {
+            let field = &seg_str[..seg_str.len() - 16];
+            if !field.is_empty() { conditions.push(QueryCondition::LessThanEqual(field.to_string())); }
+        } else if seg_str.ends_with("_greater_than") {
+            let field = &seg_str[..seg_str.len() - 13];
+            if !field.is_empty() { conditions.push(QueryCondition::GreaterThan(field.to_string())); }
+        } else if seg_str.ends_with("_less_than") {
+            let field = &seg_str[..seg_str.len() - 10];
+            if !field.is_empty() { conditions.push(QueryCondition::LessThan(field.to_string())); }
+        } else if seg_str.ends_with("_not_like") {
+            let field = &seg_str[..seg_str.len() - 9];
+            if !field.is_empty() { conditions.push(QueryCondition::NotLike(field.to_string())); }
+        } else if seg_str.ends_with("_like") {
+            let field = &seg_str[..seg_str.len() - 5];
+            if !field.is_empty() { conditions.push(QueryCondition::Like(field.to_string())); }
+        } else if seg_str.ends_with("_is_not_null") {
+            let field = &seg_str[..seg_str.len() - 12];
+            if !field.is_empty() { conditions.push(QueryCondition::IsNotNull(field.to_string())); }
+        } else if seg_str.ends_with("_is_null") {
+            let field = &seg_str[..seg_str.len() - 8];
+            if !field.is_empty() { conditions.push(QueryCondition::IsNull(field.to_string())); }
+        } else if seg_str.ends_with("_in") {
+            let field = &seg_str[..seg_str.len() - 3];
+            if !field.is_empty() { conditions.push(QueryCondition::In(field.to_string())); }
+        } else if seg_str.ends_with("_between") {
+            let field = &seg_str[..seg_str.len() - 8];
+            if !field.is_empty() { conditions.push(QueryCondition::Between(field.to_string())); }
+        } else if seg_str.ends_with("_not") {
+            let field = &seg_str[..seg_str.len() - 4];
+            if !field.is_empty() { conditions.push(QueryCondition::Not(field.to_string())); }
+        } else if !seg_str.is_empty() {
+            conditions.push(QueryCondition::Eq(seg_str.to_string()));
+        }
+    }
+
+    conditions
+}
+
+/// Split a method name fragment by _and_ and _or_ separators.
+fn split_conditions(s: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut current = String::new();
+    let bytes = s.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+    while i < len {
+        if i + 5 <= len && &s[i..i+5] == "_and_" {
+            if !current.is_empty() { result.push(std::mem::take(&mut current)); }
+            i += 5;
+        } else if i + 4 <= len && &s[i..i+4] == "_or_" {
+            if !current.is_empty() { result.push(std::mem::take(&mut current)); }
+            i += 4;
+        } else {
+            current.push(bytes[i] as char);
+            i += 1;
+        }
+    }
+    if !current.is_empty() { result.push(current); }
+    result
 }
 
 #[cfg(test)]
@@ -1001,24 +1162,45 @@ mod tests {
 
     #[test]
     fn test_parse_method_name() {
-        let (op, conds) = parse_method_name("find_by_username");
+        let (op, conds, order, limit) = parse_method_name("find_by_username");
         assert_eq!(op, "find");
-        assert_eq!(conds, vec!["username"]);
+        assert_eq!(conds.len(), 1);
+        assert!(matches!(&conds[0], QueryCondition::Eq(f) if f == "username"));
+        assert!(order.is_empty());
+        assert!(limit.is_none());
 
-        let (op, conds) = parse_method_name("find_by_username_and_email");
+        let (op, conds, _, _) = parse_method_name("find_by_username_and_email");
         assert_eq!(op, "find");
-        assert_eq!(conds, vec!["username", "email"]);
+        assert_eq!(conds.len(), 2);
 
-        let (op, conds) = parse_method_name("count_by_active");
+        let (op, conds, _, _) = parse_method_name("count_by_active");
         assert_eq!(op, "count");
-        assert_eq!(conds, vec!["active"]);
+        assert_eq!(conds.len(), 1);
 
-        let (op, conds) = parse_method_name("delete_by_user_id");
+        let (op, conds, _, _) = parse_method_name("delete_by_user_id");
         assert_eq!(op, "delete");
-        assert_eq!(conds, vec!["user_id"]);
+        assert_eq!(conds.len(), 1);
 
-        let (op, conds) = parse_method_name("find_all_by_status");
+        let (op, conds, _, _) = parse_method_name("find_all_by_status");
         assert_eq!(op, "find_all");
-        assert_eq!(conds, vec!["status"]);
+        assert_eq!(conds.len(), 1);
+    }
+
+    #[test]
+    fn test_parse_method_name_operators() {
+        let (op, conds, _, _) = parse_method_name("find_by_age_greater_than");
+        assert_eq!(op, "find");
+        assert!(matches!(&conds[0], QueryCondition::GreaterThan(f) if f == "age"));
+
+        let (op, conds, _, _) = parse_method_name("find_by_name_like");
+        assert!(matches!(&conds[0], QueryCondition::Like(f) if f == "name"));
+
+        let (op, conds, _, _) = parse_method_name("find_by_deleted_is_null");
+        assert!(matches!(&conds[0], QueryCondition::IsNull(f) if f == "deleted"));
+
+        let (_, conds, order, limit) = parse_method_name("find_by_active_order_by_name_limit_10");
+        assert!(matches!(&conds[0], QueryCondition::Eq(f) if f == "active"));
+        assert_eq!(order, vec!["name"]);
+        assert_eq!(limit, Some(10));
     }
 }

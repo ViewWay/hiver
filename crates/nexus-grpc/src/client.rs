@@ -5,36 +5,25 @@
 //! 等价于 Spring Cloud gRPC 的 GrpcChannelFactory / GrpcClientFactory。
 
 use crate::error::{GrpcError, GrpcResult};
+use crate::tls::TlsConfig;
 use std::time::Duration;
 use tonic::transport::{Channel, Endpoint};
 use tracing::info;
 
 /// Configuration for a gRPC client channel.
 /// gRPC 客户端通道配置。
-///
-/// # Example / 示例
-/// ```rust,ignore
-/// use nexus_grpc::client::GrpcChannelBuilder;
-/// use hello::greeter_client::GreeterClient;
-///
-/// let channel = GrpcChannelBuilder::new("http://127.0.0.1:50051")
-///     .timeout(Duration::from_secs(5))
-///     .connect_timeout(Duration::from_secs(2))
-///     .connect()
-///     .await?;
-/// let mut client = GreeterClient::new(channel);
-/// ```
 pub struct GrpcChannelBuilder {
     endpoint: String,
     timeout: Option<Duration>,
     connect_timeout: Option<Duration>,
     rate_limit: Option<(u64, Duration)>,
     concurrency_limit: Option<usize>,
+    tls: Option<TlsConfig>,
 }
 
 impl GrpcChannelBuilder {
-    /// Create a new builder pointing at `endpoint` (e.g. `"http://127.0.0.1:50051"`).
-    /// 创建指向 endpoint 的新构建器（例如 "http://127.0.0.1:50051"）。
+    /// Create a new builder pointing at `endpoint`.
+    /// 创建指向 endpoint 的新构建器。
     pub fn new(endpoint: impl Into<String>) -> Self {
         Self {
             endpoint: endpoint.into(),
@@ -42,6 +31,7 @@ impl GrpcChannelBuilder {
             connect_timeout: None,
             rate_limit: None,
             concurrency_limit: None,
+            tls: None,
         }
     }
 
@@ -59,8 +49,8 @@ impl GrpcChannelBuilder {
         self
     }
 
-    /// Rate-limit the channel (`requests` per `per` duration).
-    /// 限制通道速率（每 per 时间 requests 个请求）。
+    /// Rate-limit the channel.
+    /// 限制通道速率。
     pub fn rate_limit(mut self, requests: u64, per: Duration) -> Self {
         self.rate_limit = Some((requests, per));
         self
@@ -73,8 +63,15 @@ impl GrpcChannelBuilder {
         self
     }
 
-    /// Establish the channel (lazy — actual TCP connect happens on first RPC).
-    /// 建立通道（懒连接 — 实际 TCP 连接发生在第一次 RPC 时）。
+    /// Enable TLS with the given configuration.
+    /// 启用 TLS。
+    pub fn tls(mut self, config: TlsConfig) -> Self {
+        self.tls = Some(config);
+        self
+    }
+
+    /// Establish the channel (lazy).
+    /// 建立通道（懒连接）。
     pub fn connect_lazy(self) -> GrpcResult<Channel> {
         let addr = self.endpoint.clone();
         let endpoint = self.build_endpoint()?;
@@ -107,6 +104,12 @@ impl GrpcChannelBuilder {
         if let Some(n) = self.concurrency_limit {
             ep = ep.concurrency_limit(n);
         }
+        if let Some(tls) = self.tls {
+            let tls_config = tls.client_tls_config()?;
+            ep = ep.tls_config(tls_config).map_err(|e| {
+                GrpcError::config(format!("client TLS config failed: {e}"))
+            })?;
+        }
         Ok(ep)
     }
 }
@@ -122,7 +125,10 @@ impl GrpcChannelPool {
     /// Create a pool from already-connected channels.
     /// 从已连接的通道创建池。
     pub fn new(channels: Vec<Channel>) -> Self {
-        Self { channels, next: std::sync::atomic::AtomicUsize::new(0) }
+        Self {
+            channels,
+            next: std::sync::atomic::AtomicUsize::new(0),
+        }
     }
 
     /// Round-robin pick a channel.
@@ -138,11 +144,15 @@ impl GrpcChannelPool {
 
     /// Number of channels in the pool.
     /// 池中的通道数量。
-    pub fn len(&self) -> usize { self.channels.len() }
+    pub fn len(&self) -> usize {
+        self.channels.len()
+    }
 
     /// Returns `true` if the pool is empty.
     /// 若池为空则返回 true。
-    pub fn is_empty(&self) -> bool { self.channels.is_empty() }
+    pub fn is_empty(&self) -> bool {
+        self.channels.is_empty()
+    }
 }
 
 #[cfg(test)]

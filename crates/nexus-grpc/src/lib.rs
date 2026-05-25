@@ -25,8 +25,10 @@
 
 pub mod client;
 pub mod error;
+pub mod health;
 pub mod interceptor;
 pub mod metadata;
 pub mod server;
+pub mod tls;
 
 pub use error::GrpcError;

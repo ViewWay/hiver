@@ -50,6 +50,7 @@
 mod tests;
 
 mod auth;
+pub mod acl;
 pub mod authorization_server;
 mod authority;
 mod context;

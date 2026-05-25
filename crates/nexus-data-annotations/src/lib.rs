@@ -71,6 +71,7 @@ mod column;
 mod entity;
 mod id;
 mod query;
+mod relation;
 mod repository;
 mod transactional;
 mod transactional_macro;
@@ -205,6 +206,87 @@ pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream {
 #[allow(non_snake_case)]
 pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
     column::impl_column(attr, item)
+}
+
+// ========================================================================
+// Relation Annotations / 关系注解
+// ========================================================================
+
+/// Marks a one-to-many relationship
+/// 标记一对多关系
+///
+/// # Attributes / 属性
+///
+/// - `target_entity` - Target entity type name / 目标实体类型名
+/// - `mapped_by` - Field name in target entity / 目标实体中的字段名
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_data_annotations::{Entity, OneToMany};
+///
+/// #[Entity]
+/// pub struct User {
+///     pub id: i64,
+///     #[OneToMany(target_entity = "Order", mapped_by = "user_id")]
+///     pub orders: Vec<Order>,
+/// }
+/// ```
+#[proc_macro_attribute]
+#[allow(non_snake_case)]
+pub fn OneToMany(attr: TokenStream, item: TokenStream) -> TokenStream {
+    relation::impl_one_to_many(attr, item)
+}
+
+/// Marks a many-to-one relationship
+/// 标记多对一关系
+///
+/// # Attributes / 属性
+///
+/// - `target_entity` - Target entity type name / 目标实体类型名
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_data_annotations::{Entity, ManyToOne};
+///
+/// #[Entity]
+/// pub struct Order {
+///     pub id: i64,
+///     #[ManyToOne(target_entity = "User")]
+///     pub user: User,
+/// }
+/// ```
+#[proc_macro_attribute]
+#[allow(non_snake_case)]
+pub fn ManyToOne(attr: TokenStream, item: TokenStream) -> TokenStream {
+    relation::impl_many_to_one(attr, item)
+}
+
+/// Marks a many-to-many relationship
+/// 标记多对多关系
+///
+/// # Attributes / 属性
+///
+/// - `target_entity` - Target entity type name / 目标实体类型名
+/// - `mapped_by` - Field name in target entity / 目标实体中的字段名
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_data_annotations::{Entity, ManyToMany};
+///
+/// #[Entity]
+/// pub struct User {
+///     pub id: i64,
+///     #[ManyToMany(target_entity = "Role", mapped_by = "users")]
+///     pub roles: Vec<Role>,
+/// }
+/// ```
+#[proc_macro_attribute]
+#[allow(non_snake_case)]
+pub fn ManyToMany(attr: TokenStream, item: TokenStream) -> TokenStream {
+    relation::impl_many_to_many(attr, item)
 }
 
 // ========================================================================
