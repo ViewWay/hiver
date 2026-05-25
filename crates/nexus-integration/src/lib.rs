@@ -43,8 +43,10 @@
 
 pub mod aggregator;
 pub mod channel;
+pub mod endpoint;
 pub mod error;
 pub mod filter;
+pub mod interceptor;
 pub mod message;
 pub mod router;
 pub mod splitter;
