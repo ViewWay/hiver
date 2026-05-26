@@ -49,6 +49,14 @@ validator = { workspace = true }
 chrono = { workspace = true }
 indexmap = { workspace = true }
 
+# Encryption / 加密
+aes-gcm = { workspace = true }
+base64 = { workspace = true }
+hex = { workspace = true }
+rand = { workspace = true }
+sha2 = { workspace = true }
+hmac = { workspace = true }
+
 # Logging / 日志
 tracing = { workspace = true }
 

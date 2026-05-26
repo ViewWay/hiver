@@ -208,6 +208,7 @@ hex = "0.4"
 getrandom = "0.3"
 sha3 = "0.10"
 sha2 = "0.10"
+aes-gcm = "0.10"
 
 # Template Engines / 模板引擎
 # Equivalent to: Spring Thymeleaf, FreeMarker

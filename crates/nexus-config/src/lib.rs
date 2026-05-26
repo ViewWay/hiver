@@ -47,6 +47,7 @@
 mod tests;
 
 mod config;
+mod encrypt;
 mod environment;
 mod error;
 mod loader;
@@ -55,6 +56,7 @@ mod source;
 mod value;
 
 pub use config::{Config, ConfigBuilder, FileFormat, ReloadStrategy};
+pub use encrypt::{ConfigEncryptor, EncryptError};
 pub use environment::{ActiveProfiles, Environment, Profile};
 pub use error::{ConfigError, ConfigResult};
 pub use loader::{ConfigLoader, ConfigLoaderBuilder, Watcher};
