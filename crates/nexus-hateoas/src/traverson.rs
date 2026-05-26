@@ -108,6 +108,26 @@ impl Traverson {
     pub fn links(&self) -> Vec<Link> {
         self.links.get(&self.current_url).cloned().unwrap_or_default()
     }
+
+    /// Follow a chain of link relations by providing successive response bodies.
+    /// 通过提供连续的响应体来跟随一系列链接关系。
+    pub fn follow_chain(mut self, steps: &[(&str, String, Value)]) -> Result<Self, TraversonError> {
+        for (rel, url, body) in steps {
+            let _ = self.find_link_href(rel)?;
+            self = self.navigate_to(url, body.clone())?;
+        }
+        Ok(self)
+    }
+
+    /// Get a specific link's href from the current resource.
+    pub fn link_href(&self, rel: &str) -> Option<String> {
+        self.find_link_href(rel).ok()
+    }
+
+    /// Check if a link relation exists.
+    pub fn has_link(&self, rel: &str) -> bool {
+        self.find_link_href(rel).is_ok()
+    }
 }
 
 #[derive(Debug, Clone, thiserror::Error)]
@@ -159,5 +179,40 @@ mod tests {
         let body = serde_json::json!({"id": 1, "_links": {"self": {"href": "/api/1"}}});
         let t = t.navigate_to("http://localhost/api/1", body).unwrap();
         assert!(t.follow("nonexistent").is_err());
+    }
+
+    #[test]
+    fn test_follow_chain() {
+        let body1 = serde_json::json!({
+            "_links": {
+                "self": {"href": "/api"},
+                "users": {"href": "/api/users"}
+            }
+        });
+        let body2 = serde_json::json!({
+            "_links": {
+                "self": {"href": "/api/users"},
+                "first": {"href": "/api/users/1"}
+            }
+        });
+        let t = Traverson::new("http://localhost/api")
+            .with_response("http://localhost/api", body1);
+        let t = t.follow_chain(&[
+            ("users", "http://localhost/api/users".into(), body2),
+        ]).unwrap();
+        assert!(t.has_link("first"));
+        assert_eq!(t.link_href("first"), Some("/api/users/1".to_string()));
+    }
+
+    #[test]
+    fn test_has_link() {
+        let body = serde_json::json!({
+            "_links": {"self": {"href": "/api/1"}, "next": {"href": "/api/2"}}
+        });
+        let t = Traverson::new("http://localhost/api")
+            .with_response("http://localhost/api/1", body);
+        assert!(t.has_link("self"));
+        assert!(t.has_link("next"));
+        assert!(!t.has_link("prev"));
     }
 }

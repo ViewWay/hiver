@@ -70,3 +70,108 @@ where
         CollectionModel::from(entities.to_vec())
     }
 }
+
+/// Typed resource assembler that auto-generates self and collection links.
+/// 类型化资源装配器，自动生成 self 和 collection 链接。
+pub struct TypedResourceAssembler<T, F>
+where
+    F: Fn(&T) -> String + Send + Sync,
+{
+    collection_path: String,
+    self_link_fn: F,
+    _phantom: std::marker::PhantomData<T>,
+}
+
+impl<T, F> TypedResourceAssembler<T, F>
+where
+    F: Fn(&T) -> String + Send + Sync,
+{
+    /// Create a new typed assembler.
+    pub fn new(collection_path: impl Into<String>, self_link_fn: F) -> Self {
+        Self {
+            collection_path: collection_path.into(),
+            self_link_fn,
+            _phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<T, F> RepresentationModelAssembler<T> for TypedResourceAssembler<T, F>
+where
+    T: Clone + serde::Serialize,
+    F: Fn(&T) -> String + Send + Sync,
+{
+    fn to_model(&self, entity: &T) -> EntityModel<T> {
+        let mut model = EntityModel::from(entity.clone());
+        let self_href = (self.self_link_fn)(entity);
+        model.add_link(Link::new(&self_href).with_rel(crate::link::LinkRelation::Self_));
+        model.add_link(
+            Link::new(&self.collection_path)
+                .with_rel(crate::link::LinkRelation::Custom("collection".into())),
+        );
+        model
+    }
+}
+
+impl<T, F> CollectionModelAssembler<T> for TypedResourceAssembler<T, F>
+where
+    T: Clone + serde::Serialize,
+    F: Fn(&T) -> String + Send + Sync,
+{
+    fn to_collection_model(&self, entities: &[T]) -> CollectionModel<T> {
+        let items: Vec<EntityModel<T>> = entities.iter().map(|e| self.to_model(e)).collect();
+        let mut collection = CollectionModel::from(items);
+        collection.add_link(
+            Link::new(&self.collection_path).with_rel(crate::link::LinkRelation::Self_),
+        );
+        collection
+    }
+
+    fn collection_link(&self) -> Link {
+        Link::new(&self.collection_path).with_rel(crate::link::LinkRelation::Self_)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Clone, serde::Serialize)]
+    struct Item {
+        id: u64,
+        name: String,
+    }
+
+    #[test]
+    fn test_typed_assembler_single() {
+        let asm = TypedResourceAssembler::new("/api/items", |item: &Item| {
+            format!("/api/items/{}", item.id)
+        });
+        let item = Item { id: 42, name: "test".into() };
+        let model = asm.to_model(&item);
+        let links = model.links();
+        assert!(links.iter().any(|l| l.rel() == &LinkRelation::Self_));
+        assert!(links.iter().any(|l| l.rel().to_string() == "collection"));
+    }
+
+    #[test]
+    fn test_typed_assembler_collection() {
+        let asm = TypedResourceAssembler::new("/api/items", |item: &Item| {
+            format!("/api/items/{}", item.id)
+        });
+        let items = vec![
+            Item { id: 1, name: "a".into() },
+            Item { id: 2, name: "b".into() },
+        ];
+        let collection = asm.to_collection_model(&items);
+        assert!(collection.links().iter().any(|l| l.rel() == &LinkRelation::Self_));
+    }
+
+    #[test]
+    fn test_simple_assembler() {
+        let asm = SimpleAssembler;
+        let item = Item { id: 1, name: "test".into() };
+        let model: EntityModel<Item> = asm.to_model(&item);
+        assert_eq!(model.links().len(), 0);
+    }
+}
