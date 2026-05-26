@@ -61,6 +61,7 @@ mod jwt;
 mod oauth2;
 mod pre_authorize;
 mod rbac;
+mod rememberme;
 mod request_ext;
 mod role;
 mod secured;
