@@ -57,6 +57,9 @@ async-trait = { workspace = true }
 futures = { workspace = true }
 pin-project-lite = { workspace = true }
 
+# Async runtime (for backpressure channels)
+tokio = { workspace = true, features = ["sync", "macros", "rt"] }
+
 # Utilities / 工具 (Spring Utils)
 indexmap = { workspace = true }
 itertools = { workspace = true }

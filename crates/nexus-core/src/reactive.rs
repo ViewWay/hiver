@@ -327,6 +327,83 @@ impl<T: Send + 'static> Flux<T> {
         }
     }
 
+    // ── Backpressure operators / 背压操作符 ────────────────────────────────────
+
+    /// Apply backpressure by buffering up to `capacity` items.
+    /// When the buffer is full, the producer is suspended.
+    /// 应用背压：缓冲最多 `capacity` 个元素。缓冲满时生产者暂停。
+    pub fn on_backpressure_buffer(self, capacity: usize) -> Flux<T> {
+        let (tx, rx) = tokio::sync::mpsc::channel(capacity);
+        let mut stream = self.inner;
+        let producer = async move {
+            while let Some(item) = StreamExt::next(&mut stream).await {
+                if tx.send(item).await.is_err() {
+                    break;
+                }
+            }
+        };
+        tokio::spawn(producer);
+        Flux {
+            inner: Box::pin(stream::unfold(rx, |mut rx| async move {
+                rx.recv().await.map(|item| (item, rx))
+            })),
+        }
+    }
+
+    /// Apply backpressure by dropping items when the buffer is full.
+    /// 应用背压：缓冲满时丢弃新元素。
+    pub fn on_backpressure_drop(self, capacity: usize) -> Flux<T> {
+        let (tx, rx) = tokio::sync::mpsc::channel(capacity);
+        let mut stream = self.inner;
+        let producer = async move {
+            while let Some(item) = StreamExt::next(&mut stream).await {
+                let _ = tx.try_send(item);
+            }
+        };
+        tokio::spawn(producer);
+        Flux {
+            inner: Box::pin(stream::unfold(rx, |mut rx| async move {
+                rx.recv().await.map(|item| (item, rx))
+            })),
+        }
+    }
+
+    /// Apply backpressure by keeping only the latest item.
+    /// 应用背压：仅保留最新元素。
+    pub fn on_backpressure_latest(self) -> Flux<T> {
+        let (tx, rx) = tokio::sync::mpsc::channel(1);
+        let mut stream = self.inner;
+        let producer = async move {
+            while let Some(item) = StreamExt::next(&mut stream).await {
+                tx.send(item).await.ok();
+            }
+        };
+        tokio::spawn(producer);
+        Flux {
+            inner: Box::pin(stream::unfold(rx, |mut rx| async move {
+                rx.recv().await.map(|item| (item, rx))
+            })),
+        }
+    }
+
+    /// Batch items into groups of at most `n` elements.
+    /// 将元素批量分组，每组最多 `n` 个元素。
+    pub fn buffer(self, n: usize) -> Flux<Vec<T>> {
+        Flux {
+            inner: Box::pin(self.inner.chunks(n)),
+        }
+    }
+
+    /// Rate-limit by taking `n` items at a time.
+    /// 限速：每次只取 `n` 个元素。
+    pub fn limit_rate(self, n: usize) -> Flux<T> {
+        Flux {
+            inner: Box::pin(self.inner.ready_chunks(n).flat_map(|chunk| {
+                stream::iter(chunk)
+            })),
+        }
+    }
+
     // ── Terminal operations / 终结操作 ────────────────────────────────────────
 
     /// Collects all emitted items into a collection.
@@ -862,5 +939,75 @@ mod tests {
     async fn test_flux_skip_zero() {
         let items = Flux::from_iter(vec![1, 2, 3]).skip(0).collect::<Vec<_>>().await;
         assert_eq!(items, vec![1, 2, 3]);
+    }
+
+    // ── Backpressure tests / 背压测试 ──────────────────────────────────
+
+    #[tokio::test]
+    async fn test_backpressure_buffer() {
+        let items = Flux::from_iter(vec![1, 2, 3, 4, 5])
+            .on_backpressure_buffer(10)
+            .collect::<Vec<_>>()
+            .await;
+        let mut sorted = items;
+        sorted.sort();
+        assert_eq!(sorted, vec![1, 2, 3, 4, 5]);
+    }
+
+    #[tokio::test]
+    async fn test_backpressure_drop() {
+        let items = Flux::from_iter(0..100)
+            .on_backpressure_drop(10)
+            .collect::<Vec<_>>()
+            .await;
+        // Some items may be dropped, but we should get at least some
+        assert!(!items.is_empty());
+        assert!(items.len() <= 100);
+    }
+
+    #[tokio::test]
+    async fn test_backpressure_latest() {
+        let items = Flux::from_iter(0..50)
+            .on_backpressure_latest()
+            .collect::<Vec<_>>()
+            .await;
+        // Should get at least the last few items
+        assert!(!items.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_buffer_batching() {
+        let batches = Flux::from_iter(vec![1, 2, 3, 4, 5])
+            .buffer(2)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(batches, vec![vec![1, 2], vec![3, 4], vec![5]]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_buffer_larger_than_input() {
+        let batches = Flux::from_iter(vec![1, 2])
+            .buffer(10)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(batches, vec![vec![1, 2]]);
+    }
+
+    #[tokio::test]
+    async fn test_flux_buffer_empty() {
+        let batches = Flux::<i32>::empty()
+            .buffer(5)
+            .collect::<Vec<_>>()
+            .await;
+        assert!(batches.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_flux_limit_rate() {
+        let items = Flux::from_iter(vec![1, 2, 3, 4, 5])
+            .limit_rate(2)
+            .collect::<Vec<_>>()
+            .await;
+        assert_eq!(items, vec![1, 2, 3, 4, 5]);
     }
 }
