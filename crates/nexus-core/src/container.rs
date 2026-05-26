@@ -155,6 +155,14 @@ struct BeanStore {
     /// Type-erased pre-destroy hooks keyed by TypeId
     /// 按TypeId键控的类型擦除销毁前回调
     pre_destroy_hooks: HashMap<TypeId, Box<dyn PreDestroyHook>>,
+
+    /// Type-erased eager init functions (for `initialize()`)
+    /// 类型擦除的急切初始化函数（用于 `initialize()`）
+    eager_init_fns: HashMap<TypeId, Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
+
+    /// Whether each registration is lazy
+    /// 每个注册是否延迟初始化
+    lazy_flags: HashMap<TypeId, bool>,
 }
 
 impl BeanStore {
@@ -166,6 +174,8 @@ impl BeanStore {
             early_exposed: HashMap::new(),
             creating: std::cell::RefCell::new(std::collections::HashSet::new()),
             pre_destroy_hooks: HashMap::new(),
+            eager_init_fns: HashMap::new(),
+            lazy_flags: HashMap::new(),
         }
     }
 }
@@ -280,6 +290,18 @@ impl Container {
         beans
             .by_name
             .insert(registration.definition.name.clone(), type_id);
+
+        let is_lazy = registration.definition.lazy;
+        beans.lazy_flags.insert(type_id, is_lazy);
+
+        beans.eager_init_fns.insert(
+            type_id,
+            Arc::new(|c: &Container| {
+                c.get_bean::<T>()?;
+                Ok(())
+            }),
+        );
+
         beans.registrations.insert(type_id, Box::new(registration));
 
         Ok(())
@@ -647,25 +669,35 @@ impl Container {
     /// Initialize all registered beans (eager initialization)
     /// 初始化所有注册的bean（急切初始化）
     ///
-    /// Equivalent to calling `getBean()` on all registered beans.
-    /// 等价于在所有注册的bean上调用`getBean()`。
+    /// Equivalent to calling `getBean()` on all non-lazy registered beans.
+    /// 等价于在所有非延迟注册的bean上调用`getBean()`。
+    /// Lazy beans are skipped and will be initialized on first access.
+    /// 延迟bean被跳过，将在首次访问时初始化。
     pub fn initialize(&self) -> Result<()> {
-        // Get all type_ids from registrations
-        // 获取注册中的所有type_id
-        let type_ids: Vec<_> = {
+        let to_init: Vec<TypeId> = {
             let beans = self
                 .beans
                 .read()
                 .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
-            beans.registrations.keys().copied().collect()
+            beans
+                .registrations
+                .keys()
+                .filter(|tid| !beans.lazy_flags.get(tid).copied().unwrap_or(false))
+                .copied()
+                .collect()
         };
 
-        for _ in type_ids {
-            // We can't directly initialize without knowing the type
-            // In a real implementation, we'd have more metadata
-            // 在实际实现中，我们会拥有更多元数据
-            // For now, just note that initialization would happen
-            // 目前，只需注意初始化会发生
+        for type_id in to_init {
+            let init_fn = {
+                let beans = self
+                    .beans
+                    .read()
+                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                beans.eager_init_fns.get(&type_id).cloned()
+            };
+            if let Some(init_fn) = init_fn {
+                init_fn(self)?;
+            }
         }
 
         Ok(())
@@ -1345,6 +1377,73 @@ mod tests {
             .register(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
         container.initialize().unwrap();
+    }
+
+    #[test]
+    fn test_initialize_creates_eager_beans() {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let created = Arc::new(AtomicBool::new(false));
+        let created_clone = created.clone();
+
+        let mut container = Container::new();
+        let reg = BeanRegistration::new("svc")
+            .factory(Arc::new(move |_| {
+                created_clone.store(true, Ordering::SeqCst);
+                Ok(UserService { user_count: 42 })
+            }));
+        container.register_with(reg).unwrap();
+
+        assert!(!created.load(Ordering::SeqCst));
+
+        container.initialize().unwrap();
+
+        assert!(created.load(Ordering::SeqCst));
+        let bean = container.get_bean::<UserService>().unwrap();
+        assert_eq!(bean.user_count, 42);
+    }
+
+    #[test]
+    fn test_initialize_skips_lazy_beans() {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let created = Arc::new(AtomicBool::new(false));
+        let created_clone = created.clone();
+
+        let mut container = Container::new();
+        let reg = BeanRegistration::new("svc")
+            .factory(Arc::new(move |_| {
+                created_clone.store(true, Ordering::SeqCst);
+                Ok(UserService { user_count: 99 })
+            }))
+            .lazy(true);
+        container.register_with(reg).unwrap();
+
+        container.initialize().unwrap();
+
+        // Factory should NOT have been called
+        assert!(!created.load(Ordering::SeqCst));
+
+        // But it works on first get_bean
+        let bean = container.get_bean::<UserService>().unwrap();
+        assert!(created.load(Ordering::SeqCst));
+        assert_eq!(bean.user_count, 99);
+    }
+
+    #[test]
+    fn test_initialize_mixed_lazy_and_eager() {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let eager_created = Arc::new(AtomicBool::new(false));
+        let eager_clone = eager_created.clone();
+
+        let mut container = Container::new();
+        let reg_eager = BeanRegistration::new("eager")
+            .factory(Arc::new(move |_| {
+                eager_clone.store(true, Ordering::SeqCst);
+                Ok(UserService { user_count: 1 })
+            }));
+        container.register_with(reg_eager).unwrap();
+
+        container.initialize().unwrap();
+        assert!(eager_created.load(Ordering::SeqCst));
     }
 
     // ── Extensions ─────────────────────────────────────────────────────
