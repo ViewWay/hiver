@@ -62,6 +62,8 @@ pub mod error;
 pub mod model;
 pub mod active_record;
 pub mod query;
+pub mod example;
+pub mod specification;
 pub mod repository;
 pub mod relationships;
 pub mod migrations;
