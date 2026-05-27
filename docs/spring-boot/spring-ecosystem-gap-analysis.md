@@ -195,7 +195,7 @@
 |------|----------------|-------|------|
 | CsrfFilter | ✅ | CsrfTokenRepository | **90%** |
 | CORS | ✅ | `nexus-middleware` CORS | **已实现** |
-| Security Headers | ✅ | — | **部分** |
+| Security Headers | ✅ | `SecurityHeadersMiddleware` + `SecurityHeadersConfig` | **已实现** |
 
 ### 3.5 会话管理
 

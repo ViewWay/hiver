@@ -31,6 +31,7 @@ pub mod cors;
 pub mod jwt_auth;
 pub mod logger;
 pub mod middleware;
+pub mod security_headers;
 pub mod static_files;
 pub mod timeout;
 
@@ -53,5 +54,6 @@ pub use cors::{CorsConfig, CorsMiddleware};
 pub use jwt_auth::{JwtAuthenticationMiddleware, JwtRequestExt};
 pub use logger::LoggerMiddleware;
 pub use middleware::MiddlewareStack;
+pub use security_headers::{SecurityHeadersConfig, SecurityHeadersMiddleware};
 pub use static_files::StaticFiles;
 pub use timeout::TimeoutMiddleware;
