@@ -60,6 +60,7 @@ mod error;
 mod jwt;
 mod oauth2;
 mod pre_authorize;
+mod post_authorize;
 mod rbac;
 mod rememberme;
 mod request_ext;
@@ -80,6 +81,7 @@ pub use oauth2::{
     UserInfo,
 };
 pub use pre_authorize::{PreAuthorize, SecurityExpression};
+pub use post_authorize::{PostAuthorize, PostAuthorizeOptions};
 pub use rbac::{
     AuditLog, AuditLogger, ConsoleAuditLogger, PermissionEntry, RbacConfig, RbacManager,
     RolePermission, UserRole,
