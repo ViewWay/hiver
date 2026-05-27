@@ -18,6 +18,16 @@ const HELPER_ATTRS: &[&str] = &[
     "JoinColumn",
     "JoinTable",
     "Transient",
+    "PrePersist",
+    "PostPersist",
+    "PreUpdate",
+    "PostUpdate",
+    "PreRemove",
+    "PostLoad",
+    "CreatedDate",
+    "LastModifiedDate",
+    "CreatedBy",
+    "LastModifiedBy",
 ];
 
 // ============================================================
@@ -88,6 +98,7 @@ fn extract_usize(args: &[(String, syn::Expr)], key: &str) -> Option<usize> {
 
 struct FieldMeta {
     name: String,
+    ty: String,
     is_id: bool,
     id_strategy: Option<String>,
     column_name: Option<String>,
@@ -98,6 +109,8 @@ struct FieldMeta {
     relation_kind: Option<String>,
     relation_target: Option<String>,
     relation_mapped_by: Option<String>,
+    join_column: Option<String>,
+    join_table: Option<String>,
 }
 
 impl FieldMeta {
@@ -112,8 +125,10 @@ impl FieldMeta {
 /// 通过读取辅助属性从结构体字段提取元数据。
 fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
     let name = field.ident.as_ref()?.to_string();
+    let ty = quote!(#field.ty).to_string().replace(' ', "");
     let mut meta = FieldMeta {
         name,
+        ty,
         is_id: false,
         id_strategy: None,
         column_name: None,
@@ -124,6 +139,8 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
         relation_kind: None,
         relation_target: None,
         relation_mapped_by: None,
+        join_column: None,
+        join_table: None,
     };
 
     for attr in &field.attrs {
@@ -173,6 +190,14 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
                 meta.relation_kind = Some("many_to_many".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
+            }
+            "JoinColumn" => {
+                let args = parse_attr_args(attr);
+                meta.join_column = extract_string(&args, "name");
+            }
+            "JoinTable" => {
+                let args = parse_attr_args(attr);
+                meta.join_table = extract_string(&args, "name");
             }
             _ => {}
         }
@@ -359,6 +384,35 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         })
         .collect();
 
+    let field_type_lits: Vec<LitStr> = fields
+        .iter()
+        .map(|f| LitStr::new(&f.ty, Span::call_site()))
+        .collect();
+
+    let join_info_entries: Vec<_> = fields
+        .iter()
+        .filter(|f| f.join_column.is_some() || f.join_table.is_some())
+        .map(|f| {
+            let field = LitStr::new(&f.name, Span::call_site());
+            let jc = f.join_column.as_deref().map(|s| LitStr::new(s, Span::call_site()));
+            let jt = f.join_table.as_deref().map(|s| LitStr::new(s, Span::call_site()));
+            let jc_code = jc.map(|l| quote! { Some(#l) }).unwrap_or(quote! { None });
+            let jt_code = jt.map(|l| quote! { Some(#l) }).unwrap_or(quote! { None });
+            quote! { (#field, #jc_code, #jt_code) }
+        })
+        .collect();
+
+    let length_arms: Vec<_> = fields
+        .iter()
+        .map(|f| {
+            let fname = LitStr::new(&f.name, Span::call_site());
+            match f.length {
+                Some(l) => quote! { #fname => Some(#l) },
+                None => quote! { #fname => None },
+            }
+        })
+        .collect();
+
     let expanded = quote! {
         #input
 
@@ -375,6 +429,13 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
             #[inline]
             pub fn field_names() -> &'static [&'static str] {
                 &[#(#field_name_lits),*]
+            }
+
+            /// Returns all non-transient field type strings.
+            /// 返回所有非瞬态字段的类型字符串。
+            #[inline]
+            pub fn field_types() -> &'static [&'static str] {
+                &[#(#field_type_lits),*]
             }
 
             /// Returns the number of persistent fields.
@@ -413,6 +474,15 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
                 }
             }
 
+            /// Returns the column length for a field, if specified.
+            /// 返回字段的列长度（如果指定）。
+            pub fn length_for(field: &str) -> Option<usize> {
+                match field {
+                    #(#length_arms,)*
+                    _ => None,
+                }
+            }
+
             /// Returns the ID field name.
             /// 返回 ID 字段名。
             #[inline]
@@ -432,6 +502,13 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
             #[inline]
             pub fn relations() -> &'static [(&'static str, &'static str, Option<&'static str>)] {
                 &[#(#relation_entries),*]
+            }
+
+            /// Returns join info: (field_name, join_column, join_table).
+            /// 返回连接信息：(字段名, 连接列名, 连接表名)。
+            #[inline]
+            pub fn join_info() -> &'static [(&'static str, Option<&'static str>, Option<&'static str>)] {
+                &[#(#join_info_entries),*]
             }
         }
     };

@@ -79,7 +79,7 @@
 | 功能 | Spring Boot | Nexus | 状态 |
 |------|------------|-------|------|
 | @SpringBootTest | ✅ | `nexus-test` 测试工具 | **70%** |
-| @MockBean | Mockito | — | **缺失** |
+| @MockBean | Mockito | `MockBean` trait 替换 | **已实现** |
 | TestContainers | ✅ | `nexus-test` testcontainers 集成 | **已实现** |
 | 集成测试 | ✅ | 5 个容器目标 | **已实现** |
 
@@ -219,9 +219,9 @@
 | 方法名派生查询 | findByXxxAndYyy | MethodName::parse() | **已实现** |
 | @Query 注解 | ✅ | `#[Query]` 宏 | **已实现** |
 | 分页排序 | Pageable/Page/Sort | ✅ | **已实现** |
-| Example 查询 | ✅ | — | **缺失** |
-| Specification | ✅ | — | **缺失** |
-| 审计 | @CreatedDate/@LastModifiedDate | — | **缺失** |
+| Example 查询 | ✅ | `Example<T>` + `ExampleMatcher` | **已实现** |
+| Specification | ✅ | `Spec` + `CompositeSpec` + `JpaSpecificationExecutor` | **已实现** |
+| 审计 | @CreatedDate/@LastModifiedDate | `#[CreatedDate]`/`#[LastModifiedDate]`/`#[CreatedBy]`/`#[LastModifiedBy]` | **已实现** |
 
 ### 4.2 数据库支持
 
@@ -241,7 +241,7 @@
 
 | 功能 | Spring Data | Nexus | 状态 |
 |------|-----------|-------|------|
-| @Entity | ✅ | `nexus-data-annotations` | **60%** |
+| @Entity | ✅ | `nexus-data-annotations` + 生命周期回调 + JoinColumn/JoinTable | **90%** |
 | Model derive | — | `nexus-data-macros` | **65%** |
 | 关系映射 | @OneToMany/@ManyToOne | HasMany/HasOne/BelongsTo | **已实现** |
 

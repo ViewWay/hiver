@@ -76,6 +76,7 @@ mod repository;
 mod transactional;
 mod transactional_macro;
 mod audit;
+mod lifecycle;
 
 // Pre-authorize macro module (conditionally compiled with security feature)
 // Pre-authorize 宏模块（使用 security feature 条件编译）
@@ -563,4 +564,104 @@ pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_last_modified_by(attr, item)
+}
+
+// ============================================================================
+// Lifecycle Callback Annotations / 生命周期回调注解
+// ============================================================================
+
+/// Marks a method to be called before entity persist (INSERT).
+/// 标记方法在实体持久化（INSERT）之前调用。
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @PrePersist
+/// protected void onCreate() { ... }
+/// ```
+#[proc_macro_attribute]
+pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_pre_persist(attr, item)
+}
+
+/// Marks a method to be called after entity persist.
+/// 标记方法在实体持久化之后调用。
+#[proc_macro_attribute]
+pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_post_persist(attr, item)
+}
+
+/// Marks a method to be called before entity update.
+/// 标记方法在实体更新之前调用。
+#[proc_macro_attribute]
+pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_pre_update(attr, item)
+}
+
+/// Marks a method to be called after entity update.
+/// 标记方法在实体更新之后调用。
+#[proc_macro_attribute]
+pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_post_update(attr, item)
+}
+
+/// Marks a method to be called before entity remove (DELETE).
+/// 标记方法在实体删除之前调用。
+#[proc_macro_attribute]
+pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_pre_remove(attr, item)
+}
+
+/// Marks a method to be called after entity is loaded from database.
+/// 标记方法在实体从数据库加载之后调用。
+#[proc_macro_attribute]
+pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream {
+    lifecycle::impl_post_load(attr, item)
+}
+
+// ============================================================================
+// Additional Field Annotations / 附加字段注解
+// ============================================================================
+
+/// Marks a field as non-persistent (not mapped to a database column).
+/// 标记字段为非持久化（不映射到数据库列）。
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @Transient
+/// private String computedField;
+/// ```
+#[proc_macro_attribute]
+pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+
+/// Specifies the foreign key column for a relationship.
+/// 指定关系的外键列。
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @JoinColumn(name = "user_id")
+/// private User user;
+/// ```
+#[proc_macro_attribute]
+pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+
+/// Specifies the join table for a many-to-many relationship.
+/// 指定多对多关系的连接表。
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @JoinTable(name = "user_roles",
+///     joinColumns = @JoinColumn(name = "user_id"),
+///     inverseJoinColumns = @JoinColumn(name = "role_id"))
+/// ```
+#[proc_macro_attribute]
+pub fn JoinTable(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
 }
