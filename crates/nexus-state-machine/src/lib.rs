@@ -50,16 +50,24 @@ use std::fmt::Debug;
 pub mod builder;
 pub mod config;
 pub mod error;
+pub mod persist;
+pub mod regions;
 pub mod state;
+pub mod timer;
 pub mod transition;
+pub mod visualizer;
 
 pub use builder::{
     ActionExt, GuardExt, StateMachineBuilder, TransitionBuilder,
 };
 pub use config::{StateConfig, StateDataValueConfig, StateMachineConfig, TransitionConfig};
 pub use error::{StateMachineError, StateMachineResult};
+pub use persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot};
+pub use regions::{ForkJoinRegion, Region};
 pub use state::{State, StateContext, StateData, StateDataValue};
+pub use timer::{StateMachineTimer, TimerScheduler};
 pub use transition::{Action, Guard, Transition};
+pub use visualizer::{DiagramFormat, StateMachineVisualizer};
 
 /// Event trait for state machine events
 /// 状态机事件的特征
