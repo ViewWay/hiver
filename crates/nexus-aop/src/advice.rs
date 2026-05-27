@@ -1,4 +1,4 @@
-//! Advice attribute macros (@Before, @After, @Around)
+//! Advice attribute macros (@Before, @After, @Around, @AfterReturning, @AfterThrowing)
 //! 通知属性宏
 
 use proc_macro::TokenStream;
@@ -165,6 +165,96 @@ pub(crate) fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream {
             /// Returns the advice type
             /// 返回通知类型
             const ADVICE_TYPE: &str = "around";
+
+            #[doc(hidden)]
+            fn _nexus_get_pointcut() -> &'static str {
+                POINTCUT
+            }
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+/// Implements #[AfterReturning] attribute macro
+/// 实现 #[AfterReturning] 属性宏
+///
+/// Marks a method as after-returning advice (executed after the join point returns successfully)
+/// 将方法标记为返回后通知（在连接点成功返回后执行）
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_aop::AfterReturning;
+///
+/// #[AfterReturning("execution(* com.example..*.*(..))")]
+/// fn log_success(&self, join_point: &JoinPoint, result: &ReturnValue) {
+///     println!("Method returned successfully: {}", join_point.method_name());
+/// }
+/// ```
+pub(crate) fn impl_after_returning(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as ItemFn);
+    let func_name = &input.sig.ident;
+
+    let args = parse_macro_input!(attr as PointcutExpr);
+    let pointcut = args.expression;
+
+    let expanded = quote! {
+        #input
+
+        impl #func_name {
+            /// Returns the pointcut expression for this advice
+            /// 返回此通知的切点表达式
+            const POINTCUT: &str = #pointcut;
+
+            /// Returns the advice type
+            /// 返回通知类型
+            const ADVICE_TYPE: &str = "after_returning";
+
+            #[doc(hidden)]
+            fn _nexus_get_pointcut() -> &'static str {
+                POINTCUT
+            }
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+/// Implements #[AfterThrowing] attribute macro
+/// 实现 #[AfterThrowing] 属性宏
+///
+/// Marks a method as after-throwing advice (executed when the join point throws an error)
+/// 将方法标记为异常后通知（在连接点抛出异常时执行）
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_aop::AfterThrowing;
+///
+/// #[AfterThrowing("execution(* com.example..*.*(..))")]
+/// fn log_error(&self, join_point: &JoinPoint, error: &Error) {
+///     eprintln!("Method threw error: {} - {}", join_point.method_name(), error);
+/// }
+/// ```
+pub(crate) fn impl_after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as ItemFn);
+    let func_name = &input.sig.ident;
+
+    let args = parse_macro_input!(attr as PointcutExpr);
+    let pointcut = args.expression;
+
+    let expanded = quote! {
+        #input
+
+        impl #func_name {
+            /// Returns the pointcut expression for this advice
+            /// 返回此通知的切点表达式
+            const POINTCUT: &str = #pointcut;
+
+            /// Returns the advice type
+            /// 返回通知类型
+            const ADVICE_TYPE: &str = "after_throwing";
 
             #[doc(hidden)]
             fn _nexus_get_pointcut() -> &'static str {

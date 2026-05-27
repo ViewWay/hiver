@@ -314,6 +314,12 @@ pub enum AdviceType {
     /// Around advice
     /// 环绕通知
     Around,
+    /// After returning advice
+    /// 返回后通知
+    AfterReturning,
+    /// After throwing advice
+    /// 异常后通知
+    AfterThrowing,
 }
 
 // ============================================================================
@@ -746,6 +752,8 @@ mod tests {
         assert_eq!(AdviceType::Before, AdviceType::Before);
         assert_eq!(AdviceType::After, AdviceType::After);
         assert_eq!(AdviceType::Around, AdviceType::Around);
+        assert_eq!(AdviceType::AfterReturning, AdviceType::AfterReturning);
+        assert_eq!(AdviceType::AfterThrowing, AdviceType::AfterThrowing);
 
         assert_ne!(AdviceType::Before, AdviceType::After);
         assert_ne!(AdviceType::After, AdviceType::Around);

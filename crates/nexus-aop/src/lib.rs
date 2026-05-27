@@ -9,6 +9,8 @@
 //! - **`@Before`** - Before advice (runs before method execution)
 //! - **`@After`** - After advice (runs after method execution)
 //! - **`@Around`** - Around advice (wraps method execution)
+//! - **`@AfterReturning`** - After-returning advice (runs after successful return)
+//! - **`@AfterThrowing`** - After-throwing advice (runs after exception)
 //! - **`@Pointcut`** - Pointcut definition (reusable join points)
 //!
 //! ## Example / 示例
@@ -144,6 +146,48 @@ pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_around(attr, item)
+}
+
+/// Marks a method as after-returning advice
+/// 将方法标记为返回后通知
+///
+/// Executed only when the join point returns successfully.
+/// 仅在连接点成功返回时执行。
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_aop::AfterReturning;
+///
+/// #[AfterReturning("execution(* com.example..*.*(..))")]
+/// fn log_success(&self, join_point: &JoinPoint) {
+///     println!("Method returned successfully");
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn after_returning(attr: TokenStream, item: TokenStream) -> TokenStream {
+    advice::impl_after_returning(attr, item)
+}
+
+/// Marks a method as after-throwing advice
+/// 将方法标记为异常后通知
+///
+/// Executed only when the join point throws an error.
+/// 仅在连接点抛出异常时执行。
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_aop::AfterThrowing;
+///
+/// #[AfterThrowing("execution(* com.example..*.*(..))")]
+/// fn log_error(&self, join_point: &JoinPoint) {
+///     eprintln!("Method threw an error");
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream {
+    advice::impl_after_throwing(attr, item)
 }
 
 // ========================================================================
