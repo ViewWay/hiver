@@ -113,8 +113,8 @@
 | @Before | ✅ | ✅ | **已实现** |
 | @After | ✅ | ✅ | **已实现** |
 | @Around | ✅ | ✅ | **已实现** |
-| @AfterReturning | ✅ | — | **缺失** |
-| @AfterThrowing | ✅ | — | **缺失** |
+| @AfterReturning | ✅ | ✅ `nexus-aop` | **已实现** |
+| @AfterThrowing | ✅ | ✅ `nexus-aop` | **已实现** |
 | @Pointcut | ✅ | ✅ | **已实现** |
 | JoinPoint | ✅ | ✅ | **已实现** |
 | AspectRegistry | ✅ | ✅ | **已实现** |
@@ -166,14 +166,14 @@
 | OAuth2 Login | ✅ | ✅ 授权码/客户端凭证 | **85%** |
 | OIDC | ✅ | ✅ Discovery | **已实现** |
 | Remember Me | ✅ | RememberMeServices + token rotation | **已实现** |
-| 匿名认证 | ✅ | — | **缺失** |
+| 匿名认证 | ✅ | ✅ `AnonymousAuthentication` | **已实现** |
 
 ### 3.2 授权
 
 | 功能 | Spring Security | Nexus | 状态 |
 |------|----------------|-------|------|
 | @PreAuthorize | ✅ | ✅ SpEL 表达式 | **已实现** |
-| @PostAuthorize | ✅ | — | **缺失** |
+| @PostAuthorize | ✅ | ✅ `nexus-security` PostAuthorize | **已实现** |
 | @Secured | ✅ | ✅ | **已实现** |
 | @RolesAllowed | ✅ | ✅ | **已实现** |
 | RBAC | ✅ | ✅ RbacManager + 审计 | **已实现** |
@@ -520,10 +520,9 @@
 
 ### 与 Spring Boot 的关键差距（已大幅缩小）
 
-1. **AOP @AfterReturning/@AfterThrowing** — AOP 增强通知
-2. **@PostAuthorize** — 方法调用后权限检查
-3. **匿名认证** — Anonymous Authentication
-4. **Web Flow** — 流程引擎（未规划）
+1. **Example 查询/Specification** — JPA 高级查询模式
+2. **审计 @CreatedDate/@LastModifiedDate** — 数据审计
+3. **Web Flow** — 流程引擎（未规划）
 
 ### Nexus 相对 Spring Boot 的优势
 
