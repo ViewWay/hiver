@@ -222,4 +222,4 @@ pub fn pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
 // 注意：运行时类型仅在非 proc-macro 构建时可用。
 //       这是一种变通方法 - 理想情况下，运行时类型应该在单独的 crate 中。
 #[cfg(not(proc_macro))]
-pub use runtime::{AdviceType, AspectRegistry, JoinPoint, PointcutExpression, global_registry};
+pub use runtime::{AdviceChain, AdviceType, AspectRegistry, JoinPoint, PointcutExpression, ProceedingJoinPoint, global_registry};

@@ -143,6 +143,177 @@ impl fmt::Debug for JoinPoint {
 }
 
 // ============================================================================
+// ProceedingJoinPoint / 可继续的连接点
+// ============================================================================
+
+/// A join point that supports proceeding with the underlying method.
+/// 支持继续执行底层方法的连接点。
+///
+/// Used by `@Around` advice to control whether and when the target
+/// method executes.
+///
+/// 用于 `@Around` 通知控制目标方法是否以及何时执行。
+pub struct ProceedingJoinPoint {
+    /// Inner join point data.
+    /// 内部连接点数据。
+    inner: JoinPoint,
+    /// Whether proceed() has been called.
+    /// proceed() 是否已被调用。
+    proceeded: bool,
+}
+
+impl ProceedingJoinPoint {
+    /// Create a new proceeding join point.
+    /// 创建新的可继续连接点。
+    pub fn new(inner: JoinPoint) -> Self {
+        Self {
+            inner,
+            proceeded: false,
+        }
+    }
+
+    /// Get the method name.
+    /// 获取方法名。
+    pub fn method_name(&self) -> &str {
+        self.inner.method_name()
+    }
+
+    /// Get the method arguments.
+    /// 获取方法参数。
+    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>] {
+        self.inner.args()
+    }
+
+    /// Get typed argument by index.
+    /// 通过索引获取类型化参数。
+    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T> {
+        self.inner.arg(index)
+    }
+
+    /// Get the target class name.
+    /// 获取目标类名。
+    pub fn target_class(&self) -> &str {
+        self.inner.target_class()
+    }
+
+    /// Get the method signature.
+    /// 获取方法签名。
+    pub fn signature(&self) -> &str {
+        self.inner.signature()
+    }
+
+    /// Get the target object.
+    /// 获取目标对象。
+    pub fn target(&self) -> &Arc<dyn Any + Send + Sync> {
+        self.inner.target()
+    }
+
+    /// Mark that the underlying method should proceed.
+    /// 标记底层方法应继续执行。
+    pub fn proceed(&mut self) {
+        self.proceeded = true;
+    }
+
+    /// Check whether proceed has been called.
+    /// 检查 proceed 是否已被调用。
+    pub fn is_proceeded(&self) -> bool {
+        self.proceeded
+    }
+}
+
+impl Clone for ProceedingJoinPoint {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+            proceeded: self.proceeded,
+        }
+    }
+}
+
+impl fmt::Debug for ProceedingJoinPoint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ProceedingJoinPoint")
+            .field("method_name", &self.inner.method_name())
+            .field("proceeded", &self.proceeded)
+            .finish()
+    }
+}
+
+// ============================================================================
+// AdviceChain / 通知执行链
+// ============================================================================
+
+/// Ordered advice to be applied to a join point.
+/// 要应用到连接点的有序通知。
+#[derive(Debug, Clone)]
+pub struct AdviceChain {
+    /// Before advices (in order).
+    /// 前置通知（按顺序）。
+    pub before: Vec<String>,
+    /// Around advices (in order).
+    /// 环绕通知（按顺序）。
+    pub around: Vec<String>,
+    /// After advices (in order).
+    /// 后置通知（按顺序）。
+    pub after: Vec<String>,
+    /// After-returning advices.
+    /// 返回后通知。
+    pub after_returning: Vec<String>,
+    /// After-throwing advices.
+    /// 异常后通知。
+    pub after_throwing: Vec<String>,
+}
+
+impl AdviceChain {
+    /// Create an empty chain.
+    /// 创建空链。
+    pub fn new() -> Self {
+        Self {
+            before: Vec::new(),
+            around: Vec::new(),
+            after: Vec::new(),
+            after_returning: Vec::new(),
+            after_throwing: Vec::new(),
+        }
+    }
+
+    /// Build a chain from matched advice.
+    /// 从匹配的通知构建链。
+    pub fn from_matches(matches: &[(AdviceType, String, String)]) -> Self {
+        let mut chain = Self::new();
+        for (advice_type, _aspect, method) in matches {
+            match advice_type {
+                AdviceType::Before => chain.before.push(method.clone()),
+                AdviceType::Around => chain.around.push(method.clone()),
+                AdviceType::After => chain.after.push(method.clone()),
+                AdviceType::AfterReturning => chain.after_returning.push(method.clone()),
+                AdviceType::AfterThrowing => chain.after_throwing.push(method.clone()),
+            }
+        }
+        chain
+    }
+
+    /// Total number of advices in the chain.
+    /// 链中通知总数。
+    pub fn total(&self) -> usize {
+        self.before.len() + self.around.len() + self.after.len()
+            + self.after_returning.len() + self.after_throwing.len()
+    }
+
+    /// Check if the chain is empty.
+    /// 检查链是否为空。
+    pub fn is_empty(&self) -> bool {
+        self.total() == 0
+    }
+}
+
+impl Default for AdviceChain {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+// ============================================================================
 // Pointcut Expression / 切点表达式
 // ============================================================================
 

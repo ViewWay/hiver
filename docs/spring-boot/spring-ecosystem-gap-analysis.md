@@ -109,7 +109,7 @@
 
 | 功能 | Spring Framework | Nexus | 状态 |
 |------|-----------------|-------|------|
-| @Aspect | ✅ | `nexus-aop` | **70%** |
+| @Aspect | ✅ | `nexus-aop` + ProceedingJoinPoint + AdviceChain | **90%** |
 | @Before | ✅ | ✅ | **已实现** |
 | @After | ✅ | ✅ | **已实现** |
 | @Around | ✅ | ✅ | **已实现** |
