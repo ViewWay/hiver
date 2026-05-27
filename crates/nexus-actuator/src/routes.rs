@@ -4,9 +4,12 @@
 //! # Equivalent to Spring Boot Actuator endpoints
 //! # 等价于 Spring Boot Actuator 端点
 
+use crate::beans::{BeansBuilder, BeansResponse};
 use crate::env::{EnvironmentCollector, EnvironmentResponse};
 use crate::health::{HealthCheck, SystemHealthIndicator};
 use crate::info::{AppInfo, InfoBuilder};
+use crate::loggers::LoggerManager;
+use crate::mappings::{MappingsBuilder, MappingsResponse};
 use crate::metrics::MetricsRegistry;
 use nexus_http::{Body, Request, Response, StatusCode};
 use std::sync::Arc;
@@ -58,9 +61,33 @@ pub struct Actuator {
     /// 启用环境端点
     enable_env: bool,
 
+    /// Enable beans endpoint
+    /// 启用 beans 端点
+    enable_beans: bool,
+
+    /// Enable loggers endpoint
+    /// 启用 loggers 端点
+    enable_loggers: bool,
+
+    /// Enable mappings endpoint
+    /// 启用 mappings 端点
+    enable_mappings: bool,
+
     /// Environment collector
     /// 环境收集器
     env_collector: Arc<EnvironmentCollector>,
+
+    /// Logger manager
+    /// 日志管理器
+    logger_manager: Arc<std::sync::Mutex<LoggerManager>>,
+
+    /// Cached beans response
+    /// 缓存的 beans 响应
+    beans_response: Arc<BeansResponse>,
+
+    /// Cached mappings response
+    /// 缓存的 mappings 响应
+    mappings_response: Arc<MappingsResponse>,
 }
 
 impl Actuator {
@@ -78,7 +105,13 @@ impl Actuator {
             enable_info: true,
             enable_metrics: true,
             enable_env: true,
+            enable_beans: true,
+            enable_loggers: true,
+            enable_mappings: true,
             env_collector: Arc::new(EnvironmentCollector::new()),
+            logger_manager: Arc::new(std::sync::Mutex::new(LoggerManager::new())),
+            beans_response: Arc::new(BeansBuilder::new().build()),
+            mappings_response: Arc::new(MappingsBuilder::new().build()),
         }
     }
 
@@ -141,6 +174,47 @@ impl Actuator {
         self
     }
 
+    /// Enable or disable beans endpoint
+    /// 启用或禁用 beans 端点
+    pub fn enable_beans(mut self, enable: bool) -> Self {
+        self.enable_beans = enable;
+        self
+    }
+
+    /// Enable or disable loggers endpoint
+    /// 启用或禁用 loggers 端点
+    pub fn enable_loggers(mut self, enable: bool) -> Self {
+        self.enable_loggers = enable;
+        self
+    }
+
+    /// Enable or disable mappings endpoint
+    /// 启用或禁用 mappings 端点
+    pub fn enable_mappings(mut self, enable: bool) -> Self {
+        self.enable_mappings = enable;
+        self
+    }
+
+    /// Set the beans data.
+    /// 设置 beans 数据。
+    pub fn with_beans(mut self, builder: BeansBuilder) -> Self {
+        self.beans_response = Arc::new(builder.build());
+        self
+    }
+
+    /// Set the mappings data.
+    /// 设置 mappings 数据。
+    pub fn with_mappings(mut self, builder: MappingsBuilder) -> Self {
+        self.mappings_response = Arc::new(builder.build());
+        self
+    }
+
+    /// Get the logger manager.
+    /// 获取日志管理器。
+    pub fn get_logger_manager(&self) -> &Arc<std::sync::Mutex<LoggerManager>> {
+        &self.logger_manager
+    }
+
     /// Get the metrics registry
     /// 获取指标注册表
     pub fn get_metrics(&self) -> Arc<MetricsRegistry> {
@@ -199,6 +273,30 @@ impl Actuator {
                 "templated": false
             });
             links.insert("env".to_string(), env_link);
+        }
+
+        if self.enable_beans {
+            let beans_link = serde_json::json!({
+                "href": "/actuator/beans",
+                "templated": false
+            });
+            links.insert("beans".to_string(), beans_link);
+        }
+
+        if self.enable_loggers {
+            let loggers_link = serde_json::json!({
+                "href": "/actuator/loggers",
+                "templated": false
+            });
+            links.insert("loggers".to_string(), loggers_link);
+        }
+
+        if self.enable_mappings {
+            let mappings_link = serde_json::json!({
+                "href": "/actuator/mappings",
+                "templated": false
+            });
+            links.insert("mappings".to_string(), mappings_link);
         }
 
         let body = serde_json::to_vec(&links).unwrap_or_default();
@@ -304,6 +402,38 @@ impl Actuator {
                 .with_body(Body::from(r#"{"error":"Property not found"}"#))
         }
     }
+
+    /// Handle the beans request.
+    /// 处理 beans 请求。
+    pub fn handle_beans(&self, _req: &Request) -> Response {
+        if !self.enable_beans {
+            return Response::new(StatusCode::NOT_FOUND);
+        }
+        let body = serde_json::to_vec(&*self.beans_response).unwrap_or_default();
+        Response::new(StatusCode::OK).with_body(Body::from(body))
+    }
+
+    /// Handle the loggers request.
+    /// 处理 loggers 请求。
+    pub fn handle_loggers(&self, _req: &Request) -> Response {
+        if !self.enable_loggers {
+            return Response::new(StatusCode::NOT_FOUND);
+        }
+        let mgr = self.logger_manager.lock().unwrap();
+        let resp = mgr.to_response();
+        let body = serde_json::to_vec(&resp).unwrap_or_default();
+        Response::new(StatusCode::OK).with_body(Body::from(body))
+    }
+
+    /// Handle the mappings request.
+    /// 处理 mappings 请求。
+    pub fn handle_mappings(&self, _req: &Request) -> Response {
+        if !self.enable_mappings {
+            return Response::new(StatusCode::NOT_FOUND);
+        }
+        let body = serde_json::to_vec(&*self.mappings_response).unwrap_or_default();
+        Response::new(StatusCode::OK).with_body(Body::from(body))
+    }
 }
 
 impl Default for Actuator {
@@ -326,6 +456,9 @@ pub fn handle_request(actuator: Arc<Actuator>, req: &Request) -> Response {
         "/info" => actuator.handle_info(req),
         "/metrics" => actuator.handle_metrics(req),
         "/env" => actuator.handle_env(req),
+        "/beans" => actuator.handle_beans(req),
+        "/loggers" => actuator.handle_loggers(req),
+        "/mappings" => actuator.handle_mappings(req),
         path if path.starts_with("/metrics/") => {
             let name = &path[10..]; // Remove "/metrics/"
             actuator.handle_metric(name, req)

@@ -328,7 +328,7 @@
 | Counter/Gauge | ✅ | `nexus-observability` | **85%** |
 | Histogram | ✅ | ✅ | **已实现** |
 | Prometheus 导出 | ✅ | `nexus-micrometer` Prometheus/Histogram/OTLP | **85%** |
-| Actuator 端点 | ✅ | `nexus-actuator` | **70%** |
+| Actuator 端点 | ✅ | `nexus-actuator` health/info/metrics/env/beans/loggers/mappings | **90%** |
 
 ---
 

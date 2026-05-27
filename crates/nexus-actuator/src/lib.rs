@@ -35,15 +35,21 @@
 #[cfg(test)]
 mod tests;
 
+pub mod beans;
 pub mod env;
 pub mod health;
 pub mod info;
+pub mod loggers;
+pub mod mappings;
 pub mod metrics;
 pub mod routes;
 
+pub use beans::{BeanDescriptor, BeansBuilder, BeansResponse};
 pub use env::{Environment, EnvironmentCollector, PropertySource, PropertyValue};
 pub use health::{HealthCheck, HealthIndicator, HealthStatus};
 pub use info::InfoBuilder;
+pub use loggers::{LogLevel, LoggerDescriptor, LoggerManager, LoggersResponse};
+pub use mappings::{MappingDetail, MappingsBuilder, MappingsResponse};
 pub use metrics::{Metric, MetricType, MetricsRegistry};
 pub use routes::Actuator;
 
