@@ -78,7 +78,7 @@
 
 | 功能 | Spring Boot | Nexus | 状态 |
 |------|------------|-------|------|
-| @SpringBootTest | ✅ | `nexus-test` 测试工具 | **70%** |
+| @SpringBootTest | ✅ | `nexus-test` + TestExecutionListener + TestPropertySource | **90%** |
 | @MockBean | Mockito | `MockBean` trait 替换 | **已实现** |
 | TestContainers | ✅ | `nexus-test` testcontainers 集成 | **已实现** |
 | 集成测试 | ✅ | 5 个容器目标 | **已实现** |

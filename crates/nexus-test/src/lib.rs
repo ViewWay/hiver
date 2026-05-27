@@ -44,6 +44,8 @@ mod test_application;
 mod test_config;
 mod web_test_client;
 pub mod containers;
+mod listener;
+mod property_source;
 
 pub use test_client::{TestClient, TestRequest, TestResponse};
 pub use test_context::{TestContext, TestApplicationContext, TestContextRegistry, global_test_registry};
@@ -53,6 +55,8 @@ pub use test_application::{TestApplication, TestApplicationBuilder, TestApplicat
 pub use test_config::{TestConfig, TestConfigHolder, TestMode, ServerConfig, DatabaseConfig, global_test_config};
 pub use web_test_client::{WebTestClient, RequestSpec, ResponseSpec};
 pub use containers::{ContainerSet, KafkaContainer, PostgresContainer, RedisContainer};
+pub use listener::{TestExecutionListener, TestLifecycleContext, TestListenerRegistry, LoggingTestListener};
+pub use property_source::TestPropertySource;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
