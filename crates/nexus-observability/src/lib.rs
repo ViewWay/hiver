@@ -21,6 +21,9 @@ pub mod trace;
 #[cfg(feature = "nexus-format")]
 pub mod nexus_format;
 
+#[cfg(feature = "zipkin")]
+pub mod zipkin;
+
 pub use log::{
     LogFormat, LogLevel, LogMode, LogRotation, Logger, LoggerConfig, LoggerFactory, LoggerHandle,
 };

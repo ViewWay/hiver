@@ -604,6 +604,24 @@ impl Span {
         &self.name
     }
 
+    /// Get start time in nanoseconds since UNIX epoch
+    /// 获取开始时间（自 UNIX 纪元以来的纳秒数）
+    pub fn start_time_ns(&self) -> u64 {
+        self.start_time
+    }
+
+    /// Get duration in nanoseconds (None if not ended)
+    /// 获取持续时间（纳秒，未结束则为 None）
+    pub fn duration_ns(&self) -> Option<u64> {
+        self.end_time.map(|end| end.saturating_sub(self.start_time))
+    }
+
+    /// Get the span status
+    /// 获取span状态
+    pub fn status(&self) -> Option<SpanStatus> {
+        self.status
+    }
+
     /// Get the span's kind
     /// 获取span的类型
     pub fn kind(&self) -> SpanKind {
