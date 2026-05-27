@@ -520,9 +520,7 @@
 
 ### 与 Spring Boot 的关键差距（已大幅缩小）
 
-1. **Example 查询/Specification** — JPA 高级查询模式
-2. **审计 @CreatedDate/@LastModifiedDate** — 数据审计
-3. **Web Flow** — 流程引擎（未规划）
+1. **Web Flow** — 流程引擎（未规划，低优先级）
 
 ### Nexus 相对 Spring Boot 的优势
 
