@@ -1153,7 +1153,7 @@ impl Future for RecvFromFuture<'_, '_> {
             // Parse peer address (simplified)
             // 解析对端地址（简化版）
             let peer_addr = SocketAddr::V4(std::net::SocketAddrV4::new(
-                std::net::Ipv4Addr::LOCALHOST,
+                Ipv4Addr::LOCALHOST,
                 0,
             ));
 

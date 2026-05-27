@@ -23,7 +23,7 @@
 //! }
 //! ```
 
-use testcontainers::{ContainerAsync, ImageExt};
+use testcontainers::ContainerAsync;
 use testcontainers_modules::{kafka::Kafka, postgres::Postgres, redis::Redis};
 use tracing::info;
 
@@ -248,18 +248,18 @@ impl ContainerSet {
     /// PostgreSQL connection URL if a container was started.
     /// 若容器已启动，返回 PostgreSQL 连接 URL。
     pub fn postgres_url(&self) -> Option<String> {
-        self.postgres.as_ref().map(|c| c.connection_url())
+        self.postgres.as_ref().map(PostgresContainer::connection_url)
     }
 
     /// Redis connection URL if a container was started.
     /// 若容器已启动，返回 Redis 连接 URL。
     pub fn redis_url(&self) -> Option<String> {
-        self.redis.as_ref().map(|c| c.connection_url())
+        self.redis.as_ref().map(RedisContainer::connection_url)
     }
 
     /// Kafka bootstrap servers if a container was started.
     /// 若容器已启动，返回 Kafka bootstrap 服务器地址。
     pub fn kafka_bootstrap(&self) -> Option<String> {
-        self.kafka.as_ref().map(|c| c.bootstrap_servers())
+        self.kafka.as_ref().map(KafkaContainer::bootstrap_servers)
     }
 }

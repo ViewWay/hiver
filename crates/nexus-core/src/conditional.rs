@@ -131,7 +131,7 @@ impl ConditionContext {
     /// 检查属性是否存在且等于特定值。
     #[must_use]
     pub fn property_equals(&self, key: &str, expected: &str) -> bool {
-        self.property(key).map_or(false, |v| v == expected)
+        self.property(key) == Some(expected)
     }
 
     /// Check whether a profile is currently active.
@@ -336,18 +336,15 @@ impl ConditionalOnProperty {
 
 impl Condition for ConditionalOnProperty {
     fn matches(&self, context: &ConditionContext) -> bool {
-        match &self.value {
-            Some(expected) => {
-                // Exact value match
-                // 精确值匹配
-                context.property_equals(&self.key, expected)
-            }
-            None => {
-                // Existence check
-                // 存在性检查
-                let exists = context.property(&self.key).is_some();
-                exists || self.match_if_missing
-            }
+        if let Some(expected) = &self.value {
+            // Exact value match
+            // 精确值匹配
+            context.property_equals(&self.key, expected)
+        } else {
+            // Existence check
+            // 存在性检查
+            let exists = context.property(&self.key).is_some();
+            exists || self.match_if_missing
         }
     }
 }

@@ -326,8 +326,8 @@ where
 
         if exists {
             // Modify existing entry / 修改现有条目
-            let modifications: Vec<(&str, &[&str])> = attrs.iter().map(|(k, v)| {
-                let refs: Vec<&str> = v.iter().map(String::as_str).collect();
+            let _modifications: Vec<(&str, &[&str])> = attrs.iter().map(|(k, v)| {
+                let _refs: Vec<&str> = v.iter().map(String::as_str).collect();
                 // We need owned storage for the refs; use a leak-free approach
                 (k.as_str(), &[] as &[&str]) // placeholder, real impl below
             }).collect();
@@ -345,7 +345,7 @@ where
         } else {
             // Create new entry / 创建新条目
             let mut ldap_attrs: Vec<(&str, Vec<&str>)> = vec![
-                ("objectClass", T::object_classes().iter().map(|s| *s).collect()),
+                ("objectClass", T::object_classes().iter().copied().collect()),
             ];
             for (key, values) in &attrs {
                 let refs: Vec<&str> = values.iter().map(String::as_str).collect();

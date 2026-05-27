@@ -67,7 +67,7 @@ pub struct ConfigServerClient {
 
     /// Response cache: (app, profile, label) -> (properties, fetched_at)
     /// 响应缓存：(app, profile, label) -> (属性, 获取时间)
-    cache: Arc<RwLock<HashMap<String, (HashMap<String, String>, chrono::DateTime<Utc>)>>>,
+    cache: Arc<RwLock<HashMap<String, (HashMap<String, String>, DateTime<Utc>)>>>,
 
     /// Cache TTL (time-to-live) for each entry
     /// 每个缓存条目的TTL（存活时间）

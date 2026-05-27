@@ -621,7 +621,7 @@ impl<M: Model> QueryBuilder<M> {
                 .iter()
                 .map(|w| {
                     let mut condition = w.condition.clone();
-                    for param in &w.params {
+                    for _param in &w.params {
                         condition = condition.replacen('?', &format!("${param_idx}"), 1);
                         param_idx += 1;
                     }

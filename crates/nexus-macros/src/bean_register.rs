@@ -7,7 +7,7 @@ use syn::{Field, Fields, ItemStruct, Type};
 
 /// Extract inner type `T` from `Arc<T>` / `std::sync::Arc<T>`.
 fn extract_arc_inner(ty: &Type) -> Option<&Type> {
-    let syn::Type::Path(type_path) = ty else {
+    let Type::Path(type_path) = ty else {
         return None;
     };
     let seg = type_path.path.segments.last()?;
@@ -59,20 +59,16 @@ fn extract_condition_fn(
             let mut key = String::new();
             let mut value: Option<String> = None;
             let _ = attr.parse_nested_meta(|meta| {
-                if meta.path.is_ident("name") || meta.path.is_ident("key") {
-                    if let Ok(lit) = meta.value() {
-                        if let Ok(s) = lit.parse::<syn::LitStr>() {
+                if (meta.path.is_ident("name") || meta.path.is_ident("key"))
+                    && let Ok(lit) = meta.value()
+                        && let Ok(s) = lit.parse::<syn::LitStr>() {
                             key = s.value();
                         }
-                    }
-                }
-                if meta.path.is_ident("having_value") || meta.path.is_ident("value") {
-                    if let Ok(lit) = meta.value() {
-                        if let Ok(s) = lit.parse::<syn::LitStr>() {
+                if (meta.path.is_ident("having_value") || meta.path.is_ident("value"))
+                    && let Ok(lit) = meta.value()
+                        && let Ok(s) = lit.parse::<syn::LitStr>() {
                             value = Some(s.value());
                         }
-                    }
-                }
                 Ok(())
             });
             if !key.is_empty() {
@@ -97,10 +93,10 @@ fn extract_condition_fn(
     // @ConditionalOnMissingBean — register only if no bean of the given type is in the container
     for attr in &input.attrs {
         if attr.path().is_ident("conditional_on_missing_bean") {
-            let mut target_type: Option<syn::Type> = None;
+            let mut target_type: Option<Type> = None;
             let _ = attr.parse_nested_meta(|meta| {
                 let path = meta.path.clone();
-                target_type = Some(syn::Type::Path(syn::TypePath {
+                target_type = Some(Type::Path(syn::TypePath {
                     qself: None,
                     path,
                 }));
@@ -167,7 +163,7 @@ pub fn generate_bean_registration(
                         .unwrap_or_else(|e| panic!("failed to inject {}: {e}", stringify!(#dep_ty)))
                 });
             }
-        } else if let syn::Type::Path(p) = field_ty {
+        } else if let Type::Path(p) = field_ty {
             if p.path.segments.last().is_some_and(|s| s.ident == "String") {
                 field_inits.push(quote! { #field_name: ::std::string::String::new() });
             } else {

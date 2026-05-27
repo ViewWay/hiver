@@ -267,11 +267,10 @@ fn get_value(
         return JsonValue::Number(num.into());
     }
 
-    if let Ok(num) = expr.parse::<f64>() {
-        if let Some(n) = serde_json::Number::from_f64(num) {
+    if let Ok(num) = expr.parse::<f64>()
+        && let Some(n) = serde_json::Number::from_f64(num) {
             return JsonValue::Number(n);
         }
-    }
 
     // Handle boolean literals
     if expr == "true" {

@@ -183,9 +183,9 @@ pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-pub fn repository(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn repository(_attr: TokenStream, item: TokenStream) -> TokenStream {
     if let Ok(input) = syn::parse::<ItemStruct>(item.clone()) {
-        let name = &input.ident;
+        let _name = &input.ident;
         let bean_reg = crate::bean_register::generate_bean_registration(
             &input,
             quote! { ::nexus_starter::core::registry::BeanScope::Singleton },

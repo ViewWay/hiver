@@ -37,7 +37,7 @@ pub fn elasticsearch_repository(_attr: TokenStream, item: TokenStream) -> TokenS
 }
 
 pub fn configuration_properties(attr: TokenStream, item: TokenStream) -> TokenStream {
-    use proc_macro2::TokenStream as TokenStream2;
+    
     use quote::quote;
     use syn::{Fields, ItemStruct, parse_macro_input};
 
@@ -159,7 +159,7 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
         let mut has_body_attr = false;
 
         for a in &method.attrs {
-            let nm = a.path().get_ident().map(|i| i.to_string());
+            let nm = a.path().get_ident().map(ToString::to_string);
             match nm.as_deref() {
                 Some(n @ ("feign_get" | "feign_post" | "feign_put" | "feign_delete" | "feign_patch")) => {
                     if let Ok(lit) = a.parse_args::<LitStr>() {
@@ -190,9 +190,9 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
             let ident = pi.ident.clone();
 
             let is_body = has_body_attr
-                || pt.attrs.iter().any(|a| a.path().get_ident().map(|i| i == "feign_body").unwrap_or(false));
+                || pt.attrs.iter().any(|a| a.path().get_ident().is_some_and(|i| i == "feign_body"));
             let q = pt.attrs.iter().find_map(|a| {
-                if a.path().get_ident().map(|i| i == "feign_query").unwrap_or(false) {
+                if a.path().get_ident().is_some_and(|i| i == "feign_query") {
                     a.parse_args::<LitStr>().ok().map(|l| l.value())
                 } else {
                     None
@@ -245,7 +245,7 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
             FnArg::Receiver(r) => quote! { #r },
             FnArg::Typed(pt) => {
                 let clean_attrs: Vec<_> = pt.attrs.iter()
-                    .filter(|a| !a.path().get_ident().map(|i| i.to_string().starts_with("feign_")).unwrap_or(false))
+                    .filter(|a| !a.path().get_ident().is_some_and(|i| i.to_string().starts_with("feign_")))
                     .collect();
                 let p = &pt.pat; let t = &pt.ty;
                 quote! { #(#clean_attrs)* #p: #t }
@@ -321,8 +321,7 @@ fn feign_clean_trait(trait_def: &syn::ItemTrait) -> proc_macro2::TokenStream {
     let feign_attrs = ["feign_get","feign_post","feign_put","feign_delete","feign_patch",
                        "feign_body","feign_query","feign_path","feign_header"];
     let is_feign = |a: &syn::Attribute| a.path().get_ident()
-        .map(|i| feign_attrs.contains(&i.to_string().as_str()))
-        .unwrap_or(false);
+        .is_some_and(|i| feign_attrs.contains(&i.to_string().as_str()));
 
     let vis = &trait_def.vis;
     let ident = &trait_def.ident;

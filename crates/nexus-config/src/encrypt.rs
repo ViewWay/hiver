@@ -76,7 +76,7 @@ impl ConfigEncryptor {
         let key = Key::<Aes256Gcm>::from_slice(&self.key);
         let cipher = Aes256Gcm::new(key);
         let plaintext = cipher
-            .decrypt(&nonce, ciphertext)
+            .decrypt(nonce, ciphertext)
             .map_err(|_| EncryptError::DecryptionFailed)?;
 
         String::from_utf8(plaintext).map_err(|e| EncryptError::Utf8Error(e.to_string()))
@@ -102,11 +102,10 @@ impl ConfigEncryptor {
     /// 递归解密 JSON 值中的所有 `ENC(...)` 值。
     pub fn decrypt_json_value(&self, value: &mut serde_json::Value) -> Result<(), EncryptError> {
         match value {
-            serde_json::Value::String(s) => {
-                if Self::is_encrypted(s) {
+            serde_json::Value::String(s)
+                if Self::is_encrypted(s) => {
                     *s = self.decrypt(s)?;
                 }
-            }
             serde_json::Value::Object(map) => {
                 for v in map.values_mut() {
                     self.decrypt_json_value(v)?;

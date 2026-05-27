@@ -258,7 +258,7 @@ impl Config {
     /// Get loaded files
     /// 获取已加载的文件
     pub fn files(&self) -> Vec<PathBuf> {
-        self.files.read().unwrap_or_else(|e| e.into_inner()).clone()
+        self.files.read().unwrap_or_else(std::sync::PoisonError::into_inner).clone()
     }
 
     /// Get reload strategy

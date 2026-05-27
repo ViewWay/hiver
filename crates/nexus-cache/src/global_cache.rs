@@ -30,7 +30,7 @@ pub async fn cache_get(cache_name: &str, key: &str) -> Option<String> {
 pub async fn cache_put(cache_name: &str, key: String, value: String) {
     let entry = caches()
         .entry(cache_name.to_string())
-        .or_insert_with(DashMap::new);
+        .or_default();
     entry.insert(key, value);
 }
 

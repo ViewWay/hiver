@@ -30,12 +30,12 @@ impl Dn {
     ///
     /// E.g., `"cn=user,ou=people,dc=example,dc=com"` → `["cn=user", "ou=people", "dc=example", "dc=com"]`
     pub fn components(&self) -> Vec<&str> {
-        self.0.split(',').map(|s| s.trim()).collect()
+        self.0.split(',').map(str::trim).collect()
     }
 
     /// Get the leftmost RDN (e.g. `"cn=user"`) / 获取最左边的RDN
     pub fn rdn(&self) -> Option<&str> {
-        self.0.split(',').next().map(|s| s.trim())
+        self.0.split(',').next().map(str::trim)
     }
 
     /// Get the parent DN (everything after the first comma) / 获取父DN
@@ -210,9 +210,9 @@ impl ObjectDirectoryMapper {
     ///
     /// 从字段值映射构建 `(ldap_name, values)` 对的列表。
     /// 输入键是Rust字段名。
-    pub fn map_to_attrs<'a>(
+    pub fn map_to_attrs(
         &self,
-        fields: &'a HashMap<String, String>,
+        fields: &HashMap<String, String>,
     ) -> Vec<(String, Vec<String>)> {
         let mut result = Vec::new();
         for mapping in &self.mappings {

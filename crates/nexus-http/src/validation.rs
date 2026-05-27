@@ -118,7 +118,7 @@ impl ValidationErrors {
 impl std::fmt::Display for ValidationErrors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.errors.len() == 1 {
-            let first = self.errors.get(0).ok_or_else(|| std::fmt::Error)?;
+            let first = self.errors.first().ok_or(std::fmt::Error)?;
             write!(f, "{first}")
         } else {
             let messages: Vec<String> = self.errors.iter().map(ToString::to_string).collect();

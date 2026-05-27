@@ -246,21 +246,18 @@ impl Timeout {
 
         let duration = self.config.timeout;
 
-        match tokio::time::timeout(duration, f()).await {
-            Ok(value) => {
-                self.success_count.fetch_add(1, Ordering::Relaxed);
-                Ok(value)
-            },
-            Err(_) => {
-                self.timeout_count.fetch_add(1, Ordering::Relaxed);
-                if let Some(ref callback) = self.config.on_timeout {
-                    callback();
-                }
-                Err(TimeoutError::Elapsed {
-                    name: self.name.clone(),
-                    timeout: duration,
-                })
-            },
+        if let Ok(value) = tokio::time::timeout(duration, f()).await {
+            self.success_count.fetch_add(1, Ordering::Relaxed);
+            Ok(value)
+        } else {
+            self.timeout_count.fetch_add(1, Ordering::Relaxed);
+            if let Some(ref callback) = self.config.on_timeout {
+                callback();
+            }
+            Err(TimeoutError::Elapsed {
+                name: self.name.clone(),
+                timeout: duration,
+            })
         }
     }
 }

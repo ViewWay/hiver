@@ -272,15 +272,13 @@ impl AnthropicChatModel {
         let body = response.text().await.unwrap_or_default();
 
         // Try to parse structured Anthropic error / 尝试解析结构化的 Anthropic 错误
-        let message = serde_json::from_str::<AnthropicErrorResponse>(&body)
-            .map(|e| e.error.message)
-            .unwrap_or_else(|_| {
+        let message = serde_json::from_str::<AnthropicErrorResponse>(&body).map_or_else(|_| {
                 if body.is_empty() {
                     format!("HTTP {status}")
                 } else {
                     body
                 }
-            });
+            }, |e| e.error.message);
 
         match status {
             401 | 403 => ModelError::AuthError(message),

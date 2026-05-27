@@ -204,7 +204,7 @@ impl AclService {
     pub fn is_granted(&self, oid: &AclObjectIdentity, sid: &AclSid, permission: AclPermission) -> bool {
         self.acls.read().unwrap()
             .get(&(oid.object_type.clone(), oid.object_id.clone()))
-            .map_or(false, |acl| acl.is_granted(sid, permission))
+            .is_some_and(|acl| acl.is_granted(sid, permission))
     }
 
     /// List all ACLs.

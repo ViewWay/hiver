@@ -126,7 +126,7 @@ impl TransactionManagerRegistry {
     /// List all registered manager names.
     /// 列出所有已注册的管理器名称。
     pub fn manager_names(&self) -> Vec<&str> {
-        self.managers.keys().map(|s| s.as_str()).collect()
+        self.managers.keys().map(std::string::String::as_str).collect()
     }
 
     /// Check if a manager with the given name exists.
@@ -278,7 +278,7 @@ impl TransactionManager for DelegatingTransactionManager {
         self.fallback.rollback(status).await
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "delegating"
     }
 }

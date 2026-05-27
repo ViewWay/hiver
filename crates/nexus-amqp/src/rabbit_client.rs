@@ -29,7 +29,7 @@
 #[cfg(feature = "lapin")]
 mod inner {
     use lapin::{
-        options::*,
+        options::{QueueDeclareOptions, ExchangeDeclareOptions, QueueBindOptions, BasicPublishOptions, BasicQosOptions, BasicConsumeOptions, BasicAckOptions, BasicNackOptions},
         types::FieldTable,
         BasicProperties, Channel, Connection, ConnectionProperties,
     };
@@ -49,7 +49,7 @@ mod inner {
         ConnectionFailed(String),
     }
 
-    pub type Result<T> = std::result::Result<T, RabbitError>;
+    pub(super) type Result<T> = std::result::Result<T, RabbitError>;
 
     /// Shared lapin connection + channel pool.
     /// 共享的 lapin 连接和通道池。
@@ -196,7 +196,7 @@ mod inner {
         ) -> Result<()>
         where
             F: Fn(Vec<u8>, String) -> Fut + Send + Sync + 'static,
-            Fut: std::future::Future<Output = std::result::Result<(), String>> + Send + 'static,
+            Fut: Future<Output = std::result::Result<(), String>> + Send + 'static,
         {
             // Open a dedicated channel for this consumer
             let consumer_channel = self.connection.create_channel().await?;

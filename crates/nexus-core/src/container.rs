@@ -112,15 +112,15 @@ impl<T> BeanRegistration<T> {
 }
 
 trait PreDestroyHook: Send + Sync {
-    fn invoke(&self, bean: &dyn Any) -> crate::error::Result<()>;
+    fn invoke(&self, bean: &dyn Any) -> Result<()>;
 }
 
 struct PreDestroyHookImpl<T> {
-    callback: Arc<dyn Fn(&T) -> crate::error::Result<()> + Send + Sync>,
+    callback: Arc<dyn Fn(&T) -> Result<()> + Send + Sync>,
 }
 
 impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T> {
-    fn invoke(&self, bean: &dyn Any) -> crate::error::Result<()> {
+    fn invoke(&self, bean: &dyn Any) -> Result<()> {
         if let Some(typed) = bean.downcast_ref::<T>() {
             (self.callback)(typed)
         } else {

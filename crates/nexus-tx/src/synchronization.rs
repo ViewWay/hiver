@@ -13,9 +13,9 @@ use crate::{Propagation, TransactionError, TransactionResult, TransactionStatus}
 /// 在互斥锁后持有活动的数据库事务。
 pub trait LiveTransaction: Send {
     /// Commit the underlying transaction.
-    fn commit_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>;
+    fn commit_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
     /// Roll back the underlying transaction.
-    fn rollback_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>;
+    fn rollback_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
 }
 
 tokio::task_local! {
@@ -24,7 +24,7 @@ tokio::task_local! {
 
 fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>> {
     ACTIVE_TX
-        .try_with(|m| m.clone())
+        .try_with(std::clone::Clone::clone)
         .expect("No active transaction scope: wrap your transactional code with `with_transaction_scope`")
 }
 
@@ -40,7 +40,7 @@ fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTra
 /// 生命周期中共享同一个 `Arc<Mutex<HashMap>>`。
 pub async fn with_transaction_scope<F, R>(f: F) -> R
 where
-    F: std::future::Future<Output = R>,
+    F: Future<Output = R>,
 {
     ACTIVE_TX.scope(Arc::new(Mutex::new(HashMap::new())), f).await
 }

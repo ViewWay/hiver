@@ -2,7 +2,6 @@
 //! Bean 注册表 — 通过 `inventory` 在编译期收集 Bean 描述符。
 
 use std::any::{Any, TypeId};
-use std::sync::Arc;
 
 use super::container::ApplicationContext;
 

@@ -130,7 +130,7 @@ impl PropertiesConfigRegistry {
     where
         T: PropertiesConfig + 'static,
     {
-        let mut configs = self.configs.write().unwrap_or_else(|e| e.into_inner());
+        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.insert(TypeId::of::<T>(), Box::new(config));
     }
 
@@ -152,7 +152,7 @@ impl PropertiesConfigRegistry {
     where
         T: PropertiesConfig + Clone + 'static,
     {
-        let configs = self.configs.read().unwrap_or_else(|e| e.into_inner());
+        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs
             .get(&TypeId::of::<T>())
             .and_then(|v| v.downcast_ref::<T>())
@@ -181,7 +181,7 @@ impl PropertiesConfigRegistry {
     where
         T: 'static,
     {
-        let configs = self.configs.read().unwrap_or_else(|e| e.into_inner());
+        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.contains_key(&TypeId::of::<T>())
     }
 
@@ -191,21 +191,21 @@ impl PropertiesConfigRegistry {
     where
         T: 'static,
     {
-        let mut configs = self.configs.write().unwrap_or_else(|e| e.into_inner());
+        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.remove(&TypeId::of::<T>()).is_some()
     }
 
     /// Clear all registered configs
     /// 清除所有已注册的配置
     pub fn clear(&self) {
-        let mut configs = self.configs.write().unwrap_or_else(|e| e.into_inner());
+        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.clear();
     }
 
     /// Get count of registered configs
     /// 获取已注册配置的数量
     pub fn len(&self) -> usize {
-        let configs = self.configs.read().unwrap_or_else(|e| e.into_inner());
+        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.len()
     }
 

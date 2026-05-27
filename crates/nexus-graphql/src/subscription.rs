@@ -177,7 +177,7 @@ impl PersistedQueryCache {
 
     /// Look up a persisted query by hash.
     pub fn get(&self, hash: &str) -> Option<&str> {
-        self.queries.get(hash).map(|s| s.as_str())
+        self.queries.get(hash).map(std::string::String::as_str)
     }
 
     /// Number of persisted queries.

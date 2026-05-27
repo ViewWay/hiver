@@ -150,11 +150,10 @@ impl FeignClientConfig {
     /// 从此配置构建 `reqwest::Client`。
     pub fn build_client(&self) -> Result<Client, reqwest::Error> {
         let mut headers = reqwest::header::HeaderMap::new();
-        if let Some(token) = &self.bearer_token {
-            if let Ok(v) = reqwest::header::HeaderValue::from_str(&format!("Bearer {token}")) {
+        if let Some(token) = &self.bearer_token
+            && let Ok(v) = reqwest::header::HeaderValue::from_str(&format!("Bearer {token}")) {
                 headers.insert(reqwest::header::AUTHORIZATION, v);
             }
-        }
         for (k, v) in &self.default_headers {
             if let (Ok(name), Ok(val)) = (
                 reqwest::header::HeaderName::from_bytes(k.as_bytes()),

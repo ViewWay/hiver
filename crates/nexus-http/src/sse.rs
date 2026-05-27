@@ -253,7 +253,7 @@ impl Sse {
             .map(Event::to_sse_format)
             .collect::<String>();
 
-        builder.body(Body::from(body)).unwrap_or_else(|_| Response::new(crate::StatusCode::INTERNAL_SERVER_ERROR))
+        builder.body(Body::from(body)).unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 
     /// Create a simple event (shorthand)

@@ -33,8 +33,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream {
         attr.path()
             .segments
             .last()
-            .map(|seg| seg.ident == "setter")
-            .unwrap_or(false)
+            .is_some_and(|seg| seg.ident == "setter")
     });
 
     // Collect fields that should not be skipped
@@ -43,7 +42,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream {
     let mut field_types = Vec::new();
     let mut setter_method_names = Vec::new();
 
-    for field in fields.iter() {
+    for field in fields {
         let field_name = match field.ident.as_ref() {
             Some(name) => name,
             None => continue,

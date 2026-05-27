@@ -337,21 +337,21 @@ impl TransactionManager for NoopTransactionManager {
     async fn begin(
         &self,
         definition: &TransactionDefinition,
-    ) -> crate::TransactionResult<TransactionStatus> {
+    ) -> TransactionResult<TransactionStatus> {
         Ok(TransactionStatus::new(&definition.name))
     }
 
-    async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
         status.mark_completed();
         Ok(())
     }
 
-    async fn rollback(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
         status.mark_completed();
         Ok(())
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "noop"
     }
 }

@@ -526,7 +526,7 @@ impl ServiceDiscoveryClient {
         load_balancer: &crate::load_balancer::RoundRobinLoadBalancer,
     ) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
-        let healthy: Vec<_> = instances.into_iter().filter(|i| i.is_healthy()).collect();
+        let healthy: Vec<_> = instances.into_iter().filter(ServiceInstance::is_healthy).collect();
 
         if healthy.is_empty() {
             return None;

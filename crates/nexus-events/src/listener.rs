@@ -585,6 +585,7 @@ where
 /// public void handleEvent(MyEvent event) { }
 /// ```
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct ListenerConfig {
     /// Listener ID for identification
     /// 用于标识的监听器ID
@@ -599,15 +600,6 @@ pub struct ListenerConfig {
     pub condition: Option<String>,
 }
 
-impl Default for ListenerConfig {
-    fn default() -> Self {
-        Self {
-            id: None,
-            order: 0,
-            condition: None,
-        }
-    }
-}
 
 impl ListenerConfig {
     /// Create a new default configuration

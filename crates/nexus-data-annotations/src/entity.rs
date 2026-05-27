@@ -275,25 +275,22 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
     }
 
     // Strip helper attrs from struct fields
-    if let syn::Data::Struct(data) = &mut input.data {
-        if let syn::Fields::Named(named) = &mut data.fields {
+    if let syn::Data::Struct(data) = &mut input.data
+        && let syn::Fields::Named(named) = &mut data.fields {
             for field in &mut named.named {
                 field.attrs.retain(|attr| {
                     attr.path()
                         .get_ident()
-                        .map(|id| !HELPER_ATTRS.contains(&id.to_string().as_str()))
-                        .unwrap_or(true)
+                        .is_none_or(|id| !HELPER_ATTRS.contains(&id.to_string().as_str()))
                 });
             }
         }
-    }
 
     // Strip #[Table] from struct attrs (Entity handles it)
     input.attrs.retain(|attr| {
         attr.path()
             .get_ident()
-            .map(|id| id != "Table")
-            .unwrap_or(true)
+            .is_none_or(|id| id != "Table")
     });
 
     // -- Build generated code --
@@ -355,13 +352,10 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .map(|f| {
             let field = LitStr::new(&f.name, Span::call_site());
             let kind = LitStr::new(f.relation_kind.as_ref().unwrap(), Span::call_site());
-            match &f.relation_target {
-                Some(t) => {
-                    let target = LitStr::new(t, Span::call_site());
-                    quote! { (#field, #kind, Some(#target)) }
-                }
-                None => quote! { (#field, #kind, None) },
-            }
+            if let Some(t) = &f.relation_target {
+                let target = LitStr::new(t, Span::call_site());
+                quote! { (#field, #kind, Some(#target)) }
+            } else { quote! { (#field, #kind, None) } }
         })
         .collect();
 

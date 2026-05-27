@@ -380,16 +380,14 @@ impl Flyway {
                 continue;
             }
             let file_name = path.file_name().unwrap().to_string_lossy().to_string();
-            if let Some((base_name, _desc)) = parse_migration_filename_with_dialect(&file_name) {
-                if let Some(dialect) = extract_dialect_suffix(&base_name) {
-                    if dialect == target_suffix {
+            if let Some((base_name, _desc)) = parse_migration_filename_with_dialect(&file_name)
+                && let Some(dialect) = extract_dialect_suffix(&base_name)
+                    && dialect == target_suffix {
                         // This dialect-specific file matches our DB
                         // 此方言特定文件匹配我们的数据库
                         let base_version = strip_dialect_suffix(&base_name);
                         dialect_overrides.insert(base_version);
                     }
-                }
-            }
         }
 
         // Second pass: collect applicable migrations
@@ -673,12 +671,7 @@ fn extract_dialect_suffix(base_name: &str) -> Option<&str> {
     // 已知的方言后缀
     let suffixes = ["postgresql", "mysql", "sqlite"];
 
-    for suffix in suffixes {
-        if base_name.ends_with(suffix) && base_name.as_bytes().get(base_name.len() - suffix.len() - 1) == Some(&b'.') {
-            return Some(suffix);
-        }
-    }
-    None
+    suffixes.into_iter().find(|&suffix| base_name.ends_with(suffix) && base_name.as_bytes().get(base_name.len() - suffix.len() - 1) == Some(&b'.')).map(|v| v as _)
 }
 
 /// Strip the dialect suffix from a base name: "V1.postgresql" -> "V1"

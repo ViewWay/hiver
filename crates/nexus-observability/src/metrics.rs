@@ -693,7 +693,7 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Counter(counter)) = metrics.get(&id) {
             return counter.clone();
         }
@@ -722,7 +722,7 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
             return gauge.clone();
         }
@@ -751,7 +751,7 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(|e| e.into_inner());
+        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
             return histogram.clone();
         }

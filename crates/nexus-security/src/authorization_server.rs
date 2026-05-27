@@ -102,8 +102,8 @@ impl RegisteredClient {
             redirect_uris: Vec::new(),
             grant_types: vec![GrantType::AuthorizationCode],
             scopes: vec!["openid".into()],
-            access_token_ttl: Duration::from_secs(3600),
-            refresh_token_ttl: Duration::from_secs(86400 * 30),
+            access_token_ttl: Duration::from_hours(1),
+            refresh_token_ttl: Duration::from_hours(720),
         }
     }
 
@@ -327,7 +327,7 @@ impl AuthorizationServer {
             code_challenge: code_challenge.map(str::to_string),
             code_challenge_method: code_challenge_method.map(str::to_string),
             issued_at: Instant::now(),
-            ttl: Duration::from_secs(600),
+            ttl: Duration::from_mins(10),
         });
         debug!(client_id, subject, "authorization code issued");
         Ok(code)
@@ -363,11 +363,10 @@ impl AuthorizationServer {
         let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
             SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
         })?;
-        if let Some(secret) = client_secret {
-            if !client.verify_secret(secret) {
+        if let Some(secret) = client_secret
+            && !client.verify_secret(secret) {
                 return Err(SecurityError::AuthenticationFailed("invalid client_secret".into()));
             }
-        }
         self.issue_tokens(&entry.subject, client_id, &entry.scope, &client).await
     }
 
@@ -434,7 +433,7 @@ impl AuthorizationServer {
         }
         let device_code = random_token(32);
         let user_code = random_user_code();
-        let ttl = Duration::from_secs(1800);
+        let ttl = Duration::from_mins(30);
         self.device_codes.write().await.insert(device_code.clone(), DeviceCodeEntry {
             device_code: device_code.clone(),
             user_code: user_code.clone(),

@@ -14,7 +14,7 @@ pub trait ChannelInterceptor: Send + Sync {
     }
 
     /// Called after a message is successfully sent.
-    async fn post_send(&self, message: &Message) {}
+    async fn post_send(&self, _message: &Message) {}
 
     /// Called after a send fails.
     async fn on_send_error(&self, message: &Message, error: &crate::error::IntegrationError) {
@@ -27,7 +27,7 @@ pub trait ChannelInterceptor: Send + Sync {
     }
 
     /// Called after a message is received.
-    async fn post_receive(&self, message: &Message) {}
+    async fn post_receive(&self, _message: &Message) {}
 
     /// Name for logging.
     fn name(&self) -> &str {

@@ -295,7 +295,7 @@ impl AutowiredAnnotationBeanPostProcessor {
 }
 
 impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "AutowiredAnnotationBeanPostProcessor"
     }
 
@@ -515,7 +515,7 @@ impl CommonAnnotationBeanPostProcessor {
 }
 
 impl BeanPostProcessor for CommonAnnotationBeanPostProcessor {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "CommonAnnotationBeanPostProcessor"
     }
 

@@ -292,7 +292,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
                 .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
             let rows: std::result::Result<Vec<Row>, crate::error::Error> = db_rows
                 .iter()
-                .map(|r| any_row_to_nexus_row(r))
+                .map(any_row_to_nexus_row)
                 .collect();
             let rows = rows.map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
             put_tx(&inner, tx).await?;
@@ -346,11 +346,11 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     }
     fn is_committed(&self) -> bool {
         let guard = self.inner.try_lock();
-        guard.map_or(false, |tx| tx.is_none())
+        guard.is_ok_and(|tx| tx.is_none())
     }
     fn is_rolled_back(&self) -> bool {
         let guard = self.inner.try_lock();
-        guard.map_or(false, |tx| tx.is_none())
+        guard.is_ok_and(|tx| tx.is_none())
     }
     fn clone_box(&self) -> Box<dyn crate::transaction::TransactionInner> {
         Box::new(AnyTransactionInner {

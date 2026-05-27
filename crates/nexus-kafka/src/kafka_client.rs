@@ -50,7 +50,7 @@ mod inner {
         Config(String),
     }
 
-    pub type Result<T> = std::result::Result<T, KafkaError>;
+    pub(super) type Result<T> = std::result::Result<T, KafkaError>;
 
     // ─────────────────────────────────────────────────────────────────────────
     // KafkaProducer
@@ -188,7 +188,7 @@ mod inner {
         pub async fn poll<F, Fut>(&self, handler: F) -> Result<()>
         where
             F: Fn(String, i32, Option<Vec<u8>>, Vec<u8>) -> Fut + Send + Sync + 'static,
-            Fut: std::future::Future<Output = std::result::Result<(), String>> + Send + 'static,
+            Fut: Future<Output = std::result::Result<(), String>> + Send + 'static,
         {
             use futures::StreamExt;
             let handler = Arc::new(handler);
@@ -202,7 +202,7 @@ mod inner {
                         Ok(msg) => {
                             let topic = msg.topic().to_string();
                             let partition = msg.partition();
-                            let key = msg.key().map(|k| k.to_vec());
+                            let key = msg.key().map(<[u8]>::to_vec);
                             let payload = msg.payload().unwrap_or(&[]).to_vec();
                             match handler(topic.clone(), partition, key, payload).await {
                                 Ok(()) => {

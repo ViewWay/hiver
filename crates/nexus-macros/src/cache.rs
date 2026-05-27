@@ -28,11 +28,10 @@ fn param_idents(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Com
     inputs
         .iter()
         .filter_map(|arg| {
-            if let syn::FnArg::Typed(pat_type) = arg {
-                if let Pat::Ident(pat_ident) = &*pat_type.pat {
+            if let syn::FnArg::Typed(pat_type) = arg
+                && let Pat::Ident(pat_ident) = &*pat_type.pat {
                     return Some(pat_ident.ident.clone());
                 }
-            }
             None
         })
         .collect()

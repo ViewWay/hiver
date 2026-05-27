@@ -62,6 +62,7 @@ use tokio::sync::RwLock;
 /// }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default)]
 pub enum TransactionPhase {
     /// Execute before the transaction commits
     /// 在事务提交之前执行
@@ -69,6 +70,7 @@ pub enum TransactionPhase {
 
     /// Execute after the transaction commits (default)
     /// 在事务提交之后执行（默认）
+    #[default]
     AfterCommit,
 
     /// Execute after the transaction rolls back
@@ -118,11 +120,6 @@ impl fmt::Display for TransactionPhase {
     }
 }
 
-impl Default for TransactionPhase {
-    fn default() -> Self {
-        Self::AfterCommit
-    }
-}
 
 /// A transactional event listener bound to a specific phase
 /// 绑定到特定阶段的事务事件监听器
@@ -432,11 +429,10 @@ impl TransactionalEventPublisher {
             .push(Arc::new(listener));
 
         // Sort by order within the phase+type group
-        if let Some(phase_map) = listeners.get_mut(&phase) {
-            if let Some(type_list) = phase_map.get_mut(&type_id) {
+        if let Some(phase_map) = listeners.get_mut(&phase)
+            && let Some(type_list) = phase_map.get_mut(&type_id) {
                 type_list.sort_by_key(|l| l.order());
             }
-        }
     }
 
     /// Register a listener using a convenience builder pattern
@@ -521,7 +517,7 @@ impl TransactionalEventPublisher {
 
         if let Some(phase_map) = listeners.get(&phase) {
             // Try to match against all registered TypeIds in this phase
-            for (_type_id, listener_list) in phase_map.iter() {
+            for (_type_id, listener_list) in phase_map {
                 for listener in listener_list {
                     let result = listener.call(event).await;
                     results.push(result);
@@ -553,14 +549,13 @@ impl TransactionalEventPublisher {
 
         let mut results = Vec::new();
 
-        if let Some(phase_map) = listeners.get(&phase) {
-            if let Some(listener_list) = phase_map.get(&type_id) {
+        if let Some(phase_map) = listeners.get(&phase)
+            && let Some(listener_list) = phase_map.get(&type_id) {
                 for listener in listener_list {
                     let result = listener.call(event as &dyn Any).await;
                     results.push(result);
                 }
             }
-        }
 
         results
     }
@@ -577,7 +572,7 @@ impl TransactionalEventPublisher {
         listeners
             .get(&phase)
             .and_then(|phase_map| phase_map.get(&type_id))
-            .map_or(false, |list| !list.is_empty())
+            .is_some_and(|list| !list.is_empty())
     }
 
     /// Get the count of listeners for a given event type and phase

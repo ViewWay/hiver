@@ -40,7 +40,7 @@ pub fn impl_with(input: DeriveInput) -> TokenStream {
     let mut field_types = Vec::new();
     let mut with_method_names = Vec::new();
 
-    for field in fields.iter() {
+    for field in fields {
         let field_name = match field.ident.as_ref() {
             Some(name) => name,
             None => continue,

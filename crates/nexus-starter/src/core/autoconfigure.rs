@@ -127,8 +127,7 @@ impl AutoConfigurationEntry {
     pub fn matches(&self, ctx: &ApplicationContext) -> bool {
         self.condition
             .as_ref()
-            .map(|c| c.matches(ctx))
-            .unwrap_or(true)
+            .map_or(true, |c| c.matches(ctx))
     }
 
     /// 执行工厂函数
@@ -486,12 +485,10 @@ impl Condition for ConditionalOnClass {
             "NEXUS_CONDITIONAL_ON_CLASS_{}",
             self.type_name
                 .replace("::", "_")
-                .replace('<', "_")
-                .replace('>', "_")
+                .replace(['<', '>'], "_")
         );
         std::env::var(env_key)
-            .map(|v| v == "true" || v == "1")
-            .unwrap_or(true)
+            .map_or(true, |v| v == "true" || v == "1")
     }
 }
 

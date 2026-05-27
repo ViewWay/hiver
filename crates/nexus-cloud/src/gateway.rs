@@ -888,7 +888,7 @@ impl Predicate {
             Predicate::Path(pattern) => request.path.starts_with(pattern.as_str()),
             Predicate::Method(methods) => methods
                 .iter()
-                .any(|m| m.eq_ignore_ascii_case(&request.method.to_string())),
+                .any(|m| m.eq_ignore_ascii_case(request.method.as_ref())),
             Predicate::Header(name, _pattern) => {
                 // Simple existence check for the header
                 request.headers.contains_key(name)
@@ -1329,8 +1329,8 @@ impl GatewayRouter {
             match filter {
                 Filter::RateLimit(rate) => {
                     let key = rate.to_string();
-                    if let Some(limiter) = self.rate_limiters.get(&key) {
-                        if !limiter.try_acquire() {
+                    if let Some(limiter) = self.rate_limiters.get(&key)
+                        && !limiter.try_acquire() {
                             tracing::warn!(
                                 "Rate limit exceeded for key={}, path={}",
                                 key,
@@ -1341,14 +1341,13 @@ impl GatewayRouter {
                                     .body("Rate limit exceeded".as_bytes().to_owned()),
                             );
                         }
-                    }
                     // If no limiter is registered for this rate, the request
                     // passes through (passthrough mode).
                     // 如果没有为此速率注册限流器，请求直接通过（透传模式）。
                 }
                 Filter::CircuitBreaker(name) => {
-                    if let Some(cb) = self.circuit_breakers.get(name) {
-                        if !cb.allow_request() {
+                    if let Some(cb) = self.circuit_breakers.get(name)
+                        && !cb.allow_request() {
                             tracing::warn!(
                                 "Circuit breaker '{}' is open, rejecting request path={}",
                                 name,
@@ -1362,7 +1361,6 @@ impl GatewayRouter {
                                     ),
                             );
                         }
-                    }
                 }
                 _ => {} // Handled by apply_to_request / apply_to_response.
                         // 由apply_to_request / apply_to_response处理。
@@ -1377,28 +1375,26 @@ impl GatewayRouter {
     pub fn record_response(&self, response: &GatewayResponse, route: &Route) {
         let is_success = response.status.is_success();
         for filter in &route.filters {
-            if let Filter::CircuitBreaker(name) = filter {
-                if let Some(cb) = self.circuit_breakers.get(name) {
+            if let Filter::CircuitBreaker(name) = filter
+                && let Some(cb) = self.circuit_breakers.get(name) {
                     if is_success {
                         cb.record_success();
                     } else {
                         cb.record_failure();
                     }
                 }
-            }
         }
         // Also check global filters for circuit breakers.
         // 同时检查全局过滤器中的断路器。
         for filter in &self.config.global_filters {
-            if let Filter::CircuitBreaker(name) = filter {
-                if let Some(cb) = self.circuit_breakers.get(name) {
+            if let Filter::CircuitBreaker(name) = filter
+                && let Some(cb) = self.circuit_breakers.get(name) {
                     if is_success {
                         cb.record_success();
                     } else {
                         cb.record_failure();
                     }
                 }
-            }
         }
     }
 

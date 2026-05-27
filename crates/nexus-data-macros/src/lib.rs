@@ -737,12 +737,11 @@ fn convert_placeholders(sql: &str) -> String {
 /// Extract typed argument identifiers from a trait method signature (skips &self / self).
 fn extract_args(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>) -> Vec<proc_macro2::TokenStream> {
     inputs.iter().filter_map(|arg| {
-        if let syn::FnArg::Typed(pt) = arg {
-            if let syn::Pat::Ident(pi) = &*pt.pat {
+        if let syn::FnArg::Typed(pt) = arg
+            && let syn::Pat::Ident(pi) = &*pt.pat {
                 let ident = &pi.ident;
                 return Some(quote!(#ident));
             }
-        }
         None
     }).collect()
 }
@@ -883,7 +882,7 @@ fn generate_derived_query_method(
     };
 
     let returns_option = return_type_str.contains("Option");
-    let returns_vec = return_type_str.contains("Vec");
+    let _returns_vec = return_type_str.contains("Vec");
     let returns_bool = return_type_str.contains("bool");
     let _returns_usize = return_type_str.contains("usize") || return_type_str.contains("i64");
 
@@ -1087,35 +1086,25 @@ fn parse_conditions(part: &str) -> Vec<QueryCondition> {
         if seg_str.ends_with("_greater_than_equal") {
             let field = &seg_str[..seg_str.len() - 20];
             if !field.is_empty() { conditions.push(QueryCondition::GreaterThanEqual(field.to_string())); }
-        } else if seg_str.ends_with("_less_than_equal") {
-            let field = &seg_str[..seg_str.len() - 16];
+        } else if let Some(field) = seg_str.strip_suffix("_less_than_equal") {
             if !field.is_empty() { conditions.push(QueryCondition::LessThanEqual(field.to_string())); }
-        } else if seg_str.ends_with("_greater_than") {
-            let field = &seg_str[..seg_str.len() - 13];
+        } else if let Some(field) = seg_str.strip_suffix("_greater_than") {
             if !field.is_empty() { conditions.push(QueryCondition::GreaterThan(field.to_string())); }
-        } else if seg_str.ends_with("_less_than") {
-            let field = &seg_str[..seg_str.len() - 10];
+        } else if let Some(field) = seg_str.strip_suffix("_less_than") {
             if !field.is_empty() { conditions.push(QueryCondition::LessThan(field.to_string())); }
-        } else if seg_str.ends_with("_not_like") {
-            let field = &seg_str[..seg_str.len() - 9];
+        } else if let Some(field) = seg_str.strip_suffix("_not_like") {
             if !field.is_empty() { conditions.push(QueryCondition::NotLike(field.to_string())); }
-        } else if seg_str.ends_with("_like") {
-            let field = &seg_str[..seg_str.len() - 5];
+        } else if let Some(field) = seg_str.strip_suffix("_like") {
             if !field.is_empty() { conditions.push(QueryCondition::Like(field.to_string())); }
-        } else if seg_str.ends_with("_is_not_null") {
-            let field = &seg_str[..seg_str.len() - 12];
+        } else if let Some(field) = seg_str.strip_suffix("_is_not_null") {
             if !field.is_empty() { conditions.push(QueryCondition::IsNotNull(field.to_string())); }
-        } else if seg_str.ends_with("_is_null") {
-            let field = &seg_str[..seg_str.len() - 8];
+        } else if let Some(field) = seg_str.strip_suffix("_is_null") {
             if !field.is_empty() { conditions.push(QueryCondition::IsNull(field.to_string())); }
-        } else if seg_str.ends_with("_in") {
-            let field = &seg_str[..seg_str.len() - 3];
+        } else if let Some(field) = seg_str.strip_suffix("_in") {
             if !field.is_empty() { conditions.push(QueryCondition::In(field.to_string())); }
-        } else if seg_str.ends_with("_between") {
-            let field = &seg_str[..seg_str.len() - 8];
+        } else if let Some(field) = seg_str.strip_suffix("_between") {
             if !field.is_empty() { conditions.push(QueryCondition::Between(field.to_string())); }
-        } else if seg_str.ends_with("_not") {
-            let field = &seg_str[..seg_str.len() - 4];
+        } else if let Some(field) = seg_str.strip_suffix("_not") {
             if !field.is_empty() { conditions.push(QueryCondition::Not(field.to_string())); }
         } else if !seg_str.is_empty() {
             conditions.push(QueryCondition::Eq(seg_str.to_string()));

@@ -49,7 +49,7 @@ impl AutoConfiguration for DummyAutoConfig {
 // ============================================================================
 
 tokio::task_local! {
-    static REQUEST_BEANS: std::sync::RwLock<HashMap<TypeId, Arc<dyn Any + Send + Sync>>>;
+    static REQUEST_BEANS: RwLock<HashMap<TypeId, Arc<dyn Any + Send + Sync>>>;
 }
 
 /// Run an async future with a fresh request-scoped bean map.
@@ -60,7 +60,7 @@ where
     Fut: std::future::Future<Output = R>,
 {
     REQUEST_BEANS
-        .scope(std::sync::RwLock::new(HashMap::new()), f())
+        .scope(RwLock::new(HashMap::new()), f())
         .await
 }
 
@@ -290,11 +290,7 @@ impl ApplicationContext {
         singletons.get(&type_id).and_then(|b| {
             if let Some(arc) = b.downcast_ref::<Arc<T>>() {
                 Some(arc.clone())
-            } else if let Some(val) = b.downcast_ref::<T>() {
-                Some(Arc::new(val.clone()))
-            } else {
-                None
-            }
+            } else { b.downcast_ref::<T>().map(|val| Arc::new(val.clone())) }
         })
     }
 

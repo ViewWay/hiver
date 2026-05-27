@@ -303,41 +303,37 @@ impl<T> JoinHandle<T> {
     /// 获取任务ID
     #[must_use]
     pub fn id(&self) -> TaskId {
-        if let Some(refs) = &self.raw_core {
-            if let Some(core) = refs.core() {
+        if let Some(refs) = &self.raw_core
+            && let Some(core) = refs.core() {
                 return core.id();
             }
-        }
-        self.inner.as_ref().map(|i| i.id).unwrap_or(0)
+        self.inner.as_ref().map_or(0, |i| i.id)
     }
 
     /// Check if the task has finished (completed, cancelled, or panicked).
     /// 检查任务是否已完成（成功完成、已取消或发生panic）。
     #[must_use]
     pub fn is_finished(&self) -> bool {
-        if let Some(refs) = &self.raw_core {
-            if let Some(core) = refs.core() {
+        if let Some(refs) = &self.raw_core
+            && let Some(core) = refs.core() {
                 return core.is_completed();
             }
-        }
         self.inner.as_ref()
             .and_then(|i| TaskState::from_u8(i.state.load(Ordering::Acquire)))
-            .map(|s| s.is_finished())
-            .unwrap_or(false)
+            .is_some_and(TaskState::is_finished)
     }
 
     /// Wait for the task to complete and retrieve its result.
     /// 等待任务完成并获取其结果。
     pub async fn wait(self) -> Result<T, JoinError> {
-        if let Some(refs) = &self.raw_core {
-            if let Some(core) = refs.core() {
+        if let Some(refs) = &self.raw_core
+            && let Some(core) = refs.core() {
                 while !core.is_completed() {
                     std::hint::spin_loop();
                     std::future::pending::<()>().await;
                 }
                 return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
             }
-        }
         if let Some(inner) = self.inner {
             return WaitForTask::new(inner).await;
         }
@@ -467,7 +463,7 @@ where
         let (raw_task, task_ref) =
             raw_task::allocate_task(future, handle.scheduler().clone());
 
-        let id = task_ref.core().map(|c| c.id()).unwrap_or(0);
+        let id = task_ref.core().map_or(0, raw_task::TaskCore::id);
         let _ = handle.scheduler().submit(raw_task);
 
         return JoinHandle {

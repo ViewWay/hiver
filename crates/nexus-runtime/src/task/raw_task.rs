@@ -42,14 +42,14 @@ pub(crate) struct TaskCore {
 impl TaskCore {
     /// Get the task ID.
     /// 获取任务ID。
-    pub fn id(&self) -> TaskId {
+    pub(crate) fn id(&self) -> TaskId {
         self.id
     }
 
     /// Check if the task has completed.
     /// 检查任务是否已完成。
     #[must_use]
-    pub fn is_completed(&self) -> bool {
+    pub(crate) fn is_completed(&self) -> bool {
         self.state.load(Ordering::Acquire) == STATE_COMPLETED
     }
 
@@ -203,15 +203,15 @@ fn try_re_enqueue(core: *const TaskCore) {
 pub(crate) struct TaskRef(Option<NonNull<TaskCore>>);
 
 impl TaskRef {
-    pub fn new(ptr: *const TaskCore) -> Self {
-        TaskRef(Some(unsafe { NonNull::new_unchecked(ptr as *mut TaskCore) }))
+    pub(crate) fn new(ptr: *const TaskCore) -> Self {
+        TaskRef(Some(unsafe { NonNull::new_unchecked(ptr.cast_mut()) }))
     }
 
-    pub fn core(&self) -> Option<&TaskCore> {
+    pub(crate) fn core(&self) -> Option<&TaskCore> {
         self.0.map(|nn| unsafe { nn.as_ref() })
     }
 
-    pub fn is_some(&self) -> bool {
+    pub(crate) fn is_some(&self) -> bool {
         self.0.is_some()
     }
 }

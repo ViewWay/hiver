@@ -305,8 +305,8 @@ where
 
         // Authentication
         // 认证
-        let login = frame.header("login").map(|s| s.clone());
-        let passcode = frame.header("passcode").map(|s| s.clone());
+        let login = frame.header("login").cloned();
+        let passcode = frame.header("passcode").cloned();
 
         if self.config.require_login {
             let login = login.as_deref().ok_or_else(|| {
@@ -496,14 +496,13 @@ where
 
         // Validate subscription if provided.
         // 如果提供了订阅 ID 则验证。
-        if let Some(ref sub_id) = subscription_id {
-            if pending.subscription_id != *sub_id {
+        if let Some(ref sub_id) = subscription_id
+            && pending.subscription_id != *sub_id {
                 return Err(StompError::InvalidHeader(format!(
                     "ACK subscription mismatch: expected {}, got {} / ACK订阅不匹配: 期望 {}, 得到 {}",
                     pending.subscription_id, sub_id, pending.subscription_id, sub_id
                 )));
             }
-        }
 
         tracing::debug!(
             ack_id = %ack_id,
@@ -549,21 +548,19 @@ where
 
         // Validate subscription if provided.
         // 如果提供了订阅 ID 则验证。
-        if let Some(ref sub_id) = subscription_id {
-            if let Some(ref pending) = self.session.get_pending_ack(&ack_id) {
-                if pending.subscription_id != *sub_id {
+        if let Some(ref sub_id) = subscription_id
+            && let Some(ref pending) = self.session.get_pending_ack(&ack_id)
+                && pending.subscription_id != *sub_id {
                     return Err(StompError::InvalidHeader(format!(
                         "NACK subscription mismatch: expected {}, got {} / NACK订阅不匹配: 期望 {}, 得到 {}",
                         pending.subscription_id, sub_id, pending.subscription_id, sub_id
                     )));
                 }
-            }
-        }
 
         // Re-queue for redelivery or dead-letter if exhausted.
         // 重新排队投递，或如果耗尽则进入死信。
         match self.session.requeue_for_redelivery(&ack_id) {
-            Some(pending) if !self.session.get_pending_ack(&ack_id).is_some() => {
+            Some(pending) if self.session.get_pending_ack(&ack_id).is_none() => {
                 // Message was removed because it is exhausted.
                 // 消息因重试耗尽被移除。
                 tracing::warn!(
@@ -586,7 +583,7 @@ where
                 // Carry through any extra headers.
                 // 传递任何额外头部。
                 for (k, v) in &pending.headers {
-                    if !msg_frame.header(k).is_some() {
+                    if msg_frame.header(k).is_none() {
                         msg_frame.set_header(k, v);
                     }
                 }

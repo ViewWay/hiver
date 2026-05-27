@@ -361,7 +361,7 @@ impl PropertyPlaceholderProcessor {
 }
 
 impl BeanFactoryPostProcessor for PropertyPlaceholderProcessor {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "PropertyPlaceholderProcessor"
     }
 
@@ -511,7 +511,7 @@ impl ConfigurationPropertiesBinder {
 }
 
 impl BeanFactoryPostProcessor for ConfigurationPropertiesBinder {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "ConfigurationPropertiesBinder"
     }
 

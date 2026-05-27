@@ -170,7 +170,7 @@ mod engine_impl {
         /// 执行一批 GraphQL 请求。
         pub async fn execute_batch(&self, requests: Vec<GraphQLRequest>) -> Vec<GraphQLResponse> {
             let ag_batch = BatchRequest::Batch(
-                requests.into_iter().map(|r| r.into_ag_request()).collect(),
+                requests.into_iter().map(GraphQLRequest::into_ag_request).collect(),
             );
             let batch_resp = self.schema.execute_batch(ag_batch).await;
             match batch_resp {

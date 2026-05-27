@@ -74,7 +74,7 @@ impl Partitioner for RangePartitioner {
         if grid_size == 0 {
             return Err(BatchError::Other("grid_size must be > 0".into()));
         }
-        let chunk = (self.total + grid_size - 1) / grid_size;
+        let chunk = self.total.div_ceil(grid_size);
         let mut partitions = Vec::with_capacity(grid_size);
         let mut start = 0usize;
         for i in 0..grid_size {

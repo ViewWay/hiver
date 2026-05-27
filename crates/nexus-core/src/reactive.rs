@@ -74,7 +74,7 @@ impl<T: Send + 'static> Mono<T> {
     /// 从现有 `Future` 创建 `Mono`。
     pub fn from_future<F>(fut: F) -> Self
     where
-        F: std::future::Future<Output = T> + Send + 'static,
+        F: Future<Output = T> + Send + 'static,
     {
         Self {
             inner: async move { Some(fut.await) }.boxed(),
@@ -85,7 +85,7 @@ impl<T: Send + 'static> Mono<T> {
     /// 从返回 `Option<T>` 的 future 创建 `Mono`。
     pub fn from_future_opt<F>(fut: F) -> Self
     where
-        F: std::future::Future<Output = Option<T>> + Send + 'static,
+        F: Future<Output = Option<T>> + Send + 'static,
     {
         Self { inner: fut.boxed() }
     }
@@ -95,7 +95,7 @@ impl<T: Send + 'static> Mono<T> {
     pub fn defer<F, Fut>(f: F) -> Self
     where
         F: FnOnce() -> Fut + Send + 'static,
-        Fut: std::future::Future<Output = T> + Send + 'static,
+        Fut: Future<Output = T> + Send + 'static,
     {
         Self {
             inner: async move { Some(f().await) }.boxed(),
@@ -114,10 +114,7 @@ impl<T: Send + 'static> Mono<T> {
         let inner = self.inner;
         Mono {
             inner: async move {
-                match inner.await {
-                    Some(v) => Some(f(v)),
-                    None => None,
-                }
+                inner.await.map(f)
             }
             .boxed(),
         }
@@ -148,7 +145,7 @@ impl<T: Send + 'static> Mono<T> {
         let inner = self.inner;
         Flux {
             inner: Box::pin(
-                stream::once(async move { inner.await })
+                stream::once(inner)
                     .filter_map(|x| async move { x }),
             ),
         }
@@ -255,7 +252,7 @@ impl<T: Send + 'static> Flux<T> {
     where
         U: Send + 'static,
         F: FnMut(T) -> Fut + Send + 'static,
-        Fut: std::future::Future<Output = U> + Send + 'static,
+        Fut: Future<Output = U> + Send + 'static,
     {
         Flux {
             inner: Box::pin(self.inner.then(f)),
