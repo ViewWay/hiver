@@ -75,6 +75,7 @@ mod relation;
 mod repository;
 mod transactional;
 mod transactional_macro;
+mod audit;
 
 // Pre-authorize macro module (conditionally compiled with security feature)
 // Pre-authorize 宏模块（使用 security feature 条件编译）
@@ -502,4 +503,64 @@ pub fn PreAuthorize(attr: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream {
     pre_authorize_macro::pre_authorize(attr, item)
+}
+
+// ============================================================================
+// Audit Annotations / 审计注解
+// ============================================================================
+
+/// Marks a field as auto-populated with creation timestamp
+/// 标记字段自动填充创建时间戳
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @CreatedDate
+/// private Instant createdAt;
+/// ```
+#[proc_macro_attribute]
+pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
+    audit::impl_created_date(attr, item)
+}
+
+/// Marks a field as auto-updated with modification timestamp
+/// 标记字段自动更新修改时间戳
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @LastModifiedDate
+/// private Instant updatedAt;
+/// ```
+#[proc_macro_attribute]
+pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
+    audit::impl_last_modified_date(attr, item)
+}
+
+/// Marks a field as auto-populated with creator identity
+/// 标记字段自动填充创建者标识
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @CreatedBy
+/// private String createdBy;
+/// ```
+#[proc_macro_attribute]
+pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
+    audit::impl_created_by(attr, item)
+}
+
+/// Marks a field as auto-updated with modifier identity
+/// 标记字段自动更新修改者标识
+///
+/// # Spring Equivalent / Spring等价物
+///
+/// ```java
+/// @LastModifiedBy
+/// private String updatedBy;
+/// ```
+#[proc_macro_attribute]
+pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
+    audit::impl_last_modified_by(attr, item)
 }
