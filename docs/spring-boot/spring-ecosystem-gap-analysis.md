@@ -186,8 +186,8 @@
 | Authorization Code | ✅ | ✅ | **已实现** |
 | Client Credentials | ✅ | ✅ | **已实现** |
 | Refresh Token | ✅ | ✅ | **已实现** |
-| PKCE | ✅ | — | **缺失** |
-| Token 自省 | ✅ | — | **缺失** |
+| PKCE | ✅ | ✅ | **已实现** |
+| Token 自省 | ✅ | ✅ | **已实现** |
 
 ### 3.4 CSRF / CORS
 
@@ -284,10 +284,10 @@
 | 功能 | Spring Kafka | Nexus | 状态 |
 |------|-------------|-------|------|
 | KafkaTemplate | ✅ | Producer/Consumer | **75%** |
-| @KafkaListener | ✅ | — | **缺失** |
+| @KafkaListener | ✅ | ✅ `nexus-kafka` KafkaListener | **已实现** |
 | 消费者组 | ✅ | ✅ 基础支持 | **部分** |
 | 序列化/反序列化 | ✅ | ✅ Bytes/String/JSON | **已实现** |
-| 偏移量管理 | ✅ | — | **缺失** |
+| 偏移量管理 | ✅ | ✅ 基础自动/手动提交 | **部分** |
 
 ### 6.2 AMQP (RabbitMQ)
 
@@ -319,7 +319,7 @@
 | TraceId 生成 | ✅ | `nexus-observability` OpenTelemetry | **85%** |
 | Span | ✅ | ✅ | **已实现** |
 | 上下文传播 | ✅ | ✅ | **已实现** |
-| Zipkin 导出 | ✅ | — | **缺失** |
+| Zipkin 导出 | ✅ | ✅ `nexus-observability` zipkin feature | **已实现** |
 
 ### 7.2 指标
 
@@ -520,9 +520,9 @@
 
 ### 与 Spring Boot 的关键差距（已大幅缩小）
 
-1. **PKCE/OAuth2 Token 自省** — 高级 OAuth2 特性
-2. **@KafkaListener 声明式消费** — 声明式 Kafka 注解
-3. **Zipkin 导出** — 分布式追踪导出
+1. **AOP @AfterReturning/@AfterThrowing** — AOP 增强通知
+2. **@PostAuthorize** — 方法调用后权限检查
+3. **匿名认证** — Anonymous Authentication
 4. **Web Flow** — 流程引擎（未规划）
 
 ### Nexus 相对 Spring Boot 的优势
