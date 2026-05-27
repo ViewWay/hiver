@@ -38,6 +38,7 @@
 mod tests;
 
 mod config;
+pub mod listener;
 mod producer;
 mod consumer;
 mod topic;
