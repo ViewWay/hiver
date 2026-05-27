@@ -13,7 +13,7 @@ mod module;
 mod registry;
 mod verify;
 
-pub use event::{DomainEvent, EventPublisher, InMemoryEventPublisher};
+pub use event::{DomainEvent, EventPublisher, EventHandler, InMemoryEventPublisher};
 pub use module::{Module, ModuleMetadata};
 pub use registry::ModuleRegistry;
 pub use verify::{VerificationResult, verify_modules};

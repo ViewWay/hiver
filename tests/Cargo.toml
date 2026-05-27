@@ -20,6 +20,12 @@ nexus-data-rdbc = { path = "../crates/nexus-data-rdbc", features = ["postgres", 
 nexus-data-orm = { path = "../crates/nexus-data-orm" }
 nexus-data-macros = { path = "../crates/nexus-data-macros" }
 
+# Nexus core and cross-crate test targets
+nexus-core = { path = "../crates/nexus-core" }
+nexus-config = { path = "../crates/nexus-config" }
+nexus-modulith = { path = "../crates/nexus-modulith" }
+nexus-state-machine = { path = "../crates/nexus-state-machine" }
+
 # Async runtime
 tokio = { workspace = true, features = ["full"] }
 
@@ -90,3 +96,7 @@ required-features = ["integration-tests"]
 name = "rabbitmq_integration"
 path = "integration/rabbitmq_tests.rs"
 required-features = ["integration-tests"]
+
+[[test]]
+name = "cross_crate"
+path = "cross_crate_tests.rs"
