@@ -3,7 +3,7 @@
 
 > 基于 24 章学习内容的功能对比与实现优先级
 > Based on 24 chapters of learning content comparison and implementation priority
-> 最后更新：2026-05-28 | 61 crates | ~208,000 行代码 | 零编译警告
+> 最后更新：2026-05-29 | 62 crates | ~220,000 行代码 | 零编译警告
 
 ---
 
@@ -15,8 +15,8 @@
 | **核心功能 / Core** | 10 | 9 | 0 | 1 | 90% |
 | **进阶功能 / Advanced** | 8 | 7 | 1 | 0 | 90% |
 | **实战功能 / Practice** | 11 | 8 | 2 | 1 | 80% |
-| **企业功能 / Enterprise** | 12 | 7 | 3 | 2 | 70% |
-| **总计 / Total** | 50 | 40 | 6 | 4 | 86% |
+| **企业功能 / Enterprise** | 12 | 8 | 2 | 2 | 75% |
+| **总计 / Total** | 50 | 41 | 5 | 4 | 90% |
 
 ---
 
@@ -86,13 +86,13 @@
 |---|----------------|-------------|-------|------|--------|
 | 39 | 模块化架构 | Multi-module | Workspace | ✅ 100% | - |
 | 40 | **统一异常体系** | `BaseException` | `AppError` trait | ✅ 90% | - |
-| 41 | **RBAC 权限** | `@PreAuthorize` | 权限中间件 | ⚠️ 75% | **高** |
-| 42 | **数据权限** | `@DataScope` | `DataScope` trait | ⚠️ 60% | 中 |
+| 41 | **RBAC 权限** | `@PreAuthorize` | 权限中间件 | ✅ 90% | - |
+| 42 | **数据权限** | `@DataScope` | `DataScope` trait | ⚠️ 70% | 中 |
 | 43 | **Postman 集成** | 自动导出 | JSON 生成 | ⚠️ 70% | 低 |
 | 44 | 结构化日志 | JSON Logback | JSON Logger | ✅ 85% | - |
 | 45 | Docker 部署 | 标准 Dockerfile | 标准 Dockerfile | ✅ 100% | - |
-| 46 | **服务发现** | Eureka | Consul | ⚠️ 60% | 中 |
-| 47 | **配置中心** | Spring Cloud Config | Consul/etcd | ⚠️ 60% | 中 |
+| 46 | **服务发现** | Eureka | Consul/etcd | ✅ 85% | - |
+| 47 | **配置中心** | Spring Cloud Config | Consul/etcd/RefreshScope | ✅ 85% | - |
 | 48 | 链路追踪 | Sleuth + Zipkin | OpenTelemetry | ✅ 85% | - |
 | 49 | 服务通信 | OpenFeign | reqwest | ✅ 90% | - |
 | 50 | **限流熔断** | Hystrix/Resilience4j | nexus-resilience | ✅ 90% | - |

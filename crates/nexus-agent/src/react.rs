@@ -109,6 +109,7 @@ enum ReActStep {
         tool_input: serde_json::Value,
         /// The agent's reasoning.
         /// 代理的推理。
+        #[allow(dead_code)]
         thought: String,
     },
     /// The agent has reached a final answer.
@@ -119,6 +120,7 @@ enum ReActStep {
         answer: String,
         /// The agent's final reasoning.
         /// 代理的最终推理。
+        #[allow(dead_code)]
         thought: String,
     },
 }

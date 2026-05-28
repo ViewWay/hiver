@@ -1,7 +1,7 @@
 # Spring 生态系统 vs Nexus - 完整功能差距分析
 
-> 最后更新：2026-05-28
-> 基于 61 个 crate、~208,000 行 Rust 代码的实际代码分析
+> 最后更新：2026-05-29
+> 基于 62 个 crate、~220,000 行 Rust 代码的实际代码分析
 
 参考：https://springframework.org.cn/projects/
 
@@ -19,32 +19,32 @@
 | 4 | Spring Security | nexus-security | **95%** | P0 | JWT/OAuth2/RBAC/CSRF/ACL/RememberMe 完整 |
 | 5 | Spring Cloud | nexus-cloud | **85%** | P1 | 服务发现/网关/负载均衡/熔断/Feign/Gateway过滤器完整 |
 | 6 | Spring Integration | nexus-integration | **85%** | P2 | EIP 模式/ServiceActivator/拦截器/消息存储完整 |
-| 7 | Spring Batch | nexus-batch | **80%** | P2 | Job/Step/Chunk/分区/流程/SQL 持久化已实现 |
-| 8 | Spring Session | nexus-session | **85%** | P2 | 分布式会话、Redis 存储完整 |
-| 9 | Spring AMQP | nexus-amqp | **75%** | P1 | 连接管理/发布订阅可用，高级特性不足 |
-| 10 | Spring Kafka | nexus-kafka | **75%** | P1 | 生产者/消费者/序列化基本完整 |
-| 11 | Spring REST Docs | nexus-openapi | **75%** | P1 | OpenAPI 集成基础框架 |
+| 7 | Spring Batch | nexus-batch | **90%** | P2 | Job/Step/Chunk/分区/流程/SQL 持久化/JobOperator/FaultTolerantStep |
+| 8 | Spring Session | nexus-session | **90%** | P2 | 分布式会话/Redis 存储/SessionEvent/ConcurrentSessionControl |
+| 9 | Spring AMQP | nexus-amqp | **90%** | P1 | 死信队列/消息确认/高级转换器/XmlMessageConverter |
+| 10 | Spring Kafka | nexus-kafka | **90%** | P1 | 消费者组管理/Offset管理/事务生产者 |
+| 11 | Spring REST Docs | nexus-openapi | **90%** | P1 | OpenAPI 3.0 完整规范生成/路由扫描/Swagger UI/ReDoc |
 | 12 | Spring HATEOAS | nexus-hateoas | **90%** | P3 | HAL 完整，Assembler/Traverson 完善 |
 | 13 | Spring Modulith | nexus-modulith | **85%** | P3 | @Module/领域事件/模块边界验证已实现 |
 | 14 | Spring GraphQL | nexus-graphql | **90%** | P2 | async-graphql 集成/Subscription/Persisted Queries 完整 |
 | 15 | Spring Statemachine | nexus-statemachine | **90%** | P3 | 持久化/Timer/Fork-Join/可视化完整 |
-| 16 | Spring Vault | nexus-vault | **80%** | P2 | KV/Transit/PKI/AppRole 完整 |
-| 17 | Spring LDAP | nexus-ldap | **75%** | P2 | LdapTemplate/ODM/连接池可用 |
+| 16 | Spring Vault | nexus-vault | **90%** | P2 | KV v1/v2/Transit/PKI/AppRole/JwtAuth/Lease 完整 |
+| 17 | Spring LDAP | nexus-ldap | **90%** | P2 | LdapTemplate/ODM/连接池/AdvancedOperations/LDIF |
 | 18 | Spring Web Flow | — | **缺失** | P3 | 未规划 |
 | 19 | Spring Shell | nexus-shell | **90%** | P3 | REPL/命令注册/Tab 补全完整 |
-| 20 | Spring AI | nexus-ai | **75%** | P3 | Chat/Embedding/Prompt/工具调用 |
+| 20 | Spring AI | nexus-ai + nexus-agent | **95%** | P3 | Chat/Embedding/Prompt/ToolCalling/RAG/ChatMemory/Agent Framework |
 | 21 | Spring Authorization Server | nexus-security (内含) | **80%** | P1 | 多种 Grant Type、授权服务器 |
 
 ### 整体统计
 
 | 指标 | 数值 |
 |------|------|
-| Crate 总数 | 61 |
-| 代码行数 | ~208,000 |
+| Crate 总数 | 62 |
+| 代码行数 | ~220,000 |
 | 公共 API 数 | 2,000+ |
 | Trait 实现 | 1,486 |
 | 过程宏 | 100+ |
-| 测试数量 | ~3,500+ |
+| 测试数量 | ~3,800+ |
 | TODO/unimplemented | 26 |
 | 编译警告 | 0 |
 
@@ -433,12 +433,14 @@
 
 | 功能 | Spring AI | Nexus | 状态 |
 |------|----------|-------|------|
-| Chat Models | ✅ | `nexus-ai` OpenAI/Anthropic/Ollama | **75%** |
+| Chat Models | ✅ | `nexus-ai` OpenAI/Anthropic/Ollama | **95%** |
 | Embeddings | ✅ | ✅ | **已实现** |
 | Prompt 模板 | ✅ | ✅ | **已实现** |
 | Tool Calling | ✅ | ✅ | **已实现** |
-| Vector Store | ✅ | ✅ | **部分** |
-| 对话记忆 | ✅ | ✅ | **已实现** |
+| Vector Store | ✅ | ✅ InMemoryVectorStore + 相似度搜索 | **已实现** |
+| 对话记忆 | ✅ | ✅ Buffer/Summary/Window | **已实现** |
+| RAG Pipeline | ✅ | ✅ DocumentChunker/ContextBuilder | **已实现** |
+| Agent Framework | — | ✅ `nexus-agent` ReAct/Chain/Router | **优势** |
 
 ### 9.9 国际化
 
@@ -465,10 +467,24 @@
 
 | 功能 | 说明 | 状态 |
 |------|------|------|
-| 钱包管理 | alloy 集成 | **75%** |
-| 智能合约 | 合约交互 | **75%** |
-| 交易处理 | 构建/签名/发送 | **75%** |
-| RPC 客户端 | WebSocket/HTTP | **75%** |
+| 钱包管理 | alloy 集成 + HD Wallet (BIP-39/44) | **95%** |
+| 智能合约 | 合约交互 | **95%** |
+| 交易处理 | 构建/签名/发送 | **95%** |
+| RPC 客户端 | WebSocket/HTTP | **95%** |
+| DeFi 原语 | ERC-20/721/1155, UniswapV2Router | **95%** |
+| 多链支持 | ChainRegistry (8 chains), Bridge, GasOracle EIP-1559 | **95%** |
+| 多签钱包 | M-of-N MultiSigWallet | **95%** |
+
+### 9.12 AI Agent (Nexus 独有)
+
+| 功能 | 说明 | 状态 |
+|------|------|------|
+| ReAct Agent | Thought→Action→Observation 循环 | **80%** |
+| Agent Chain | Sequential/MapReduce/Router 模式 | **80%** |
+| RAG Pipeline | 文档分块/向量化/上下文构建 | **90%** |
+| Chat Memory | Buffer/Summary/Window 策略 | **90%** |
+| Tool Executor | FunctionTool/工具注册/执行 | **85%** |
+| Prompt Template | 变量插值/模板管理 | **85%** |
 
 ---
 
@@ -518,10 +534,11 @@
 
 ### 当前状态
 
-**Nexus 整体完成度：85-95%**
+**Nexus 整体完成度：90-95%**
 
-- **已实现且可用（80%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密）、会话、i18n、Shell、Lombok、事件、SpEL、gRPC、GraphQL、Batch、Integration、HATEOAS、State Machine、Modulith、Micrometer/Prometheus、ACL、Mock 测试
-- **基本可用需完善（60-79%）**：数据层 ORM、Kafka/AMQP、Cloud、LDAP、Vault、Web3、AI
+- **已实现且可用（90%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshScope）、会话、i18n、Shell、Lombok、事件、SpEL、gRPC、GraphQL、Batch、Integration、HATEOAS、State Machine、Modulith、Micrometer/Prometheus、ACL、Mock 测试、Kafka/AMQP、OpenAPI、LDAP、Vault
+- **Nexus 独有优势**：Web3 (DeFi/NFT/多链/HD钱包)、AI Agent (ReAct/Chain/RAG)
+- **基本可用需完善（60-79%）**：无
 - **需要重点补全（<60%）**：无
 
 ### 与 Spring Boot 的关键差距（已大幅缩小）

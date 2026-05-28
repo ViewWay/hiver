@@ -487,6 +487,7 @@ pub struct RagPipeline {
     chat_model: Arc<dyn ChatModel>,
     /// The embedding model for generating vectors.
     /// 用于生成向量的嵌入模型。
+    #[allow(dead_code)]
     embedding_model: Arc<dyn EmbeddingModel>,
     /// The vector store for storing and retrieving document chunks.
     /// 用于存储和检索文档块的向量存储。
