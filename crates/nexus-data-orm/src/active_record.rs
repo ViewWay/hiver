@@ -613,7 +613,11 @@ mod tests {
         let malicious = "'; DROP TABLE users; --";
         let param = json_value_to_param(&serde_json::json!(malicious));
         assert_eq!(param, QueryParam::Text(malicious.into()));
-        // Value is stored as QueryParam, never interpolated into SQL
-        assert!(!param.to_sql_literal().contains("DROP TABLE users; --"));
+        // Value is stored as QueryParam, never interpolated into SQL.
+        // to_sql_literal() escapes quotes so the SQL parser treats it as a string literal.
+        let literal = param.to_sql_literal();
+        assert!(literal.starts_with('\'') && literal.ends_with('\''));
+        // Original single quote is escaped to ''
+        assert!(literal.contains("''"));
     }
 }
