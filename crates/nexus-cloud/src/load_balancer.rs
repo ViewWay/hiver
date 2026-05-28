@@ -289,6 +289,161 @@ impl LoadBalancer for ReactiveLoadBalancer {
     }
 }
 
+/// Weighted round-robin load balancer using smooth weighted selection (Nginx-style).
+/// 使用平滑加权选择的加权轮询负载均衡器（Nginx 风格）。
+///
+/// Reads weights from instance metadata key `"weight"`, defaulting to 1.
+/// Equivalent to Spring Cloud's `WeightedServiceInstanceListSupplier` with round-robin.
+/// 从实例元数据键 `"weight"` 读取权重，默认为 1。
+/// 等价于 Spring Cloud 的 `WeightedServiceInstanceListSupplier` 配合轮询。
+pub struct WeightedRoundRobinLoadBalancer {
+    states: Arc<tokio::sync::RwLock<std::collections::HashMap<String, SmoothWeightState>>>,
+}
+
+#[derive(Debug, Default)]
+struct SmoothWeightState {
+    weight: u32,
+    current: i64,
+}
+
+impl WeightedRoundRobinLoadBalancer {
+    /// Create a new weighted round-robin load balancer.
+    /// 创建新的加权轮询负载均衡器。
+    pub fn new() -> Self {
+        Self {
+            states: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
+        }
+    }
+
+    fn get_weight(instance: &ServiceInstance) -> u32 {
+        instance
+            .metadata
+            .get("weight")
+            .and_then(|w| w.parse().ok())
+            .unwrap_or(1)
+    }
+}
+
+impl Default for WeightedRoundRobinLoadBalancer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl LoadBalancer for WeightedRoundRobinLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        if instances.is_empty() {
+            return None;
+        }
+
+        let mut states = self.states.write().await;
+
+        for inst in instances {
+            let w = Self::get_weight(inst);
+            states
+                .entry(inst.instance_id.clone())
+                .and_modify(|s| s.weight = w)
+                .or_insert(SmoothWeightState { weight: w, current: 0 });
+        }
+
+        let total_weight: u32 = instances.iter().map(Self::get_weight).sum();
+
+        let mut best: Option<(&ServiceInstance, i64)> = None;
+        for inst in instances {
+            if let Some(state) = states.get_mut(&inst.instance_id) {
+                state.current += state.weight as i64;
+                if best.is_none() || state.current > best.unwrap().1 {
+                    best = Some((inst, state.current));
+                }
+            }
+        }
+
+        if let Some((inst, _)) = best {
+            if let Some(state) = states.get_mut(&inst.instance_id) {
+                state.current -= total_weight as i64;
+            }
+            return Some(inst.clone());
+        }
+
+        instances.first().cloned()
+    }
+}
+
+/// Consistent hash load balancer for session affinity.
+/// 用于会话亲和的一致性哈希负载均衡器。
+///
+/// Routes requests to the same instance based on a hash key using virtual nodes.
+/// Equivalent to Spring Cloud's hash-based load balancing.
+/// 使用虚拟节点根据哈希键将请求路由到相同实例。
+/// 等价于 Spring Cloud 的基于哈希的负载均衡。
+pub struct ConsistentHashLoadBalancer {
+    virtual_nodes: usize,
+}
+
+impl ConsistentHashLoadBalancer {
+    /// Create with default 150 virtual nodes per instance.
+    /// 使用默认每个实例 150 个虚拟节点创建。
+    pub fn new() -> Self {
+        Self { virtual_nodes: 150 }
+    }
+
+    /// Set the number of virtual nodes per instance.
+    /// 设置每个实例的虚拟节点数。
+    pub fn with_virtual_nodes(mut self, n: usize) -> Self {
+        self.virtual_nodes = n;
+        self
+    }
+
+    fn hash_key(key: &str) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut h = std::collections::hash_map::DefaultHasher::new();
+        key.hash(&mut h);
+        h.finish()
+    }
+
+    /// Choose an instance by consistent hash of the given key.
+    /// 通过给定键的一致性哈希选择实例。
+    pub fn choose_by_key<'a>(
+        &self,
+        instances: &'a [ServiceInstance],
+        key: &str,
+    ) -> Option<&'a ServiceInstance> {
+        if instances.is_empty() {
+            return None;
+        }
+        if instances.len() == 1 {
+            return Some(&instances[0]);
+        }
+
+        let mut ring: Vec<(u64, usize)> = Vec::with_capacity(instances.len() * self.virtual_nodes);
+        for (idx, inst) in instances.iter().enumerate() {
+            for vn in 0..self.virtual_nodes {
+                let vk = format!("{}:{}", inst.instance_id, vn);
+                ring.push((Self::hash_key(&vk), idx));
+            }
+        }
+        ring.sort_by_key(|(h, _)| *h);
+
+        let target = Self::hash_key(key);
+        let pos = ring.partition_point(|(h, _)| *h < target);
+        let (_, idx) = ring[pos % ring.len()];
+        Some(&instances[idx])
+    }
+}
+
+impl Default for ConsistentHashLoadBalancer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl LoadBalancer for ConsistentHashLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        self.choose_by_key(instances, &instances.first()?.service_id)
+            .cloned()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -323,6 +478,82 @@ mod tests {
 
         // Just verify it compiles and runs
         let _ = instances;
-        // In a real test, we'd run this in an async context
+    }
+
+    #[tokio::test]
+    async fn test_weighted_round_robin() {
+        let lb = WeightedRoundRobinLoadBalancer::new();
+
+        let mut inst_a = ServiceInstance::new("test", "1", "localhost", 8080);
+        inst_a.metadata.insert("weight".to_string(), "5".to_string());
+
+        let mut inst_b = ServiceInstance::new("test", "2", "localhost", 8081);
+        inst_b.metadata.insert("weight".to_string(), "1".to_string());
+
+        let instances = vec![inst_a, inst_b];
+
+        let mut counts = std::collections::HashMap::new();
+        for _ in 0..12 {
+            let chosen = lb.choose(&instances).await.unwrap();
+            *counts.entry(chosen.instance_id.clone()).or_insert(0) += 1;
+        }
+
+        // inst_a (weight 5) should be chosen ~10 times, inst_b (weight 1) ~2 times
+        assert!(counts.get("1").copied().unwrap_or(0) >= 8);
+        assert!(counts.get("2").copied().unwrap_or(0) >= 1);
+    }
+
+    #[tokio::test]
+    async fn test_weighted_round_robin_default_weight() {
+        let lb = WeightedRoundRobinLoadBalancer::new();
+        let instances = vec![
+            ServiceInstance::new("test", "1", "localhost", 8080),
+            ServiceInstance::new("test", "2", "localhost", 8081),
+        ];
+
+        // Without explicit weights, should behave like regular round-robin
+        let a = lb.choose(&instances).await.unwrap();
+        let b = lb.choose(&instances).await.unwrap();
+        assert_ne!(a.instance_id, b.instance_id);
+    }
+
+    #[test]
+    fn test_consistent_hash_same_key_same_instance() {
+        let lb = ConsistentHashLoadBalancer::new();
+        let instances = vec![
+            ServiceInstance::new("svc", "1", "localhost", 8080),
+            ServiceInstance::new("svc", "2", "localhost", 8081),
+            ServiceInstance::new("svc", "3", "localhost", 8082),
+        ];
+
+        let first = lb.choose_by_key(&instances, "user-123").unwrap();
+        let second = lb.choose_by_key(&instances, "user-123").unwrap();
+        assert_eq!(first.instance_id, second.instance_id);
+    }
+
+    #[test]
+    fn test_consistent_hash_different_keys_distribute() {
+        let lb = ConsistentHashLoadBalancer::new();
+        let instances = vec![
+            ServiceInstance::new("svc", "1", "localhost", 8080),
+            ServiceInstance::new("svc", "2", "localhost", 8081),
+            ServiceInstance::new("svc", "3", "localhost", 8082),
+        ];
+
+        let mut chosen_ids = std::collections::HashSet::new();
+        for i in 0..30 {
+            if let Some(inst) = lb.choose_by_key(&instances, &format!("key-{i}")) {
+                chosen_ids.insert(inst.instance_id.clone());
+            }
+        }
+        // Should distribute across multiple instances
+        assert!(chosen_ids.len() > 1);
+    }
+
+    #[test]
+    fn test_consistent_hash_empty_instances() {
+        let lb = ConsistentHashLoadBalancer::new();
+        let instances: Vec<ServiceInstance> = vec![];
+        assert!(lb.choose_by_key(&instances, "key").is_none());
     }
 }

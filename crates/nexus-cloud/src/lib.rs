@@ -62,7 +62,10 @@ pub use feign::{
     BearerTokenInterceptor, DefaultFallback, FeignClientConfig, FeignError, FeignFallback,
     FeignRequestInterceptor, FeignResult, HeaderInterceptor, RetryConfig,
 };
-pub use load_balancer::{LoadBalancer, RoundRobinLoadBalancer};
+pub use load_balancer::{
+    ConsistentHashLoadBalancer, LoadBalancer, ReactiveLoadBalancer, RoundRobinLoadBalancer,
+    WeightedRoundRobinLoadBalancer,
+};
 pub use load_balancer_ext::{
     HealthCheckLoadBalancer, HealthStatus, InMemoryHealthChecker, InstanceHealthChecker,
     ZoneAwareLoadBalancer,
