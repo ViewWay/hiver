@@ -44,6 +44,8 @@ mod exchange;
 mod binding;
 mod message;
 mod converter;
+mod dead_letter;
+mod ack;
 pub mod rabbit_client;
 
 pub use config::{AmqpConfig, ConnectionConfig};
@@ -54,7 +56,9 @@ pub use queue::{Queue, QueueBuilder, QueueType};
 pub use exchange::{Exchange, ExchangeBuilder, ExchangeType};
 pub use binding::{Binding, BindingBuilder};
 pub use message::{AmqpMessage, Message, MessageProperties, DeliveryMode};
-pub use converter::{MessageConverter, JsonMessageConverter};
+pub use converter::{MessageConverter, JsonMessageConverter, XmlMessageConverter, BytesMessageConverter};
+pub use dead_letter::{DeadLetterQueue, DlqReason, DeathRecord};
+pub use ack::{AckMode, AckState, AcknowledgableMessage, ChannelExt};
 pub use rabbit_client::RabbitMqClient;
 #[cfg(feature = "lapin")]
 pub use rabbit_client::RabbitError;
@@ -67,7 +71,9 @@ pub mod prelude {
         Listener, ListenerContainer, MessageHandler, Queue, QueueBuilder, QueueType,
         Exchange, ExchangeBuilder, ExchangeType, Binding, BindingBuilder,
         AmqpMessage, Message, MessageProperties, DeliveryMode,
-        MessageConverter, JsonMessageConverter,
+        MessageConverter, JsonMessageConverter, XmlMessageConverter, BytesMessageConverter,
+        DeadLetterQueue, DlqReason, DeathRecord,
+        AckMode, AckState, AcknowledgableMessage, ChannelExt,
     };
 }
 

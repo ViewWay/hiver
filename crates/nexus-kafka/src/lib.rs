@@ -45,6 +45,9 @@ mod topic;
 mod message;
 mod serialization;
 pub mod kafka_client;
+mod consumer_group_manager;
+mod offset_manager;
+mod transactional_producer;
 
 pub use config::{ProducerConfig, ConsumerConfig, ConsumerOffset};
 pub use producer::{Producer, Record, RecordHeader, ProduceOptions};
@@ -58,6 +61,14 @@ pub use serialization::{
     Serializer, Deserializer, JsonSerializer, JsonDeserializer, BytesSerializer,
     KeySerializer, SerializeData
 };
+pub use consumer_group_manager::{
+    ConsumerGroupManager, OffsetResetStrategy, GroupDescription, GroupMemberInfo,
+    GroupSummary, PartitionOffsetInfo, TopicPartitionAssignment,
+};
+pub use offset_manager::OffsetManager;
+pub use transactional_producer::{
+    TransactionalProducer, TransactionOffset, TransactionState,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
@@ -66,6 +77,8 @@ pub mod prelude {
         ProducerConfig, ConsumerConfig, ConsumerOffset, Producer, Record, ProduceOptions,
         Consumer, ConsumerGroup, TopicPartition, Offset, KafkaMessage, MessageKey,
         JsonSerializer, JsonDeserializer, BytesSerializer,
+        ConsumerGroupManager, OffsetResetStrategy, GroupDescription,
+        OffsetManager, TransactionalProducer, TransactionOffset, TransactionState,
     };
 }
 
