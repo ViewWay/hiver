@@ -21,6 +21,9 @@ mod tests;
 
 pub mod chain;
 pub mod contract;
+pub mod defi;
+pub mod hd_wallet;
+pub mod multichain;
 pub mod rpc;
 pub mod subscribe;
 pub mod tx;
@@ -28,6 +31,9 @@ pub mod wallet;
 
 pub use chain::{Block, BlockNumber, ChainConfig, ChainId, Eip155Chain};
 pub use contract::{CallParams, ContractError, FunctionSelector};
+pub use defi::{DeFiError, Erc20, Erc1155, Erc721, UniswapV2Router};
+pub use hd_wallet::{DerivedAccount, HdWallet, HdWalletError, MultiSigWallet, WordCount};
+pub use multichain::{BridgeError, ChainRegistry, GasOracle, GasFeeEstimate};
 pub use rpc::RpcError;
 pub use tx::{Transaction, TransactionBuilder, TxHash, TxType};
 pub use wallet::{Address, LocalWallet, Wallet};
