@@ -1,0 +1,22 @@
+[package]
+name = "nexus-agent"
+version.workspace = true
+edition.workspace = true
+description = "AI Agent framework for Nexus - ReAct, chaining, routing, and tool-using agents"
+# 中文描述: Nexus 的 AI 代理框架 - ReAct、链式、路由和工具使用代理
+
+[dependencies]
+nexus-ai = { path = "../nexus-ai" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+futures = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+
+[lints]
+workspace = true

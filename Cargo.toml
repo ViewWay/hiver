@@ -57,6 +57,7 @@ members = [
     "crates/nexus-shell-macros",
     "crates/nexus-ws",
     "crates/nexus-ai",
+    "crates/nexus-agent",
     "crates/nexus-lombok",
     "crates/nexus-spel",
     "crates/nexus-modulith",

@@ -37,12 +37,14 @@
 
 pub mod anthropic;
 pub mod chat_client;
+pub mod chat_memory;
 pub mod chat_model;
 pub mod embedding;
 pub mod memory;
 pub mod ollama;
 pub mod openai;
 pub mod prompt;
+pub mod rag;
 pub mod tool;
 pub mod vector_store;
 
@@ -50,11 +52,18 @@ pub mod vector_store;
 // 重新导出主要类型以方便使用
 pub use anthropic::{AnthropicChatModel, AnthropicConfig};
 pub use chat_client::ChatClient;
+pub use chat_memory::{
+    ConversationBufferMemory, ConversationBufferWindowMemory, ConversationMemory,
+    ConversationSummaryMemory,
+};
 pub use chat_model::{ChatMessage, ChatRequest, ChatResponse, ChatStream, Role, TokenUsage};
 pub use embedding::{cosine_similarity, euclidean_distance, normalize, EmbeddingModel, EmbeddingRequest, EmbeddingResponse};
 pub use memory::{ChatMemory, InMemoryChatMemory};
 pub use ollama::{OllamaChatModel, OllamaConfig, OllamaEmbeddingModel};
 pub use openai::{OpenAiChatModel, OpenAiConfig, OpenAiEmbeddingModel};
 pub use prompt::PromptTemplate;
-pub use tool::{ToolCallback, ToolRegistry};
+pub use rag::{
+    ChunkStrategy, ContextBuilder, DocumentChunker, RagConfig, RagPipeline, RagResponse,
+};
+pub use tool::{FunctionTool, ToolCallback, ToolCall, ToolExecutor, ToolExecutorConfig, ToolRegistry, ToolResult};
 pub use vector_store::{Document, InMemoryVectorStore, SearchResult, VectorStore};

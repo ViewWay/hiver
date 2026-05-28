@@ -476,3 +476,394 @@ impl std::fmt::Debug for ToolRegistry {
             .finish_non_exhaustive()
     }
 }
+
+/// A tool call request from the LLM, specifying which tool to invoke and with what arguments.
+/// 来自 LLM 的工具调用请求，指定要调用的工具及其参数。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolCall {
+    /// Unique identifier for this tool call.
+    /// 此工具调用的唯一标识符。
+    pub id: String,
+    /// The name of the tool to invoke.
+    /// 要调用的工具名称。
+    pub name: String,
+    /// The arguments to pass to the tool, as a JSON object.
+    /// 传递给工具的参数，作为 JSON 对象。
+    pub arguments: Value,
+}
+
+impl ToolCall {
+    /// Creates a new tool call.
+    /// 创建新的工具调用。
+    #[must_use]
+    pub fn new(id: impl Into<String>, name: impl Into<String>, arguments: Value) -> Self {
+        Self {
+            id: id.into(),
+            name: name.into(),
+            arguments,
+        }
+    }
+}
+
+/// The result of executing a tool call.
+/// 执行工具调用的结果。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolResult {
+    /// The ID of the tool call this result corresponds to.
+    /// 此结果对应的工具调用 ID。
+    pub call_id: String,
+    /// The name of the tool that was executed.
+    /// 已执行的工具名称。
+    pub tool_name: String,
+    /// The result of the tool execution (Ok) or error message (Err).
+    /// 工具执行的结果（Ok）或错误消息（Err）。
+    pub output: Result<String, String>,
+    /// Execution time in milliseconds.
+    /// 执行时间（毫秒）。
+    pub elapsed_ms: u64,
+}
+
+impl ToolResult {
+    /// Creates a new successful tool result.
+    /// 创建新的成功工具结果。
+    #[must_use]
+    pub fn ok(call_id: impl Into<String>, tool_name: impl Into<String>, output: impl Into<String>) -> Self {
+        Self {
+            call_id: call_id.into(),
+            tool_name: tool_name.into(),
+            output: Ok(output.into()),
+            elapsed_ms: 0,
+        }
+    }
+
+    /// Creates a new failed tool result.
+    /// 创建新的失败工具结果。
+    #[must_use]
+    pub fn err(call_id: impl Into<String>, tool_name: impl Into<String>, error: impl Into<String>) -> Self {
+        Self {
+            call_id: call_id.into(),
+            tool_name: tool_name.into(),
+            output: Err(error.into()),
+            elapsed_ms: 0,
+        }
+    }
+
+    /// Sets the elapsed execution time.
+    /// 设置已用执行时间。
+    #[must_use]
+    pub fn elapsed_ms(mut self, ms: u64) -> Self {
+        self.elapsed_ms = ms;
+        self
+    }
+
+    /// Returns true if the tool execution was successful.
+    /// 如果工具执行成功则返回 true。
+    #[must_use]
+    pub fn is_ok(&self) -> bool {
+        self.output.is_ok()
+    }
+}
+
+/// Configuration for tool execution behavior.
+/// 工具执行行为的配置。
+#[derive(Debug, Clone)]
+pub struct ToolExecutorConfig {
+    /// Maximum execution time per tool call in milliseconds (0 = no timeout).
+    /// 每次工具调用的最大执行时间（毫秒）（0 = 无超时）。
+    pub timeout_ms: u64,
+    /// Maximum number of tool calls per execution loop (0 = unlimited).
+    /// 每次执行循环的最大工具调用次数（0 = 无限制）。
+    pub max_iterations: usize,
+    /// Whether to continue the loop when a tool execution fails.
+    /// 工具执行失败时是否继续循环。
+    pub continue_on_error: bool,
+}
+
+impl Default for ToolExecutorConfig {
+    fn default() -> Self {
+        Self {
+            timeout_ms: 30_000,
+            max_iterations: 10,
+            continue_on_error: true,
+        }
+    }
+}
+
+impl ToolExecutorConfig {
+    /// Creates a new executor config with default values.
+    /// 使用默认值创建新的执行器配置。
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the timeout per tool call.
+    /// 设置每次工具调用的超时时间。
+    #[must_use]
+    pub fn timeout_ms(mut self, ms: u64) -> Self {
+        self.timeout_ms = ms;
+        self
+    }
+
+    /// Sets the maximum number of iterations.
+    /// 设置最大迭代次数。
+    #[must_use]
+    pub fn max_iterations(mut self, n: usize) -> Self {
+        self.max_iterations = n;
+        self
+    }
+
+    /// Sets whether to continue on error.
+    /// 设置出错时是否继续。
+    #[must_use]
+    pub fn continue_on_error(mut self, continue_on: bool) -> Self {
+        self.continue_on_error = continue_on;
+        self
+    }
+}
+
+/// Executes tool calls from the LLM with error handling, timeout, and iteration control.
+/// 执行来自 LLM 的工具调用，具有错误处理、超时和迭代控制。
+///
+/// The `ToolExecutor` bridges the gap between LLM tool call requests and actual
+/// tool execution. It handles timeouts, error recovery, and provides structured
+/// results for each tool invocation.
+///
+/// `ToolExecutor` 弥合了 LLM 工具调用请求和实际工具执行之间的差距。
+/// 它处理超时、错误恢复，并为每次工具调用提供结构化结果。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use nexus_ai::tool::{ToolExecutor, ToolRegistry, ToolCall};
+///
+/// let registry = ToolRegistry::new();
+/// registry.register(my_tool).await;
+///
+/// let executor = ToolExecutor::new(registry);
+/// let calls = vec![ToolCall::new("call-1", "search", json!({"query": "rust"}))];
+/// let results = executor.execute_all(calls).await;
+/// ```
+pub struct ToolExecutor {
+    /// The tool registry to look up tools from.
+    /// 用于查找工具的工具注册表。
+    registry: Arc<ToolRegistry>,
+    /// Executor configuration.
+    /// 执行器配置。
+    config: ToolExecutorConfig,
+}
+
+impl std::fmt::Debug for ToolExecutor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ToolExecutor")
+            .field("config", &self.config)
+            .finish_non_exhaustive()
+    }
+}
+
+impl ToolExecutor {
+    /// Creates a new tool executor with the given registry.
+    /// 使用给定的注册表创建新的工具执行器。
+    #[must_use]
+    pub fn new(registry: ToolRegistry) -> Self {
+        Self {
+            registry: Arc::new(registry),
+            config: ToolExecutorConfig::default(),
+        }
+    }
+
+    /// Creates a new tool executor from an Arc registry.
+    /// 从 Arc 注册表创建新的工具执行器。
+    #[must_use]
+    pub fn from_arc(registry: Arc<ToolRegistry>) -> Self {
+        Self {
+            registry,
+            config: ToolExecutorConfig::default(),
+        }
+    }
+
+    /// Sets the executor configuration.
+    /// 设置执行器配置。
+    #[must_use]
+    pub fn with_config(mut self, config: ToolExecutorConfig) -> Self {
+        self.config = config;
+        self
+    }
+
+    /// Returns a reference to the tool registry.
+    /// 返回工具注册表的引用。
+    #[must_use]
+    pub fn registry(&self) -> &ToolRegistry {
+        &self.registry
+    }
+
+    /// Executes a single tool call with timeout and error handling.
+    /// 执行单个工具调用，带超时和错误处理。
+    pub async fn execute(&self, call: ToolCall) -> ToolResult {
+        let start = std::time::Instant::now();
+
+        let result = if self.config.timeout_ms > 0 {
+            match tokio::time::timeout(
+                std::time::Duration::from_millis(self.config.timeout_ms),
+                self.registry.execute_by_name(&call.name, call.arguments.clone()),
+            )
+            .await
+            {
+                Ok(Ok(output)) => Ok(output),
+                Ok(Err(e)) => Err(e.to_string()),
+                Err(_) => Err(format!("Tool '{}' timed out after {}ms", call.name, self.config.timeout_ms)),
+            }
+        } else {
+            match self.registry.execute_by_name(&call.name, call.arguments.clone()).await {
+                Ok(output) => Ok(output),
+                Err(e) => Err(e.to_string()),
+            }
+        };
+
+        let elapsed = start.elapsed().as_millis() as u64;
+
+        match result {
+            Ok(output) => ToolResult::ok(&call.id, &call.name, output).elapsed_ms(elapsed),
+            Err(e) => ToolResult::err(&call.id, &call.name, e).elapsed_ms(elapsed),
+        }
+    }
+
+    /// Executes multiple tool calls in sequence, respecting max_iterations.
+    /// 按顺序执行多个工具调用，遵守最大迭代次数。
+    pub async fn execute_all(&self, calls: Vec<ToolCall>) -> Vec<ToolResult> {
+        let max = if self.config.max_iterations > 0 {
+            self.config.max_iterations.min(calls.len())
+        } else {
+            calls.len()
+        };
+
+        let mut results = Vec::with_capacity(max);
+        for call in calls.into_iter().take(max) {
+            let result = self.execute(call).await;
+            let should_stop = !result.is_ok() && !self.config.continue_on_error;
+            results.push(result);
+            if should_stop {
+                break;
+            }
+        }
+        results
+    }
+
+    /// Returns the tool definitions for all registered tools.
+    /// 返回所有已注册工具的定义。
+    pub async fn tool_definitions(&self) -> Vec<ToolDefinition> {
+        self.registry.list_definitions().await
+    }
+}
+
+/// A wrapper that turns an async Rust function into an AI-callable tool.
+/// 将异步 Rust 函数包装为 AI 可调用工具。
+///
+/// `FunctionTool` allows registering simple closures or function pointers
+/// as tools without needing to implement the full `ToolCallback` trait manually.
+///
+/// `FunctionTool` 允许注册简单的闭包或函数指针作为工具，
+/// 无需手动实现完整的 `ToolCallback` trait。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use nexus_ai::tool::FunctionTool;
+///
+/// let tool = FunctionTool::new(
+///     "greet",
+///     "Greets a person by name",
+///     |args: serde_json::Value| async move {
+///         let name = args["name"].as_str().unwrap_or("stranger");
+///         Ok(format!("Hello, {name}!"))
+///     },
+/// );
+/// ```
+pub struct FunctionTool<F, Fut>
+where
+    F: Fn(Value) -> Fut + Send + Sync,
+    Fut: std::future::Future<Output = Result<String, ModelError>> + Send,
+{
+    /// The tool name.
+    /// 工具名称。
+    name: String,
+    /// The tool description.
+    /// 工具描述。
+    description: String,
+    /// The tool definition with parameter schemas.
+    /// 带有参数 schema 的工具定义。
+    definition: ToolDefinition,
+    /// The function to execute.
+    /// 要执行的函数。
+    func: F,
+}
+
+impl<F, Fut> std::fmt::Debug for FunctionTool<F, Fut>
+where
+    F: Fn(Value) -> Fut + Send + Sync,
+    Fut: std::future::Future<Output = Result<String, ModelError>> + Send,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FunctionTool")
+            .field("name", &self.name)
+            .field("description", &self.description)
+            .finish_non_exhaustive()
+    }
+}
+
+impl<F, Fut> FunctionTool<F, Fut>
+where
+    F: Fn(Value) -> Fut + Send + Sync,
+    Fut: std::future::Future<Output = Result<String, ModelError>> + Send,
+{
+    /// Creates a new function tool with the given name, description, and function.
+    /// 使用给定的名称、描述和函数创建新的函数工具。
+    #[allow(dead_code)]
+    pub fn new(
+        name: impl Into<String>,
+        description: impl Into<String>,
+        func: F,
+    ) -> Self {
+        let name_str = name.into();
+        let desc_str = description.into();
+        let definition = ToolDefinition::new(&name_str, &desc_str);
+        Self {
+            name: name_str,
+            description: desc_str,
+            definition,
+            func,
+        }
+    }
+
+    /// Adds a parameter to the function tool's schema.
+    /// 向函数工具的 schema 添加参数。
+    #[must_use]
+    #[allow(dead_code)]
+    pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self {
+        self.definition = self.definition.parameter(name, schema);
+        self
+    }
+}
+
+#[async_trait::async_trait]
+impl<F, Fut> ToolCallback for FunctionTool<F, Fut>
+where
+    F: Fn(Value) -> Fut + Send + Sync,
+    Fut: std::future::Future<Output = Result<String, ModelError>> + Send,
+{
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn description(&self) -> &str {
+        &self.description
+    }
+
+    fn definition(&self) -> ToolDefinition {
+        self.definition.clone()
+    }
+
+    async fn execute(&self, args: Value) -> Result<String, ModelError> {
+        (self.func)(args).await
+    }
+}
