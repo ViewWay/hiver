@@ -107,7 +107,7 @@ pub fn impl_value(input: DeriveInput) -> TokenStream {
 
         impl #impl_generics #struct_name #ty_generics #where_clause
         where
-            #struct_name: Clone,
+            #struct_name #ty_generics: Clone,
         {
             #(#getters)*
 

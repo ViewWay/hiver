@@ -87,25 +87,9 @@ pub fn impl_no_args(input: DeriveInput) -> TokenStream {
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
-    // Generate constructor with Default::default() for each field
-    // 为每个字段生成使用 Default::default() 的构造函数
-    let constructor_expanded = quote! {
-        impl #impl_generics #struct_name #ty_generics #where_clause {
-            #[inline]
-            #[doc = "Creates a new instance with default values.\n"]
-            #[doc = "使用默认值创建新实例。"]
-            pub fn new() -> Self
-            where
-                Self: Default,
-            {
-                Self::default()
-            }
-        }
-    };
-
-    // Generate Default implementation
-    // 生成 Default 实现
-    let default_expanded = quote! {
+    // Generate Default implementation only (no new() to avoid conflict with AllArgsConstructor)
+    // 仅生成 Default 实现（不生成 new() 以避免与 AllArgsConstructor 冲突）
+    let expanded = quote! {
         impl #impl_generics Default for #struct_name #ty_generics #where_clause
         where
             #(#field_types: Default,)*
@@ -117,11 +101,6 @@ pub fn impl_no_args(input: DeriveInput) -> TokenStream {
                 }
             }
         }
-    };
-
-    let expanded = quote! {
-        #constructor_expanded
-        #default_expanded
     };
 
     TokenStream::from(expanded)

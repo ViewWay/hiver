@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"git add crates/nexus-cloud/src/config.rs crates/nexus-cloud/Cargo.toml Cargo.lock && git commit -m \\\"$(cat <<'EOF'\\nfeat(cloud): add config encryption, property change listeners, and envir...",
+  "error": "Exit code 128\nfatal: pathspec 'crates/nexus-cloud/src/config.rs' did not match any files",
+  "timestamp": "2026-05-28T14:15:57.460Z",
+  "retry_count": 1
+}

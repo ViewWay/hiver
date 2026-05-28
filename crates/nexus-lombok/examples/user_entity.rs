@@ -98,7 +98,7 @@ fn example_constructors() {
     println!("Config: {:?}", config);
 
     // No args (uses Default) / 无参数（使用 Default）
-    let config = DefaultConfig::new();
+    let config = DefaultConfig::default();
     println!("Default config: {:?}", config);
 }
 

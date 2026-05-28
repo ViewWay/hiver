@@ -96,7 +96,7 @@ pub fn impl_with(input: DeriveInput) -> TokenStream {
     let where_clause = if where_clause.is_some() {
         quote! { #where_clause }
     } else {
-        quote! { where #struct_name: Clone }
+        quote! { where #struct_name #ty_generics: Clone }
     };
 
     let expanded: TokenStream = quote! {

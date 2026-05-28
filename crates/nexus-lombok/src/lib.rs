@@ -94,7 +94,7 @@ use syn::parse_macro_input;
 /// //     pub fn username(&self) -> &str { &self.username }
 /// // }
 /// ```
-#[proc_macro_derive(Getter)]
+#[proc_macro_derive(Getter, attributes(get))]
 pub fn derive_getter(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as syn::DeriveInput);
     getter::impl_getter(input).into()
@@ -120,7 +120,7 @@ pub fn derive_getter(input: TokenStream) -> TokenStream {
 /// //     pub fn set_username(&mut self, username: String) { self.username = username; }
 /// // }
 /// ```
-#[proc_macro_derive(Setter)]
+#[proc_macro_derive(Setter, attributes(set))]
 pub fn derive_setter(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as syn::DeriveInput);
     setter::impl_setter(input).into()

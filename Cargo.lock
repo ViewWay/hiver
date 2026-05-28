@@ -6162,6 +6162,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-agent"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "futures",
+ "nexus-ai",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "nexus-ai"
 version = "0.1.0"
 dependencies = [
@@ -6731,6 +6745,7 @@ version = "0.1.0-alpha"
 dependencies = [
  "anyhow",
  "async-trait",
+ "base64 0.22.1",
  "ldap3",
  "nexus-core",
  "parking_lot",

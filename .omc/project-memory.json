@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep \"warning.*generated\" | tail -5",
-    "testCommand": "cargo test -p nexus-config 2>&1 | grep \"test result:\" | head -5",
+    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"(error|warning:.*generated|Finished|Compiling nexus-)\" | tail -20",
+    "testCommand": "git stash && cargo test -p nexus-lombok --test data_test -- test_builder_with_option_fields 2>&1 | tail -15",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}

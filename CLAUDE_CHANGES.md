@@ -4281,3 +4281,172 @@ Changed `crates/nexus-config/src/config.rs` from "assert!(result.is_err());; ass
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:52:36
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/data.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/data.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/data.rs` from "#struct_name: Clone," to "#struct_name #ty_generics: Clone,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:52:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/value.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/value.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/value.rs` from "#struct_name: Clone," to "#struct_name #ty_generics: Clone,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:52:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/with_method.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/with_method.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/with_method.rs` from "quote! { where #struct_name: Clone }" to "quote! { where #struct_name #ty_generics: Clone }".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:53:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 50 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:53:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 98 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:53:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 144 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:53:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 153 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:53:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 162 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:54:09
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/tests/data_test.rs`
+### Change Record
+Modified file `crates/nexus-lombok/tests/data_test.rs`. Approximately 241 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/tests/data_test.rs` from "/// TODO: Data derive macro does not handle generic structs correctly (Pair<T, U>).; /// Re-enable when the macro suppor..." to "/// Generic struct for testing Data with type parameters.; /// 用于测试 Data 泛型类型参数的泛型结构体。; #[derive(Data, Clone, PartialEq,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:54:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/lib.rs` from "#[proc_macro_derive(Getter)]" to "#[proc_macro_derive(Getter, attributes(get))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:54:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/lib.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/lib.rs` from "#[proc_macro_derive(Getter)]; #[proc_macro_derive(Setter)]" to "#[proc_macro_derive(Getter, attributes(get))]; #[proc_macro_derive(Setter, attributes(set))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:54:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/constructor.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/constructor.rs`. Approximately 44 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/constructor.rs` from "// Generate constructor with Default::default() for each field; // 为每个字段生成使用 Default::default() 的构造函数; let constructor_e..." to "// Generate Default implementation only (no new() to avoid conflict with AllArgsConstructor); // 仅生成 Default 实现（不生成 new(...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 07:54:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/examples/user_entity.rs`
+### Change Record
+Modified file `crates/nexus-lombok/examples/user_entity.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/examples/user_entity.rs` from "let config = DefaultConfig::new();" to "let config = DefaultConfig::default();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
