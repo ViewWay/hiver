@@ -81,10 +81,10 @@ impl ServiceInstance {
     /// 从URL创建新的服务实例
     pub fn new(url: impl Into<String>) -> Self {
         let url_str = url.into();
-        let (secure, url) = if url_str.starts_with("https://") {
-            (true, &url_str[8..])
-        } else if url_str.starts_with("http://") {
-            (false, &url_str[7..])
+        let (secure, url) = if let Some(rest) = url_str.strip_prefix("https://") {
+            (true, rest)
+        } else if let Some(rest) = url_str.strip_prefix("http://") {
+            (false, rest)
         } else {
             (false, url_str.as_str())
         };
@@ -479,36 +479,42 @@ impl ServiceDiscovery {
 
     /// Discover all instances for a service
     /// 发现服务的所有实例
+    #[allow(clippy::unused_async)]
     pub async fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>> {
         self.registry.get_instances(service_name)
     }
 
     /// Get a single service instance
     /// 获取单个服务实例
+    #[allow(clippy::unused_async)]
     pub async fn get_instance(&self, service_name: &str) -> Result<ServiceInstance> {
         self.registry.get_instance(service_name)
     }
 
     /// Register a service instance
     /// 注册服务实例
+    #[allow(clippy::unused_async)]
     pub async fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()> {
         self.registry.register(service_name, instance)
     }
 
     /// Deregister a service instance
     /// 取消注册服务实例
+    #[allow(clippy::unused_async)]
     pub async fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()> {
         self.registry.deregister(service_name, instance_id)
     }
 
     /// Get all registered service names
     /// 获取所有已注册的服务名称
+    #[allow(clippy::unused_async)]
     pub async fn get_services(&self) -> Result<Vec<String>> {
         self.registry.get_services()
     }
 
     /// Check if a service is available
     /// 检查服务是否可用
+    #[allow(clippy::unused_async)]
     pub async fn is_available(&self, service_name: &str) -> bool {
         self.registry.get_instances(service_name).is_ok()
     }

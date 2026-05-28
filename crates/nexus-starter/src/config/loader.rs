@@ -369,11 +369,11 @@ impl ConfigurationLoader {
     fn load_environment_variables(&mut self) {
         // 加载 NEXUS_* 前缀的环境变量
         for (key, value) in std::env::vars() {
-            if key.starts_with("NEXUS_") {
-                let config_key = key["NEXUS_".len()..].to_lowercase().replace('_', ".");
+            if let Some(rest) = key.strip_prefix("NEXUS_") {
+                let config_key = rest.to_lowercase().replace('_', ".");
                 self.properties.insert(config_key, value);
-            } else if key.starts_with("APP_") {
-                let config_key = key["APP_".len()..].to_lowercase().replace('_', ".");
+            } else if let Some(rest) = key.strip_prefix("APP_") {
+                let config_key = rest.to_lowercase().replace('_', ".");
                 self.properties.insert(config_key, value);
             }
         }

@@ -46,7 +46,7 @@ impl TestPropertySource {
     /// Get a property value.
     /// 获取属性值。
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.properties.get(key).map(|s| s.as_str())
+        self.properties.get(key).map(String::as_str)
     }
 
     /// Get all properties.

@@ -346,7 +346,7 @@ where
         } else {
             // Create new entry / 创建新条目
             let mut ldap_attrs: Vec<(&str, Vec<&str>)> = vec![
-                ("objectClass", T::object_classes().iter().copied().collect()),
+                ("objectClass", T::object_classes().to_vec()),
             ];
             for (key, values) in &attrs {
                 let refs: Vec<&str> = values.iter().map(String::as_str).collect();

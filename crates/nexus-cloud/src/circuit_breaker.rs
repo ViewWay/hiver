@@ -293,7 +293,7 @@ impl CircuitBreaker {
         // Record result
         match result {
             Ok(value) => {
-                let is_slow = self.config.slow_call_duration.map_or(false, |d| elapsed >= d);
+                let is_slow = self.config.slow_call_duration.is_some_and(|d| elapsed >= d);
                 if is_slow {
                     self.on_slow_call(elapsed).await;
                 } else {
@@ -403,11 +403,10 @@ impl CircuitBreaker {
         if state == CircuitState::Open {
             return;
         }
-        if let Some(w) = self.window.read().await.as_ref() {
-            if w.slow_call_rate() >= self.config.slow_call_rate_threshold {
+        if let Some(w) = self.window.read().await.as_ref()
+            && w.slow_call_rate() >= self.config.slow_call_rate_threshold {
                 self.transition_to(CircuitState::Open).await;
             }
-        }
     }
 
     /// Transition to a new state with event emission.

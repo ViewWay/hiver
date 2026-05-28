@@ -58,7 +58,7 @@ impl TestLifecycleContext {
     /// Get an attribute.
     /// 获取属性。
     pub fn get_attribute(&self, key: &str) -> Option<&str> {
-        self.attributes.get(key).map(|s| s.as_str())
+        self.attributes.get(key).map(String::as_str)
     }
 }
 

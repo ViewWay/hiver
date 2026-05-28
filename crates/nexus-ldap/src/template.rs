@@ -46,6 +46,7 @@ impl LdapTemplate {
     ///
     /// Performs a simple bind to verify credentials.
     /// 执行简单绑定以验证凭据。
+    #[allow(clippy::unused_async)]
     pub async fn authenticate(&self, user_dn: &str, password: &str) -> LdapResult<bool> {
         #[cfg(feature = "ldap")]
         {
@@ -67,6 +68,7 @@ impl LdapTemplate {
     ///
     /// Uses `AttributesMapper` to convert raw LDAP attributes into Rust types.
     /// 使用 `AttributesMapper` 将原始LDAP属性转换为Rust类型。
+    #[allow(clippy::unused_async)]
     pub async fn search<T, M: AttributesMapper<T>>(
         &self,
         base: &str,
@@ -102,6 +104,7 @@ impl LdapTemplate {
     ///
     /// Convenience method that returns attribute maps instead of requiring a mapper.
     /// 便捷方法，返回属性映射而不需要提供mapper。
+    #[allow(clippy::unused_async)]
     pub async fn search_attrs(
         &self,
         base: &str,
@@ -130,6 +133,7 @@ impl LdapTemplate {
     }
 
     /// Look up a single entry by DN / 通过DN查找单个条目
+    #[allow(clippy::unused_async)]
     pub async fn lookup<T, M: ContextMapper<T>>(&self, dn: &str, mapper: &M) -> LdapResult<Option<T>> {
         #[cfg(feature = "ldap")]
         {
@@ -153,6 +157,7 @@ impl LdapTemplate {
     ///
     /// `attrs` is a list of `(attribute_name, values)` pairs.
     /// `attrs` 是 `(属性名, 值列表)` 对的列表。
+    #[allow(clippy::unused_async)]
     pub async fn bind(&self, dn: &str, attrs: &[(&str, &[&str])]) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         {
@@ -171,6 +176,7 @@ impl LdapTemplate {
     }
 
     /// Unbind (delete) an LDAP entry / 解绑（删除）LDAP条目
+    #[allow(clippy::unused_async)]
     pub async fn unbind(&self, dn: &str) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         {
@@ -191,6 +197,7 @@ impl LdapTemplate {
     ///
     /// `modifications` 是 `(属性名, 新值列表)` 对的列表。
     /// 每对将属性替换为给定的值。
+    #[allow(clippy::unused_async)]
     pub async fn modify(&self, dn: &str, modifications: &[(&str, &[&str])]) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         {
@@ -211,6 +218,7 @@ impl LdapTemplate {
     }
 
     /// Check if an entry exists by performing a base search / 通过基础搜索检查条目是否存在
+    #[allow(clippy::unused_async)]
     pub async fn exists(&self, dn: &str) -> LdapResult<bool> {
         #[cfg(feature = "ldap")]
         {
@@ -227,6 +235,7 @@ impl LdapTemplate {
     }
 
     /// Count entries matching a filter / 统计匹配过滤器的条目数
+    #[allow(clippy::unused_async)]
     pub async fn count(&self, base: &str, filter: &str) -> LdapResult<usize> {
         #[cfg(feature = "ldap")]
         {

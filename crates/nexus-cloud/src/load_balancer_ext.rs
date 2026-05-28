@@ -133,7 +133,7 @@ impl<L: LoadBalancer> LoadBalancer for ZoneAwareLoadBalancer<L> {
     async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         let same_zone: Vec<ServiceInstance> = instances
             .iter()
-            .filter(|i| i.metadata.get("zone").map(|z| z.as_str()) == Some(self.zone.as_str()))
+            .filter(|i| i.metadata.get("zone").map(String::as_str) == Some(self.zone.as_str()))
             .cloned()
             .collect();
 

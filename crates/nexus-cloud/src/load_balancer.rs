@@ -123,6 +123,7 @@ impl WeightedLoadBalancer {
 
     /// Choose by weight
     /// 按权重选择
+    #[allow(clippy::unused_async)]
     pub async fn choose_weighted(
         &self,
         weighted_instances: &[(ServiceInstance, f32)],

@@ -87,7 +87,7 @@ impl KafkaListener {
     {
         let consumer = KafkaConsumer::new(&self.config.brokers, &self.config.group_id)?;
 
-        let topics: Vec<&str> = self.config.topics.iter().map(|s| s.as_str()).collect();
+        let topics: Vec<&str> = self.config.topics.iter().map(String::as_str).collect();
         if topics.is_empty() {
             return Err(KafkaError::Config(
                 "No topics configured for listener".to_string(),

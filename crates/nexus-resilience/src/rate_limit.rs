@@ -476,17 +476,16 @@ impl RateLimiter {
     ///
     /// Note: This is a simplified version that just calls `try_acquire`.
     /// In a real implementation, this would use async waiting.
+    #[allow(clippy::unused_async)]
     pub async fn acquire(&self) -> Result<()> {
-        loop {
-            match self.try_acquire() {
-                Ok(()) => return Ok(()),
-                Err(RateLimitError::Exceeded { retry_after }) => {
-                    // In a real async implementation, we would sleep here
-                    // For now, just return the error
-                    return Err(RateLimitError::Exceeded { retry_after });
-                },
-                Err(e) => return Err(e),
-            }
+        match self.try_acquire() {
+            Ok(()) => Ok(()),
+            Err(RateLimitError::Exceeded { retry_after }) => {
+                // In a real async implementation, we would sleep here
+                // For now, just return the error
+                Err(RateLimitError::Exceeded { retry_after })
+            },
+            Err(e) => Err(e),
         }
     }
 

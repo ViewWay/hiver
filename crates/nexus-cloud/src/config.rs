@@ -372,6 +372,7 @@ impl RefreshScope {
     ///     refreshScope.refresh();
     /// }
     /// ```
+    #[allow(clippy::unused_async)]
     pub async fn refresh() {
         // Trigger context refresh
         // In a real implementation, this would reload beans and configuration
@@ -483,23 +484,19 @@ impl ConfigEnvironment {
     pub fn get(&self, key: &str) -> Option<String> {
         let mut result = None;
         for profile in &self.profiles {
-            if let Some(props) = self.sources.get(profile) {
-                if let Some(v) = props.get(key) { result = Some(v.clone()); }
-            }
+            if let Some(props) = self.sources.get(profile)
+                && let Some(v) = props.get(key) { result = Some(v.clone()); }
         }
-        if let Some(ref v) = result {
-            if v.starts_with("ENC(") && v.ends_with(')') {
-                if let Some(ref enc) = self.encryptor {
-                    if let Ok(d) = enc.decrypt(v) { return Some(d); }
-                }
-            }
-        }
+        if let Some(ref v) = result
+            && v.starts_with("ENC(") && v.ends_with(')')
+                && let Some(ref enc) = self.encryptor
+                    && let Ok(d) = enc.decrypt(v) { return Some(d); }
         result
     }
 
     /// Refresh properties and notify listeners of changes.
     pub fn refresh(&mut self, new_props: HashMap<String, String>) {
-        let default = self.profiles.first().map(|s| s.as_str()).unwrap_or("default");
+        let default = self.profiles.first().map_or("default", String::as_str);
         let old_props = self.sources.get(default).cloned().unwrap_or_default();
         let mut changes = Vec::new();
         for (key, new_val) in &new_props {

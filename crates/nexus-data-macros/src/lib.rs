@@ -758,7 +758,7 @@ fn generate_query_method(
     let converted_sql = convert_placeholders(sql);
 
     let returns_option = return_type_str.contains("Option");
-    let returns_vec = return_type_str.contains("Vec");
+    let _returns_vec = return_type_str.contains("Vec");
 
     let params_build = quote! {
         let params: Vec<nexus_data_rdbc::QueryParam> = vec![
@@ -781,19 +781,6 @@ fn generate_query_method(
                     }
                     None => Ok(None),
                 }
-            }
-        } else if returns_vec {
-            quote! {
-                let sql: &str = #converted_sql;
-                #params_build
-                let rows = self.client.fetch_all_params(sql, &params).await
-                    .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
-                let mut results = Vec::with_capacity(rows.len());
-                for row in &rows {
-                    results.push(row.deserialize()
-                        .map_err(|e| nexus_data_commons::Error::other(e.to_string()))?);
-                }
-                Ok(results)
             }
         } else {
             quote! {

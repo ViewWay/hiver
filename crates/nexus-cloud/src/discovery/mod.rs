@@ -549,6 +549,7 @@ impl ServiceDiscoveryClient {
 
     /// Start the heartbeat loop for a given instance
     /// 为给定实例启动心跳循环
+    #[allow(clippy::unused_async)]
     pub async fn start_heartbeat(&self, instance_id: String) {
         let registry = self.registry.clone();
         let mut cancel_rx = self.heartbeat_cancel.subscribe();
@@ -629,7 +630,7 @@ impl ServiceDiscoveryClient {
         self.get_instances(service_id)
             .await
             .into_iter()
-            .filter(|i| i.metadata.get(key).map(|v| v.as_str()) == Some(value))
+            .filter(|i| i.metadata.get(key).map(String::as_str) == Some(value))
             .collect()
     }
 

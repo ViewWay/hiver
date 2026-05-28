@@ -235,6 +235,7 @@ impl TestRequest {
 
     /// Send the request and get response
     /// 发送请求并获取响应
+    #[allow(clippy::unused_async)]
     pub async fn send(self) -> TestResponse {
         let _url = self.client.build_url(&self.path);
 

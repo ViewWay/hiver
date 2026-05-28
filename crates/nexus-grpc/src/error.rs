@@ -10,12 +10,12 @@ pub enum GrpcError {
     /// Transport / connection error.
     /// 传输/连接错误。
     #[error("gRPC transport error: {0}")]
-    Transport(#[from] tonic::transport::Error),
+    Transport(Box<tonic::transport::Error>),
 
     /// RPC call returned a non-OK status.
     /// RPC 调用返回了非 OK 状态。
     #[error("gRPC status {}: {}", .0.code(), .0.message())]
-    Status(#[from] tonic::Status),
+    Status(Box<tonic::Status>),
 
     /// Configuration error.
     /// 配置错误。
@@ -26,6 +26,18 @@ pub enum GrpcError {
     /// 序列化错误。
     #[error("gRPC serialization error: {0}")]
     Serialization(String),
+}
+
+impl From<tonic::transport::Error> for GrpcError {
+    fn from(e: tonic::transport::Error) -> Self {
+        GrpcError::Transport(Box::new(e))
+    }
+}
+
+impl From<tonic::Status> for GrpcError {
+    fn from(s: tonic::Status) -> Self {
+        GrpcError::Status(Box::new(s))
+    }
 }
 
 impl GrpcError {
@@ -45,7 +57,7 @@ impl GrpcError {
     /// 转换为 tonic::Status。
     pub fn into_status(self) -> tonic::Status {
         match self {
-            GrpcError::Status(s) => s,
+            GrpcError::Status(s) => *s,
             GrpcError::Transport(e) => {
                 tonic::Status::unavailable(format!("transport: {e}"))
             }

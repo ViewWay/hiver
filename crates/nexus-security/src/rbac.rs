@@ -577,6 +577,7 @@ impl RbacManager {
 
     /// Get all inherited roles for a role
     /// 获取角色的所有继承角色
+    #[allow(clippy::unused_async)]
     async fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {
         let mut inherited = HashSet::new();
         let mut to_check = vec![role.to_string()];
@@ -596,6 +597,7 @@ impl RbacManager {
 
     /// Check if a role inherits another role
     /// 检查角色是否继承另一个角色
+    #[allow(clippy::unused_async)]
     async fn role_inherits_role(&self, role: &str, target: &str) -> bool {
         if role == target {
             return true;

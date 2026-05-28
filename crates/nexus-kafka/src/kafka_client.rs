@@ -188,6 +188,7 @@ mod inner {
         ///
         /// The handler receives `(topic, partition, key, payload)`.
         /// 处理函数接收 `(topic, partition, key, payload)`。
+        #[allow(clippy::unused_async)]
         pub async fn poll<F, Fut>(&self, handler: F) -> Result<()>
         where
             F: Fn(String, i32, Option<Vec<u8>>, Vec<u8>) -> Fut + Send + Sync + 'static,

@@ -33,6 +33,7 @@ impl LdapConnection {
     }
 
     /// Disconnect from the server / 断开与服务器的连接
+    #[allow(clippy::unused_async)]
     pub async fn unbind(&mut self) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         if let Some(ref mut ldap) = self.inner {
@@ -43,6 +44,7 @@ impl LdapConnection {
     }
 
     /// Perform a simple bind (username/password auth) / 执行简单绑定（用户名/密码认证）
+    #[allow(clippy::unused_async)]
     pub async fn simple_bind(&mut self, user: &str, pass: &str) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         if let Some(ref mut ldap) = self.inner {
@@ -225,6 +227,7 @@ impl LdapContextSource {
 
     /// Open a stub connection (no ldap feature) / 打开存根连接（无ldap feature）
     #[cfg(not(feature = "ldap"))]
+    #[allow(clippy::unused_async)]
     async fn create_connection(&self, _authenticate: bool) -> LdapResult<LdapConnection> {
         Ok(LdapConnection {
             url: self.url.clone(),

@@ -361,6 +361,7 @@ impl<T> Part<T> {
 ///
 /// 如果请求包含有效的 multipart/form-data，则返回 `Ok(Multipart)`，
 /// 如果内容类型缺失/无效或无法读取主体，则返回错误。
+#[allow(clippy::unused_async)]
 pub async fn extract_multipart(
     req: &Request,
     config: &MultipartConfig,

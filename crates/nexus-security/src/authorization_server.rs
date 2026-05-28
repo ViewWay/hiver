@@ -513,6 +513,7 @@ impl AuthorizationServer {
     ///
     /// Validates signature and expiry without strict audience checking.
     /// 验证签名和过期时间，不强制检查受众。
+    #[allow(clippy::unused_async)]
     pub async fn introspect(&self, token: &str) -> IntrospectionResult {
         match self.jwt_provider.decode_without_validation(token) {
             Ok(claims) => {

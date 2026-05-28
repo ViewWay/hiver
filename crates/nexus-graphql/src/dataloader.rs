@@ -80,14 +80,15 @@ where
                 }
             }
         }
-        let mut pending = self.pending.lock().expect("lock poisoned");
-        for key in keys {
-            if result.contains_key(&key) { continue; }
-            let (tx, rx) = tokio::sync::oneshot::channel();
-            pending.entry(key.clone()).or_default().push(tx);
-            receivers.push((key, rx));
+        {
+            let mut pending = self.pending.lock().expect("lock poisoned");
+            for key in keys {
+                if result.contains_key(&key) { continue; }
+                let (tx, rx) = tokio::sync::oneshot::channel();
+                pending.entry(key.clone()).or_default().push(tx);
+                receivers.push((key, rx));
+            }
         }
-        drop(pending);
         self.dispatch().await;
         for (key, rx) in receivers {
             result.insert(key, rx.await.ok());
