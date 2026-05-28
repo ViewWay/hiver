@@ -6287,6 +6287,7 @@ dependencies = [
  "consul",
  "etcd-rs",
  "futures",
+ "hex",
  "http 1.4.0",
  "hyper 1.9.0",
  "hyper-util",
@@ -6820,6 +6821,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "nexus-modulith"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "futures",
+ "nexus-runtime",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "nexus-multipart"
 version = "0.1.0-alpha"
 dependencies = [
@@ -7184,10 +7202,14 @@ dependencies = [
  "chrono",
  "futures",
  "lapin",
+ "nexus-config",
+ "nexus-core",
  "nexus-data-commons",
  "nexus-data-macros",
  "nexus-data-orm",
  "nexus-data-rdbc",
+ "nexus-modulith",
+ "nexus-state-machine",
  "rdkafka",
  "redis 0.27.6",
  "serde",

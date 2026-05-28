@@ -142,6 +142,11 @@ pub enum ConfigError {
     #[error("Configuration not found: {0}")]
     NotFound(String),
 
+    /// Encryption/decryption error.
+    /// 加密/解密错误。
+    #[error("Encryption error: {0}")]
+    Encryption(String),
+
     /// IO error
     /// IO错误
     #[error("IO error: {0}")]
@@ -371,5 +376,215 @@ impl RefreshScope {
         // Trigger context refresh
         // In a real implementation, this would reload beans and configuration
         tracing::info!("RefreshScope: application context refreshed");
+    }
+}
+
+/// Listener for property change events.
+/// 属性变更事件监听器。
+pub trait PropertyChangeListener: Send + Sync {
+    /// Called when properties change. Each tuple is (key, old_value, new_value).
+    fn on_change(&self, changes: &[(String, Option<String>, Option<String>)]);
+}
+
+/// A simple listener that logs property changes.
+/// 记录属性变更日志的简单监听器。
+pub struct LoggingPropertyChangeListener;
+
+impl PropertyChangeListener for LoggingPropertyChangeListener {
+    fn on_change(&self, changes: &[(String, Option<String>, Option<String>)]) {
+        for (key, old, new) in changes {
+            tracing::info!("Property changed: {} ({:?} -> {:?})", key, old, new);
+        }
+    }
+}
+
+/// Configuration value encryptor/decryptor (jasypt-style).
+/// 配置值加密/解密器（jasypt 风格）。
+pub trait ConfigEncryptor: Send + Sync {
+    /// Encrypt a plain text value.
+    fn encrypt(&self, plain: &str) -> Result<String, ConfigError>;
+    /// Decrypt an encrypted value.
+    fn decrypt(&self, cipher: &str) -> Result<String, ConfigError>;
+}
+
+/// Simple XOR-based encryptor (NOT production-safe).
+/// 基于 XOR 的简单加密器（非生产安全）。
+pub struct SimpleEncryptor { key: Vec<u8> }
+
+impl SimpleEncryptor {
+    /// Create with a secret key.
+    pub fn new(key: impl Into<String>) -> Self { Self { key: key.into().into_bytes() } }
+}
+
+impl ConfigEncryptor for SimpleEncryptor {
+    fn encrypt(&self, plain: &str) -> Result<String, ConfigError> {
+        let bytes: Vec<u8> = plain.bytes().enumerate().map(|(i, b)| b ^ self.key[i % self.key.len()]).collect();
+        Ok(format!("ENC({})", hex::encode_upper(&bytes)))
+    }
+
+    fn decrypt(&self, cipher: &str) -> Result<String, ConfigError> {
+        let inner = cipher.strip_prefix("ENC(").and_then(|s| s.strip_suffix(')'))
+            .ok_or_else(|| ConfigError::Encryption("Not an ENC(...) value".into()))?;
+        let bytes = hex::decode(inner).map_err(|e| ConfigError::Encryption(e.to_string()))?;
+        let dec: Vec<u8> = bytes.iter().enumerate().map(|(i, &b)| b ^ self.key[i % self.key.len()]).collect();
+        String::from_utf8(dec).map_err(|e| ConfigError::Encryption(e.to_string()))
+    }
+}
+
+/// Decrypt all `ENC(...)` values in a property map.
+/// 解密属性映射中所有 `ENC(...)` 值。
+pub fn decrypt_properties(props: &mut HashMap<String, String>, encryptor: &dyn ConfigEncryptor) -> Result<(), ConfigError> {
+    for value in props.values_mut() {
+        if value.starts_with("ENC(") && value.ends_with(')') {
+            *value = encryptor.decrypt(value)?;
+        }
+    }
+    Ok(())
+}
+
+/// Configuration environment with profile support and change tracking.
+/// 带配置文件支持和变更跟踪的配置环境。
+pub struct ConfigEnvironment {
+    profiles: Vec<String>,
+    sources: HashMap<String, HashMap<String, String>>,
+    listeners: Vec<Box<dyn PropertyChangeListener>>,
+    encryptor: Option<Box<dyn ConfigEncryptor>>,
+}
+
+impl ConfigEnvironment {
+    /// Create a new environment with default profile.
+    pub fn new() -> Self {
+        Self { profiles: vec!["default".to_string()], sources: HashMap::new(), listeners: Vec::new(), encryptor: None }
+    }
+
+    /// Add an active profile.
+    pub fn with_profile(mut self, profile: impl Into<String>) -> Self {
+        let p = profile.into();
+        if !self.profiles.contains(&p) { self.profiles.push(p); }
+        self
+    }
+
+    /// Set properties for a profile.
+    pub fn set_properties(&mut self, profile: &str, props: HashMap<String, String>) {
+        self.sources.insert(profile.to_string(), props);
+    }
+
+    /// Add a property change listener.
+    pub fn add_listener(&mut self, listener: Box<dyn PropertyChangeListener>) {
+        self.listeners.push(listener);
+    }
+
+    /// Set the encryptor for ENC(...) values.
+    pub fn set_encryptor(&mut self, encryptor: Box<dyn ConfigEncryptor>) {
+        self.encryptor = Some(encryptor);
+    }
+
+    /// Resolve a property across profiles (later profiles override). Auto-decrypts ENC(...).
+    pub fn get(&self, key: &str) -> Option<String> {
+        let mut result = None;
+        for profile in &self.profiles {
+            if let Some(props) = self.sources.get(profile) {
+                if let Some(v) = props.get(key) { result = Some(v.clone()); }
+            }
+        }
+        if let Some(ref v) = result {
+            if v.starts_with("ENC(") && v.ends_with(')') {
+                if let Some(ref enc) = self.encryptor {
+                    if let Ok(d) = enc.decrypt(v) { return Some(d); }
+                }
+            }
+        }
+        result
+    }
+
+    /// Refresh properties and notify listeners of changes.
+    pub fn refresh(&mut self, new_props: HashMap<String, String>) {
+        let default = self.profiles.first().map(|s| s.as_str()).unwrap_or("default");
+        let old_props = self.sources.get(default).cloned().unwrap_or_default();
+        let mut changes = Vec::new();
+        for (key, new_val) in &new_props {
+            let old_val = old_props.get(key).cloned();
+            if old_val.as_ref() != Some(new_val) { changes.push((key.clone(), old_val, Some(new_val.clone()))); }
+        }
+        for (key, old_val) in &old_props {
+            if !new_props.contains_key(key) { changes.push((key.clone(), Some(old_val.clone()), None)); }
+        }
+        self.sources.insert(default.to_string(), new_props);
+        for listener in &self.listeners { listener.on_change(&changes); }
+    }
+
+    /// Get all resolved properties (merged across profiles).
+    pub fn all_properties(&self) -> HashMap<String, String> {
+        let mut merged = HashMap::new();
+        for profile in &self.profiles {
+            if let Some(props) = self.sources.get(profile) {
+                merged.extend(props.iter().map(|(k, v)| (k.clone(), v.clone())));
+            }
+        }
+        merged
+    }
+}
+
+impl Default for ConfigEnvironment { fn default() -> Self { Self::new() } }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn test_encryptor_round_trip() {
+        let enc = SimpleEncryptor::new("secret-key");
+        let encrypted = enc.encrypt("my-password").unwrap();
+        assert!(encrypted.starts_with("ENC("));
+        assert_eq!(enc.decrypt(&encrypted).unwrap(), "my-password");
+    }
+
+    #[test]
+    fn test_decrypt_properties() {
+        let enc = SimpleEncryptor::new("key");
+        let encrypted = enc.encrypt("db-pass").unwrap();
+        let mut props = HashMap::new();
+        props.insert("db.password".to_string(), encrypted);
+        props.insert("db.host".to_string(), "localhost".to_string());
+        decrypt_properties(&mut props, &enc).unwrap();
+        assert_eq!(props.get("db.password").unwrap(), "db-pass");
+    }
+
+    #[test]
+    fn test_profile_resolution() {
+        let mut env = ConfigEnvironment::new().with_profile("prod");
+        let mut dp = HashMap::new(); dp.insert("host".into(), "localhost".into());
+        let mut pp = HashMap::new(); pp.insert("host".into(), "prod.example.com".into());
+        env.set_properties("default", dp); env.set_properties("prod", pp);
+        assert_eq!(env.get("host").unwrap(), "prod.example.com");
+    }
+
+    #[test]
+    fn test_auto_decrypt() {
+        let enc = SimpleEncryptor::new("key");
+        let encrypted = enc.encrypt("secret").unwrap();
+        let mut env = ConfigEnvironment::new();
+        env.set_encryptor(Box::new(enc));
+        let mut p = HashMap::new(); p.insert("pw".into(), encrypted);
+        env.set_properties("default", p);
+        assert_eq!(env.get("pw").unwrap(), "secret");
+    }
+
+    #[test]
+    fn test_refresh_notifies() {
+        let ch: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+        let cc = ch.clone();
+        struct L { c: Arc<Mutex<Vec<String>>> }
+        impl PropertyChangeListener for L {
+            fn on_change(&self, ch: &[(String, Option<String>, Option<String>)]) {
+                for (k, _, _) in ch { self.c.lock().unwrap().push(k.clone()); }
+            }
+        }
+        let mut env = ConfigEnvironment::new();
+        env.add_listener(Box::new(L { c: cc }));
+        let mut p = HashMap::new(); p.insert("k1".into(), "v1".into());
+        env.refresh(p);
+        assert!(ch.lock().unwrap().contains(&"k1".to_string()));
     }
 }

@@ -66,6 +66,7 @@ etcd-rs = { workspace = true, optional = true }
 # Service discovery registration / 服务发现注册
 # Use existing resilience crate
 nexus-resilience = { path = "../nexus-resilience" }
+hex.workspace = true
 
 [features]
 default = ["consul"]
