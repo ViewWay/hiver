@@ -885,7 +885,14 @@ impl Predicate {
     /// 对网关请求评估此谓词。
     pub fn matches(&self, request: &GatewayRequest) -> bool {
         match self {
-            Predicate::Path(pattern) => request.path.starts_with(pattern.as_str()),
+            Predicate::Path(pattern) => {
+                let has_glob = pattern.contains('*') || pattern.contains('{');
+                if has_glob {
+                    glob_match(pattern, &request.path)
+                } else {
+                    request.path.starts_with(pattern.as_str())
+                }
+            }
             Predicate::Method(methods) => methods
                 .iter()
                 .any(|m| m.eq_ignore_ascii_case(request.method.as_ref())),
@@ -907,6 +914,45 @@ impl Predicate {
             }
         }
     }
+}
+
+/// Glob-style path pattern matcher.
+/// Glob 风格路径模式匹配器。
+///
+/// Supports:
+/// - `**` matches zero or more path segments (`/api/**` matches `/api`, `/api/users`, `/api/users/1`)
+/// - `*` matches a single path segment (`/api/*` matches `/api/users` but not `/api/users/1`)
+/// - `{var}` matches a single segment and captures it (e.g. `/users/{id}`)
+/// - Literal segments match exactly
+///
+/// 等价于 Spring Cloud Gateway 的 PathRoutePredicate。
+fn glob_match(pattern: &str, path: &str) -> bool {
+    let pattern_parts: Vec<&str> = pattern.split('/').filter(|s| !s.is_empty()).collect();
+    let path_parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
+
+    fn match_parts(pp: &[&str], hp: &[&str]) -> bool {
+        match (pp.first(), hp.first()) {
+            (None, None) => true,
+            (None, Some(_)) => false,
+            (Some(p), None) => *p == "**" && pp.len() == 1,
+            (Some(p), Some(h)) => {
+                if *p == "**" {
+                    for skip in 0..=hp.len() {
+                        if match_parts(&pp[1..], &hp[skip..]) {
+                            return true;
+                        }
+                    }
+                    false
+                } else if *p == "*" || (p.starts_with('{') && p.ends_with('}')) {
+                    match_parts(&pp[1..], &hp[1..])
+                } else {
+                    p == h && match_parts(&pp[1..], &hp[1..])
+                }
+            }
+        }
+    }
+
+    match_parts(&pattern_parts, &path_parts)
 }
 
 // ---------------------------------------------------------------------------
@@ -939,6 +985,25 @@ pub enum Filter {
     /// Apply circuit breaker by name
     /// 按名称应用断路器
     CircuitBreaker(String),
+
+    /// Timeout for upstream requests (milliseconds).
+    /// 上游请求超时（毫秒）。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `RequestTimeout` filter.
+    Timeout(u64),
+
+    /// Retry failed requests (max attempts).
+    /// 重试失败请求（最大尝试次数）。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `Retry` filter.
+    Retry {
+        /// Maximum retry attempts.
+        /// 最大重试次数。
+        max_attempts: u32,
+        /// Retry on these HTTP status codes.
+        /// 在这些 HTTP 状态码上重试。
+        statuses: Vec<u16>,
+    },
 }
 
 impl Filter {
@@ -962,7 +1027,7 @@ impl Filter {
                     request.path = format!("{}{}", to, &request.path[from.len()..]);
                 }
             }
-            Filter::AddHeader(_, _) | Filter::RateLimit(_) | Filter::CircuitBreaker(_) => {
+            Filter::AddHeader(_, _) | Filter::RateLimit(_) | Filter::CircuitBreaker(_) | Filter::Timeout(_) | Filter::Retry { .. } => {
                 // These are handled at the response / infrastructure level.
                 // 这些在响应/基础设施层面处理。
             }
@@ -983,7 +1048,7 @@ impl Filter {
     /// 如果此过滤器需要基础设施级别的评估（限流或断路），而不是简单的
     /// 请求/响应变更，则返回`true`。
     pub fn is_infrastructure_filter(&self) -> bool {
-        matches!(self, Filter::RateLimit(_) | Filter::CircuitBreaker(_))
+        matches!(self, Filter::RateLimit(_) | Filter::CircuitBreaker(_) | Filter::Timeout(_) | Filter::Retry { .. })
     }
 }
 
@@ -2140,5 +2205,69 @@ mod tests {
         let result = router.route(&mut req).await;
         assert!(result.is_err());
         assert_eq!(result.unwrap_err().status, http::StatusCode::TOO_MANY_REQUESTS);
+    }
+
+    // =======================================================================
+    // Glob pattern matching tests
+    // =======================================================================
+
+    #[test]
+    fn test_glob_exact_match() {
+        assert!(glob_match("/api/users", "/api/users"));
+        assert!(!glob_match("/api/users", "/api/orders"));
+    }
+
+    #[test]
+    fn test_glob_double_star() {
+        assert!(glob_match("/api/**", "/api"));
+        assert!(glob_match("/api/**", "/api/users"));
+        assert!(glob_match("/api/**", "/api/users/123"));
+        assert!(glob_match("/api/**", "/api/users/123/orders"));
+        assert!(!glob_match("/api/**", "/other"));
+    }
+
+    #[test]
+    fn test_glob_single_star() {
+        assert!(glob_match("/api/*", "/api/users"));
+        assert!(!glob_match("/api/*", "/api/users/123"));
+        assert!(glob_match("/api/*/orders", "/api/users/orders"));
+        assert!(!glob_match("/api/*/orders", "/api/users/items/orders"));
+    }
+
+    #[test]
+    fn test_glob_path_variable() {
+        assert!(glob_match("/users/{id}", "/users/123"));
+        assert!(glob_match("/users/{id}", "/users/abc"));
+        assert!(!glob_match("/users/{id}", "/users/123/orders"));
+        assert!(glob_match("/users/{id}/orders/{oid}", "/users/123/orders/456"));
+    }
+
+    #[test]
+    fn test_glob_combined_patterns() {
+        assert!(glob_match("/api/{version}/**", "/api/v1/users/123"));
+        assert!(glob_match("/api/{version}/**", "/api/v2"));
+        assert!(!glob_match("/api/{version}/**", "/other/v1/users"));
+    }
+
+    #[test]
+    fn test_glob_empty_paths() {
+        assert!(glob_match("", ""));
+        assert!(!glob_match("/api", ""));
+    }
+
+    #[test]
+    fn test_predicate_path_uses_glob() {
+        let pred = Predicate::Path("/api/**".to_string());
+        let req = GatewayRequest::new(http::Method::GET, "/api/users/123");
+        assert!(pred.matches(&req));
+
+        let req2 = GatewayRequest::new(http::Method::GET, "/other");
+        assert!(!pred.matches(&req2));
+    }
+
+    #[test]
+    fn test_filter_timeout_and_retry_are_infrastructure() {
+        assert!(Filter::Timeout(5000).is_infrastructure_filter());
+        assert!(Filter::Retry { max_attempts: 3, statuses: vec![500, 502] }.is_infrastructure_filter());
     }
 }

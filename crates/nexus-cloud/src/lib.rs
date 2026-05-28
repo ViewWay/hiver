@@ -33,6 +33,7 @@ pub mod discovery;
 pub mod feign;
 pub mod gateway;
 pub mod load_balancer;
+pub mod load_balancer_ext;
 
 /// Re-export async_trait for use by generated feign client code.
 /// 为生成的 feign 客户端代码重新导出 async_trait。
@@ -57,8 +58,15 @@ pub use gateway::{
     GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
     InMemoryRouteLocator, Predicate, Route, RouteLocator, TokenBucketRateLimiter,
 };
-pub use feign::{FeignClientConfig, FeignError, FeignResult};
+pub use feign::{
+    BearerTokenInterceptor, DefaultFallback, FeignClientConfig, FeignError, FeignFallback,
+    FeignRequestInterceptor, FeignResult, HeaderInterceptor, RetryConfig,
+};
 pub use load_balancer::{LoadBalancer, RoundRobinLoadBalancer};
+pub use load_balancer_ext::{
+    HealthCheckLoadBalancer, HealthStatus, InMemoryHealthChecker, InstanceHealthChecker,
+    ZoneAwareLoadBalancer,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

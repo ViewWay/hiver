@@ -251,6 +251,204 @@ pub async fn execute_request_text(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Retry with exponential backoff
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Retry configuration for Feign clients.
+/// Feign 客户端的重试配置。
+///
+/// Equivalent to Spring Cloud OpenFeign's `Retryer.Default`.
+/// 等价于 Spring Cloud OpenFeign 的 `Retryer.Default`。
+#[derive(Debug, Clone)]
+pub struct RetryConfig {
+    /// Maximum number of retry attempts.
+    /// 最大重试次数。
+    pub max_attempts: u32,
+    /// Initial backoff interval.
+    /// 初始退避间隔。
+    pub initial_interval: Duration,
+    /// Multiplier for exponential backoff.
+    /// 指数退避乘数。
+    pub multiplier: f64,
+    /// Maximum backoff interval.
+    /// 最大退避间隔。
+    pub max_interval: Duration,
+    /// HTTP status codes that trigger a retry.
+    /// 触发重试的 HTTP 状态码。
+    pub retry_on_statuses: Vec<u16>,
+}
+
+impl RetryConfig {
+    /// Create a retry config with defaults (3 attempts, 100ms initial, 2x multiplier).
+    /// 创建默认重试配置（3 次尝试、100ms 初始、2x 乘数）。
+    pub fn new() -> Self {
+        Self {
+            max_attempts: 3,
+            initial_interval: Duration::from_millis(100),
+            multiplier: 2.0,
+            max_interval: Duration::from_secs(10),
+            retry_on_statuses: vec![500, 502, 503, 504],
+        }
+    }
+
+    /// Set max retry attempts.
+    /// 设置最大重试次数。
+    pub fn max_attempts(mut self, n: u32) -> Self {
+        self.max_attempts = n;
+        self
+    }
+
+    /// Set initial backoff interval.
+    /// 设置初始退避间隔。
+    pub fn initial_interval(mut self, d: Duration) -> Self {
+        self.initial_interval = d;
+        self
+    }
+
+    /// Set retry-on HTTP status codes.
+    /// 设置触发重试的 HTTP 状态码。
+    pub fn retry_on_statuses(mut self, statuses: Vec<u16>) -> Self {
+        self.retry_on_statuses = statuses;
+        self
+    }
+
+    /// Calculate backoff duration for the given attempt (0-indexed).
+    /// 计算给定尝试次数（0 索引）的退避时间。
+    pub fn backoff_for(&self, attempt: u32) -> Duration {
+        let exp = self.multiplier.powi(attempt as i32);
+        let millis = (self.initial_interval.as_millis() as f64 * exp) as u64;
+        Duration::from_millis(millis.min(self.max_interval.as_millis() as u64))
+    }
+
+    /// Whether the given error is retryable.
+    /// 判断给定错误是否可重试。
+    pub fn is_retryable(&self, error: &FeignError) -> bool {
+        match error {
+            FeignError::HttpStatus { status, .. } => {
+                self.retry_on_statuses.contains(status)
+            }
+            FeignError::Transport(_) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Default for RetryConfig {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fallback
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Fallback trait for Feign clients.
+/// Feign 客户端的降级 trait。
+///
+/// Equivalent to Spring Cloud OpenFeign's `@FeignClient(fallback = ...)`.
+/// 等价于 Spring Cloud OpenFeign 的 `@FeignClient(fallback = ...)`。
+pub trait FeignFallback<T>: Send + Sync {
+    /// Return a fallback value when the request fails.
+    /// 请求失败时返回降级值。
+    fn fallback(&self, error: &FeignError) -> FeignResult<T>;
+}
+
+/// A simple fallback that returns a default value.
+/// 返回默认值的简单降级。
+pub struct DefaultFallback<T> {
+    /// The default value to return.
+    /// 要返回的默认值。
+    pub value: Option<T>,
+}
+
+impl<T: Send + Sync> DefaultFallback<T> {
+    /// Create a fallback that returns the given default.
+    /// 创建返回给定默认值的降级。
+    pub fn new(value: T) -> Self {
+        Self { value: Some(value) }
+    }
+
+    /// Create a fallback that returns None.
+    /// 创建返回 None 的降级。
+    pub fn none() -> Self {
+        Self { value: None }
+    }
+}
+
+impl<T: Send + Sync> FeignFallback<T> for DefaultFallback<T> {
+    fn fallback(&self, _error: &FeignError) -> FeignResult<T> {
+        Err(FeignError::Other("no fallback value available".into()))
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Request Interceptor
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Request interceptor trait for Feign clients.
+/// Feign 客户端的请求拦截器 trait。
+///
+/// Equivalent to Spring Cloud OpenFeign's `RequestInterceptor`.
+/// 等价于 Spring Cloud OpenFeign 的 `RequestInterceptor`。
+pub trait FeignRequestInterceptor: Send + Sync {
+    /// Modify request headers before the request is sent.
+    /// 在请求发送前修改请求头。
+    fn intercept(&self, headers: &mut Vec<(String, String)>);
+}
+
+/// An interceptor that adds a dynamic Bearer token.
+/// 添加动态 Bearer 令牌的拦截器。
+pub struct BearerTokenInterceptor {
+    token_fn: Box<dyn Fn() -> String + Send + Sync>,
+}
+
+impl BearerTokenInterceptor {
+    /// Create a new bearer token interceptor with a static token.
+    /// 使用静态令牌创建新的 Bearer 令牌拦截器。
+    pub fn new(token: impl Into<String>) -> Self {
+        let token = token.into();
+        Self {
+            token_fn: Box::new(move || token.clone()),
+        }
+    }
+
+    /// Create with a dynamic token supplier.
+    /// 使用动态令牌提供函数创建。
+    pub fn dynamic<F: Fn() -> String + Send + Sync + 'static>(f: F) -> Self {
+        Self {
+            token_fn: Box::new(f),
+        }
+    }
+}
+
+impl FeignRequestInterceptor for BearerTokenInterceptor {
+    fn intercept(&self, headers: &mut Vec<(String, String)>) {
+        headers.push(("Authorization".to_string(), format!("Bearer {}", (self.token_fn)())));
+    }
+}
+
+/// An interceptor that adds custom headers.
+/// 添加自定义请求头的拦截器。
+pub struct HeaderInterceptor {
+    headers: Vec<(String, String)>,
+}
+
+impl HeaderInterceptor {
+    /// Create a new header interceptor.
+    /// 创建新的请求头拦截器。
+    pub fn new(headers: Vec<(String, String)>) -> Self {
+        Self { headers }
+    }
+}
+
+impl FeignRequestInterceptor for HeaderInterceptor {
+    fn intercept(&self, headers: &mut Vec<(String, String)>) {
+        headers.extend(self.headers.iter().cloned());
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Tests
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -277,5 +475,56 @@ mod tests {
         assert!(e.to_string().contains("404"));
         let e2 = FeignError::Other("custom".into());
         assert!(e2.to_string().contains("custom"));
+    }
+
+    #[test]
+    fn test_retry_config_defaults() {
+        let cfg = RetryConfig::new();
+        assert_eq!(cfg.max_attempts, 3);
+        assert_eq!(cfg.initial_interval, Duration::from_millis(100));
+        assert!(cfg.multiplier - 2.0 < f64::EPSILON);
+        assert_eq!(cfg.retry_on_statuses, vec![500, 502, 503, 504]);
+    }
+
+    #[test]
+    fn test_retry_backoff() {
+        let cfg = RetryConfig::new();
+        assert!(cfg.backoff_for(0) < cfg.backoff_for(1));
+        assert!(cfg.backoff_for(1) < cfg.backoff_for(2));
+        assert_eq!(cfg.backoff_for(0), Duration::from_millis(100));
+        assert_eq!(cfg.backoff_for(1), Duration::from_millis(200));
+    }
+
+    #[test]
+    fn test_retry_is_retryable() {
+        let cfg = RetryConfig::new();
+        assert!(cfg.is_retryable(&FeignError::http_status(503, "Service Unavailable")));
+        assert!(!cfg.is_retryable(&FeignError::http_status(404, "Not Found")));
+        assert!(!cfg.is_retryable(&FeignError::Other("logic".into())));
+    }
+
+    #[test]
+    fn test_bearer_token_interceptor() {
+        let interp = BearerTokenInterceptor::new("my-token");
+        let mut headers = vec![];
+        interp.intercept(&mut headers);
+        assert_eq!(headers[0].0, "Authorization");
+        assert!(headers[0].1.contains("my-token"));
+    }
+
+    #[test]
+    fn test_header_interceptor() {
+        let interp = HeaderInterceptor::new(vec![
+            ("X-Tenant".to_string(), "acme".to_string()),
+        ]);
+        let mut headers = vec![];
+        interp.intercept(&mut headers);
+        assert_eq!(headers[0].0, "X-Tenant");
+    }
+
+    #[test]
+    fn test_default_fallback() {
+        let fb: DefaultFallback<String> = DefaultFallback::none();
+        assert!(fb.fallback(&FeignError::Other("test".into())).is_err());
     }
 }
