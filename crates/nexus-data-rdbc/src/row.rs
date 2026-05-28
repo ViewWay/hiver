@@ -254,6 +254,18 @@ impl FromRowValue for chrono::NaiveDateTime {
     }
 }
 
+/// `Option<T>` extracts as `Some(T)` when the column value is present and non-null,
+/// or `None` when the column is `Null` or the inner conversion fails.
+/// `Option<T>` 在列值存在且非空时提取为 `Some(T)`，在列为 `Null` 或内部转换失败时为 `None`。
+impl<T: FromRowValue> FromRowValue for Option<T> {
+    fn from_column_value(val: &ColumnValue) -> Option<Self> {
+        match val {
+            ColumnValue::Null => Some(None),
+            other => T::from_column_value(other).map(Some),
+        }
+    }
+}
+
 /// Column metadata
 /// 列元数据
 #[derive(Debug, Clone)]

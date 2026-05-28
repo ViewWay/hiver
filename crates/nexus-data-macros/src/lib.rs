@@ -201,6 +201,19 @@ fn parse_struct_attrs(attrs: &[syn::Attribute]) -> StructAttrs {
     result
 }
 
+/// Field info collected during macro expansion for non-ignored fields.
+/// 宏展开期间收集的非忽略字段信息。
+struct FieldInfo {
+    /// Field identifier
+    field_ident: Ident,
+    /// Column name (custom or same as field name)
+    column_name: String,
+    /// Whether this field is nullable
+    nullable: bool,
+    /// Field type tokens
+    field_type: Type,
+}
+
 /// Implementation of the Model derive macro
 /// Model derive 宏的实现
 fn model_derive_impl(input: DeriveInput) -> TokenStream {
@@ -218,6 +231,8 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     let mut primary_keys = Vec::new();
     let mut field_names = Vec::new();
     let mut version_field: Option<Ident> = None;
+    let mut field_infos: Vec<FieldInfo> = Vec::new();
+    let mut ignored_fields: Vec<Ident> = Vec::new();
 
     if let Data::Struct(DataStruct { fields, .. }) = &input.data
         && let Fields::Named(named_fields) = fields {
@@ -230,6 +245,7 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
                 let field_attrs = parse_field_attrs(&field.attrs);
 
                 if field_attrs.ignore {
+                    ignored_fields.push(field_name.clone());
                     continue;
                 }
 
@@ -247,6 +263,13 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
 
                 // Column name (custom or field name)
                 let column_name = field_attrs.column.unwrap_or_else(|| field_name_str.clone());
+
+                field_infos.push(FieldInfo {
+                    field_ident: field_name.clone(),
+                    column_name: column_name.clone(),
+                    nullable: field_attrs.nullable,
+                    field_type: field_type.clone(),
+                });
 
                 // Build column metadata
                 let primary_key_method = if field_attrs.primary_key {
@@ -308,6 +331,42 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
         quote! {}
     };
 
+    // Build column_names static list
+    let column_name_strs: Vec<&str> = field_infos.iter().map(|fi| fi.column_name.as_str()).collect();
+    let column_name_count = column_name_strs.len();
+
+    // Build from_row field extractions (non-ignored fields from row, ignored fields from Default)
+    let from_row_fields: Vec<proc_macro2::TokenStream> = field_infos.iter().map(|fi| {
+        let ident = &fi.field_ident;
+        let col = &fi.column_name;
+        let ty = &fi.field_type;
+        if fi.nullable {
+            // Nullable fields use Default (Option<T> defaults to None).
+            // Attempt to extract from row; if column is missing/Null, Default applies.
+            // nullable 字段使用 Default（Option<T> 默认为 None）。
+            quote! {
+                #ident: row.get_as::<#ty>(#col).unwrap_or_default()
+            }
+        } else {
+            quote! {
+                #ident: row.get_as::<#ty>(#col).map_err(|e| nexus_data_orm::Error::unknown(
+                    format!("failed to read column '{}': {}", #col, e)
+                ))?
+            }
+        }
+    }).chain(ignored_fields.iter().map(|ident| {
+        quote! { #ident: Default::default() }
+    })).collect();
+
+    // Build to_row field conversions
+    let to_row_fields: Vec<proc_macro2::TokenStream> = field_infos.iter().map(|fi| {
+        let ident = &fi.field_ident;
+        let col = &fi.column_name;
+        quote! {
+            (#col, Box::new(self.#ident.clone()) as Box<dyn std::any::Any + Send>)
+        }
+    }).collect();
+
     // Generate the Model implementation
     let expanded = quote! {
         // Implement Model trait
@@ -326,6 +385,34 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
                     nexus_data_orm::Error::validation(format!("Invalid primary key: {}", e))
                 })?;
                 Ok(())
+            }
+
+            /// Get all column names in declaration order.
+            /// 获取声明顺序的所有列名。
+            fn column_names() -> &'static [&'static str] {
+                &[#(#column_name_strs),*]
+            }
+
+            /// Get the number of columns.
+            /// 获取列数量。
+            fn column_count() -> usize {
+                #column_name_count
+            }
+
+            /// Construct the model from a database row.
+            /// 从数据库行构造模型实例。
+            fn from_row(row: &nexus_data_rdbc::Row) -> nexus_data_orm::Result<Self> {
+                Ok(Self {
+                    #(#from_row_fields),*
+                })
+            }
+
+            /// Convert the model to column-value pairs for INSERT/UPDATE.
+            /// 将模型转换为列-值对，用于 INSERT/UPDATE。
+            fn to_row(&self) -> Vec<(&'static str, Box<dyn std::any::Any + Send>)> {
+                vec![
+                    #(#to_row_fields),*
+                ]
             }
         }
 

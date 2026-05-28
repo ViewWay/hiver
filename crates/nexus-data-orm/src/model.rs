@@ -208,6 +208,52 @@ pub trait Model: Send + Sync {
     fn validate(&self) -> Result<()> {
         Ok(())
     }
+
+    /// Get all column names in declaration order.
+    /// 获取声明顺序的所有列名。
+    ///
+    /// Returns a static slice of column name strings.
+    /// 返回列名字符串的静态切片。
+    fn column_names() -> &'static [&'static str]
+    where
+        Self: Sized,
+    {
+        &[]
+    }
+
+    /// Get the number of columns.
+    /// 获取列数量。
+    fn column_count() -> usize
+    where
+        Self: Sized,
+    {
+        Self::column_names().len()
+    }
+
+    /// Construct the model from a database row.
+    /// 从数据库行构造模型实例。
+    ///
+    /// Uses `Row::get_as` to extract typed values by column name.
+    /// 使用 `Row::get_as` 按列名提取类型化值。
+    fn from_row(row: &nexus_data_rdbc::Row) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let _ = row;
+        Err(Error::unknown("from_row not implemented"))
+    }
+
+    /// Convert the model to column-value pairs for INSERT/UPDATE.
+    /// 将模型转换为列-值对，用于 INSERT/UPDATE。
+    ///
+    /// Returns a vector of (column_name, boxed value) pairs.
+    /// 返回 (列名, 装箱值) 对的向量。
+    fn to_row(&self) -> Vec<(&'static str, Box<dyn std::any::Any + Send>)>
+    where
+        Self: Sized,
+    {
+        Vec::new()
+    }
 }
 
 #[cfg(test)]
