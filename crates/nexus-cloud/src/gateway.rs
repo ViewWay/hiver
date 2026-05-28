@@ -1028,7 +1028,9 @@ pub enum Filter {
     /// Retry failed requests (max attempts).
     /// 重试失败请求（最大尝试次数）。
     Retry {
+        /// Maximum retry attempts. / 最大重试次数。
         max_attempts: u32,
+        /// HTTP status codes that trigger a retry. / 触发重试的HTTP状态码。
         statuses: Vec<u16>,
     },
 }

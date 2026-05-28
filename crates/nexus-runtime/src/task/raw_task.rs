@@ -53,8 +53,7 @@ impl TaskCore {
         self.state.load(Ordering::Acquire) == STATE_COMPLETED
     }
 
-    /// Get a reference to the scheduler handle.
-    /// 获取调度器句柄的引用。
+    #[allow(dead_code)]
     pub(crate) fn scheduler(&self) -> &SchedulerHandle {
         &self.scheduler
     }
@@ -211,6 +210,7 @@ impl TaskRef {
         self.0.map(|nn| unsafe { nn.as_ref() })
     }
 
+    #[allow(dead_code)]
     pub(crate) fn is_some(&self) -> bool {
         self.0.is_some()
     }

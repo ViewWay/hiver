@@ -32,8 +32,6 @@ use crate::driver::{Driver, DriverFactory, DriverType};
 use crate::scheduler::{Scheduler, SchedulerConfig, SchedulerHandle};
 use crate::time::{Duration, Instant};
 
-/// Thread-local storage for the current runtime handle
-/// 当前运行时句柄的线程本地存储
 thread_local! {
     static CURRENT_HANDLE: std::cell::RefCell<Option<Handle>> = const { std::cell::RefCell::new(None) };
 }

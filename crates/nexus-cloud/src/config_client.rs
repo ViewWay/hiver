@@ -318,6 +318,7 @@ impl Default for ConfigServerClient {
 /// Cache entry for config responses with TTL tracking.
 /// 带TTL跟踪的配置响应缓存条目。
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct CacheEntry {
     /// Flattened properties from the config server.
     /// 从配置服务器获取的扁平化属性。
