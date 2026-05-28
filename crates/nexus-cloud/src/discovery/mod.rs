@@ -607,6 +607,60 @@ impl ServiceDiscoveryClient {
             self.refresh_cache(&service_id).await;
         }
     }
+
+    /// Get healthy instances for a service.
+    /// 获取服务的健康实例。
+    pub async fn get_healthy_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
+        self.get_instances(service_id)
+            .await
+            .into_iter()
+            .filter(ServiceInstance::is_healthy)
+            .collect()
+    }
+
+    /// Get instances filtered by metadata key-value pair.
+    /// 按元数据键值对过滤获取实例。
+    pub async fn get_instances_by_metadata(
+        &self,
+        service_id: &str,
+        key: &str,
+        value: &str,
+    ) -> Vec<ServiceInstance> {
+        self.get_instances(service_id)
+            .await
+            .into_iter()
+            .filter(|i| i.metadata.get(key).map(|v| v.as_str()) == Some(value))
+            .collect()
+    }
+
+    /// Get instances that have a specific tag (metadata key present).
+    /// 获取带有特定标签（元数据键存在）的实例。
+    pub async fn get_instances_by_tag(&self, service_id: &str, tag: &str) -> Vec<ServiceInstance> {
+        self.get_instances(service_id)
+            .await
+            .into_iter()
+            .filter(|i| i.metadata.contains_key(tag))
+            .collect()
+    }
+
+    /// Get instances filtered by version metadata.
+    /// 按版本元数据过滤获取实例。
+    pub async fn get_instances_by_version(&self, service_id: &str, version: &str) -> Vec<ServiceInstance> {
+        self.get_instances_by_metadata(service_id, "version", version).await
+    }
+
+    /// Get all service IDs that have at least one healthy instance.
+    /// 获取至少有一个健康实例的所有服务 ID。
+    pub async fn get_healthy_services(&self) -> Vec<String> {
+        let services = self.get_all_services().await;
+        let mut healthy = Vec::new();
+        for s in services {
+            if !self.get_healthy_instances(&s).await.is_empty() {
+                healthy.push(s);
+            }
+        }
+        healthy
+    }
 }
 
 /// Service registry
