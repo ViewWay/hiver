@@ -35,6 +35,8 @@ pub mod context;
 pub mod error;
 pub mod mapper;
 pub mod odm;
+pub mod operations;
+pub mod ldif;
 pub mod pool;
 pub mod query;
 pub mod repository;
@@ -51,3 +53,5 @@ pub use query::LdapQueryBuilder;
 pub use repository::{LdapRepository, SimpleLdapRepository, TypedLdapRepository,
                      EntryMapper, EntrySerializer, IdExtractor};
 pub use template::LdapTemplate;
+pub use operations::{AdvancedOperations, Modification};
+pub use ldif::{parse_ldif, generate_ldif, LdifEntry, LdifChangeType, LdifModification, LdifModOp};

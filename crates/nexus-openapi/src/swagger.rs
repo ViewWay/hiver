@@ -464,6 +464,65 @@ impl SwaggerUi {
     }
 }
 
+/// Generate Swagger UI HTML page / 生成 Swagger UI HTML 页面
+///
+/// A standalone function that generates a complete Swagger UI HTML page
+/// given the URL to the OpenAPI spec JSON endpoint.
+/// 给定 OpenAPI 规范 JSON 端点的 URL，生成完整 Swagger UI HTML 页面的独立函数。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use nexus_openapi::swagger::swagger_ui_html;
+///
+/// let html = swagger_ui_html("/api-docs/openapi.json");
+/// assert!(html.contains("swagger-ui"));
+/// ```
+#[allow(dead_code)]
+pub fn swagger_ui_html(spec_url: &str) -> String {
+    SwaggerConfig::default().html(spec_url)
+}
+
+/// Generate ReDoc HTML page / 生成 ReDoc HTML 页面
+///
+/// Generates a complete ReDoc HTML page for rendering OpenAPI documentation.
+/// ReDoc provides a three-panel layout that is well-suited for large APIs.
+/// 生成用于渲染 OpenAPI 文档的完整 ReDoc HTML 页面。
+/// ReDoc 提供三栏布局，适合大型 API。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use nexus_openapi::swagger::redoc_html;
+///
+/// let html = redoc_html("/api-docs/openapi.json");
+/// assert!(html.contains("redoc"));
+/// ```
+#[allow(dead_code)]
+pub fn redoc_html(spec_url: &str) -> String {
+    format!(
+        r#"<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - ReDoc</title>
+    <style>
+        body {{
+            margin: 0;
+            padding: 0;
+        }}
+    </style>
+</head>
+<body>
+    <redoc spec-url='{spec_url}'></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+</body>
+</html>"#,
+        spec_url = spec_url
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

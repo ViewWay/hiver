@@ -135,6 +135,50 @@ impl LdapConnection {
             .map_err(|e| LdapError::Operation(e.to_string()))?;
         Ok(())
     }
+
+    /// Modify the DN of an entry / 修改条目的DN
+    #[cfg(feature = "ldap")]
+    pub(crate) async fn modify_dn(
+        &mut self,
+        dn: &str,
+        new_rdn: &str,
+        delete_old_rdn: bool,
+        new_superior: Option<&str>,
+    ) -> LdapResult<()> {
+        let ldap = self.inner.as_mut()
+            .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
+        ldap.modifydn(dn, new_rdn, delete_old_rdn, new_superior)
+            .await
+            .map_err(|e| LdapError::Operation(e.to_string()))?;
+        Ok(())
+    }
+
+    /// Compare an attribute value / 比较属性值
+    #[cfg(feature = "ldap")]
+    pub(crate) async fn compare(
+        &mut self,
+        dn: &str,
+        attribute: &str,
+        value: &str,
+    ) -> LdapResult<bool> {
+        let ldap = self.inner.as_mut()
+            .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
+        let result = ldap.compare(dn, attribute, value)
+            .await
+            .map_err(|e| LdapError::Operation(e.to_string()))?;
+        Ok(result.0)
+    }
+
+    /// Abandon an ongoing operation / 放弃正在进行的操作
+    #[cfg(feature = "ldap")]
+    pub(crate) async fn abandon(&mut self, message_id: i32) -> LdapResult<()> {
+        let ldap = self.inner.as_mut()
+            .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
+        ldap.abandon(message_id)
+            .await
+            .map_err(|e| LdapError::Operation(e.to_string()))?;
+        Ok(())
+    }
 }
 
 /// Context source trait / 上下文源 trait

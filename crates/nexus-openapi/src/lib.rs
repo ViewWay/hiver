@@ -81,6 +81,8 @@ pub mod openapi;
 pub mod swagger;
 pub mod http;
 pub mod macros;
+pub mod generator;
+pub mod scanner;
 
 pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig};
 pub use schema::{Schema, SchemaType, SchemaFormat, SchemaProperty};
@@ -88,7 +90,7 @@ pub use operation::{Operation, Parameter, ParameterLocation, SecurityScheme, Req
 pub use response::{Response, ResponseContent, ApiResponse};
 pub use path::{PathItem, PathMethod, PathOperation, Components};
 pub use openapi::OpenApi;
-pub use swagger::{SwaggerUi, SwaggerConfig, ModelRendering, SyntaxHighlightTheme};
+pub use swagger::{SwaggerUi, SwaggerConfig, ModelRendering, SyntaxHighlightTheme, swagger_ui_html, redoc_html};
 pub use http::{OpenApiHandler, OpenApiResponse, OpenApiRoutes, OpenApiRouter};
 
 /// Version of the `OpenAPI` module
