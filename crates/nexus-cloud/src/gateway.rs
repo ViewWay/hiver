@@ -972,11 +972,46 @@ pub enum Filter {
     /// Add a response header / 添加响应头
     AddHeader(String, String),
 
+    /// Add a request header / 添加请求头
+    ///
+    /// Equivalent to Spring Cloud Gateway's `AddRequestHeader` filter.
+    AddRequestHeader(String, String),
+
     /// Remove a request header / 移除请求头
     RemoveHeader(String),
 
     /// Rewrite the request path / 重写请求路径
     RewritePath(String, String),
+
+    /// Strip N leading path segments.
+    /// 移除路径前 N 段。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `StripPrefix` filter.
+    StripPrefix(u32),
+
+    /// Prepend a prefix to the request path.
+    /// 在请求路径前添加前缀。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `PrefixPath` filter.
+    PrefixPath(String),
+
+    /// Set the request path to a new value.
+    /// 将请求路径设为新值。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `SetPath` filter.
+    SetPath(String),
+
+    /// Override the response status code.
+    /// 覆盖响应状态码。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `SetStatus` filter.
+    SetStatus(u16),
+
+    /// Limit request body size in bytes.
+    /// 限制请求体大小（字节）。
+    ///
+    /// Equivalent to Spring Cloud Gateway's `RequestSize` filter.
+    RequestSize(u64),
 
     /// Rate limit (max requests per period)
     /// 速率限制（每个周期最大请求数）
@@ -988,20 +1023,12 @@ pub enum Filter {
 
     /// Timeout for upstream requests (milliseconds).
     /// 上游请求超时（毫秒）。
-    ///
-    /// Equivalent to Spring Cloud Gateway's `RequestTimeout` filter.
     Timeout(u64),
 
     /// Retry failed requests (max attempts).
     /// 重试失败请求（最大尝试次数）。
-    ///
-    /// Equivalent to Spring Cloud Gateway's `Retry` filter.
     Retry {
-        /// Maximum retry attempts.
-        /// 最大重试次数。
         max_attempts: u32,
-        /// Retry on these HTTP status codes.
-        /// 在这些 HTTP 状态码上重试。
         statuses: Vec<u16>,
     },
 }
@@ -1027,18 +1054,47 @@ impl Filter {
                     request.path = format!("{}{}", to, &request.path[from.len()..]);
                 }
             }
-            Filter::AddHeader(_, _) | Filter::RateLimit(_) | Filter::CircuitBreaker(_) | Filter::Timeout(_) | Filter::Retry { .. } => {
-                // These are handled at the response / infrastructure level.
-                // 这些在响应/基础设施层面处理。
+            Filter::AddRequestHeader(name, value) => {
+                request.headers.insert(name.clone(), value.clone());
             }
+            Filter::StripPrefix(n) => {
+                let segments: Vec<&str> = request.path.split('/').filter(|s| !s.is_empty()).collect();
+                let stripped = segments.iter().skip(*n as usize).copied().collect::<Vec<_>>();
+                request.path = if stripped.is_empty() {
+                    "/".to_string()
+                } else {
+                    format!("/{}", stripped.join("/"))
+                };
+            }
+            Filter::PrefixPath(prefix) => {
+                request.path = format!("{}/{}", prefix.trim_end_matches('/'), request.path.trim_start_matches('/'));
+            }
+            Filter::SetPath(path) => {
+                request.path = path.clone();
+            }
+            Filter::AddHeader(_, _)
+            | Filter::RateLimit(_)
+            | Filter::CircuitBreaker(_)
+            | Filter::Timeout(_)
+            | Filter::Retry { .. }
+            | Filter::SetStatus(_)
+            | Filter::RequestSize(_) => {}
         }
     }
 
     /// Apply this filter to a response, returning the (possibly modified) response.
     /// 将此过滤器应用于响应，返回（可能已修改的）响应。
     pub fn apply_to_response(&self, response: &mut GatewayResponse) {
-        if let Filter::AddHeader(name, value) = self {
-            response.headers.insert(name.clone(), value.clone());
+        match self {
+            Filter::AddHeader(name, value) => {
+                response.headers.insert(name.clone(), value.clone());
+            }
+            Filter::SetStatus(code) => {
+                if let Ok(s) = http::StatusCode::from_u16(*code) {
+                    response.status = s;
+                }
+            }
+            _ => {}
         }
     }
 
@@ -1048,7 +1104,14 @@ impl Filter {
     /// 如果此过滤器需要基础设施级别的评估（限流或断路），而不是简单的
     /// 请求/响应变更，则返回`true`。
     pub fn is_infrastructure_filter(&self) -> bool {
-        matches!(self, Filter::RateLimit(_) | Filter::CircuitBreaker(_) | Filter::Timeout(_) | Filter::Retry { .. })
+        matches!(
+            self,
+            Filter::RateLimit(_)
+                | Filter::CircuitBreaker(_)
+                | Filter::Timeout(_)
+                | Filter::Retry { .. }
+                | Filter::RequestSize(_)
+        )
     }
 }
 
