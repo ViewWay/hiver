@@ -2,6 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, parse_macro_input};
 
+#[allow(dead_code)]
 fn wrap_pre_authorize(expr_lit: &str, item: TokenStream) -> TokenStream {
     let expr_lit = syn::LitStr::new(expr_lit, proc_macro2::Span::call_site());
 
@@ -43,6 +44,7 @@ fn wrap_pre_authorize(expr_lit: &str, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+#[allow(dead_code)]
 pub fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream {
     let expr = if attr.is_empty() {
         "isAuthenticated()".to_string()
@@ -52,11 +54,13 @@ pub fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream {
     wrap_pre_authorize(&expr, item)
 }
 
+#[allow(dead_code)]
 pub fn secured(attr: TokenStream, item: TokenStream) -> TokenStream {
     let role = attr.to_string().trim_matches('"').to_string();
     wrap_pre_authorize(&format!("hasRole('{role}')"), item)
 }
 
+#[allow(dead_code)]
 pub fn roles_allowed(attr: TokenStream, item: TokenStream) -> TokenStream {
     let attr_s = attr.to_string();
     let roles: Vec<String> = attr_s

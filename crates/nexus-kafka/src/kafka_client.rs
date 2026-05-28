@@ -42,10 +42,13 @@ mod inner {
     /// Kafka 操作错误类型。
     #[derive(Debug, thiserror::Error)]
     pub enum KafkaError {
+        /// rdkafka library error. / rdkafka 库错误。
         #[error("rdkafka error: {0}")]
         RdKafka(#[from] rdkafka::error::KafkaError),
+        /// Send operation timed out. / 发送操作超时。
         #[error("send timeout")]
         SendTimeout,
+        /// Configuration error. / 配置错误。
         #[error("configuration error: {0}")]
         Config(String),
     }

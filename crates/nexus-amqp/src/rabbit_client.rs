@@ -41,10 +41,13 @@ mod inner {
     /// RabbitMQ 操作错误类型。
     #[derive(Debug, thiserror::Error)]
     pub enum RabbitError {
+        /// lapin library error. / lapin 库错误。
         #[error("lapin error: {0}")]
         Lapin(#[from] lapin::Error),
+        /// Channel has been closed. / 通道已关闭。
         #[error("channel closed")]
         ChannelClosed,
+        /// Connection attempt failed. / 连接尝试失败。
         #[error("connection failed: {0}")]
         ConnectionFailed(String),
     }

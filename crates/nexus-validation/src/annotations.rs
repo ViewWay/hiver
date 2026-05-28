@@ -153,7 +153,12 @@ pub enum ValidationRule {
     NotBlank,
 
     /// Size validation / 大小验证
-    Size { min: Option<usize>, max: Option<usize> },
+    Size {
+        /// Minimum size / 最小大小
+        min: Option<usize>,
+        /// Maximum size / 最大大小
+        max: Option<usize>,
+    },
 
     /// Minimum value / 最小值
     Min(i64),
@@ -168,7 +173,12 @@ pub enum ValidationRule {
     DecimalMax(f64),
 
     /// Digits validation / 数字位数验证
-    Digits { integer: usize, fraction: usize },
+    Digits {
+        /// Maximum integer digits / 最大整数位数
+        integer: usize,
+        /// Maximum fraction digits / 最大小数位数
+        fraction: usize,
+    },
 
     /// Email validation / 邮箱验证
     Email,
@@ -177,7 +187,10 @@ pub enum ValidationRule {
     Url,
 
     /// Pattern validation / 模式验证
-    Pattern { regex: String },
+    Pattern {
+        /// Regular expression pattern / 正则表达式模式
+        regex: String,
+    },
 
     /// Negative number / 负数
     Negative,

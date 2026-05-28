@@ -18,8 +18,12 @@ pub use module::{Module, ModuleMetadata};
 pub use registry::ModuleRegistry;
 pub use verify::{VerificationResult, verify_modules};
 
+/// Version of the modulith module
+/// 模块化单体模块版本
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// Re-exports of commonly used types
+/// 常用类型的重新导出
 pub mod prelude {
     pub use crate::event::{DomainEvent, EventPublisher, InMemoryEventPublisher};
     pub use crate::module::Module;

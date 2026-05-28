@@ -59,6 +59,7 @@ impl RetryCallback for NoOpCallback {
 
 /// Callback from function
 /// 函数回调
+#[allow(dead_code)]
 pub struct CallbackFn<R, S, E>
 where
     R: Fn(usize, Duration) + Send + Sync,
@@ -76,6 +77,7 @@ where
     S: Fn(usize) + Send + Sync,
     E: Fn(&str) + Send + Sync,
 {
+    #[allow(dead_code)]
     pub fn new(on_retry_fn: R, on_success_fn: S, on_error_fn: E) -> Self {
         Self {
             on_retry_fn: Arc::new(on_retry_fn),
@@ -243,7 +245,7 @@ impl RetryTemplate {
         E: std::error::Error + Send + Sync + 'static,
     {
         let mut context = RetryContext::new();
-        let mut last_error: Option<String> = None;
+        let mut _last_error: Option<String> = None;
 
         loop {
             let result = op().await;
@@ -255,7 +257,7 @@ impl RetryTemplate {
                 }
                 Err(error) => {
                     let error_msg = error.to_string();
-                    last_error = Some(error_msg.clone());
+                    _last_error = Some(error_msg.clone());
 
                     if context.attempt >= self.max_attempts {
                         context.set_exhausted();
@@ -273,7 +275,7 @@ impl RetryTemplate {
             }
         }
 
-        Err(last_error.unwrap_or_else(|| "Unknown error".to_string()))
+        Err(_last_error.unwrap_or_else(|| "Unknown error".to_string()))
     }
 
     /// Execute with recover fallback

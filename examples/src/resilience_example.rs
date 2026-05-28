@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus Resilience Example / Nexus弹性示例
 //!
 //! Demonstrates high availability patterns for backend applications.

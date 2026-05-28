@@ -144,6 +144,7 @@ struct OllamaChatResponse {
     message: OllamaMessage,
     done: bool,
     #[serde(default)]
+    #[allow(dead_code)]
     total_duration: Option<u64>,
     #[serde(default)]
     eval_count: Option<u32>,
@@ -162,6 +163,7 @@ struct OllamaStreamChunk {
 
 /// The message field in a streamed chunk.
 /// 流式块中的消息字段。
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 struct OllamaStreamMessage {
     content: Option<String>,

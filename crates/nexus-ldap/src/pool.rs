@@ -11,11 +11,17 @@ use std::collections::VecDeque;
 /// Configuration for LDAP connection pool / LDAP连接池配置
 #[derive(Debug, Clone)]
 pub struct PoolConfig {
+    /// Maximum number of connections / 最大连接数
     pub max_size: usize,
+    /// Maximum number of idle connections / 最大空闲连接数
     pub max_idle: usize,
+    /// Minimum number of idle connections / 最小空闲连接数
     pub min_idle: usize,
+    /// Maximum wait time in milliseconds when pool is exhausted / 池耗尽时的最大等待时间（毫秒）
     pub max_wait_ms: u64,
+    /// Whether to validate connections on borrow / 是否在借用时验证连接
     pub test_on_borrow: bool,
+    /// Whether to validate connections on return / 是否在归还时验证连接
     pub test_on_return: bool,
 }
 
@@ -35,6 +41,7 @@ impl Default for PoolConfig {
 /// A connection in the pool / 池中的连接
 #[derive(Debug)]
 struct PooledConnection {
+    #[allow(dead_code)]
     active: bool,
 }
 
@@ -108,8 +115,11 @@ impl LdapPool {
 /// Pool statistics / 池统计信息
 #[derive(Debug, Clone)]
 pub struct PoolStats {
+    /// Number of active (borrowed) connections / 活跃（已借用）连接数
     pub active: usize,
+    /// Number of idle connections / 空闲连接数
     pub idle: usize,
+    /// Maximum pool size / 池最大容量
     pub max_size: usize,
 }
 

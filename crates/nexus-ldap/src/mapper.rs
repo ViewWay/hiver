@@ -7,7 +7,9 @@
 
 /// Maps LDAP attributes to a Rust type / `将LDAP属性映射到Rust类型`
 pub trait AttributesMapper<T>: Send + Sync {
+    /// Map raw attribute pairs to a Rust type / 将原始属性对映射到Rust类型
     fn map_attributes(&self, attrs: &[(&str, &[&str])]) -> T;
+    /// Map attributes with default delegation / 使用默认委托映射属性
     fn map_from_attributes(&self, attrs: &[(&str, &[&str])]) -> T {
         self.map_attributes(attrs)
     }
@@ -15,6 +17,7 @@ pub trait AttributesMapper<T>: Send + Sync {
 
 /// Maps an LDAP entry context to a Rust type / `将LDAP条目上下文映射到Rust类型`
 pub trait ContextMapper<T>: Send + Sync {
+    /// Map from a raw LDAP context string / 从原始LDAP上下文字符串映射
     fn map_from_context(&self, ctx: &str) -> T;
 }
 
@@ -31,16 +34,20 @@ impl Default for AttrMap {
 }
 
 impl AttrMap {
+    /// Create an empty attribute map / 创建空的属性映射
     pub fn new() -> Self { Self { attrs: Vec::new() } }
 
+    /// Add a key-value pair to the map / 向映射中添加键值对
     pub fn add(&mut self, key: &str, values: &[&str]) {
         self.attrs.push((key.to_string(), values.iter().map(ToString::to_string).collect()));
     }
 
+    /// Get all values for a key / 获取某个键的所有值
     pub fn get(&self, key: &str) -> Option<&[String]> {
         self.attrs.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_slice())
     }
 
+    /// Get the first value for a key / 获取某个键的第一个值
     pub fn get_first(&self, key: &str) -> Option<&str> {
         self.get(key).and_then(|v| v.first().map(String::as_str))
     }

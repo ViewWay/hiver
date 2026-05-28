@@ -520,6 +520,7 @@ pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream 
 /// private Instant createdAt;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_created_date(attr, item)
 }
@@ -534,6 +535,7 @@ pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// private Instant updatedAt;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_last_modified_date(attr, item)
 }
@@ -548,6 +550,7 @@ pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// private String createdBy;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_created_by(attr, item)
 }
@@ -562,6 +565,7 @@ pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// private String updatedBy;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_last_modified_by(attr, item)
 }
@@ -580,6 +584,7 @@ pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// protected void onCreate() { ... }
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_persist(attr, item)
 }
@@ -587,6 +592,7 @@ pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Marks a method to be called after entity persist.
 /// 标记方法在实体持久化之后调用。
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_persist(attr, item)
 }
@@ -594,6 +600,7 @@ pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Marks a method to be called before entity update.
 /// 标记方法在实体更新之前调用。
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_update(attr, item)
 }
@@ -601,6 +608,7 @@ pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Marks a method to be called after entity update.
 /// 标记方法在实体更新之后调用。
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_update(attr, item)
 }
@@ -608,6 +616,7 @@ pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Marks a method to be called before entity remove (DELETE).
 /// 标记方法在实体删除之前调用。
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_remove(attr, item)
 }
@@ -615,6 +624,7 @@ pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Marks a method to be called after entity is loaded from database.
 /// 标记方法在实体从数据库加载之后调用。
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_load(attr, item)
 }
@@ -633,6 +643,7 @@ pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// private String computedField;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
@@ -647,6 +658,7 @@ pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream {
 /// private User user;
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
@@ -662,6 +674,7 @@ pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     inverseJoinColumns = @JoinColumn(name = "role_id"))
 /// ```
 #[proc_macro_attribute]
+#[allow(non_snake_case)]
 pub fn JoinTable(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }

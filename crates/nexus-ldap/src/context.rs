@@ -162,6 +162,7 @@ pub struct LdapContextSource {
     base_dn: String,
     username: Option<String>,
     password: Option<String>,
+    #[allow(dead_code)]
     connect_timeout: Duration,
 }
 

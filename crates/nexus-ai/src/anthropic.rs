@@ -154,6 +154,7 @@ struct AnthropicStreamEvent {
     #[serde(rename = "type")]
     event_type: String,
     delta: Option<AnthropicDelta>,
+    #[allow(dead_code)]
     message: Option<AnthropicMessageStart>,
 }
 
@@ -167,6 +168,7 @@ struct AnthropicDelta {
 
 /// Message start information in a stream event.
 /// 流式事件中的消息起始信息。
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 struct AnthropicMessageStart {
     model: Option<String>,
@@ -175,6 +177,7 @@ struct AnthropicMessageStart {
 
 /// Anthropic error response body.
 /// Anthropic 错误响应体。
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 struct AnthropicErrorResponse {
     error: AnthropicErrorDetail,

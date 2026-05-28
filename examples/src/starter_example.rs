@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus Starter 自动配置示例
 //! Nexus Starter Auto-Configuration Example
 //!

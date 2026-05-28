@@ -158,6 +158,7 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     // ── SQL builders ─────────────────────────────────────────────────
 
+    #[allow(dead_code)]
     fn validate_identifier(id: &str) -> Result<()> {
         if id.is_empty() || !id.chars().all(|c| c.is_alphanumeric() || c == '_') {
             return Err(Error::sql(format!("Invalid SQL identifier: '{id}'")));

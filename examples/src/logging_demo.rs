@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus 统一日志系统演示
 //! Nexus Unified Logging System Demo
 //!

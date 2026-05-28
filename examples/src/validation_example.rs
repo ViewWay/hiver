@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus Validation Example / Nexus验证示例
 //!
 //! Demonstrates input validation for backend applications.

@@ -150,16 +150,22 @@ fn extract_enc_value(value: &str) -> Option<&str> {
 /// 加密错误。
 #[derive(Debug, thiserror::Error)]
 pub enum EncryptError {
+    /// Invalid encryption key. / 无效加密密钥。
     #[error("Invalid encryption key")]
     InvalidKey,
+    /// Encryption operation failed. / 加密操作失败。
     #[error("Encryption failed")]
     EncryptionFailed,
+    /// Decryption failed due to wrong password or corrupted data. / 解密失败，密码错误或数据损坏。
     #[error("Decryption failed (wrong password or corrupted data)")]
     DecryptionFailed,
+    /// Payload is too short to contain nonce and ciphertext. / 载荷过短，无法包含 nonce 和密文。
     #[error("Invalid payload (too short)")]
     InvalidPayload,
+    /// Base64 encoding/decoding error. / Base64 编解码错误。
     #[error("Base64 error: {0}")]
     Base64Error(String),
+    /// UTF-8 encoding error. / UTF-8 编码错误。
     #[error("UTF-8 error: {0}")]
     Utf8Error(String),
 }

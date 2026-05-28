@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus HTTP Example / Nexus HTTP示例
 //!
 //! Demonstrates HTTP request/response handling for backend applications.

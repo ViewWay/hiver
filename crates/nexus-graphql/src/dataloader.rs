@@ -7,15 +7,18 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::sync::{Arc, Mutex};
 
+/// Trait for batch-loading values by a set of keys. / 按键集合批量加载值的 trait。
 #[async_trait]
 pub trait BatchLoader<K, V>: Send + Sync
 where
     K: Clone + Eq + Hash + Debug + Send + Sync,
     V: Clone + Send + Sync,
 {
+    /// Load values for the given keys, returning a map of found results. / 加载给定键对应的值，返回找到的结果映射。
     async fn load(&self, keys: &[K]) -> HashMap<K, V>;
 }
 
+/// Batching data loader to prevent N+1 queries. / 批量数据加载器，防止 N+1 查询。
 pub struct DataLoader<K, V>
 where
     K: Clone + Eq + Hash + Debug + Send + Sync + 'static,
@@ -32,6 +35,7 @@ where
     K: Clone + Eq + Hash + Debug + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
+    /// Create a new DataLoader with the given batch loader. / 使用给定的批量加载器创建 DataLoader。
     pub fn new(loader: impl BatchLoader<K, V> + 'static) -> Self {
         Self {
             loader: Arc::new(loader),
@@ -41,11 +45,13 @@ where
         }
     }
 
+    /// Set the maximum number of keys per batch. / 设置每批最大键数。
     pub fn max_batch_size(mut self, size: usize) -> Self {
         self.max_batch_size = size;
         self
     }
 
+    /// Load a single value by key (uses cache and batching). / 按键加载单个值（使用缓存和批处理）。
     pub async fn load(&self, key: K) -> Option<V> {
         {
             let cache = self.cache.lock().expect("lock poisoned");
@@ -62,6 +68,7 @@ where
         rx.await.ok()
     }
 
+    /// Load multiple values by keys. / 按多个键加载值。
     pub async fn load_many(&self, keys: Vec<K>) -> HashMap<K, Option<V>> {
         let mut receivers: Vec<(K, tokio::sync::oneshot::Receiver<V>)> = Vec::new();
         let mut result = HashMap::new();
@@ -88,18 +95,22 @@ where
         result
     }
 
+    /// Prime the cache with a single key-value pair. / 向缓存中预置单个键值对。
     pub fn prime(&self, key: K, value: V) {
         self.cache.lock().expect("lock poisoned").insert(key, value);
     }
 
+    /// Prime the cache with multiple entries. / 向缓存中预置多个条目。
     pub fn prime_many(&self, entries: HashMap<K, V>) {
         self.cache.lock().expect("lock poisoned").extend(entries);
     }
 
+    /// Clear the value cache. / 清除值缓存。
     pub fn clear(&self) {
         self.cache.lock().expect("lock poisoned").clear();
     }
 
+    /// Dispatch pending keys to the batch loader. / 将待处理键分发给批量加载器。
     pub async fn dispatch(&self) -> usize {
         let pending_keys: Vec<K> = {
             self.pending.lock().expect("lock poisoned").keys().cloned().collect()
@@ -122,6 +133,7 @@ where
         count
     }
 
+    /// Dispatch all pending batches until none remain. / 分发所有待处理批次直到清空。
     pub async fn dispatch_all(&self) {
         loop {
             let n = self.dispatch().await;
@@ -130,13 +142,16 @@ where
     }
 }
 
+/// Registry for named DataLoader instances. / 命名 DataLoader 实例的注册表。
 #[derive(Default)]
 pub struct DataLoaderRegistry {
     name: String,
 }
 
 impl DataLoaderRegistry {
+    /// Create a new registry with the given name. / 使用给定名称创建新注册表。
     pub fn new(name: impl Into<String>) -> Self { Self { name: name.into() } }
+    /// Return the registry name. / 返回注册表名称。
     pub fn name(&self) -> &str { &self.name }
 }
 

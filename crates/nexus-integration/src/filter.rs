@@ -94,6 +94,7 @@ impl MessageFilter for HeaderFilter {
 /// Payload type filter - filters based on payload type
 /// 载荷类型过滤器 - 基于载荷类型过滤
 pub struct PayloadTypeFilter {
+    #[allow(dead_code)]
     type_name: String,
 }
 

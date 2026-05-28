@@ -24,7 +24,7 @@ tokio::task_local! {
 
 fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>> {
     ACTIVE_TX
-        .try_with(std::clone::Clone::clone)
+        .try_with(Clone::clone)
         .expect("No active transaction scope: wrap your transactional code with `with_transaction_scope`")
 }
 

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! Nexus Router Example / Nexus路由器示例
 //!
 //! Demonstrates HTTP request routing for backend applications.

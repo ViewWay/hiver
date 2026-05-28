@@ -238,6 +238,7 @@ where
     base: String,
     mapper: M,
     serializer: S,
+    #[allow(dead_code)]
     id_extractor: E,
     _marker: PhantomData<(T, ID)>,
 }

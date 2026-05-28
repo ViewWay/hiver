@@ -75,6 +75,7 @@ impl ServiceActivatorConfig {
 pub struct ServiceActivator {
     config: ServiceActivatorConfig,
     handler: Arc<dyn MessageHandler>,
+    #[allow(dead_code)]
     input_channel: Arc<dyn MessageChannel>,
     output_channel: Option<Arc<dyn MessageChannel>>,
 }

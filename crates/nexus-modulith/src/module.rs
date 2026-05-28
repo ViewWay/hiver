@@ -46,8 +46,8 @@ impl ModuleMetadata {
         Self {
             name: module.name().to_string(),
             description: module.description().to_string(),
-            dependencies: module.dependencies().iter().map(std::string::ToString::to_string).collect(),
-            packages: module.packages().iter().map(std::string::ToString::to_string).collect(),
+            dependencies: module.dependencies().iter().map(ToString::to_string).collect(),
+            packages: module.packages().iter().map(ToString::to_string).collect(),
             type_id: TypeId::of::<M>(),
         }
     }

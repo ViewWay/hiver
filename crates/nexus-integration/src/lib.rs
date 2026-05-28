@@ -108,7 +108,9 @@ enum FlowStep {
     Channel(String),
     Transform(std::sync::Arc<dyn transformer::Transformer>),
     Filter(std::sync::Arc<dyn filter::MessageFilter>),
+    #[allow(dead_code)]
     Split(std::sync::Arc<dyn splitter::MessageSplitter>),
+    #[allow(dead_code)]
     Aggregate(std::sync::Arc<dyn aggregator::MessageAggregator>),
 }
 

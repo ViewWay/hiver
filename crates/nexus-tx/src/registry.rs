@@ -126,7 +126,7 @@ impl TransactionManagerRegistry {
     /// List all registered manager names.
     /// 列出所有已注册的管理器名称。
     pub fn manager_names(&self) -> Vec<&str> {
-        self.managers.keys().map(std::string::String::as_str).collect()
+        self.managers.keys().map(String::as_str).collect()
     }
 
     /// Check if a manager with the given name exists.

@@ -302,7 +302,7 @@ where
 /// This function may be called both in async and sync contexts.
 /// 此函数可以在异步和同步上下文中调用。
 pub fn get_security_context() -> Option<Arc<SecurityContext>> {
-    CURRENT_SECURITY_CONTEXT.try_with(std::clone::Clone::clone).ok()
+    CURRENT_SECURITY_CONTEXT.try_with(Clone::clone).ok()
 }
 
 /// Run a closure with the given [`SecurityContext`] installed as the

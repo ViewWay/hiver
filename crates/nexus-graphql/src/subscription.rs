@@ -15,47 +15,58 @@ pub enum SubscriptionMessage {
     /// Client → Server: initialize the connection.
     #[serde(rename = "connection_init")]
     ConnectionInit {
+        /// Optional initialization payload. / 可选的初始化负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Server → Client: connection acknowledged.
     #[serde(rename = "connection_ack")]
     ConnectionAck {
+        /// Optional acknowledgment payload. / 可选的确认负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Client → Server: start a subscription.
     #[serde(rename = "subscribe")]
     Subscribe {
+        /// Subscription identifier. / 订阅标识符。
         id: String,
+        /// Subscription request payload. / 订阅请求负载。
         payload: SubscribePayload,
     },
     /// Server → Client: subscription data.
     #[serde(rename = "next")]
     Next {
+        /// Subscription identifier. / 订阅标识符。
         id: String,
+        /// Subscription result data. / 订阅结果数据。
         payload: SubscriptionData,
     },
     /// Server → Client: subscription error.
     #[serde(rename = "error")]
     Error {
+        /// Subscription identifier. / 订阅标识符。
         id: String,
+        /// Error details. / 错误详情。
         payload: Vec<GraphQLErrorPayload>,
     },
     /// Server → Client: subscription complete.
     #[serde(rename = "complete")]
     Complete {
+        /// Subscription identifier. / 订阅标识符。
         id: String,
     },
     /// Keep-alive ping.
     #[serde(rename = "ping")]
     Ping {
+        /// Optional ping payload. / 可选的 ping 负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Keep-alive pong.
     #[serde(rename = "pong")]
     Pong {
+        /// Optional pong payload. / 可选的 pong 负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
@@ -66,10 +77,13 @@ pub enum SubscriptionMessage {
 pub struct SubscribePayload {
     /// The GraphQL subscription query.
     pub query: String,
+    /// Query variables. / 查询变量。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub variables: Option<Value>,
+    /// Operation name for multi-operation documents. / 多操作文档的操作名称。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub operation_name: Option<String>,
+    /// Protocol extensions. / 协议扩展。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Value>,
 }
@@ -77,9 +91,12 @@ pub struct SubscribePayload {
 /// Subscription data payload.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubscriptionData {
+    /// Response data. / 响应数据。
     pub data: Option<Value>,
+    /// Errors encountered during subscription resolution. / 订阅解析期间遇到的错误。
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub errors: Vec<GraphQLErrorPayload>,
+    /// Protocol extensions. / 协议扩展。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extensions: Option<Value>,
 }
@@ -87,9 +104,12 @@ pub struct SubscriptionData {
 /// Simplified error payload for subscription messages.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GraphQLErrorPayload {
+    /// Error message. / 错误信息。
     pub message: String,
+    /// Source locations of the error. / 错误的源码位置。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locations: Option<Vec<ErrorLocation>>,
+    /// Path to the error field. / 错误字段的路径。
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path: Option<Value>,
 }
@@ -97,7 +117,9 @@ pub struct GraphQLErrorPayload {
 /// Error location in a GraphQL document.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorLocation {
+    /// Line number. / 行号。
     pub line: u32,
+    /// Column number. / 列号。
     pub column: u32,
 }
 
@@ -177,7 +199,7 @@ impl PersistedQueryCache {
 
     /// Look up a persisted query by hash.
     pub fn get(&self, hash: &str) -> Option<&str> {
-        self.queries.get(hash).map(std::string::String::as_str)
+        self.queries.get(hash).map(String::as_str)
     }
 
     /// Number of persisted queries.

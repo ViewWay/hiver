@@ -32,6 +32,7 @@ fn field_is_autowired(field: &Field) -> bool {
     })
 }
 
+#[allow(dead_code)]
 fn should_inject_field(field: &Field) -> bool {
     field_is_autowired(field) || extract_arc_inner(&field.ty).is_some()
 }
