@@ -1,7 +1,7 @@
 # Spring 生态系统 vs Nexus - 完整功能差距分析
 
-> 最后更新：2026-05-27
-> 基于 60+ 个 crate、~200,000 行 Rust 代码的实际代码分析
+> 最后更新：2026-05-28
+> 基于 61 个 crate、~208,000 行 Rust 代码的实际代码分析
 
 参考：https://springframework.org.cn/projects/
 
@@ -17,7 +17,7 @@
 | 2 | Spring Framework | nexus-core | **95%** | P0 | Bean 生命周期、条件装配、响应式完整 |
 | 3 | Spring Data | nexus-data-* | **85%** | P0 | RDBC/ORM/MongoDB/Redis 可用，Annotations/Macros 已完善 |
 | 4 | Spring Security | nexus-security | **95%** | P0 | JWT/OAuth2/RBAC/CSRF/ACL/RememberMe 完整 |
-| 5 | Spring Cloud | nexus-cloud | **75%** | P1 | 服务发现/网关/负载均衡可用 |
+| 5 | Spring Cloud | nexus-cloud | **85%** | P1 | 服务发现/网关/负载均衡/熔断/Feign/Gateway过滤器完整 |
 | 6 | Spring Integration | nexus-integration | **85%** | P2 | EIP 模式/ServiceActivator/拦截器/消息存储完整 |
 | 7 | Spring Batch | nexus-batch | **80%** | P2 | Job/Step/Chunk/分区/流程/SQL 持久化已实现 |
 | 8 | Spring Session | nexus-session | **85%** | P2 | 分布式会话、Redis 存储完整 |
@@ -39,13 +39,14 @@
 
 | 指标 | 数值 |
 |------|------|
-| Crate 总数 | 60 |
-| 代码行数 | ~197,000 |
+| Crate 总数 | 61 |
+| 代码行数 | ~208,000 |
 | 公共 API 数 | 2,000+ |
 | Trait 实现 | 1,486 |
 | 过程宏 | 100+ |
-| 测试数量 | ~1,500+ |
-| TODO/unimplemented | 3 |
+| 测试数量 | ~3,500+ |
+| TODO/unimplemented | 26 |
+| 编译警告 | 0 |
 
 ---
 
@@ -256,23 +257,28 @@
 | Eureka Client | ✅ | `nexus-cloud` Eureka 支持 | **80%** |
 | Consul | ✅ | ✅ HTTP API 集成 | **已实现** |
 | etcd | — | ✅ | **已实现** |
-| 负载均衡 | @LoadBalanced | RoundRobin | **75%** |
+| 负载均衡 | @LoadBalanced | RoundRobin/WeightedRoundRobin/ConsistentHash | **90%** |
 | 健康检查 | ✅ | ✅ | **已实现** |
+| 元数据过滤 | ✅ | ✅ MetadataFilter/Grouping/VersionRouting | **已实现** |
 
 ### 5.2 API 网关
 
 | 功能 | Spring Cloud Gateway | Nexus | 状态 |
 |------|---------------------|-------|------|
-| Route Locator | ✅ | `nexus-cloud` 路由 | **75%** |
-| Predicate/Filter | ✅ | ✅ | **部分** |
-| Circuit Breaker | ✅ | `nexus-resilience` | **已实现** |
+| Route Locator | ✅ | `nexus-cloud` 路由 | **85%** |
+| Predicate/Filter | ✅ | ✅ AddRequestHeader/StripPrefix/PrefixPath/SetPath/SetStatus/RequestSize | **已实现** |
+| Glob 路径匹配 | ✅ | ✅ | **已实现** |
+| Timeout/Retry 过滤器 | ✅ | ✅ | **已实现** |
+| Circuit Breaker | ✅ | ✅ 滑动窗口/慢调用检测/事件监听 | **已实现** |
 | Rate Limiter | ✅ | ✅ | **已实现** |
 
 ### 5.3 声明式 HTTP 客户端
 
 | 功能 | Spring Cloud OpenFeign | Nexus | 状态 |
 |------|----------------------|-------|------|
-| @FeignClient | ✅ | `nexus-cloud` Feign 宏 | **75%** |
+| @FeignClient | ✅ | `nexus-cloud` Feign 宏 | **85%** |
+| 重试/降级 | ✅ | ✅ RetryConfig/Fallback | **已实现** |
+| 拦截器 | ✅ | ✅ RequestInterceptor | **已实现** |
 | 负载均衡集成 | ✅ | ✅ | **已实现** |
 
 ---
