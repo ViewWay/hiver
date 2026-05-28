@@ -114,6 +114,7 @@ pub mod execution;
 pub mod context;
 pub mod partition;
 pub mod flow;
+pub mod operator;
 
 // Prelude module for convenient imports
 pub mod prelude {
@@ -127,6 +128,7 @@ pub mod prelude {
     pub use crate::launcher::JobLauncher;
     pub use crate::execution::{JobExecution, StepExecution, JobStatus, BatchStatus};
     pub use crate::context::{JobContext, StepContext};
+    pub use crate::operator::{AdvancedJobOperator, JobExecutionSummary, FaultTolerantStep};
 }
 
 /// Re-exports for convenience
@@ -141,3 +143,4 @@ pub use repository::JobRepository;
 pub use launcher::JobLauncher;
 pub use execution::{JobExecution, StepExecution, JobStatus, BatchStatus};
 pub use context::{JobContext, StepContext};
+pub use operator::{AdvancedJobOperator, JobExecutionSummary, FaultTolerantStep};

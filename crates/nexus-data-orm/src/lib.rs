@@ -68,6 +68,7 @@ pub mod repository;
 pub mod relationships;
 pub mod migrations;
 pub mod connection;
+pub mod projection;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
 #[cfg(feature = "diesel")]

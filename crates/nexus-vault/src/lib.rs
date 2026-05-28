@@ -47,10 +47,12 @@
 #![warn(unreachable_pub)]
 
 pub mod auth;
+pub mod auth_jwt;
 pub mod client;
 pub mod error;
 pub mod health;
 pub mod kv;
+pub mod kv_v2;
 pub mod lease;
 pub mod pki;
 pub mod secret;
@@ -59,6 +61,7 @@ pub mod transit;
 // Re-exports / 重导出
 pub use client::{VaultClient, VaultConfig};
 pub use error::VaultError;
+pub use auth_jwt::{JwtAuth, JwtAuthManager, JwtRoleConfig};
 
 #[cfg(test)]
 mod tests;

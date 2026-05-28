@@ -63,9 +63,11 @@ pub mod session;
 pub mod store;
 pub mod config;
 pub mod middleware;
+pub mod events;
 
 pub use session::{Session, SessionId, SessionAttribute};
 pub use store::{SessionStore, MemorySessionStore};
+pub use events::{SessionEvent, SessionEventListener, SessionEventPublisher, ConcurrentSessionControl, ConcurrentSessionStrategy};
 
 #[cfg(feature = "redis")]
 pub use store::RedisSessionStore;
