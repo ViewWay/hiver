@@ -60,7 +60,7 @@ mod tests {
     struct OrderModule;
     impl Module for OrderModule {
         fn name(&self) -> &str { "order" }
-        fn description(&self) -> &str { "Order management" }
+        fn description(&self) -> &'static str { "Order management" }
         fn dependencies(&self) -> Vec<&str> { vec!["customer", "product"] }
         fn packages(&self) -> Vec<&str> { vec!["order", "order.item"] }
     }

@@ -1,6 +1,7 @@
 //! Interest types for file descriptor registration
 //! 文件描述符注册的兴趣类型
 
+use std::os::fd::RawFd;
 
 /// Interest types for file descriptor registration
 /// 文件描述符注册的兴趣类型
@@ -152,6 +153,52 @@ impl Interest {
         }
     }
 
+    /// Convert to kqueue event flags
+    /// 转换为kqueue事件标志
+    #[cfg(any(
+        target_os = "macos",
+        target_os = "freebsd",
+        target_os = "netbsd",
+        target_os = "openbsd",
+        target_os = "dragonfly"
+    ))]
+    #[allow(dead_code)]
+    pub fn to_kqueue_filters(&self, fd: RawFd) -> (Vec<libc::kevent>, Vec<libc::kevent>) {
+        use std::mem::zeroed;
+
+        let mut add_events = Vec::with_capacity(2);
+        let remove_events = Vec::new();
+
+        if self.readable {
+            let mut event = unsafe { zeroed::<libc::kevent>() };
+            event.ident = fd as libc::uintptr_t;
+            event.filter = libc::EVFILT_READ;
+            event.flags = libc::EV_ADD | libc::EV_RECEIPT;
+            if self.edge {
+                event.flags |= libc::EV_CLEAR;
+            }
+            if self.oneshot {
+                event.flags |= libc::EV_ONESHOT;
+            }
+            add_events.push(event);
+        }
+
+        if self.writable {
+            let mut event = unsafe { zeroed::<libc::kevent>() };
+            event.ident = fd as libc::uintptr_t;
+            event.filter = libc::EVFILT_WRITE;
+            event.flags = libc::EV_ADD | libc::EV_RECEIPT;
+            if self.edge {
+                event.flags |= libc::EV_CLEAR;
+            }
+            if self.oneshot {
+                event.flags |= libc::EV_ONESHOT;
+            }
+            add_events.push(event);
+        }
+
+        (add_events, remove_events)
+    }
 }
 
 #[cfg(test)]

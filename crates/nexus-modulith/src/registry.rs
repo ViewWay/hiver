@@ -62,7 +62,7 @@ mod tests {
     struct CustomerModule;
     impl Module for CustomerModule {
         fn name(&self) -> &str { "customer" }
-        fn description(&self) -> &str { "Customer management" }
+        fn description(&self) -> &'static str { "Customer management" }
     }
 
     struct OrderModule;

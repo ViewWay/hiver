@@ -22,6 +22,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 use std::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
 
+use crate::scheduler::{RawTask, SchedulerHandle};
 
 /// Task ID type
 /// 任务ID类型
@@ -70,11 +71,16 @@ impl TaskState {
 
 /// Inner task data shared between task, waker, and join handle
 /// 任务、waker和join句柄之间共享的内部任务数据
+#[allow(dead_code)]
 struct TaskInner<T> {
     /// Task ID / 任务ID
     id: TaskId,
     /// Task state / 任务状态
     state: AtomicU8,
+    /// Reference count / 引用计数
+    ref_count: AtomicUsize,
+    /// Scheduler handle for re-scheduling / 用于重新调度的调度器句柄
+    scheduler: SchedulerHandle,
     /// Raw task pointer for wake-up / 用于唤醒的原始任务指针
     raw_task: AtomicUsize,
     /// Task output (available when completed) / 任务输出（完成时可用）
@@ -94,6 +100,7 @@ mod lock {
     }
 
     impl<T> OptionalCell<T> {
+        #[allow(dead_code)]
         pub(super) fn new() -> Self {
             Self {
                 inner: Mutex::new(MaybeUninit::uninit()),
@@ -101,12 +108,14 @@ mod lock {
             }
         }
 
+        #[allow(dead_code)]
         pub(super) fn set(&self, value: T) {
             let mut inner = self.inner.lock().unwrap();
             *inner = MaybeUninit::new(value);
             self.initialized.store(1, Ordering::Release);
         }
 
+        #[allow(dead_code)]
         pub(super) unsafe fn get(&self) -> Option<T> {
             if self.initialized.load(Ordering::Acquire) == 1 {
                 let inner = self.inner.lock().unwrap();
@@ -141,16 +150,52 @@ mod lock {
 ///
 /// Wraps a future and manages its execution lifecycle.
 /// 包装一个future并管理其执行生命周期。
+#[allow(dead_code)]
 pub struct Task<T> {
     inner: Arc<TaskInner<T>>,
 }
 
 impl<T> Task<T> {
+    /// Create a new task
+    /// 创建新任务
+    #[allow(dead_code)]
+    fn new<F>(_future: F, id: TaskId, scheduler: SchedulerHandle) -> (Self, RawTask)
+    where
+        F: Future<Output = T> + Send + 'static,
+        T: Send + 'static,
+    {
+        let inner = Arc::new(TaskInner {
+            id,
+            state: AtomicU8::new(TaskState::Running as u8),
+            ref_count: AtomicUsize::new(2), // Task + waker
+            scheduler,
+            raw_task: AtomicUsize::new(0),
+            output: lock::OptionalCell::new(),
+        });
+
+        let raw_task = Arc::into_raw(inner.clone()) as RawTask;
+        inner.raw_task.store(raw_task as usize, Ordering::Release);
+
+        let task = Task { inner };
+        (task, raw_task)
+    }
+
     /// Get the task ID
     /// 获取任务ID
     #[must_use]
     pub fn id(&self) -> TaskId {
         self.inner.id
+    }
+
+    /// Poll the task future
+    /// 轮询任务future
+    #[allow(dead_code)]
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<T> {
+        // This would be called by the executor
+        // For now, we'll use a simpler approach
+        // 这将由执行器调用
+        // 目前我们使用更简单的方法
+        Poll::Pending
     }
 }
 
@@ -161,6 +206,85 @@ impl<T> Drop for Task<T> {
         // Clear the raw_task pointer to prevent use-after-free
         // 清除raw_task指针以防止use-after-free
         self.inner.raw_task.store(0, Ordering::Release);
+    }
+}
+
+/// Custom waker for task wake-up notifications
+/// 用于任务唤醒通知的自定义waker
+///
+/// Uses the vtable pattern for raw waker implementation.
+/// 使用vtable模式实现原始waker。
+#[allow(dead_code)]
+fn task_waker(inner: &Arc<TaskInner<()>>) -> Waker {
+    // Clone and convert to raw pointer
+    // 克隆并转换为原始指针
+    let cloned = inner.clone();
+    let data = Arc::into_raw(cloned) as *const ();
+
+    unsafe { Waker::from_raw(RawWaker::new(data, &RAW_WAKER_VTABLE)) }
+}
+
+/// VTable for the task waker
+/// 任务waker的VTable
+///
+/// Provides functions for cloning, waking, and dropping the waker.
+/// 提供克隆、唤醒和删除waker的函数。
+#[allow(dead_code)]
+static RAW_WAKER_VTABLE: RawWakerVTable =
+    RawWakerVTable::new(raw_waker_clone, raw_waker_wake, raw_waker_wake_by_ref, raw_waker_drop);
+
+#[allow(dead_code)]
+unsafe fn raw_waker_clone(data: *const ()) -> RawWaker {
+    // Increment reference count
+    // 增加引用计数
+    let inner = &*(data as *const TaskInner<()>);
+    inner.ref_count.fetch_add(1, Ordering::Relaxed);
+
+    RawWaker::new(data, &RAW_WAKER_VTABLE)
+}
+
+#[allow(dead_code)]
+unsafe fn raw_waker_wake(data: *const ()) {
+    raw_waker_wake_by_ref(data);
+    raw_waker_drop(data);
+}
+
+#[allow(dead_code)]
+unsafe fn raw_waker_wake_by_ref(data: *const ()) {
+    let inner = &*(data as *const TaskInner<()>);
+
+    // Try to transition from Waiting to Running
+    // 尝试从Waiting转换到Running
+    if inner.state.compare_exchange(
+        TaskState::Waiting as u8,
+        TaskState::Running as u8,
+        Ordering::Release,
+        Ordering::Relaxed,
+    )
+    .is_err()
+    {
+        return; // Not in waiting state
+    }
+
+    // Re-schedule the task
+    // 重新调度任务
+    let raw_task = inner.raw_task.load(Ordering::Acquire) as RawTask;
+    if raw_task as usize != 0 {
+        let _ = inner.scheduler.submit(raw_task);
+    }
+}
+
+#[allow(dead_code)]
+unsafe fn raw_waker_drop(data: *const ()) {
+    let inner = &*(data as *const TaskInner<()>);
+
+    // Decrement reference count
+    // 减少引用计数
+    if inner.ref_count.fetch_sub(1, Ordering::Release) == 1 {
+        // Last reference, deallocate
+        // 最后一个引用，释放内存
+        // Note: This is handled by Arc, we don't need explicit deallocation
+        // 注意：这由Arc处理，我们不需要显式释放
     }
 }
 
@@ -346,6 +470,8 @@ where
             inner: Some(Arc::new(TaskInner {
                 id,
                 state: AtomicU8::new(TaskState::Running as u8),
+                ref_count: AtomicUsize::new(1),
+                scheduler: handle.scheduler().clone(),
                 raw_task: AtomicUsize::new(0),
                 output: lock::OptionalCell::new(),
             })),
@@ -359,6 +485,8 @@ where
     let inner = Arc::new(TaskInner {
         id,
         state: AtomicU8::new(TaskState::Running as u8),
+        ref_count: AtomicUsize::new(1),
+        scheduler: SchedulerHandle::new_default(),
         raw_task: AtomicUsize::new(0),
         output: lock::OptionalCell::new(),
     });

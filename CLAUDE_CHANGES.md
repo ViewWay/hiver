@@ -8622,3 +8622,68 @@ Changed `crates/nexus-ldap/src/repository.rs` from "#[allow(dead_code)]; id_extr
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:18:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ai/src/openai.rs`
+### Change Record
+Modified file `crates/nexus-ai/src/openai.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "total_tokens: u32," in `crates/nexus-ai/src/openai.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:18:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-events/src/transactional_listener.rs`
+### Change Record
+Modified file `crates/nexus-events/src/transactional_listener.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "status: String," in `crates/nexus-events/src/transactional_listener.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:18:49
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-events/src/transactional_listener.rs`
+### Change Record
+Modified file `crates/nexus-events/src/transactional_listener.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/nexus-events/src/transactional_listener.rs` from "_payment_id: u64," to "status: String,; payment_id: u64,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:22:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "// Single quotes are escaped, so the injection is neutralized; assert_eq!(; result," to "// Single quotes are escaped (' → ''), wrapping in SQL quotes produces:; // WHERE name = '''; DROP TABLE users; --'; // ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:32:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-lombok/src/builder.rs`
+### Change Record
+Modified file `crates/nexus-lombok/src/builder.rs`. Approximately 117 lines changed.
+### Change Summary
+Changed `crates/nexus-lombok/src/builder.rs` from "// Generate Builder struct; // 生成 Builder 结构体; #(" to "// Detect Option<T> fields for optional handling; // 检测 Option<T> 字段以进行可选处理; let is_option: Vec<_> = field_types".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

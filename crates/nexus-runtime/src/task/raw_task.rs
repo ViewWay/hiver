@@ -53,6 +53,11 @@ impl TaskCore {
         self.state.load(Ordering::Acquire) == STATE_COMPLETED
     }
 
+    #[allow(dead_code)]
+    pub(crate) fn scheduler(&self) -> &SchedulerHandle {
+        &self.scheduler
+    }
+
     /// Poll this task via the vtable. Returns true if completed.
     unsafe fn poll(&self) -> bool {
         (self.vtable.poll)(self)
@@ -205,6 +210,10 @@ impl TaskRef {
         self.0.map(|nn| unsafe { nn.as_ref() })
     }
 
+    #[allow(dead_code)]
+    pub(crate) fn is_some(&self) -> bool {
+        self.0.is_some()
+    }
 }
 
 impl Drop for TaskRef {

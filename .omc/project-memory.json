@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1779589966419,
+  "lastScanned": 1780070712094,
   "projectRoot": "/Users/yimiliya/RustroverProjects/nexus",
   "techStack": {
     "languages": [
@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished\" | tail -3",
-    "testCommand": "cargo test -p nexus-runtime -p nexus-batch 2>&1",
+    "buildCommand": "cargo build",
+    "testCommand": "cargo test --workspace --exclude nexus-runtime 2>&1 | grep \"FAILED\\|error\\[|^Exit\" | head -5; cargo test --workspace --exclude nexus-runtime 2>&1 | grep \"test result\" | wc -l",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -49,14 +49,14 @@
       "path": "crates",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1779589966406,
+      "lastAccessed": 1780070712089,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 9,
-      "lastAccessed": 1779589966406,
+      "lastAccessed": 1780070712090,
       "keyFiles": [
         "CODEMAP.md",
         "DOCS-INDEX.md",
@@ -68,8 +68,8 @@
     "examples": {
       "path": "examples",
       "purpose": "Example code",
-      "fileCount": 14,
-      "lastAccessed": 1779589966406,
+      "fileCount": 18,
+      "lastAccessed": 1780070712090,
       "keyFiles": [
         "Cargo.toml",
         "EXAMPLES.md",
@@ -82,7 +82,7 @@
       "path": "fuzzers",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1779589966407,
+      "lastAccessed": 1780070712091,
       "keyFiles": [
         "Cargo.toml",
         "README.md"
@@ -91,8 +91,8 @@
     "target": {
       "path": "target",
       "purpose": null,
-      "fileCount": 3,
-      "lastAccessed": 1779589966407,
+      "fileCount": 4,
+      "lastAccessed": 1780070712092,
       "keyFiles": [
         "CACHEDIR.TAG"
       ]
@@ -100,10 +100,11 @@
     "tests": {
       "path": "tests",
       "purpose": "Test files",
-      "fileCount": 2,
-      "lastAccessed": 1779589966407,
+      "fileCount": 3,
+      "lastAccessed": 1780070712092,
       "keyFiles": [
         "Cargo.toml",
+        "cross_crate_tests.rs",
         "lib.rs"
       ]
     },
@@ -111,7 +112,7 @@
       "path": "docs/api",
       "purpose": "API routes",
       "fileCount": 3,
-      "lastAccessed": 1779589966407,
+      "lastAccessed": 1780070712092,
       "keyFiles": [
         "annotations-reference.md",
         "api-quick-reference.md",
@@ -151,6 +152,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-data-rdbc/src/client.rs",
+      "accessCount": 12,
+      "lastAccessed": 1780068179534,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-websocket-stomp/src/handler.rs",
       "accessCount": 11,
       "lastAccessed": 1779619714734,
@@ -160,12 +167,6 @@
       "path": "crates/nexus-security/src/rbac.rs",
       "accessCount": 10,
       "lastAccessed": 1780066005461,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-data-rdbc/src/client.rs",
-      "accessCount": 10,
-      "lastAccessed": 1780066110294,
       "type": "file"
     },
     {

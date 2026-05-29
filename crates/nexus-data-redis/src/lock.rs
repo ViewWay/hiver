@@ -768,8 +768,8 @@ mod tests {
 
     /// Verify RedisLockGuard::new spawns a watchdog when interval is set.
     /// 验证当间隔设置时 RedisLockGuard::new 会生成看门狗。
-    #[test]
-    fn test_guard_has_watchdog_when_interval_set() {
+    #[tokio::test]
+    async fn test_guard_has_watchdog_when_interval_set() {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -784,8 +784,8 @@ mod tests {
 
     /// Verify RedisLockGuard::new does NOT spawn a watchdog without interval.
     /// 验证没有间隔时 RedisLockGuard::new 不会生成看门狗。
-    #[test]
-    fn test_guard_no_watchdog_without_interval() {
+    #[tokio::test]
+    async fn test_guard_no_watchdog_without_interval() {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -866,8 +866,8 @@ mod tests {
 
     /// Verify Debug output includes key, token, and watchdog state.
     /// 验证 Debug 输出包含 key、token 和看门狗状态。
-    #[test]
-    fn test_guard_debug_format() {
+    #[tokio::test]
+    async fn test_guard_debug_format() {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -884,8 +884,8 @@ mod tests {
 
     /// Verify multiple guards with the same key can be created (different tokens).
     /// 验证可以用相同的 key 创建多个守卫（不同令牌）。
-    #[test]
-    fn test_multiple_guards_same_key() {
+    #[tokio::test]
+    async fn test_multiple_guards_same_key() {
         let client1 = make_client();
         let client2 = make_client();
         let guard1 = RedisLockGuard::new(

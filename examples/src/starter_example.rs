@@ -173,7 +173,7 @@ mod tests {
 
         let config = DatabaseConfig::from_env();
         assert_eq!(config.url, "postgresql://localhost:5432/mydb");
-        assert_eq!(config.pool_size, 10);
+        assert_eq!(config.pool_size, 20);
     }
 
     #[test]

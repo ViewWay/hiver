@@ -173,7 +173,8 @@
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"rest_api.rs\"$/d' examples/Cargo.toml)",
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"microservice.rs\"$/d' examples/Cargo.toml)",
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"web3_dapp.rs\"$/d' examples/Cargo.toml)",
-      "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"grpc_service.rs\"$/d' examples/Cargo.toml)"
+      "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"grpc_service.rs\"$/d' examples/Cargo.toml)",
+      "mcp__plugin_claude-mem_mcp-search__smart_outline"
     ]
   }
 }

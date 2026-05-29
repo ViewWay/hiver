@@ -43,20 +43,42 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
-    // Generate Builder struct
-    // 生成 Builder 结构体
+    // Detect Option<T> fields for optional handling
+    // 检测 Option<T> 字段以进行可选处理
+    let is_option: Vec<_> = field_types
+        .iter()
+        .map(|ty| {
+            if let syn::Type::Path(type_path) = ty {
+                type_path.path.segments.last().map_or(false, |seg| seg.ident == "Option")
+            } else {
+                false
+            }
+        })
+        .collect();
+
+    // Generate Builder struct: Option<T> fields stored directly, others wrapped in Option
+    let builder_fields: Vec<_> = field_names
+        .iter()
+        .zip(field_types.iter())
+        .zip(is_option.iter())
+        .map(|((name, ty), is_opt)| {
+            if *is_opt {
+                quote! { #name: #ty }
+            } else {
+                quote! { #name: Option<#ty> }
+            }
+        })
+        .collect();
+
     let builder_struct = quote! {
         #[derive(Default, Debug)]
         #[doc = concat!("Builder for `", stringify!(#struct_name), "`")]
         pub struct #builder_ident #impl_generics #ty_generics #where_clause {
-            #(
-                #field_names: Option<#field_types>,
-            )*
+            #(#builder_fields,)*
         }
     };
 
     // Generate builder methods on original struct
-    // 在原结构体上生成 builder 方法
     let builder_method = quote! {
         impl #impl_generics #struct_name #ty_generics #where_clause {
             #[inline]
@@ -69,19 +91,42 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
     };
 
     // Generate setter methods on Builder
-    // 生成 Builder 上的 setter 方法
-    let builder_setters = field_names.iter().zip(field_types.iter()).map(|(name, ty)| {
-        quote! {
-            #[inline]
-            pub fn #name(mut self, #name: #ty) -> Self {
-                self.#name = Some(#name);
-                self
+    let builder_setters = field_names.iter().zip(field_types.iter()).zip(is_option.iter()).map(|((name, ty), is_opt)| {
+        if *is_opt {
+            quote! {
+                #[inline]
+                pub fn #name(mut self, #name: #ty) -> Self {
+                    self.#name = #name;
+                    self
+                }
+            }
+        } else {
+            quote! {
+                #[inline]
+                pub fn #name(mut self, #name: #ty) -> Self {
+                    self.#name = Some(#name);
+                    self
+                }
             }
         }
     });
 
-    // Generate build method
-    // 生成 build 方法
+    // Generate build method: Option fields default to None, others are required
+    let build_assignments: Vec<_> = field_names
+        .iter()
+        .zip(is_option.iter())
+        .map(|(name, is_opt)| {
+            if *is_opt {
+                quote! { #name: self.#name }
+            } else {
+                quote! {
+                    #name: self.#name
+                        .ok_or_else(|| concat!(stringify!(#name), " is required").to_string())?
+                }
+            }
+        })
+        .collect();
+
     let build_method = quote! {
         impl #impl_generics #builder_ident #ty_generics #where_clause {
             #[inline]
@@ -89,10 +134,7 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
             #[doc = "构建结构体。"]
             pub fn build(self) -> Result<#struct_name #ty_generics, String> {
                 Ok(#struct_name {
-                    #(
-                        #field_names: self.#field_names
-                            .ok_or_else(|| concat!(stringify!(#field_names), " is required").to_string())?,
-                    )*
+                    #(#build_assignments,)*
                 })
             }
         }
