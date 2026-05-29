@@ -14,9 +14,9 @@
 | **基础功能 / Basics** | 9 | 9 | 0 | 0 | 100% |
 | **核心功能 / Core** | 10 | 9 | 0 | 1 | 90% |
 | **进阶功能 / Advanced** | 8 | 7 | 1 | 0 | 90% |
-| **实战功能 / Practice** | 11 | 8 | 2 | 1 | 80% |
-| **企业功能 / Enterprise** | 12 | 8 | 2 | 2 | 75% |
-| **总计 / Total** | 50 | 41 | 5 | 4 | 90% |
+| **实战功能 / Practice** | 11 | 9 | 1 | 1 | 85% |
+| **企业功能 / Enterprise** | 12 | 9 | 1 | 2 | 80% |
+| **总计 / Total** | 50 | 43 | 3 | 4 | 92% |
 
 ---
 
@@ -68,13 +68,13 @@
 
 | # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
-| 28 | **文件上传** | `MultipartFile` | multer | ⚠️ 70% | **高** |
+| 28 | **文件上传** | `MultipartFile` | Multipart + UploadConfig | ✅ 90% | - |
 | 29 | 文件下载 | `ResponseEntity` | Response builder | ✅ 90% | - |
 | 30 | 定时任务 | `@Scheduled` | `#[scheduled]` | ✅ 85% | - |
 | 31 | 异步执行 | `@Async` | `tokio::spawn` | ✅ 100% | - |
 | 32 | **邮件发送** | JavaMailSender | lettre | ⚠️ 75% | 中 |
 | 33 | CORS | `@CrossOrigin` | CorsMiddleware | ✅ 100% | - |
-| 34 | **统一响应** | `Result<T>` | `Result<T>` | ⚠️ 80% | **高** |
+| 34 | **统一响应** | `Result<T>` | `ApiResponse<T>` + ResponseAdvice | ✅ 95% | - |
 | 35 | 分页查询 | `Pageable` | `PageRequest` | ✅ 90% | - |
 | 36 | CSV 导出 | OpenCSV | csv crate | ✅ 85% | - |
 | 37 | **Excel 导出** | Apache POI | rust_xlsxwriter | ⚠️ 60% | 低 |
@@ -87,7 +87,7 @@
 | 39 | 模块化架构 | Multi-module | Workspace | ✅ 100% | - |
 | 40 | **统一异常体系** | `BaseException` | `AppError` trait | ✅ 90% | - |
 | 41 | **RBAC 权限** | `@PreAuthorize` | 权限中间件 | ✅ 90% | - |
-| 42 | **数据权限** | `@DataScope` | `DataScope` trait | ⚠️ 70% | 中 |
+| 42 | **数据权限** | `@DataScope` | `DataScope` + DataScopeMiddleware | ✅ 90% | - |
 | 43 | **Postman 集成** | 自动导出 | JSON 生成 | ⚠️ 70% | 低 |
 | 44 | 结构化日志 | JSON Logback | JSON Logger | ✅ 85% | - |
 | 45 | Docker 部署 | 标准 Dockerfile | 标准 Dockerfile | ✅ 100% | - |
