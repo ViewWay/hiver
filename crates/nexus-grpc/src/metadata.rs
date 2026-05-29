@@ -76,6 +76,63 @@ impl MetadataMapExt for MetadataMap {
     }
 }
 
+use std::time::Duration;
+
+/// Deadline propagation via gRPC metadata.
+/// 通过 gRPC 元数据传播 Deadline。
+///
+/// Equivalent to Spring Cloud's deadline propagation / gRPC deadline handling.
+/// 等价于 Spring Cloud 的 deadline 传播 / gRPC deadline 处理。
+///
+/// Stores the absolute deadline as a Unix timestamp (milliseconds) in the
+/// `x-deadline-ms` metadata header, so downstream services know how much
+/// time remains.
+///
+/// 将绝对 deadline 以 Unix 时间戳（毫秒）存储在 `x-deadline-ms` 元数据头中，
+/// 以便下游服务知道剩余时间。
+pub struct DeadlinePropagator;
+
+/// Metadata key for deadline propagation.
+/// deadline 传播的元数据键。
+pub const DEADLINE_KEY: &str = "x-deadline-ms";
+
+impl DeadlinePropagator {
+    /// Inject a deadline into request metadata.
+    /// 将 deadline 注入请求元数据。
+    ///
+    /// The `remaining` duration is converted to an absolute timestamp.
+    /// `remaining` 持续时间被转换为绝对时间戳。
+    pub fn inject<T>(request: &mut tonic::Request<T>, remaining: Duration) {
+        let deadline_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64
+            + remaining.as_millis() as u64;
+        let value: MetadataValue<tonic::metadata::Ascii> =
+            deadline_ms.to_string().parse().unwrap_or_else(|_| "0".parse().unwrap());
+        request.metadata_mut().insert(DEADLINE_KEY, value);
+    }
+
+    /// Extract the remaining duration from request metadata.
+    /// 从请求元数据中提取剩余持续时间。
+    ///
+    /// Returns `None` if no deadline header is present or parsing fails.
+    /// 若无 deadline 头或解析失败则返回 None。
+    pub fn extract<T>(request: &tonic::Request<T>) -> Option<Duration> {
+        let raw = request.metadata().get_str(DEADLINE_KEY)?;
+        let deadline_ms: u64 = raw.parse().ok()?;
+        let now_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
+        if deadline_ms > now_ms {
+            Some(Duration::from_millis(deadline_ms - now_ms))
+        } else {
+            Some(Duration::ZERO)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

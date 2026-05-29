@@ -37,6 +37,9 @@ serde_json = { workspace = true }
 # Error handling / 错误处理
 thiserror = { workspace = true }
 
+# UUID for request IDs / 用于请求 ID 的 UUID
+uuid = { workspace = true }
+
 # Logging / 日志
 tracing = { workspace = true }
 

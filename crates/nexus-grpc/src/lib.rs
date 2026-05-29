@@ -28,7 +28,9 @@ pub mod error;
 pub mod health;
 pub mod interceptor;
 pub mod metadata;
+pub mod retry;
 pub mod server;
 pub mod tls;
 
 pub use error::GrpcError;
+pub use retry::RetryPolicy;
