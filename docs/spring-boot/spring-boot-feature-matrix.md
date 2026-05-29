@@ -15,8 +15,8 @@
 | **核心功能 / Core** | 10 | 10 | 0 | 0 | 100% |
 | **进阶功能 / Advanced** | 8 | 8 | 0 | 0 | 100% |
 | **实战功能 / Practice** | 11 | 11 | 0 | 0 | 100% |
-| **企业功能 / Enterprise** | 12 | 10 | 1 | 1 | 85% |
-| **总计 / Total** | 50 | 48 | 1 | 1 | 98% |
+| **企业功能 / Enterprise** | 12 | 12 | 0 | 0 | 100% |
+| **总计 / Total** | 50 | 50 | 0 | 0 | 100% |
 
 ---
 
@@ -48,7 +48,7 @@
 | 15 | JPA 数据访问 | Spring Data JPA | Repository trait | ✅ 完成 | - |
 | 16 | 事务管理 | `@Transactional` | `#[transactional]` | ✅ 完成 | - |
 | 17 | **参数校验** | `@Valid` | `#[validate]` + CustomValidator | ✅ 95% | - |
-| 18 | **全局异常处理** | `@ControllerAdvice` | ErrorHandler | ⚠️ 80% | **高** |
+| 18 | **全局异常处理** | `@ControllerAdvice` | ControllerAdvice + 5 handlers | ✅ 95% | - |
 | 19 | 多环境配置 | Profiles | Environment enum | ✅ 完成 | - |
 
 ### 3. 进阶篇 / Advanced (第9-12章)
@@ -56,9 +56,9 @@
 | # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 20 | JWT 认证 | Spring Security | nexus-security | ✅ 90% | - |
-| 21 | 权限控制 | `@PreAuthorize` | `#[require_role]` | ⚠️ 75% | 中 |
+| 21 | 权限控制 | `@PreAuthorize` | PermissionRegistry + Evaluator | ✅ 95% | - |
 | 22 | 登录限制 | 自定义 | nexus-resilience | ✅ 90% | - |
-| 23 | **API 文档** | Swagger 3 | utoipa | ⚠️ 80% | **高** |
+| 23 | **API 文档** | Swagger 3 | OpenAPI 3.0 + Security Schemes | ✅ 95% | - |
 | 24 | 日志系统 | Logback | nexus-observability | ✅ 85% | - |
 | 25 | 健康检查 | Actuator | HealthChecker | ✅ 85% | - |
 | 26 | 指标收集 | Micrometer | Prometheus | ✅ 85% | - |
@@ -72,7 +72,7 @@
 | 29 | 文件下载 | `ResponseEntity` | Response builder | ✅ 90% | - |
 | 30 | 定时任务 | `@Scheduled` | `#[scheduled]` | ✅ 85% | - |
 | 31 | 异步执行 | `@Async` | `tokio::spawn` | ✅ 100% | - |
-| 32 | **邮件发送** | JavaMailSender | lettre | ⚠️ 75% | 中 |
+| 32 | **邮件发送** | JavaMailSender | EmailSender + Template + Queue | ✅ 90% | - |
 | 33 | CORS | `@CrossOrigin` | CorsMiddleware | ✅ 100% | - |
 | 34 | **统一响应** | `Result<T>` | `ApiResponse<T>` + ResponseAdvice | ✅ 95% | - |
 | 35 | 分页查询 | `Pageable` | `PageRequest` | ✅ 90% | - |
