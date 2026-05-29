@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished|warning.*generated\" | tail -10",
-    "testCommand": "cargo build -p nexus-openapi && cargo test -p nexus-openapi 2>&1",
+    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished\" | tail -3",
+    "testCommand": "cargo test -p nexus-http -p nexus-openapi 2>&1",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -127,6 +127,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/lib.rs",
+      "accessCount": 15,
+      "lastAccessed": 1780064603790,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-runtime/src/task.rs",
       "accessCount": 13,
       "lastAccessed": 1779621112069,
@@ -142,12 +148,6 @@
       "path": "crates/nexus-websocket-stomp/src/handler.rs",
       "accessCount": 11,
       "lastAccessed": 1779619714734,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-security/src/lib.rs",
-      "accessCount": 11,
-      "lastAccessed": 1780056056477,
       "type": "file"
     },
     {
@@ -272,8 +272,8 @@
     },
     {
       "path": "crates/nexus-security/src/rbac.rs",
-      "accessCount": 3,
-      "lastAccessed": 1779619582017,
+      "accessCount": 4,
+      "lastAccessed": 1780064351303,
       "type": "file"
     },
     {
@@ -349,6 +349,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/pre_authorize.rs",
+      "accessCount": 3,
+      "lastAccessed": 1780064350629,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-orm/src/relationships.rs",
       "accessCount": 2,
       "lastAccessed": 1779464144549,
@@ -388,12 +394,6 @@
       "path": "crates/nexus-data-annotations/src/lib.rs",
       "accessCount": 2,
       "lastAccessed": 1779620648030,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-security/src/pre_authorize.rs",
-      "accessCount": 2,
-      "lastAccessed": 1780055945628,
       "type": "file"
     },
     {

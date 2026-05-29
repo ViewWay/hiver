@@ -42,6 +42,7 @@ pub mod api_response;
 pub mod body;
 pub mod builder;
 pub mod conn;
+pub mod controller_advice;
 pub mod error;
 pub mod exception;
 pub mod ext;
@@ -69,6 +70,11 @@ pub use error::{Error, Result};
 pub use exception::{
     ApplicationException, ErrorResponse, ExceptionHandlerRegistry, FieldError,
     IntoErrorResponse, ResourceNotFoundException, ValidationException,
+};
+pub use controller_advice::{
+    ControllerAdvice, ControllerAdviceBuilder, ControllerErrorResponse, ExceptionHandler,
+    ForbiddenHandler, InternalErrorHandler, NotFoundHandler, UnauthorizedHandler,
+    ValidationHandler,
 };
 pub use http2::{
     ErrorCode, FrameType, Http2Config, Http2Error, Priority, SettingsParameter, StreamId,

@@ -292,10 +292,28 @@
       "status": "completed",
       "completed_at": "2026-05-29T14:06:40.448Z",
       "duration_ms": 429843
+    },
+    {
+      "agent_id": "a2b71c35ec4046954",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-29T14:19:00.445Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-29T14:26:26.879Z",
+      "duration_ms": 446434
+    },
+    {
+      "agent_id": "a05c9a4a0ed24a6d1",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-29T14:19:00.500Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-29T14:24:40.920Z",
+      "duration_ms": 340420
     }
   ],
-  "total_spawned": 22,
-  "total_completed": 31,
+  "total_spawned": 23,
+  "total_completed": 33,
   "total_failed": 0,
-  "last_updated": "2026-05-29T14:08:29.903Z"
+  "last_updated": "2026-05-29T14:26:26.982Z"
 }

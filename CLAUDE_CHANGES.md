@@ -5555,3 +5555,484 @@ Added "pub mod postman;; pub mod doc_pdf;; pub use openapi::OpenApiBuilder;" in 
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:09:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 12 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` | ⚠️ 70% | **高** |" to "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` + CustomValidator | ✅ 95% | - |".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:09:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 23 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` | ⚠️ 70% | **高** |; | 37 | **Excel 导出** | Apache POI | rust_xlsxwriter | ..." to "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` + CustomValidator | ✅ 95% | - |; | 37 | **Excel 导出** | Apache POI | Excel...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:09:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 33 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` | ⚠️ 70% | **高** |; | 37 | **Excel 导出** | Apache POI | rust_xlsxwriter | ..." to "| 17 | **参数校验** | \`@Valid\` | \`#[validate]\` + CustomValidator | ✅ 95% | - |; | 37 | **Excel 导出** | Apache POI | Excel...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:10:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 50 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| **核心功能 / Core** | 10 | 9 | 0 | 1 | 90% |; | **进阶功能 / Advanced** | 8 | 7 | 1 | 0 | 90% |; | **实战功能 / Practice** | 11 | ..." to "| **核心功能 / Core** | 10 | 10 | 0 | 0 | 100% |; | **进阶功能 / Advanced** | 8 | 8 | 0 | 0 | 100% |; | **实战功能 / Practice** | 11...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:20:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-http/src/controller_advice.rs`
+### Change Record
+New file `crates/nexus-http/src/controller_advice.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-http/src/controller_advice.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:21:12
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-http/src/controller_advice.rs`
+### Change Record
+New file `crates/nexus-http/src/controller_advice.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-http/src/controller_advice.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:21:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:21:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-http/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "pub mod controller_advice;" in `crates/nexus-http/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:21:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-http/src/lib.rs`. Approximately 24 lines changed.
+### Change Summary
+Added "pub mod controller_advice;; pub use controller_advice::{; ControllerAdvice, ControllerAdviceBuilder, ControllerErrorResp..." in `crates/nexus-http/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:21:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:21:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 53 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Add a server URL with variables (e.g. \`{protocol}://api.{host}/v{version}...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:21:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 164 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Add a server URL with variables (e.g. \`{protocol}://api.{host}/v{version}...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:22:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 182 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Names of security schemes registered via convenience methods; /// 通过便捷方法注册...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:22:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 230 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Names of security schemes registered via convenience methods; /// 通过便捷方法注册...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:22:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 600 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Names of security schemes registered via convenience methods; /// 通过便捷方法注册...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+New file `crates/nexus-security/src/email.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:23:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 17 lines changed.
+### Change Summary
+Added "pub mod email;; pub mod permission;" in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 32 lines changed.
+### Change Summary
+Added "pub mod email;; pub mod permission;; pub use email::{" in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 47 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/lib.rs` from "PasswordEncoder, Permission, PermissionEntry, PreAuthorize, RbacConfig, RbacManager,; RoleEnum, RolePermission, Roles, S..." to "pub mod email;; pub mod permission;; pub use email::{".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 975 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "ServerConfig, TagConfig," to "ServerConfig, TagConfig, SecurityScheme,; /// Names of security schemes registered via convenience methods; /// 通过便捷方法注册...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/lib.rs`. Approximately 19 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/lib.rs` from "pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig};" to "pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig, S...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:23:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:23:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:24:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 977 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig, SecurityScheme, config::Secur...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:24:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 977 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig, SecurityScheme, config::Secur...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:24:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:24:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-http/src/controller_advice.rs`
+### Change Record
+New file `crates/nexus-http/src/controller_advice.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-http/src/controller_advice.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:24:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:24:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+New file `crates/nexus-security/src/permission.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/permission.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:24:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 982 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig, SecurityScheme, config::Secur...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:24:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 982 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema,; ServerConfig, TagConfig, SecurityScheme, config::SecuritySchemeCon...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:25:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 982 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig, SecurityScheme, config::Secur...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:25:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 985 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig," to "OpenApi, OpenApiConfig, Operation, PathItem, Schema,; ServerConfig, TagConfig, SecurityScheme, config::SecuritySchemeCon...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:25:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 986 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "Components, InfoConfig, OpenApi, OpenApiConfig, Operation, PathItem, Schema, SchemaType,; ServerConfig, TagConfig,; pub ..." to "OpenApi, OpenApiConfig, Operation, PathItem, Schema,; ServerConfig, TagConfig, SecurityScheme, config::SecuritySchemeCon...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:25:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-http/src/controller_advice.rs`
+### Change Record
+New file `crates/nexus-http/src/controller_advice.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-http/src/controller_advice.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:25:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/config.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/config.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]" in `crates/nexus-openapi/src/config.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:26:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/config.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/config.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/config.rs` from "#[derive(Debug, Clone, Serialize, Deserialize)]" to "#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

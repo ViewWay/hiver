@@ -56,10 +56,12 @@ mod authority;
 mod context;
 pub mod data_scope;
 mod csrf;
+pub mod email;
 mod encoder;
 mod error;
 mod jwt;
 mod oauth2;
+pub mod permission;
 mod pre_authorize;
 mod post_authorize;
 mod rbac;
@@ -100,6 +102,14 @@ pub use authorization_server::{
     AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse,
     DeviceCodeStatus, GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
 };
+pub use email::{
+    Attachment, EmailConfig, EmailError, EmailMessage, EmailQueue, EmailResult, EmailSender,
+    EmailTemplate, SmtpEmailSender,
+};
+pub use permission::{
+    InMemoryPermissionAuditLogger, PermissionAuditEntry, PermissionAuditLog, PermissionAuditLogger,
+    PermissionDef, PermissionEvaluator, PermissionRegistry,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
@@ -108,9 +118,11 @@ pub mod prelude {
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,
         DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
         DataScopeType, GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil,
-        PasswordEncoder, Permission, PermissionEntry, PreAuthorize, RbacConfig, RbacManager,
-        RoleEnum, RolePermission, Roles, Secured, SecurityContext, SecurityContextGuard,
-        SecurityExpression, User, UserDetails, UserRole, UserService,
+        PasswordEncoder, Permission, PermissionAuditEntry, PermissionAuditLogger,
+        PermissionAuditLog, PermissionDef, PermissionEvaluator, PermissionEntry,
+        PermissionRegistry, PreAuthorize, RbacConfig, RbacManager, RoleEnum, RolePermission,
+        Roles, Secured, SecurityContext, SecurityContextGuard, SecurityExpression, User,
+        UserDetails, UserRole, UserService,
     };
 
     // CSRF re-exports / CSRF重新导出

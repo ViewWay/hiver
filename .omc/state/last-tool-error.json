@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cargo test -p nexus-openapi 2>&1\",\"timeout\":120000,\"description\":\"Run nexus-openapi tests\"}",
-  "error": "Exit code 101\n   Compiling nexus-runtime v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-runtime)\n   Compiling nexus-core v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-core)\n   Compiling nexus-openapi v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-openapi)\nwarning: unused imports: `Components`, `InfoConfig`, and `SchemaType`\n  --> crates/nexus-openapi/src/generator.rs:21:5\n   |\n21 |     Components, InfoConfig, OpenApi, OpenApiConfig, Op...",
-  "timestamp": "2026-05-29T14:07:52.384Z",
-  "retry_count": 4
+  "tool_input_preview": "{\"command\":\"cargo test -p nexus-http -p nexus-openapi 2>&1\",\"timeout\":300000,\"description\":\"Run tests for both crates\"}",
+  "error": "Exit code 101\n   Compiling nexus-http v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-http)\n   Compiling nexus-openapi v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-openapi)\nerror[E0369]: binary operation `==` cannot be applied to type `ApiKeyLocation`\n    --> crates/nexus-openapi/src/generator.rs:1264:17\n     |\n1264 |                 assert_eq!(location, crate::config::ApiKeyLocation::Header);\n     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...",
+  "timestamp": "2026-05-29T14:25:48.856Z",
+  "retry_count": 8
 }

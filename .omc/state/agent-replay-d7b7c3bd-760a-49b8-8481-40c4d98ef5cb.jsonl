@@ -59,3 +59,8 @@
 {"t":0,"agent":"afa3b32","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":358957}
 {"t":0,"agent":"aeb5b3f","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":429843}
 {"t":0,"agent":"af0a105","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":539256}
+{"t":0,"agent":"a295027","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a2b71c3","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a05c9a4","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a05c9a4","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":340420}
+{"t":0,"agent":"a2b71c3","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":446434}

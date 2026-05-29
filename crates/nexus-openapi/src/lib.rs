@@ -86,7 +86,13 @@ pub mod scanner;
 pub mod postman;
 pub mod doc_pdf;
 
-pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig};
+pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig, ServerVariable};
+pub use generator::{
+    NestedSchemaBuilder, MapSchemaBuilder, EnumSchemaBuilder,
+    bearer_security_scheme, basic_security_scheme, api_key_security_scheme,
+    oauth2_authorization_code_security_scheme,
+    server_variable, server_variable_with_enum,
+};
 pub use schema::{Schema, SchemaType, SchemaFormat, SchemaProperty};
 pub use operation::{Operation, Parameter, ParameterLocation, SecurityScheme, RequestBody};
 pub use response::{Response, ResponseContent, ApiResponse};

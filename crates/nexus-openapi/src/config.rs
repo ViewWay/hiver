@@ -368,7 +368,7 @@ pub enum SecuritySchemeConfig {
 
 /// API key location
 /// API密钥位置
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum ApiKeyLocation {
     /// In header
