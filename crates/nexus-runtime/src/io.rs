@@ -907,10 +907,11 @@ impl UdpSocket {
     ///
     /// Returns the number of bytes sent.
     /// 返回发送的字节数。
-    pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], _addr: SocketAddr) -> SendToFuture<'a, 'b> {
+    pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {
         SendToFuture {
             stream: Some(self),
             buf,
+            addr,
         }
     }
 
@@ -1176,6 +1177,7 @@ impl Future for RecvFromFuture<'_, '_> {
 pub struct SendToFuture<'a, 'b> {
     stream: Option<&'a mut UdpSocket>,
     buf: &'b [u8],
+    addr: SocketAddr,
 }
 
 impl Future for SendToFuture<'_, '_> {
@@ -1187,10 +1189,55 @@ impl Future for SendToFuture<'_, '_> {
 
         #[cfg(unix)]
         {
-            // For now, use regular send (TODO: add send_to with address)
-            // 目前使用普通send（TODO：添加带地址的send_to）
-            let result =
-                unsafe { libc::send(stream_fd, self.buf.as_ptr() as *const _, self.buf.len(), 0) };
+            let result = match self.addr {
+                SocketAddr::V4(v4) => {
+                    let sockaddr = libc::sockaddr_in {
+                        #[cfg(target_os = "macos")]
+                        sin_len: size_of::<libc::sockaddr_in>() as u8,
+                        sin_family: libc::AF_INET as _,
+                        sin_port: v4.port().to_be(),
+                        sin_addr: libc::in_addr {
+                            s_addr: u32::from(*v4.ip()).to_be(),
+                        },
+                        sin_zero: [0; 8],
+                    };
+                    unsafe {
+                        libc::sendto(
+                            stream_fd,
+                            self.buf.as_ptr() as *const _,
+                            self.buf.len(),
+                            0,
+                            &sockaddr as *const _ as *const _,
+                            size_of::<libc::sockaddr_in>() as libc::socklen_t,
+                        )
+                    }
+                }
+                SocketAddr::V6(v6) => {
+                    let sockaddr = libc::sockaddr_in6 {
+                        sin6_family: libc::AF_INET6 as _,
+                        sin6_port: v6.port().to_be(),
+                        sin6_flowinfo: v6.flowinfo().to_be(),
+                        sin6_addr: libc::in6_addr {
+                            s6_addr: v6.ip().octets(),
+                        },
+                        sin6_scope_id: v6.scope_id(),
+                        #[cfg(target_os = "macos")]
+                        sin6_len: size_of::<libc::sockaddr_in6>() as u8,
+                        #[cfg(not(target_os = "macos"))]
+                        sin6_len: 0,
+                    };
+                    unsafe {
+                        libc::sendto(
+                            stream_fd,
+                            self.buf.as_ptr() as *const _,
+                            self.buf.len(),
+                            0,
+                            &sockaddr as *const _ as *const _,
+                            size_of::<libc::sockaddr_in6>() as libc::socklen_t,
+                        )
+                    }
+                }
+            };
 
             if result < 0 {
                 let err = io::Error::last_os_error();
