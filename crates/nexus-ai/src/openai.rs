@@ -139,6 +139,7 @@ struct OpenAiChoice {
 struct OpenAiUsage {
     prompt_tokens: u32,
     completion_tokens: u32,
+    total_tokens: u32,
 }
 
 /// A single streamed chunk from the OpenAI API.

@@ -836,6 +836,7 @@ mod tests {
     #[derive(Clone, Debug)]
     struct OrderCreatedEvent {
         order_id: u64,
+        status: String,
     }
 
     impl ApplicationEvent for OrderCreatedEvent {
@@ -850,7 +851,7 @@ mod tests {
 
     #[derive(Clone, Debug)]
     struct PaymentProcessedEvent {
-        _payment_id: u64,
+        payment_id: u64,
     }
 
     impl ApplicationEvent for PaymentProcessedEvent {
