@@ -210,7 +210,6 @@ impl std::fmt::Debug for MapReduceAgent {
 impl MapReduceAgent {
     /// Creates a new map-reduce agent with the given mapper and reducer.
     /// 使用给定的 mapper 和 reducer 创建新的 MapReduce 代理。
-    #[allow(dead_code)]
     pub fn new(
         mapper: impl Agent + 'static,
         reducer: impl Agent + 'static,
@@ -225,7 +224,6 @@ impl MapReduceAgent {
     /// Sets the configuration.
     /// 设置配置。
     #[must_use]
-    #[allow(dead_code)]
     pub fn config(mut self, config: AgentConfig) -> Self {
         self.config = config;
         self
@@ -233,7 +231,6 @@ impl MapReduceAgent {
 
     /// Runs the map-reduce pipeline over multiple inputs.
     /// 对多个输入运行 MapReduce 管道。
-    #[allow(dead_code)]
     pub async fn run_map_reduce(&self, inputs: &[&str]) -> Result<AgentOutput, AgentError> {
         if inputs.is_empty() {
             return Ok(AgentOutput::text("No inputs provided."));
@@ -337,7 +334,6 @@ impl std::fmt::Debug for RouterAgent {
 impl RouterAgent {
     /// Creates a new router agent with the given classification model.
     /// 使用给定的分类模型创建新的路由代理。
-    #[allow(dead_code)]
     pub fn new(chat_model: impl ChatModel + 'static) -> Self {
         Self {
             chat_model: Arc::new(chat_model),
@@ -348,7 +344,6 @@ impl RouterAgent {
 
     /// Creates a new router agent from an Arc model.
     /// 从 Arc 模型创建新的路由代理。
-    #[allow(dead_code)]
     pub fn from_arc(chat_model: Arc<dyn ChatModel>) -> Self {
         Self {
             chat_model,
@@ -360,7 +355,6 @@ impl RouterAgent {
     /// Adds a route with a name, description, and target agent.
     /// 添加带有名称、描述和目标代理的路由。
     #[must_use]
-    #[allow(dead_code)]
     pub fn route(
         mut self,
         name: impl Into<String>,
@@ -374,7 +368,6 @@ impl RouterAgent {
     /// Sets the configuration.
     /// 设置配置。
     #[must_use]
-    #[allow(dead_code)]
     pub fn config(mut self, config: AgentConfig) -> Self {
         self.config = config;
         self
@@ -383,7 +376,6 @@ impl RouterAgent {
     /// Returns the number of routes.
     /// 返回路由数量。
     #[must_use]
-    #[allow(dead_code)]
     pub fn route_count(&self) -> usize {
         self.routes.len()
     }

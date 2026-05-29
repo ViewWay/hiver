@@ -24,10 +24,9 @@ use std::sync::Arc;
 /// ```
 #[derive(Clone)]
 pub struct SessionMiddleware<S> {
-    /// Inner service
-    /// 内部服务
-    #[allow(dead_code)]
-    inner: S,
+    /// Inner service (type parameter preserved for API compatibility).
+    /// 内部服务（类型参数保留用于 API 兼容性）。
+    _inner: std::marker::PhantomData<S>,
 
     /// Session store
     /// 会话存储
@@ -41,9 +40,9 @@ pub struct SessionMiddleware<S> {
 impl<S> SessionMiddleware<S> {
     /// Create new session middleware
     /// 创建新的会话中间件
-    pub fn new(inner: S, store: Arc<dyn SessionStore>, config: SessionConfig) -> Self {
+    pub fn new(_inner: S, store: Arc<dyn SessionStore>, config: SessionConfig) -> Self {
         Self {
-            inner,
+            _inner: std::marker::PhantomData,
             store,
             config,
         }

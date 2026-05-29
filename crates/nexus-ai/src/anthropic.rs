@@ -154,6 +154,8 @@ struct AnthropicStreamEvent {
     #[serde(rename = "type")]
     event_type: String,
     delta: Option<AnthropicDelta>,
+    // message field is deserialized from `message_start` events but not consumed
+    // (used to advance the SSE parser past those events).
     #[allow(dead_code)]
     message: Option<AnthropicMessageStart>,
 }
@@ -168,7 +170,7 @@ struct AnthropicDelta {
 
 /// Message start information in a stream event.
 /// 流式事件中的消息起始信息。
-#[allow(dead_code)]
+#[allow(dead_code)] // Fields only needed for serde deserialization
 #[derive(Debug, Deserialize)]
 struct AnthropicMessageStart {
     model: Option<String>,
@@ -177,7 +179,6 @@ struct AnthropicMessageStart {
 
 /// Anthropic error response body.
 /// Anthropic 错误响应体。
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 struct AnthropicErrorResponse {
     error: AnthropicErrorDetail,

@@ -125,7 +125,6 @@ impl AdvancedJobOperator {
     /// ```java
     /// jobRegistry.register(new ReferenceJobFactory(job));
     /// ```
-    #[allow(dead_code)]
     pub async fn register_job(&self, name: &str, restartable: bool) {
         let mut registry = self.job_registry.write().await;
         registry.insert(
@@ -140,7 +139,6 @@ impl AdvancedJobOperator {
 
     /// Unregister a job by name.
     /// 按名称取消注册作业。
-    #[allow(dead_code)]
     pub async fn unregister_job(&self, name: &str) -> bool {
         let mut registry = self.job_registry.write().await;
         registry.remove(name).is_some()
@@ -148,7 +146,6 @@ impl AdvancedJobOperator {
 
     /// List all registered job names.
     /// 列出所有已注册的作业名称。
-    #[allow(dead_code)]
     pub async fn registered_jobs(&self) -> Vec<String> {
         let registry = self.job_registry.read().await;
         registry.keys().cloned().collect()
@@ -156,7 +153,6 @@ impl AdvancedJobOperator {
 
     /// Check if a job is registered.
     /// 检查作业是否已注册。
-    #[allow(dead_code)]
     pub async fn is_registered(&self, name: &str) -> bool {
         let registry = self.job_registry.read().await;
         registry.contains_key(name)
@@ -166,14 +162,12 @@ impl AdvancedJobOperator {
 
     /// Get a job execution by its ID.
     /// 通过 ID 获取作业执行。
-    #[allow(dead_code)]
     pub async fn get_execution(&self, execution_id: Uuid) -> BatchResult<JobExecution> {
         self.repository.get_job_execution(execution_id).await
     }
 
     /// Get the last execution of a job by name.
     /// 通过名称获取作业的最后一次执行。
-    #[allow(dead_code)]
     pub async fn get_last_execution(
         &self,
         job_name: &str,
@@ -183,7 +177,6 @@ impl AdvancedJobOperator {
 
     /// Get a summary of a job execution.
     /// 获取作业执行的摘要。
-    #[allow(dead_code)]
     pub async fn get_job_summary(
         &self,
         job_name: &str,
@@ -194,7 +187,6 @@ impl AdvancedJobOperator {
 
     /// Get summaries for all executions of a job.
     /// 获取作业所有执行的摘要。
-    #[allow(dead_code)]
     pub async fn get_job_executions(
         &self,
         job_name: &str,
@@ -221,7 +213,6 @@ impl AdvancedJobOperator {
     /// ```java
     /// jobOperator.stop(executionId);
     /// ```
-    #[allow(dead_code)]
     pub async fn stop(&self, execution_id: Uuid) -> BatchResult<()> {
         let mut running = self.running_jobs.write().await;
         if let Some(mut execution) = running.remove(&execution_id) {
@@ -245,7 +236,6 @@ impl AdvancedJobOperator {
     /// ```java
     /// jobOperator.restart(executionId);
     /// ```
-    #[allow(dead_code)]
     pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution> {
         let last = self.repository.get_last_job_execution(job_name).await?;
         let last = match last {
@@ -287,7 +277,6 @@ impl AdvancedJobOperator {
     /// ```java
     /// jobOperator.abandon(executionId);
     /// ```
-    #[allow(dead_code)]
     pub async fn abandon(&self, execution_id: Uuid) -> BatchResult<()> {
         let mut execution = self.repository.get_job_execution(execution_id).await?;
 
@@ -305,7 +294,6 @@ impl AdvancedJobOperator {
 
     /// Get the status of a job execution.
     /// 获取作业执行的状态。
-    #[allow(dead_code)]
     pub async fn get_status(&self, execution_id: Uuid) -> BatchResult<BatchStatus> {
         let execution = self.repository.get_job_execution(execution_id).await?;
         Ok(execution.status)
@@ -313,7 +301,6 @@ impl AdvancedJobOperator {
 
     /// List all currently running job names.
     /// 列出所有当前运行中的作业名称。
-    #[allow(dead_code)]
     pub async fn running_job_names(&self) -> Vec<String> {
         let running = self.running_jobs.read().await;
         running
@@ -324,7 +311,6 @@ impl AdvancedJobOperator {
 
     /// Count the number of running jobs.
     /// 计算运行中的作业数量。
-    #[allow(dead_code)]
     pub async fn running_count(&self) -> usize {
         let running = self.running_jobs.read().await;
         running.len()
@@ -332,7 +318,6 @@ impl AdvancedJobOperator {
 
     /// Register a running job execution for tracking.
     /// 注册运行中的作业执行以进行跟踪。
-    #[allow(dead_code)]
     pub async fn mark_running(&self, execution: JobExecution) {
         let mut running = self.running_jobs.write().await;
         running.insert(execution.id, execution);
@@ -340,7 +325,6 @@ impl AdvancedJobOperator {
 
     /// Remove a job from the running set (e.g., after completion).
     /// 从运行集合中移除作业（例如完成后）。
-    #[allow(dead_code)]
     pub async fn mark_completed(&self, execution_id: Uuid) {
         let mut running = self.running_jobs.write().await;
         running.remove(&execution_id);
@@ -449,14 +433,12 @@ impl JobExecutionSummary {
 
     /// Check if the execution is running.
     /// 检查执行是否正在运行。
-    #[allow(dead_code)]
     pub fn is_running(&self) -> bool {
         self.status.is_running()
     }
 
     /// Check if the execution is finished (terminal state).
     /// 检查执行是否已完成（终止状态）。
-    #[allow(dead_code)]
     pub fn is_finished(&self) -> bool {
         self.status.is_terminal()
     }
@@ -540,7 +522,6 @@ impl FaultTolerantStep {
 
     /// Set the chunk size.
     /// 设置块大小。
-    #[allow(dead_code)]
     pub fn with_chunk_size(mut self, size: usize) -> Self {
         self.chunk_size = size;
         self
@@ -548,7 +529,6 @@ impl FaultTolerantStep {
 
     /// Set the skip limit.
     /// 设置跳过限制。
-    #[allow(dead_code)]
     pub fn with_skip_limit(mut self, limit: usize) -> Self {
         self.skip_limit = limit;
         self
@@ -556,7 +536,6 @@ impl FaultTolerantStep {
 
     /// Set the retry limit.
     /// 设置重试限制。
-    #[allow(dead_code)]
     pub fn with_retry_limit(mut self, limit: usize) -> Self {
         self.retry_limit = limit;
         self
@@ -564,7 +543,6 @@ impl FaultTolerantStep {
 
     /// Enable skipping on read errors.
     /// 启用读取错误时跳过。
-    #[allow(dead_code)]
     pub fn skip_on_read_error(mut self) -> Self {
         self.skip_on_read_error = true;
         self
@@ -572,7 +550,6 @@ impl FaultTolerantStep {
 
     /// Enable skipping on write errors.
     /// 启用写入错误时跳过。
-    #[allow(dead_code)]
     pub fn skip_on_write_error(mut self) -> Self {
         self.skip_on_write_error = true;
         self
@@ -580,7 +557,6 @@ impl FaultTolerantStep {
 
     /// Set step timeout.
     /// 设置步骤超时。
-    #[allow(dead_code)]
     pub fn with_timeout(mut self, secs: u64) -> Self {
         self.timeout_secs = Some(secs);
         self

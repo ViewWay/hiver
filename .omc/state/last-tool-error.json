@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cargo test -p nexus-security 2>&1\",\"timeout\":300000,\"description\":\"Run tests for nexus-security\"}",
-  "error": "Exit code 101\n   Compiling nexus-security v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-security)\nwarning: unused variable: `server`\n   --> crates/nexus-security/src/authorization_server.rs:874:13\n    |\n874 |         let server = AuthorizationServerBuilder::default()\n    |             ^^^^^^ help: if this is intentional, prefix it with an underscore: `_server`\n    |\n    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `...",
-  "timestamp": "2026-05-29T14:50:45.653Z",
-  "retry_count": 1
+  "tool_input_preview": "{\"command\":\"git checkout -- .omc/project-memory.json && git stash pop && cargo build -p nexus-session -p nexus-ai 2>&1\",\"timeout\":300000,\"description\":\"Restore stash and build both crates\"}",
+  "error": "Exit code 1\nerror: Your local changes to the following files would be overwritten by merge:\n\t.omc/state/last-tool-error.json\nPlease commit your changes or stash them before you merge.\nAborting\nOn branch main\nYour branch is ahead of 'origin/main' by 83 commits.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   .omc/state/l...",
+  "timestamp": "2026-05-29T14:56:32.078Z",
+  "retry_count": 2
 }

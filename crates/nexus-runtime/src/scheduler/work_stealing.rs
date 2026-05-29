@@ -272,6 +272,10 @@ pub struct WorkStealingHandle {
 impl WorkStealingHandle {
     /// Create a new work-stealing handle
     /// 创建新的工作窃取句柄
+    ///
+    /// Used to create a detached handle from an existing scheduler's worker queues,
+    /// enabling task submission from outside the scheduler.
+    /// 用于从现有调度器的工作队列创建分离句柄，允许从调度器外部提交任务。
     #[allow(dead_code)]
     pub(crate) fn new(queues: Vec<Arc<LocalQueue>>) -> Self {
         Self { queues }

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T14:51:02.155Z",
+  "updatedAt": "2026-05-29T15:08:04.370Z",
   "missions": [
     {
       "id": "session:006e127e-e527-42e6-950c-6ef99ab8b632:none",
@@ -339,7 +339,7 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-05-29T11:58:53.475Z",
-      "updatedAt": "2026-05-29T14:51:02.155Z",
+      "updatedAt": "2026-05-29T15:08:04.370Z",
       "status": "done",
       "workerCount": 11,
       "taskCounts": {
@@ -359,7 +359,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-05-29T14:31:23.935Z"
+          "updatedAt": "2026-05-29T15:08:04.370Z"
         },
         {
           "name": "backend-developer:accb926",
@@ -510,6 +510,30 @@
           "agent": "backend-developer:a2e6e30",
           "detail": "completed",
           "sourceKey": "session-stop:a2e6e309131345896"
+        },
+        {
+          "id": "session-stop:af960b51f694153b6:2026-05-29T15:00:35.473Z",
+          "at": "2026-05-29T15:00:35.473Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad816ba",
+          "detail": "completed",
+          "sourceKey": "session-stop:af960b51f694153b6"
+        },
+        {
+          "id": "session-stop:ae32499a480f9b0f4:2026-05-29T15:01:08.326Z",
+          "at": "2026-05-29T15:01:08.326Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad816ba",
+          "detail": "completed",
+          "sourceKey": "session-stop:ae32499a480f9b0f4"
+        },
+        {
+          "id": "session-stop:a3d0abd62ee32e431:2026-05-29T15:08:04.370Z",
+          "at": "2026-05-29T15:08:04.370Z",
+          "kind": "completion",
+          "agent": "backend-developer:ad816ba",
+          "detail": "completed",
+          "sourceKey": "session-stop:a3d0abd62ee32e431"
         }
       ]
     }

@@ -143,7 +143,6 @@ impl DeadLetterQueue {
     /// * `message` - The original AMQP message to dead-letter / 要进行死信处理的原始 AMQP 消息
     /// * `reason` - Why the message is being dead-lettered / 死信原因
     /// * `original_routing_key` - The original routing key of the message / 消息的原始路由键
-    #[allow(dead_code)]
     pub fn send_to_dlq(
         &self,
         message: &AmqpMessage,
@@ -205,7 +204,6 @@ impl DeadLetterQueue {
     /// and clears the x-death headers, producing a clean message ready for reprocessing.
     /// 从 `x-dlq-original-routing-key` 头中提取原始路由键，并清除 x-death 头，
     /// 生成一个干净的消息以便重新处理。
-    #[allow(dead_code)]
     pub fn reprocess(&self, dlq_message: &AmqpMessage) -> Result<AmqpMessage, String> {
         let original_routing_key = dlq_message
             .message
@@ -251,7 +249,6 @@ impl DeadLetterQueue {
 
     /// Extract all death records from a message's x-death header.
     /// 从消息的 x-death 头中提取所有死信记录。
-    #[allow(dead_code)]
     pub fn extract_death_records(message: &AmqpMessage) -> Vec<DeathRecord> {
         let Some(serde_json::Value::Array(entries)) =
             message.message.properties.headers.get("x-death")

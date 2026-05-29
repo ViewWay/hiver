@@ -184,7 +184,6 @@ impl BytesMessageConverter {
     ///
     /// This is a convenience method for when you already have `Vec<u8>` data.
     /// 当你已有 `Vec<u8>` 数据时，这是一个便捷方法。
-    #[allow(dead_code)]
     pub fn to_message_from_bytes(&self, payload: Vec<u8>) -> Message {
         let properties = MessageProperties::new()
             .with_content_type("application/octet-stream");
@@ -193,7 +192,6 @@ impl BytesMessageConverter {
 
     /// Extract raw bytes from a message without deserialization.
     /// 从消息中提取原始字节，无需反序列化。
-    #[allow(dead_code)]
     pub fn from_message_to_bytes(&self, message: &Message) -> Vec<u8> {
         message.payload.clone()
     }
@@ -272,7 +270,6 @@ impl XmlMessageConverter {
     /// Replace with a proper XML serializer in production.
     /// 这是一个存根实现，将 JSON 输出包装在类似 XML 的信封中。
     /// 在生产环境中请替换为合适的 XML 序列化器。
-    #[allow(dead_code)]
     pub fn to_xml<T: serde::Serialize>(&self, value: &T) -> Result<String, String> {
         let json = serde_json::to_string(value)
             .map_err(|e| format!("Failed to serialize for XML: {}", e))?;
@@ -291,7 +288,6 @@ impl XmlMessageConverter {
     ///
     /// This is a stub that extracts JSON from the XML envelope.
     /// 这是一个从 XML 信封中提取 JSON 的存根实现。
-    #[allow(dead_code)]
     pub fn from_xml<T: serde::de::DeserializeOwned>(&self, xml: &str) -> Result<T, String> {
         // Stub: extract content between <message> tags
         // 存根：提取 <message> 标签之间的内容

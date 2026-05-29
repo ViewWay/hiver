@@ -171,7 +171,6 @@ impl AcknowledgableMessage {
     /// 在 `Auto` 和 `None` 模式下，这是空操作并返回 `Ok(())`。
     /// 在 `Manual` 和 `ManualAck` 模式下，将消息标记为已确认，
     /// 并委托给底层 `AmqpMessage::ack()`。
-    #[allow(dead_code)]
     pub fn ack(&mut self) -> Result<(), String> {
         if self.state != AckState::Pending {
             return Err(format!(
@@ -199,7 +198,6 @@ impl AcknowledgableMessage {
     /// # Arguments / 参数
     ///
     /// * `requeue` - Whether to requeue the message for redelivery / 是否将消息重新入队以便重新投递
-    #[allow(dead_code)]
     pub fn nack(&mut self, requeue: bool) -> Result<(), String> {
         if self.state != AckState::Pending {
             return Err(format!(
@@ -230,7 +228,6 @@ impl AcknowledgableMessage {
     /// # Arguments / 参数
     ///
     /// * `requeue` - Whether to requeue the message / 是否将消息重新入队
-    #[allow(dead_code)]
     pub fn reject(&mut self, requeue: bool) -> Result<(), String> {
         if self.state != AckState::Pending {
             return Err(format!(
@@ -288,7 +285,6 @@ pub trait ChannelExt {
     /// * `queue` - Queue name to consume from / 要消费的队列名称
     /// * `ack_mode` - Acknowledgment mode to use / 使用的确认模式
     /// * `handler` - Function called for each message / 每条消息调用的处理函数
-    #[allow(dead_code)]
     fn consume_with_ack<F>(
         &self,
         queue: &str,

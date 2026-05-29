@@ -818,7 +818,6 @@ where
 {
     /// Creates a new function tool with the given name, description, and function.
     /// 使用给定的名称、描述和函数创建新的函数工具。
-    #[allow(dead_code)]
     pub fn new(
         name: impl Into<String>,
         description: impl Into<String>,
@@ -838,7 +837,6 @@ where
     /// Adds a parameter to the function tool's schema.
     /// 向函数工具的 schema 添加参数。
     #[must_use]
-    #[allow(dead_code)]
     pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self {
         self.definition = self.definition.parameter(name, schema);
         self

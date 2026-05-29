@@ -177,7 +177,6 @@ impl ConsumerGroupManager {
     /// member count, and protocol type.
     ///
     /// 返回组摘要列表，包括组ID、状态、成员数量和协议类型。
-    #[allow(dead_code)]
     pub fn list_groups(&self) -> Result<Vec<GroupSummary>, String> {
         tracing::debug!("Listing consumer groups from {}", self.bootstrap_servers);
         let summaries: Vec<GroupSummary> = self
@@ -200,7 +199,6 @@ impl ConsumerGroupManager {
     /// partition assignments, and offset/lag details.
     ///
     /// 返回组的详细信息，包括成员、分区分配和偏移/延迟详情。
-    #[allow(dead_code)]
     pub fn describe_group(&self, group_id: &str) -> Result<GroupDescription, String> {
         tracing::debug!("Describing consumer group: {}", group_id);
         self.groups
@@ -215,7 +213,6 @@ impl ConsumerGroupManager {
     /// The group must be empty (no members) before it can be deleted.
     ///
     /// 组必须为空（无成员）才能删除。
-    #[allow(dead_code)]
     pub fn delete_group(&mut self, group_id: &str) -> Result<(), String> {
         tracing::info!("Deleting consumer group: {}", group_id);
         self.groups
@@ -236,7 +233,6 @@ impl ConsumerGroupManager {
     /// - `OffsetResetStrategy::Earliest` — 重置到日志开头。
     /// - `OffsetResetStrategy::Latest` — 重置到日志末尾。
     /// - `OffsetResetStrategy::ByTimestamp(ts)` — 重置到给定时间戳的偏移。
-    #[allow(dead_code)]
     pub fn reset_offsets(
         &mut self,
         group_id: &str,

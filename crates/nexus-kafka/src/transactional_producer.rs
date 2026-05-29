@@ -181,7 +181,6 @@ impl TransactionalProducer {
     ///
     /// Returns an error if a transaction is already in progress.
     /// 如果事务正在进行中则返回错误。
-    #[allow(dead_code)]
     pub fn begin_transaction(&mut self) -> Result<(), String> {
         if self.state != TransactionState::Idle {
             return Err(format!(
@@ -214,7 +213,6 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    #[allow(dead_code)]
     pub fn commit_transaction(&mut self) -> Result<(), String> {
         if self.state != TransactionState::Active {
             return Err(format!(
@@ -262,7 +260,6 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    #[allow(dead_code)]
     pub fn abort_transaction(&mut self) -> Result<(), String> {
         if self.state != TransactionState::Active {
             return Err(format!(
@@ -298,7 +295,6 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    #[allow(dead_code)]
     pub fn send_in_transaction(
         &mut self,
         topic: &str,
@@ -349,7 +345,6 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    #[allow(dead_code)]
     pub fn send_offsets_to_transaction(
         &mut self,
         offsets: Vec<TransactionOffset>,

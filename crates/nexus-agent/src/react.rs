@@ -109,7 +109,6 @@ enum ReActStep {
         tool_input: serde_json::Value,
         /// The agent's reasoning.
         /// 代理的推理。
-        #[allow(dead_code)]
         thought: String,
     },
     /// The agent has reached a final answer.
@@ -120,7 +119,6 @@ enum ReActStep {
         answer: String,
         /// The agent's final reasoning.
         /// 代理的最终推理。
-        #[allow(dead_code)]
         thought: String,
     },
 }
@@ -176,7 +174,6 @@ impl std::fmt::Debug for ReActAgent {
 impl ReActAgent {
     /// Creates a new ReAct agent with the given chat model, tool registry, and config.
     /// 使用给定的聊天模型、工具注册表和配置创建新的 ReAct 代理。
-    #[allow(dead_code)]
     pub fn new(
         chat_model: impl ChatModel + 'static,
         tool_registry: ToolRegistry,
@@ -195,7 +192,6 @@ impl ReActAgent {
 
     /// Creates a new ReAct agent from Arc references.
     /// 从 Arc 引用创建新的 ReAct 代理。
-    #[allow(dead_code)]
     pub fn from_arc(
         chat_model: Arc<dyn ChatModel>,
         tool_registry: Arc<ToolRegistry>,
@@ -214,7 +210,6 @@ impl ReActAgent {
     /// Sets a custom system prompt template.
     /// 设置自定义系统提示模板。
     #[must_use]
-    #[allow(dead_code)]
     pub fn system_template(mut self, template: PromptTemplate) -> Self {
         self.system_template = template;
         self

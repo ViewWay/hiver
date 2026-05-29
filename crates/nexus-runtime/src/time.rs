@@ -38,7 +38,6 @@ use std::cell::UnsafeCell;
 use std::collections::{HashMap, LinkedList};
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::task::{Context, Poll, Waker};
@@ -76,13 +75,11 @@ const WHEEL2_MASK: usize = WHEEL2_SIZE - 1;
 /// Wheel 3: 1048.576s tick, 64 slots (67108.864s total)
 /// 轮3：1048.576s滴答，64个槽（总共67108.864s）
 const WHEEL3_SIZE: usize = 64;
-#[allow(dead_code)]
-const WHEEL3_SHIFT: usize = 6;
 const WHEEL3_MASK: usize = WHEEL3_SIZE - 1;
 
 /// Maximum timeout in milliseconds (about 18.6 hours)
 /// 最大超时时间（毫秒，约18.6小时）
-#[allow(dead_code)]
+#[cfg(test)]
 const MAX_TIMEOUT_MS: u64 =
     (WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE * WHEEL3_SIZE) as u64 * TICK_MS;
 
@@ -98,10 +95,6 @@ struct TimerEntry {
     /// Waker for this timer
     /// 此定时器的waker
     waker: Option<Waker>,
-    /// Whether this timer has been canceled
-    /// 此定时器是否已取消
-    #[allow(dead_code)]
-    canceled: Mutex<bool>,
 }
 
 unsafe impl Send for TimerEntry {}
@@ -169,19 +162,7 @@ pub struct TimerWheel {
     next_id: AtomicU64,
     /// Active timer registry for cancellation (ID -> slot index)
     /// 活跃定时器注册表用于取消（ID -> 槽索引）
-    timer_registry: Mutex<HashMap<u64, TimerLocation>>,
-}
-
-/// Location of a timer in the wheel
-/// 定时器在轮中的位置
-#[derive(Clone, Copy, Debug)]
-struct TimerLocation {
-    /// Wheel level (0-3)
-    #[allow(dead_code)]
-    wheel_level: u8,
-    /// Slot index within the wheel
-    #[allow(dead_code)]
-    slot_index: usize,
+    timer_registry: std::sync::Mutex<HashMap<u64, ()>>,
 }
 
 // SAFETY: TimerWheel uses atomic operations and interior mutability
@@ -220,7 +201,7 @@ impl TimerWheel {
                 .try_into()
                 .unwrap(),
             next_id: AtomicU64::new(1),
-            timer_registry: Mutex::new(HashMap::new()),
+            timer_registry: std::sync::Mutex::new(HashMap::new()),
         }
     }
 
@@ -228,7 +209,7 @@ impl TimerWheel {
     /// 通过ID取消定时器
     pub fn cancel_timer(&self, id: u64) -> bool {
         let mut registry = self.timer_registry.lock().unwrap();
-        if let Some(_location) = registry.remove(&id) {
+        if registry.remove(&id).is_some() {
             // Timer was found and removed from registry
             // The actual cancellation will be checked when the timer expires
             // 定时器已找到并从注册表中移除
@@ -391,13 +372,7 @@ impl TimerWheel {
         // 在插入到轮之前添加到注册表
         {
             let mut registry = self.timer_registry.lock().unwrap();
-            registry.insert(
-                id,
-                TimerLocation {
-                    wheel_level,
-                    slot_index: pos,
-                },
-            );
+            registry.insert(id, ());
         }
 
         // Insert into appropriate wheel
@@ -423,7 +398,6 @@ impl TimerWheel {
             id,
             expiration_ms,
             waker: None,
-            canceled: Mutex::new(false),
         };
 
         // Insert into wheel and registry
@@ -446,7 +420,6 @@ impl TimerWheel {
             id,
             expiration_ms,
             waker: Some(waker),
-            canceled: Mutex::new(false),
         };
 
         self.insert_timer_inner(timer);
@@ -480,9 +453,7 @@ impl Default for TimerWheel {
 /// 可用于在定时器到期前取消它。
 #[derive(Clone)]
 pub struct TimerHandle {
-    #[allow(dead_code)]
     id: u64,
-    #[allow(dead_code)]
     wheel: *const TimerWheel,
 }
 

@@ -103,10 +103,6 @@ pub struct KqueueDriver {
     state: Arc<KqueueState>,
     /// Event buffer for kevent / kevent的事件缓冲区
     event_buffer: UnsafeCell<Vec<libc::kevent>>,
-    /// Change buffer for registering/deregistering events (reserved for future use)
-    /// 用于注册/注销事件的change缓冲区（保留供将来使用）
-    #[allow(dead_code)]
-    change_buffer: UnsafeCell<Vec<libc::kevent>>,
 }
 
 // Safety: KqueueDriver can be sent between threads
@@ -190,17 +186,6 @@ impl KqueueDriver {
                     udata: std::ptr::null_mut(),
                 };
                 capacity
-            ]),
-            change_buffer: UnsafeCell::new(vec![
-                libc::kevent {
-                    ident: 0,
-                    filter: 0,
-                    flags: 0,
-                    fflags: 0,
-                    data: 0,
-                    udata: std::ptr::null_mut(),
-                };
-                16 // Small buffer for registration changes
             ]),
         })
     }

@@ -49,9 +49,6 @@ const DUMMY_ADDR: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED)
 pub struct TcpStream {
     /// The raw file descriptor / 原始文件描述符
     fd: std::os::fd::OwnedFd,
-    /// Whether this stream is in non-blocking mode / 此流是否处于非阻塞模式
-    #[allow(dead_code)]
-    non_blocking: bool,
 }
 
 impl TcpStream {
@@ -80,7 +77,6 @@ impl TcpStream {
             // SAFETY: Caller guarantees ownership
             // 安全性：调用者保证所有权
             fd: unsafe { std::os::fd::OwnedFd::from_raw_fd(fd) },
-            non_blocking: true,
         })
     }
 

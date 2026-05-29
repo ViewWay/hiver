@@ -155,7 +155,6 @@ impl std::fmt::Debug for ConversationSummaryMemory {
 impl ConversationSummaryMemory {
     /// Creates a new summary memory with the given chat model and threshold.
     /// 使用给定的聊天模型和阈值创建新的总结记忆。
-    #[allow(dead_code)]
     pub fn new(chat_model: impl ChatModel + 'static, keep_recent: usize) -> Self {
         Self {
             chat_model: Arc::new(chat_model),
@@ -168,7 +167,6 @@ impl ConversationSummaryMemory {
 
     /// Creates a new summary memory from an Arc chat model.
     /// 从 Arc 聊天模型创建新的总结记忆。
-    #[allow(dead_code)]
     pub fn from_arc(chat_model: Arc<dyn ChatModel>, keep_recent: usize) -> Self {
         Self {
             chat_model,
@@ -182,7 +180,6 @@ impl ConversationSummaryMemory {
     /// Sets the maximum number of summarization rounds.
     /// 设置最大总结迭代次数。
     #[must_use]
-    #[allow(dead_code)]
     pub fn max_summarization_rounds(mut self, rounds: usize) -> Self {
         self.max_summarization_rounds = rounds;
         self
@@ -190,7 +187,6 @@ impl ConversationSummaryMemory {
 
     /// Returns the current summary text.
     /// 返回当前的总结文本。
-    #[allow(dead_code)]
     pub async fn summary(&self) -> String {
         self.summary.read().await.clone()
     }

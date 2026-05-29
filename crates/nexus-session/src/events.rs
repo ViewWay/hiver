@@ -117,7 +117,6 @@ pub enum SessionEvent {
 impl SessionEvent {
     /// Get the session ID associated with this event, if any.
     /// 获取与此事件关联的会话 ID（如果有）。
-    #[allow(dead_code)]
     pub fn session_id(&self) -> Option<&SessionId> {
         match self {
             SessionEvent::Created { session_id, .. } => Some(session_id),
@@ -130,7 +129,6 @@ impl SessionEvent {
 
     /// Get the principal associated with this event, if any.
     /// 获取与此事件关联的主体（如果有）。
-    #[allow(dead_code)]
     pub fn principal(&self) -> Option<&str> {
         match self {
             SessionEvent::Created { principal, .. } => principal.as_deref(),
@@ -143,7 +141,6 @@ impl SessionEvent {
 
     /// Get a human-readable event name.
     /// 获取人类可读的事件名称。
-    #[allow(dead_code)]
     pub fn event_name(&self) -> &'static str {
         match self {
             SessionEvent::Created { .. } => "SessionCreated",
@@ -232,7 +229,6 @@ impl SessionEventPublisher {
 
     /// Remove all listeners.
     /// 移除所有监听器。
-    #[allow(dead_code)]
     pub fn clear_listeners(&self) {
         if let Ok(mut guard) = self.listeners.try_write() {
             guard.clear();
@@ -241,7 +237,6 @@ impl SessionEventPublisher {
 
     /// Get the number of registered listeners.
     /// 获取已注册的监听器数量。
-    #[allow(dead_code)]
     pub fn listener_count(&self) -> usize {
         self.listeners
             .try_read()
@@ -260,7 +255,6 @@ impl SessionEventPublisher {
 
     /// Emit a session created event.
     /// 发出会话创建事件。
-    #[allow(dead_code)]
     pub async fn emit_created(&self, session_id: SessionId, principal: Option<String>) {
         self.emit(SessionEvent::Created {
             session_id,
@@ -271,7 +265,6 @@ impl SessionEventPublisher {
 
     /// Emit a session expired event.
     /// 发出会话过期事件。
-    #[allow(dead_code)]
     pub async fn emit_expired(&self, session_id: SessionId, principal: Option<String>) {
         self.emit(SessionEvent::Expired {
             session_id,
@@ -282,7 +275,6 @@ impl SessionEventPublisher {
 
     /// Emit a session destroyed event.
     /// 发出会话销毁事件。
-    #[allow(dead_code)]
     pub async fn emit_destroyed(&self, session_id: SessionId, principal: Option<String>) {
         self.emit(SessionEvent::Destroyed {
             session_id,
@@ -293,7 +285,6 @@ impl SessionEventPublisher {
 
     /// Emit an attribute changed event.
     /// 发出属性更改事件。
-    #[allow(dead_code)]
     pub async fn emit_attribute_changed(
         &self,
         session_id: SessionId,
@@ -308,7 +299,6 @@ impl SessionEventPublisher {
 
     /// Emit a max sessions exceeded event.
     /// 发出最大会话超出事件。
-    #[allow(dead_code)]
     pub async fn emit_max_sessions_exceeded(
         &self,
         principal: String,
@@ -463,7 +453,6 @@ impl ConcurrentSessionControl {
 
     /// Set the concurrent session strategy.
     /// 设置并发会话策略。
-    #[allow(dead_code)]
     pub fn with_strategy(mut self, strategy: ConcurrentSessionStrategy) -> Self {
         self.strategy = strategy;
         self
@@ -471,7 +460,6 @@ impl ConcurrentSessionControl {
 
     /// Set the event publisher.
     /// 设置事件发布器。
-    #[allow(dead_code)]
     pub fn with_publisher(mut self, publisher: SessionEventPublisher) -> Self {
         self.publisher = Some(publisher);
         self
@@ -479,14 +467,12 @@ impl ConcurrentSessionControl {
 
     /// Get the max sessions limit.
     /// 获取最大会话限制。
-    #[allow(dead_code)]
     pub fn max_sessions(&self) -> usize {
         self.max_sessions
     }
 
     /// Get the current session count for a user.
     /// 获取用户的当前会话数。
-    #[allow(dead_code)]
     pub async fn session_count(&self, principal: &str) -> usize {
         let sessions = self.user_sessions.read().await;
         sessions.get(principal).map(|v| v.len()).unwrap_or(0)
@@ -494,7 +480,6 @@ impl ConcurrentSessionControl {
 
     /// Get all session IDs for a user.
     /// 获取用户的所有会话 ID。
-    #[allow(dead_code)]
     pub async fn sessions_for(&self, principal: &str) -> Vec<SessionId> {
         let sessions = self.user_sessions.read().await;
         sessions.get(principal).cloned().unwrap_or_default()
@@ -507,7 +492,6 @@ impl ConcurrentSessionControl {
     /// was reached and the strategy is `PreventNew`.
     ///
     /// 如果会话已注册则返回 `true`，如果达到限制且策略为 `PreventNew` 则返回 `false`。
-    #[allow(dead_code)]
     pub async fn check_and_register(
         &self,
         principal: &str,
@@ -564,7 +548,6 @@ impl ConcurrentSessionControl {
 
     /// Remove a session for a user (e.g., on logout or expiration).
     /// 移除用户的会话（例如注销或过期时）。
-    #[allow(dead_code)]
     pub async fn remove_session(&self, principal: &str, session_id: &SessionId) {
         let mut sessions = self.user_sessions.write().await;
         if let Some(user_sessions) = sessions.get_mut(principal) {
@@ -577,7 +560,6 @@ impl ConcurrentSessionControl {
 
     /// Clean up all sessions for a user.
     /// 清理用户的所有会话。
-    #[allow(dead_code)]
     pub async fn clear_user(&self, principal: &str) {
         let mut sessions = self.user_sessions.write().await;
         sessions.remove(principal);
@@ -585,7 +567,6 @@ impl ConcurrentSessionControl {
 
     /// Get the total number of tracked users.
     /// 获取跟踪的用户总数。
-    #[allow(dead_code)]
     pub async fn tracked_user_count(&self) -> usize {
         let sessions = self.user_sessions.read().await;
         sessions.len()

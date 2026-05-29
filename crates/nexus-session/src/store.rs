@@ -3,16 +3,18 @@
 
 use crate::{Session, SessionId};
 use async_trait::async_trait;
+#[cfg(any(feature = "redis", feature = "mongodb"))]
 use chrono::{DateTime, Utc};
+#[cfg(any(feature = "redis", feature = "mongodb"))]
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-/// Serializable session data for storage
-/// 可序列化的会话数据用于存储
+/// Serializable session data for storage (used by Redis and MongoDB stores).
+/// 可序列化的会话数据用于存储（由 Redis 和 MongoDB 存储使用）。
+#[cfg(any(feature = "redis", feature = "mongodb"))]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[allow(dead_code)]
 struct SessionData {
     /// Session ID
     /// 会话ID
@@ -35,7 +37,7 @@ struct SessionData {
     pub attributes: HashMap<String, serde_json::Value>,
 }
 
-#[allow(dead_code)]
+#[cfg(any(feature = "redis", feature = "mongodb"))]
 impl SessionData {
     /// Create from Session
     /// 从Session创建

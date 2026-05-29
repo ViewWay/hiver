@@ -57,13 +57,11 @@ impl OpenApiSpec {
     }
 
     /// Export the spec as JSON / 将规范导出为 JSON
-    #[allow(dead_code)]
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
         self.inner.to_json()
     }
 
     /// Export the spec as YAML / 将规范导出为 YAML
-    #[allow(dead_code)]
     pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
         self.inner.to_yaml()
     }
@@ -540,14 +538,12 @@ impl SchemaGenerator {
     }
 
     /// Build as a named (name, schema) pair / 构建为 (名称, 模式) 对
-    #[allow(dead_code)]
     pub fn build_named(self) -> (String, Schema) {
         (self.name, self.schema)
     }
 }
 
 /// Helper to quickly create a GET operation / 快速创建 GET 操作的助手
-#[allow(dead_code)]
 pub fn get_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().get(
         Operation::new()
@@ -557,7 +553,6 @@ pub fn get_operation(path: &str, summary: &str) -> PathItem {
 }
 
 /// Helper to quickly create a POST operation / 快速创建 POST 操作的助手
-#[allow(dead_code)]
 pub fn post_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().post(
         Operation::new()
@@ -567,7 +562,6 @@ pub fn post_operation(path: &str, summary: &str) -> PathItem {
 }
 
 /// Helper to quickly create a PUT operation / 快速创建 PUT 操作的助手
-#[allow(dead_code)]
 pub fn put_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().put(
         Operation::new()
@@ -577,7 +571,6 @@ pub fn put_operation(path: &str, summary: &str) -> PathItem {
 }
 
 /// Helper to quickly create a DELETE operation / 快速创建 DELETE 操作的助手
-#[allow(dead_code)]
 pub fn delete_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().delete(
         Operation::new()
@@ -706,7 +699,6 @@ impl NestedSchemaBuilder {
     }
 
     /// Build as a named pair / 构建为命名对
-    #[allow(dead_code)]
     pub fn build_named(self) -> (String, Schema) {
         (self.name, self.schema)
     }
@@ -777,7 +769,6 @@ impl MapSchemaBuilder {
     }
 
     /// Build as a named pair / 构建为命名对
-    #[allow(dead_code)]
     pub fn build_named(self) -> (String, Schema) {
         let name = self.name.clone();
         (name, self.build())
@@ -849,7 +840,6 @@ impl EnumSchemaBuilder {
     }
 
     /// Build as a named pair / 构建为命名对
-    #[allow(dead_code)]
     pub fn build_named(self) -> (String, Schema) {
         let name = self.name.clone();
         (name, self.build())

@@ -73,7 +73,6 @@ impl OffsetManager {
     /// (i.e. last consumed offset + 1).
     ///
     /// `offset` 应该是下一个要消费的消息的偏移（即最后消费的偏移 + 1）。
-    #[allow(dead_code)]
     pub fn commit_offset(
         &mut self,
         topic: &str,
@@ -107,7 +106,6 @@ impl OffsetManager {
     ///
     /// 如果该分区没有提交过偏移则返回 `None`。
     /// 否则返回已提交的偏移值。
-    #[allow(dead_code)]
     pub fn committed_offset(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
         tracing::debug!(
             "Querying committed offset: topic={}, partition={}",
@@ -127,7 +125,6 @@ impl OffsetManager {
     /// After this call, the next `poll` will start from offset 0.
     ///
     /// 调用后，下一次 `poll` 将从偏移 0 开始。
-    #[allow(dead_code)]
     pub fn seek_to_beginning(&mut self, topic: &str, partition: i32) -> Result<(), String> {
         tracing::debug!(
             "Seeking to beginning: topic={}, partition={}",
@@ -153,7 +150,6 @@ impl OffsetManager {
     /// After this call, the next `poll` will only receive newly produced messages.
     ///
     /// 调用后，下一次 `poll` 只会接收新产生的消息。
-    #[allow(dead_code)]
     pub fn seek_to_end(&mut self, topic: &str, partition: i32) -> Result<(), String> {
         tracing::debug!(
             "Seeking to end: topic={}, partition={}",
@@ -182,7 +178,6 @@ impl OffsetManager {
     ///
     /// `timestamp` 是自纪元以来的毫秒数。消费者将跳转到时间戳
     /// 大于等于给定时间戳的第一条消息。
-    #[allow(dead_code)]
     pub fn seek_to_timestamp(
         &mut self,
         topic: &str,
@@ -220,7 +215,6 @@ impl OffsetManager {
     ///
     /// 位置是下一个要拉取的消息的偏移。
     /// 如果该分区不存在状态则返回 `None`。
-    #[allow(dead_code)]
     pub fn position(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
         tracing::debug!(
             "Querying position: topic={}, partition={}",

@@ -68,6 +68,7 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+#![allow(dead_code)]
 
 #[cfg(test)]
 mod tests;

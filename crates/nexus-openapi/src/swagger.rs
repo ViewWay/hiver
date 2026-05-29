@@ -478,7 +478,6 @@ impl SwaggerUi {
 /// let html = swagger_ui_html("/api-docs/openapi.json");
 /// assert!(html.contains("swagger-ui"));
 /// ```
-#[allow(dead_code)]
 pub fn swagger_ui_html(spec_url: &str) -> String {
     SwaggerConfig::default().html(spec_url)
 }
@@ -498,7 +497,6 @@ pub fn swagger_ui_html(spec_url: &str) -> String {
 /// let html = redoc_html("/api-docs/openapi.json");
 /// assert!(html.contains("redoc"));
 /// ```
-#[allow(dead_code)]
 pub fn redoc_html(spec_url: &str) -> String {
     format!(
         r#"<!DOCTYPE html>

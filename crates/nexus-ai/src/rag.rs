@@ -400,7 +400,6 @@ impl ContextBuilder {
 
     /// Builds a full prompt with system instructions, context, and user question.
     /// 构建包含系统指令、上下文和用户问题的完整提示。
-    #[allow(dead_code)]
     pub fn build_prompt(
         &self,
         system_prompt: &str,
@@ -487,6 +486,8 @@ pub struct RagPipeline {
     chat_model: Arc<dyn ChatModel>,
     /// The embedding model for generating vectors.
     /// 用于生成向量的嵌入模型。
+    /// Retained for future direct embedding access in the pipeline.
+    /// 为管道中未来的直接嵌入访问而保留。
     #[allow(dead_code)]
     embedding_model: Arc<dyn EmbeddingModel>,
     /// The vector store for storing and retrieving document chunks.
@@ -516,7 +517,6 @@ impl std::fmt::Debug for RagPipeline {
 impl RagPipeline {
     /// Creates a new RAG pipeline with the given models and store.
     /// 使用给定的模型和存储创建新的 RAG 管道。
-    #[allow(dead_code)]
     pub fn new(
         chat_model: impl ChatModel + 'static,
         embedding_model: impl EmbeddingModel + 'static,
@@ -534,7 +534,6 @@ impl RagPipeline {
 
     /// Creates a new RAG pipeline from Arc references.
     /// 从 Arc 引用创建新的 RAG 管道。
-    #[allow(dead_code)]
     pub fn from_arc(
         chat_model: Arc<dyn ChatModel>,
         embedding_model: Arc<dyn EmbeddingModel>,
@@ -553,7 +552,6 @@ impl RagPipeline {
     /// Sets the pipeline configuration.
     /// 设置管道配置。
     #[must_use]
-    #[allow(dead_code)]
     pub fn with_config(mut self, config: RagConfig) -> Self {
         self.chunker = DocumentChunker::new(config.chunk_strategy)
             .chunk_size(config.chunk_size)
@@ -565,7 +563,6 @@ impl RagPipeline {
     /// Sets the context builder.
     /// 设置上下文构建器。
     #[must_use]
-    #[allow(dead_code)]
     pub fn with_context_builder(mut self, builder: ContextBuilder) -> Self {
         self.context_builder = builder;
         self
@@ -580,7 +577,6 @@ impl RagPipeline {
     ///
     /// 每个文档使用配置的 `DocumentChunker` 拆分为块，然后每个块作为
     /// 单独的文档存储在向量存储中。如果向量存储有嵌入模型，嵌入会自动生成。
-    #[allow(dead_code)]
     pub async fn ingest(&self, documents: Vec<Document>) -> Result<usize, ModelError> {
         let mut chunk_count = 0;
         let mut all_chunks: Vec<Document> = Vec::new();
@@ -609,7 +605,6 @@ impl RagPipeline {
 
     /// Queries the pipeline with a question and returns an answer based on retrieved context.
     /// 使用问题查询管道，并基于检索到的上下文返回答案。
-    #[allow(dead_code)]
     pub async fn query(&self, question: &str) -> Result<RagResponse, ModelError> {
         // Retrieve relevant chunks from the vector store
         // 从向量存储中检索相关块
@@ -652,7 +647,6 @@ impl RagPipeline {
 
     /// Queries the pipeline and returns a streaming response.
     /// 查询管道并返回流式响应。
-    #[allow(dead_code)]
     pub async fn query_stream(
         &self,
         question: &str,
@@ -681,7 +675,6 @@ impl RagPipeline {
 
     /// Returns the total number of documents in the vector store.
     /// 返回向量存储中的文档总数。
-    #[allow(dead_code)]
     pub async fn document_count(&self) -> Result<usize, ModelError> {
         self.vector_store.count().await
     }

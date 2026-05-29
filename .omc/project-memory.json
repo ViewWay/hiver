@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished|warning.*generated\" | tail -10",
-    "testCommand": "cargo test -p nexus-vault 2>&1",
+    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished\" | tail -3",
+    "testCommand": "cargo test -p nexus-runtime -p nexus-batch 2>&1",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -127,15 +127,15 @@
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/lib.rs",
-      "accessCount": 15,
-      "lastAccessed": 1780064603790,
+      "path": "crates/nexus-runtime/src/task.rs",
+      "accessCount": 28,
+      "lastAccessed": 1780066900372,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/task.rs",
-      "accessCount": 13,
-      "lastAccessed": 1779621112069,
+      "path": "crates/nexus-security/src/lib.rs",
+      "accessCount": 15,
+      "lastAccessed": 1780064603790,
       "type": "file"
     },
     {
@@ -160,6 +160,12 @@
       "path": "crates/nexus-data-rdbc/src/client.rs",
       "accessCount": 10,
       "lastAccessed": 1780066110294,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-runtime/src/task/raw_task.rs",
+      "accessCount": 10,
+      "lastAccessed": 1780066937813,
       "type": "file"
     },
     {
@@ -247,6 +253,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-runtime/src/scheduler/work_stealing.rs",
+      "accessCount": 5,
+      "lastAccessed": 1780066948091,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-websocket-stomp/src/lib.rs",
       "accessCount": 4,
       "lastAccessed": 1779619714270,
@@ -301,12 +313,6 @@
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/scheduler/work_stealing.rs",
-      "accessCount": 3,
-      "lastAccessed": 1779620546326,
-      "type": "file"
-    },
-    {
       "path": "crates/nexus-router/src/lib.rs",
       "accessCount": 3,
       "lastAccessed": 1779620550608,
@@ -316,12 +322,6 @@
       "path": "crates/nexus-resilience/src/lib.rs",
       "accessCount": 3,
       "lastAccessed": 1779620550843,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-runtime/src/task/raw_task.rs",
-      "accessCount": 3,
-      "lastAccessed": 1779620596916,
       "type": "file"
     },
     {
