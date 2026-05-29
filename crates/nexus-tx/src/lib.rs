@@ -46,6 +46,7 @@
 #[cfg(test)]
 mod tests;
 
+pub mod events;
 mod error;
 mod isolation;
 mod manager;
@@ -72,6 +73,10 @@ pub use status::TransactionStatus;
 pub use template::TransactionTemplate;
 pub use transaction::Transaction;
 pub use transactional::{Transactional, TransactionalOptions};
+pub use events::{
+    LoggingSynchronization, PhaseListener, SynchronizationRegistry, TransactionPhase,
+    TransactionSynchronization,
+};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
