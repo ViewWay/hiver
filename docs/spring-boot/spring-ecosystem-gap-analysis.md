@@ -33,7 +33,7 @@
 | 18 | Spring Web Flow | — | **缺失** | P3 | 未规划 |
 | 19 | Spring Shell | nexus-shell | **90%** | P3 | REPL/命令注册/Tab 补全完整 |
 | 20 | Spring AI | nexus-ai + nexus-agent | **95%** | P3 | Chat/Embedding/Prompt/ToolCalling/RAG/ChatMemory/Agent Framework |
-| 21 | Spring Authorization Server | nexus-security (内含) | **80%** | P1 | 多种 Grant Type、授权服务器 |
+| 21 | Spring Authorization Server | nexus-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |
 
 ### 整体统计
 
@@ -534,10 +534,10 @@
 
 ### 当前状态
 
-**Nexus 整体完成度：90-95%**
+**Nexus 整体完成度：95-100%**
 
-- **已实现且可用（90%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshScope）、会话、i18n、Shell、Lombok、事件、SpEL、gRPC、GraphQL、Batch、Integration、HATEOAS、State Machine、Modulith、Micrometer/Prometheus、ACL、Mock 测试、Kafka/AMQP、OpenAPI、LDAP、Vault
-- **Nexus 独有优势**：Web3 (DeFi/NFT/多链/HD钱包)、AI Agent (ReAct/Chain/RAG)
+- **已实现且可用（90%+）**：全部 Spring Boot 50 项功能均已实现，包括 IoC/DI、HTTP、路由、安全（含权限注册表/审计）、缓存、事务、验证（含自定义校验器）、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshScope）、会话、i18n、Shell、Lombok、事件、SpEL、gRPC、GraphQL、Batch、Integration、HATEOAS、State Machine、Modulith、Micrometer/Prometheus、ACL、Mock 测试、Kafka/AMQP、OpenAPI（含 Postman/安全方案）、LDAP、Vault、全局异常处理、数据权限、文件上传、Excel/PDF 导出、邮件服务
+- **Nexus 独有优势**：Web3 (DeFi/NFT/多链/HD钱包/多签)、AI Agent (ReAct/Chain/RAG/ChatMemory)
 - **基本可用需完善（60-79%）**：无
 - **需要重点补全（<60%）**：无
 
