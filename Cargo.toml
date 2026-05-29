@@ -258,6 +258,10 @@ clap = { version = "4.5", features = ["derive"] }
 rustyline = "15"
 colored = "2"
 
+# Spreadsheet / 电子表格
+# Equivalent to: Spring Apache POI
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
 # Service Discovery / 服务发现
 # Equivalent to: Spring Cloud Service Discovery
 consul = "0.4"

@@ -86,6 +86,7 @@
 mod tests;
 
 pub mod annotations;
+pub mod custom;
 pub mod error;
 pub mod extractor;
 pub mod groups;
@@ -110,6 +111,13 @@ pub use annotations::{
 
 // Re-export nested validation / 重新导出嵌套验证
 pub use nested::{Nested, ValidateNested};
+
+// Re-export custom validators / 重新导出自定义验证器
+pub use custom::{
+    CompositeValidator, ConditionalValidator, CustomValidator, FieldMatchValidator,
+    FieldProvider, ValidationReport, ValidationErrorExt, ValidatorRegistry,
+};
+pub use custom::field_match;
 
 use std::fmt;
 

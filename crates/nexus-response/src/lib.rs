@@ -13,6 +13,7 @@
 #[cfg(test)]
 mod tests;
 
+pub mod excel;
 pub mod html;
 pub mod json;
 pub mod response;
@@ -24,3 +25,9 @@ pub use json::Json;
 pub use response::{IntoResponse, Response};
 pub use result::{PageResult, Result, ResultCode};
 pub use unified::{ApiResponse, DefaultResponseAdvice, ResponseAdvice, ResponseResult};
+
+// Excel re-exports
+pub use excel::{
+    CellAlignment, Excel, ExcelCell, ExcelError, ExcelExportConfig, ExcelExporter, ExcelCellStyle,
+    ExcelTable, export_to_excel,
+};

@@ -64,6 +64,9 @@ indexmap = { workspace = true }
 # Time / 时间 (Spring LocalDateTime)
 chrono = { workspace = true }
 
+# Spreadsheet / 电子表格 (Spring Apache POI)
+zip = { workspace = true }
+
 [lints]
 workspace = true
 

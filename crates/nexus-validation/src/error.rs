@@ -28,6 +28,12 @@ pub struct ValidationError {
     pub code: String,
     /// 无效值 / Invalid value
     pub value: Option<String>,
+    /// 嵌套字段路径（如 "address.street"）/ Nested field path (e.g. "address.street")
+    pub field_path: Option<String>,
+    /// 拒绝的值（被验证拒绝的值的字符串表示）/ Rejected value (string repr of the value that failed)
+    pub rejected_value: Option<String>,
+    /// 约束名称（导致失败的验证约束名）/ Constraint name (the validation constraint that caused the failure)
+    pub constraint_name: Option<String>,
 }
 
 impl ValidationError {
@@ -38,6 +44,9 @@ impl ValidationError {
             message: message.into(),
             code: "validation_failed".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: None,
         }
     }
 
@@ -61,6 +70,9 @@ impl ValidationError {
             message: format!("{} is required", field_name),
             code: "required".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: Some("NotNull".to_string()),
         }
     }
 
@@ -71,6 +83,9 @@ impl ValidationError {
             message: "Invalid email format".to_string(),
             code: "invalid_email".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: Some("Email".to_string()),
         }
     }
 
@@ -82,6 +97,9 @@ impl ValidationError {
             message: format!("{} length must be between {} and {}", field_name, min, max),
             code: "invalid_length".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: Some("Length".to_string()),
         }
     }
 
@@ -93,6 +111,9 @@ impl ValidationError {
             message: format!("{} must be between {} and {}", field_name, min, max),
             code: "out_of_range".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: Some("Range".to_string()),
         }
     }
 
@@ -104,6 +125,9 @@ impl ValidationError {
             message: format!("{} does not match required pattern", field_name),
             code: "pattern_mismatch".to_string(),
             value: Some(pattern.to_string()),
+            field_path: None,
+            rejected_value: None,
+            constraint_name: Some("Pattern".to_string()),
         }
     }
 }
@@ -145,6 +169,9 @@ impl From<ValidationErrors> for ValidationError {
             ),
             code: "validation_failed".to_string(),
             value: None,
+            field_path: None,
+            rejected_value: None,
+            constraint_name: None,
         }
     }
 }

@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cargo test -p nexus-extractors --features multipart 2>&1\",\"timeout\":120000,\"description\":\"Rebuild and test after fixes\"}",
-  "error": "Exit code 101\n   Compiling nexus-extractors v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-extractors)\n    Finished `test` profile [optimized + debuginfo] target(s) in 1.79s\n     Running unittests src/lib.rs (target/debug/deps/nexus_extractors-f8c9fdd44018257b)\n\nrunning 52 tests\ntest attribute::tests::test_named_request_attribute_consume ... ok\ntest cookie::tests::test_cookie_into_inner ... ok\ntest cookie::tests::test_named_cookie ... ok\ntest cookie::tests::test_parse_cookies...",
-  "timestamp": "2026-05-29T12:02:45.766Z",
-  "retry_count": 2
+  "tool_input_preview": "{\"command\":\"cargo test -p nexus-openapi 2>&1\",\"timeout\":120000,\"description\":\"Run nexus-openapi tests\"}",
+  "error": "Exit code 101\n   Compiling nexus-runtime v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-runtime)\n   Compiling nexus-core v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-core)\n   Compiling nexus-openapi v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-openapi)\nwarning: unused imports: `Components`, `InfoConfig`, and `SchemaType`\n  --> crates/nexus-openapi/src/generator.rs:21:5\n   |\n21 |     Components, InfoConfig, OpenApi, OpenApiConfig, Op...",
+  "timestamp": "2026-05-29T14:07:52.384Z",
+  "retry_count": 4
 }

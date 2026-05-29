@@ -4879,3 +4879,679 @@ Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:04:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 13 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 28 | **文件上传** | \`MultipartFile\` | multer | ⚠️ 70% | **高** |" to "| 28 | **文件上传** | \`MultipartFile\` | Multipart + UploadConfig | ✅ 90% | - |".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:04:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 20 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 28 | **文件上传** | \`MultipartFile\` | multer | ⚠️ 70% | **高** |; | 34 | **统一响应** | \`Result<T>\` | \`Result<T>\` | ⚠️ 80..." to "| 28 | **文件上传** | \`MultipartFile\` | Multipart + UploadConfig | ✅ 90% | - |; | 34 | **统一响应** | \`Result<T>\` | \`ApiRes...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:04:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 29 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 28 | **文件上传** | \`MultipartFile\` | multer | ⚠️ 70% | **高** |; | 34 | **统一响应** | \`Result<T>\` | \`Result<T>\` | ⚠️ 80..." to "| 28 | **文件上传** | \`MultipartFile\` | Multipart + UploadConfig | ✅ 90% | - |; | 34 | **统一响应** | \`Result<T>\` | \`ApiRes...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:05:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 42 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| **实战功能 / Practice** | 11 | 8 | 2 | 1 | 80% |; | **企业功能 / Enterprise** | 12 | 8 | 2 | 2 | 75% |; | **总计 / Total** | 50 ..." to "| **实战功能 / Practice** | 11 | 9 | 1 | 1 | 85% |; | **企业功能 / Enterprise** | 12 | 9 | 1 | 2 | 80% |; | **总计 / Total** | 50 ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:00:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `Cargo.toml`
+### Change Record
+Modified file `Cargo.toml`. Approximately 15 lines changed.
+### Change Summary
+Added "# Spreadsheet / 电子表格; # Equivalent to: Spring Apache POI; zip = { version = "2", default-features = false, features = ["..." in `Cargo.toml`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:00:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/Cargo.toml`
+### Change Record
+Modified file `crates/nexus-response/Cargo.toml`. Approximately 13 lines changed.
+### Change Summary
+Added "# Spreadsheet / 电子表格 (Spring Apache POI); zip = { workspace = true }" in `crates/nexus-response/Cargo.toml`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:02:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:03:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/error.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/error.rs`. Approximately 17 lines changed.
+### Change Summary
+Added "/// 嵌套字段路径（如 "address.street"）/ Nested field path (e.g. "address.street"); pub field_path: Option<String>,; /// 拒绝的值（被验证..." in `crates/nexus-validation/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:03:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:03:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/error.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/error.rs`. Approximately 26 lines changed.
+### Change Summary
+Added "/// 嵌套字段路径（如 "address.street"）/ Nested field path (e.g. "address.street"); pub field_path: Option<String>,; /// 拒绝的值（被验证..." in `crates/nexus-validation/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:03:33
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/error.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/error.rs`. Approximately 77 lines changed.
+### Change Summary
+Added "/// 嵌套字段路径（如 "address.street"）/ Nested field path (e.g. "address.street"); pub field_path: Option<String>,; /// 拒绝的值（被验证..." in `crates/nexus-validation/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:03:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:03:49
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/error.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/error.rs`. Approximately 87 lines changed.
+### Change Summary
+Added "/// 嵌套字段路径（如 "address.street"）/ Nested field path (e.g. "address.street"); pub field_path: Option<String>,; /// 拒绝的值（被验证..." in `crates/nexus-validation/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:03:50
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/nested.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/nested.rs`. Approximately 14 lines changed.
+### Change Summary
+Added "field_path: field_error.field_path,; rejected_value: field_error.rejected_value,; constraint_name: field_error.constrain..." in `crates/nexus-validation/src/nested.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:03:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:03:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/nested.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/nested.rs`. Approximately 24 lines changed.
+### Change Summary
+Added "field_path: field_error.field_path,; rejected_value: field_error.rejected_value,; constraint_name: field_error.constrain..." in `crates/nexus-validation/src/nested.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:04:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "pub mod custom;" in `crates/nexus-validation/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:04:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/lib.rs`. Approximately 26 lines changed.
+### Change Summary
+Added "pub mod custom;; // Re-export custom validators / 重新导出自定义验证器; pub use custom::{" in `crates/nexus-validation/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:04:09
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:04:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-response/src/lib.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "pub mod excel;; // Excel re-exports; pub use excel::{" in `crates/nexus-response/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:04:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+New file `crates/nexus-validation/src/custom.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:05:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:06:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+New file `crates/nexus-response/src/excel.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:06:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+New file `crates/nexus-openapi/src/doc_pdf.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "pub mod postman;; pub mod doc_pdf;" in `crates/nexus-openapi/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:07:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/lib.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "pub mod postman;; pub mod doc_pdf;; pub use postman::{PostmanCollection, PostmanGenerator, CollectionInfo, PostmanItem, ..." in `crates/nexus-openapi/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:07:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+New file `crates/nexus-openapi/src/doc_pdf.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+New file `crates/nexus-openapi/src/doc_pdf.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+New file `crates/nexus-openapi/src/doc_pdf.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:07:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+New file `crates/nexus-openapi/src/postman.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+New file `crates/nexus-openapi/src/doc_pdf.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 22:08:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/lib.rs`. Approximately 25 lines changed.
+### Change Summary
+Added "pub mod postman;; pub mod doc_pdf;; pub use openapi::OpenApiBuilder;" in `crates/nexus-openapi/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

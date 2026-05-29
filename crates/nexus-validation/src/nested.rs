@@ -129,6 +129,9 @@ where
                         message: field_error.message,
                         code: field_error.code,
                         value: field_error.value,
+                        field_path: field_error.field_path,
+                        rejected_value: field_error.rejected_value,
+                        constraint_name: field_error.constraint_name,
                     });
                 }
             }
@@ -324,6 +327,9 @@ where
                             message: field_error.message,
                             code: field_error.code,
                             value: field_error.value,
+                            field_path: field_error.field_path,
+                            rejected_value: field_error.rejected_value,
+                            constraint_name: field_error.constraint_name,
                         });
                     }
                 }

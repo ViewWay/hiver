@@ -19,7 +19,7 @@
   },
   "build": {
     "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished|warning.*generated\" | tail -10",
-    "testCommand": "cargo test -p nexus-extractors --features multipart 2>&1",
+    "testCommand": "cargo build -p nexus-openapi && cargo test -p nexus-openapi 2>&1",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
