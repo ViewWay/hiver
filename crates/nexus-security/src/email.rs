@@ -25,6 +25,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use thiserror::Error;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
 use tokio::sync::{Mutex, Notify};
 
 /// Email error type.
@@ -393,13 +394,16 @@ pub trait EmailSender: Send + Sync {
     async fn send(&self, message: EmailMessage) -> EmailResult<()>;
 }
 
-/// SMTP-based email sender (stub implementation).
-/// 基于 SMTP 的邮件发送器（桩实现）。
+/// SMTP-based email sender.
+/// 基于 SMTP 的邮件发送器。
 ///
-/// In production, this would open a TCP/TLS connection to the SMTP server.
-/// For now it logs the send attempt via `tracing`.
-/// 在生产环境中，这会打开到 SMTP 服务器的 TCP/TLS 连接。
-/// 目前通过 `tracing` 记录发送尝试。
+/// Opens a plain TCP connection to the SMTP server and performs the basic
+/// SMTP protocol handshake (EHLO, MAIL FROM, RCPT TO, DATA, QUIT).
+/// If the connection or any SMTP command fails, returns an error.
+///
+/// 打开到 SMTP 服务器的普通 TCP 连接并执行基本 SMTP 协议握手
+/// （EHLO, MAIL FROM, RCPT TO, DATA, QUIT）。
+/// 如果连接或任何 SMTP 命令失败，则返回错误。
 #[derive(Debug, Clone)]
 pub struct SmtpEmailSender {
     config: EmailConfig,
@@ -417,6 +421,54 @@ impl SmtpEmailSender {
     pub fn config(&self) -> &EmailConfig {
         &self.config
     }
+
+    /// Read a complete SMTP response (multi-line `250-...` / final `250 ...`).
+    /// 读取完整的 SMTP 响应（多行 `250-...` / 最终 `250 ...`）。
+    async fn read_response<R: tokio::io::AsyncBufRead + Unpin>(
+        reader: &mut R,
+    ) -> EmailResult<u16> {
+        let mut line = String::new();
+        let mut code: u16;
+        loop {
+            line.clear();
+            let n = reader.read_line(&mut line).await.map_err(|e| {
+                EmailError::SmtpError(format!("failed to read SMTP response: {e}"))
+            })?;
+            if n == 0 {
+                return Err(EmailError::SmtpError(
+                    "SMTP connection closed unexpectedly".into(),
+                ));
+            }
+            if line.len() >= 4 {
+                code = line[..3].parse::<u16>().map_err(|_| {
+                    EmailError::SmtpError(format!("invalid SMTP response: {line}"))
+                })?;
+                // A space after the code means this is the final line of the response.
+                if line.as_bytes()[3] == b' ' {
+                    break;
+                }
+            }
+        }
+        Ok(code)
+    }
+
+    /// Send an SMTP command and read the response code.
+    /// 发送 SMTP 命令并读取响应码。
+    async fn send_command<W: tokio::io::AsyncWrite + Unpin, R: tokio::io::AsyncBufRead + Unpin>(
+        writer: &mut W,
+        reader: &mut R,
+        command: &str,
+    ) -> EmailResult<u16> {
+        writer
+            .write_all(command.as_bytes())
+            .await
+            .map_err(|e| EmailError::SmtpError(format!("failed to write SMTP command: {e}")))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| EmailError::SmtpError(format!("failed to flush SMTP command: {e}")))?;
+        Self::read_response(reader).await
+    }
 }
 
 #[async_trait::async_trait]
@@ -425,8 +477,117 @@ impl EmailSender for SmtpEmailSender {
         self.config.validate()?;
         message.validate()?;
 
+        let addr = format!("{}:{}", self.config.smtp_host, self.config.smtp_port);
+        let stream =
+            tokio::net::TcpStream::connect(&addr).await.map_err(|e| {
+                EmailError::SmtpError(format!(
+                    "failed to connect to SMTP server {addr}: {e}"
+                ))
+            })?;
+
+        let (reader, mut writer) = tokio::io::split(stream);
+        let mut reader = tokio::io::BufReader::new(reader);
+
+        // Read server greeting.
+        let greeting_code = Self::read_response(&mut reader).await?;
+        if !(greeting_code >= 200 && greeting_code < 300) {
+            return Err(EmailError::SmtpError(format!(
+                "SMTP server greeting failed with code {greeting_code}"
+            )));
+        }
+
+        // EHLO.
+        let hostname = "nexus.local";
+        let ehlo_code =
+            Self::send_command(&mut writer, &mut reader, &format!("EHLO {hostname}\r\n"))
+                .await?;
+        if ehlo_code != 250 {
+            return Err(EmailError::SmtpError(format!(
+                "SMTP EHLO rejected with code {ehlo_code}"
+            )));
+        }
+
+        // MAIL FROM.
+        let mail_from_cmd = format!(
+            "MAIL FROM:<{}>\r\n",
+            self.config.from_address
+        );
+        let mail_code =
+            Self::send_command(&mut writer, &mut reader, &mail_from_cmd).await?;
+        if mail_code != 250 {
+            return Err(EmailError::SmtpError(format!(
+                "SMTP MAIL FROM rejected with code {mail_code}"
+            )));
+        }
+
+        // RCPT TO (for each recipient).
+        for recipient in message.to.iter().chain(message.cc.iter()).chain(message.bcc.iter()) {
+            let rcpt_cmd = format!("RCPT TO:<{recipient}>\r\n");
+            let rcpt_code =
+                Self::send_command(&mut writer, &mut reader, &rcpt_cmd).await?;
+            if rcpt_code != 250 {
+                return Err(EmailError::SmtpError(format!(
+                    "SMTP RCPT TO <{recipient}> rejected with code {rcpt_code}"
+                )));
+            }
+        }
+
+        // DATA.
+        let data_code =
+            Self::send_command(&mut writer, &mut reader, "DATA\r\n").await?;
+        if data_code != 354 {
+            return Err(EmailError::SmtpError(format!(
+                "SMTP DATA rejected with code {data_code}"
+            )));
+        }
+
+        // Build a minimal RFC 5322 message.
+        let mut data_payload = String::new();
+        data_payload.push_str(&format!("From: {}\r\n", self.config.from_address));
+        for to_addr in &message.to {
+            data_payload.push_str(&format!("To: {to_addr}\r\n"));
+        }
+        for cc_addr in &message.cc {
+            data_payload.push_str(&format!("Cc: {cc_addr}\r\n"));
+        }
+        data_payload.push_str(&format!("Subject: {}\r\n", message.subject));
+        data_payload.push_str("Content-Type: text/plain; charset=utf-8\r\n");
+        data_payload.push_str("\r\n");
+        // Dot-stuffing: lines starting with "." get an extra "." prepended.
+        for line in message.body.lines() {
+            if line.starts_with('.') {
+                data_payload.push('.');
+            }
+            data_payload.push_str(line);
+            data_payload.push_str("\r\n");
+        }
+        if !message.body.ends_with('\n') {
+            data_payload.push_str("\r\n");
+        }
+        data_payload.push_str(".\r\n");
+
+        writer
+            .write_all(data_payload.as_bytes())
+            .await
+            .map_err(|e| {
+                EmailError::SmtpError(format!("failed to write SMTP DATA payload: {e}"))
+            })?;
+        writer.flush().await.map_err(|e| {
+            EmailError::SmtpError(format!("failed to flush SMTP DATA payload: {e}"))
+        })?;
+
+        let data_end_code = Self::read_response(&mut reader).await?;
+        if data_end_code != 250 {
+            return Err(EmailError::SmtpError(format!(
+                "SMTP DATA end rejected with code {data_end_code}"
+            )));
+        }
+
+        // QUIT.
+        let _ = Self::send_command(&mut writer, &mut reader, "QUIT\r\n").await;
+
         tracing::info!(
-            "[SMTP] Sending email via {}:{} | From: {} | To: {:?} | Subject: {}",
+            "[SMTP] Sent email via {}:{} | From: {} | To: {:?} | Subject: {}",
             self.config.smtp_host,
             self.config.smtp_port,
             self.config.from_address,
@@ -434,8 +595,6 @@ impl EmailSender for SmtpEmailSender {
             message.subject,
         );
 
-        // Stub: in production, establish SMTP session and transmit.
-        // 桩实现：在生产环境中，建立 SMTP 会话并传输。
         Ok(())
     }
 }
@@ -693,11 +852,13 @@ mod tests {
     // ── SmtpEmailSender / SMTP 邮件发送器 ──
 
     #[tokio::test]
-    async fn test_smtp_sender_valid_message() {
-        let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
+    async fn test_smtp_sender_connection_failure() {
+        // Non-existent host will fail at TCP connect.
+        let cfg = EmailConfig::new("smtp.nonexistent.invalid", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);
         let msg = EmailMessage::new().to("a@b.com").subject("S").body("B");
-        assert!(sender.send(msg).await.is_ok());
+        let err = sender.send(msg).await.unwrap_err();
+        assert!(err.to_string().contains("SMTP"));
     }
 
     #[tokio::test]
@@ -736,9 +897,10 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_queue_process() {
+    async fn test_queue_process_all_fail() {
+        // All sends fail because the host is unreachable; queue is still drained.
         let queue = EmailQueue::new();
-        let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
+        let cfg = EmailConfig::new("smtp.nonexistent.invalid", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);
 
         for i in 0..3 {
@@ -750,7 +912,7 @@ mod tests {
         }
 
         let sent = queue.process_queue(&sender).await.unwrap();
-        assert_eq!(sent, 3);
+        assert_eq!(sent, 0);
         assert!(queue.is_empty().await);
     }
 

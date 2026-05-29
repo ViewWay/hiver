@@ -513,8 +513,7 @@ impl AuthorizationServer {
     ///
     /// Validates signature and expiry without strict audience checking.
     /// 验证签名和过期时间，不强制检查受众。
-    #[allow(clippy::unused_async)]
-    pub async fn introspect(&self, token: &str) -> IntrospectionResult {
+    pub fn introspect(&self, token: &str) -> IntrospectionResult {
         match self.jwt_provider.decode_without_validation(token) {
             Ok(claims) => {
                 let now = chrono::Utc::now().timestamp();
@@ -1523,7 +1522,7 @@ mod tests {
             .await
             .unwrap();
 
-        let result = server.introspect(&token.access_token).await;
+        let result = server.introspect(&token.access_token);
         assert!(result.active);
         assert!(result.sub.is_some());
         assert!(result.exp.is_some());
@@ -1539,7 +1538,7 @@ mod tests {
             .await
             .unwrap();
 
-        let result = server.introspect(&token.access_token).await;
+        let result = server.introspect(&token.access_token);
         assert!(result.active);
         assert_eq!(result.client_id.as_deref(), Some("app"));
     }
@@ -1547,7 +1546,7 @@ mod tests {
     #[tokio::test]
     async fn test_introspect_garbage_token_inactive() {
         let server = make_server();
-        let result = server.introspect("not-a-valid-jwt").await;
+        let result = server.introspect("not-a-valid-jwt");
         assert!(!result.active);
         assert!(result.sub.is_none());
         assert!(result.exp.is_none());
@@ -1556,7 +1555,7 @@ mod tests {
     #[tokio::test]
     async fn test_introspect_empty_string_inactive() {
         let server = make_server();
-        let result = server.introspect("").await;
+        let result = server.introspect("");
         assert!(!result.active);
     }
 
@@ -1572,7 +1571,7 @@ mod tests {
             .await
             .unwrap();
 
-        let result = server.introspect(&token.access_token).await;
+        let result = server.introspect(&token.access_token);
         assert!(result.active);
         assert_eq!(result.sub.as_deref(), Some("introspect-user"));
     }
@@ -1726,9 +1725,9 @@ mod tests {
         assert_ne!(token_b.access_token, token_c.access_token);
 
         // All introspect as active
-        assert!(server.introspect(&token_a.access_token).await.active);
-        assert!(server.introspect(&token_b.access_token).await.active);
-        assert!(server.introspect(&token_c.access_token).await.active);
+        assert!(server.introspect(&token_a.access_token).active);
+        assert!(server.introspect(&token_b.access_token).active);
+        assert!(server.introspect(&token_c.access_token).active);
     }
 
     #[tokio::test]

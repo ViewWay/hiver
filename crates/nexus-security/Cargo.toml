@@ -73,7 +73,7 @@ subtle = { workspace = true }
 tracing = { workspace = true }
 
 # Async runtime / 异步运行时 (for tokio::sync types, task_local!, and macros)
-tokio = { workspace = true, features = ["sync", "macros", "rt"] }
+tokio = { workspace = true, features = ["sync", "macros", "rt", "net", "io-util", "time"] }
 
 # Utilities / 工具
 once_cell = { workspace = true }

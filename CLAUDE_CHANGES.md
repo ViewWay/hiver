@@ -6036,3 +6036,990 @@ Changed `crates/nexus-openapi/src/config.rs` from "#[derive(Debug, Clone, Serial
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:27:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 13 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ErrorHandler | ⚠️ 80% | **高** |" to "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ControllerAdvice + 5 handlers | ✅ 95% | - |".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:27:34
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 25 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ErrorHandler | ⚠️ 80% | **高** |; | 21 | 权限控制 | \`@PreAuthorize\` | \`#[requi..." to "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ControllerAdvice + 5 handlers | ✅ 95% | - |; | 21 | 权限控制 | \`@PreAuthorize\`...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:27:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 34 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ErrorHandler | ⚠️ 80% | **高** |; | 21 | 权限控制 | \`@PreAuthorize\` | \`#[requi..." to "| 18 | **全局异常处理** | \`@ControllerAdvice\` | ControllerAdvice + 5 handlers | ✅ 95% | - |; | 21 | 权限控制 | \`@PreAuthorize\`...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:27:49
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
+### Change Record
+Modified file `docs/spring-boot/spring-boot-feature-matrix.md`. Approximately 45 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-boot-feature-matrix.md` from "| **企业功能 / Enterprise** | 12 | 10 | 1 | 1 | 85% |; | **总计 / Total** | 50 | 48 | 1 | 1 | 98% |; | 18 | **全局异常处理** | \`@Co..." to "| **企业功能 / Enterprise** | 12 | 12 | 0 | 0 | 100% |; | **总计 / Total** | 50 | 50 | 0 | 0 | 100% |; | 18 | **全局异常处理** | \`@...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:42:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-ecosystem-gap-analysis.md`
+### Change Record
+Modified file `docs/spring-boot/spring-ecosystem-gap-analysis.md`. Approximately 17 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "**Nexus 整体完成度：90-95%**; - **已实现且可用（90%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshSco..." to "**Nexus 整体完成度：95-100%**; - **已实现且可用（90%+）**：全部 Spring Boot 50 项功能均已实现，包括 IoC/DI、HTTP、路由、安全（含权限注册表/审计）、缓存、事务、验证（含自定义校验器）、...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:42:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `docs/spring-boot/spring-ecosystem-gap-analysis.md`
+### Change Record
+Modified file `docs/spring-boot/spring-ecosystem-gap-analysis.md`. Approximately 26 lines changed.
+### Change Summary
+Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "| 21 | Spring Authorization Server | nexus-security (内含) | **80%** | P1 | 多种 Grant Type、授权服务器 |; **Nexus 整体完成度：90-95%**;..." to "| 21 | Spring Authorization Server | nexus-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |; **Nexus 整体完成...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:12
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/authorization_server.rs`
+### Change Record
+Modified file `crates/nexus-security/src/authorization_server.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/authorization_server.rs` from "#[allow(clippy::unused_async)]; pub async fn introspect(&self, token: &str) -> IntrospectionResult {" to "pub fn introspect(&self, token: &str) -> IntrospectionResult {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:36
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rbac.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rbac.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rbac.rs` from "#[allow(clippy::unused_async)]; async fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {" to "fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 27 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rbac.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rbac.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rbac.rs` from "let inherited_roles = self.get_all_inherited_roles(role_name).await;; #[allow(clippy::unused_async)]; async fn get_all_i..." to "let inherited_roles = self.get_all_inherited_roles(role_name);; fn get_all_inherited_roles(&self, role: &str) -> HashSet...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 35 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 43 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 51 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 59 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 67 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rbac.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rbac.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rbac.rs` from "let inherited_roles = self.get_all_inherited_roles(role_name).await;; #[allow(clippy::unused_async)]; async fn get_all_i..." to "let inherited_roles = self.get_all_inherited_roles(role_name);; fn get_all_inherited_roles(&self, role: &str) -> HashSet...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 75 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 83 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 91 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 99 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:45
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rbac.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rbac.rs`. Approximately 42 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rbac.rs` from "if self.role_inherits_role(user_role_name, role).await {; let inherited_roles = self.get_all_inherited_roles(role_name)...." to "if self.role_inherits_role(user_role_name, role) {; let inherited_roles = self.get_all_inherited_roles(role_name);; fn g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:45
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 107 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 115 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 123 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv_v2.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv_v2.rs`. Approximately 131 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv_v2.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/oauth2.rs`
+### Change Record
+Modified file `crates/nexus-security/src/oauth2.rs`. Approximately 19 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/oauth2.rs` from "#[allow(clippy::format_push_string)]; url.push_str(&format!(; "&code_challenge={}&code_challenge_method=S256"," to "url.push_str("&code_challenge=");; url.push_str(&urlencoding::encode(challenge));; url.push_str("&code_challenge_method=...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:46:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/Cargo.toml`
+### Change Record
+Modified file `crates/nexus-security/Cargo.toml`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-security/Cargo.toml` from "tokio = { workspace = true, features = ["sync", "macros", "rt"] }" to "tokio = { workspace = true, features = ["sync", "macros", "rt", "net", "io-util", "time"] }".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/kv.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/kv.rs`. Approximately 18 lines changed.
+### Change Summary
+Removed "/// Patch request for KV v2 / KV v2 的补丁请求; #[derive(Debug, Clone, Serialize)]; #[allow(dead_code)]" from `crates/nexus-vault/src/kv.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:12
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 28 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-macros/src/pre_authorize.rs`
+### Change Record
+Modified file `crates/nexus-macros/src/pre_authorize.rs`. Approximately 84 lines changed.
+### Change Summary
+Changed `crates/nexus-macros/src/pre_authorize.rs` from "use proc_macro::TokenStream;; use quote::quote;; use syn::{ItemFn, parse_macro_input};" to "//! Pre-authorize macro helpers (superseded by spring_di module).; //! Pre-authorize 宏辅助（已被 spring_di 模块取代）。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 36 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-macros/src/bean_register.rs`
+### Change Record
+Modified file `crates/nexus-macros/src/bean_register.rs`. Approximately 16 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; fn should_inject_field(field: &Field) -> bool {; field_is_autowired(field) || extract_arc_inner(&fi..." from `crates/nexus-macros/src/bean_register.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 44 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/resource_bundle.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/resource_bundle.rs`. Approximately 16 lines changed.
+### Change Summary
+Changed `crates/nexus-i18n/src/resource_bundle.rs` from "#[allow(dead_code)]; async fn needs_reload(&self) -> bool {" to "/// Check if cache needs reload.; /// 检查缓存是否需要重载。; pub async fn needs_reload(&self) -> bool {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 52 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-i18n/src/message_source.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 60 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-i18n/src/message_source.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 68 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 28 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-i18n/src/message_source.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 76 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 33 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-i18n/src/message_source.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 84 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-integration/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 92 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/filter.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/filter.rs`. Approximately 16 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/filter.rs` from "pub struct PayloadTypeFilter {; #[allow(dead_code)]; type_name: String," to "pub struct PayloadTypeFilter {}".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 100 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/filter.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/filter.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/filter.rs` from "pub struct PayloadTypeFilter {; #[allow(dead_code)]; type_name: String," to "pub struct PayloadTypeFilter {}; Self {}".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 108 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/endpoint.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/endpoint.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; input_channel: Arc<dyn MessageChannel>," from `crates/nexus-integration/src/endpoint.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-vault/src/auth_jwt.rs`
+### Change Record
+Modified file `crates/nexus-vault/src/auth_jwt.rs`. Approximately 116 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-vault/src/auth_jwt.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/endpoint.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/endpoint.rs`. Approximately 28 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/endpoint.rs` from "#[allow(dead_code)]; input_channel: Arc<dyn MessageChannel>,; input_channel: Arc<dyn MessageChannel>," to "_input_channel: Arc<dyn MessageChannel>,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/endpoint.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/endpoint.rs`. Approximately 36 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/endpoint.rs` from "#[allow(dead_code)]; input_channel: Arc<dyn MessageChannel>,; input_channel: Arc<dyn MessageChannel>," to "_input_channel: Arc<dyn MessageChannel>,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-data-rdbc/src/client.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 19 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; fn validate_identifier(id: &str) -> Result<()> {; if id.is_empty() || !id.chars().all(|c| c.is_alph..." from `crates/nexus-data-rdbc/src/executor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 27 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; fn validate_identifier(id: &str) -> Result<()> {; if id.is_empty() || !id.chars().all(|c| c.is_alph..." from `crates/nexus-data-rdbc/src/executor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 209 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "/// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。; /// Opens a plain TCP connection to the SMTP server and performs the ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:47:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 217 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "use tokio::io::{AsyncReadExt, AsyncWriteExt};; /// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 255 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "use tokio::io::{AsyncReadExt, AsyncWriteExt};; /// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 36 lines changed.
+### Change Summary
+Changed `crates/nexus-i18n/src/message_source.rs` from "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" to "/// Default message source resolvable implementation; /// 默认消息源可解析实现; #[cfg_attr(not(test), allow(dead_code))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 255 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "use tokio::io::{AsyncBufReadExt, AsyncWriteExt};; /// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 37 lines changed.
+### Change Summary
+Changed `crates/nexus-i18n/src/message_source.rs` from "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" to "/// Default message source resolvable implementation; /// 默认消息源可解析实现; #[cfg_attr(not(test), allow(dead_code))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 38 lines changed.
+### Change Summary
+Changed `crates/nexus-i18n/src/message_source.rs` from "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" to "/// Default message source resolvable implementation; /// 默认消息源可解析实现; #[cfg_attr(not(test), allow(dead_code))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-i18n/src/message_source.rs`
+### Change Record
+Modified file `crates/nexus-i18n/src/message_source.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-i18n/src/message_source.rs` from "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" to "/// Default message source resolvable implementation; /// 默认消息源可解析实现; #[cfg_attr(not(test), allow(dead_code))]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/lib.rs`
+### Change Record
+### Change Summary
+Changed `crates/nexus-integration/src/lib.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/endpoint.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/endpoint.rs`. Approximately 45 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/endpoint.rs` from "#[allow(dead_code)]; input_channel: Arc<dyn MessageChannel>,; input_channel: Arc<dyn MessageChannel>," to "_input_channel: Arc<dyn MessageChannel>,; _input_channel: Arc<dyn MessageChannel>,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/endpoint.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/endpoint.rs`. Approximately 47 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/endpoint.rs` from "#[allow(dead_code)]; input_channel: Arc<dyn MessageChannel>,; input_channel: Arc<dyn MessageChannel>," to "_input_channel: Arc<dyn MessageChannel>,; _input_channel: Arc<dyn MessageChannel>,; output_channel: output_channel,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 16 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "#[allow(dead_code)]" to "#[cfg(test)]; #[cfg(test)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 28 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/executor.rs` from "#[allow(dead_code)]; fn validate_identifier(id: &str) -> Result<()> {; if id.is_empty() || !id.chars().all(|c| c.is_alph..." to "#[cfg(test)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:48:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 27 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "use crate::error::{Error, Result};; #[allow(dead_code)]" to "#[cfg(test)]; use crate::error::Error;; use crate::error::Result;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:49:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 256 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "use tokio::io::{AsyncBufReadExt, AsyncWriteExt};; /// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 22:49:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 256 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "/// SMTP-based email sender (stub implementation).; /// 基于 SMTP 的邮件发送器（桩实现）。; /// In production, this would open a TCP/T..." to "use tokio::io::{AsyncBufReadExt, AsyncWriteExt};; /// SMTP-based email sender.; /// 基于 SMTP 的邮件发送器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

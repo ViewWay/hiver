@@ -158,14 +158,6 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     // ── SQL builders ─────────────────────────────────────────────────
 
-    #[allow(dead_code)]
-    fn validate_identifier(id: &str) -> Result<()> {
-        if id.is_empty() || !id.chars().all(|c| c.is_alphanumeric() || c == '_') {
-            return Err(Error::sql(format!("Invalid SQL identifier: '{id}'")));
-        }
-        Ok(())
-    }
-
     fn build_select_query(
         &self,
         wrapper: &QueryWrapper,
@@ -398,7 +390,7 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 }
 
 /// Escape a value for SQL string literals
-#[allow(dead_code)]
+#[cfg(test)]
 fn sql_escape(s: &str) -> String {
     s.replace('\'', "''")
 }

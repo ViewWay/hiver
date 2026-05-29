@@ -525,7 +525,7 @@ impl RbacManager {
             // Check hierarchy
             if self.config.enable_hierarchy {
                 for user_role_name in &user_role.roles {
-                    if self.role_inherits_role(user_role_name, role).await {
+                    if self.role_inherits_role(user_role_name, role) {
                         return Ok(true);
                     }
                 }
@@ -562,7 +562,7 @@ impl RbacManager {
 
                 // Get inherited permissions via hierarchy
                 if self.config.enable_hierarchy {
-                    let inherited_roles = self.get_all_inherited_roles(role_name).await;
+                    let inherited_roles = self.get_all_inherited_roles(role_name);
                     for inherited_role in inherited_roles {
                         if let Some(role_perms) = role_permissions.get(&inherited_role) {
                             permissions.extend(role_perms.clone());
@@ -577,8 +577,7 @@ impl RbacManager {
 
     /// Get all inherited roles for a role
     /// 获取角色的所有继承角色
-    #[allow(clippy::unused_async)]
-    async fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {
+    fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {
         let mut inherited = HashSet::new();
         let mut to_check = vec![role.to_string()];
 
@@ -597,8 +596,7 @@ impl RbacManager {
 
     /// Check if a role inherits another role
     /// 检查角色是否继承另一个角色
-    #[allow(clippy::unused_async)]
-    async fn role_inherits_role(&self, role: &str, target: &str) -> bool {
+    fn role_inherits_role(&self, role: &str, target: &str) -> bool {
         if role == target {
             return true;
         }

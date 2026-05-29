@@ -64,3 +64,10 @@
 {"t":0,"agent":"a05c9a4","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
 {"t":0,"agent":"a05c9a4","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":340420}
 {"t":0,"agent":"a2b71c3","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":446434}
+{"t":0,"agent":"a4778b5","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a2e6e30","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a2cdb31","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ac80e98","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a2cdb31","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":146884}
+{"t":0,"agent":"ac80e98","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":184769}
+{"t":0,"agent":"a2e6e30","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":320099}

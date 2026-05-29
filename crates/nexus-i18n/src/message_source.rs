@@ -99,7 +99,9 @@ pub trait MessageSourceResolvable: Send + Sync {
 
 /// Default message source resolvable implementation
 /// 默认消息源可解析实现
-#[allow(dead_code)]
+/// Default message source resolvable implementation
+/// 默认消息源可解析实现
+#[cfg_attr(not(test), allow(dead_code))]
 pub struct DefaultMessageSourceResolvable {
     codes: Vec<String>,
     args: Vec<String>,
@@ -107,7 +109,7 @@ pub struct DefaultMessageSourceResolvable {
     locale: String,
 }
 
-#[allow(dead_code)]
+#[cfg_attr(not(test), allow(dead_code))]
 impl DefaultMessageSourceResolvable {
     /// Create new resolvable
     /// 创建新可解析对象
@@ -181,12 +183,12 @@ impl fmt::Debug for DefaultMessageSourceResolvable {
 /// Static message source (for testing)
 /// 静态消息源（用于测试）
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
+#[cfg_attr(not(test), allow(dead_code))]
 pub struct StaticMessageSource {
     messages: std::collections::HashMap<String, String>,
 }
 
-#[allow(dead_code)]
+#[cfg_attr(not(test), allow(dead_code))]
 impl StaticMessageSource {
     /// Create new static message source
     /// 创建新静态消息源

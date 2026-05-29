@@ -75,8 +75,6 @@ impl ServiceActivatorConfig {
 pub struct ServiceActivator {
     config: ServiceActivatorConfig,
     handler: Arc<dyn MessageHandler>,
-    #[allow(dead_code)]
-    input_channel: Arc<dyn MessageChannel>,
     output_channel: Option<Arc<dyn MessageChannel>>,
 }
 
@@ -85,13 +83,12 @@ impl ServiceActivator {
     pub fn new(
         config: ServiceActivatorConfig,
         handler: impl MessageHandler + 'static,
-        input_channel: Arc<dyn MessageChannel>,
+        _input_channel: Arc<dyn MessageChannel>,
         output_channel: Option<Arc<dyn MessageChannel>>,
     ) -> Self {
         Self {
             config,
             handler: Arc::new(handler),
-            input_channel,
             output_channel,
         }
     }
@@ -159,7 +156,7 @@ impl ServiceActivatorBuilder {
     /// Build with explicit channels.
     pub fn build(
         self,
-        input_channel: Arc<dyn MessageChannel>,
+        _input_channel: Arc<dyn MessageChannel>,
         output_channel: Option<Arc<dyn MessageChannel>>,
     ) -> Result<ServiceActivator> {
         let config = self.config.ok_or_else(|| {
@@ -171,8 +168,7 @@ impl ServiceActivatorBuilder {
         Ok(ServiceActivator {
             config,
             handler,
-            input_channel,
-            output_channel,
+            output_channel: output_channel,
         })
     }
 }

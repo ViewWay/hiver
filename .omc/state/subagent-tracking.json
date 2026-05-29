@@ -310,10 +310,37 @@
       "status": "completed",
       "completed_at": "2026-05-29T14:24:40.920Z",
       "duration_ms": 340420
+    },
+    {
+      "agent_id": "a2e6e309131345896",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-29T14:45:42.056Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-29T14:51:02.155Z",
+      "duration_ms": 320099
+    },
+    {
+      "agent_id": "a2cdb311f68c11618",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-29T14:45:42.107Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-29T14:48:08.991Z",
+      "duration_ms": 146884
+    },
+    {
+      "agent_id": "ac80e985dc307f1e8",
+      "agent_type": "backend-developer",
+      "started_at": "2026-05-29T14:45:42.169Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-29T14:48:46.938Z",
+      "duration_ms": 184769
     }
   ],
-  "total_spawned": 23,
-  "total_completed": 33,
+  "total_spawned": 25,
+  "total_completed": 36,
   "total_failed": 0,
-  "last_updated": "2026-05-29T14:26:26.982Z"
+  "last_updated": "2026-05-29T14:51:02.258Z"
 }

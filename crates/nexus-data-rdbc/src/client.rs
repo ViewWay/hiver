@@ -6,7 +6,9 @@
 //! High-level database client for executing queries with real sqlx backend.
 //! 用于执行查询的高级数据库客户端，基于 sqlx 真实后端。
 
-use crate::error::{Error, Result};
+#[cfg(test)]
+use crate::error::Error;
+use crate::error::Result;
 use crate::row::Row;
 
 /// Type-safe SQL parameter value
@@ -177,9 +179,10 @@ impl ToSql for bool {
 
 /// No-op client for testing SQL builders without a real database
 /// 无操作客户端，用于测试 SQL 构建器无需真实数据库
-#[allow(dead_code)]
+#[cfg(test)]
 pub(crate) struct NoopClient;
 
+#[cfg(test)]
 #[async_trait::async_trait]
 impl DatabaseClient for NoopClient {
     async fn fetch_all(&self, _sql: &str) -> Result<Vec<Row>> {

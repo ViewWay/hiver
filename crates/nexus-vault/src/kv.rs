@@ -143,13 +143,6 @@ struct KvV2ResponseInner {
     metadata: KvV2Metadata,
 }
 
-/// Patch request for KV v2 / KV v2 的补丁请求
-#[derive(Debug, Clone, Serialize)]
-#[allow(dead_code)]
-struct KvV2PatchRequest {
-    data: serde_json::Value,
-}
-
 /// Version request for KV v2 / KV v2 的版本请求
 #[derive(Debug, Clone, Serialize)]
 struct KvV2VersionRequest {

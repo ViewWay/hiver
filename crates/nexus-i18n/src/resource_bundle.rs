@@ -123,8 +123,9 @@ impl ResourceBundleMessageSource {
 
     /// Check if cache needs reload
     /// 检查缓存是否需要重载
-    #[allow(dead_code)]
-    async fn needs_reload(&self) -> bool {
+    /// Check if cache needs reload.
+    /// 检查缓存是否需要重载。
+    pub async fn needs_reload(&self) -> bool {
         let last = *self.last_reload.read().await;
         tokio::time::Instant::now()
             .duration_since(last)

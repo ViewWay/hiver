@@ -582,11 +582,9 @@ impl OAuth2Client {
         );
 
         if let Some(challenge) = code_challenge {
-            #[allow(clippy::format_push_string)]
-            url.push_str(&format!(
-                "&code_challenge={}&code_challenge_method=S256",
-                urlencoding::encode(challenge),
-            ));
+            url.push_str("&code_challenge=");
+            url.push_str(&urlencoding::encode(challenge));
+            url.push_str("&code_challenge_method=S256");
         }
 
         url

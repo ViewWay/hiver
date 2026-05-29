@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished\" | tail -3",
-    "testCommand": "cargo test -p nexus-http -p nexus-openapi 2>&1",
+    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished|warning.*generated\" | tail -10",
+    "testCommand": "cargo test -p nexus-vault 2>&1",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -151,6 +151,18 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/rbac.rs",
+      "accessCount": 10,
+      "lastAccessed": 1780066005461,
+      "type": "file"
+    },
+    {
+      "path": "crates/nexus-data-rdbc/src/client.rs",
+      "accessCount": 10,
+      "lastAccessed": 1780066110294,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-macros/src/lib.rs",
       "accessCount": 8,
       "lastAccessed": 1779590434172,
@@ -178,12 +190,6 @@
       "path": "crates/nexus-data-orm/src/active_record.rs",
       "accessCount": 7,
       "lastAccessed": 1779622199027,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-data-rdbc/src/client.rs",
-      "accessCount": 6,
-      "lastAccessed": 1779590340997,
       "type": "file"
     },
     {
@@ -235,6 +241,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/authorization_server.rs",
+      "accessCount": 5,
+      "lastAccessed": 1780065975706,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-websocket-stomp/src/lib.rs",
       "accessCount": 4,
       "lastAccessed": 1779619714270,
@@ -271,21 +283,9 @@
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/rbac.rs",
-      "accessCount": 4,
-      "lastAccessed": 1780064351303,
-      "type": "file"
-    },
-    {
       "path": "crates/nexus-router/src/params.rs",
       "accessCount": 3,
       "lastAccessed": 1779619601030,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-security/src/authorization_server.rs",
-      "accessCount": 3,
-      "lastAccessed": 1779619727453,
       "type": "file"
     },
     {

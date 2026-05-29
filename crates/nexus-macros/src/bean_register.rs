@@ -32,11 +32,6 @@ fn field_is_autowired(field: &Field) -> bool {
     })
 }
 
-#[allow(dead_code)]
-fn should_inject_field(field: &Field) -> bool {
-    field_is_autowired(field) || extract_arc_inner(&field.ty).is_some()
-}
-
 fn inject_type_for_field(field: &Field) -> Option<&Type> {
     if let Some(inner) = extract_arc_inner(&field.ty) {
         return Some(inner);

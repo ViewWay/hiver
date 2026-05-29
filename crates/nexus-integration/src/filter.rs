@@ -93,18 +93,13 @@ impl MessageFilter for HeaderFilter {
 
 /// Payload type filter - filters based on payload type
 /// 载荷类型过滤器 - 基于载荷类型过滤
-pub struct PayloadTypeFilter {
-    #[allow(dead_code)]
-    type_name: String,
-}
+pub struct PayloadTypeFilter {}
 
 impl PayloadTypeFilter {
     /// Create a new payload type filter
     /// 创建新的载荷类型过滤器
     pub fn new<T: 'static>() -> Self {
-        Self {
-            type_name: std::any::type_name::<T>().to_string(),
-        }
+        Self {}
     }
 }
 

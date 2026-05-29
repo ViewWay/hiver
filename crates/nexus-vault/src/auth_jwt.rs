@@ -107,7 +107,6 @@ pub struct JwtRoleConfig {
 impl JwtRoleConfig {
     /// Create a new role configuration with required fields.
     /// 使用必填字段创建新角色配置。
-    #[allow(dead_code)]
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
@@ -124,7 +123,6 @@ impl JwtRoleConfig {
 
     /// Set the role type.
     /// 设置角色类型。
-    #[allow(dead_code)]
     pub fn with_role_type(mut self, role_type: impl Into<String>) -> Self {
         self.role_type = Some(role_type.into());
         self
@@ -132,7 +130,6 @@ impl JwtRoleConfig {
 
     /// Set the bound audiences.
     /// 设置绑定受众。
-    #[allow(dead_code)]
     pub fn with_bound_audiences(mut self, audiences: Vec<String>) -> Self {
         self.bound_audiences = Some(audiences);
         self
@@ -140,7 +137,6 @@ impl JwtRoleConfig {
 
     /// Set the user claim (required for most configurations).
     /// 设置用户声明（大多数配置必需）。
-    #[allow(dead_code)]
     pub fn with_user_claim(mut self, claim: impl Into<String>) -> Self {
         self.user_claim = Some(claim.into());
         self
@@ -148,7 +144,6 @@ impl JwtRoleConfig {
 
     /// Set the groups claim.
     /// 设置分组声明。
-    #[allow(dead_code)]
     pub fn with_groups_claim(mut self, claim: impl Into<String>) -> Self {
         self.groups_claim = Some(claim.into());
         self
@@ -156,7 +151,6 @@ impl JwtRoleConfig {
 
     /// Set the policies to grant.
     /// 设置要授予的策略。
-    #[allow(dead_code)]
     pub fn with_policies(mut self, policies: Vec<String>) -> Self {
         self.policies = Some(policies);
         self
@@ -164,7 +158,6 @@ impl JwtRoleConfig {
 
     /// Set the token TTL.
     /// 设置 Token TTL。
-    #[allow(dead_code)]
     pub fn with_ttl(mut self, ttl: impl Into<String>) -> Self {
         self.ttl = Some(ttl.into());
         self
@@ -221,7 +214,6 @@ impl JwtAuth {
 
     /// Create a new JWT authentication with a custom mount path.
     /// 使用自定义挂载路径创建新的 JWT 认证。
-    #[allow(dead_code)]
     pub fn with_mount(mut self, mount: impl Into<String>) -> Self {
         self.mount = mount.into();
         self
@@ -290,7 +282,6 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Create with a custom mount path.
     /// 使用自定义挂载路径创建。
-    #[allow(dead_code)]
     pub fn with_mount(client: &'a VaultClient, mount: &str) -> Self {
         Self {
             client,
@@ -306,7 +297,6 @@ impl<'a> JwtAuthManager<'a> {
     /// ```java
     /// vaultOperations.write("auth/jwt/role/my-role", roleConfig);
     /// ```
-    #[allow(dead_code)]
     pub async fn configure_role(&self, config: &JwtRoleConfig) -> VaultResult<()> {
         let path = format!("auth/{}/role/{}", self.mount, config.name);
         self.client.post(&path, config).await?;
@@ -315,7 +305,6 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Read a JWT auth role configuration.
     /// 读取 JWT 认证角色配置。
-    #[allow(dead_code)]
     pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value> {
         let path = format!("auth/{}/role/{}", self.mount, role_name);
         let resp = self.client.get(&path).await?;
@@ -327,7 +316,6 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Delete a JWT auth role.
     /// 删除 JWT 认证角色。
-    #[allow(dead_code)]
     pub async fn delete_role(&self, role_name: &str) -> VaultResult<()> {
         let path = format!("auth/{}/role/{}", self.mount, role_name);
         self.client.delete(&path).await?;
@@ -336,7 +324,6 @@ impl<'a> JwtAuthManager<'a> {
 
     /// List all JWT auth roles.
     /// 列出所有 JWT 认证角色。
-    #[allow(dead_code)]
     pub async fn list_roles(&self) -> VaultResult<Vec<String>> {
         let path = format!("auth/{}/role", self.mount);
         crate::secret::list(self.client, &path).await
@@ -344,7 +331,6 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Configure the JWT auth method itself (OIDC discovery URL, etc.).
     /// 配置 JWT 认证方法本身（OIDC 发现 URL 等）。
-    #[allow(dead_code)]
     pub async fn configure(
         &self,
         oidc_discovery_url: Option<&str>,

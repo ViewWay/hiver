@@ -173,7 +173,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Start building a read request for a secret.
     /// 开始构建密钥的读取请求。
-    #[allow(dead_code)]
     pub fn get(&self, path: &str) -> KvV2GetRequest<'a> {
         KvV2GetRequest {
             client: self.client,
@@ -185,14 +184,12 @@ impl<'a> KvV2Engine<'a> {
 
     /// Read the latest version of a secret (convenience method).
     /// 读取密钥的最新版本（便捷方法）。
-    #[allow(dead_code)]
     pub async fn get_latest(&self, path: &str) -> VaultResult<crate::kv::KvV2Secret> {
         self.client.kv_v2(&self.mount).read(path).await
     }
 
     /// Read a specific version of a secret (convenience method).
     /// 读取密钥的指定版本（便捷方法）。
-    #[allow(dead_code)]
     pub async fn get_secret(&self, path: &str, version: i64) -> VaultResult<crate::kv::KvV2Secret> {
         self.client.kv_v2(&self.mount).read_version(path, version).await
     }
@@ -201,7 +198,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Start building a write request for a secret.
     /// 开始构建密钥的写入请求。
-    #[allow(dead_code)]
     pub fn put(&self, path: &str, data: serde_json::Value) -> KvV2PutRequest<'a> {
         KvV2PutRequest {
             client: self.client,
@@ -214,7 +210,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Write a secret without CAS (convenience method).
     /// 写入不带 CAS 的密钥（便捷方法）。
-    #[allow(dead_code)]
     pub async fn put_secret(
         &self,
         path: &str,
@@ -238,7 +233,6 @@ impl<'a> KvV2Engine<'a> {
     /// ```java
     /// keyValueTemplate.put("path", Versioned.just(casVersion, data));
     /// ```
-    #[allow(dead_code)]
     pub async fn put_with_cas(
         &self,
         path: &str,
@@ -273,7 +267,6 @@ impl<'a> KvV2Engine<'a> {
     ///
     /// Soft-deleted versions can be recovered with `undelete_secret_versions`.
     /// 软删除的版本可以通过 `undelete_secret_versions` 恢复。
-    #[allow(dead_code)]
     pub async fn delete_secret_versions(
         &self,
         path: &str,
@@ -287,7 +280,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Undelete (recover) previously soft-deleted versions.
     /// 恢复（取消删除）之前软删除的版本。
-    #[allow(dead_code)]
     pub async fn undelete_secret_versions(
         &self,
         path: &str,
@@ -304,7 +296,6 @@ impl<'a> KvV2Engine<'a> {
     ///
     /// Destroyed versions cannot be recovered.
     /// 销毁的版本无法恢复。
-    #[allow(dead_code)]
     pub async fn destroy(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         self.client
             .kv_v2(&self.mount)
@@ -314,7 +305,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// List all secret keys at a given path prefix.
     /// 列出给定路径前缀下的所有密钥。
-    #[allow(dead_code)]
     pub async fn list_secrets(&self, path: &str) -> VaultResult<Vec<String>> {
         self.client.kv_v2(&self.mount).list(path).await
     }
@@ -323,7 +313,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Read the full metadata for a secret path.
     /// 读取密钥路径的完整元数据。
-    #[allow(dead_code)]
     pub async fn read_full_metadata(
         &self,
         path: &str,
@@ -362,7 +351,6 @@ impl<'a> KvV2Engine<'a> {
 
     /// Delete all versions and metadata for a secret.
     /// 删除密钥的所有版本和元数据。
-    #[allow(dead_code)]
     pub async fn delete_metadata(&self, path: &str) -> VaultResult<()> {
         self.client.kv_v2(&self.mount).delete_metadata(path).await
     }
@@ -384,7 +372,6 @@ pub struct KvV2GetRequest<'a> {
 impl KvV2GetRequest<'_> {
     /// Request a specific version of the secret.
     /// 请求密钥的指定版本。
-    #[allow(dead_code)]
     pub fn version(mut self, version: i64) -> Self {
         self.version = Some(version);
         self
@@ -392,7 +379,6 @@ impl KvV2GetRequest<'_> {
 
     /// Execute the read request.
     /// 执行读取请求。
-    #[allow(dead_code)]
     pub async fn execute(self) -> VaultResult<crate::kv::KvV2Secret> {
         match self.version {
             Some(v) => {
@@ -424,7 +410,6 @@ pub struct KvV2PutRequest<'a> {
 impl KvV2PutRequest<'_> {
     /// Set the CAS version for conditional write.
     /// 为条件写入设置 CAS 版本。
-    #[allow(dead_code)]
     pub fn with_cas(mut self, version: i64) -> Self {
         self.options = self.options.with_cas(version);
         self
@@ -432,7 +417,6 @@ impl KvV2PutRequest<'_> {
 
     /// Execute the write request.
     /// 执行写入请求。
-    #[allow(dead_code)]
     pub async fn execute(self) -> VaultResult<crate::kv::KvV2Metadata> {
         if self.options.cas.is_some() {
             let full_path = format!("{}/data/{}", self.mount, self.path);

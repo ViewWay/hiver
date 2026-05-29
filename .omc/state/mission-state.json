@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T14:26:26.879Z",
+  "updatedAt": "2026-05-29T14:51:02.155Z",
   "missions": [
     {
       "id": "session:006e127e-e527-42e6-950c-6ef99ab8b632:none",
@@ -339,15 +339,15 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-05-29T11:58:53.475Z",
-      "updatedAt": "2026-05-29T14:26:26.879Z",
+      "updatedAt": "2026-05-29T14:51:02.155Z",
       "status": "done",
-      "workerCount": 8,
+      "workerCount": 11,
       "taskCounts": {
-        "total": 8,
+        "total": 11,
         "pending": 0,
         "blocked": 0,
         "inProgress": 0,
-        "completed": 8,
+        "completed": 11,
         "failed": 0
       },
       "agents": [
@@ -359,7 +359,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-05-29T14:13:40.923Z"
+          "updatedAt": "2026-05-29T14:31:23.935Z"
         },
         {
           "name": "backend-developer:accb926",
@@ -430,48 +430,86 @@
           "latestUpdate": "completed",
           "completedSummary": null,
           "updatedAt": "2026-05-29T14:24:40.920Z"
+        },
+        {
+          "name": "backend-developer:a2e6e30",
+          "role": "backend-developer",
+          "ownership": "a2e6e309131345896",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-29T14:51:02.155Z"
+        },
+        {
+          "name": "backend-developer:a2cdb31",
+          "role": "backend-developer",
+          "ownership": "a2cdb311f68c11618",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-29T14:48:08.991Z"
+        },
+        {
+          "name": "backend-developer:ac80e98",
+          "role": "backend-developer",
+          "ownership": "ac80e985dc307f1e8",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-05-29T14:48:46.938Z"
         }
       ],
       "timeline": [
         {
-          "id": "session-stop:a2950270e821cbf2a:2026-05-29T14:13:40.923Z",
-          "at": "2026-05-29T14:13:40.923Z",
-          "kind": "completion",
-          "agent": "backend-developer:ad816ba",
-          "detail": "completed",
-          "sourceKey": "session-stop:a2950270e821cbf2a"
-        },
-        {
-          "id": "session-start:a2b71c35ec4046954:2026-05-29T14:19:00.445Z",
-          "at": "2026-05-29T14:19:00.445Z",
+          "id": "session-start:a2e6e309131345896:2026-05-29T14:45:42.056Z",
+          "at": "2026-05-29T14:45:42.056Z",
           "kind": "update",
-          "agent": "backend-developer:a2b71c3",
-          "detail": "started backend-developer:a2b71c3",
-          "sourceKey": "session-start:a2b71c35ec4046954"
+          "agent": "backend-developer:a2e6e30",
+          "detail": "started backend-developer:a2e6e30",
+          "sourceKey": "session-start:a2e6e309131345896"
         },
         {
-          "id": "session-start:a05c9a4a0ed24a6d1:2026-05-29T14:19:00.500Z",
-          "at": "2026-05-29T14:19:00.500Z",
+          "id": "session-start:a2cdb311f68c11618:2026-05-29T14:45:42.107Z",
+          "at": "2026-05-29T14:45:42.107Z",
           "kind": "update",
-          "agent": "backend-developer:a05c9a4",
-          "detail": "started backend-developer:a05c9a4",
-          "sourceKey": "session-start:a05c9a4a0ed24a6d1"
+          "agent": "backend-developer:a2cdb31",
+          "detail": "started backend-developer:a2cdb31",
+          "sourceKey": "session-start:a2cdb311f68c11618"
         },
         {
-          "id": "session-stop:a05c9a4a0ed24a6d1:2026-05-29T14:24:40.920Z",
-          "at": "2026-05-29T14:24:40.920Z",
-          "kind": "completion",
-          "agent": "backend-developer:a05c9a4",
-          "detail": "completed",
-          "sourceKey": "session-stop:a05c9a4a0ed24a6d1"
+          "id": "session-start:ac80e985dc307f1e8:2026-05-29T14:45:42.169Z",
+          "at": "2026-05-29T14:45:42.169Z",
+          "kind": "update",
+          "agent": "backend-developer:ac80e98",
+          "detail": "started backend-developer:ac80e98",
+          "sourceKey": "session-start:ac80e985dc307f1e8"
         },
         {
-          "id": "session-stop:a2b71c35ec4046954:2026-05-29T14:26:26.879Z",
-          "at": "2026-05-29T14:26:26.879Z",
+          "id": "session-stop:a2cdb311f68c11618:2026-05-29T14:48:08.991Z",
+          "at": "2026-05-29T14:48:08.991Z",
           "kind": "completion",
-          "agent": "backend-developer:a2b71c3",
+          "agent": "backend-developer:a2cdb31",
           "detail": "completed",
-          "sourceKey": "session-stop:a2b71c35ec4046954"
+          "sourceKey": "session-stop:a2cdb311f68c11618"
+        },
+        {
+          "id": "session-stop:ac80e985dc307f1e8:2026-05-29T14:48:46.938Z",
+          "at": "2026-05-29T14:48:46.938Z",
+          "kind": "completion",
+          "agent": "backend-developer:ac80e98",
+          "detail": "completed",
+          "sourceKey": "session-stop:ac80e985dc307f1e8"
+        },
+        {
+          "id": "session-stop:a2e6e309131345896:2026-05-29T14:51:02.155Z",
+          "at": "2026-05-29T14:51:02.155Z",
+          "kind": "completion",
+          "agent": "backend-developer:a2e6e30",
+          "detail": "completed",
+          "sourceKey": "session-stop:a2e6e309131345896"
         }
       ]
     }
