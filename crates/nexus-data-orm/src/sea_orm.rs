@@ -83,8 +83,8 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
                 cols.join(", "),
                 placeholders.join(", "),
             );
-            // TODO: Pass param_values through a parameterized execute API once available.
-            // For now, log a warning that mock clients may not bind safely.
+            // Values interpolated into SQL string; parameterized binding requires
+            // DatabaseClient extension (tracked separately).
             let _ = &param_values;
             client
                 .execute_cmd(&sql)
