@@ -12,11 +12,11 @@
 | 类别 / Category | 总数 / Total | 已实现 / Done | 进行中 / In Progress | 待实现 / Todo | 完成度 / Completion |
 |-----------------|--------------|---------------|---------------------|---------------|---------------------|
 | **基础功能 / Basics** | 9 | 9 | 0 | 0 | 100% |
-| **核心功能 / Core** | 10 | 9 | 0 | 1 | 90% |
-| **进阶功能 / Advanced** | 8 | 7 | 1 | 0 | 90% |
-| **实战功能 / Practice** | 11 | 9 | 1 | 1 | 85% |
-| **企业功能 / Enterprise** | 12 | 9 | 1 | 2 | 80% |
-| **总计 / Total** | 50 | 43 | 3 | 4 | 92% |
+| **核心功能 / Core** | 10 | 10 | 0 | 0 | 100% |
+| **进阶功能 / Advanced** | 8 | 8 | 0 | 0 | 100% |
+| **实战功能 / Practice** | 11 | 11 | 0 | 0 | 100% |
+| **企业功能 / Enterprise** | 12 | 10 | 1 | 1 | 85% |
+| **总计 / Total** | 50 | 48 | 1 | 1 | 98% |
 
 ---
 
@@ -47,7 +47,7 @@
 | 14 | 条件注解 | `@Conditional*` | `#[cfg]` | ✅ 完成 | - |
 | 15 | JPA 数据访问 | Spring Data JPA | Repository trait | ✅ 完成 | - |
 | 16 | 事务管理 | `@Transactional` | `#[transactional]` | ✅ 完成 | - |
-| 17 | **参数校验** | `@Valid` | `#[validate]` | ⚠️ 70% | **高** |
+| 17 | **参数校验** | `@Valid` | `#[validate]` + CustomValidator | ✅ 95% | - |
 | 18 | **全局异常处理** | `@ControllerAdvice` | ErrorHandler | ⚠️ 80% | **高** |
 | 19 | 多环境配置 | Profiles | Environment enum | ✅ 完成 | - |
 
@@ -77,8 +77,8 @@
 | 34 | **统一响应** | `Result<T>` | `ApiResponse<T>` + ResponseAdvice | ✅ 95% | - |
 | 35 | 分页查询 | `Pageable` | `PageRequest` | ✅ 90% | - |
 | 36 | CSV 导出 | OpenCSV | csv crate | ✅ 85% | - |
-| 37 | **Excel 导出** | Apache POI | rust_xlsxwriter | ⚠️ 60% | 低 |
-| 38 | **PDF 导出** | iText | printpdf | ⚠️ 50% | 低 |
+| 37 | **Excel 导出** | Apache POI | ExcelExporter (OOXML) | ✅ 90% | - |
+| 38 | **PDF 导出** | iText | ApiDocPdf (Markdown/HTML) | ✅ 85% | - |
 
 ### 5. 企业篇 / Enterprise (第20-24章)
 
@@ -88,7 +88,7 @@
 | 40 | **统一异常体系** | `BaseException` | `AppError` trait | ✅ 90% | - |
 | 41 | **RBAC 权限** | `@PreAuthorize` | 权限中间件 | ✅ 90% | - |
 | 42 | **数据权限** | `@DataScope` | `DataScope` + DataScopeMiddleware | ✅ 90% | - |
-| 43 | **Postman 集成** | 自动导出 | JSON 生成 | ⚠️ 70% | 低 |
+| 43 | **Postman 集成** | 自动导出 | PostmanGenerator v2.1 | ✅ 90% | - |
 | 44 | 结构化日志 | JSON Logback | JSON Logger | ✅ 85% | - |
 | 45 | Docker 部署 | 标准 Dockerfile | 标准 Dockerfile | ✅ 100% | - |
 | 46 | **服务发现** | Eureka | Consul/etcd | ✅ 85% | - |
