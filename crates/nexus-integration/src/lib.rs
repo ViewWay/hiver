@@ -108,9 +108,9 @@ enum FlowStep {
     Channel(String),
     Transform(std::sync::Arc<dyn transformer::Transformer>),
     Filter(std::sync::Arc<dyn filter::MessageFilter>),
-    #[allow(dead_code)]
+    #[allow(dead_code)] // no builder method yet; match arm in BuiltFlow::process ready for when added
     Split(std::sync::Arc<dyn splitter::MessageSplitter>),
-    #[allow(dead_code)]
+    #[allow(dead_code)] // no builder method yet; match arm in BuiltFlow::process ready for when added
     Aggregate(std::sync::Arc<dyn aggregator::MessageAggregator>),
 }
 

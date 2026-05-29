@@ -45,7 +45,7 @@ pub struct RequestContext {
 pub struct State {
     /// Inner state data
     /// 内部状态数据
-    #[allow(dead_code)]
+    #[allow(dead_code)] // public API scaffolding, field access not yet implemented
     inner: Arc<state::Inner>,
 }
 
@@ -56,7 +56,7 @@ mod state {
     pub(crate) struct Inner {
         /// Shared data storage
         /// 共享数据存储
-        #[allow(dead_code)]
+        #[allow(dead_code)] // storage for future shared state accessors
         pub(crate) data: std::sync::RwLock<super::Extensions>,
     }
 }

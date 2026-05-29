@@ -213,16 +213,6 @@ impl<'a> PostProcessorContext<'a> {
 /// ```
 #[derive(Debug, Clone)]
 pub struct PropertyPlaceholderProcessor {
-    /// 占位符前缀
-    /// Placeholder prefix
-    #[allow(dead_code)]
-    prefix: String,
-
-    /// 占位符后缀
-    /// Placeholder suffix
-    #[allow(dead_code)]
-    suffix: String,
-
     /// 值分隔符（用于默认值）
     /// Value separator (for default values)
     separator: char,
@@ -242,24 +232,8 @@ impl PropertyPlaceholderProcessor {
     /// Uses `${` and `}` as placeholder delimiters, `:` as default separator.
     pub fn new() -> Self {
         Self {
-            prefix: "${".to_string(),
-            suffix: "}".to_string(),
             separator: ':',
         }
-    }
-
-    /// 设置占位符前缀
-    /// Set placeholder prefix
-    pub fn with_prefix(mut self, prefix: impl Into<String>) -> Self {
-        self.prefix = prefix.into();
-        self
-    }
-
-    /// 设置占位符后缀
-    /// Set placeholder suffix
-    pub fn with_suffix(mut self, suffix: impl Into<String>) -> Self {
-        self.suffix = suffix.into();
-        self
     }
 
     /// 设置默认值分隔符

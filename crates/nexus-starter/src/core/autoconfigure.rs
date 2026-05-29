@@ -446,11 +446,6 @@ pub trait Condition: Send + Sync + fmt::Debug {
 /// Equivalent to Spring Boot's `@ConditionalOnClass`.
 #[derive(Debug, Clone)]
 pub struct ConditionalOnClass {
-    /// 要检查的类型 ID
-    /// Type ID to check
-    #[allow(dead_code)]
-    type_id: TypeId,
-
     /// 类型名称（用于日志和环境变量检查）
     /// Type name (for logging and environment variable checking)
     type_name: &'static str,
@@ -465,7 +460,6 @@ impl ConditionalOnClass {
     /// - `T`: 要检查的类型 / Type to check
     pub fn new<T: 'static>() -> Self {
         Self {
-            type_id: TypeId::of::<T>(),
             type_name: std::any::type_name::<T>(),
         }
     }
@@ -506,11 +500,6 @@ impl Condition for ConditionalOnClass {
 /// Equivalent to Spring Boot's `@ConditionalOnMissingClass`.
 #[derive(Debug, Clone)]
 pub struct ConditionalOnMissingClass {
-    /// 要检查的类型 ID
-    /// Type ID to check
-    #[allow(dead_code)]
-    type_id: TypeId,
-
     /// 类型名称（用于日志和环境变量检查）
     /// Type name (for logging and environment variable checking)
     type_name: &'static str,
@@ -525,7 +514,6 @@ impl ConditionalOnMissingClass {
     /// - `T`: 要检查不存在的类型 / Type to check for absence
     pub fn new<T: 'static>() -> Self {
         Self {
-            type_id: TypeId::of::<T>(),
             type_name: std::any::type_name::<T>(),
         }
     }
@@ -534,7 +522,6 @@ impl ConditionalOnMissingClass {
 impl Condition for ConditionalOnMissingClass {
     fn matches(&self, ctx: &ApplicationContext) -> bool {
         !ConditionalOnClass {
-            type_id: self.type_id,
             type_name: self.type_name,
         }
         .matches(ctx)
@@ -635,11 +622,6 @@ pub struct ConditionalOnMissingBeanCondition {
     /// Bean 类型 ID
     /// Bean type ID
     type_id: TypeId,
-
-    /// Bean 类型名称（用于日志）
-    /// Bean type name (for logging)
-    #[allow(dead_code)]
-    type_name: &'static str,
 }
 
 impl ConditionalOnMissingBeanCondition {
@@ -652,7 +634,6 @@ impl ConditionalOnMissingBeanCondition {
     pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
-            type_name: std::any::type_name::<T>(),
         }
     }
 }
@@ -680,11 +661,6 @@ pub struct ConditionalOnBeanCondition {
     /// Bean 类型 ID
     /// Bean type ID
     type_id: TypeId,
-
-    /// Bean 类型名称（用于日志）
-    /// Bean type name (for logging)
-    #[allow(dead_code)]
-    type_name: &'static str,
 }
 
 impl ConditionalOnBeanCondition {
@@ -697,7 +673,6 @@ impl ConditionalOnBeanCondition {
     pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
-            type_name: std::any::type_name::<T>(),
         }
     }
 }

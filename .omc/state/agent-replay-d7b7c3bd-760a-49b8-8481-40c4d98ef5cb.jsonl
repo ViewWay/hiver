@@ -74,3 +74,7 @@
 {"t":0,"agent":"af960b5","agent_type":"backend-developer","event":"agent_stop","success":true}
 {"t":0,"agent":"ae32499","agent_type":"backend-developer","event":"agent_stop","success":true}
 {"t":0,"agent":"a3d0abd","agent_type":"backend-developer","event":"agent_stop","success":true}
+{"t":0,"agent":"afd6938","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ac0879c","agent_type":"backend-developer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"afd6938","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":169104}
+{"t":0,"agent":"ac0879c","agent_type":"backend-developer","event":"agent_stop","success":true,"duration_ms":315581}

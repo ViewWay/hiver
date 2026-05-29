@@ -63,12 +63,6 @@ where
         &self.template
     }
 
-    /// Convert ID to Bson / 将 ID 转换为 Bson
-    #[allow(dead_code)]
-    fn to_bson(&self, id: ID) -> Bson {
-        id.into()
-    }
-
     /// Find documents by filter / 根据过滤器查找文档
     pub async fn find(&self, filter: Document) -> MongoResult<Vec<T>> {
         let collection = self.template.client().collection::<T>(&self.collection_name);

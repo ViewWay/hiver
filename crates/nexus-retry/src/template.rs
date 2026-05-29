@@ -57,55 +57,6 @@ impl RetryCallback for NoOpCallback {
     fn on_error(&self, _error: &str) {}
 }
 
-/// Callback from function
-/// 函数回调
-#[allow(dead_code)]
-pub struct CallbackFn<R, S, E>
-where
-    R: Fn(usize, Duration) + Send + Sync,
-    S: Fn(usize) + Send + Sync,
-    E: Fn(&str) + Send + Sync,
-{
-    on_retry_fn: Arc<R>,
-    on_success_fn: Arc<S>,
-    on_error_fn: Arc<E>,
-}
-
-impl<R, S, E> CallbackFn<R, S, E>
-where
-    R: Fn(usize, Duration) + Send + Sync,
-    S: Fn(usize) + Send + Sync,
-    E: Fn(&str) + Send + Sync,
-{
-    #[allow(dead_code)]
-    pub fn new(on_retry_fn: R, on_success_fn: S, on_error_fn: E) -> Self {
-        Self {
-            on_retry_fn: Arc::new(on_retry_fn),
-            on_success_fn: Arc::new(on_success_fn),
-            on_error_fn: Arc::new(on_error_fn),
-        }
-    }
-}
-
-impl<R, S, E> RetryCallback for CallbackFn<R, S, E>
-where
-    R: Fn(usize, Duration) + Send + Sync,
-    S: Fn(usize) + Send + Sync,
-    E: Fn(&str) + Send + Sync,
-{
-    fn on_retry(&self, attempt: usize, delay: Duration) {
-        (self.on_retry_fn)(attempt, delay)
-    }
-
-    fn on_success(&self, attempts: usize) {
-        (self.on_success_fn)(attempts)
-    }
-
-    fn on_error(&self, error: &str) {
-        (self.on_error_fn)(error)
-    }
-}
-
 /// Retry context containing execution state
 /// 重试上下文，包含执行状态
 ///

@@ -253,16 +253,6 @@ pub struct ReactiveLoadBalancer {
     /// Round robin strategy
     /// 轮询策略
     round_robin: Arc<RoundRobinLoadBalancer>,
-
-    /// Random strategy (reserved for future use)
-    /// 随机策略（预留，未来使用）
-    #[allow(dead_code)]
-    random: Arc<RandomLoadBalancer>,
-
-    /// Least connection strategy (reserved for future use)
-    /// 最少连接策略（预留，未来使用）
-    #[allow(dead_code)]
-    least_connection: Arc<LeastConnectionLoadBalancer>,
 }
 
 impl ReactiveLoadBalancer {
@@ -271,8 +261,6 @@ impl ReactiveLoadBalancer {
     pub fn new() -> Self {
         Self {
             round_robin: Arc::new(RoundRobinLoadBalancer::new()),
-            random: Arc::new(RandomLoadBalancer),
-            least_connection: Arc::new(LeastConnectionLoadBalancer::new()),
         }
     }
 }

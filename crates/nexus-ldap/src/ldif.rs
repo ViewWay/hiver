@@ -322,7 +322,6 @@ fn decode_base64_value(encoded: &str) -> String {
 ///
 /// Serializes a list of LDIF entries into valid LDIF format.
 /// 将 LDIF 条目列表序列化为有效的 LDIF 格式。
-#[allow(dead_code)]
 pub fn generate_ldif(entries: &[LdifEntry]) -> String {
     let mut output = String::new();
 

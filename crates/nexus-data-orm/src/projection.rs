@@ -165,7 +165,6 @@ where
 
     /// Execute the projected query and return all results as DTOs.
     /// 执行投影查询并以 DTO 形式返回所有结果。
-    #[allow(dead_code)]
     pub async fn query<C: DatabaseClient>(&self, client: &C) -> crate::Result<Vec<T>> {
         let col_list = if self.columns.is_empty() {
             "*".to_string()
@@ -189,7 +188,6 @@ where
 
     /// Execute the projected query with a WHERE condition.
     /// 使用 WHERE 条件执行投影查询。
-    #[allow(dead_code)]
     pub async fn query_where<C: DatabaseClient>(
         &self,
         client: &C,
@@ -226,7 +224,6 @@ where
 
     /// Get the columns included in this projection.
     /// 获取此投影中包含的列。
-    #[allow(dead_code)]
     pub fn columns(&self) -> &[String] {
         &self.columns
     }
@@ -310,7 +307,6 @@ impl<M: Model> DynamicProjection<M> {
 
     /// Execute and return raw rows for flexible mapping.
     /// 执行并返回原始行以进行灵活映射。
-    #[allow(dead_code)]
     pub async fn execute<C: DatabaseClient>(
         &self,
         client: &C,
@@ -329,7 +325,6 @@ impl<M: Model> DynamicProjection<M> {
 
     /// Execute with a WHERE condition.
     /// 使用 WHERE 条件执行。
-    #[allow(dead_code)]
     pub async fn execute_where<C: DatabaseClient>(
         &self,
         client: &C,
@@ -358,7 +353,6 @@ impl<M: Model> DynamicProjection<M> {
 
     /// Get the columns included in this projection.
     /// 获取此投影中包含的列。
-    #[allow(dead_code)]
     pub fn columns(&self) -> &[String] {
         &self.columns
     }

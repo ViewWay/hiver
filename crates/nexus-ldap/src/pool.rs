@@ -40,10 +40,7 @@ impl Default for PoolConfig {
 
 /// A connection in the pool / 池中的连接
 #[derive(Debug)]
-struct PooledConnection {
-    #[allow(dead_code)]
-    active: bool,
-}
+struct PooledConnection {}
 
 /// LDAP connection pool / LDAP连接池
 ///
@@ -62,7 +59,7 @@ impl LdapPool {
         // Pre-create idle connections
         let mut idle = VecDeque::new();
         for _ in 0..config.min_idle {
-            idle.push_back(PooledConnection { active: false });
+            idle.push_back(PooledConnection {});
         }
 
         Self {
@@ -98,7 +95,7 @@ impl LdapPool {
         *self.active_count.lock().expect("lock poisoned") -= 1;
 
         if idle.len() < self.config.max_idle {
-            idle.push_back(PooledConnection { active: false });
+            idle.push_back(PooledConnection {});
         }
     }
 

@@ -238,9 +238,7 @@ where
     base: String,
     mapper: M,
     serializer: S,
-    #[allow(dead_code)]
-    id_extractor: E,
-    _marker: PhantomData<(T, ID)>,
+    _marker: PhantomData<(T, ID, E)>,
 }
 
 impl<T, ID, M, S, E> TypedLdapRepository<T, ID, M, S, E>
@@ -265,14 +263,13 @@ where
         base: &str,
         mapper: M,
         serializer: S,
-        id_extractor: E,
+        _id_extractor: E,
     ) -> Self {
         Self {
             template,
             base: base.to_string(),
             mapper,
             serializer,
-            id_extractor,
             _marker: PhantomData,
         }
     }

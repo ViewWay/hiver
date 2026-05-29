@@ -687,7 +687,7 @@ fn strip_dialect_suffix(base_name: &str) -> String {
 
 /// Parse Flyway migration filename (original simple version)
 /// 解析 Flyway 迁移文件名（原始简单版本）
-#[allow(dead_code)]
+#[allow(dead_code)] // used in tests; kept for API compatibility with parse_migration_filename_with_dialect
 fn parse_migration_filename(filename: &str) -> Option<(String, String)> {
     parse_migration_filename_with_dialect(filename)
 }

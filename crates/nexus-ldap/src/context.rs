@@ -208,7 +208,7 @@ pub struct LdapContextSource {
     base_dn: String,
     username: Option<String>,
     password: Option<String>,
-    #[allow(dead_code)]
+    #[allow(dead_code)] // Used by builder; will be consumed by future create_connection()
     connect_timeout: Duration,
 }
 

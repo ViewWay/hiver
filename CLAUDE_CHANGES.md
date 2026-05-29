@@ -8115,3 +8115,510 @@ Added "///; /// Used to create a detached handle from an existing scheduler's wo
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-retry/src/template.rs`
+### Change Record
+Modified file `crates/nexus-retry/src/template.rs`. Approximately 60 lines changed.
+### Change Summary
+Removed "/// Callback from function; /// 函数回调; #[allow(dead_code)]" from `crates/nexus-retry/src/template.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-integration/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-mongodb/src/bulk.rs`
+### Change Record
+Modified file `crates/nexus-data-mongodb/src/bulk.rs`. Approximately 79 lines changed.
+### Change Summary
+Removed "/// Convert to MongoDB write models.; #[allow(dead_code)]; fn to_write_models(&self) -> Vec<mongodb::bson::Document> {" from `crates/nexus-data-mongodb/src/bulk.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-mongodb/src/repository.rs`
+### Change Record
+Modified file `crates/nexus-data-mongodb/src/repository.rs`. Approximately 17 lines changed.
+### Change Summary
+Removed "/// Convert ID to Bson / 将 ID 转换为 Bson; #[allow(dead_code)]; fn to_bson(&self, id: ID) -> Bson {" from `crates/nexus-data-mongodb/src/repository.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/context.rs`
+### Change Record
+Modified file `crates/nexus-core/src/context.rs`. Approximately 11 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-core/src/context.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/context.rs`
+### Change Record
+Modified file `crates/nexus-core/src/context.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-core/src/context.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-flyway/src/flyway.rs`
+### Change Record
+Modified file `crates/nexus-flyway/src/flyway.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-flyway/src/flyway.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:10:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 11 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-grpc/src/interceptor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/autoconfigure.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/autoconfigure.rs`. Approximately 24 lines changed.
+### Change Summary
+Removed "/// 要检查的类型 ID; /// Type ID to check; #[allow(dead_code)]" from `crates/nexus-starter/src/core/autoconfigure.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/autoconfigure.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/autoconfigure.rs`. Approximately 44 lines changed.
+### Change Summary
+Removed "/// 要检查的类型 ID; /// Type ID to check; #[allow(dead_code)]" from `crates/nexus-starter/src/core/autoconfigure.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/autoconfigure.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/autoconfigure.rs`. Approximately 52 lines changed.
+### Change Summary
+Removed "/// 要检查的类型 ID; /// Type ID to check; #[allow(dead_code)]" from `crates/nexus-starter/src/core/autoconfigure.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/autoconfigure.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/autoconfigure.rs`. Approximately 72 lines changed.
+### Change Summary
+Removed "/// 要检查的类型 ID; /// Type ID to check; #[allow(dead_code)]" from `crates/nexus-starter/src/core/autoconfigure.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/autoconfigure.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/autoconfigure.rs`. Approximately 92 lines changed.
+### Change Summary
+Removed "/// 要检查的类型 ID; /// Type ID to check; #[allow(dead_code)]" from `crates/nexus-starter/src/core/autoconfigure.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/bean_factory_post_processor.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/bean_factory_post_processor.rs`. Approximately 21 lines changed.
+### Change Summary
+Removed "/// 占位符前缀; /// Placeholder prefix; #[allow(dead_code)]" from `crates/nexus-starter/src/core/bean_factory_post_processor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:11:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/core/bean_factory_post_processor.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/core/bean_factory_post_processor.rs`. Approximately 48 lines changed.
+### Change Summary
+Removed "/// 占位符前缀; /// Placeholder prefix; #[allow(dead_code)]" from `crates/nexus-starter/src/core/bean_factory_post_processor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/context.rs`
+### Change Record
+Modified file `crates/nexus-core/src/context.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/nexus-core/src/context.rs` from "#[allow(dead_code)]; #[allow(dead_code)]" to "#[allow(dead_code)] // public API scaffolding, field access not yet implemented".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/context.rs`
+### Change Record
+Modified file `crates/nexus-core/src/context.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-core/src/context.rs` from "#[allow(dead_code)]; #[allow(dead_code)]" to "#[allow(dead_code)] // public API scaffolding, field access not yet implemented; #[allow(dead_code)] // storage for futu...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/interceptor.rs` from "#[allow(dead_code)]" to "#[allow(dead_code)] // trait method for future ErasedInterceptor impls".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-integration/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-integration/src/lib.rs`. Approximately 15 lines changed.
+### Change Summary
+Changed `crates/nexus-integration/src/lib.rs` from "#[allow(dead_code)]; #[allow(dead_code)]" to "#[allow(dead_code)] // no builder method yet; match arm in BuiltFlow::process ready for when added; #[allow(dead_code)] ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-flyway/src/flyway.rs`
+### Change Record
+Modified file `crates/nexus-flyway/src/flyway.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-flyway/src/flyway.rs` from "#[allow(dead_code)]" to "#[allow(dead_code)] // used in tests; kept for API compatibility with parse_migration_filename_with_dialect".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-data-orm/src/projection.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-data-orm/src/projection.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 28 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-data-orm/src/projection.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 36 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-data-orm/src/projection.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/pool.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/pool.rs`. Approximately 16 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/pool.rs` from "struct PooledConnection {; #[allow(dead_code)]; active: bool," to "struct PooledConnection {}".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/pool.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/pool.rs`. Approximately 25 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/pool.rs` from "struct PooledConnection {; #[allow(dead_code)]; active: bool," to "struct PooledConnection {}; idle.push_back(PooledConnection {});".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/pool.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/pool.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/pool.rs` from "struct PooledConnection {; #[allow(dead_code)]; active: bool," to "struct PooledConnection {}; idle.push_back(PooledConnection {});; idle.push_back(PooledConnection {});".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/ldif.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/ldif.rs`. Approximately 11 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]" from `crates/nexus-ldap/src/ldif.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/context.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/context.rs`. Approximately 20 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; connect_timeout: Duration,; connect_timeout: Duration::from_secs(30)," from `crates/nexus-ldap/src/context.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:33
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/repository.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/repository.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/repository.rs` from "#[allow(dead_code)]; id_extractor: E,; id_extractor: E," to "_id_extractor: E,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:12:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 52 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" from `crates/nexus-data-orm/src/projection.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:13:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-events/src/transactional_listener.rs`
+### Change Record
+Modified file `crates/nexus-events/src/transactional_listener.rs`. Approximately 13 lines changed.
+### Change Summary
+Removed "#[allow(dead_code)]; status: String," from `crates/nexus-events/src/transactional_listener.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:13:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-events/src/transactional_listener.rs`
+### Change Record
+Modified file `crates/nexus-events/src/transactional_listener.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-events/src/transactional_listener.rs` from "#[allow(dead_code)]; status: String,; #[allow(dead_code)]" to "_payment_id: u64,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:13:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 30 lines changed.
+### Change Summary
+Removed "/// Random strategy (reserved for future use); /// 随机策略（预留，未来使用）; #[allow(dead_code)]" from `crates/nexus-cloud/src/load_balancer.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:13:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 24 lines changed.
+### Change Summary
+Removed "/// Cache entry for config responses with TTL tracking.; /// 带TTL跟踪的配置响应缓存条目。; #[derive(Debug, Clone)]" from `crates/nexus-cloud/src/config_client.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:14:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/context.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/context.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/context.rs` from "password: Option<String>,; #[allow(dead_code)]" to "password: Option<String,; #[allow(dead_code)] // Used by builder; will be consumed by future create_connection()".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:14:09
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/context.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/context.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/context.rs` from "#[allow(dead_code)]" to "#[allow(dead_code)] // Used by builder; will be consumed by future create_connection()".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:14:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/repository.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/repository.rs`. Approximately 40 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/repository.rs` from "_marker: PhantomData<(T, ID)>,; #[allow(dead_code)]; id_extractor: E," to "_marker: PhantomData<(T, ID, E)>,; _marker: PhantomData<(T, ID, E)>,; _id_extractor: E,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 23:14:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/repository.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/repository.rs`. Approximately 31 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/repository.rs` from "#[allow(dead_code)]; id_extractor: E,; _marker: PhantomData<(T, ID)>," to "_marker: PhantomData<(T, ID, E)>,; _id_extractor: E,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

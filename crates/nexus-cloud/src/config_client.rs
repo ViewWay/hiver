@@ -315,19 +315,6 @@ impl Default for ConfigServerClient {
     }
 }
 
-/// Cache entry for config responses with TTL tracking.
-/// 带TTL跟踪的配置响应缓存条目。
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-struct CacheEntry {
-    /// Flattened properties from the config server.
-    /// 从配置服务器获取的扁平化属性。
-    props: HashMap<String, String>,
-    /// When this entry was fetched.
-    /// 获取此条目的时间。
-    fetched_at: DateTime<Utc>,
-}
-
 /// Recursively flatten a JSON value into `HashMap<String, String>`.
 /// 递归地将JSON值扁平化为`HashMap<String, String>`。
 fn flatten_json_value(value: &serde_json::Value) -> Result<HashMap<String, String>, ConfigClientError> {

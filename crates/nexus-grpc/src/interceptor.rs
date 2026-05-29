@@ -124,7 +124,7 @@ pub struct InterceptorChain {
 #[async_trait]
 trait ErasedInterceptor: Send + Sync {
     async fn intercept_erased(&self, metadata: &tonic::metadata::MetadataMap) -> Result<(), Status>;
-    #[allow(dead_code)]
+    #[allow(dead_code)] // trait method for future ErasedInterceptor impls
     fn name(&self) -> &'static str;
 }
 
