@@ -54,6 +54,7 @@ pub mod acl;
 pub mod authorization_server;
 mod authority;
 mod context;
+pub mod data_scope;
 mod csrf;
 mod encoder;
 mod error;
@@ -71,6 +72,10 @@ mod user;
 pub use auth::{Authentication, AuthenticationManager};
 pub use authority::{Authority, GrantedAuthority};
 pub use context::{SecurityContext, SecurityContextGuard};
+pub use data_scope::{
+    DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
+    DataScopeType,
+};
 pub use csrf::{CsrfProtectionConfig, CsrfToken, CsrfTokenRepository, InMemoryCsrfTokenRepository};
 pub use encoder::{BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder, StandardPasswordEncoder};
 pub use error::{SecurityError, SecurityResult};
@@ -101,10 +106,11 @@ pub use authorization_server::{
 pub mod prelude {
     pub use super::{
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,
-        GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil, PasswordEncoder,
-        Permission, PermissionEntry, PreAuthorize, RbacConfig, RbacManager, RoleEnum,
-        RolePermission, Roles, Secured, SecurityContext, SecurityContextGuard, SecurityExpression,
-        User, UserDetails, UserRole, UserService,
+        DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
+        DataScopeType, GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil,
+        PasswordEncoder, Permission, PermissionEntry, PreAuthorize, RbacConfig, RbacManager,
+        RoleEnum, RolePermission, Roles, Secured, SecurityContext, SecurityContextGuard,
+        SecurityExpression, User, UserDetails, UserRole, UserService,
     };
 
     // CSRF re-exports / CSRF重新导出

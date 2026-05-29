@@ -24,6 +24,8 @@ mod tests;
 pub mod attribute;
 pub mod cookie;
 pub mod form;
+#[cfg(feature = "multipart")]
+pub mod multipart;
 pub mod header;
 pub mod json;
 pub mod matrix;
@@ -35,6 +37,8 @@ pub mod state;
 pub use attribute::{NamedRequestAttribute, RequestAttribute};
 pub use cookie::{Cookie, CookieOption, NamedCookie};
 pub use form::Form;
+#[cfg(feature = "multipart")]
+pub use multipart::{Multipart, MultipartParser, UploadedFile, UploadConfig, UploadError};
 pub use header::{Header, HeaderOption, NamedHeader};
 pub use json::Json;
 pub use matrix::{MatrixPath, MatrixVariable, MatrixVariables};

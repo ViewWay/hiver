@@ -17,8 +17,10 @@ pub mod html;
 pub mod json;
 pub mod response;
 pub mod result;
+pub mod unified;
 
 pub use html::Html;
 pub use json::Json;
 pub use response::{IntoResponse, Response};
 pub use result::{PageResult, Result, ResultCode};
+pub use unified::{ApiResponse, DefaultResponseAdvice, ResponseAdvice, ResponseResult};

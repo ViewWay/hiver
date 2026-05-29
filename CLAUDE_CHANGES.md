@@ -4450,3 +4450,432 @@ Changed `crates/nexus-lombok/examples/user_entity.rs` from "let config = Default
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-29 18:58:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-kafka/src/message.rs`
+### Change Record
+Modified file `crates/nexus-kafka/src/message.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-kafka/src/message.rs` from "#[derive(Clone, Debug, Serialize, Deserialize)]" to "#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 18:58:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/sea_orm.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/sea_orm.rs`. Approximately 15 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/sea_orm.rs` from "// TODO: Pass param_values through a parameterized execute API once available.; // For now, log a warning that mock clie..." to "// Values interpolated into SQL string; parameterized binding requires; // DatabaseClient extension (tracked separately)...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 18:59:34
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-config/src/config.rs`
+### Change Record
+Modified file `crates/nexus-config/src/config.rs`. Approximately 18 lines changed.
+### Change Summary
+Added "/// Add a property source with highest priority.; /// 添加最高优先级的属性源。; pub fn add_property_source_first(&self, source: Prop..." in `crates/nexus-config/src/config.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 18:59:49
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-config/src/config.rs`
+### Change Record
+Modified file `crates/nexus-config/src/config.rs`. Approximately 64 lines changed.
+### Change Summary
+Changed `crates/nexus-config/src/config.rs` from "// TODO: add_property_source_first method does not exist yet.; // Re-enable when the method is implemented.; // add_prop..." to "/// Add a property source with highest priority.; /// 添加最高优先级的属性源。; pub fn add_property_source_first(&self, source: Prop...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:00:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-kafka/src/message.rs`
+### Change Record
+Modified file `crates/nexus-kafka/src/message.rs`. Approximately 47 lines changed.
+### Change Summary
+Changed `crates/nexus-kafka/src/message.rs` from "#[derive(Clone, Debug, Serialize, Deserialize)]; // TODO: MessageHeaderValue does not derive PartialEq, so assert_eq! ca..." to "#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]; #[test]; fn test_message_header_value_serde() {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:52:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/io.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/io.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "addr: SocketAddr," in `crates/nexus-runtime/src/io.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:52:50
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/io.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/io.rs`. Approximately 25 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/io.rs` from "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], _addr: SocketAddr) -> SendToFuture<'a, 'b> {" to "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {; addr,; addr: SocketAddr...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:52:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/io.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/io.rs`. Approximately 47 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/io.rs` from "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], _addr: SocketAddr) -> SendToFuture<'a, 'b> {; // For now, use regula..." to "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {; addr,; addr: SocketAddr...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:53:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/io.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/io.rs`. Approximately 83 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/io.rs` from "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], _addr: SocketAddr) -> SendToFuture<'a, 'b> {; // For now, use regula..." to "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {; addr,; addr: SocketAddr...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:53:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/io.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/io.rs`. Approximately 85 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/io.rs` from "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], _addr: SocketAddr) -> SendToFuture<'a, 'b> {; // For now, use regula..." to "pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {; addr,; addr: SocketAddr...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:59:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 19:59:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-response/src/lib.rs`. Approximately 15 lines changed.
+### Change Summary
+Added "pub mod unified;; pub use unified::{ApiResponse, DefaultResponseAdvice, ResponseAdvice, ResponseResult};" in `crates/nexus-response/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 19:59:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 19:59:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 19:59:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 19:59:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:00:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:00:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:00:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-response/src/unified.rs`
+### Change Record
+New file `crates/nexus-response/src/unified.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-response/src/unified.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:00:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+New file `crates/nexus-security/src/data_scope.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:00:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "pub mod data_scope;" in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:00:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 23 lines changed.
+### Change Summary
+Added "pub mod data_scope;; pub use data_scope::{; DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeR..." in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:00:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/lib.rs` from "GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil, PasswordEncoder,; Permission, PermissionEntry..." to "pub mod data_scope;; pub use data_scope::{; DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeR...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:00:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:01:09
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/lib.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "#[cfg(feature = "multipart")]; pub mod multipart;; #[cfg(feature = "multipart")]" in `crates/nexus-extractors/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-29 20:01:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+New file `crates/nexus-security/src/data_scope.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:01:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+New file `crates/nexus-security/src/data_scope.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:01:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:01:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:02:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:02:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:03:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-29 20:03:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-extractors/src/multipart.rs`
+### Change Record
+New file `crates/nexus-extractors/src/multipart.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-extractors/src/multipart.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.

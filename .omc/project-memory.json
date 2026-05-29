@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"(error|warning:.*generated|Finished|Compiling nexus-)\" | tail -20",
-    "testCommand": "git stash && cargo test -p nexus-lombok --test data_test -- test_builder_with_option_fields 2>&1 | tail -15",
+    "buildCommand": "cargo build --workspace 2>&1 | grep -E \"error\\[|Finished|warning.*generated\" | tail -10",
+    "testCommand": "cargo test -p nexus-extractors --features multipart 2>&1",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -145,6 +145,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/lib.rs",
+      "accessCount": 11,
+      "lastAccessed": 1780056056477,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-macros/src/lib.rs",
       "accessCount": 8,
       "lastAccessed": 1779590434172,
@@ -166,12 +172,6 @@
       "path": "crates/nexus-data-orm/src/query.rs",
       "accessCount": 7,
       "lastAccessed": 1779620567600,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-security/src/lib.rs",
-      "accessCount": 7,
-      "lastAccessed": 1779620772056,
       "type": "file"
     },
     {
@@ -343,6 +343,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/context.rs",
+      "accessCount": 3,
+      "lastAccessed": 1780055941253,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-orm/src/relationships.rs",
       "accessCount": 2,
       "lastAccessed": 1779464144549,
@@ -367,12 +373,6 @@
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/context.rs",
-      "accessCount": 2,
-      "lastAccessed": 1779619446597,
-      "type": "file"
-    },
-    {
       "path": "crates/nexus-tx/src/manager.rs",
       "accessCount": 2,
       "lastAccessed": 1779620019639,
@@ -391,6 +391,12 @@
       "type": "file"
     },
     {
+      "path": "crates/nexus-security/src/pre_authorize.rs",
+      "accessCount": 2,
+      "lastAccessed": 1780055945628,
+      "type": "file"
+    },
+    {
       "path": "crates/nexus-data-commons/src/method_name.rs",
       "accessCount": 1,
       "lastAccessed": 1779464646217,
@@ -400,12 +406,6 @@
       "path": "crates/nexus-data-annotations/src/transactional.rs",
       "accessCount": 1,
       "lastAccessed": 1779591026846,
-      "type": "file"
-    },
-    {
-      "path": "crates/nexus-security/src/pre_authorize.rs",
-      "accessCount": 1,
-      "lastAccessed": 1779591053764,
       "type": "file"
     },
     {
