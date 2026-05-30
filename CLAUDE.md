@@ -33,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Phase 8**: Data Layer (6 months, P0 blocking)
   - 8.1 nexus-data-commons: Repository traits, Page/Sort, entity metadata, `MethodName::parse()` for findByXxxAndYyy ✅
   - 8.2 nexus-data-rdbc: DatabaseClient, Connection pool, RowMapper, ResultSetExtractor ✅
-  - 8.3 nexus-data-orm: ORM abstraction, ActiveRecord, Model derive, SeaORM bridge
+  - 8.3 nexus-data-orm: ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges ✅
   - Pre-existing code in mapper/executor/query_runtime modules needs structural refactoring
 
 **All Development Complete:**
