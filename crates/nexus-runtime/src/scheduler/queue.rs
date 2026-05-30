@@ -86,9 +86,8 @@ impl LocalQueue {
                 self.buffer[pos].get().write(MaybeUninit::new(task));
             }
 
-            match self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed) {
-                Ok(_) => return true,
-                Err(_) => continue,
+            if self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed).is_ok() {
+                return true;
             }
         }
     }
@@ -120,7 +119,6 @@ impl LocalQueue {
             unsafe {
                 self.buffer[pos].get().write(MaybeUninit::new(task));
             }
-            continue;
         }
     }
 

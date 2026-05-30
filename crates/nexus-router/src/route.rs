@@ -9,7 +9,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use nexus_http::{Request, Response, Result, StatusCode};
+use nexus_http::{Body, Request, Response, Result, StatusCode};
 use std::collections::HashMap;
 use std::fmt;
 use std::future::Future;
@@ -134,6 +134,7 @@ impl fmt::Debug for Route {
         f.debug_struct("Route")
             .field("methods", &self.methods)
             .field("path", &self.path)
+            .field("handler", &self.handler)
             .finish()
     }
 }
@@ -242,53 +243,46 @@ impl Handler {
             Handler::Static(s) => {
                 // Return static string as response
                 // 将静态字符串作为响应返回
-                use nexus_http::Body;
-                use nexus_http::StatusCode;
                 let s = *s;
                 Box::pin(async move {
                     Ok(Response::builder()
                         .status(StatusCode::OK)
                         .header("content-type", "text/plain; charset=utf-8")
                         .body(Body::from(s))
-                        .unwrap())
+                        .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                 })
             },
             Handler::StaticBytes(b) => {
                 // Return static bytes as response
                 // 将静态字节作为响应返回
-                use nexus_http::Body;
-                use nexus_http::StatusCode;
                 let b = *b;
                 Box::pin(async move {
                     Ok(Response::builder()
                         .status(StatusCode::OK)
                         .header("content-type", "application/octet-stream")
                         .body(Body::from(b))
-                        .unwrap())
+                        .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                 })
             },
             Handler::Fn(f) => {
                 // Call the sync function and return empty response
                 // 调用同步函数并返回空响应
                 let _ = f; // Suppress unused warning
-                use nexus_http::Body;
-                use nexus_http::StatusCode;
                 Box::pin(async move {
                     Ok(Response::builder()
                         .status(StatusCode::OK)
                         .body(Body::empty())
-                        .unwrap())
+                        .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                 })
             },
             Handler::Unimplemented => {
                 // Return 501 Not Implemented
                 // 返回501 Not Implemented
-                use nexus_http::Body;
                 Box::pin(async move {
                     Ok(Response::builder()
                         .status(StatusCode::NOT_IMPLEMENTED)
                         .body(Body::from("Not Implemented"))
-                        .unwrap())
+                        .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                 })
             },
         }
@@ -316,10 +310,9 @@ impl Clone for Handler {
             Handler::Async(f) => Handler::Async(*f),
             // BoxedAsync cannot be cloned, return Unimplemented instead
             // BoxedAsync 无法克隆，返回 Unimplemented 代替
-            Handler::BoxedAsync(_) => Handler::Unimplemented,
+            Handler::BoxedAsync(_) | Handler::Unimplemented => Handler::Unimplemented,
             Handler::Static(s) => Handler::Static(s),
             Handler::StaticBytes(b) => Handler::StaticBytes(b),
-            Handler::Unimplemented => Handler::Unimplemented,
         }
     }
 }

@@ -32,8 +32,8 @@ where
     F: Fn(Request) -> Fut + Send + Sync,
     Fut: Future<Output = Result<Response>> + Send,
 {
-    fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send {
-        async move { self(req).await }
+    async fn call(&self, req: Request) -> Result<Response> {
+        self(req).await
     }
 }
 

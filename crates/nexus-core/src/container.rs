@@ -398,7 +398,7 @@ impl Container {
     ///     ConditionalOnMissingBean::of::<dyn Cache>(),
     /// )?;
     /// ```
-    pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: C) -> Result<()>
+    pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: &C) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
         F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
@@ -1482,7 +1482,7 @@ mod tests {
         container
             .register_conditional(
                 |_| Ok(CacheService { hits: 0 }),
-                cond,
+                &cond,
             )
             .unwrap();
         assert!(container.has_bean::<CacheService>());
@@ -1502,7 +1502,7 @@ mod tests {
         container
             .register_conditional(
                 |_| Ok(CacheService { hits: 20 }),
-                cond,
+                &cond,
             )
             .unwrap();
     }
@@ -1517,7 +1517,7 @@ mod tests {
         container
             .register_conditional(
                 |_| Ok(UserService { user_count: 0 }),
-                cond,
+                &cond,
             )
             .unwrap();
         assert!(container.has_bean::<UserService>());
@@ -1864,7 +1864,7 @@ mod tests {
         container
             .register_conditional(
                 |_| Ok(EmailService { sent_count: 0 }),
-                cond,
+                &cond,
             )
             .unwrap();
         // EmailService should NOT be registered since UserService is absent

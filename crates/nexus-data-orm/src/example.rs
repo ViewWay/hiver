@@ -21,9 +21,11 @@
 /// Match mode for example queries
 /// Example 查询的匹配模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum StringMatcher {
     /// Exact match
     /// 精确匹配
+    #[default]
     Exact,
     /// Case-insensitive match
     /// 不区分大小写匹配
@@ -39,15 +41,11 @@ pub enum StringMatcher {
     Containing,
 }
 
-impl Default for StringMatcher {
-    fn default() -> Self {
-        Self::Exact
-    }
-}
 
 /// Null handling mode
 /// NULL 处理模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum NullHandling {
     /// Skip null values in probe
     /// 跳过探针中的 NULL 值
@@ -57,14 +55,10 @@ pub enum NullHandling {
     Include,
     /// Use default (same as Ignore)
     /// 使用默认（等同于 Ignore）
+    #[default]
     Default,
 }
 
-impl Default for NullHandling {
-    fn default() -> Self {
-        Self::Default
-    }
-}
 
 /// Configuration for how example matching behaves
 /// Example 匹配行为的配置

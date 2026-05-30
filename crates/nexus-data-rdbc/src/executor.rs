@@ -234,19 +234,17 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         wrapper: &UpdateWrapper,
         table: &str,
     ) -> (String, Vec<QueryParam>) {
-        let mut idx = 1u32;
         let mut set_parts = Vec::new();
         let mut params = Vec::new();
 
-        for (column, value) in &wrapper.sets {
+        for (idx, (column, value)) in (1u32..).zip(wrapper.sets.iter()) {
             set_parts.push(format!("{} = ${}", column, idx));
             params.push(QueryParam::from(value.clone()));
-            idx += 1;
         }
 
         let mut sql = format!("UPDATE {} SET {}", table, set_parts.join(", "));
 
-        let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
+        let (where_clause, _where_params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
             let offset = params.len();
             let (where_sql, where_prms) = Self::build_where_clause_offset(&wrapper.conditions, offset);

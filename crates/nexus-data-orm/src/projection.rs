@@ -200,11 +200,9 @@ where
             self.columns.join(", ")
         };
 
-        let mut param_idx = 1u32;
         let mut cond = condition.to_string();
-        for _ in params {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
-            param_idx += 1;
         }
 
         let sql = format!("SELECT {} FROM {} WHERE {}", col_list, M::table_name(), cond);
@@ -337,11 +335,9 @@ impl<M: Model> DynamicProjection<M> {
             self.columns.join(", ")
         };
 
-        let mut param_idx = 1u32;
         let mut cond = condition.to_string();
-        for _ in params {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
-            param_idx += 1;
         }
 
         let sql = format!("SELECT {} FROM {} WHERE {}", col_list, M::table_name(), cond);

@@ -642,13 +642,7 @@ impl PartTreeParser {
 
         if let Some(rest) = lower.strip_prefix("first") {
             let (digits, _after) = take_digits(rest);
-            let num = if digits.is_empty() {
-                1
-            } else if let Ok(n) = digits.parse::<u32>() {
-                n
-            } else {
-                1
-            };
+            let num = digits.parse::<u32>().unwrap_or(1);
             self.max_results = Some(num);
             self.remaining = self.remaining[5 + digits.len()..].to_string();
             return;
@@ -656,13 +650,7 @@ impl PartTreeParser {
 
         if let Some(rest) = lower.strip_prefix("top") {
             let (digits, _after) = take_digits(rest);
-            let num = if digits.is_empty() {
-                1
-            } else if let Ok(n) = digits.parse::<u32>() {
-                n
-            } else {
-                1
-            };
+            let num = digits.parse::<u32>().unwrap_or(1);
             self.max_results = Some(num);
             self.remaining = self.remaining[3 + digits.len()..].to_string();
         }

@@ -100,6 +100,7 @@ impl CompositeSpec {
 
     /// Negate
     /// 取反
+    #[allow(clippy::should_implement_trait)]
     pub fn not(self) -> Self {
         Self::Not(Box::new(self))
     }

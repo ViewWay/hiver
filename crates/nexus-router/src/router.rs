@@ -238,7 +238,7 @@ impl<S> Router<S> {
     /// 匹配给定方法和路径的路由
     fn match_route(
         &self,
-        method: &Method,
+        method: Method,
         path: &str,
     ) -> Option<(Route<S>, HashMap<String, String>)> {
         let routes = match method {
@@ -390,17 +390,14 @@ where
         let path = req.path().to_string();
         let state = self.state.clone();
         let middleware = self.middleware.clone();
-        let matched = self.match_route(&method, &path);
+        let matched = self.match_route(method, &path);
 
         Box::pin(async move {
-            let (route, params) = match matched {
-                Some(m) => m,
-                None => {
-                    return Ok(Response::builder()
-                        .status(StatusCode::NOT_FOUND)
-                        .body(Body::from("Not Found"))
-                        .unwrap());
-                },
+            let Some((route, params)) = matched else {
+                return Ok(Response::builder()
+                    .status(StatusCode::NOT_FOUND)
+                    .body(Body::from("Not Found"))
+                    .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)));
             };
 
             // Set path parameters on request
@@ -420,14 +417,14 @@ where
                             .status(StatusCode::OK)
                             .header("content-type", "text/plain")
                             .body(Body::from(s))
-                            .unwrap())
+                            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                     })
                         as Pin<Box<dyn Future<Output = Result<Response>> + Send>>,
                     Handler::Bytes(b) => Box::pin(async move {
                         Ok(Response::builder()
                             .status(StatusCode::OK)
                             .body(Body::from(Vec::from(b)))
-                            .unwrap())
+                            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
                     })
                         as Pin<Box<dyn Future<Output = Result<Response>> + Send>>,
                     Handler::Fn(h) => h(req, route_state.clone()),

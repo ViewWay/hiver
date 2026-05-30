@@ -340,7 +340,7 @@ impl WebSocketUpgrade {
 
         builder
             .body(Body::from("< WebSocket connection >"))
-            .unwrap()
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 

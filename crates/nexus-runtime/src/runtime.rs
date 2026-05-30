@@ -413,12 +413,10 @@ impl Handle {
     ///
     /// Panics if called outside of a runtime context.
     /// 如果在运行时上下文之外调用则恐慌。
+    #[allow(clippy::expect_used)]
     pub fn current() -> Self {
-        CURRENT_HANDLE.with(|h| {
-            h.borrow()
-                .clone()
-                .expect("Handle::current() called outside of a runtime context")
-        })
+        Self::try_current()
+            .expect("Handle::current() called outside of a runtime context")
     }
 
     /// Try to get a handle to the current runtime. Returns None if outside a runtime.

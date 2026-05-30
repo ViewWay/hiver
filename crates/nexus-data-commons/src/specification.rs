@@ -215,6 +215,7 @@ impl Predicate {
 
     /// Create a NOT predicate.
     /// 创建 NOT 谓词。
+    #[allow(clippy::should_implement_trait)]
     pub fn not(inner: Box<Predicate>) -> Self {
         Self::Not(inner)
     }
@@ -500,6 +501,7 @@ impl Specifications {
 
     /// Negate the current specification.
     /// 取反当前 specification。
+    #[allow(clippy::should_implement_trait)]
     pub fn not(self) -> Self {
         match self.predicate {
             Some(p) => Self {

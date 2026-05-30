@@ -74,7 +74,7 @@ impl std::error::Error for ValidationError {}
 
 /// Collection of validation errors
 /// 验证错误集合
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ValidationErrors {
     /// Individual validation errors
     /// 单个验证错误
@@ -85,7 +85,7 @@ impl ValidationErrors {
     /// Create new validation errors
     /// 创建新的验证错误
     pub fn new() -> Self {
-        Self { errors: Vec::new() }
+        Self::default()
     }
 
     /// Add a validation error
@@ -459,7 +459,7 @@ impl ValidationHelpers {
 
     /// Validate minimum value for numbers
     /// 验证数字的最小值
-    pub fn require_min<T>(field: &str, value: T, min: T) -> Option<ValidationError>
+    pub fn require_min<T>(field: &str, value: &T, min: &T) -> Option<ValidationError>
     where
         T: PartialOrd + std::fmt::Display,
     {
@@ -476,7 +476,7 @@ impl ValidationHelpers {
 
     /// Validate maximum value for numbers
     /// 验证数字的最大值
-    pub fn require_max<T>(field: &str, value: T, max: T) -> Option<ValidationError>
+    pub fn require_max<T>(field: &str, value: &T, max: &T) -> Option<ValidationError>
     where
         T: PartialOrd + std::fmt::Display,
     {
@@ -585,14 +585,14 @@ mod tests {
 
     #[test]
     fn test_require_min() {
-        assert!(ValidationHelpers::require_min("age", 18u32, 18).is_none());
-        assert!(ValidationHelpers::require_min("age", 17u32, 18).is_some());
+        assert!(ValidationHelpers::require_min("age", &18u32, &18).is_none());
+        assert!(ValidationHelpers::require_min("age", &17u32, &18).is_some());
     }
 
     #[test]
     fn test_require_max() {
-        assert!(ValidationHelpers::require_max("age", 100u32, 100).is_none());
-        assert!(ValidationHelpers::require_max("age", 101u32, 100).is_some());
+        assert!(ValidationHelpers::require_max("age", &100u32, &100).is_none());
+        assert!(ValidationHelpers::require_max("age", &101u32, &100).is_some());
     }
 
     #[test]

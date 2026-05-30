@@ -260,11 +260,9 @@ pub trait Delete: Send + Sync + Model + Sized {
     where
         Self: Sized,
     {
-        let mut param_idx = 1u32;
         let mut cond = condition.to_string();
-        for _ in params {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
-            param_idx += 1;
         }
         let sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), cond);
         client
@@ -383,11 +381,9 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         condition: &str,
         params: &[QueryParam],
     ) -> Result<Vec<Self>> {
-        let mut param_idx = 1u32;
         let mut cond = condition.to_string();
-        for _ in params {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
-            param_idx += 1;
         }
         let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
         let rows = client
@@ -404,11 +400,9 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         condition: &str,
         params: &[QueryParam],
     ) -> Result<Option<Self>> {
-        let mut param_idx = 1u32;
         let mut cond = condition.to_string();
-        for _ in params {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
-            param_idx += 1;
         }
         let sql = format!(
             "SELECT * FROM {} WHERE {} LIMIT 1",

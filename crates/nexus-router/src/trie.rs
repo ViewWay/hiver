@@ -82,7 +82,7 @@ impl TrieRouter {
     pub fn insert(&mut self, path: &str, method: Method, handler: Handler) -> Result<()> {
         // Convert path to matchit format (uses :param instead of {param})
         // matchit uses :param style which we already use
-        let router = self.router_for_method_mut(&method);
+        let router = self.router_for_method_mut(method);
 
         // Extract parameter names from path
         let param_names: Vec<String> = path
@@ -116,7 +116,7 @@ impl TrieRouter {
     /// * `None` - No matching route found
     pub fn match_request(
         &self,
-        method: &Method,
+        method: Method,
         path: &str,
     ) -> Option<(Handler, HashMap<String, String>)> {
         let router = self.router_for_method(method)?;
@@ -133,31 +133,29 @@ impl TrieRouter {
 
     /// Get the router for a specific method (mutable)
     /// 获取特定方法的路由器（可变）
-    fn router_for_method_mut(&mut self, method: &Method) -> &mut matchit::Router<MethodRoute> {
+    fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::Router<MethodRoute> {
         match method {
-            Method::GET => &mut self.get,
             Method::POST => &mut self.post,
             Method::PUT => &mut self.put,
             Method::DELETE => &mut self.delete,
             Method::PATCH => &mut self.patch,
             Method::HEAD => &mut self.head,
             Method::OPTIONS => &mut self.options,
-            Method::TRACE | Method::CONNECT => &mut self.get, // Not commonly used, map to GET
+            Method::GET | Method::TRACE | Method::CONNECT => &mut self.get, // TRACE/CONNECT not commonly used, map to GET
         }
     }
 
     /// Get the router for a specific method
     /// 获取特定方法的路由器
-    fn router_for_method(&self, method: &Method) -> Option<&matchit::Router<MethodRoute>> {
+    fn router_for_method(&self, method: Method) -> Option<&matchit::Router<MethodRoute>> {
         match method {
-            Method::GET => Some(&self.get),
             Method::POST => Some(&self.post),
             Method::PUT => Some(&self.put),
             Method::DELETE => Some(&self.delete),
             Method::PATCH => Some(&self.patch),
             Method::HEAD => Some(&self.head),
             Method::OPTIONS => Some(&self.options),
-            Method::TRACE | Method::CONNECT => Some(&self.get), // Not commonly used, map to GET
+            Method::GET | Method::TRACE | Method::CONNECT => Some(&self.get), // TRACE/CONNECT not commonly used, map to GET
         }
     }
 
@@ -166,7 +164,7 @@ impl TrieRouter {
     ///
     /// Note: This returns an empty vector as matchit doesn't expose
     /// the list of registered routes. Use route testing instead.
-    pub fn routes(&self, _method: &Method) -> Vec<String> {
+    pub fn routes(&self, _method: Method) -> Vec<String> {
         // matchit Router doesn't expose a way to iterate over registered routes
         // Users should test routes via match_request instead
         Vec::new()
@@ -190,7 +188,7 @@ impl nexus_http::HttpService for TrieRouter {
         let method = req.method().clone();
         let path = req.path().to_string();
 
-        let matched = self.match_request(&method, &path);
+        let matched = self.match_request(method, &path);
 
         // Call the handler with the request and path parameters
         // 使用请求和路径参数调用处理程序
@@ -209,7 +207,7 @@ impl nexus_http::HttpService for TrieRouter {
                     .status(StatusCode::NOT_FOUND)
                     .header("content-type", "text/plain; charset=utf-8")
                     .body(Body::from("Not Found"))
-                    .unwrap()),
+                    .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))),
             }
         }
     }
@@ -225,7 +223,7 @@ mod tests {
         let handler = Handler::Static("Hello");
         router.insert("/hello", Method::GET, handler).unwrap();
 
-        let result = router.match_request(&Method::GET, "/hello");
+        let result = router.match_request(Method::GET, "/hello");
         assert!(result.is_some());
     }
 
@@ -235,7 +233,7 @@ mod tests {
         let handler = Handler::Static("User");
         router.insert("/users/{id}", Method::GET, handler).unwrap();
 
-        let result = router.match_request(&Method::GET, "/users/123");
+        let result = router.match_request(Method::GET, "/users/123");
         assert!(result.is_some());
 
         let (_, params) = result.unwrap();
@@ -250,7 +248,7 @@ mod tests {
             .insert("/users/{user_id}/posts/{post_id}", Method::GET, handler)
             .unwrap();
 
-        let result = router.match_request(&Method::GET, "/users/42/posts/99");
+        let result = router.match_request(Method::GET, "/users/42/posts/99");
         assert!(result.is_some());
 
         let (_, params) = result.unwrap();
@@ -271,9 +269,9 @@ mod tests {
             .insert("/resource", Method::POST, post_handler)
             .unwrap();
 
-        assert!(router.match_request(&Method::GET, "/resource").is_some());
-        assert!(router.match_request(&Method::POST, "/resource").is_some());
-        assert!(router.match_request(&Method::DELETE, "/resource").is_none());
+        assert!(router.match_request(Method::GET, "/resource").is_some());
+        assert!(router.match_request(Method::POST, "/resource").is_some());
+        assert!(router.match_request(Method::DELETE, "/resource").is_none());
     }
 
     #[test]
@@ -282,7 +280,7 @@ mod tests {
         let handler = Handler::Static("Catch all");
         router.insert("/{*path}", Method::GET, handler).unwrap();
 
-        assert!(router.match_request(&Method::GET, "/anything").is_some());
-        assert!(router.match_request(&Method::GET, "/nested/path").is_some());
+        assert!(router.match_request(Method::GET, "/anything").is_some());
+        assert!(router.match_request(Method::GET, "/nested/path").is_some());
     }
 }

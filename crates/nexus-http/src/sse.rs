@@ -50,6 +50,7 @@ pub struct Event {
 
     /// Event name/type (optional)
     /// 事件名称/类型（可选）
+    #[allow(clippy::struct_field_names)]
     event_type: Option<String>,
 
     /// Event data
