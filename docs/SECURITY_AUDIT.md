@@ -1,9 +1,10 @@
 # Nexus Security Audit Report
 # Nexus 安全审计报告
 
-**Date / 日期**: 2026-01-29
+**Date / 日期**: 2026-05-30
 **Status / 状态**: In Progress / 进行中
-**Phase / 阶段**: Phase 7 - Production Ready / 生产就绪
+**Phase / 阶段**: Phase 8 - Data Layer / 数据层
+**Last Audit Tool / 上次审计工具**: `cargo audit` (RUSTSEC database)
 
 ## Summary / 摘要
 
@@ -38,7 +39,56 @@ This document tracks security vulnerabilities found and fixed during Phase 7 pro
 
 ## Remaining Vulnerabilities / 剩余漏洞
 
-### 1. RSA Marvin Attack (sqlx-mysql path)
+### 1. hickory-proto CPU Exhaustion (NEW 2026-05-30)
+**Status**: Awaiting Upstream Fix / 等待上游修复
+**Advisory**: RUSTSEC-2026-0119
+**Severity**: Medium
+**Date**: 2026-05-01
+
+**Dependency Tree**:
+```
+hickory-proto 0.24.4
+└── trust-dns-resolver / hickory-dns
+```
+
+**Impact**: O(n²) name compression in DNS message encoding can cause CPU exhaustion.
+This is a transitive dependency.
+
+**Mitigation**: Update hickory-proto when upstream releases fix. No direct Nexus code affected.
+
+### 2. rustls-webpki Certificate Validation Issues (NEW 2026-05-30)
+**Status**: Awaiting Upstream Fix / 等待上游修复
+**Advisories**: RUSTSEC-2026-0104, RUSTSEC-2026-0098, RUSTSEC-2026-0099
+**Severity**: Medium-High
+**Date**: 2026-04-14/22
+
+**Dependency Tree**:
+```
+rustls-webpki 0.101.7
+└── rustls / tokio-rustls / tungstenite
+```
+
+**Impact**: Three issues — reachable panic in CRL parsing, incorrect URI name constraint acceptance, wildcard name constraint bypass.
+
+**Mitigation**: Update rustls and transitive dependencies when fixed versions are available.
+
+### 3. tokio-tar File Smuggling (NEW 2026-05-30)
+**Status**: Awaiting Upstream Fix / 等待上游修复
+**Advisory**: RUSTSEC-2025-0111
+**Severity**: Medium
+**Date**: 2025-10-21
+
+**Dependency Tree**:
+```
+tokio-tar 0.3.1
+└── transitive dependency
+```
+
+**Impact**: PAX extended headers parsed incorrectly, allows file smuggling (path traversal).
+
+**Mitigation**: Update tokio-tar or switch to alternative tar library when fix available.
+
+### 4. RSA Marvin Attack (sqlx-mysql path)
 **Status**: Awaiting Upstream Fix / 等待上游修复
 **Advisory**: RUSTSEC-2023-0071
 **Severity**: Medium (5.9)
@@ -92,12 +142,14 @@ This is a transitive dependency and cannot be fixed directly in Nexus.
 
 ## Next Steps / 下一步
 
-1. [ ] Monitor for `sqlx` updates addressing RSA vulnerability
-2. [ ] Replace `opentelemetry-jaeger` with `opentelemetry-otlp`
-3. [ ] Consider alternative template engines to `tera`
-4. [ ] Run fuzzing tests regularly (`cargo fuzz`)
-5. [ ] Conduct manual code review for security issues
-6. [ ] Set up continuous security scanning in CI/CD
+1. [ ] Update `rustls` / `tokio-rustls` to fix 3 rustls-webpki CVEs (RUSTSEC-2026-0104/0098/0099)
+2. [ ] Update `hickory-proto` to fix CPU exhaustion (RUSTSEC-2026-0119)
+3. [ ] Update or replace `tokio-tar` to fix file smuggling (RUSTSEC-2025-0111)
+4. [ ] Monitor for `sqlx` updates addressing RSA vulnerability (RUSTSEC-2023-0071)
+5. [ ] Replace `opentelemetry-jaeger` with `opentelemetry-otlp`
+6. [ ] Consider alternative template engines to `tera`
+7. [ ] Run fuzzing tests regularly (`cargo fuzz`)
+8. [ ] Set up continuous security scanning in CI/CD (`cargo audit` in GitHub Actions)
 
 ## References / 参考
 

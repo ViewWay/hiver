@@ -46,7 +46,7 @@ Examples of behavior that contributes to a positive environment:
 
 ### Prerequisites / 先决条件
 
-- Rust 1.75 or later / Rust 1.75 或更高版本
+- Rust 1.93 or later / Rust 1.93 或更高版本
 - Git / Git
 - A GitHub account / GitHub 账户
 
@@ -54,32 +54,28 @@ Examples of behavior that contributes to a positive environment:
 
 ```bash
 # Clone the repository / 克隆仓库
-git clone https://github.com/nexus-framework/nexus.git
+git clone https://github.com/ViewWay/nexus.git
 cd nexus
 
 # Install Rust toolchain / 安装 Rust 工具链
 rustup install stable
 rustup default stable
 
-# Install development tools / 安装开发工具
-cargo install cargo-watch
-cargo install cargo-edit
+# Add required components / 添加必需组件
+rustup component add clippy rustfmt
 ```
 
 ### Building the Project / 构建项目
 
 ```bash
 # Build all crates / 构建所有 crate
-cargo build --workspace
+cargo build
 
-# Run tests / 运行测试
-cargo test --workspace
+# Build a specific crate (faster iteration) / 构建特定 crate（更快的迭代）
+cargo build -p nexus-runtime
 
-# Check formatting / 检查格式化
-cargo fmt --all -- --check
-
-# Run linter / 运行 linter
-cargo clippy --workspace --all-targets -- -D warnings
+# Build with optimizations / 带优化构建
+cargo build --release
 ```
 
 ---
@@ -88,8 +84,8 @@ cargo clippy --workspace --all-targets -- -D warnings
 
 ### 1. Find an Issue / 查找问题
 
-Look for issues labeled `good first issue` or `help wanted` in our [issue tracker](https://github.com/nexus-framework/nexus/issues).
-在我们的[问题跟踪器](https://github.com/nexus-framework/nexus/issues)中查找标记为 `good first issue` 或 `help wanted` 的问题。
+Look for issues labeled `good first issue` or `help wanted` in our [issue tracker](https://github.com/ViewWay/nexus/issues).
+在我们的[问题跟踪器](https://github.com/ViewWay/nexus/issues)中查找标记为 `good first issue` 或 `help wanted` 的问题。
 
 ### 2. Create a Branch / 创建分支
 
@@ -239,16 +235,16 @@ pub fn function(arg1: Type) -> ReturnType {
 
 ```bash
 # Run all tests / 运行所有测试
-cargo test --workspace
+cargo test
+
+# Run tests for a specific crate (recommended for faster iteration) / 运行特定 crate 的测试（推荐，更快的迭代）
+cargo test -p nexus-runtime
 
 # Run tests with output / 运行测试并显示输出
-cargo test --workspace -- --nocapture
+RUST_BACKTRACE=1 cargo test -p nexus-runtime -- --nocapture
 
-# Run specific test / 运行特定测试
-cargo test test_name
-
-# Run tests in a specific crate / 在特定 crate 中运行测试
-cargo test -p nexus-runtime
+# Run a specific test / 运行特定测试
+cargo test -p nexus-runtime test_spawn_returns_value
 ```
 
 ### Writing Tests / 编写测试
@@ -316,8 +312,8 @@ Before submitting your PR, ensure:
 
 ## Getting Help / 获取帮助
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/nexus-framework/nexus/issues) / [报告错误或请求功能]
-- **Discussions**: [Ask questions or discuss ideas](https://github.com/nexus-framework/nexus/discussions) / [提问或讨论想法]
+- **GitHub Issues**: [Report bugs or request features](https://github.com/ViewWay/nexus/issues) / [报告错误或请求功能]
+- **Discussions**: [Ask questions or discuss ideas](https://github.com/ViewWay/nexus/discussions) / [提问或讨论想法]
 - **Discord**: Join our community server / 加入我们的社区服务器
 
 ---

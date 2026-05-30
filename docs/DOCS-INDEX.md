@@ -175,14 +175,14 @@ This index provides a structured overview of all Nexus documentation.
 ### Completion Metrics / 完成度指标
 
 ```
-Overall Completion: 35%
-总体完成度：35%
+Overall Completion: 40%
+总体完成度：40%
 
 ├─ Web Layer:          ████████████████████████░░░░  85%  ✅
-├─ Data Layer:         █░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%  ❌ CRITICAL
+├─ Data Layer:         ████████░░░░░░░░░░░░░░░░░░░░  33%  ⚠️ (8.1 commons ✅, 8.2 rdbc ✅, 8.3 orm WIP)
 ├─ Security Layer:     ████████████░░░░░░░░░░░░░░░░  40%  ⚠️
 ├─ Cache Layer:        ████████░░░░░░░░░░░░░░░░░░░░  30%  ⚠️
-├─ Messaging:          █░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%  ❌
+├─ Messaging:          █░░░░░░░░░░░░░░░░░░░░░░░░░░░█   0%  ❌
 ├─ Configuration:      ████████████████░░░░░░░░░░░░  60%  ⚠️
 ├─ Testing:            ██░░░░░░░░░░░░░░░░░░░░░░░░░░  10%  ❌
 └─ Documentation:      ██░░░░░░░░░░░░░░░░░░░░░░░░░░  15%  ⚠️
@@ -209,11 +209,11 @@ Overall Completion: 35%
 
 ### Top 5 Critical Blockers / 前 5 个关键阻塞
 
-1. 🔴 **nexus-data-rdbc** (2 months) - Cannot do database operations / 无法进行数据库操作
-2. 🔴 **nexus-data-commons** (1.5 months) - No Repository abstraction / 无 Repository 抽象
-3. 🔴 **nexus-autoconfigure** (1 month) - Too much boilerplate / 样板代码太多
-4. 🔴 **@Autowired** (1 month) - Manual DI is tedious / 手动 DI 很繁琐
-5. 🔴 **nexus-lombok** (0.5 months) - Too much getter/setter code / getter/setter 代码太多
+1. 🔴 **nexus-data-orm** (2 months) - ORM abstraction and ActiveRecord pattern / ORM 抽象和 ActiveRecord 模式
+2. 🔴 **nexus-autoconfigure** (1 month) - Too much boilerplate / 样板代码太多
+3. 🔴 **@Autowired** (1 month) - Manual DI is tedious / 手动 DI 很繁琐
+4. 🟡 **nexus-lombok** (0.5 months) - Too much getter/setter code / getter/setter 代码太多
+5. 🟡 **Integration testing** (1 month) - End-to-end test coverage / 端到端测试覆盖
 
 ---
 
@@ -322,7 +322,7 @@ Content in English / 英文内容
 
 ---
 
-**Last Updated / 最后更新**: 2026-01-25
+**Last Updated / 最后更新**: 2026-05-30
 **Document Count / 文档数量**: 12 major documents / 12 个主要文档
 **Total Pages / 总页数**: ~500+ pages / ~500+ 页
 **Status / 状态**: 🚧 Actively maintained / 积极维护中
