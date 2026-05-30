@@ -21,8 +21,8 @@ workspace = true
 tonic = { version = "0.12", features = ["transport", "tls"] }
 
 # Protocol buffer encoding / Protocol Buffer 编码
-prost = "0.13"
-prost-types = "0.13"
+prost = "0.14"
+prost-types = "0.14"
 
 # Async / 异步
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "net"] }
@@ -47,7 +47,7 @@ tracing = { workspace = true }
 http = "1"
 
 # Tower middleware (re-exported by tonic) / Tower 中间件
-tower = { version = "0.4", features = ["util"] }
+tower = { version = "0.5", features = ["util"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
