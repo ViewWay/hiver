@@ -259,14 +259,17 @@ pub struct ClientInterceptorChain {
 }
 
 #[async_trait]
+#[allow(dead_code)]
 trait ErasedClientInterceptor: Send + Sync {
     async fn intercept_metadata(&self, metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status>;
     fn name(&self) -> &'static str;
 }
 
+#[allow(dead_code)]
 struct ClientInterceptorWrapper<I: ClientInterceptor>(I);
 
 #[async_trait]
+#[allow(dead_code)]
 impl<I: ClientInterceptor> ErasedClientInterceptor for ClientInterceptorWrapper<I> {
     async fn intercept_metadata(&self, _metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status> {
         // Metadata-only pre-call check; full interception happens at call site

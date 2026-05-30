@@ -15,6 +15,7 @@
 //!     .with_max_delay(Duration::from_secs(5));
 //! ```
 
+use std::future::Future;
 use std::time::Duration;
 
 /// Retry policy for gRPC calls.
@@ -149,7 +150,7 @@ impl RetryPolicy {
     pub async fn execute<F, Fut, T>(&self, mut f: F) -> Result<T, tonic::Status>
     where
         F: FnMut() -> Fut,
-        Fut: std::future::Future<Output = Result<T, tonic::Status>>,
+        Fut: Future<Output = Result<T, tonic::Status>>,
     {
         let mut last_err = None;
         for attempt in 0..=self.max_attempts {

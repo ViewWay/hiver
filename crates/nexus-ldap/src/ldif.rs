@@ -339,7 +339,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
         match entry.changetype {
             LdifChangeType::Add => {
                 let mut attrs: Vec<_> = entry.attributes.iter().collect();
-                attrs.sort_by_key(|(k, _)| k.clone());
+                attrs.sort_by_key(|(k, _)| (**k).clone());
                 for (attr, values) in attrs {
                     for value in values {
                         output.push_str(&format!("{}: {}\n", attr, value));

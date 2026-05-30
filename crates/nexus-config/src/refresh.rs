@@ -74,7 +74,7 @@ impl ConfigChangeEvent {
 }
 
 /// Callback type for config change listeners / 配置变更监听器的回调类型
-pub type ChangeListener = Box<dyn Fn(&ConfigChangeEvent) + Send + Sync>;
+pub(crate) type ChangeListener = Box<dyn Fn(&ConfigChangeEvent) + Send + Sync>;
 
 /// RefreshScope — marks beans that should be refreshed when config changes.
 /// RefreshScope — 标记在配置更改时应刷新的 bean。

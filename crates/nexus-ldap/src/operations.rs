@@ -24,7 +24,7 @@
 //! ```
 
 use crate::context::LdapContextSource;
-use crate::error::{LdapError, LdapResult};
+use crate::error::LdapResult;
 use crate::LdapTemplate;
 
 /// Advanced LDAP operations wrapper / 高级 LDAP 操作包装器
