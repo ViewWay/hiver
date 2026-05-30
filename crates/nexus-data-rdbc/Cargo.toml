@@ -25,9 +25,15 @@ all = ["postgres", "mysql", "sqlite", "any"]
 # R2DBC compatibility layer
 r2dbc-compat = []
 
+# Transaction bridge with nexus-tx
+tx-bridge = ["dep:nexus-tx"]
+
 [dependencies]
 # Data commons
 nexus-data-commons = { path = "../nexus-data-commons", features = ["query"] }
+
+# Optional transaction management bridge
+nexus-tx = { path = "../nexus-tx", optional = true }
 
 # Async runtime
 nexus-runtime = { path = "../nexus-runtime" }

@@ -154,6 +154,25 @@ pub trait DatabaseClient: Send + Sync {
     /// 开始事务
     async fn begin_transaction(&self) -> Result<crate::Transaction>;
 
+    /// Get the current transaction from the active transaction context, if any.
+    /// 从活跃事务上下文中获取当前事务（如果有）。
+    ///
+    /// When the `tx-bridge` feature is enabled and a transaction has been started
+    /// via `RdbcTransactionManager`, this method returns it.
+    ///
+    /// 当启用 `tx-bridge` feature 且通过 `RdbcTransactionManager` 启动了事务时，
+    /// 此方法返回该事务。
+    fn current_transaction(&self) -> Option<crate::Transaction> {
+        #[cfg(feature = "tx-bridge")]
+        {
+            crate::tx_bridge::try_current_transaction()
+        }
+        #[cfg(not(feature = "tx-bridge"))]
+        {
+            None
+        }
+    }
+
     /// Ping the database
     /// Ping 数据库
     async fn ping(&self) -> Result<()>;

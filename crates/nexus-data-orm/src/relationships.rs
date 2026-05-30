@@ -35,8 +35,10 @@
 //! }
 //! ```
 
+use std::collections::HashMap;
+
 use crate::{Error, Model, Result};
-use nexus_data_rdbc::DatabaseClient;
+use nexus_data_rdbc::{DatabaseClient, QueryParam};
 
 /// Relationship type
 /// 关系类型
@@ -142,13 +144,12 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T> {
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>> {
         let sql = format!(
-            "SELECT * FROM {} WHERE {} = {}",
+            "SELECT * FROM {} WHERE {} = $1",
             T::table_name(),
             self.foreign_key,
-            self.parent_id,
         );
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("HasMany load failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
@@ -165,8 +166,8 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T> {
     /// 获取相关记录的查询构建器。
     pub fn query(&self) -> crate::QueryBuilder<T> {
         crate::QueryBuilder::new().where_(
-            &format!("{} = ?", self.foreign_key),
-            &[nexus_data_rdbc::QueryParam::Text(self.parent_id.clone())],
+            &format!("{} = $1", self.foreign_key),
+            &[QueryParam::Text(self.parent_id.clone())],
         )
     }
 }
@@ -197,13 +198,12 @@ impl<T: Model + serde::de::DeserializeOwned> HasOne<T> {
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
         let sql = format!(
-            "SELECT * FROM {} WHERE {} = {} LIMIT 1",
+            "SELECT * FROM {} WHERE {} = $1 LIMIT 1",
             T::table_name(),
             self.foreign_key,
-            self.parent_id,
         );
         let row = client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("HasOne load failed: {e}")))?;
         match row {
@@ -242,13 +242,12 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T> {
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
         let sql = format!(
-            "SELECT * FROM {} WHERE {} = {} LIMIT 1",
+            "SELECT * FROM {} WHERE {} = $1 LIMIT 1",
             T::table_name(),
             self.foreign_key,
-            self.foreign_key_value,
         );
         let row = client
-            .fetch_one(&sql)
+            .fetch_one_params(&sql, &[QueryParam::Text(self.foreign_key_value.clone())])
             .await
             .map_err(|e| Error::relationship(format!("BelongsTo load failed: {e}")))?;
         match row {
@@ -298,15 +297,14 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>> {
         let sql = format!(
-            "SELECT t.* FROM {} t INNER JOIN {} j ON t.id = j.{} WHERE j.{} = {}",
+            "SELECT t.* FROM {} t INNER JOIN {} j ON t.id = j.{} WHERE j.{} = $1",
             T::table_name(),
             self.join_table,
             self.related_foreign_key,
             self.foreign_key,
-            self.current_id,
         );
         let rows = client
-            .fetch_all(&sql)
+            .fetch_all_params(&sql, &[QueryParam::Text(self.current_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("BelongsToMany load failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
@@ -324,15 +322,13 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     pub async fn attach<C: DatabaseClient>(&self, client: &C, related_id: impl Into<String>) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
-            "INSERT INTO {} ({}, {}) VALUES ({}, {})",
+            "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
             self.join_table,
             self.foreign_key,
             self.related_foreign_key,
-            self.current_id,
-            rid,
         );
         client
-            .execute_cmd(&sql)
+            .execute_params(&sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid)])
             .await
             .map_err(|e| Error::relationship(format!("attach failed: {e}")))?;
         Ok(())
@@ -343,15 +339,13 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     pub async fn detach<C: DatabaseClient>(&self, client: &C, related_id: impl Into<String>) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
-            "DELETE FROM {} WHERE {} = {} AND {} = {}",
+            "DELETE FROM {} WHERE {} = $1 AND {} = $2",
             self.join_table,
             self.foreign_key,
-            self.current_id,
             self.related_foreign_key,
-            rid,
         );
         client
-            .execute_cmd(&sql)
+            .execute_params(&sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid)])
             .await
             .map_err(|e| Error::relationship(format!("detach failed: {e}")))?;
         Ok(())
@@ -360,29 +354,27 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     /// Sync the related records (replace all join table entries).
     /// 同步相关记录（替换所有连接表条目）。
     pub async fn sync<C: DatabaseClient>(&self, client: &C, related_ids: &[impl ToString]) -> Result<()> {
-        // Delete all current associations
+        // Delete all current associations / 删除所有当前关联
         let delete_sql = format!(
-            "DELETE FROM {} WHERE {} = {}",
-            self.join_table, self.foreign_key, self.current_id,
+            "DELETE FROM {} WHERE {} = $1",
+            self.join_table, self.foreign_key,
         );
         client
-            .execute_cmd(&delete_sql)
+            .execute_params(&delete_sql, &[QueryParam::Text(self.current_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("sync delete failed: {e}")))?;
 
-        // Insert new associations
+        // Insert new associations / 插入新关联
         for rid in related_ids {
             let rid_str = rid.to_string();
             let insert_sql = format!(
-                "INSERT INTO {} ({}, {}) VALUES ({}, {})",
+                "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
                 self.join_table,
                 self.foreign_key,
                 self.related_foreign_key,
-                self.current_id,
-                rid_str,
             );
             client
-                .execute_cmd(&insert_sql)
+                .execute_params(&insert_sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid_str)])
                 .await
                 .map_err(|e| Error::relationship(format!("sync insert failed: {e}")))?;
         }
@@ -427,12 +419,262 @@ impl Default for EagerLoad {
     }
 }
 
-/// Transaction trait for relationships / 关系的事务 trait
-pub trait Transaction: Send + Sync {
-    /// Commit the transaction / 提交事务
-    fn commit(self: Box<Self>) -> impl std::future::Future<Output = Result<()>> + Send;
-    /// Rollback the transaction / 回滚事务
-    fn rollback(self: Box<Self>) -> impl std::future::Future<Output = Result<()>> + Send;
+// ──────────────────────────────────────────────────────────────────────────────
+// Eager Loading Builder / 预加载构建器
+// ──────────────────────────────────────────────────────────────────────────────
+
+/// A parent model with its eagerly loaded relations.
+/// 带有预加载关系的父模型。
+///
+/// # Type Parameters / 类型参数
+///
+/// - `M` — The parent model type / 父模型类型
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// let results = User::eager_query()
+///     .with("posts", "user_id", "posts")
+///     .all(&client)
+///     .await?;
+/// for item in results {
+///     let user = item.model;
+///     let posts = item.relation_rows("posts");
+/// }
+/// ```
+#[derive(Debug, Clone)]
+pub struct WithRelations<M> {
+    /// The parent model / 父模型
+    pub model: M,
+    /// Loaded relation rows keyed by relationship name
+    /// 按关系名称索引的已加载关系行
+    relations: HashMap<String, Vec<serde_json::Value>>,
+}
+
+impl<M> WithRelations<M> {
+    /// Get the loaded rows for a named relationship.
+    /// 获取命名关系的已加载行。
+    pub fn relation_rows(&self, name: &str) -> &[serde_json::Value] {
+        self.relations.get(name).map(|v| v.as_slice()).unwrap_or(&[])
+    }
+
+    /// Deserialize the loaded rows for a named relationship into a concrete type.
+    /// 将命名关系的已加载行反序列化为具体类型。
+    pub fn relation<T: serde::de::DeserializeOwned>(&self, name: &str) -> Result<Vec<T>> {
+        self.relations
+            .get(name)
+            .map(|rows| {
+                rows.iter()
+                    .map(|v| serde_json::from_value(v.clone()).map_err(|e| Error::relationship(format!("deserialize relation '{name}': {e}"))))
+                    .collect::<Result<Vec<T>>>()
+            })
+            .unwrap_or(Ok(Vec::new()))
+    }
+}
+
+/// Eager loading query builder — wraps a `QueryBuilder` with relationship preloading.
+/// 预加载查询构建器 — 包装 `QueryBuilder` 以支持关系预加载。
+///
+/// Avoids N+1 queries by batching relationship loads:
+/// executes the base query, collects parent IDs, then issues one `WHERE fk IN (...)`
+/// query per relationship.
+///
+/// 避免 N+1 查询，通过批量加载关系：执行基础查询，收集父 ID，
+/// 然后为每个关系发出一个 `WHERE fk IN (...)` 查询。
+pub struct EagerQueryBuilder<M: Model> {
+    /// The base query builder / 基础查询构建器
+    query: crate::QueryBuilder<M>,
+    /// Relationships to eager-load: (name, foreign_key, target_table)
+    /// 要预加载的关系：(名称, 外键, 目标表)
+    eager: Vec<(String, String, String)>,
+}
+
+impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
+    /// Create a new eager query builder.
+    /// 创建新的预加载查询构建器。
+    pub(crate) fn new() -> Self {
+        Self {
+            query: crate::QueryBuilder::new(),
+            eager: Vec::new(),
+        }
+    }
+
+    /// Specify a relationship to eager-load.
+    /// 指定要预加载的关系。
+    ///
+    /// # Parameters / 参数
+    ///
+    /// - `name` — Relationship name (used as key in results) / 关系名称（结果中的键）
+    /// - `foreign_key` — Foreign key column in the target table / 目标表中的外键列
+    /// - `target_table` — Target table to query / 要查询的目标表
+    pub fn with(mut self, name: impl Into<String>, foreign_key: impl Into<String>, target_table: impl Into<String>) -> Self {
+        self.eager.push((name.into(), foreign_key.into(), target_table.into()));
+        self
+    }
+
+    /// Add a where clause (delegates to inner QueryBuilder).
+    /// 添加 WHERE 子句（委托给内部 QueryBuilder）。
+    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
+        self.query = self.query.where_(condition, params);
+        self
+    }
+
+    /// Set the limit (delegates to inner QueryBuilder).
+    /// 设置 LIMIT（委托给内部 QueryBuilder）。
+    pub fn limit(mut self, limit: usize) -> Self {
+        self.query = self.query.limit(limit);
+        self
+    }
+
+    /// Set the offset (delegates to inner QueryBuilder).
+    /// 设置 OFFSET（委托给内部 QueryBuilder）。
+    pub fn offset(mut self, offset: usize) -> Self {
+        self.query = self.query.offset(offset);
+        self
+    }
+
+    /// Execute the query with eager-loaded relations.
+    /// 执行带预加载关系的查询。
+    ///
+    /// Returns parent records with their relations loaded in a single batch per relationship.
+    /// 返回父记录，每个关系在单个批次中加载。
+    pub async fn all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<WithRelations<M>>> {
+        // 1. Execute base query to get parent records
+        let parents = self.query.all(client).await?;
+
+        // 2. Collect parent primary keys
+        let mut parent_ids: Vec<String> = Vec::with_capacity(parents.len());
+        for p in &parents {
+            parent_ids.push(p.primary_key()?);
+        }
+
+        // 3. For each relationship, issue a batched query
+        let mut relation_maps: Vec<HashMap<String, HashMap<String, Vec<serde_json::Value>>>> =
+            Vec::with_capacity(self.eager.len());
+
+        for (name, foreign_key, target_table) in &self.eager {
+            let mut map: HashMap<String, Vec<serde_json::Value>> = HashMap::new();
+
+            if parent_ids.is_empty() {
+                relation_maps.push([(name.clone(), map)].into());
+                continue;
+            }
+
+            // Build IN clause: WHERE foreign_key IN ($1, $2, ...)
+            let placeholders: Vec<String> = (1..=parent_ids.len()).map(|i| format!("${i}")).collect();
+            let sql = format!(
+                "SELECT * FROM {} WHERE {} IN ({})",
+                target_table,
+                foreign_key,
+                placeholders.join(", "),
+            );
+            let params: Vec<QueryParam> = parent_ids.iter().map(|id| QueryParam::Text(id.clone())).collect();
+
+            let rows = client
+                .fetch_all_params(&sql, &params)
+                .await
+                .map_err(|e| Error::relationship(format!("eager load '{name}' failed: {e}")))?;
+
+            for row in rows {
+                let fk_val: String = row
+                    .get(foreign_key)
+                    .and_then(|v| v.as_type())
+                    .unwrap_or_default();
+                let json_val: serde_json::Value = row
+                    .deserialize()
+                    .unwrap_or(serde_json::Value::Null);
+                map.entry(fk_val).or_default().push(json_val);
+            }
+
+            let mut keyed: HashMap<String, HashMap<String, Vec<serde_json::Value>>> = HashMap::new();
+            keyed.insert(name.clone(), map);
+            relation_maps.push(keyed);
+        }
+
+        // 4. Assemble results
+        let mut results = Vec::with_capacity(parents.len());
+        for parent in parents {
+            let pk = parent.primary_key()?;
+            let mut relations = HashMap::new();
+            for keyed in &relation_maps {
+                for (name, map) in keyed {
+                    let rows = map.get(&pk).cloned().unwrap_or_default();
+                    relations.insert(name.clone(), rows);
+                }
+            }
+            results.push(WithRelations { model: parent, relations });
+        }
+
+        Ok(results)
+    }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Cascade Delete / 级联删除
+// ──────────────────────────────────────────────────────────────────────────────
+
+/// Enforce cascade delete behavior based on the model's declared relations.
+/// 根据模型声明的关系执行级联删除行为。
+///
+/// For each relation with `OnDelete::Cascade`, deletes related records.
+/// For `OnDelete::SetNull`, sets the foreign key to NULL.
+/// For `OnDelete::Restrict`, checks for existing related records and errors if found.
+///
+/// 对每个 `OnDelete::Cascade` 的关系，删除相关记录。
+/// 对 `OnDelete::SetNull`，将外键设置为 NULL。
+/// 对 `OnDelete::Restrict`，检查是否存在相关记录，如果存在则报错。
+pub async fn enforce_cascade<M, C>(model: &M, client: &C, relations: &[Relation]) -> Result<()>
+where
+    M: Model,
+    C: DatabaseClient,
+{
+    let pk = model.primary_key()?;
+
+    for relation in relations {
+        match relation.on_delete {
+            OnDelete::Cascade => {
+                let sql = format!(
+                    "DELETE FROM {} WHERE {} = $1",
+                    relation.target_table, relation.foreign_key,
+                );
+                client
+                    .execute_params(&sql, &[QueryParam::Text(pk.clone())])
+                    .await
+                    .map_err(|e| Error::relationship(format!("cascade delete on '{}': {e}", relation.name)))?;
+            }
+            OnDelete::SetNull => {
+                let sql = format!(
+                    "UPDATE {} SET {} = NULL WHERE {} = $1",
+                    relation.target_table, relation.foreign_key, relation.foreign_key,
+                );
+                client
+                    .execute_params(&sql, &[QueryParam::Text(pk.clone())])
+                    .await
+                    .map_err(|e| Error::relationship(format!("set-null on '{}': {e}", relation.name)))?;
+            }
+            OnDelete::Restrict => {
+                let sql = format!(
+                    "SELECT 1 FROM {} WHERE {} = $1 LIMIT 1",
+                    relation.target_table, relation.foreign_key,
+                );
+                let row = client
+                    .fetch_one_params(&sql, &[QueryParam::Text(pk.clone())])
+                    .await
+                    .map_err(|e| Error::relationship(format!("restrict check on '{}': {e}", relation.name)))?;
+                if row.is_some() {
+                    return Err(Error::relationship(format!(
+                        "cannot delete: relation '{}' has dependent records (OnDelete::Restrict)",
+                        relation.name
+                    )));
+                }
+            }
+            OnDelete::SetDefault | OnDelete::NoAction => {
+                // No action needed / 无需操作
+            }
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]

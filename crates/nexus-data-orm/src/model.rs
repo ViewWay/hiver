@@ -254,6 +254,18 @@ pub trait Model: Send + Sync {
     {
         Vec::new()
     }
+
+    /// Get the relationship definitions for this model.
+    /// 获取此模型的关系定义。
+    ///
+    /// Override this method to declare cascading relationships.
+    /// 重写此方法以声明级联关系。
+    fn relations() -> Vec<crate::Relation>
+    where
+        Self: Sized,
+    {
+        Vec::new()
+    }
 }
 
 #[cfg(test)]

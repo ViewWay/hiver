@@ -13,6 +13,7 @@ const HELPER_ATTRS: &[&str] = &[
     "GeneratedValue",
     "Column",
     "OneToMany",
+    "OneToOne",
     "ManyToOne",
     "ManyToMany",
     "JoinColumn",
@@ -176,6 +177,12 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
             "OneToMany" => {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("one_to_many".to_string());
+                meta.relation_target = extract_string(&args, "target_entity");
+                meta.relation_mapped_by = extract_string(&args, "mapped_by");
+            }
+            "OneToOne" => {
+                let args = parse_attr_args(attr);
+                meta.relation_kind = Some("one_to_one".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
             }

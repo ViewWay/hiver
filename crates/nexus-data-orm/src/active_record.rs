@@ -37,6 +37,7 @@
 //! ```
 
 use crate::query::QueryBuilder;
+use crate::relationships::{EagerQueryBuilder, enforce_cascade};
 use crate::Model;
 use crate::Result;
 use nexus_data_rdbc::{DatabaseClient, QueryParam, Row};
@@ -241,6 +242,11 @@ pub trait Delete: Send + Sync + Model + Sized {
     /// Delete this record from the database.
     /// 从数据库删除此记录。
     async fn delete<C: DatabaseClient>(&self, client: &C) -> Result<()> {
+        // Enforce cascade rules before deleting the parent record.
+        // 在删除父记录之前执行级联规则。
+        let relations = Self::relations();
+        enforce_cascade(self, client, &relations).await?;
+
         let pk = self.primary_key()?;
         let sql = format!("DELETE FROM {} WHERE id = $1", Self::table_name());
         client
@@ -525,6 +531,21 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     /// 获取此模型类型的 QueryBuilder。
     fn query() -> QueryBuilder<Self> {
         QueryBuilder::new()
+    }
+
+    /// Get an EagerQueryBuilder for this model type with relationship preloading.
+    /// 获取此模型类型的 EagerQueryBuilder 以支持关系预加载。
+    ///
+    /// # Example / 示例
+    ///
+    /// ```rust,no_run,ignore
+    /// let results = User::eager_query()
+    ///     .with("posts", "user_id", "posts")
+    ///     .all(&client)
+    ///     .await?;
+    /// ```
+    fn eager_query() -> EagerQueryBuilder<Self> {
+        EagerQueryBuilder::new()
     }
 }
 

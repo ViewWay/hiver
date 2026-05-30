@@ -86,7 +86,7 @@ pub use query::{QueryBuilder, WhereClause, OrderBy, Limit};
 pub use nexus_data_commons::ToSql;
 pub use nexus_data_rdbc::QueryParam;
 pub use repository::{OrmRepository, DefaultOrmRepository};
-pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, Relation, RelationType, OnDelete};
+pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, WithRelations, EagerQueryBuilder, Relation, RelationType, OnDelete};
 pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
 pub use connection::Connection;
 

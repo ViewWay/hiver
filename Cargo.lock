@@ -6482,6 +6482,7 @@ dependencies = [
  "futures-util",
  "nexus-data-commons",
  "nexus-runtime",
+ "nexus-tx",
  "serde",
  "serde_json",
  "sqlx",

@@ -215,6 +215,32 @@ pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
 // Relation Annotations / 关系注解
 // ========================================================================
 
+/// Marks a one-to-one relationship
+/// 标记一对一关系
+///
+/// # Attributes / 属性
+///
+/// - `target_entity` - Target entity type name / 目标实体类型名
+/// - `mapped_by` - Field name in target entity / 目标实体中的字段名
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use nexus_data_annotations::{Entity, OneToOne};
+///
+/// #[Entity]
+/// pub struct User {
+///     pub id: i64,
+///     #[OneToOne(target_entity = "Profile", mapped_by = "user_id")]
+///     pub profile: Profile,
+/// }
+/// ```
+#[proc_macro_attribute]
+#[allow(non_snake_case)]
+pub fn OneToOne(attr: TokenStream, item: TokenStream) -> TokenStream {
+    relation::impl_one_to_one(attr, item)
+}
+
 /// Marks a one-to-many relationship
 /// 标记一对多关系
 ///

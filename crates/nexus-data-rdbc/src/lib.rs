@@ -18,6 +18,9 @@ pub mod pool;
 pub mod repository;
 pub mod extractor;
 pub mod executor;
+
+#[cfg(feature = "tx-bridge")]
+pub mod tx_bridge;
 pub mod mapper;
 pub mod query_runtime;
 
