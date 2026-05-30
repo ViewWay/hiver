@@ -86,7 +86,7 @@ pub enum CellAlignment {
 impl CellAlignment {
     /// Convert to OOXML alignment attribute value.
     /// 转换为 OOXML 对齐属性值。
-    fn as_str(&self) -> &'static str {
+    fn as_str(self) -> &'static str {
         match self {
             CellAlignment::Left => "left",
             CellAlignment::Center => "center",
@@ -223,9 +223,8 @@ impl ExcelCell {
     /// 返回基于样式单元格的单元格类型。
     fn style_type_attribute(&self) -> &'static str {
         match self {
-            ExcelCell::Number(_) => "n",
             ExcelCell::Boolean(_) => "b",
-            ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",
+            ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",
             _ => "str",
         }
     }
@@ -642,13 +641,12 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
             return id;
         }
         let id = *next_num_fmt_id;
-        write!(
+        let _ = write!(
             num_fmts_section,
             "<numFmt numFmtId=\"{}\" formatCode=\"{}\"/>",
             id,
             escape_xml(fmt)
-        )
-        .unwrap();
+        );
         num_fmt_id_map.insert(fmt.to_string(), id);
         *next_num_fmt_id += 1;
         *num_fmt_count += 1;
@@ -666,12 +664,11 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
             .map(|c| format!(" rgb=\"{}\"", c))
             .unwrap_or_default();
         let bold_attr = if style.bold { "<b/>" } else { "" };
-        write!(
+        let _ = write!(
             fonts_section,
             "<font><sz val=\"{}\"/><color{}/><name val=\"Calibri\"/>{}</font>",
             style.font_size, color_attr, bold_attr
-        )
-        .unwrap();
+        );
         *next_font_id += 1;
         id
     };
@@ -682,12 +679,11 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
                          next_fill_id: &mut u32| {
         if let Some(ref color) = style.bg_color {
             let id = *next_fill_id;
-            write!(
+            let _ = write!(
                 fills_section,
                 "<fill><patternFill patternType=\"solid\"><fgColor rgb=\"{}\"/></patternFill></fill>",
                 color
-            )
-            .unwrap();
+            );
             *next_fill_id += 1;
             Some(id)
         } else {
@@ -701,11 +697,10 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
                            next_border_id: &mut u32| {
         if style.border {
             let id = *next_border_id;
-            write!(
+            let _ = write!(
                 borders_section,
                 "<border><left style=\"thin\"><color auto=\"1\"/></left><right style=\"thin\"><color auto=\"1\"/></right><top style=\"thin\"><color auto=\"1\"/></top><bottom style=\"thin\"><color auto=\"1\"/></bottom><diagonal/></border>"
-            )
-            .unwrap();
+            );
             *next_border_id += 1;
             Some(id)
         } else {
@@ -722,8 +717,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
         let num_fmt_id = hs
             .number_format
             .as_deref()
-            .map(|fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count))
-            .unwrap_or(0);
+            .map_or(0, |fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count));
 
         let apply = build_apply_attributes(hs);
         let xf = build_xf(num_fmt_id, font_id, fill_id.unwrap_or(0), border_id.unwrap_or(0), hs.alignment, next_xf_id, &apply);
@@ -742,7 +736,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
 
     // Register column styles
     for &col in exporter.column_styles.keys() {
-        if let Some(ref cs) = exporter.column_styles.get(&col) {
+        if let Some(cs) = exporter.column_styles.get(&col) {
             let font_id = register_font(cs, &mut fonts_section, &mut next_font_id);
             let fill_id = register_fill(cs, &mut fills_section, &mut next_fill_id);
             let border_id = register_border(cs, &mut borders_section, &mut next_border_id);
@@ -750,8 +744,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
             let num_fmt_id = cs
                 .number_format
                 .as_deref()
-                .map(|fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count))
-                .unwrap_or(0);
+                .map_or(0, |fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count));
 
             let apply = build_apply_attributes(cs);
             let xf = build_xf(num_fmt_id, font_id, fill_id.unwrap_or(0), border_id.unwrap_or(0), cs.alignment, next_xf_id, &apply);
@@ -762,12 +755,11 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
 
     // Build final output
     if num_fmt_count > 0 {
-        write!(
+        let _ = writeln!(
             xml,
-            "<numFmts count=\"{}\">{}</numFmts>\n",
+            "<numFmts count=\"{}\">{}</numFmts>",
             num_fmt_count, num_fmts_section
-        )
-        .unwrap();
+        );
     }
 
     // Update counts in section headers
@@ -797,6 +789,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
 /// 为单元格 Xf 构建 apply 属性字符串。
 fn build_apply_attributes(style: &ExcelCellStyle) -> String {
     let mut attrs = Vec::new();
+    #[allow(clippy::float_cmp)]
     if style.bold || style.font_size != 11.0 || style.font_color.is_some() {
         attrs.push("applyFont=\"1\"");
     }
@@ -846,7 +839,7 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
         .config
         .headers
         .len()
-        .max(exporter.rows.iter().map(|r| r.len()).max().unwrap_or(0));
+        .max(exporter.rows.iter().map(Vec::len).max().unwrap_or(0));
 
     // Header row index for auto-filter and freeze pane
     let has_header = !exporter.config.headers.is_empty();
@@ -860,18 +853,17 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
     if exporter.config.auto_filter && has_header && num_cols > 0 {
         let start_col = col_ref(0);
         let end_col = col_ref(num_cols - 1);
-        write!(
+        let _ = writeln!(
             xml,
-            "<autoFilter ref=\"{}1:{}{}\"/>\n",
+            "<autoFilter ref=\"{}1:{}{}\"/>",
             start_col, end_col, last_data_row
-        )
-        .unwrap();
+        );
     }
 
     // Freeze pane (freeze header row)
     if exporter.config.freeze_header && has_header {
         // Freeze below row 1, no split column
-        write!(xml, "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"1\" topLeftCell=\"A2\" activePane=\"bottomLeft\" state=\"frozen\"/></sheetView></sheetViews>\n").unwrap();
+        let _ = writeln!(xml, "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"1\" topLeftCell=\"A2\" activePane=\"bottomLeft\" state=\"frozen\"/></sheetView></sheetViews>");
     }
 
     xml.push_str("<sheetData>\n");
@@ -881,11 +873,11 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
     // 1 = header style (if set)
     // 2 = date format
     // 3+ = column styles (in sorted order by column index)
-    let header_xf_id = if exporter.header_style.is_some() { 1 } else { 0 };
+    let header_xf_id = i32::from(exporter.header_style.is_some());
     let date_xf_id = if exporter.header_style.is_some() { 2 } else { 1 };
     let mut col_style_xf_ids: HashMap<usize, u32> = HashMap::new();
     let mut sorted_cols: Vec<usize> = exporter.column_styles.keys().copied().collect();
-    sorted_cols.sort();
+    sorted_cols.sort_unstable();
     for (i, &col) in sorted_cols.iter().enumerate() {
         let base_xf = if exporter.header_style.is_some() { 3 } else { 2 };
         col_style_xf_ids.insert(col, base_xf + i as u32);
@@ -896,30 +888,29 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
         xml.push_str("<row r=\"1\">\n");
         for (col_idx, header) in exporter.config.headers.iter().enumerate() {
             let ref_str = cell_ref(col_idx, 0);
-            write!(
+            let _ = writeln!(
                 xml,
-                "<c r=\"{}\" s=\"{}\" t=\"inlineStr\"><is><t>{}</t></is></c>\n",
+                "<c r=\"{}\" s=\"{}\" t=\"inlineStr\"><is><t>{}</t></is></c>",
                 ref_str, header_xf_id, escape_xml(header)
-            )
-            .unwrap();
+            );
         }
         xml.push_str("</row>\n");
     }
 
     // Write data rows
     for (row_idx, row) in exporter.rows.iter().enumerate() {
-        let r = row_idx + 1 + if has_header { 1 } else { 0 }; // 1-based, offset by header
-        xml.push_str(&format!("<row r=\"{}\">\n", r));
+        let r = row_idx + 1 + usize::from(has_header); // 1-based, offset by header
+        let _ = writeln!(xml, "<row r=\"{}\">", r);
         for (col_idx, cell) in row.iter().enumerate() {
             let ref_str = cell_ref(col_idx, r);
             if cell.is_empty() {
-                write!(xml, "<c r=\"{}\"/>", ref_str).unwrap();
+                let _ = write!(xml, "<c r=\"{}\"/>", ref_str);
             } else {
                 // Determine style based on column style or cell type
                 let xf_id = col_style_xf_ids
                     .get(&col_idx)
                     .copied()
-                    .unwrap_or_else(|| {
+                    .unwrap_or({
                         if matches!(cell, ExcelCell::Date(_) | ExcelCell::DateTime(_)) {
                             date_xf_id
                         } else {
@@ -927,15 +918,14 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
                         }
                     });
 
-                write!(
+                let _ = write!(
                     xml,
                     "<c r=\"{}\" s=\"{}\" t=\"{}\"><v>{}</v></c>",
                     ref_str,
                     xf_id,
                     cell.style_type_attribute(),
                     cell.style_value().unwrap_or_default()
-                )
-                .unwrap();
+                );
             }
         }
         xml.push_str("\n</row>\n");
@@ -948,14 +938,13 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
         xml.push_str("<cols>\n");
         for (i, &width) in exporter.config.column_widths.iter().enumerate() {
             // OOXML width is in character widths (approximately)
-            write!(
+            let _ = writeln!(
                 xml,
-                "<col min=\"{}\" max=\"{}\" width=\"{}\" customWidth=\"1\"/>\n",
+                "<col min=\"{}\" max=\"{}\" width=\"{}\" customWidth=\"1\"/>",
                 i + 1,
                 i + 1,
                 width
-            )
-            .unwrap();
+            );
         }
         xml.push_str("</cols>\n");
     }

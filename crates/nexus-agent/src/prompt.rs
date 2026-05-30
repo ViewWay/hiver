@@ -80,11 +80,11 @@ impl AgentPromptTemplate {
     #[must_use]
     pub fn extract_variables(&self) -> Vec<String> {
         let mut vars = Vec::new();
-        let mut chars = self.template.chars().peekable();
+        let chars = self.template.chars().peekable();
         let mut in_brace = false;
         let mut current_var = String::new();
 
-        while let Some(ch) = chars.next() {
+        for ch in chars {
             if ch == '{' {
                 in_brace = true;
                 current_var.clear();

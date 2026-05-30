@@ -76,7 +76,7 @@ impl LoadBalancer for RoundRobinLoadBalancer {
 
         // Get and increment index
         let index = self.index.fetch_add(1, Ordering::SeqCst) % instances.len();
-        Some(instances[index].clone())
+        instances.get(index).cloned()
     }
 }
 
@@ -124,6 +124,7 @@ impl WeightedLoadBalancer {
     /// Choose by weight
     /// 按权重选择
     #[allow(clippy::unused_async)]
+    #[allow(clippy::expect_used)]
     pub async fn choose_weighted(
         &self,
         weighted_instances: &[(ServiceInstance, f32)],
@@ -341,7 +342,7 @@ impl LoadBalancer for WeightedRoundRobinLoadBalancer {
         for inst in instances {
             if let Some(state) = states.get_mut(&inst.instance_id) {
                 state.current += state.weight as i64;
-                if best.is_none() || state.current > best.unwrap().1 {
+                if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c) {
                     best = Some((inst, state.current));
                 }
             }
@@ -401,7 +402,7 @@ impl ConsistentHashLoadBalancer {
             return None;
         }
         if instances.len() == 1 {
-            return Some(&instances[0]);
+            return instances.first();
         }
 
         let mut ring: Vec<(u64, usize)> = Vec::with_capacity(instances.len() * self.virtual_nodes);
@@ -415,8 +416,9 @@ impl ConsistentHashLoadBalancer {
 
         let target = Self::hash_key(key);
         let pos = ring.partition_point(|(h, _)| *h < target);
-        let (_, idx) = ring[pos % ring.len()];
-        Some(&instances[idx])
+        let ring_idx = pos % ring.len();
+        let (_, idx) = ring.get(ring_idx).copied()?;
+        instances.get(idx)
     }
 }
 

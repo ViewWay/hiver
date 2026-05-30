@@ -25,6 +25,7 @@
 //! assert_eq!(entries[0].dn, "cn=John Doe,dc=example,dc=com");
 //! ```
 
+use std::fmt::Write;
 use std::collections::HashMap;
 
 /// LDIF change type / LDIF 更改类型
@@ -326,7 +327,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
     let mut output = String::new();
 
     for entry in entries {
-        output.push_str(&format!("dn: {}\n", entry.dn));
+        let _ = writeln!(output, "dn: {}", entry.dn);
 
         let ct = match entry.changetype {
             LdifChangeType::Add => "add",
@@ -334,7 +335,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
             LdifChangeType::Delete => "delete",
             LdifChangeType::ModDn => "moddn",
         };
-        output.push_str(&format!("changetype: {}\n", ct));
+        let _ = writeln!(output, "changetype: {}", ct);
 
         match entry.changetype {
             LdifChangeType::Add => {
@@ -342,7 +343,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
                 attrs.sort_by_key(|(k, _)| (**k).clone());
                 for (attr, values) in attrs {
                     for value in values {
-                        output.push_str(&format!("{}: {}\n", attr, value));
+                        let _ = writeln!(output, "{}: {}", attr, value);
                     }
                 }
             }
@@ -356,9 +357,9 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
                         LdifModOp::Replace => "replace",
                         LdifModOp::Delete => "delete",
                     };
-                    output.push_str(&format!("{}: {}\n", op, modification.attribute));
+                    let _ = writeln!(output, "{}: {}", op, modification.attribute);
                     for value in &modification.values {
-                        output.push_str(&format!("{}: {}\n", modification.attribute, value));
+                        let _ = writeln!(output, "{}: {}", modification.attribute, value);
                     }
                 }
             }

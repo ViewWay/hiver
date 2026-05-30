@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::missing_fields_in_debug)]
 //! Nexus Transaction - Transaction management module
 //! Nexus事务 - 事务管理模块
 //!

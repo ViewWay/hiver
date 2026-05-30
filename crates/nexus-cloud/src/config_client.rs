@@ -327,19 +327,20 @@ fn flatten_json_value(value: &serde_json::Value) -> Result<HashMap<String, Strin
     if let Some(sources) = value.get("propertySources").and_then(|v| v.as_array()) {
         for source in sources.iter().rev() {
             if let Some(obj) = source.get("source").and_then(|v| v.as_object()) {
-                flatten_object(obj, String::new(), &mut map);
+                flatten_object(obj, "", &mut map);
             }
         }
     } else if let Some(obj) = value.as_object() {
-        flatten_object(obj, String::new(), &mut map);
+        flatten_object(obj, "", &mut map);
     }
 
     Ok(map)
 }
 
+#[allow(clippy::match_wildcard_for_single_variants)]
 fn flatten_object(
     obj: &serde_json::Map<String, serde_json::Value>,
-    prefix: String,
+    prefix: &str,
     out: &mut HashMap<String, String>,
 ) {
     for (key, value) in obj {
@@ -350,7 +351,7 @@ fn flatten_object(
         };
         match value {
             serde_json::Value::Object(inner) => {
-                flatten_object(inner, full_key, out);
+                flatten_object(inner, &full_key, out);
             }
             other => {
                 // Convert non-string values to their string representation
@@ -431,7 +432,7 @@ impl ConfigProvider for ConfigSource {
                 load_local_config(path).await
             }
             ConfigSource::Environment { prefix } => {
-                Ok(load_env_config(prefix))
+                Ok(load_env_config(prefix.as_deref()))
             }
         }
     }
@@ -496,15 +497,15 @@ async fn load_local_config(path: &PathBuf) -> Result<HashMap<String, String>, Co
 
 /// Load configuration from environment variables.
 /// 从环境变量加载配置。
-fn load_env_config(prefix: &Option<String>) -> HashMap<String, String> {
+fn load_env_config(prefix: Option<&str>) -> HashMap<String, String> {
     let mut map = HashMap::new();
     for (key, value) in std::env::vars() {
         if let Some(p) = prefix {
-            if !key.starts_with(p.as_str()) {
+            if !key.starts_with(p) {
                 continue;
             }
             // Strip the prefix and lowercase for consistency
-            let stripped = key.strip_prefix(p.as_str()).unwrap_or(&key);
+            let stripped = key.strip_prefix(p).unwrap_or(&key);
             map.insert(stripped.to_lowercase(), value);
         } else {
             map.insert(key.to_lowercase(), value);

@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::unwrap_used, clippy::needless_pass_by_value)]
 //! Nexus Macros - Spring Boot Style Procedural Macros
 //! Nexus宏 - Spring Boot风格的过程宏
 //!

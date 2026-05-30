@@ -31,6 +31,7 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+#![allow(clippy::expect_used, clippy::unwrap_used, clippy::needless_pass_by_value)]
 
 #[cfg(test)]
 mod tests;

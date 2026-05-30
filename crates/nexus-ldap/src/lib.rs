@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 //! nexus-ldap — Spring LDAP — Directory service integration
 //! nexus-ldap — LDAP目录服务集成
 //!

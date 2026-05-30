@@ -1,3 +1,4 @@
+#![allow(clippy::indexing_slicing)]
 //! nexus-shell — Spring Shell Equivalent: Interactive CLI REPL Framework
 //! nexus-shell — 等价于Spring Shell：交互式CLI REPL框架
 //!

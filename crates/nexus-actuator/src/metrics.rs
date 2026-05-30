@@ -230,23 +230,12 @@ impl SystemMetrics {
     /// Collect system metrics
     /// 收集系统指标
     pub fn collect(&self) -> Vec<Metric> {
-        let mut metrics = Vec::new();
-
-        // JVM/process equivalent metrics (placeholder values)
-        metrics.push(
+        vec![
             Metric::gauge("jvm.memory.max", 1024 * 1024 * 512).with_description("Maximum memory"),
-        );
-        metrics.push(
             Metric::gauge("jvm.memory.used", 1024 * 1024 * 128).with_description("Used memory"),
-        );
-
-        // Process CPU
-        metrics.push(Metric::gauge("process.cpu.usage", 5).with_description("Process CPU usage"));
-
-        // System info
-        metrics.push(Metric::gauge("system.cpu.count", 4).with_description("Number of processors"));
-
-        metrics
+            Metric::gauge("process.cpu.usage", 5).with_description("Process CPU usage"),
+            Metric::gauge("system.cpu.count", 4).with_description("Number of processors"),
+        ]
     }
 }
 

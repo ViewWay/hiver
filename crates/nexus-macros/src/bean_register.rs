@@ -1,6 +1,5 @@
 //! Shared helpers for generating `inventory::submit!` bean registration code.
 //! 生成 `inventory::submit!` Bean 注册代码的共享辅助模块。
-
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{format_ident, quote};
 use syn::{Field, Fields, ItemStruct, Type};
@@ -43,7 +42,6 @@ fn inject_type_for_field(field: &Field) -> Option<&Type> {
 }
 
 /// Generate inventory bean registration for a struct stereotype (`#[service]`, etc.).
-
 fn extract_condition_fn(
     input: &ItemStruct,
 ) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
@@ -142,7 +140,7 @@ pub fn generate_bean_registration(
     let mut field_inits: Vec<TokenStream2> = Vec::new();
 
     for field in &fields.named {
-        let field_name = field.ident.as_ref().expect("named field");
+        let field_name = field.ident.as_ref().expect("Fields::Named always have idents");
         let field_ty = &field.ty;
 
         if let Some(dep_ty) = inject_type_for_field(field) {

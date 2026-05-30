@@ -41,10 +41,7 @@ pub fn impl_with(input: DeriveInput) -> TokenStream {
     let mut with_method_names = Vec::new();
 
     for field in fields {
-        let field_name = match field.ident.as_ref() {
-            Some(name) => name,
-            None => continue,
-        };
+        let Some(field_name) = field.ident.as_ref() else { continue; };
         let field_type = &field.ty;
 
         // Check if field should be skipped

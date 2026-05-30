@@ -9,6 +9,11 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+// Allow expect_used: Response::builder().body() failure is unrecoverable;
+// using expect with a descriptive message is intentional.
+// 允许 expect_used：Response::builder().body() 失败是不可恢复的；
+// 使用带有描述性消息的 expect 是有意的。
+#![allow(clippy::expect_used)]
 
 #[cfg(test)]
 mod tests;

@@ -406,10 +406,7 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .iter()
         .map(|f| {
             let fname = LitStr::new(&f.name, Span::call_site());
-            match f.length {
-                Some(l) => quote! { #fname => Some(#l) },
-                None => quote! { #fname => None },
-            }
+            if let Some(l) = f.length { quote! { #fname => Some(#l) } } else { quote! { #fname => None } }
         })
         .collect();
 

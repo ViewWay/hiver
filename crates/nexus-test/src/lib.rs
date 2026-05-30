@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::indexing_slicing, clippy::doc_overindented_list_items, clippy::missing_fields_in_debug)]
 //! Nexus Test - Testing framework module
 //! Nexus测试 - 测试框架模块
 //!

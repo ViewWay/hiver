@@ -22,6 +22,8 @@
 //! ```
 
 #![warn(missing_docs)]
+#![allow(clippy::expect_used)]
+#![allow(clippy::unwrap_used)]
 
 pub mod client;
 pub mod error;

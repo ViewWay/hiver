@@ -66,7 +66,7 @@ impl HealthService {
     pub fn set_serving(&self, service: &str) {
         self.statuses
             .write()
-            .unwrap()
+            .expect("health service lock poisoned")
             .insert(service.to_string(), ServingStatus::Serving);
     }
 
@@ -75,7 +75,7 @@ impl HealthService {
     pub fn set_not_serving(&self, service: &str) {
         self.statuses
             .write()
-            .unwrap()
+            .expect("health service lock poisoned")
             .insert(service.to_string(), ServingStatus::NotServing);
     }
 
@@ -84,7 +84,7 @@ impl HealthService {
     pub fn set_status(&self, service: &str, status: ServingStatus) {
         self.statuses
             .write()
-            .unwrap()
+            .expect("health service lock poisoned")
             .insert(service.to_string(), status);
     }
 
@@ -93,7 +93,7 @@ impl HealthService {
     pub fn check(&self, service: &str) -> ServingStatus {
         self.statuses
             .read()
-            .unwrap()
+            .expect("health service lock poisoned")
             .get(service)
             .copied()
             .unwrap_or(ServingStatus::Unknown)
@@ -102,7 +102,7 @@ impl HealthService {
     /// Remove a service from tracking.
     /// 从跟踪中移除服务。
     pub fn remove(&self, service: &str) {
-        self.statuses.write().unwrap().remove(service);
+        self.statuses.write().expect("health service lock poisoned").remove(service);
     }
 
     /// Returns true if the overall server is in Serving state.

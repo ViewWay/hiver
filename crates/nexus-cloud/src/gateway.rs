@@ -557,16 +557,16 @@ impl TokenBucketRateLimiter {
                 return false;
             }
             let new_value = after_refill - TOKEN_SCALE;
-            match self.tokens.compare_exchange(
+            if self.tokens.compare_exchange(
                 current,
                 new_value,
                 Ordering::SeqCst,
                 Ordering::SeqCst,
-            ) {
-                Ok(_) => return true,
-                Err(_) => continue, // Another thread changed it; retry.
-                                    // 另一个线程更改了它；重试。
+            ).is_ok() {
+                return true;
             }
+            // Another thread changed it; retry.
+            // 另一个线程更改了它；重试。
         }
     }
 
@@ -586,6 +586,7 @@ impl TokenBucketRateLimiter {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl std::fmt::Debug for TokenBucketRateLimiter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("TokenBucketRateLimiter")
@@ -726,7 +727,7 @@ impl GatewayCircuitBreaker {
     pub fn allow_request(&self) -> bool {
         let raw = self.state.load(Ordering::SeqCst);
         match GatewayCbState::from_u8(raw) {
-            GatewayCbState::Closed => true,
+            GatewayCbState::Closed | GatewayCbState::HalfOpen => true,
             GatewayCbState::Open => {
                 let last = self.last_failure_time.load(Ordering::SeqCst);
                 let now = Self::now_millis();
@@ -745,7 +746,6 @@ impl GatewayCircuitBreaker {
                     false
                 }
             }
-            GatewayCbState::HalfOpen => true,
         }
     }
 
@@ -832,6 +832,7 @@ impl GatewayCircuitBreaker {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl std::fmt::Debug for GatewayCircuitBreaker {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("GatewayCircuitBreaker")
@@ -926,6 +927,8 @@ impl Predicate {
 /// - Literal segments match exactly
 ///
 /// 等价于 Spring Cloud Gateway 的 PathRoutePredicate。
+#[allow(clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing)]
 fn glob_match(pattern: &str, path: &str) -> bool {
     let pattern_parts: Vec<&str> = pattern.split('/').filter(|s| !s.is_empty()).collect();
     let path_parts: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
@@ -1046,6 +1049,7 @@ impl Filter {
     /// **注意：** `RateLimit`和`CircuitBreaker`过滤器*不*在此处应用，
     /// 因为它们需要由`GatewayRouter`管理的共享状态（限流器/断路器实例）。
     /// 请改用[`GatewayRouter::check_preflight_filters`]。
+    #[allow(clippy::assigning_clones)]
     pub fn apply_to_request(&self, request: &mut GatewayRequest) {
         match self {
             Filter::RemoveHeader(name) => {
@@ -1069,7 +1073,8 @@ impl Filter {
                 };
             }
             Filter::PrefixPath(prefix) => {
-                request.path = format!("{}/{}", prefix.trim_end_matches('/'), request.path.trim_start_matches('/'));
+                let old_path = request.path.trim_start_matches('/');
+                request.path = format!("{}/{}", prefix.trim_end_matches('/'), old_path);
             }
             Filter::SetPath(path) => {
                 request.path = path.clone();

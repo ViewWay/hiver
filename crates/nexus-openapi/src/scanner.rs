@@ -195,7 +195,7 @@ impl RouteScanner {
         let mut paths: HashMap<String, PathItem> = HashMap::new();
 
         for route in &self.routes {
-            let path_item = paths.entry(route.path.clone()).or_insert_with(PathItem::new);
+            let path_item = paths.entry(route.path.clone()).or_default();
             let mut operation = route.to_operation();
 
             // Apply default tags if no explicit tags

@@ -210,7 +210,7 @@ impl DocumentChunker {
         let mut chunks = Vec::new();
         let mut current = String::new();
 
-        for sentence in text.split_inclusive(|c: char| c == '.' || c == '!' || c == '?') {
+        for sentence in text.split_inclusive(['.', '!', '?']) {
             let trimmed = sentence.trim();
             if trimmed.is_empty() {
                 continue;

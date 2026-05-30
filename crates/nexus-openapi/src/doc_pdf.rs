@@ -18,6 +18,7 @@
 use crate::openapi::OpenApi;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt::Write;
 
 // ---------------------------------------------------------------------------
 // Data types
@@ -230,9 +231,7 @@ impl ApiDocPdf {
                         required: p.required,
                         type_: p.schema.as_ref().map(|s| {
                             s.schema_type
-                                .as_ref()
-                                .map(|t| format!("{:?}", t).to_lowercase())
-                                .unwrap_or_else(|| "any".to_string())
+                                .as_ref().map_or_else(|| "any".to_string(), |t| format!("{:?}", t).to_lowercase())
                         }),
                     })
                     .collect();
@@ -333,11 +332,11 @@ impl ApiDocPdf {
 
         // Title
         // 标题
-        md.push_str(&format!("# {}\n\n", self.title));
-        md.push_str(&format!("**Version:** {}\n\n", self.version));
+        let _ = writeln!(md, "# {}\n", self.title);
+        let _ = writeln!(md, "**Version:** {}\n", self.version);
 
         if let Some(desc) = &self.description {
-            md.push_str(&format!("{}\n\n", desc));
+            let _ = writeln!(md, "{}\n", desc);
         }
 
         // Contact & License
@@ -345,21 +344,21 @@ impl ApiDocPdf {
         if let Some(contact) = &self.contact {
             md.push_str("## Contact\n\n");
             if let Some(name) = &contact.name {
-                md.push_str(&format!("- **Name:** {}\n", name));
+                let _ = writeln!(md, "- **Name:** {}", name);
             }
             if let Some(email) = &contact.email {
-                md.push_str(&format!("- **Email:** {}\n", email));
+                let _ = writeln!(md, "- **Email:** {}", email);
             }
             if let Some(url) = &contact.url {
-                md.push_str(&format!("- **URL:** {}\n", url));
+                let _ = writeln!(md, "- **URL:** {}", url);
             }
             md.push('\n');
         }
 
         if let Some(license) = &self.license {
-            md.push_str(&format!("## License\n\n{}\n\n", license.name));
+            let _ = writeln!(md, "## License\n\n{}\n", license.name);
             if let Some(url) = &license.url {
-                md.push_str(&format!("[License URL]({})\n\n", url));
+                let _ = writeln!(md, "[License URL]({})\n", url);
             }
         }
 
@@ -367,33 +366,33 @@ impl ApiDocPdf {
         // 目录
         md.push_str("## Table of Contents\n\n");
         for (i, section) in self.sections.iter().enumerate() {
-            md.push_str(&format!("{}. {}\n", i + 1, section.title));
+            let _ = writeln!(md, "{}. {}", i + 1, section.title);
         }
         md.push('\n');
 
         // Sections
         // 章节
         for section in &self.sections {
-            md.push_str(&format!("## {}\n\n", section.title));
+            let _ = writeln!(md, "## {}\n", section.title);
             if let Some(desc) = &section.description {
-                md.push_str(&format!("{}\n\n", desc));
+                let _ = writeln!(md, "{}\n", desc);
             }
 
             for endpoint in &section.endpoints {
-                md.push_str(&format!("### {} `{}`\n\n", endpoint.method, endpoint.path));
+                let _ = writeln!(md, "### {} `{}`\n", endpoint.method, endpoint.path);
 
                 if endpoint.deprecated {
                     md.push_str("> **DEPRECATED**\n>\n");
                 }
 
                 if let Some(summary) = &endpoint.summary {
-                    md.push_str(&format!("**{}**\n\n", summary));
+                    let _ = writeln!(md, "**{}**\n", summary);
                 }
                 if let Some(desc) = &endpoint.description {
-                    md.push_str(&format!("{}\n\n", desc));
+                    let _ = writeln!(md, "{}\n", desc);
                 }
                 if let Some(op_id) = &endpoint.operation_id {
-                    md.push_str(&format!("**Operation ID:** `{}`\n\n", op_id));
+                    let _ = writeln!(md, "**Operation ID:** `{}`\n", op_id);
                 }
 
                 // Parameters
@@ -405,10 +404,11 @@ impl ApiDocPdf {
                     for p in &endpoint.parameters {
                         let desc = p.description.as_deref().unwrap_or("-");
                         let type_ = p.type_.as_deref().unwrap_or("-");
-                        md.push_str(&format!(
+                        let _ = writeln!(
+                            md,
                             "| `{}` | {} | {} | {} | {} |\n",
                             p.name, p.location, p.required, type_, desc
-                        ));
+                        );
                     }
                     md.push('\n');
                 }
@@ -429,7 +429,7 @@ impl ApiDocPdf {
                     md.push_str("| Code | Description |\n");
                     md.push_str("|------|-------------|\n");
                     for r in &endpoint.responses {
-                        md.push_str(&format!("| `{}` | {} |\n", r.code, r.description));
+                        let _ = writeln!(md, "| `{}` | {} |", r.code, r.description);
                     }
                     md.push('\n');
                 }
@@ -446,7 +446,7 @@ impl ApiDocPdf {
 
         html.push_str("<!DOCTYPE html>\n");
         html.push_str("<html lang=\"en\">\n<head>\n");
-        html.push_str(&format!("  <title>{}</title>\n", escape_html(&self.title)));
+        let _ = writeln!(html, "  <title>{}</title>", escape_html(&self.title));
         html.push_str("  <meta charset=\"UTF-8\">\n");
         html.push_str("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
         html.push_str("  <style>\n");
@@ -456,63 +456,67 @@ impl ApiDocPdf {
 
         // Header
         // 头部
-        html.push_str(&format!(
+        let _ = writeln!(
+            html,
             "  <div class=\"header\">\n    <h1>{}</h1>\n",
             escape_html(&self.title)
-        ));
-        html.push_str(&format!("    <p class=\"version\">Version: {}</p>\n", escape_html(&self.version)));
+        );
+        let _ = writeln!(html, "    <p class=\"version\">Version: {}</p>", escape_html(&self.version));
         html.push_str("  </div>\n");
 
         // Description
         // 描述
         if let Some(desc) = &self.description {
-            html.push_str(&format!("  <div class=\"description\"><p>{}</p></div>\n", escape_html(desc)));
+            let _ = writeln!(html, "  <div class=\"description\"><p>{}</p></div>", escape_html(desc));
         }
 
         // Table of Contents
         // 目录
         html.push_str("  <div class=\"toc\">\n    <h2>Table of Contents</h2>\n    <ol>\n");
         for section in &self.sections {
-            html.push_str(&format!(
+            let _ = writeln!(
+                html,
                 "      <li><a href=\"#section-{}\">{}</a></li>\n",
                 slug(&section.title),
                 escape_html(&section.title)
-            ));
+            );
         }
         html.push_str("    </ol>\n  </div>\n");
 
         // Sections
         // 章节
         for section in &self.sections {
-            html.push_str(&format!(
+            let _ = writeln!(
+                html,
                 "  <div class=\"section\" id=\"section-{}\">\n    <h2>{}</h2>\n",
                 slug(&section.title),
                 escape_html(&section.title)
-            ));
+            );
 
             if let Some(desc) = &section.description {
-                html.push_str(&format!("    <p class=\"section-desc\">{}</p>\n", escape_html(desc)));
+                let _ = writeln!(html, "    <p class=\"section-desc\">{}</p>", escape_html(desc));
             }
 
             for endpoint in &section.endpoints {
                 let method_class = endpoint.method.to_lowercase();
                 html.push_str("    <div class=\"endpoint\">\n");
-                html.push_str(&format!(
+                let _ = writeln!(
+                    html,
                     "      <h3><span class=\"method method-{}\">{}</span> <code>{}</code></h3>\n",
                     method_class,
                     endpoint.method,
                     escape_html(&endpoint.path)
-                ));
+                );
 
                 if endpoint.deprecated {
                     html.push_str("      <p class=\"deprecated\">DEPRECATED</p>\n");
                 }
 
                 if let Some(summary) = &endpoint.summary {
-                    html.push_str(&format!("      <p class=\"summary\"><strong>{}</strong></p>\n", escape_html(summary)));
+                    let _ = writeln!(html, "      <p class=\"summary\"><strong>{}</strong></p>", escape_html(summary));
                 }
                 if let Some(desc) = &endpoint.description {
-                    html.push_str(&format!("      <p class=\"endpoint-desc\">{}</p>\n", escape_html(desc)));
+                    let _ = writeln!(html, "      <p class=\"endpoint-desc\">{}</p>", escape_html(desc));
                 }
 
                 // Parameters table
@@ -525,10 +529,11 @@ impl ApiDocPdf {
                         let desc = escape_html(p.description.as_deref().unwrap_or("-"));
                         let type_ = escape_html(p.type_.as_deref().unwrap_or("-"));
                         let req = if p.required { "Yes" } else { "No" };
-                        html.push_str(&format!(
+                        let _ = writeln!(
+                            html,
                             "          <tr><td><code>{}</code></td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\n",
                             escape_html(&p.name), p.location, req, type_, desc
-                        ));
+                        );
                     }
                     html.push_str("        </tbody>\n      </table>\n");
                 }
@@ -538,7 +543,7 @@ impl ApiDocPdf {
                 if let Some(body) = &endpoint.request_body {
                     html.push_str("      <div class=\"request-body\">\n");
                     html.push_str("        <h4>Request Body</h4>\n");
-                    html.push_str(&format!("        <pre>{}</pre>\n", escape_html(body)));
+                    let _ = writeln!(html, "        <pre>{}</pre>", escape_html(body));
                     html.push_str("      </div>\n");
                 }
 
@@ -549,11 +554,12 @@ impl ApiDocPdf {
                     html.push_str("        <thead><tr><th>Code</th><th>Description</th></tr></thead>\n");
                     html.push_str("        <tbody>\n");
                     for r in &endpoint.responses {
-                        html.push_str(&format!(
+                        let _ = writeln!(
+                            html,
                             "          <tr><td><code>{}</code></td><td>{}</td></tr>\n",
                             escape_html(&r.code),
                             escape_html(&r.description)
-                        ));
+                        );
                     }
                     html.push_str("        </tbody>\n      </table>\n");
                 }
@@ -567,7 +573,7 @@ impl ApiDocPdf {
         // Footer
         // 页脚
         html.push_str("  <div class=\"footer\">\n");
-        html.push_str(&format!("    <p>Generated by Nexus OpenAPI | API Documentation v{}</p>\n", escape_html(&self.version)));
+        let _ = writeln!(html, "    <p>Generated by Nexus OpenAPI | API Documentation v{}</p>", escape_html(&self.version));
         html.push_str("  </div>\n");
 
         html.push_str("</body>\n</html>\n");

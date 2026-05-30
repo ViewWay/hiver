@@ -264,6 +264,7 @@ impl ComponentScanner {
     fn register_component(
         &self,
         _ctx: &mut ApplicationContext,
+        #[allow(clippy::needless_pass_by_value)]
         component: ComponentDefinition,
     ) -> Result<()> {
         tracing::debug!(

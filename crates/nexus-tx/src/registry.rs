@@ -216,7 +216,7 @@ impl std::fmt::Debug for DelegatingTransactionManager {
 impl DelegatingTransactionManager {
     /// Create a new delegating manager.
     /// 创建新的委托管理器。
-    pub fn new(registry: TransactionManagerRegistry) -> TransactionResult<Self> {
+    pub fn new(registry: &TransactionManagerRegistry) -> TransactionResult<Self> {
         registry.clone().into_delegate()
     }
 

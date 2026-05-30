@@ -145,14 +145,11 @@ impl Chain {
     /// 获取此链的原生货币。
     pub const fn native_currency(self) -> NativeCurrency {
         match self {
-            Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
+            Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>
+                NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
             Self::Polygon => NativeCurrency { symbol: "MATIC", decimals: 18, name: "Matic" },
             Self::Bsc => NativeCurrency { symbol: "BNB", decimals: 18, name: "BNB" },
-            Self::Arbitrum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
-            Self::Optimism => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
             Self::Avalanche => NativeCurrency { symbol: "AVAX", decimals: 18, name: "Avalanche" },
-            Self::Base => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
-            Self::ZkSync => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
         }
     }
 
@@ -230,13 +227,9 @@ impl ChainRegistry {
             .with_native_currency(currency.symbol, currency.decimals, currency.name)
             .with_block_time(match chain {
                 Chain::Ethereum => 12,
-                Chain::Polygon => 2,
+                Chain::Polygon | Chain::Optimism | Chain::Avalanche | Chain::Base => 2,
                 Chain::Bsc => 3,
-                Chain::Arbitrum => 1,
-                Chain::Optimism => 2,
-                Chain::Avalanche => 2,
-                Chain::Base => 2,
-                Chain::ZkSync => 1,
+                Chain::Arbitrum | Chain::ZkSync => 1,
             });
 
         let entry = ChainEntry {
@@ -275,7 +268,7 @@ impl ChainRegistry {
     /// 获取所有已注册的链ID。
     pub fn chain_ids(&self) -> Vec<u64> {
         let mut ids: Vec<u64> = self.chains.keys().copied().collect();
-        ids.sort();
+        ids.sort_unstable();
         ids
     }
 
@@ -531,12 +524,14 @@ impl GasFeeEstimate {
 
     /// Get the max fee per gas as a Gwei float.
     /// 获取最大费用每单位Gas的Gwei浮点数。
+    #[allow(clippy::cast_precision_loss)]
     pub fn max_fee_gwei(&self) -> f64 {
         self.max_fee_per_gas as f64 / 1e9
     }
 
     /// Get the base fee as a Gwei float.
     /// 获取基础费用的Gwei浮点数。
+    #[allow(clippy::cast_precision_loss)]
     pub fn base_fee_gwei(&self) -> f64 {
         self.base_fee as f64 / 1e9
     }

@@ -136,6 +136,7 @@ struct OpenAiChoice {
 /// Token usage in the OpenAI response format.
 /// OpenAI 响应格式中的 token 使用量。
 #[derive(Debug, Deserialize)]
+#[allow(clippy::struct_field_names)]
 struct OpenAiUsage {
     prompt_tokens: u32,
     completion_tokens: u32,

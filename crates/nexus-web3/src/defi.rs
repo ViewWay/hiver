@@ -8,6 +8,9 @@
 //!
 //! 本模块提供DeFi原语接口，包括代币标准（ERC-20、ERC-721、ERC-1155）
 //! 和DEX路由器交互（Uniswap V2）。
+
+#![allow(clippy::indexing_slicing)]
+#![allow(clippy::cast_precision_loss)]
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
@@ -494,7 +497,7 @@ impl Erc1155 {
         // Offset to first dynamic array (accounts[]) = 0x60 (3 words head)
         let offset_accounts: [u8; 32] = encode_uint256(0x60);
         // Offset to second dynamic array (ids[]) = 0x60 + 0x20 + n*0x20
-        let offset_ids = 0x60u64 + 0x20 + (n as u64) * 0x20;
+        let offset_ids = 0x60u64 + 0x20 + n * 0x20;
         let offset_ids_enc: [u8; 32] = encode_uint256(offset_ids);
 
         params.push(offset_accounts);

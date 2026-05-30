@@ -517,7 +517,7 @@ impl TransactionalEventPublisher {
 
         if let Some(phase_map) = listeners.get(&phase) {
             // Try to match against all registered TypeIds in this phase
-            for (_type_id, listener_list) in phase_map {
+            for listener_list in phase_map.values() {
                 for listener in listener_list {
                     let result = listener.call(event).await;
                     results.push(result);

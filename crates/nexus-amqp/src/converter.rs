@@ -333,8 +333,8 @@ fn xml_escape(s: &str) -> String {
 fn extract_xml_content(xml: &str) -> String {
     let start_tag = "<message>";
     let end_tag = "</message>";
-    if let Some(start) = xml.find(start_tag) {
-        if let Some(end) = xml.rfind(end_tag) {
+    if let Some(start) = xml.find(start_tag)
+        && let Some(end) = xml.rfind(end_tag) {
             let content_start = start + start_tag.len();
             if content_start < end {
                 let encoded = &xml[content_start..end];
@@ -347,7 +347,6 @@ fn extract_xml_content(xml: &str) -> String {
                     .replace("&apos;", "'");
             }
         }
-    }
     // Fallback: return raw content (maybe it's plain JSON)
     xml.to_string()
 }

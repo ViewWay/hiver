@@ -107,7 +107,7 @@ impl GrpcServerBuilder {
     pub fn build(self) -> GrpcResult<GrpcServer> {
         let addr: SocketAddr = format!("{}:{}", self.host, self.port)
             .parse()
-            .unwrap_or_else(|_| "0.0.0.0:50051".parse().unwrap());
+            .unwrap_or_else(|_| "0.0.0.0:50051".parse().expect("hardcoded address is valid"));
 
         let mut tonic = Server::builder();
 

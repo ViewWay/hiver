@@ -119,10 +119,10 @@ impl SessionEvent {
     /// 获取与此事件关联的会话 ID（如果有）。
     pub fn session_id(&self) -> Option<&SessionId> {
         match self {
-            SessionEvent::Created { session_id, .. } => Some(session_id),
-            SessionEvent::Expired { session_id, .. } => Some(session_id),
-            SessionEvent::Destroyed { session_id, .. } => Some(session_id),
-            SessionEvent::AttributeChanged { session_id, .. } => Some(session_id),
+            SessionEvent::Created { session_id, .. }
+            | SessionEvent::Expired { session_id, .. }
+            | SessionEvent::Destroyed { session_id, .. }
+            | SessionEvent::AttributeChanged { session_id, .. } => Some(session_id),
             SessionEvent::MaxSessionsExceeded { .. } => None,
         }
     }
@@ -131,9 +131,9 @@ impl SessionEvent {
     /// 获取与此事件关联的主体（如果有）。
     pub fn principal(&self) -> Option<&str> {
         match self {
-            SessionEvent::Created { principal, .. } => principal.as_deref(),
-            SessionEvent::Expired { principal, .. } => principal.as_deref(),
-            SessionEvent::Destroyed { principal, .. } => principal.as_deref(),
+            SessionEvent::Created { principal, .. }
+            | SessionEvent::Expired { principal, .. }
+            | SessionEvent::Destroyed { principal, .. } => principal.as_deref(),
             SessionEvent::AttributeChanged { .. } => None,
             SessionEvent::MaxSessionsExceeded { principal, .. } => Some(principal),
         }
@@ -240,8 +240,7 @@ impl SessionEventPublisher {
     pub fn listener_count(&self) -> usize {
         self.listeners
             .try_read()
-            .map(|g| g.len())
-            .unwrap_or(0)
+            .map_or(0, |g| g.len())
     }
 
     /// Emit a session event to all registered listeners.
@@ -475,7 +474,7 @@ impl ConcurrentSessionControl {
     /// 获取用户的当前会话数。
     pub async fn session_count(&self, principal: &str) -> usize {
         let sessions = self.user_sessions.read().await;
-        sessions.get(principal).map(|v| v.len()).unwrap_or(0)
+        sessions.get(principal).map_or(0, Vec::len)
     }
 
     /// Get all session IDs for a user.
@@ -520,11 +519,11 @@ impl ConcurrentSessionControl {
                     }
                     ConcurrentSessionStrategy::ExpireOldest => {
                         // Remove the oldest session
-                        let expired = if !user_sessions.is_empty() {
+                        let expired = if user_sessions.is_empty() {
+                            None
+                        } else {
                             let oldest = user_sessions.remove(0);
                             Some(oldest)
-                        } else {
-                            None
                         };
                         user_sessions.push(new_session_id);
                         expired
@@ -537,10 +536,10 @@ impl ConcurrentSessionControl {
         };
 
         // Phase 2: Emit events outside the lock
-        if let Some(expired_id) = action {
-            if let Some(ref publisher) = self.publisher {
-                publisher.emit_expired(expired_id, Some(principal.to_string())).await;
-            }
+        if let Some(expired_id) = action
+            && let Some(ref publisher) = self.publisher
+        {
+            publisher.emit_expired(expired_id, Some(principal.to_string())).await;
         }
 
         true

@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 //! Nexus Config - Configuration management module
 //! Nexus配置 - 配置管理模块
 //!

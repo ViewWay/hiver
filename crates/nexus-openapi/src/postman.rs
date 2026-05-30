@@ -657,7 +657,7 @@ impl PostmanGenerator {
     /// 从 `OpenApi` 规范生成 Postman Collection
     pub fn generate(&self, openapi: &OpenApi) -> PostmanCollection {
         let mut collection = PostmanCollection::new(&openapi.info.title);
-        collection.info.description = openapi.info.description.clone();
+        collection.info.description.clone_from(&openapi.info.description);
 
         // Group routes by tag, fall back to "default" folder
         // 按标签分组路由，默认使用 "default" 文件夹
@@ -748,22 +748,21 @@ impl PostmanGenerator {
             // Query parameters
             // 查询参数
             for param in &op.parameters {
-                req = self.convert_parameter(&param, req);
+                req = self.convert_parameter(param, req);
             }
 
             // Also apply path-item-level parameters
             // 同样应用路径项级别的参数
             for param in &path_item.parameters {
-                req = self.convert_parameter(&param, req);
+                req = self.convert_parameter(param, req);
             }
 
             // Request body
             // 请求体
-            if let Some(body) = &op.request_body {
-                if let Some(json_body) = self.extract_body_json(body) {
+            if let Some(body) = &op.request_body
+                && let Some(json_body) = self.extract_body_json(body) {
                     req = req.body(PostmanBody::raw_json(json_body));
                 }
-            }
 
             // Bearer auth from security
             // 从安全配置获取 Bearer 认证
@@ -849,6 +848,7 @@ impl PostmanGenerator {
 
     /// Recursively build an example JSON value from a schema
     /// 从模式递归构建示例 JSON 值
+    #[allow(clippy::self_only_used_in_recursion)]
     fn schema_to_example(&self, schema: &Schema) -> Option<serde_json::Value> {
         // If schema already has an example, return it
         // 如果模式已有示例，直接返回

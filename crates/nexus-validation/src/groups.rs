@@ -107,9 +107,10 @@ impl GroupSet {
     }
 
     /// Create with a single group / 使用单个分组创建
+    #[allow(clippy::needless_pass_by_value)]
     pub fn with_group<G: ValidationGroup>(group: G) -> Self {
         let mut set = Self::new();
-        set.add(group);
+        set.add(&group);
         set
     }
 
@@ -117,13 +118,13 @@ impl GroupSet {
     pub fn with_groups<G: ValidationGroup>(groups: impl IntoIterator<Item = G>) -> Self {
         let mut set = Self::new();
         for group in groups {
-            set.add(group);
+            set.add(&group);
         }
         set
     }
 
     /// Add a group / 添加分组
-    pub fn add<G: ValidationGroup>(&mut self, group: G) {
+    pub fn add<G: ValidationGroup>(&mut self, group: &G) {
         self.groups.insert(TypeId::of::<G>());
         self.names.insert(group.name().to_string());
     }
@@ -359,8 +360,8 @@ mod tests {
     fn test_group_set_with_multiple() {
         // Test with separate add calls since different group types can't be in the same vec
         let mut set = GroupSet::new();
-        set.add(CreateGroup);
-        set.add(UpdateGroup);
+        set.add(&CreateGroup);
+        set.add(&UpdateGroup);
         assert!(set.contains::<CreateGroup>());
         assert!(set.contains::<UpdateGroup>());
         assert!(!set.contains::<DefaultGroup>());

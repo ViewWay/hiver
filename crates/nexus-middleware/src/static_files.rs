@@ -8,6 +8,7 @@
 #![warn(unreachable_pub)]
 
 use std::fs;
+use std::fmt::Write as FmtWrite;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -210,11 +211,12 @@ impl StaticFiles {
                 .is_ok_and(|ft| ft.is_dir());
 
             let suffix = if is_dir { "/" } else { "" };
-            html.push_str(&format!(
+            let _ = write!(
+                html,
                 r#"        <li><a href="{}{}">{}</a></li>
 "#,
                 name, suffix, name
-            ));
+            );
         }
 
         html.push_str(
@@ -229,7 +231,7 @@ impl StaticFiles {
             .status(StatusCode::OK)
             .header("content-type", "text/html; charset=utf-8")
             .body(Body::from(html))
-            .unwrap())
+            .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)))
     }
 }
 
@@ -282,7 +284,7 @@ where
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
                     .body(Body::from("Access denied"))
-                    .unwrap());
+                    .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)));
             }
 
             // Check if file exists
@@ -360,7 +362,7 @@ where
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
                     .body(Body::from("File type not allowed"))
-                    .unwrap());
+                    .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR)));
             }
 
             // Serve the file

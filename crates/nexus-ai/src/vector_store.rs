@@ -277,6 +277,7 @@ impl VectorStore for InMemoryVectorStore {
                         .filter(|w| content_lower.contains(*w))
                         .count();
                     if query_words.is_empty() {
+#[allow(clippy::cast_precision_loss)]
                         0.0
                     } else {
                         (matched as f32) / (query_words.len() as f32) * 0.5

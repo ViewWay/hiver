@@ -213,6 +213,7 @@ impl Example {
 /// 安全方案
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
+#[allow(clippy::large_enum_variant)]
 pub enum SecurityScheme {
     /// HTTP authentication
     /// HTTP认证

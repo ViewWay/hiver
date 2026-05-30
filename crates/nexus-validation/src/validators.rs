@@ -3,6 +3,8 @@
 //! 提供预定义的验证规则和工具函数
 //! Provides predefined validation rules and utility functions
 
+#![allow(clippy::expect_used)]
+
 use crate::{ValidationError, ValidationErrors};
 use regex::Regex;
 use std::collections::HashMap;
@@ -228,7 +230,7 @@ impl ValidatorBuilder {
 }
 
 /// 快速验证函数 / Quick validation functions
-
+///
 /// 验证邮箱 / Validate email
 pub fn is_email(value: &str) -> bool {
     EMAIL_REGEX.is_match(value)

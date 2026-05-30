@@ -228,6 +228,7 @@ pub enum ValidationRule {
 
 impl ValidationRule {
     /// Validate a value / 验证值
+    #[allow(clippy::indexing_slicing)]
     pub fn validate(&self, field: &str, value: &str) -> Result<(), ValidationError> {
         match self {
             ValidationRule::NotNull => {

@@ -322,6 +322,7 @@ pub struct ServerVariable {
 /// 安全方案配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
+#[allow(clippy::large_enum_variant)]
 pub enum SecuritySchemeConfig {
     /// HTTP authentication
     /// HTTP认证

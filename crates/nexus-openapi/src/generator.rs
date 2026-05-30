@@ -322,8 +322,8 @@ impl OpenApiSpecBuilder {
 
         // Register security schemes from config into OpenAPI components
         // 将配置中的安全方案注册到 OpenAPI 组件中
-        if !security_schemes.is_empty() {
-            if let Some(ref mut components) = openapi.components {
+        if !security_schemes.is_empty()
+            && let Some(ref mut components) = openapi.components {
                 for (name, scheme_config) in security_schemes {
                     let scheme = match scheme_config {
                         SecuritySchemeConfig::Http { scheme, bearer_format } => {
@@ -359,7 +359,6 @@ impl OpenApiSpecBuilder {
                         .insert(name, scheme);
                 }
             }
-        }
 
         OpenApiSpec::from_openapi(openapi)
     }
@@ -548,7 +547,7 @@ pub fn get_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().get(
         Operation::new()
             .summary(summary)
-            .operation_id(format!("get_{}", path.trim_start_matches('/').replace('/', "_").replace('{', "").replace('}', "")))
+            .operation_id(format!("get_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
     )
 }
 
@@ -557,7 +556,7 @@ pub fn post_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().post(
         Operation::new()
             .summary(summary)
-            .operation_id(format!("post_{}", path.trim_start_matches('/').replace('/', "_").replace('{', "").replace('}', "")))
+            .operation_id(format!("post_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
     )
 }
 
@@ -566,7 +565,7 @@ pub fn put_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().put(
         Operation::new()
             .summary(summary)
-            .operation_id(format!("put_{}", path.trim_start_matches('/').replace('/', "_").replace('{', "").replace('}', "")))
+            .operation_id(format!("put_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
     )
 }
 
@@ -575,7 +574,7 @@ pub fn delete_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().delete(
         Operation::new()
             .summary(summary)
-            .operation_id(format!("delete_{}", path.trim_start_matches('/').replace('/', "_").replace('{', "").replace('}', "")))
+            .operation_id(format!("delete_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
     )
 }
 
@@ -890,6 +889,7 @@ pub fn api_key_security_scheme(
 
 /// Helper to create an OAuth2 authorization code flow security scheme.
 /// 创建 OAuth2 授权码流程安全方案的助手。
+#[allow(clippy::implicit_hasher)]
 pub fn oauth2_authorization_code_security_scheme(
     authorization_url: impl Into<String>,
     token_url: impl Into<String>,

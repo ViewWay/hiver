@@ -12,12 +12,14 @@ use std::collections::HashMap;
 /// 日志级别。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
+#[derive(Default)]
 pub enum LogLevel {
     /// Trace level / Trace 级别
     Trace,
     /// Debug level / Debug 级别
     Debug,
     /// Info level / Info 级别
+    #[default]
     Info,
     /// Warn level / Warn 级别
     Warn,
@@ -27,11 +29,6 @@ pub enum LogLevel {
     Off,
 }
 
-impl Default for LogLevel {
-    fn default() -> Self {
-        Self::Info
-    }
-}
 
 impl std::fmt::Display for LogLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

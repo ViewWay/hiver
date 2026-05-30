@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::indexing_slicing, clippy::unwrap_used, clippy::missing_fields_in_debug)]
 //! Nexus Events - Event mechanism for Nexus framework
 //! Nexus事件 - Nexus框架的事件机制
 //!

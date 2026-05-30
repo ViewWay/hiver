@@ -168,7 +168,7 @@ impl RetryPolicy {
                 }
             }
         }
-        Err(last_err.unwrap())
+        Err(last_err.expect("retry loop should always produce an error"))
     }
 }
 

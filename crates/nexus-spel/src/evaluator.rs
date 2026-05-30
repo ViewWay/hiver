@@ -65,6 +65,7 @@ fn eval_value(expr: &SpelExpr, ctx: &SpelContext) -> Result<Value, SpelError> {
     }
 }
 
+#[allow(clippy::float_cmp)]
 fn compare(l: &Value, r: &Value, op: CmpOp) -> Result<bool, SpelError> {
     let ln = l.as_f64();
     let rn = r.as_f64();

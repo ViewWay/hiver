@@ -1,6 +1,8 @@
 //! `DataLoader` for N+1 query prevention / DataLoader用于防止N+1查询
 //! Equivalent to Spring for GraphQL's `DataLoader` + `BatchLoaderRegistry`
 
+#![allow(clippy::expect_used)]
+
 use async_trait::async_trait;
 use std::collections::HashMap;
 use std::fmt::Debug;

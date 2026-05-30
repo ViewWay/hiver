@@ -246,7 +246,7 @@ impl From<Response> for http::Response<Body> {
             http::Response::builder()
                 .status(resp.status)
                 .body(Body::default())
-                .unwrap()
+                .expect("response builder with default body should not fail")
         })
     }
 }

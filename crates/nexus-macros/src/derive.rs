@@ -52,7 +52,7 @@ pub fn from_request(input: TokenStream) -> TokenStream {
 
     let field_names: Vec<_> = fields
         .iter()
-        .map(|f| f.ident.as_ref().unwrap())
+        .filter_map(|f| f.ident.as_ref())
         .collect();
 
     let expanded = quote! {

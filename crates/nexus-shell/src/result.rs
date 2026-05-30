@@ -186,8 +186,8 @@ impl ShellOutput for TableResult {
         let mut widths: Vec<usize> = self.headers.iter().map(String::len).collect();
         for row in &self.rows {
             for (i, cell) in row.iter().enumerate() {
-                if i < widths.len() {
-            widths[i] = widths[i].max(cell.len());
+                if let Some(w) = widths.get_mut(i) {
+                    *w = (*w).max(cell.len());
                 }
             }
         }

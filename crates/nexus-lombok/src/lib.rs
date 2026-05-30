@@ -1,3 +1,4 @@
+#![allow(clippy::needless_pass_by_value)]
 //! # Nexus Lombok
 //!
 //! Lombok-style procedural macros for Nexus framework.

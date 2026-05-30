@@ -39,6 +39,7 @@ pub trait FieldResolver<T>: Send + Sync {
 
 /// Central registry for query, mutation, and subscription resolvers. / 查询、变更和订阅解析器的中央注册表。
 #[derive(Default)]
+#[allow(clippy::struct_field_names)]
 pub struct ResolverRegistry {
     query_resolvers: Vec<Box<dyn QueryResolver>>,
     mutation_resolvers: Vec<Box<dyn MutationResolver>>,

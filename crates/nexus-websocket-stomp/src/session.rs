@@ -161,6 +161,7 @@ pub enum AckMode {
 impl AckMode {
     /// Parse from string
     /// 从字符串解析
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Result<Self> {
         match s.to_ascii_lowercase().as_str() {
             "auto" => Ok(AckMode::Auto),

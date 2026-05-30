@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::ref_option, clippy::items_after_statements, clippy::format_push_string, clippy::manual_clamp, clippy::used_underscore_binding)]
 
 //! Nexus 统一日志系统演示
 //! Nexus Unified Logging System Demo

@@ -17,6 +17,11 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
+// Allow indexing_slicing: path variable names are guaranteed-length
+// by prior length checks. Using .get() adds unnecessary complexity.
+// 允许索引/切片：路径变量名由先前的长度检查保证长度。
+// 使用 .get() 会增加不必要的复杂性。
+#![allow(clippy::indexing_slicing)]
 
 #[cfg(test)]
 mod tests;

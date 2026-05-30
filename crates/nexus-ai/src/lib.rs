@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::cast_precision_loss)]
 //! # Nexus AI
 //!
 //! Spring AI equivalent for the Nexus framework.

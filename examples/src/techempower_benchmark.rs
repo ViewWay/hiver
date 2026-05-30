@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string, clippy::manual_clamp, clippy::no_effect_underscore_binding)]
 //! `TechEmpower` Benchmark Example
 //! `TechEmpower` 基准测试示例
 //!

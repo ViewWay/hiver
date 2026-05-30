@@ -16,6 +16,7 @@ use crate::error::{GrpcError, GrpcResult};
 ///     .with_ca_cert("certs/ca.pem");
 /// let server_tls = tls.server_tls_config()?;
 /// ```
+#[allow(clippy::struct_field_names)]
 pub struct TlsConfig {
     cert_path: PathBuf,
     key_path: PathBuf,

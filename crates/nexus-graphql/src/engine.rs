@@ -116,8 +116,8 @@ mod engine_impl {
         /// 若响应包含错误则返回 true。
         pub fn has_errors(&self) -> bool { !self.errors.is_empty() }
 
-        fn from_ag(resp: AGResponse) -> Self {
-            let json = serde_json::to_value(&resp).unwrap_or(serde_json::json!({}));
+        fn from_ag(resp: &AGResponse) -> Self {
+            let json = serde_json::to_value(resp).unwrap_or(serde_json::json!({}));
             let data = json.get("data").cloned();
             let errors = json
                 .get("errors")
@@ -163,7 +163,7 @@ mod engine_impl {
         /// 执行单个 GraphQL 请求并返回响应。
         pub async fn execute(&self, request: GraphQLRequest) -> GraphQLResponse {
             let resp = self.schema.execute(request.into_ag_request()).await;
-            GraphQLResponse::from_ag(resp)
+            GraphQLResponse::from_ag(&resp)
         }
 
         /// Execute a batch of GraphQL requests.
@@ -175,9 +175,9 @@ mod engine_impl {
             let batch_resp = self.schema.execute_batch(ag_batch).await;
             match batch_resp {
                 BatchResponse::Batch(resps) => {
-                    resps.into_iter().map(GraphQLResponse::from_ag).collect()
+                    resps.into_iter().map(|r| GraphQLResponse::from_ag(&r)).collect()
                 }
-                BatchResponse::Single(resp) => vec![GraphQLResponse::from_ag(resp)],
+                BatchResponse::Single(resp) => vec![GraphQLResponse::from_ag(&resp)],
             }
         }
 

@@ -118,6 +118,7 @@ enum Token {
     Bang,
 }
 
+#[allow(clippy::indexing_slicing)]
 fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
     let chars: Vec<char> = input.chars().collect();
     let mut tokens = Vec::new();

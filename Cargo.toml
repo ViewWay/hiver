@@ -460,7 +460,9 @@ similar_names = "allow"
 cargo_common_metadata = "allow"
 # Allow unnecessary qualification — explicit paths improve readability
 # 允许不必要的限定 — 显式路径提升可读性
-unnecessary_qualifications = "allow"
+# (Note: this is a rustc lint, not clippy; see workspace.lints.rust.unused_qualifications)
+# (注：这是rustc的lint，不是clippy的；参见workspace.lints.rust.unused_qualifications)
+use_self = "allow"
 # Allow debug formatting lint noise
 # 允许debug格式化噪音
 unnecessary_debug_formatting = "allow"

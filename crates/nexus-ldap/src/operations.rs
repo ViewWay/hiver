@@ -219,6 +219,7 @@ impl Modification {
     }
 
     /// Get the attribute name / 获取属性名称
+    #[allow(clippy::match_same_arms)]
     pub fn attribute(&self) -> &str {
         match self {
             Self::Add { attribute, .. } => attribute,

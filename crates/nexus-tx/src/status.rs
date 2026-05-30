@@ -149,13 +149,13 @@ pub(crate) enum TransactionState {
 impl TransactionState {
     /// Check if transaction is active
     /// 检查事务是否活动
-    pub(crate) fn is_active(&self) -> bool {
+    pub(crate) fn is_active(self) -> bool {
         matches!(self, TransactionState::Active)
     }
 
     /// Check if transaction is completed
     /// 检查事务是否已完成
-    pub(crate) fn is_completed(&self) -> bool {
+    pub(crate) fn is_completed(self) -> bool {
         matches!(self, TransactionState::Committed | TransactionState::RolledBack)
     }
 }

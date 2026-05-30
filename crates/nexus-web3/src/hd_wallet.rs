@@ -893,8 +893,9 @@ const BIP39_WORDS: &[&str] = &[
 
 /// Convert entropy bytes to a BIP-39 mnemonic phrase.
 /// 将熵字节转换为BIP-39助记词短语。
+#[allow(clippy::indexing_slicing)]
 fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError> {
-    if entropy.is_empty() || entropy.len() % 4 != 0 {
+    if entropy.is_empty() || !entropy.len().is_multiple_of(4) {
         return Err(HdWalletError::EntropyError(
             "Entropy length must be a multiple of 4 bytes".into(),
         ));
@@ -942,6 +943,7 @@ fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError> {
 ///
 /// 使用2048次迭代的PBKDF2-HMAC-SHA512（在此框架实现中简化为
 /// 单次HMAC-SHA512传递）。
+#[allow(clippy::expect_used)]
 fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
     use hmac::{Hmac, Mac};
     type HmacSha512 = Hmac<sha3::Keccak512>;
@@ -967,6 +969,8 @@ fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
 ///
 /// 简化版：使用HMAC-SHA512进行每一级派生。
 /// 强化派生使用 `0x80000000 + index` 作为密钥。
+#[allow(clippy::expect_used)]
+#[allow(clippy::indexing_slicing)]
 fn derive_key_from_seed(
     seed: &[u8; 64],
     path: &DerivationPath,
@@ -976,7 +980,7 @@ fn derive_key_from_seed(
     type HmacSha512 = Hmac<sha3::Keccak512>;
 
     // Derive through each level: purpose', coin_type', account', change, index
-    let hardened = 0x80000000u32;
+    let hardened = 0x8000_0000u32;
     let indices: [u32; 5] = [
         path.purpose | hardened,
         path.coin_type | hardened,

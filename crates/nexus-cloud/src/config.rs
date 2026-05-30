@@ -261,6 +261,12 @@ impl SimpleConfigWatcher {
     /// Create a new watcher
     /// 创建新的监视器
     pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for SimpleConfigWatcher {
+    fn default() -> Self {
         Self {
             _running: Arc::new(false.into()),
         }
@@ -417,6 +423,7 @@ impl SimpleEncryptor {
     pub fn new(key: impl Into<String>) -> Self { Self { key: key.into().into_bytes() } }
 }
 
+#[allow(clippy::indexing_slicing)]
 impl ConfigEncryptor for SimpleEncryptor {
     fn encrypt(&self, plain: &str) -> Result<String, ConfigError> {
         let bytes: Vec<u8> = plain.bytes().enumerate().map(|(i, b)| b ^ self.key[i % self.key.len()]).collect();
@@ -434,7 +441,7 @@ impl ConfigEncryptor for SimpleEncryptor {
 
 /// Decrypt all `ENC(...)` values in a property map.
 /// 解密属性映射中所有 `ENC(...)` 值。
-pub fn decrypt_properties(props: &mut HashMap<String, String>, encryptor: &dyn ConfigEncryptor) -> Result<(), ConfigError> {
+pub fn decrypt_properties<S: std::hash::BuildHasher>(props: &mut HashMap<String, String, S>, encryptor: &dyn ConfigEncryptor) -> Result<(), ConfigError> {
     for value in props.values_mut() {
         if value.starts_with("ENC(") && value.ends_with(')') {
             *value = encryptor.decrypt(value)?;

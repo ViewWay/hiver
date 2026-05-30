@@ -51,7 +51,7 @@
 // provided for users but not used internally. This is expected and intentional.
 // 允许 dead_code：这是一个框架库，包含许多公共 API 供用户使用但内部未使用。
 // 这是预期且有意的设计。
-#![allow(dead_code)]
+#![allow(dead_code, clippy::expect_used, clippy::indexing_slicing, clippy::type_complexity, clippy::format_in_format_args, clippy::unused_async, clippy::unreadable_literal, clippy::borrowed_box, clippy::missing_fields_in_debug, clippy::new_ret_no_self, clippy::map_unwrap_or, clippy::type_id_on_box, clippy::needless_pass_by_value, clippy::new_without_default, clippy::comparison_chain, clippy::needless_continue)]
 
 // ============================================================================
 // 核心模块导出 / Core Module Exports

@@ -168,7 +168,7 @@ impl ServiceActivatorBuilder {
         Ok(ServiceActivator {
             config,
             handler,
-            output_channel: output_channel,
+            output_channel,
         })
     }
 }

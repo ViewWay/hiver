@@ -159,6 +159,7 @@ impl ErrorResponse {
 
     /// Build response from `ErrorBody`
     /// 从 `ErrorBody` 构建响应
+    #[allow(clippy::needless_pass_by_value)]
     fn build_response(body: ErrorBody) -> Response {
         // Convert to JSON bytes
         match serde_json::to_vec(&body) {

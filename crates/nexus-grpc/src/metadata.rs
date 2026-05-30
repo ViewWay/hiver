@@ -109,7 +109,7 @@ impl DeadlinePropagator {
             .as_millis() as u64
             + remaining.as_millis() as u64;
         let value: MetadataValue<tonic::metadata::Ascii> =
-            deadline_ms.to_string().parse().unwrap_or_else(|_| "0".parse().unwrap());
+            deadline_ms.to_string().parse().unwrap_or_else(|_| MetadataValue::from_static("0"));
         request.metadata_mut().insert(DEADLINE_KEY, value);
     }
 

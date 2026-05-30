@@ -314,6 +314,7 @@ impl RetryConfig {
 
     /// Calculate backoff duration for the given attempt (0-indexed).
     /// 计算给定尝试次数（0 索引）的退避时间。
+    #[allow(clippy::cast_precision_loss)]
     pub fn backoff_for(&self, attempt: u32) -> Duration {
         let exp = self.multiplier.powi(attempt as i32);
         let millis = (self.initial_interval.as_millis() as f64 * exp) as u64;

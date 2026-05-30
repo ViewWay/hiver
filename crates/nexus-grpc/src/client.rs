@@ -139,7 +139,7 @@ impl GrpcChannelPool {
         }
         let idx = self.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
             % self.channels.len();
-        Some(&self.channels[idx])
+        self.channels.get(idx)
     }
 
     /// Number of channels in the pool.

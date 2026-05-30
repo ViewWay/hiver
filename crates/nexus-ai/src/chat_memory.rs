@@ -14,6 +14,7 @@
 //! - `ConversationSummaryMemory`：总结旧消息以节省 token。
 //! - `ConversationBufferWindowMemory`：保留最近消息的滑动窗口。
 
+use std::fmt::Write;
 use crate::chat_model::{ChatMessage, ChatModel, ChatRequest, Role};
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -211,7 +212,7 @@ impl ConversationSummaryMemory {
         // Build summary text from old messages
         let mut old_text = self.summary.read().await.clone();
         for msg in old_messages {
-            old_text.push_str(&format!("{}: {}\n", msg.role, msg.content));
+            let _ = writeln!(old_text, "{}: {}", msg.role, msg.content);
         }
 
         // Use the chat model to summarize

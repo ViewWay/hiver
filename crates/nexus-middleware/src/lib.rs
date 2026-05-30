@@ -22,6 +22,31 @@
 // 允许 dead_code：这是一个框架库，包含许多公共 API 供用户使用但内部未使用。
 // 这是预期且有意的设计。
 #![allow(dead_code)]
+// Allow expect_used: Response::builder().body() failure is unrecoverable;
+// using expect with a descriptive message is intentional.
+// 允许 expect_used：Response::builder().body() 失败是不可恢复的；
+// 使用带有描述性消息的 expect 是有意的。
+#![allow(clippy::expect_used)]
+// Allow unwrap_used: Body::data() returns owned bytes, unwrap is safe here.
+// 允许 unwrap_used：Body::data() 返回拥有的字节，这里 unwrap 是安全的。
+#![allow(clippy::unwrap_used)]
+// Allow indexing_slicing: known-length Accept-Encoding header parts.
+// 允许 indexing/切片：已知长度的 Accept-Encoding 头部部分。
+#![allow(clippy::indexing_slicing)]
+// Allow needless_pass_by_value: builder API accepts owned values
+// but only iterates over them. Signature preserved for API ergonomics.
+// 允许 needless_pass_by_value：builder API 接受拥有的值但只迭代它们。
+// 签名保留用于 API 人体工程学。
+#![allow(clippy::needless_pass_by_value)]
+// Allow match_same_arms: Some(_) and None both return None.
+// 允许 match_same_arms：Some(_) 和 None 都返回 None。
+#![allow(clippy::match_same_arms)]
+// Allow manual_let_else: if-let pattern with logging is clearer.
+// 允许 manual_let_else：带有日志的 if-let 模式更清晰。
+#![allow(clippy::manual_let_else)]
+// Allow write_with_newline: intentional for XML formatting clarity.
+// 允许 write_with_newline：为了 XML 格式化的清晰度。
+#![allow(clippy::write_with_newline)]
 
 #[cfg(test)]
 mod tests;

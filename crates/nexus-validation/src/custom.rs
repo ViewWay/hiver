@@ -153,7 +153,7 @@ impl ValidatorRegistry {
     /// }
     /// ```
     pub fn get(&self, name: &str) -> Option<&(dyn Any + Send + Sync)> {
-        self.validators.get(name).map(|b| b.as_ref())
+        self.validators.get(name).map(|v| &**v)
     }
 
     /// Validate a value using the named validator.

@@ -8687,3 +8687,3655 @@ Changed `crates/nexus-lombok/src/builder.rs` from "// Generate Builder struct; /
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:08:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 129 lines changed.
+### Change Summary
+Added "// ─────────────────────────────────────────────────────────────────────────────; // Client-side interceptor; // ───────..." in `crates/nexus-grpc/src/interceptor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:08:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/Cargo.toml`
+### Change Record
+Modified file `crates/nexus-grpc/Cargo.toml`. Approximately 13 lines changed.
+### Change Summary
+Added "# UUID for request IDs / 用于请求 ID 的 UUID; uuid = { workspace = true }" in `crates/nexus-grpc/Cargo.toml`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:09:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-grpc/src/retry.rs`
+### Change Record
+New file `crates/nexus-grpc/src/retry.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-grpc/src/retry.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-30 00:10:09
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/metadata.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/metadata.rs`. Approximately 68 lines changed.
+### Change Summary
+Added "use std::time::Duration;; /// Deadline propagation via gRPC metadata.; /// 通过 gRPC 元数据传播 Deadline。" in `crates/nexus-grpc/src/metadata.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:10:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/lib.rs`. Approximately 14 lines changed.
+### Change Summary
+Added "pub mod retry;; pub use retry::RetryPolicy;" in `crates/nexus-grpc/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:11:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 186 lines changed.
+### Change Summary
+Added "// ─────────────────────────────────────────────────────────────────────────────; // Client-side interceptor; // ───────..." in `crates/nexus-grpc/src/interceptor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:11:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-grpc/src/retry.rs`
+### Change Record
+New file `crates/nexus-grpc/src/retry.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-grpc/src/retry.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-30 00:14:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-tx/src/events.rs`
+### Change Record
+New file `crates/nexus-tx/src/events.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-tx/src/events.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-30 00:14:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-tx/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-tx/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "pub mod events;" in `crates/nexus-tx/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:14:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-tx/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-tx/src/lib.rs`. Approximately 23 lines changed.
+### Change Summary
+Added "pub mod events;; pub use events::{; LoggingSynchronization, PhaseListener, SynchronizationRegistry, TransactionPhase," in `crates/nexus-tx/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:15:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `crates/nexus-tx/src/events.rs`
+### Change Record
+New file `crates/nexus-tx/src/events.rs`, not yet tracked by version control.
+### Change Summary
+Changed `crates/nexus-tx/src/events.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-30 00:33:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-config/src/refresh.rs`
+### Change Record
+Modified file `crates/nexus-config/src/refresh.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-config/src/refresh.rs` from "pub type ChangeListener = Box<dyn Fn(&ConfigChangeEvent) + Send + Sync>;" to "pub(crate) type ChangeListener = Box<dyn Fn(&ConfigChangeEvent) + Send + Sync>;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/retry.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/retry.rs` from "Fut: std::future::Future<Output = Result<T, tonic::Status>>," to "Fut: Future<Output = Result<T, tonic::Status>>,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/ldif.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/ldif.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/ldif.rs` from "attrs.sort_by_key(|(k, _)| k.clone());" to "attrs.sort_by_key(|(k, _)| (**k).clone());".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ai/src/openai.rs`
+### Change Record
+Modified file `crates/nexus-ai/src/openai.rs`. Approximately 11 lines changed.
+### Change Summary
+Added "#[allow(dead_code)]" in `crates/nexus-ai/src/openai.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 16 lines changed.
+### Change Summary
+Added "#[allow(dead_code)]; #[allow(dead_code)]" in `crates/nexus-grpc/src/interceptor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/retry.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/retry.rs` from "Fut: std::future::Future<Output = Result<T, tonic::Status>>," to "use std::future::Future;; Fut: Future<Output = Result<T, tonic::Status>>,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/interceptor.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/interceptor.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "#[allow(dead_code)]; #[allow(dead_code)]; #[allow(dead_code)]" in `crates/nexus-grpc/src/interceptor.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 00:33:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-ldap/src/operations.rs`
+### Change Record
+Modified file `crates/nexus-ldap/src/operations.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-ldap/src/operations.rs` from "use crate::error::{LdapError, LdapResult};" to "use crate::error::LdapResult;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:05:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/lib.rs`. Approximately 52 lines changed.
+### Change Summary
+Added "/// Trait for converting Rust types to SQL literal strings.; /// 将 Rust 类型转换为 SQL 字面量字符串的 trait。; ///" in `crates/nexus-data-commons/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:05:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "/// Trait for SQL parameter conversion; /// SQL 参数转换 trait; pub trait ToSql: Send + Sync {" to "pub use nexus_data_commons::ToSql;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:06:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/query.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/query.rs`. Approximately 83 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/query.rs` from "/// Trait for SQL parameter conversion; /// SQL 参数转换的 trait; pub trait ToSql: Send + Sync {" to "use nexus_data_commons::ToSql;; pub use nexus_data_commons::ToSql;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:06:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/query.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/query.rs`. Approximately 75 lines changed.
+### Change Summary
+Removed "/// Trait for SQL parameter conversion; /// SQL 参数转换的 trait; pub trait ToSql: Send + Sync {" from `crates/nexus-data-orm/src/query.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:06:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/lib.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/lib.rs` from "pub use query::{QueryBuilder, WhereClause, OrderBy, Limit, ToSql};" to "pub use query::{QueryBuilder, WhereClause, OrderBy, Limit};; pub use nexus_data_commons::ToSql;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:08:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 71 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "/// Trait for SQL parameter conversion; /// SQL 参数转换 trait; pub trait ToSql: Send + Sync {" to "impl From<nexus_data_commons::Value> for QueryParam {; fn from(v: nexus_data_commons::Value) -> Self {; match v {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:10:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 548 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/executor.rs` from "use crate::client::DatabaseClient;; let (sql, _params) = self.build_select_query(wrapper, table);; let rows = self.clien..." to "use crate::client::{DatabaseClient, QueryParam};; let (sql, params) = self.build_select_query(wrapper, table);; let rows...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/client.rs`. Approximately 91 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/client.rs` from "/// Trait for SQL parameter conversion; /// SQL 参数转换 trait; pub trait ToSql: Send + Sync {" to "impl From<nexus_data_commons::Value> for QueryParam {; fn from(v: nexus_data_commons::Value) -> Self {; match v {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 531 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/executor.rs` from "use crate::client::DatabaseClient;; let (sql, _params) = self.build_select_query(wrapper, table);; let rows = self.clien..." to "use crate::client::{DatabaseClient, QueryParam};; let (sql, params) = self.build_select_query(wrapper, table);; let rows...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 531 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/executor.rs` from "use crate::client::DatabaseClient;; let (sql, _params) = self.build_select_query(wrapper, table);; let rows = self.clien..." to "use crate::client::{DatabaseClient, QueryParam};; let (sql, params) = self.build_select_query(wrapper, table);; let rows...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:36
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient," to "client::{DatabaseClient, QueryParam},".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 99 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient,; ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {; // Replace :param with $1, $2, etc." to "client::{DatabaseClient, QueryParam},; ) -> R2dbcResult<(String, Vec<QueryParam>)> {; values.push(QueryParam::from(value...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:11:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 110 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient,; ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {; // Replace :param with $1, $2, etc." to "client::{DatabaseClient, QueryParam},; ) -> R2dbcResult<(String, Vec<QueryParam>)> {; values.push(QueryParam::from(value...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:12:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 121 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient,; ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {; // Replace :param with $1, $2, etc." to "client::{DatabaseClient, QueryParam},; ) -> R2dbcResult<(String, Vec<QueryParam>)> {; values.push(QueryParam::from(value...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:12:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 132 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient,; ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {; // Replace :param with $1, $2, etc." to "client::{DatabaseClient, QueryParam},; ) -> R2dbcResult<(String, Vec<QueryParam>)> {; values.push(QueryParam::from(value...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:12:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/query_runtime.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/query_runtime.rs`. Approximately 150 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/query_runtime.rs` from "client::DatabaseClient,; ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {; // Replace :param with $1, $2, etc." to "client::{DatabaseClient, QueryParam},; ) -> R2dbcResult<(String, Vec<QueryParam>)> {; values.push(QueryParam::from(value...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/service.rs`
+### Change Record
+Modified file `crates/nexus-http/src/service.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/service.rs` from "fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send {; async move { self(req).await }" to "async fn call(&self, req: Request) -> Result<Response> {; self(req).await".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/scheduler/queue.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/scheduler/queue.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/scheduler/queue.rs` from "Err(_) => continue," to "Err(_) => {}".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/scheduler/queue.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/scheduler/queue.rs`. Approximately 20 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/scheduler/queue.rs` from "Err(_) => continue,; continue;" to "Err(_) => {}".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/runtime.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/runtime.rs`. Approximately 18 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/runtime.rs` from "CURRENT_HANDLE.with(|h| {; h.borrow(); .clone()" to "Self::try_current(); .expect("Handle::current() called outside of a runtime context")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/container.rs`
+### Change Record
+Modified file `crates/nexus-core/src/container.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-core/src/container.rs` from "pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: C) -> Result<()>" to "pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: &C) -> Result<()>".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-rdbc/src/executor.rs`
+### Change Record
+Modified file `crates/nexus-data-rdbc/src/executor.rs`. Approximately 26 lines changed.
+### Change Summary
+Changed `crates/nexus-data-rdbc/src/executor.rs` from "let mut idx = 1u32;; for (column, value) in &wrapper.sets {; idx += 1;" to "for (idx, (column, value)) in (1u32..).zip(wrapper.sets.iter()) {; let (where_clause, _where_params) = Self::build_where...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/specification.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/specification.rs`. Approximately 17 lines changed.
+### Change Summary
+Added "/// Create a NOT predicate.; /// 创建 NOT 谓词。; ///" in `crates/nexus-data-commons/src/specification.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:26:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/specification.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/specification.rs`. Approximately 25 lines changed.
+### Change Summary
+Added "/// Create a NOT predicate.; /// 创建 NOT 谓词。; ///" in `crates/nexus-data-commons/src/specification.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/part_tree.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/part_tree.rs`. Approximately 28 lines changed.
+### Change Summary
+Changed `crates/nexus-data-commons/src/part_tree.rs` from "} else if let Ok(n) = digits.parse::<u32>() {; n; 1" to "digits.parse::<u32>().unwrap_or(1); digits.parse::<u32>().unwrap_or(1)".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/specification.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/specification.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::should_implement_trait)]" in `crates/nexus-data-orm/src/specification.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/active_record.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/active_record.rs`. Approximately 17 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/active_record.rs` from "let mut param_idx = 1u32;; for _ in params {; param_idx += 1;" to "for (param_idx, _) in (1u32..).zip(params.iter()) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/active_record.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/active_record.rs`. Approximately 30 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/active_record.rs` from "let mut param_idx = 1u32;; for _ in params {; param_idx += 1;" to "for (param_idx, _) in (1u32..).zip(params.iter()) {; for (param_idx, _) in (1u32..).zip(params.iter()) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/active_record.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/active_record.rs`. Approximately 43 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/active_record.rs` from "let mut param_idx = 1u32;; for _ in params {; param_idx += 1;" to "for (param_idx, _) in (1u32..).zip(params.iter()) {; for (param_idx, _) in (1u32..).zip(params.iter()) {; for (param_idx...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 17 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/projection.rs` from "let mut param_idx = 1u32;; for _ in params {; param_idx += 1;" to "for (param_idx, _) in (1u32..).zip(params.iter()) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-orm/src/projection.rs`
+### Change Record
+Modified file `crates/nexus-data-orm/src/projection.rs`. Approximately 30 lines changed.
+### Change Summary
+Changed `crates/nexus-data-orm/src/projection.rs` from "let mut param_idx = 1u32;; for _ in params {; param_idx += 1;" to "for (param_idx, _) in (1u32..).zip(params.iter()) {; for (param_idx, _) in (1u32..).zip(params.iter()) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/sse.rs`
+### Change Record
+Modified file `crates/nexus-http/src/sse.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::struct_field_names)]" in `crates/nexus-http/src/sse.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/validation.rs`
+### Change Record
+Modified file `crates/nexus-http/src/validation.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/validation.rs` from "Self { errors: Vec::new() }" to "impl Default for ValidationErrors {; fn default() -> Self {; Self { errors: Vec::new() }".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/part_tree.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/part_tree.rs`. Approximately 34 lines changed.
+### Change Summary
+Changed `crates/nexus-data-commons/src/part_tree.rs` from "let num = if digits.is_empty() {; 1; } else if let Ok(n) = digits.parse::<u32>() {" to "let num = digits.parse::<u32>().unwrap_or(1);; let num = digits.parse::<u32>().unwrap_or(1);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/validation.rs`
+### Change Record
+Modified file `crates/nexus-http/src/validation.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/validation.rs` from "Self { errors: Vec::new() }; pub fn require_min<T>(field: &str, value: T, min: T) -> Option<ValidationError>; pub fn req..." to "impl Default for ValidationErrors {; fn default() -> Self {; Self { errors: Vec::new() }".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/websocket.rs`
+### Change Record
+Modified file `crates/nexus-http/src/websocket.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/websocket.rs` from ".unwrap()" to ".unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/route.rs`
+### Change Record
+Modified file `crates/nexus-router/src/route.rs`. Approximately 12 lines changed.
+### Change Summary
+Added ".field("handler", &self.handler)" in `crates/nexus-router/src/route.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/route.rs`
+### Change Record
+Modified file `crates/nexus-router/src/route.rs`. Approximately 70 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/route.rs` from "use nexus_http::Body;; use nexus_http::StatusCode;; .unwrap())" to ".field("handler", &self.handler); .unwrap_or_else(|_| Response::new(StatusCode::INTERNAL_SERVER_ERROR))); .unwrap_or_els...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/route.rs`
+### Change Record
+Modified file `crates/nexus-router/src/route.rs`. Approximately 79 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/route.rs` from "use nexus_http::{Request, Response, Result, StatusCode};; use nexus_http::Body;; use nexus_http::StatusCode;" to "use nexus_http::{Body, Request, Response, Result, StatusCode};; .field("handler", &self.handler); .unwrap_or_else(|_| Re...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/route.rs`
+### Change Record
+Modified file `crates/nexus-router/src/route.rs`. Approximately 91 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/route.rs` from "use nexus_http::{Request, Response, Result, StatusCode};; use nexus_http::Body;; use nexus_http::StatusCode;" to "use nexus_http::{Body, Request, Response, Result, StatusCode};; .field("handler", &self.handler); .unwrap_or_else(|_| Re...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/router.rs`
+### Change Record
+Modified file `crates/nexus-router/src/router.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/router.rs` from "method: &Method," to "method: Method,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/router.rs`
+### Change Record
+Modified file `crates/nexus-router/src/router.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/router.rs` from "method: &Method,; let (route, params) = match matched {; Some(m) => m," to "method: Method,; let Some((route, params)) = matched else {; return Ok(Response::builder()".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-commons/src/specification.rs`
+### Change Record
+Modified file `crates/nexus-data-commons/src/specification.rs`. Approximately 20 lines changed.
+### Change Summary
+Added "#[allow(clippy::should_implement_trait)]; #[allow(clippy::should_implement_trait)]" in `crates/nexus-data-commons/src/specification.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/router.rs`
+### Change Record
+Modified file `crates/nexus-router/src/router.rs`. Approximately 50 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/router.rs` from "method: &Method,; let (route, params) = match matched {; Some(m) => m," to "method: Method,; let Some((route, params)) = matched else {; return Ok(Response::builder()".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "fn router_for_method_mut(&mut self, method: &Method) -> &mut matchit::Router<MethodRoute> {; Method::GET => &mut self.ge..." to "fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::Router<MethodRoute> {; Method::GET | Method::TRACE ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "fn router_for_method_mut(&mut self, method: &Method) -> &mut matchit::Router<MethodRoute> {; Method::GET => &mut self.ge..." to "fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::Router<MethodRoute> {; Method::GET | Method::TRACE ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/runtime.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/runtime.rs`. Approximately 20 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/runtime.rs` from "CURRENT_HANDLE.with(|h| {; h.borrow(); .clone()" to "#[allow(clippy::expect_used)]; Self::try_current(); .expect("Handle::current() called outside of a runtime context")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-runtime/src/scheduler/queue.rs`
+### Change Record
+Modified file `crates/nexus-runtime/src/scheduler/queue.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-runtime/src/scheduler/queue.rs` from "match self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed) {; Ok(_) => return true,; Err(_) =..." to "if self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed).is_ok() {; return true;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 58 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "let router = self.router_for_method_mut(&method);; fn router_for_method_mut(&mut self, method: &Method) -> &mut matchit:..." to "let router = self.router_for_method_mut(method);; fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::R...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 67 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "let router = self.router_for_method_mut(&method);; method: &Method,; fn router_for_method_mut(&mut self, method: &Method..." to "let router = self.router_for_method_mut(method);; method: Method,; fn router_for_method_mut(&mut self, method: Method) -...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 76 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "let router = self.router_for_method_mut(&method);; method: &Method,; fn router_for_method_mut(&mut self, method: &Method..." to "let router = self.router_for_method_mut(method);; method: Method,; fn router_for_method_mut(&mut self, method: Method) -...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:40
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/router.rs`
+### Change Record
+Modified file `crates/nexus-router/src/router.rs`. Approximately 54 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/router.rs` from "method: &Method,; let matched = self.match_route(&method, &path);; let (route, params) = match matched {" to "method: Method,; let matched = self.match_route(method, &path);; let Some((route, params)) = matched else {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 85 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "let router = self.router_for_method_mut(&method);; method: &Method,; fn router_for_method_mut(&mut self, method: &Method..." to "let router = self.router_for_method_mut(method);; method: Method,; fn router_for_method_mut(&mut self, method: Method) -...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/validation.rs`
+### Change Record
+Modified file `crates/nexus-http/src/validation.rs`. Approximately 60 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/validation.rs` from "Self { errors: Vec::new() }; pub fn require_min<T>(field: &str, value: T, min: T) -> Option<ValidationError>; pub fn req..." to "impl Default for ValidationErrors {; fn default() -> Self {; Self { errors: Vec::new() }".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:27:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-http/src/validation.rs`
+### Change Record
+Modified file `crates/nexus-http/src/validation.rs`. Approximately 59 lines changed.
+### Change Summary
+Changed `crates/nexus-http/src/validation.rs` from "#[derive(Debug, Clone)]; Self { errors: Vec::new() }; pub fn require_min<T>(field: &str, value: T, min: T) -> Option<Val..." to "#[derive(Debug, Clone, Default)]; Self::default(); pub fn require_min<T>(field: &str, value: &T, min: &T) -> Option<Vali...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:28:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `Cargo.toml`
+### Change Record
+Modified file `Cargo.toml`. Approximately 15 lines changed.
+### Change Summary
+Changed `Cargo.toml` from "unnecessary_qualifications = "allow"" to "# (Note: this is a rustc lint, not clippy; see workspace.lints.rust.unused_qualifications); # (注：这是rustc的lint，不是clippy的；...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:28:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-router/src/trie.rs`
+### Change Record
+Modified file `crates/nexus-router/src/trie.rs`. Approximately 135 lines changed.
+### Change Summary
+Changed `crates/nexus-router/src/trie.rs` from "let router = self.router_for_method_mut(&method);; method: &Method,; fn router_for_method_mut(&mut self, method: &Method..." to "let router = self.router_for_method_mut(method);; method: Method,; fn router_for_method_mut(&mut self, method: Method) -...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 09:28:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-core/src/container.rs`
+### Change Record
+Modified file `crates/nexus-core/src/container.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-core/src/container.rs` from "pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: C) -> Result<()>; cond,; cond," to "pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: &C) -> Result<()>; &cond,; &cond,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/health.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/health.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/health.rs` from ".unwrap(); .unwrap(); .unwrap()" to ".expect("health service lock poisoned"); .expect("health service lock poisoned"); .expect("health service lock poisoned"...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/metadata.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/metadata.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/metadata.rs` from "deadline_ms.to_string().parse().unwrap_or_else(|_| "0".parse().unwrap());" to "deadline_ms.to_string().parse().unwrap_or_else(|_| MetadataValue::from_static("0"));".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/retry.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/retry.rs` from "Err(last_err.unwrap())" to "Err(last_err.expect("retry loop should always produce an error"))".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:33
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/server.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/server.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/server.rs` from ".unwrap_or_else(|_| "0.0.0.0:50051".parse().unwrap());" to ".unwrap_or_else(|_| "0.0.0.0:50051".parse().expect("hardcoded address is valid"));".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/client.rs`. Approximately 12 lines changed.
+### Change Summary
+Added ".filter(|_| !self.channels.is_empty())" in `crates/nexus-grpc/src/client.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/tls.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/tls.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::struct_field_names)]" in `crates/nexus-grpc/src/tls.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/engine.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/engine.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/engine.rs` from "fn from_ag(resp: AGResponse) -> Self {" to "fn from_ag(resp: &AGResponse) -> Self {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/engine.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/engine.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/engine.rs` from "fn from_ag(resp: AGResponse) -> Self {; GraphQLResponse::from_ag(resp)" to "fn from_ag(resp: &AGResponse) -> Self {; GraphQLResponse::from_ag(&resp)".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/engine.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/engine.rs`. Approximately 30 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/engine.rs` from "fn from_ag(resp: AGResponse) -> Self {; GraphQLResponse::from_ag(resp); BatchResponse::Single(resp) => vec![GraphQLRespo..." to "fn from_ag(resp: &AGResponse) -> Self {; GraphQLResponse::from_ag(&resp); BatchResponse::Single(resp) => vec![GraphQLRes...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:50
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/resolver.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/resolver.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::struct_field_names)]" in `crates/nexus-graphql/src/resolver.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {" to "fn as_str(self) -> &'static str {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/error.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/error.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/error.rs` from "if !self.locations.is_empty() {; let loc = &self.locations[0];" to "if let Some(loc) = self.locations.first() {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:57:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 40 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 55 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/dataloader.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/dataloader.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used)]" in `crates/nexus-graphql/src/dataloader.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 70 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 84 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 94 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 103 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-spel/src/parser.rs`
+### Change Record
+Modified file `crates/nexus-spel/src/parser.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::indexing_slicing)]" in `crates/nexus-spel/src/parser.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 113 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 129 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 137 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 146 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-spel/src/evaluator.rs`
+### Change Record
+Modified file `crates/nexus-spel/src/evaluator.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::float_cmp)]" in `crates/nexus-spel/src/evaluator.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 162 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 169 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 178 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:36
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 183 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/multichain.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/multichain.rs`. Approximately 20 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/multichain.rs` from "Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },; Self::Arbitrum => NativeCurrency { sym..." to "Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>; NativeCurrency { symbol: "ETH", decimal...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 199 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 209 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/multichain.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/multichain.rs`. Approximately 37 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/multichain.rs` from "Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },; Self::Arbitrum => NativeCurrency { sym..." to "Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>; NativeCurrency { symbol: "ETH", decimal...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:45
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/multichain.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/multichain.rs`. Approximately 45 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/multichain.rs` from "Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },; Self::Arbitrum => NativeCurrency { sym..." to "Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>; NativeCurrency { symbol: "ETH", decimal...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:45
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 214 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 221 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/multichain.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/multichain.rs`. Approximately 54 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/multichain.rs` from "Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },; Self::Arbitrum => NativeCurrency { sym..." to "Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>; NativeCurrency { symbol: "ETH", decimal...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/multichain.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/multichain.rs`. Approximately 61 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/multichain.rs` from "Self::Ethereum => NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },; Self::Arbitrum => NativeCurrency { sym..." to "Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>; NativeCurrency { symbol: "ETH", decimal...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:51
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 239 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 257 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/defi.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/defi.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/defi.rs` from "let offset_ids = 0x60u64 + 0x20 + (n as u64) * 0x20;" to "let offset_ids = 0x60u64 + 0x20 + n * 0x20;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:58:57
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/response.rs`
+### Change Record
+Modified file `crates/nexus-response/src/response.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/response.rs` from ".unwrap()" to ".expect("response builder with default body should not fail")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-session/src/events.rs`
+### Change Record
+Modified file `crates/nexus-session/src/events.rs`. Approximately 32 lines changed.
+### Change Summary
+Changed `crates/nexus-session/src/events.rs` from "SessionEvent::Created { session_id, .. } => Some(session_id),; SessionEvent::Expired { session_id, .. } => Some(session_..." to "SessionEvent::Created { session_id, .. }; | SessionEvent::Expired { session_id, .. }; | SessionEvent::Destroyed { sessio...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/defi.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/defi.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/defi.rs` from "let offset_ids = 0x60u64 + 0x20 + (n as u64) * 0x20;" to "#![allow(clippy::indexing_slicing)]; #![allow(clippy::cast_precision_loss)]; let offset_ids = 0x60u64 + 0x20 + n * 0x20;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-session/src/events.rs`
+### Change Record
+Modified file `crates/nexus-session/src/events.rs`. Approximately 42 lines changed.
+### Change Summary
+Changed `crates/nexus-session/src/events.rs` from "SessionEvent::Created { session_id, .. } => Some(session_id),; SessionEvent::Expired { session_id, .. } => Some(session_..." to "SessionEvent::Created { session_id, .. }; | SessionEvent::Expired { session_id, .. }; | SessionEvent::Destroyed { sessio...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-session/src/events.rs`
+### Change Record
+Modified file `crates/nexus-session/src/events.rs`. Approximately 51 lines changed.
+### Change Summary
+Changed `crates/nexus-session/src/events.rs` from "SessionEvent::Created { session_id, .. } => Some(session_id),; SessionEvent::Expired { session_id, .. } => Some(session_..." to "SessionEvent::Created { session_id, .. }; | SessionEvent::Expired { session_id, .. }; | SessionEvent::Destroyed { sessio...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-session/src/events.rs`
+### Change Record
+Modified file `crates/nexus-session/src/events.rs`. Approximately 66 lines changed.
+### Change Summary
+Changed `crates/nexus-session/src/events.rs` from "SessionEvent::Created { session_id, .. } => Some(session_id),; SessionEvent::Expired { session_id, .. } => Some(session_..." to "SessionEvent::Created { session_id, .. }; | SessionEvent::Expired { session_id, .. }; | SessionEvent::Destroyed { sessio...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:07
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {" to "if entropy.is_empty() || !(entropy.len() * 4).is_multiple_of(4) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {" to "if entropy.is_empty() || !entropy.len().is_multiple_of(4) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-session/src/events.rs`
+### Change Record
+Modified file `crates/nexus-session/src/events.rs`. Approximately 81 lines changed.
+### Change Summary
+Changed `crates/nexus-session/src/events.rs` from "SessionEvent::Created { session_id, .. } => Some(session_id),; SessionEvent::Expired { session_id, .. } => Some(session_..." to "SessionEvent::Created { session_id, .. }; | SessionEvent::Expired { session_id, .. }; | SessionEvent::Destroyed { sessio...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/path.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/path.rs`. Approximately 20 lines changed.
+### Change Summary
+Changed `crates/nexus-extractors/src/path.rs` from "let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error")); let v2 = T2::from_str(path_vars.get(&var..." to "let v1 = T1::from_str(path_vars.get(&var_names[0]).ok_or_else(|| {; ExtractorError::Missing("expected 2 path parameters"...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {; let hardened = 0x80000000u32;" to "if entropy.is_empty() || !entropy.len().is_multiple_of(4) {; let hardened = 0x8000_0000u32;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/path.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/path.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/nexus-extractors/src/path.rs` from "let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error")); let v2 = T2::from_str(path_vars.get(&var..." to "let v1 = T1::from_str(path_vars.get(&var_names[0]).ok_or_else(|| {; ExtractorError::Missing("expected 2 path parameters"...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {; let hardened = 0x80000000u32;" to "#[allow(clippy::indexing_slicing)]; if entropy.is_empty() || !entropy.len().is_multiple_of(4) {; let hardened = 0x8000_0...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/auth.rs`
+### Change Record
+Modified file `crates/nexus-security/src/auth.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::new_ret_no_self)]" in `crates/nexus-security/src/auth.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:23
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 32 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {; let hardened = 0x80000000u32;" to "#[allow(clippy::indexing_slicing)]; if entropy.is_empty() || !entropy.len().is_multiple_of(4) {; #[allow(clippy::expect_...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-web3/src/hd_wallet.rs`
+### Change Record
+Modified file `crates/nexus-web3/src/hd_wallet.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/nexus-web3/src/hd_wallet.rs` from "if entropy.is_empty() || entropy.len() % 4 != 0 {; let hardened = 0x80000000u32;" to "#[allow(clippy::indexing_slicing)]; if entropy.is_empty() || !entropy.len().is_multiple_of(4) {; #[allow(clippy::expect_...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/acl.rs`
+### Change Record
+Modified file `crates/nexus-security/src/acl.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/acl.rs` from "self.acls.write().unwrap().insert(key, acl);" to "self.acls.write().expect("lock poisoned").insert(key, acl);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/acl.rs`
+### Change Record
+Modified file `crates/nexus-security/src/acl.rs`. Approximately 19 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/acl.rs` from "self.acls.write().unwrap().insert(key, acl);; self.acls.read().unwrap()" to "self.acls.write().expect("lock poisoned").insert(key, acl);; self.acls.read().expect("lock poisoned")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/acl.rs`
+### Change Record
+Modified file `crates/nexus-security/src/acl.rs`. Approximately 27 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/acl.rs` from "self.acls.write().unwrap().insert(key, acl);; self.acls.read().unwrap(); self.acls.write().unwrap()" to "self.acls.write().expect("lock poisoned").insert(key, acl);; self.acls.read().expect("lock poisoned"); self.acls.write()...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/acl.rs`
+### Change Record
+Modified file `crates/nexus-security/src/acl.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/acl.rs` from "self.acls.write().unwrap().insert(key, acl);; self.acls.read().unwrap(); self.acls.write().unwrap()" to "self.acls.write().expect("lock poisoned").insert(key, acl);; self.acls.read().expect("lock poisoned"); self.acls.write()...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:33
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config.rs`. Approximately 17 lines changed.
+### Change Summary
+Added "Self::default(); impl Default for SimpleConfigWatcher {; fn default() -> Self {" in `crates/nexus-cloud/src/config.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/acl.rs`
+### Change Record
+Modified file `crates/nexus-security/src/acl.rs`. Approximately 42 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/acl.rs` from "self.acls.write().unwrap().insert(key, acl);; self.acls.read().unwrap(); self.acls.write().unwrap()" to "self.acls.write().expect("lock poisoned").insert(key, acl);; self.acls.read().expect("lock poisoned"); self.acls.write()...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:35
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config.rs`. Approximately 25 lines changed.
+### Change Summary
+Added "Self::default(); impl Default for SimpleConfigWatcher {; fn default() -> Self {" in `crates/nexus-cloud/src/config.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config.rs`. Approximately 34 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config.rs` from "pub fn decrypt_properties(props: &mut HashMap<String, String>, encryptor: &dyn ConfigEncryptor) -> Result<(), ConfigErro..." to "Self::default(); impl Default for SimpleConfigWatcher {; fn default() -> Self {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/authorization_server.rs`
+### Change Record
+Modified file `crates/nexus-security/src/authorization_server.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/authorization_server.rs` from "let part1: String = (0..4).map(|_| chars[rand::random::<u8>() as usize % n]).collect();; let part2: String = (0..4).map(..." to "let part1: String = (0..4).map(|_| chars.get(rand::random::<u8>() as usize % n).copied().unwrap_or('X')).collect();; let...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();" to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/doc_pdf.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs` from ".as_ref(); .map(|t| format!("{:?}", t).to_lowercase()); .unwrap_or_else(|| "any".to_string())" to "use std::fmt::Write;; .as_ref().map_or_else(|| "any".to_string(), |t| format!("{:?}", t).to_lowercase())".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:49
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "prefix: String," to "prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 27 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 10:59:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 42 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:00
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/doc_pdf.rs`. Approximately 129 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs` from ".as_ref(); .map(|t| format!("{:?}", t).to_lowercase()); .unwrap_or_else(|| "any".to_string())" to "use std::fmt::Write;; .as_ref().map_or_else(|| "any".to_string(), |t| format!("{:?}", t).to_lowercase()); let _ = write!...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 79 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 44 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 88 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; if let Some(auth) = security_context.g...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/data_scope.rs`
+### Change Record
+Modified file `crates/nexus-security/src/data_scope.rs`. Approximately 96 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/data_scope.rs` from "let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();; if let Some(auth) = security_context.g..." to "let ids: Vec<String> = scope.dept_ids.iter().map(ToString::to_string).collect();; #[allow(clippy::unused_async)]; if let...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "if line.as_bytes()[3] == b' ' {" to "if line.as_bytes().get(3) == Some(&b' ') {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "if line.as_bytes()[3] == b' ' {; if !(greeting_code >= 200 && greeting_code < 300) {" to "if line.as_bytes().get(3) == Some(&b' ') {; if !(200..300).contains(&greeting_code) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 53 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/doc_pdf.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/doc_pdf.rs`. Approximately 266 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/doc_pdf.rs` from ".as_ref(); .map(|t| format!("{:?}", t).to_lowercase()); .unwrap_or_else(|| "any".to_string())" to "use std::fmt::Write;; .as_ref().map_or_else(|| "any".to_string(), |t| format!("{:?}", t).to_lowercase()); let _ = write!...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/circuit_breaker.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/circuit_breaker.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::indexing_slicing)]" in `crates/nexus-cloud/src/circuit_breaker.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/circuit_breaker.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/circuit_breaker.rs`. Approximately 20 lines changed.
+### Change Summary
+Added "#[allow(clippy::indexing_slicing)]; #[allow(clippy::cast_precision_loss)]" in `crates/nexus-cloud/src/circuit_breaker.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/circuit_breaker.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/circuit_breaker.rs`. Approximately 28 lines changed.
+### Change Summary
+Added "#[allow(clippy::indexing_slicing)]; #[allow(clippy::cast_precision_loss)]; #[allow(clippy::cast_precision_loss)]" in `crates/nexus-cloud/src/circuit_breaker.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 30 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "if line.as_bytes()[3] == b' ' {; if !(greeting_code >= 200 && greeting_code < 300) {" to "use std::fmt::Write as FmtWrite;; if line.as_bytes().get(3) == Some(&b' ') {; if !(200..300).contains(&greeting_code) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/feign.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/feign.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::cast_precision_loss)]" in `crates/nexus-cloud/src/feign.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/email.rs`
+### Change Record
+Modified file `crates/nexus-security/src/email.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/email.rs` from "if line.as_bytes()[3] == b' ' {; if !(greeting_code >= 200 && greeting_code < 300) {; data_payload.push_str(&format!("Fr..." to "use std::fmt::Write as FmtWrite;; if line.as_bytes().get(3) == Some(&b' ') {; if !(200..300).contains(&greeting_code) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 15 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。" to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/encoder.rs`
+### Change Record
+Modified file `crates/nexus-security/src/encoder.rs`. Approximately 74 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/encoder.rs` from "let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("unexpected error");; hex::encode(&result[..self.key..." to "let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("HMAC key length is valid");; hex::encode(&result.ge...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 16 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。" to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:00:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 32 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。; GatewayCbState::Closed => true," to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:03
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。; GatewayCbState::Closed => true," to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:04
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 50 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 59 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:12
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 48 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。; GatewayCbState::Closed => true," to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/rememberme.rs`
+### Change Record
+Modified file `crates/nexus-security/src/rememberme.rs`. Approximately 68 lines changed.
+### Change Summary
+Changed `crates/nexus-security/src/rememberme.rs` from "if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {; Some((parts[0].to_string(), parts[1].to_string())..." to "let (p0, p1) = (parts.get(0)?, parts.get(1)?);; if !p0.is_empty() && !p1.is_empty() {; Some((p0.to_string(), p1.to_strin...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/permission.rs`
+### Change Record
+Modified file `crates/nexus-security/src/permission.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::unused_async)]" in `crates/nexus-security/src/permission.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:17
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 57 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。; GatewayCbState::Closed => true," to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:19
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/circuit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/circuit.rs`. Approximately 12 lines changed.
+### Change Summary
+Removed "0 => CircuitState::Closed," from `crates/nexus-resilience/src/circuit.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/circuit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/circuit.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/circuit.rs` from "(failed as f64) / (total as f64); 0 => CircuitState::Closed," to "#[allow(clippy::cast_precision_loss)]; let rate = (failed as f64) / (total as f64);; rate".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:27
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 67 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "Err(_) => continue, // Another thread changed it; retry.; // 另一个线程更改了它；重试。; GatewayCbState::Closed => true," to "Err(_) => {} // Another thread changed it; retry.; // 另一个线程更改了它；重试。; #[allow(clippy::missing_fields_in_debug)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/postman.rs`. Approximately 39 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs` from "req = self.convert_parameter(&param, req);; req = self.convert_parameter(&param, req);; if let Some(body) = &op.request_..." to "req = self.convert_parameter(param, req);; req = self.convert_parameter(param, req);; if let Some(body) = &op.request_bo...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/load_balancer.rs` from "Some(instances[index].clone())" to "instances.get(index).cloned()".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/postman.rs`. Approximately 48 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs` from "collection.info.description = openapi.info.description.clone();; req = self.convert_parameter(&param, req);; req = self...." to "collection.info.description.clone_from(&openapi.info.description);; req = self.convert_parameter(param, req);; req = sel...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/load_balancer.rs` from "Some(instances[index].clone()); if best.is_none() || state.current > best.unwrap().1 {" to "instances.get(index).cloned(); if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 31 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/load_balancer.rs` from "Some(instances[index].clone()); if best.is_none() || state.current > best.unwrap().1 {; return Some(&instances[0]);" to "instances.get(index).cloned(); if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c) {; return instance...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/circuit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/circuit.rs`. Approximately 118 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/circuit.rs` from "let mut start = self.window_start.lock().expect("lock poisoned");; (failed as f64) / (total as f64); 0 => CircuitState::..." to "let mut start = self.window_start.lock().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; #[allow(clippy::cast_precisi...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:50
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/discovery.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/discovery.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/discovery.rs` from "let services = self.services.read().expect("lock poisoned");; let mut counter = self.rr_counter.write().expect("lock poi..." to "let services = self.services.read().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let mut counter = self.rr_counter...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:50
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 42 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/load_balancer.rs` from "Some(instances[index].clone()); if best.is_none() || state.current > best.unwrap().1 {; return Some(&instances[0]);" to "instances.get(index).cloned(); if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c) {; return instance...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/discovery.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/discovery.rs`. Approximately 53 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/discovery.rs` from "let services = self.services.read().expect("lock poisoned");; let mut counter = self.rr_counter.write().expect("lock poi..." to "let services = self.services.read().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let mut counter = self.rr_counter...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:55
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/config.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/config.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::large_enum_variant)]" in `crates/nexus-openapi/src/config.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/operation.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/operation.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::large_enum_variant)]" in `crates/nexus-openapi/src/operation.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:01:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/discovery.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/discovery.rs`. Approximately 71 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/discovery.rs` from "let services = self.services.read().expect("lock poisoned");; let mut counter = self.rr_counter.write().expect("lock poi..." to "let services = self.services.read().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let mut counter = self.rr_counter...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/generator.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/generator.rs`. Approximately 67 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/generator.rs` from "if !security_schemes.is_empty() {; if let Some(ref mut components) = openapi.components {; .operation_id(format!("get_{}..." to "if !security_schemes.is_empty(); && let Some(ref mut components) = openapi.components {; .operation_id(format!("get_{}",...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:02
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/load_balancer.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/load_balancer.rs`. Approximately 50 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/load_balancer.rs` from "Some(instances[index].clone()); if best.is_none() || state.current > best.unwrap().1 {; return Some(&instances[0]);" to "instances.get(index).cloned(); #[allow(clippy::expect_used)]; if best.is_none() || state.current > best.map_or(i64::MIN,...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/rate_limit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/rate_limit.rs`. Approximately 65 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/rate_limit.rs` from "let mut last = self.last_refill.lock().expect("lock poisoned");; let mut timestamps = self.timestamps.lock().expect("loc..." to "let mut last = self.last_refill.lock().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let mut timestamps = self.time...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/rate_limit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/rate_limit.rs`. Approximately 70 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/rate_limit.rs` from "let mut last = self.last_refill.lock().expect("lock poisoned");; let tokens_to_add = (elapsed.as_secs_f64() * refill_rat..." to "let mut last = self.last_refill.lock().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let tokens_to_add = (elapsed.a...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/validators.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/validators.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used)]" in `crates/nexus-validation/src/validators.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/validators.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/validators.rs`. Approximately 23 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/validators.rs` from "/// 验证邮箱 / Validate email" to "#![allow(clippy::expect_used)]; /// Validate email".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/validators.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/validators.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used)]; ///" in `crates/nexus-validation/src/validators.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/rate_limit.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/rate_limit.rs`. Approximately 78 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/rate_limit.rs` from "let mut last = self.last_refill.lock().expect("lock poisoned");; let tokens_to_add = (elapsed.as_secs_f64() * refill_rat..." to "let mut last = self.last_refill.lock().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let tokens_to_add = (elapsed.a...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/retry.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::cast_precision_loss)]" in `crates/nexus-resilience/src/retry.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-openapi/src/postman.rs`
+### Change Record
+Modified file `crates/nexus-openapi/src/postman.rs`. Approximately 48 lines changed.
+### Change Summary
+Changed `crates/nexus-openapi/src/postman.rs` from "collection.info.description = openapi.info.description.clone();; req = self.convert_parameter(&param, req);; req = self...." to "collection.info.description.clone_from(&openapi.info.description);; req = self.convert_parameter(param, req);; req = sel...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/retry.rs`. Approximately 20 lines changed.
+### Change Summary
+Added "#[allow(clippy::cast_precision_loss)]; #[allow(clippy::cast_precision_loss)]" in `crates/nexus-resilience/src/retry.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:32
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "#![allow(clippy::result_large_err)]" in `crates/nexus-validation/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:34
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/retry.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/retry.rs` from "let error_ref = last_error.as_ref().expect("unexpected error");" to "#[allow(clippy::cast_precision_loss)]; #[allow(clippy::cast_precision_loss)]; let error_ref = last_error.as_ref().unwrap...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/retry.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/retry.rs`. Approximately 38 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/retry.rs` from "let error_ref = last_error.as_ref().expect("unexpected error");; error: last_error.expect("unexpected error")," to "#[allow(clippy::cast_precision_loss)]; #[allow(clippy::cast_precision_loss)]; let error_ref = last_error.as_ref().unwrap...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:46
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/timeout.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/timeout.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/timeout.rs` from "let mut timeouts = self.timeouts.write().expect("lock poisoned");; let timeouts = self.timeouts.read().expect("lock pois..." to "let mut timeouts = self.timeouts.write().unwrap_or_else(|e| panic!("lock poisoned: {e}"));; let timeouts = self.timeouts...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/annotations.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/annotations.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#[allow(clippy::indexing_slicing)]" in `crates/nexus-validation/src/annotations.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/timeout.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/timeout.rs`. Approximately 37 lines changed.
+### Change Summary
+Changed `crates/nexus-resilience/src/timeout.rs` from "let mut timeouts = self.timeouts.write().expect("lock poisoned");; let timeouts = self.timeouts.read().expect("lock pois..." to "#[allow(clippy::struct_field_names)]; let mut timeouts = self.timeouts.write().unwrap_or_else(|e| panic!("lock poisoned:...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:02:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/custom.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs` from "self.validators.get(name).map(|b| b.as_ref())" to "self.validators.get(name).map(|v| v.as_ref())".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/compression.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/compression.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/compression.rs` from "parts[1]" to "parts.get(1).unwrap_or(&"")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/compression.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/compression.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/compression.rs` from "parts[1]; body: Body," to "parts.get(1).unwrap_or(&""); body: &Body,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/custom.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/custom.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/custom.rs` from "self.validators.get(name).map(|b| b.as_ref())" to "self.validators.get(name).map(|v| &**v)".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "pub fn add<G: ValidationGroup>(&mut self, group: G) {" to "pub fn add<G: ValidationGroup>(&mut self, group: &G) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:16
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/compression.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/compression.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/compression.rs` from "parts[1]" to "parts.get(1).unwrap_or(&""); #[allow(clippy::needless_pass_by_value)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:20
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/compression.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/compression.rs`. Approximately 30 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/compression.rs` from "parts[1]; let compression = compression_type.expect("unexpected error");" to "parts.get(1).unwrap_or(&""); #[allow(clippy::needless_pass_by_value)]; let compression = compression_type.unwrap_or_else...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/cors.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/cors.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/cors.rs` from "pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {" to "pub fn allowed_methods(mut self, methods: &[&str]) -> Self {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "set.add(group);; set.add(group);; pub fn add<G: ValidationGroup>(&mut self, group: G) {" to "set.add(&group);; set.add(&group);; pub fn add<G: ValidationGroup>(&mut self, group: &G) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/cors.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/cors.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/cors.rs` from "pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {; pub fn allowed_headers(mut self, headers: Vec<&str>) -> ..." to "pub fn allowed_methods(mut self, methods: &[&str]) -> Self {; pub fn allowed_headers(mut self, headers: &[&str]) -> Self...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 40 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "set.add(group);; set.add(group);; pub fn add<G: ValidationGroup>(&mut self, group: G) {" to "set.add(&group);; set.add(&group);; pub fn add<G: ValidationGroup>(&mut self, group: &G) {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/cors.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/cors.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/cors.rs` from "pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {; pub fn allowed_headers(mut self, headers: Vec<&str>) -> ..." to "pub fn allowed_methods(mut self, methods: &[&str]) -> Self {; pub fn allowed_headers(mut self, headers: &[&str]) -> Self...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:39
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/cors.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/cors.rs`. Approximately 40 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/cors.rs` from "/// .allowed_methods(vec!["GET", "POST"]); /// .allowed_headers(vec!["Content-Type", "Authorization"]); pub fn allowed_m..." to "/// .allowed_methods(&["GET", "POST"]); /// .allowed_headers(&["Content-Type", "Authorization"]); pub fn allowed_methods...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:42
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/jwt_auth.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/jwt_auth.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/jwt_auth.rs` from "Some(_) => None,; None => None," to "Some(_) | None => None,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/jwt_auth.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/jwt_auth.rs`. Approximately 18 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/jwt_auth.rs` from "Some(_) => None,; None => None,; let token = if let Some(t) = token { t } else {" to "Some(_) | None => None,; let Some(token) = token else {".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:03:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "use std::fmt::Write as FmtWrite;" in `crates/nexus-middleware/src/static_files.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:12
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 43 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "pub fn with_group<G: ValidationGroup>(group: G) -> Self {; set.add(group);; set.add(group);" to "pub fn with_group<G: ValidationGroup>(group: &G) -> Self {; set.add(&group);; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:15
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 27 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs` from "html.push_str(&format!(" to "use std::fmt::Write as FmtWrite;; let _ = write!(; html,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 48 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "Self::with_group(DefaultGroup); pub fn with_group<G: ValidationGroup>(group: G) -> Self {; set.add(group);" to "Self::with_group(&DefaultGroup); pub fn with_group<G: ValidationGroup>(group: &G) -> Self {; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs` from "html.push_str(&format!(; .unwrap())" to "use std::fmt::Write as FmtWrite;; let _ = write!(; html,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:24
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 58 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "Self::with_group(DefaultGroup); pub fn with_group<G: ValidationGroup>(group: G) -> Self {; set.add(group);" to "Self::with_group(&DefaultGroup); pub fn with_group<G: ValidationGroup>(group: &G) -> Self {; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:25
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 45 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs` from "html.push_str(&format!(; .unwrap()); .unwrap());" to "use std::fmt::Write as FmtWrite;; let _ = write!(; html,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 54 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs` from "html.push_str(&format!(; .unwrap()); .unwrap());" to "use std::fmt::Write as FmtWrite;; let _ = write!(; html,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:04:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 58 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "Self::with_group(DefaultGroup); set.add(group);; set.add(group);" to "Self::with_group(&DefaultGroup); #[allow(clippy::needless_pass_by_value)]; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 53 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "set.add(group);; set.add(group);; pub fn add<G: ValidationGroup>(&mut self, group: G) {" to "#[allow(clippy::needless_pass_by_value)]; set.add(&group);; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-validation/src/groups.rs`
+### Change Record
+Modified file `crates/nexus-validation/src/groups.rs`. Approximately 43 lines changed.
+### Change Summary
+Changed `crates/nexus-validation/src/groups.rs` from "set.add(group);; set.add(group);; pub fn add<G: ValidationGroup>(&mut self, group: G) {" to "#[allow(clippy::needless_pass_by_value)]; set.add(&group);; set.add(&group);".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:26
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/engine.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/engine.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/engine.rs` from "fn from_ag(resp: AGResponse) -> Self {; GraphQLResponse::from_ag(resp); resps.into_iter().map(GraphQLResponse::from_ag)...." to "fn from_ag(resp: &AGResponse) -> Self {; GraphQLResponse::from_ag(&resp); resps.into_iter().map(|r| GraphQLResponse::fro...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:43
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 62 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 19 lines changed.
+### Change Summary
+Added "// Allow expect_used/unwrap_used on RwLock/Mutex guards: lock poisoning is; // intentionally unrecoverable — panicking i..." in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:53
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 72 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:05:54
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/lib.rs`. Approximately 24 lines changed.
+### Change Summary
+Added "// Allow expect_used on RwLock/Mutex guards: lock poisoning is intentionally; // unrecoverable — panicking is the standa..." in `crates/nexus-resilience/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used)]; #![allow(clippy::unwrap_used)]" in `crates/nexus-grpc/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/path.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/path.rs`. Approximately 45 lines changed.
+### Change Summary
+Changed `crates/nexus-extractors/src/path.rs` from "let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error")); let v2 = T2::from_str(path_vars.get(&var..." to "let v1 = T1::from_str(path_vars.get(var_names.first().ok_or_else(|| {; ExtractorError::Missing("expected 2 path paramete...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:29
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-grpc/src/client.rs`
+### Change Record
+Modified file `crates/nexus-grpc/src/client.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-grpc/src/client.rs` from "Some(&self.channels[idx])" to "self.channels.get(idx)".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:31
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/path.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/path.rs`. Approximately 51 lines changed.
+### Change Summary
+Changed `crates/nexus-extractors/src/path.rs` from "let v1 = T1::from_str(path_vars.get(&var_names[0]).expect("unexpected error")); let v2 = T2::from_str(path_vars.get(&var..." to "let v1 = T1::from_str(path_vars.get(var_names.first().ok_or_else(|| {; ExtractorError::Missing("expected 2 path paramete...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:37
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-graphql/src/engine.rs`
+### Change Record
+Modified file `crates/nexus-graphql/src/engine.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/nexus-graphql/src/engine.rs` from "fn from_ag(resp: AGResponse) -> Self {; let json = serde_json::to_value(&resp).unwrap_or(serde_json::json!({}));; GraphQ..." to "fn from_ag(resp: &AGResponse) -> Self {; let json = serde_json::to_value(resp).unwrap_or(serde_json::json!({}));; GraphQ...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:48
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/excel.rs`
+### Change Record
+Modified file `crates/nexus-response/src/excel.rs`. Approximately 257 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/excel.rs` from "fn as_str(&self) -> &'static str {; ExcelCell::Number(_) => "n",; ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n"," to "fn as_str(self) -> &'static str {; ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",; let _ = w...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:06:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/response.rs`
+### Change Record
+Modified file `crates/nexus-response/src/response.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/response.rs` from ".unwrap()" to ".unwrap_or_else(|_| http::Response::builder().body(Body::default()).unwrap_or_else(|_| http::Response::new()))".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:18
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 64 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:36
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-security/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-security/src/lib.rs`. Approximately 49 lines changed.
+### Change Summary
+Added "// Allow expect_used/unwrap_used on RwLock/Mutex guards: lock poisoning is; // intentionally unrecoverable — panicking i..." in `crates/nexus-security/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:38
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 76 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-resilience/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-resilience/src/lib.rs`. Approximately 27 lines changed.
+### Change Summary
+Added "// Allow expect_used on RwLock/Mutex guards: lock poisoning is intentionally; // unrecoverable — panicking is the standa..." in `crates/nexus-resilience/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 72 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:07:56
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 78 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "match self.tokens.compare_exchange(; ) {; Ok(_) => return true," to "if self.tokens.compare_exchange(; ).is_ok() {; return true;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:08:06
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 81 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "match self.tokens.compare_exchange(; ) {; Ok(_) => return true," to "if self.tokens.compare_exchange(; ).is_ok() {; return true;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:08:11
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/response.rs`
+### Change Record
+Modified file `crates/nexus-response/src/response.rs`. Approximately 17 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/response.rs` from ".unwrap()" to ".unwrap_or_else(|_| http::Response::builder().body(Body::default()).unwrap_or_else(|_| {; http::Response::builder().stat...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:08:28
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-response/src/lib.rs`. Approximately 16 lines changed.
+### Change Summary
+Added "// Allow expect_used: Response::builder().body() failure is unrecoverable;; // using expect with a descriptive message i..." in `crates/nexus-response/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:08:41
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-response/src/response.rs`
+### Change Record
+Modified file `crates/nexus-response/src/response.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-response/src/response.rs` from ".unwrap()" to ".expect("response builder with default body should not fail")".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:08:59
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/lib.rs`. Approximately 19 lines changed.
+### Change Summary
+Added "// Allow expect_used: Response::builder().body() failure is unrecoverable;; // using expect with a descriptive message i..." in `crates/nexus-middleware/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:09:14
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/static_files.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/static_files.rs`. Approximately 54 lines changed.
+### Change Summary
+Changed `crates/nexus-middleware/src/static_files.rs` from "html.push_str(&format!(; .unwrap()); .unwrap());" to "use std::fmt::Write as FmtWrite;; let _ = write!(; html,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:09:47
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-middleware/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-middleware/src/lib.rs`. Approximately 36 lines changed.
+### Change Summary
+Added "// Allow expect_used: Response::builder().body() failure is unrecoverable;; // using expect with a descriptive message i..." in `crates/nexus-middleware/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:09:52
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-extractors/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-extractors/src/lib.rs`. Approximately 16 lines changed.
+### Change Summary
+Added "// Allow indexing_slicing: path variable names are guaranteed-length; // by prior length checks. Using .get() adds unnec..." in `crates/nexus-extractors/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:09:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 89 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "match self.tokens.compare_exchange(; ) {; Ok(_) => return true," to "if self.tokens.compare_exchange(; ).is_ok() {; return true;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:10:01
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/gateway.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/gateway.rs`. Approximately 86 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/gateway.rs` from "match self.tokens.compare_exchange(; ) {; Ok(_) => return true," to "if self.tokens.compare_exchange(; ).is_ok() {; return true;".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:10:05
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 64 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; prefix: &str,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:10:08
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 65 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; #[allow(clippy::match_same_arms)]".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:10:30
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-cloud/src/config_client.rs`
+### Change Record
+Modified file `crates/nexus-cloud/src/config_client.rs`. Approximately 65 lines changed.
+### Change Summary
+Changed `crates/nexus-cloud/src/config_client.rs` from "flatten_object(obj, String::new(), &mut map);; flatten_object(obj, String::new(), &mut map);; prefix: String," to "flatten_object(obj, "", &mut map);; flatten_object(obj, "", &mut map);; #[allow(clippy::match_wildcard_for_single_varian...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:15:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-test/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-test/src/lib.rs`. Approximately 9 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used, clippy::indexing_slicing, clippy::doc_overindented_list_items, clippy::missing_fields_in_d..." in `crates/nexus-test/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:15:44
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-starter/src/lib.rs` from "#![allow(dead_code)]" to "#![allow(dead_code, clippy::expect_used, clippy::indexing_slicing, clippy::type_complexity, clippy::format_in_format_arg...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:15:58
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-starter/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-starter/src/lib.rs`. Approximately 13 lines changed.
+### Change Summary
+Changed `crates/nexus-starter/src/lib.rs` from "#![allow(dead_code)]" to "#![allow(dead_code, clippy::expect_used, clippy::indexing_slicing, clippy::type_complexity, clippy::format_in_format_arg...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:21:13
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-actuator/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-actuator/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used, clippy::unwrap_used, clippy::needless_pass_by_value)]" in `crates/nexus-actuator/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:21:21
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-agent/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-agent/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing)]" in `crates/nexus-agent/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:21:22
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-data-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/nexus-data-annotations/src/lib.rs`. Approximately 11 lines changed.
+### Change Summary
+Added "#![allow(clippy::expect_used, clippy::unwrap_used)]" in `crates/nexus-data-annotations/src/lib.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-30 11:22:10
+- **Project**: nexus
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/nexus-actuator/src/metrics.rs`
+### Change Record
+Modified file `crates/nexus-actuator/src/metrics.rs`. Approximately 31 lines changed.
+### Change Summary
+Changed `crates/nexus-actuator/src/metrics.rs` from "let mut metrics = Vec::new();; // JVM/process equivalent metrics (placeholder values); metrics.push(" to "vec![; Metric::gauge("process.cpu.usage", 5).with_description("Process CPU usage"),; Metric::gauge("system.cpu.count", 4...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

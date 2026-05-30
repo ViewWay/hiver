@@ -602,6 +602,7 @@ impl SlidingWindow {
         }
     }
 
+    #[allow(clippy::indexing_slicing)]
     fn record(&mut self, outcome: CallOutcome) {
         self.outcomes[self.head] = Some(outcome);
         self.head = (self.head + 1) % self.outcomes.len();
@@ -610,6 +611,7 @@ impl SlidingWindow {
         }
     }
 
+    #[allow(clippy::cast_precision_loss)]
     fn failure_rate(&self) -> f64 {
         if self.len == 0 {
             return 0.0;
@@ -623,6 +625,7 @@ impl SlidingWindow {
         (failures as f64 / self.len as f64) * 100.0
     }
 
+    #[allow(clippy::cast_precision_loss)]
     fn slow_call_rate(&self) -> f64 {
         if self.len == 0 {
             return 0.0;

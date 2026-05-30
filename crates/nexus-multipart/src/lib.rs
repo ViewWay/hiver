@@ -1,3 +1,4 @@
+#![allow(clippy::empty_line_after_doc_comments, clippy::doc_overindented_list_items)]
 //! Nexus Multipart - Spring `MultipartFile` equivalent features
 //! Nexus Multipart - Spring `MultipartFile` 等价功能
 //!

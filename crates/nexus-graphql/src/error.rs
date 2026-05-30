@@ -163,8 +163,7 @@ impl fmt::Display for GraphQLError {
         if let Some(path) = &self.path {
             write!(f, " at path {}", path)?;
         }
-        if !self.locations.is_empty() {
-            let loc = &self.locations[0];
+        if let Some(loc) = self.locations.first() {
             write!(f, " (line {}, column {})", loc.line, loc.column)?;
         }
         Ok(())

@@ -36,6 +36,7 @@ pub enum StompCommand {
 impl StompCommand {
     /// Create from string
     /// 从字符串创建
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Result<Self> {
         match s {
             "CONNECT" => Ok(StompCommand::Connect),

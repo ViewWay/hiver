@@ -91,7 +91,6 @@ pub async fn resolve_propagation(
                 Ok(None)
             }
         }
-        Propagation::NotSupported => Ok(None),
-        Propagation::RequiresNew | Propagation::Nested => Ok(None),
+        Propagation::NotSupported | Propagation::RequiresNew | Propagation::Nested => Ok(None),
     }
 }
