@@ -75,6 +75,41 @@ impl From<u64> for QueryParam {
     fn from(v: u64) -> Self { Self::I64(v as i64) }
 }
 
+impl From<nexus_data_commons::Value> for QueryParam {
+    fn from(v: nexus_data_commons::Value) -> Self {
+        match v {
+            nexus_data_commons::Value::Null => Self::Null,
+            nexus_data_commons::Value::Bool(b) => Self::Bool(b),
+            nexus_data_commons::Value::I32(n) => Self::I32(n),
+            nexus_data_commons::Value::I64(n) => Self::I64(n),
+            nexus_data_commons::Value::F32(n) => Self::F64(n as f64),
+            nexus_data_commons::Value::F64(n) => Self::F64(n),
+            nexus_data_commons::Value::String(s) => Self::Text(s),
+            nexus_data_commons::Value::Bytes(b) => Self::Bytes(b),
+        }
+    }
+}
+
+impl From<serde_json::Value> for QueryParam {
+    fn from(v: serde_json::Value) -> Self {
+        match v {
+            serde_json::Value::Null => Self::Null,
+            serde_json::Value::Bool(b) => Self::Bool(b),
+            serde_json::Value::Number(n) => {
+                if let Some(i) = n.as_i64() {
+                    Self::I64(i)
+                } else if let Some(f) = n.as_f64() {
+                    Self::F64(f)
+                } else {
+                    Self::Text(n.to_string())
+                }
+            }
+            serde_json::Value::String(s) => Self::Text(s),
+            _ => Self::Text(v.to_string()),
+        }
+    }
+}
+
 /// Database client trait
 /// 数据库客户端 trait
 ///
@@ -139,43 +174,7 @@ fn interpolate_params(sql: &str, params: &[QueryParam]) -> String {
     result
 }
 
-/// Trait for SQL parameter conversion
-/// SQL 参数转换 trait
-pub trait ToSql: Send + Sync {
-    /// Convert to SQL literal
-    fn to_sql(&self) -> String;
-}
-
-impl ToSql for i32 {
-    fn to_sql(&self) -> String { self.to_string() }
-}
-impl ToSql for i64 {
-    fn to_sql(&self) -> String { self.to_string() }
-}
-impl ToSql for u32 {
-    fn to_sql(&self) -> String { self.to_string() }
-}
-impl ToSql for u64 {
-    fn to_sql(&self) -> String { self.to_string() }
-}
-impl ToSql for f64 {
-    fn to_sql(&self) -> String { self.to_string() }
-}
-impl ToSql for &str {
-    fn to_sql(&self) -> String {
-        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
-    }
-}
-impl ToSql for String {
-    fn to_sql(&self) -> String {
-        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
-    }
-}
-impl ToSql for bool {
-    fn to_sql(&self) -> String {
-        if *self { "TRUE".to_string() } else { "FALSE".to_string() }
-    }
-}
+pub use nexus_data_commons::ToSql;
 
 /// No-op client for testing SQL builders without a real database
 /// 无操作客户端，用于测试 SQL 构建器无需真实数据库

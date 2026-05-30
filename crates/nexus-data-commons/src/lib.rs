@@ -114,6 +114,48 @@ pub use query::{
     Value, ToValue, Specification, LambdaQueryWrapper, Predicate,
 };
 
+/// Trait for converting Rust types to SQL literal strings.
+/// 将 Rust 类型转换为 SQL 字面量字符串的 trait。
+///
+/// Used for building safe SQL value representations when parameterized
+/// queries are not available.
+pub trait ToSql: Send + Sync {
+    /// Convert to a SQL literal string.
+    /// 转换为 SQL 字面量字符串。
+    fn to_sql(&self) -> String;
+}
+
+impl ToSql for i32 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for i64 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for u32 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for u64 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for f64 {
+    fn to_sql(&self) -> String { self.to_string() }
+}
+impl ToSql for &str {
+    fn to_sql(&self) -> String {
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
+    }
+}
+impl ToSql for String {
+    fn to_sql(&self) -> String {
+        format!("'{}'", self.replace('\'', "''").replace('\0', ""))
+    }
+}
+impl ToSql for bool {
+    fn to_sql(&self) -> String {
+        if *self { "TRUE".to_string() } else { "FALSE".to_string() }
+    }
+}
+
 /// Version of the data-commons module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 

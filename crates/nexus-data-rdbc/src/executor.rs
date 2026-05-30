@@ -6,7 +6,7 @@
 //! Provides query execution for MyBatis-Plus style wrappers.
 //! 提供 MyBatis-Plus 风格包装器的查询执行。
 
-use crate::client::DatabaseClient;
+use crate::client::{DatabaseClient, QueryParam};
 use crate::error::{Error, Result};
 use crate::row::Row;
 use nexus_data_commons::{Condition, Page, PageRequest, QueryWrapper, UpdateWrapper};
@@ -36,8 +36,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         wrapper: &QueryWrapper,
         table: &str,
     ) -> Result<Vec<T>> {
-        let (sql, _params) = self.build_select_query(wrapper, table);
-        let rows = self.client.fetch_all(&sql).await?;
+        let (sql, params) = self.build_select_query(wrapper, table);
+        let rows = self.client.fetch_all_params(&sql, &params).await?;
         self.map_rows(rows)
     }
 
@@ -47,8 +47,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         wrapper: &QueryWrapper,
         table: &str,
     ) -> Result<Option<T>> {
-        let (sql, _params) = self.build_select_query(wrapper, table);
-        match self.client.fetch_one(&sql).await? {
+        let (sql, params) = self.build_select_query(wrapper, table);
+        match self.client.fetch_one_params(&sql, &params).await? {
             Some(r) => Ok(Some(self.map_row(r)?)),
             None => Ok(None),
         }
@@ -56,8 +56,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Count entities by wrapper
     pub async fn count(&self, wrapper: &QueryWrapper, table: &str) -> Result<i64> {
-        let (sql, _params) = self.build_count_query(wrapper, table);
-        let rows = self.client.fetch_all(&sql).await?;
+        let (sql, params) = self.build_count_query(wrapper, table);
+        let rows = self.client.fetch_all_params(&sql, &params).await?;
         let count = rows
             .first()
             .and_then(|r| r.get("cnt").and_then(|v| v.as_type::<i64>()))
@@ -73,8 +73,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         table: &str,
     ) -> Result<Page<T>> {
         let total = self.count(wrapper, table).await?;
-        let (sql, _params) = self.build_page_query(page, wrapper, table);
-        let rows = self.client.fetch_all(&sql).await?;
+        let (sql, params) = self.build_page_query(page, wrapper, table);
+        let rows = self.client.fetch_all_params(&sql, &params).await?;
         let records = self.map_rows(rows)?;
 
         Ok(Page::new(records, page.page, page.size, total as u64))
@@ -96,41 +96,27 @@ impl<C: DatabaseClient> QueryExecutor<C> {
             .as_object()
             .ok_or_else(|| Error::Deserialization("entity must be an object".into()))?;
 
-        let columns: Vec<String> = map.keys().cloned().collect();
-        let values: Vec<String> = map
-            .values()
-            .map(|v| match v {
-                serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''").replace('\0', "")),
-                serde_json::Value::Null => "NULL".to_string(),
-                serde_json::Value::Bool(b) => if *b { "TRUE" } else { "FALSE" }.to_string(),
-                serde_json::Value::Number(n) => n.to_string(),
-                serde_json::Value::Array(arr) => {
-                    let items: Vec<String> = arr.iter().map(|v| match v {
-                        serde_json::Value::String(s) => format!("'{}'", s.replace('\'', "''")),
-                        other => other.to_string(),
-                    }).collect();
-                    format!("({})", items.join(", "))
-                }
-                other => other.to_string(),
-            })
-            .collect();
+        let columns: Vec<&String> = map.keys().collect();
+        let params: Vec<QueryParam> = map.values().cloned().map(QueryParam::from).collect();
+
+        let placeholders: Vec<String> = (1..=params.len()).map(|i| format!("${}", i)).collect();
 
         let sql = format!(
             "INSERT INTO {} ({}) VALUES ({})",
             table,
-            columns.join(", "),
-            values.join(", ")
+            columns.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "),
+            placeholders.join(", ")
         );
 
-        self.client.execute_cmd(&sql).await
+        self.client.execute_params(&sql, &params).await
     }
 
     // ── Update ───────────────────────────────────────────────────────
 
     /// Update by wrapper
     pub async fn update(&self, wrapper: &UpdateWrapper, table: &str) -> Result<u64> {
-        let (sql, _params) = self.build_update_query(wrapper, table);
-        self.client.execute_cmd(&sql).await
+        let (sql, params) = self.build_update_query(wrapper, table);
+        self.client.execute_params(&sql, &params).await
     }
 
     /// Execute a raw update/delete command
@@ -142,8 +128,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Delete by wrapper
     pub async fn delete(&self, wrapper: &QueryWrapper, table: &str) -> Result<u64> {
-        let (sql, _params) = self.build_delete_query(wrapper, table);
-        self.client.execute_cmd(&sql).await
+        let (sql, params) = self.build_delete_query(wrapper, table);
+        self.client.execute_params(&sql, &params).await
     }
 
     // ── Row mapping helpers ──────────────────────────────────────────
@@ -162,20 +148,17 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> (String, Vec<serde_json::Value>) {
+    ) -> (String, Vec<QueryParam>) {
         let cols = wrapper.select.as_ref().map(|v| v.join(", ")).unwrap_or_else(|| "*".to_string());
 
         let mut sql = format!("SELECT {} FROM {}", cols, table);
-        let mut params = Vec::new();
 
-        let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
+        let (where_clause, params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&where_clause);
-            params = where_params;
         }
 
-        // ORDER BY
         if !wrapper.orders.is_empty() {
             let order_clauses: Vec<String> = wrapper
                 .orders
@@ -189,7 +172,6 @@ impl<C: DatabaseClient> QueryExecutor<C> {
             sql.push_str(&order_clauses.join(", "));
         }
 
-        // LIMIT
         if let Some(limit) = wrapper.limit {
             sql.push_str(&format!(" LIMIT {}", limit));
         }
@@ -201,15 +183,13 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> (String, Vec<serde_json::Value>) {
+    ) -> (String, Vec<QueryParam>) {
         let mut sql = format!("SELECT COUNT(*) AS cnt FROM {}", table);
-        let mut params = Vec::new();
 
-        let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
+        let (where_clause, params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&where_clause);
-            params = where_params;
         }
 
         (sql, params)
@@ -220,16 +200,14 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         page: &PageRequest,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> (String, Vec<serde_json::Value>) {
+    ) -> (String, Vec<QueryParam>) {
         let cols = wrapper.select.as_ref().map(|v| v.join(", ")).unwrap_or_else(|| "*".to_string());
         let mut sql = format!("SELECT {} FROM {}", cols, table);
-        let mut params = Vec::new();
 
-        let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
+        let (where_clause, params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&where_clause);
-            params = where_params;
         }
 
         if !wrapper.orders.is_empty() {
@@ -255,26 +233,26 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &UpdateWrapper,
         table: &str,
-    ) -> (String, Vec<serde_json::Value>) {
-        let mut sql = format!("UPDATE {} SET", table);
-
-        let set_clauses: Vec<String> = wrapper
-            .sets
-            .iter()
-            .map(|(column, value)| {
-                format!("{} = {}", column, value.to_sql())
-            })
-            .collect();
-
-        sql.push(' ');
-        sql.push_str(&set_clauses.join(", "));
-
+    ) -> (String, Vec<QueryParam>) {
+        let mut idx = 1u32;
+        let mut set_parts = Vec::new();
         let mut params = Vec::new();
+
+        for (column, value) in &wrapper.sets {
+            set_parts.push(format!("{} = ${}", column, idx));
+            params.push(QueryParam::from(value.clone()));
+            idx += 1;
+        }
+
+        let mut sql = format!("UPDATE {} SET {}", table, set_parts.join(", "));
+
         let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
+            let offset = params.len();
+            let (where_sql, where_prms) = Self::build_where_clause_offset(&wrapper.conditions, offset);
             sql.push_str(" WHERE ");
-            sql.push_str(&where_clause);
-            params = where_params;
+            sql.push_str(&where_sql);
+            params.extend(where_prms);
         }
 
         (sql, params)
@@ -284,29 +262,32 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> (String, Vec<serde_json::Value>) {
+    ) -> (String, Vec<QueryParam>) {
         let mut sql = format!("DELETE FROM {}", table);
-        let mut params = Vec::new();
 
-        let (where_clause, where_params) = Self::build_where_clause(&wrapper.conditions);
+        let (where_clause, params) = Self::build_where_clause(&wrapper.conditions);
         if !where_clause.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&where_clause);
-            params = where_params;
         }
 
         (sql, params)
     }
 
-    // ── Where clause builder ─────────────────────────────────────────
+    // ── Where clause builder (parameterized) ─────────────────────────
 
-    fn build_where_clause(conditions: &[Condition]) -> (String, Vec<serde_json::Value>) {
+    fn build_where_clause(conditions: &[Condition]) -> (String, Vec<QueryParam>) {
+        Self::build_where_clause_offset(conditions, 0)
+    }
+
+    fn build_where_clause_offset(conditions: &[Condition], start_idx: usize) -> (String, Vec<QueryParam>) {
         if conditions.is_empty() {
             return (String::new(), Vec::new());
         }
 
         let mut sql = String::new();
-        let params = Vec::new();
+        let mut params = Vec::new();
+        let mut idx = (start_idx + 1) as u32;
 
         for (i, condition) in conditions.iter().enumerate() {
             if i > 0 {
@@ -315,73 +296,99 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
             match condition {
                 Condition::Eq { field, value } => {
-                    sql.push_str(&format!("{} = {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} = ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Ne { field, value } => {
-                    sql.push_str(&format!("{} != {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} != ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Gt { field, value } => {
-                    sql.push_str(&format!("{} > {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} > ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Ge { field, value } => {
-                    sql.push_str(&format!("{} >= {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} >= ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Lt { field, value } => {
-                    sql.push_str(&format!("{} < {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} < ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Le { field, value } => {
-                    sql.push_str(&format!("{} <= {}", field, value.to_sql()));
-                },
+                    sql.push_str(&format!("{} <= ${}", field, idx));
+                    params.push(QueryParam::from(value.clone()));
+                    idx += 1;
+                }
                 Condition::Like { field, pattern } => {
-                    sql.push_str(&format!("{} LIKE '{}'", field, pattern.replace('\'', "''")));
-                },
+                    sql.push_str(&format!("{} LIKE ${}", field, idx));
+                    params.push(QueryParam::Text(pattern.clone()));
+                    idx += 1;
+                }
                 Condition::NotLike { field, pattern } => {
-                    sql.push_str(&format!("{} NOT LIKE '{}'", field, pattern.replace('\'', "''")));
-                },
+                    sql.push_str(&format!("{} NOT LIKE ${}", field, idx));
+                    params.push(QueryParam::Text(pattern.clone()));
+                    idx += 1;
+                }
                 Condition::In { field, values } => {
                     let placeholders: Vec<String> = values
                         .iter()
-                        .map(|v| v.to_sql())
+                        .map(|v| {
+                            let ph = format!("${}", idx);
+                            params.push(QueryParam::from(v.clone()));
+                            idx += 1;
+                            ph
+                        })
                         .collect();
                     sql.push_str(&format!("{} IN ({})", field, placeholders.join(", ")));
-                },
+                }
                 Condition::NotIn { field, values } => {
                     let placeholders: Vec<String> = values
                         .iter()
-                        .map(|v| v.to_sql())
+                        .map(|v| {
+                            let ph = format!("${}", idx);
+                            params.push(QueryParam::from(v.clone()));
+                            idx += 1;
+                            ph
+                        })
                         .collect();
                     sql.push_str(&format!("{} NOT IN ({})", field, placeholders.join(", ")));
-                },
+                }
                 Condition::IsNull { field } => {
                     sql.push_str(&format!("{} IS NULL", field));
-                },
+                }
                 Condition::IsNotNull { field } => {
                     sql.push_str(&format!("{} IS NOT NULL", field));
-                },
+                }
                 Condition::Between { field, low, high } => {
-                    sql.push_str(&format!(
-                        "{} BETWEEN {} AND {}",
-                        field,
-                        low.to_sql(),
-                        high.to_sql()
-                    ));
-                },
+                    sql.push_str(&format!("{} BETWEEN ${} AND ${}", field, idx, idx + 1));
+                    params.push(QueryParam::from(low.clone()));
+                    params.push(QueryParam::from(high.clone()));
+                    idx += 2;
+                }
                 Condition::NotBetween { field, low, high } => {
-                    sql.push_str(&format!(
-                        "{} NOT BETWEEN {} AND {}",
-                        field,
-                        low.to_sql(),
-                        high.to_sql()
-                    ));
-                },
+                    sql.push_str(&format!("{} NOT BETWEEN ${} AND ${}", field, idx, idx + 1));
+                    params.push(QueryParam::from(low.clone()));
+                    params.push(QueryParam::from(high.clone()));
+                    idx += 2;
+                }
                 Condition::And(inner) => {
-                    let (inner_sql, _) = Self::build_where_clause(inner);
+                    let (inner_sql, inner_params) = Self::build_where_clause_offset(inner, (idx - 1) as usize);
+                    idx += inner_params.len() as u32;
                     sql.push_str(&format!("({})", inner_sql));
-                },
+                    params.extend(inner_params);
+                }
                 Condition::Or(inner) => {
-                    let (inner_sql, _) = Self::build_where_clause(inner);
+                    let (inner_sql, inner_params) = Self::build_where_clause_offset(inner, (idx - 1) as usize);
+                    idx += inner_params.len() as u32;
                     sql.push_str(&format!("({})", inner_sql));
-                },
+                    params.extend(inner_params);
+                }
             }
         }
 
@@ -389,30 +396,19 @@ impl<C: DatabaseClient> QueryExecutor<C> {
     }
 }
 
-/// Escape a value for SQL string literals
-#[cfg(test)]
-fn sql_escape(s: &str) -> String {
-    s.replace('\'', "''")
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_sql_escape() {
-        assert_eq!(sql_escape("hello"), "hello");
-        assert_eq!(sql_escape("it's"), "it''s");
-    }
-
-    #[test]
     fn test_build_where_clause_eq() {
         let conditions = vec![Condition::Eq {
             field: "id".into(),
-            value: nexus_data_commons::Value::String("42".into()),
+            value: nexus_data_commons::Value::I64(42),
         }];
-        let (sql, _) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
-        assert_eq!(sql, "id = '42'");
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "id = $1");
+        assert_eq!(params.len(), 1);
     }
 
     #[test]
@@ -420,14 +416,81 @@ mod tests {
         let conditions = vec![
             Condition::Eq {
                 field: "id".into(),
-                value: nexus_data_commons::Value::String("1".into()),
+                value: nexus_data_commons::Value::I64(1),
             },
             Condition::Gt {
                 field: "age".into(),
-                value: nexus_data_commons::Value::String("18".into()),
+                value: nexus_data_commons::Value::I64(18),
             },
         ];
-        let (sql, _) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
-        assert_eq!(sql, "id = '1' AND age > '18'");
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "id = $1 AND age > $2");
+        assert_eq!(params.len(), 2);
+    }
+
+    #[test]
+    fn test_build_where_clause_like() {
+        let conditions = vec![Condition::Like {
+            field: "name".into(),
+            pattern: "%test%".into(),
+        }];
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "name LIKE $1");
+        assert_eq!(params[0], QueryParam::Text("%test%".into()));
+    }
+
+    #[test]
+    fn test_build_where_clause_in() {
+        let conditions = vec![Condition::In {
+            field: "status".into(),
+            values: vec![
+                nexus_data_commons::Value::String("active".into()),
+                nexus_data_commons::Value::String("pending".into()),
+            ],
+        }];
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "status IN ($1, $2)");
+        assert_eq!(params.len(), 2);
+    }
+
+    #[test]
+    fn test_build_where_clause_between() {
+        let conditions = vec![Condition::Between {
+            field: "age".into(),
+            low: nexus_data_commons::Value::I64(18),
+            high: nexus_data_commons::Value::I64(65),
+        }];
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "age BETWEEN $1 AND $2");
+        assert_eq!(params.len(), 2);
+    }
+
+    #[test]
+    fn test_build_where_clause_nested() {
+        let conditions = vec![
+            Condition::Eq {
+                field: "a".into(),
+                value: nexus_data_commons::Value::I64(1),
+            },
+            Condition::Or(Box::new(vec![
+                Condition::Gt {
+                    field: "b".into(),
+                    value: nexus_data_commons::Value::I64(2),
+                },
+                Condition::Lt {
+                    field: "c".into(),
+                    value: nexus_data_commons::Value::I64(3),
+                },
+            ])),
+        ];
+        let (sql, params) = QueryExecutor::<crate::client::NoopClient>::build_where_clause(&conditions);
+        assert_eq!(sql, "a = $1 AND (b > $2 AND c < $3)");
+        assert_eq!(params.len(), 3);
+    }
+
+    #[test]
+    fn test_sql_escape() {
+        assert_eq!("hello".replace('\'', "''"), "hello");
+        assert_eq!("it's".replace('\'', "''"), "it''s");
     }
 }

@@ -16,7 +16,7 @@
 //!   类型安全的查询执行
 
 use crate::{
-    client::DatabaseClient,
+    client::{DatabaseClient, QueryParam},
     error::{R2dbcError, R2dbcResult},
 };
 use serde::Deserialize;
@@ -234,14 +234,12 @@ impl QueryMetadata {
     pub fn bind_params(
         &self,
         params: &HashMap<String, serde_json::Value>,
-    ) -> R2dbcResult<(String, Vec<serde_json::Value>)> {
+    ) -> R2dbcResult<(String, Vec<QueryParam>)> {
         let mut sql = self.sql.clone();
         let mut values = Vec::new();
 
         match self.param_style {
             ParamStyle::Named => {
-                // Replace :param with $1, $2, etc.
-                // 将 :param 替换为 $1, $2 等
                 let mut param_index = 1;
                 let mut offset = 0;
 
@@ -256,7 +254,7 @@ impl QueryMetadata {
                         );
 
                         if let Some(value) = params.get(param_name) {
-                            values.push(value.clone());
+                            values.push(QueryParam::from(value.clone()));
                         } else {
                             return Err(R2dbcError::sql(format!(
                                 "Missing parameter: {}",
@@ -272,10 +270,6 @@ impl QueryMetadata {
                 Ok((sql, values))
             },
             ParamStyle::MyBatis => {
-                // Replace #{param} with $1, $2, etc.
-                // 将 #{param} 替换为 $1, $2 等
-                let _param_index = 1;
-
                 for (param_index, param_name) in (1..).zip(self.param_names.iter()) {
                     let placeholder = format!("#{{{}}}", param_name);
                     let replacement = format!("${}", param_index);
@@ -283,7 +277,7 @@ impl QueryMetadata {
                     sql = sql.replace(&placeholder, &replacement);
 
                     if let Some(value) = params.get(param_name) {
-                        values.push(value.clone());
+                        values.push(QueryParam::from(value.clone()));
                     } else {
                         return Err(R2dbcError::sql(format!("Missing parameter: {}", param_name)));
                     }
@@ -292,34 +286,27 @@ impl QueryMetadata {
                 Ok((sql, values))
             },
             ParamStyle::Positional => {
-                // Already in positional format, just order the values
-                // 已经是位置格式，只需排序值
-                let mut ordered_values = Vec::new();
-
                 for param_name in &self.param_names {
                     if let Some(value) = params.get(param_name) {
-                        ordered_values.push(value.clone());
+                        values.push(QueryParam::from(value.clone()));
                     } else {
                         return Err(R2dbcError::sql(format!("Missing parameter: {}", param_name)));
                     }
                 }
 
-                Ok((sql, ordered_values))
+                Ok((sql, values))
             },
             ParamStyle::QuestionMark => {
-                // Map params by order
-                // 按顺序映射参数
-                let mut ordered_values = Vec::new();
-
-                for param_name in &self.param_names {
+                for (i, param_name) in self.param_names.iter().enumerate() {
                     if let Some(value) = params.get(param_name) {
-                        ordered_values.push(value.clone());
+                        values.push(QueryParam::from(value.clone()));
+                        sql = sql.replacen('?', &format!("${}", i + 1), 1);
                     } else {
                         return Err(R2dbcError::sql(format!("Missing parameter: {}", param_name)));
                     }
                 }
 
-                Ok((sql, ordered_values))
+                Ok((sql, values))
             },
         }
     }
@@ -376,8 +363,8 @@ where
     where
         T: for<'de> Deserialize<'de>,
     {
-        let (sql, _values) = metadata.bind_params(params)?;
-        match self.executor.fetch_one(&sql).await? {
+        let (sql, values) = metadata.bind_params(params)?;
+        match self.executor.fetch_one_params(&sql, &values).await? {
             Some(row) => {
                 let entity = row.deserialize::<T>()
                     .map_err(|e| R2dbcError::RowMapping(format!("failed to map row: {}", e)))?;
@@ -411,8 +398,8 @@ where
     where
         T: for<'de> Deserialize<'de>,
     {
-        let (sql, _values) = metadata.bind_params(params)?;
-        let rows = self.executor.fetch_all(&sql).await?;
+        let (sql, values) = metadata.bind_params(params)?;
+        let rows = self.executor.fetch_all_params(&sql, &values).await?;
         rows.into_iter()
             .map(|row| {
                 row.deserialize::<T>()
@@ -443,9 +430,9 @@ where
         metadata: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
     ) -> R2dbcResult<u64> {
-        let (sql, _values) = metadata.bind_params(params)?;
+        let (sql, values) = metadata.bind_params(params)?;
 
-        self.executor.execute_cmd(&sql).await
+        self.executor.execute_params(&sql, &values).await
     }
 }
 
@@ -511,6 +498,8 @@ mod tests {
         assert!(sql.contains("$1"));
         assert!(sql.contains("$2"));
         assert_eq!(values.len(), 2);
+        assert_eq!(values[0], QueryParam::I64(1));
+        assert_eq!(values[1], QueryParam::Text("Alice".into()));
     }
 
     #[test]
@@ -525,6 +514,7 @@ mod tests {
 
         assert!(sql.contains("$1"));
         assert_eq!(values.len(), 1);
+        assert_eq!(values[0], QueryParam::I64(1));
     }
 
     #[test]
