@@ -575,4 +575,161 @@ mod tests {
             })
             .unwrap();
     }
+
+    #[test]
+    fn test_spawn_join_handle_id() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let h1 = crate::task::spawn(async { 1i32 });
+                let h2 = crate::task::spawn(async { 2i32 });
+                assert_ne!(h1.id(), 0);
+                assert_ne!(h2.id(), 0);
+                assert_ne!(h1.id(), h2.id());
+                let _ = h1.wait().await;
+                let _ = h2.wait().await;
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_join_handle_is_finished() {
+        let mut runtime = Runtime::new().unwrap();
+        use std::sync::atomic::{AtomicBool, Ordering};
+        use std::sync::Arc;
+
+        let flag = Arc::new(AtomicBool::new(false));
+        let flag_clone = flag.clone();
+
+        runtime
+            .block_on(async move {
+                let handle = crate::task::spawn(async move {
+                    flag_clone.store(true, Ordering::SeqCst);
+                });
+                let _ = handle.wait().await;
+                // After wait completes, the task must be finished
+                assert!(flag.load(Ordering::SeqCst));
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_string_return() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async {
+                    String::from("hello")
+                });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, "hello");
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_vec_return() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async { vec![1, 2, 3] });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, vec![1, 2, 3]);
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_tuple_return() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async { (42i32, true, "test".to_string()) });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, (42, true, "test".to_string()));
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_unit_return() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle: crate::task::JoinHandle<()> = crate::task::spawn(async {});
+                let result = handle.wait().await;
+                assert!(result.is_ok());
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_spawn_option_return() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async { Some(42i32) });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, Some(42));
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_nested_spawn() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                let handle = crate::task::spawn(async {
+                    let inner = crate::task::spawn(async { 10i32 });
+                    inner.wait().await.unwrap()
+                });
+                let result = handle.wait().await.unwrap();
+                assert_eq!(result, 10);
+            })
+            .unwrap();
+    }
+
+    #[test]
+    fn test_handle_current_and_try_current() {
+        let mut runtime = Runtime::new().unwrap();
+
+        runtime
+            .block_on(async {
+                // Inside runtime context, both should succeed
+                let handle = Handle::current();
+                assert!(Handle::try_current().is_some());
+
+                // Verify scheduler handle is functional
+                let _scheduler = handle.scheduler();
+            })
+            .unwrap();
+
+        // Outside runtime context
+        assert!(Handle::try_current().is_none());
+    }
+
+    #[test]
+    #[should_panic(expected = "outside of a runtime context")]
+    fn test_handle_current_panics_outside_runtime() {
+        let _ = Handle::current();
+    }
+
+    #[test]
+    fn test_block_on_with_config() {
+        let config = RuntimeConfig {
+            park_timeout: Duration::from_millis(10),
+            ..RuntimeConfig::default()
+        };
+        let mut runtime = Runtime::with_config(config).unwrap();
+        let result = runtime.block_on(async { });
+        assert!(result.is_ok());
+    }
 }

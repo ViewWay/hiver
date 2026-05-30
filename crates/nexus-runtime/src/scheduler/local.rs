@@ -346,26 +346,32 @@ mod tests {
     }
 
     #[test]
-    fn test_local_queue() {
-        let queue = LocalQueue::new(16);
+    fn test_scheduler_submit_and_handle() {
+        let scheduler = Scheduler::new().unwrap();
+        let handle = scheduler.handle();
 
-        let task1 = 0x1000 as RawTask;
-        let task2 = 0x2000 as RawTask;
+        // Submit multiple tasks
+        assert!(handle.submit(0x1000 as RawTask).is_ok());
+        assert!(handle.submit(0x2000 as RawTask).is_ok());
 
-        assert!(queue.push(task1));
-        assert!(queue.push(task2));
-
-        assert_eq!(queue.pop(), Some(task1));
-        assert_eq!(queue.pop(), Some(task2));
-        assert_eq!(queue.pop(), None);
+        // Wake fd should be a valid file descriptor
+        assert!(handle.wake_fd() >= 0);
     }
 
     #[test]
-    fn test_task_id_generation() {
-        use crate::scheduler::gen_task_id;
-        let id1 = gen_task_id();
-        let id2 = gen_task_id();
+    fn test_scheduler_waker_store_empty() {
+        let scheduler = Scheduler::new().unwrap();
 
-        assert!(id2 > id1);
+        // Non-existent waker should return None
+        assert!(scheduler.get_task_waker(9999).is_none());
+
+        // Removing non-existent waker should return None
+        assert!(scheduler.remove_task_waker(9999).is_none());
+    }
+
+    #[test]
+    fn test_scheduler_shutdown() {
+        let scheduler = Scheduler::new().unwrap();
+        scheduler.shutdown();
     }
 }

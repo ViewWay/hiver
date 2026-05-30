@@ -328,13 +328,34 @@ mod tests {
     }
 
     #[test]
-    fn test_wake_channel() {
+    fn test_wake_channel_notify_and_drain() {
         let wake = WakeChannel::new().unwrap();
         assert!(wake.raw_fd() >= 0);
 
-        // Test notify and drain
-        // 测试通知和排空
+        // drain on empty channel — no notification pending, recv_timeout should wait
+        let start = std::time::Instant::now();
+        let received = wake.recv_timeout(std::time::Duration::from_millis(5));
+        assert!(!received, "empty channel should not receive");
+        assert!(start.elapsed() >= std::time::Duration::from_millis(3));
+
+        // notify then drain — drain consumes the notification
         wake.notify();
+        wake.drain();
+        // After drain, a short recv_timeout should return false (notification consumed)
+        let received = wake.recv_timeout(std::time::Duration::from_millis(5));
+        assert!(!received, "drained notification should not be received again");
+    }
+
+    #[test]
+    fn test_wake_channel_multiple_notify() {
+        let wake = WakeChannel::new().unwrap();
+        wake.notify();
+        wake.notify();
+        wake.notify();
+        // Should be able to receive after multiple notifies
+        let received = wake.recv_timeout(std::time::Duration::from_millis(10));
+        assert!(received, "should receive after notify");
+        // drain remaining
         wake.drain();
     }
 

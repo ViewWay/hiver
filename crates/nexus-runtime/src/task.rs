@@ -85,6 +85,8 @@ struct TaskInner<T> {
     raw_task: AtomicUsize,
     /// Task output (available when completed) / 任务输出（完成时可用）
     output: lock::OptionalCell<T>,
+    /// Waker for waiters / 等待者的waker
+    waiter: futures::task::AtomicWaker,
 }
 
 /// Lock-free cell for optional task output
@@ -171,6 +173,7 @@ impl<T> Task<T> {
             scheduler,
             raw_task: AtomicUsize::new(0),
             output: lock::OptionalCell::new(),
+            waiter: futures::task::AtomicWaker::new(),
         });
 
         let raw_task = Arc::into_raw(inner.clone()) as RawTask;
@@ -328,10 +331,14 @@ impl<T> JoinHandle<T> {
     pub async fn wait(self) -> Result<T, JoinError> {
         if let Some(refs) = &self.raw_core
             && let Some(core) = refs.core() {
-                while !core.is_completed() {
-                    std::hint::spin_loop();
-                    std::future::pending::<()>().await;
-                }
+                std::future::poll_fn(|cx| {
+                    if core.is_completed() {
+                        Poll::Ready(())
+                    } else {
+                        cx.waker().wake_by_ref();
+                        Poll::Pending
+                    }
+                }).await;
                 return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
             }
         if let Some(inner) = self.inner {
@@ -356,8 +363,11 @@ impl<T> WaitForTask<T> {
 impl<T> Future for WaitForTask<T> {
     type Output = Result<T, JoinError>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let inner = self.inner.as_ref().unwrap();
+
+        // Register waker so the completing task can wake us
+        inner.waiter.register(cx.waker());
 
         // Check current state
         // 检查当前状态
@@ -474,6 +484,7 @@ where
                 scheduler: handle.scheduler().clone(),
                 raw_task: AtomicUsize::new(0),
                 output: lock::OptionalCell::new(),
+                waiter: futures::task::AtomicWaker::new(),
             })),
             raw_core: Some(task_ref),
         };
@@ -489,6 +500,7 @@ where
         scheduler: SchedulerHandle::new_default(),
         raw_task: AtomicUsize::new(0),
         output: lock::OptionalCell::new(),
+        waiter: futures::task::AtomicWaker::new(),
     });
 
     let inner_clone = inner.clone();
@@ -511,6 +523,7 @@ where
         inner_clone
             .state
             .store(TaskState::Completed as u8, Ordering::Release);
+        inner_clone.waiter.wake();
     });
 
     JoinHandle {
@@ -621,5 +634,75 @@ mod tests {
     fn test_join_error_display() {
         assert_eq!(format!("{}", JoinError::TaskCancelled), "Task was cancelled");
         assert_eq!(format!("{}", JoinError::TaskPanic), "Task panicked");
+    }
+
+    #[test]
+    fn test_join_error_equality() {
+        assert_eq!(JoinError::TaskCancelled, JoinError::TaskCancelled);
+        assert_eq!(JoinError::TaskPanic, JoinError::TaskPanic);
+        assert_ne!(JoinError::TaskCancelled, JoinError::TaskPanic);
+    }
+
+    #[test]
+    fn test_join_error_is_std_error() {
+        let err: Box<dyn std::error::Error> = Box::new(JoinError::TaskCancelled);
+        assert_eq!(err.to_string(), "Task was cancelled");
+
+        let err: Box<dyn std::error::Error> = Box::new(JoinError::TaskPanic);
+        assert_eq!(err.to_string(), "Task panicked");
+    }
+
+    #[test]
+    fn test_block_on_free_function() {
+        let result = block_on(async { 42i32 });
+        assert_eq!(result, 42);
+    }
+
+    #[test]
+    fn test_block_on_free_function_string() {
+        let result = block_on(async { String::from("nexus") });
+        assert_eq!(result, "nexus");
+    }
+
+    #[test]
+    fn test_block_on_free_function_unit() {
+        block_on(async { });
+    }
+
+    #[test]
+    fn test_block_on_free_function_complex() {
+        let result = block_on(async {
+            let a = 10;
+            let b = 20;
+            a + b
+        });
+        assert_eq!(result, 30);
+    }
+
+    #[test]
+    fn test_task_id_uniqueness() {
+        use std::collections::HashSet;
+        let ids: HashSet<_> = (0..100).map(|_| gen_task_id()).collect();
+        assert_eq!(ids.len(), 100, "all generated task IDs should be unique");
+    }
+
+    #[test]
+    fn test_task_state_is_finished() {
+        assert!(TaskState::Completed.is_finished());
+        assert!(TaskState::Cancelled.is_finished());
+        assert!(TaskState::Panicked.is_finished());
+        assert!(!TaskState::Running.is_finished());
+        assert!(!TaskState::Waiting.is_finished());
+    }
+
+    #[test]
+    fn test_task_state_from_u8_roundtrip() {
+        let states = [TaskState::Running, TaskState::Waiting, TaskState::Completed, TaskState::Cancelled, TaskState::Panicked];
+        for state in states {
+            let byte = state as u8;
+            let parsed = TaskState::from_u8(byte);
+            assert!(parsed == Some(state));
+        }
+        assert!(TaskState::from_u8(255).is_none());
     }
 }

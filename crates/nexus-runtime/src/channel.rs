@@ -406,7 +406,7 @@ mod tests {
 
     #[test]
     fn test_sync_send() {
-        let (tx, rx) = unbounded::<i32>();
+        let (tx, mut rx) = unbounded::<i32>();
 
         assert!(tx.send(42).is_ok());
         assert!(tx.send(100).is_ok());
@@ -414,16 +414,20 @@ mod tests {
         assert_eq!(rx.len(), 2);
         assert!(!rx.is_empty());
 
-        // Note: try_recv won't work well in sync tests without async
-        // 注意：在没有异步的同步测试中，try_recv效果不佳
+        // Verify received data and order
+        assert_eq!(rx.try_recv().unwrap(), 42);
+        assert_eq!(rx.try_recv().unwrap(), 100);
+        assert_eq!(rx.try_recv(), Err(RecvError::Closed));
     }
 
     #[test]
-    fn test_send_error() {
-        let (_tx, _rx) = unbounded::<i32>();
-        let err = SendError::Closed(42);
+    fn test_send_after_receiver_drop() {
+        let (tx, rx) = unbounded::<i32>();
+        drop(rx);
+        assert!(tx.is_closed());
 
-        assert!(matches!(err, SendError::Closed(_)));
+        let err = tx.send(42).unwrap_err();
+        assert!(matches!(err, SendError::Closed(42)));
         assert_eq!(err.to_string(), "Channel closed");
     }
 
@@ -432,5 +436,41 @@ mod tests {
         let err = RecvError::Closed;
 
         assert_eq!(err.to_string(), "Channel closed");
+    }
+
+    #[test]
+    fn test_unbounded_send_recv_order() {
+        let (tx, mut rx) = unbounded::<String>();
+        for i in 0..10 {
+            tx.send(format!("msg-{i}")).unwrap();
+        }
+        for i in 0..10 {
+            assert_eq!(rx.try_recv().unwrap(), format!("msg-{i}"));
+        }
+    }
+
+    #[test]
+    fn test_bounded_channel_full() {
+        let (tx, rx) = bounded::<i32>(2);
+        assert!(tx.send(1).is_ok());
+        assert!(tx.send(2).is_ok());
+        // Third send should still succeed (unbounded buffer semantics via VecDeque)
+        assert!(tx.send(3).is_ok());
+        assert_eq!(rx.len(), 3);
+    }
+
+    #[test]
+    fn test_close_after_all_senders_drop() {
+        let (tx, mut rx) = unbounded::<i32>();
+        let tx2 = tx.clone();
+        tx.send(1).unwrap();
+        drop(tx);
+        // tx2 still alive, channel should not be closed
+        assert!(!tx2.is_closed());
+        tx2.send(2).unwrap();
+        drop(tx2);
+        // All senders dropped, channel closed
+        assert_eq!(rx.try_recv().unwrap(), 1);
+        assert_eq!(rx.try_recv().unwrap(), 2);
     }
 }
