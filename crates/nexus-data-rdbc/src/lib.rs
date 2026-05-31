@@ -15,14 +15,11 @@ pub mod connection;
 pub mod transaction;
 pub mod client;
 pub mod pool;
-pub mod repository;
-pub mod extractor;
-pub mod executor;
 
 #[cfg(feature = "tx-bridge")]
 pub mod tx_bridge;
-pub mod mapper;
-pub mod query_runtime;
+pub mod executor;
+pub mod sql_builder;
 
 // Error types
 pub use error::{Error, Result, R2dbcError, R2dbcResult};
@@ -34,7 +31,9 @@ pub use config::{DatabaseConfig, MySqlConfig, PostgresConfig, SqliteConfig, SslM
 pub use row::{Column, ColumnType, ColumnValue, FromRowValue, Row};
 
 // Connection types
-pub use connection::{Connection, PoolConfig};
+#[allow(deprecated)]
+pub use connection::Connection;
+pub use connection::PoolConfig;
 
 // Transaction types
 pub use transaction::{IsolationLevel, Transaction, TransactionManager};
@@ -49,20 +48,8 @@ pub use pool::MySqlPoolClient;
 #[cfg(any(feature = "sqlite", feature = "all"))]
 pub use pool::SqlitePoolClient;
 
-// Repository types
-pub use repository::{R2dbcRepository, SqlxRepository};
-
-// Extractor types
-pub use extractor::{ResultSetExtractor, RowMapper, Rows, row_mapper};
-
 // Executor types
 pub use executor::QueryExecutor;
-
-// Mapper types
-pub use mapper::{BaseMapper, R2dbcBaseRepository, R2dbcCrudRepository};
-
-// Query runtime types
-pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType};
 
 /// Database type enum
 /// 数据库类型枚举
@@ -84,9 +71,9 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// Commonly used types re-exported for convenience
 pub mod prelude {
     pub use super::{
-        BaseMapper, DatabaseClient, DatabaseConfig, Error, IsolationLevel, MySqlConfig,
-        PgPoolClient, PostgresConfig, QueryExecutor, R2dbcRepository, Result, ResultSetExtractor,
-        Row, RowMapper, Rows, SqliteConfig, SqlxPoolClient, SqlxRepository,
+        DatabaseClient, DatabaseConfig, Error, IsolationLevel, MySqlConfig,
+        PgPoolClient, PostgresConfig, QueryExecutor, Result,
+        Row, SqliteConfig, SqlxPoolClient,
         Transaction, TransactionManager,
     };
     #[cfg(any(feature = "mysql", feature = "all"))]

@@ -180,6 +180,25 @@ impl From<DataError> for OrmError {
     }
 }
 
+impl From<nexus_data_rdbc::R2dbcError> for OrmError {
+    /// Convert R2DBC errors into ORM errors with semantic mapping.
+    /// 将 R2DBC 错误语义映射转换为 ORM 错误。
+    fn from(err: nexus_data_rdbc::R2dbcError) -> Self {
+        match err {
+            nexus_data_rdbc::R2dbcError::Sql(msg) => Self::QueryBuild(msg),
+            nexus_data_rdbc::R2dbcError::Connection(msg) => Self::Database(msg.into()),
+            nexus_data_rdbc::R2dbcError::Pool(msg) => Self::Database(msg.into()),
+            nexus_data_rdbc::R2dbcError::RowMapping(msg) => Self::Validation(msg),
+            nexus_data_rdbc::R2dbcError::Deserialization(msg) => Self::Validation(msg),
+            nexus_data_rdbc::R2dbcError::Timeout(msg) => Self::Unknown(msg),
+            nexus_data_rdbc::R2dbcError::Transaction(msg) => Self::Unknown(msg),
+            nexus_data_rdbc::R2dbcError::DataCommons(de) => Self::DataCommons(de),
+            nexus_data_rdbc::R2dbcError::Sqlx(e) => Self::Database(e),
+            nexus_data_rdbc::R2dbcError::Unknown(msg) => Self::Unknown(msg),
+        }
+    }
+}
+
 /// Result type for ORM operations
 /// ORM 操作的 Result 类型
 pub type OrmResult<T> = std::result::Result<T, OrmError>;
@@ -216,5 +235,20 @@ mod tests {
 
         let err = OrmError::not_found("User 123");
         assert_eq!(err.to_string(), "Not found: User 123");
+    }
+
+    #[test]
+    fn test_from_r2dbc_error() {
+        let r2dbc_err = nexus_data_rdbc::R2dbcError::Sql("syntax error".into());
+        let orm_err: OrmError = r2dbc_err.into();
+        assert_eq!(orm_err.category(), "query_build");
+
+        let r2dbc_err = nexus_data_rdbc::R2dbcError::RowMapping("bad row".into());
+        let orm_err: OrmError = r2dbc_err.into();
+        assert_eq!(orm_err.category(), "validation");
+
+        let r2dbc_err = nexus_data_rdbc::R2dbcError::Unknown("oops".into());
+        let orm_err: OrmError = r2dbc_err.into();
+        assert_eq!(orm_err.category(), "unknown");
     }
 }

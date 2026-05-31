@@ -64,11 +64,11 @@ pub mod active_record;
 pub mod query;
 pub mod example;
 pub mod specification;
-pub mod repository;
 pub mod relationships;
 pub mod migrations;
-pub mod connection;
+pub mod mock_connection;
 pub mod projection;
+pub mod query_runtime;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
 #[cfg(feature = "diesel")]
@@ -85,10 +85,10 @@ pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count, OptimisticLo
 pub use query::{QueryBuilder, WhereClause, OrderBy, Limit};
 pub use nexus_data_commons::ToSql;
 pub use nexus_data_rdbc::QueryParam;
-pub use repository::{OrmRepository, DefaultOrmRepository};
 pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, WithRelations, EagerQueryBuilder, Relation, RelationType, OnDelete};
 pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
-pub use connection::Connection;
+pub use mock_connection::Connection;
+pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType};
 
 /// Version of the data-orm module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -100,7 +100,7 @@ pub mod prelude {
         Error, Result,
         Model, ActiveRecord, Save, Delete, Refresh,
         QueryBuilder, WhereClause,
-        OrmRepository, DefaultOrmRepository,
+        AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType,
     };
 
     #[cfg(feature = "diesel")]

@@ -7,124 +7,22 @@
 //! 本模块提供数据库连接池和管理。
 
 #![allow(dead_code)] // pub(crate) scaffolding items for future use; 内部脚手架，后续使用
+#![allow(deprecated)] // This module contains deprecated types still used by downstream crates
 
 use crate::row::Row;
 use crate::{DatabaseType, R2dbcError, R2dbcResult};
 use std::sync::Arc;
-use std::time::Duration;
 
-/// Connection pool configuration
-/// 连接池配置
-///
-/// Configuration options for the database connection pool.
-/// 数据库连接池的配置选项。
-///
-/// # Example / 示例
-///
-/// ```rust,no_run,ignore
-/// use nexus_data_rdbc::PoolConfig;
-///
-/// let config = PoolConfig::new()
-///     .with_max_size(20)
-///     .with_min_idle(5)
-///     .with_connection_timeout(Duration::from_secs(30))
-///     .with_idle_timeout(Duration::from_secs(600));
-/// ```
-#[derive(Debug, Clone)]
-pub struct PoolConfig {
-    /// Maximum number of connections in the pool
-    /// 连接池中的最大连接数
-    pub max_size: u32,
-
-    /// Minimum number of idle connections to maintain
-    /// 要维护的最小空闲连接数
-    pub min_idle: u32,
-
-    /// Connection timeout
-    /// 连接超时
-    pub connection_timeout: Duration,
-
-    /// Idle timeout for connections
-    /// 连接的空闲超时
-    pub idle_timeout: Duration,
-
-    /// Maximum lifetime of a connection
-    /// 连接的最大生命周期
-    pub max_lifetime: Option<Duration>,
-
-    /// Whether to test connections on checkout
-    /// 是否在检出时测试连接
-    pub test_on_checkout: bool,
-}
-
-impl Default for PoolConfig {
-    fn default() -> Self {
-        Self {
-            max_size: 10,
-            min_idle: 1,
-            connection_timeout: Duration::from_secs(30),
-            idle_timeout: Duration::from_secs(600), // 10 minutes
-            max_lifetime: Some(Duration::from_secs(1800)), // 30 minutes
-            test_on_checkout: true,
-        }
-    }
-}
-
-impl PoolConfig {
-    /// Create a new pool configuration with defaults
-    /// 使用默认值创建新的连接池配置
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Set the maximum pool size
-    /// 设置最大连接池大小
-    pub fn with_max_size(mut self, size: u32) -> Self {
-        self.max_size = size;
-        self
-    }
-
-    /// Set the minimum idle connections
-    /// 设置最小空闲连接数
-    pub fn with_min_idle(mut self, min: u32) -> Self {
-        self.min_idle = min;
-        self
-    }
-
-    /// Set the connection timeout
-    /// 设置连接超时
-    pub fn with_connection_timeout(mut self, timeout: Duration) -> Self {
-        self.connection_timeout = timeout;
-        self
-    }
-
-    /// Set the idle timeout
-    /// 设置空闲超时
-    pub fn with_idle_timeout(mut self, timeout: Duration) -> Self {
-        self.idle_timeout = timeout;
-        self
-    }
-
-    /// Set the maximum connection lifetime
-    /// 设置最大连接生命周期
-    pub fn with_max_lifetime(mut self, lifetime: Duration) -> Self {
-        self.max_lifetime = Some(lifetime);
-        self
-    }
-
-    /// Set whether to test connections on checkout
-    /// 设置是否在检出时测试连接
-    pub fn with_test_on_checkout(mut self, test: bool) -> Self {
-        self.test_on_checkout = test;
-        self
-    }
-}
+// Re-export PoolConfig from config.rs for backward compatibility
+// 从 config.rs 重新导出 PoolConfig 以保持向后兼容
+pub use crate::config::PoolConfig;
 
 /// Database connection
 /// 数据库连接
 ///
 /// Represents a single database connection.
 /// 表示单个数据库连接。
+#[deprecated(since = "0.9.0", note = "Use DatabaseClient implementations (SqlxPoolClient) directly. Connection will be removed in a future release.")]
 pub struct Connection {
     inner: Arc<dyn ConnectionInner>,
     database_type: DatabaseType,
@@ -241,6 +139,7 @@ impl Connection {
 /// let conn = pool.acquire().await?;
 /// ```
 #[derive(Clone)]
+#[deprecated(since = "0.9.0", note = "Use SqlxPoolClient for real pool functionality. ConnectionPool will be removed in a future release.")]
 pub struct ConnectionPool {
     inner: Arc<dyn PoolInner>,
     database_type: DatabaseType,

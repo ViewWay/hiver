@@ -15,10 +15,8 @@
 //! - Query execution with type safety
 //!   类型安全的查询执行
 
-use crate::{
-    client::{DatabaseClient, QueryParam},
-    error::{R2dbcError, R2dbcResult},
-};
+use nexus_data_rdbc::{DatabaseClient, QueryParam};
+use nexus_data_rdbc::{Error as R2dbcError, Result as R2dbcResult};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -109,7 +107,6 @@ impl QueryMetadata {
         } else if sql_upper.starts_with("DELETE") {
             QueryType::Delete
         } else {
-            // Default to SELECT for unknown queries
             QueryType::Select
         }
     }
@@ -119,16 +116,12 @@ impl QueryMetadata {
     fn extract_param_names(sql: &str, style: ParamStyle) -> Vec<String> {
         match style {
             ParamStyle::Named => {
-                // Extract :param style
-                // 提取 :param 样式
                 let mut params = Vec::new();
                 let mut chars = sql.chars().peekable();
                 let mut current_param = String::new();
 
                 while let Some(c) = chars.next() {
                     if c == ':' {
-                        // Start of parameter
-                        // 参数开始
                         while let Some(&next_c) = chars.peek() {
                             if next_c.is_alphanumeric() || next_c == '_' {
                                 current_param.push(chars.next().unwrap());
@@ -146,8 +139,6 @@ impl QueryMetadata {
                 params
             },
             ParamStyle::MyBatis => {
-                // Extract #{param} style
-                // 提取 #{param} 样式
                 let mut params = Vec::new();
                 let mut chars = sql.chars().peekable();
                 let mut in_param = false;
@@ -173,8 +164,6 @@ impl QueryMetadata {
                 params
             },
             ParamStyle::Positional => {
-                // Extract $1, $2 style parameters
-                // 提取 $1, $2 样式参数
                 let mut params = Vec::new();
                 let mut chars = sql.chars().peekable();
                 let mut current_num = String::new();
@@ -193,8 +182,6 @@ impl QueryMetadata {
                         if !current_num.is_empty() {
                             let param_num: usize = current_num.parse().unwrap_or(1);
                             let index = param_num.saturating_sub(1);
-                            // Ensure vector is large enough
-                            // 确保向量足够大
                             if params.len() <= index {
                                 params.resize(index + 1, format!("param{}", index + 1));
                             }
@@ -206,8 +193,6 @@ impl QueryMetadata {
                 params
             },
             ParamStyle::QuestionMark => {
-                // Count ? placeholders
-                // 统计 ? 占位符
                 let count = sql.matches('?').count();
                 (0..count).map(|i| format!("param{}", i + 1)).collect()
             },
@@ -216,21 +201,6 @@ impl QueryMetadata {
 
     /// Bind parameters to the query
     /// 绑定参数到查询
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let metadata = QueryMetadata::new(
-    ///     "SELECT * FROM users WHERE id = :id AND name = :name",
-    ///     ParamStyle::Named
-    /// );
-    ///
-    /// let mut params = HashMap::new();
-    /// params.insert("id".to_string(), serde_json::json!(1));
-    /// params.insert("name".to_string(), serde_json::json!("Alice"));
-    ///
-    /// let (sql, values) = metadata.bind_params(&params)?;
-    /// ```
     pub fn bind_params(
         &self,
         params: &HashMap<String, serde_json::Value>,
@@ -337,24 +307,6 @@ where
 
     /// Execute a query and return a single result
     /// 执行查询并返回单个结果
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// use nexus_data_rdbc::query_runtime::{AnnotatedQueryExecutor, QueryMetadata, ParamStyle};
-    ///
-    /// let executor = AnnotatedQueryExecutor::new(db_executor);
-    ///
-    /// let metadata = QueryMetadata::new(
-    ///     "SELECT * FROM users WHERE id = :id",
-    ///     ParamStyle::Named
-    /// );
-    ///
-    /// let mut params = HashMap::new();
-    /// params.insert("id".to_string(), serde_json::json!(1));
-    ///
-    /// let user: Option<User> = executor.fetch_one(&metadata, &params).await?;
-    /// ```
     pub async fn fetch_one<T>(
         &self,
         metadata: &QueryMetadata,
@@ -376,20 +328,6 @@ where
 
     /// Execute a query and return all results
     /// 执行查询并返回所有结果
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let metadata = QueryMetadata::new(
-    ///     "SELECT * FROM users WHERE age > :min_age",
-    ///     ParamStyle::Named
-    /// );
-    ///
-    /// let mut params = HashMap::new();
-    /// params.insert("min_age".to_string(), serde_json::json!(18));
-    ///
-    /// let users: Vec<User> = executor.fetch_all(&metadata, &params).await?;
-    /// ```
     pub async fn fetch_all<T>(
         &self,
         metadata: &QueryMetadata,
@@ -410,21 +348,6 @@ where
 
     /// Execute an INSERT/UPDATE/DELETE query
     /// 执行 INSERT/UPDATE/DELETE 查询
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// let metadata = QueryMetadata::new(
-    ///     "UPDATE users SET email = :email WHERE id = :id",
-    ///     ParamStyle::Named
-    /// );
-    ///
-    /// let mut params = HashMap::new();
-    /// params.insert("email".to_string(), serde_json::json!("new@example.com"));
-    /// params.insert("id".to_string(), serde_json::json!(1));
-    ///
-    /// let affected = executor.execute(&metadata, &params).await?;
-    /// ```
     pub async fn execute(
         &self,
         metadata: &QueryMetadata,

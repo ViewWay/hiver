@@ -4,7 +4,7 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        connection::Connection,
+        mock_connection::Connection,
         query::QueryBuilder,
         ColumnType as OrmColumnType, Model, ModelMeta,
     };
