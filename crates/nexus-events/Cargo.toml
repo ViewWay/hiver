@@ -42,7 +42,7 @@ chrono = { workspace = true }
 uuid = { workspace = true, features = ["v4", "serde"] }
 
 # Utilities / 工具
-dashmap = "6.1"
+dashmap = "6.2"
 
 # Tracing / 追踪
 tracing = { workspace = true }
