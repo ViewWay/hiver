@@ -2,7 +2,7 @@
 
 **Generated**: 2026-05-13
 **Version**: 0.1.0-alpha
-**Total Crates**: 59 | **Total Lines**: ~181k
+**Total Crates**: 62 | **Total Lines**: ~181k
 
 ---
 
@@ -45,13 +45,14 @@
    ├──────────────────┤  ├───────────────────────┤  ├──────────────────────┤
    │ nexus-runtime    │  │ nexus-cloud           │  │ nexus-test           │
    │ nexus-core       │  │ nexus-web3            │  │ nexus-shell          │
-   │ nexus-macros     │  │ nexus-vault           │  │ nexus-lombok         │
-   │ nexus-lombok     │  │ nexus-grpc            │  │ nexus-benches        │
-   │ nexus-batch      │  │ nexus-ai              │  │ nexus-flyway         │
-   │ nexus-async      │  │ nexus-ldap            │  │                      │
-   │ nexus-schedule   │  │ nexus-graphql         │  │                      │
-   │ nexus-state-mach.│  │ nexus-ws (SOAP)       │  │                      │
-   │ nexus-retry      │  │ nexus-i18n            │  │                      │
+   │ nexus-macros     │  │ nexus-vault           │  │ nexus-shell-macros   │
+   │ nexus-lombok     │  │ nexus-grpc            │  │ nexus-lombok         │
+   │ nexus-batch      │  │ nexus-ai              │  │ nexus-benches        │
+   │ nexus-async      │  │ nexus-agent           │  │ nexus-flyway         │
+   │ nexus-schedule   │  │ nexus-ldap            │  │ nexus-spel           │
+   │ nexus-state-mach.│  │ nexus-graphql         │  │                      │
+   │ nexus-retry      │  │ nexus-ws (SOAP)       │  │                      │
+   │ nexus-modulith   │  │ nexus-i18n            │  │                      │
    └──────────────────┘  └───────────────────────┘  └──────────────────────┘
 ```
 

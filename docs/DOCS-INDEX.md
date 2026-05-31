@@ -175,11 +175,11 @@ This index provides a structured overview of all Nexus documentation.
 ### Completion Metrics / 完成度指标
 
 ```
-Overall Completion: 40%
-总体完成度：40%
+Overall Completion: 45%
+总体完成度：45%
 
 ├─ Web Layer:          ████████████████████████░░░░  85%  ✅
-├─ Data Layer:         ████████░░░░░░░░░░░░░░░░░░░░  33%  ⚠️ (8.1 commons ✅, 8.2 rdbc ✅, 8.3 orm WIP)
+├─ Data Layer:         ██████████████░░░░░░░░░░░░░░  55%  ⚠️ (8.1 commons ✅, 8.2 rdbc ✅, 8.3 orm ✅, refactoring WIP)
 ├─ Security Layer:     ████████████░░░░░░░░░░░░░░░░  40%  ⚠️
 ├─ Cache Layer:        ████████░░░░░░░░░░░░░░░░░░░░  30%  ⚠️
 ├─ Messaging:          █░░░░░░░░░░░░░░░░░░░░░░░░░░░█   0%  ❌
@@ -192,7 +192,7 @@ Overall Completion: 40%
 
 | Milestone / 里程碑 | Target / 目标 | Date / 日期 | Completion / 完成度 |
 |------------------|-------------|-----------|-------------------|
-| **Current / 当前** | Phase 7: Web3 Complete | Month 0 | 35% |
+| **Current / 当前** | Phase 8: Data Layer (in progress) | Month 0 | 45% |
 | **MVP / 最小可行** | Phase 8-9: Data + Framework | Month 6 | **70%** ✅ Production-ready |
 | **Full Featured / 功能完整** | Phase 10-11: Security + Messaging | Month 12 | **85%** ✅ Spring Boot parity |
 | **Enterprise / 企业级** | Phase 12+: Advanced features | Month 18+ | **95%+** ✅ Superior |
@@ -322,7 +322,7 @@ Content in English / 英文内容
 
 ---
 
-**Last Updated / 最后更新**: 2026-05-30
+**Last Updated / 最后更新**: 2026-05-31
 **Document Count / 文档数量**: 12 major documents / 12 个主要文档
 **Total Pages / 总页数**: ~500+ pages / ~500+ 页
 **Status / 状态**: 🚧 Actively maintained / 积极维护中

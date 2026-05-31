@@ -492,23 +492,28 @@ Nexus is designed for high performance from the ground up:
 
 ## 🏗️ Architecture
 
-**59 crates** across 10 functional domains. See [CODEMAP.md](docs/CODEMAP.md) for the full reference.
+**62 crates** across 10 functional domains. See [CODEMAP.md](docs/CODEMAP.md) for the full reference.
 
 ```
 nexus-starter (Spring Boot auto-configuration)
     │
     ├── Web:      nexus-http, nexus-router, nexus-extractors, nexus-middleware,
-    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi
+    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi, nexus-graphql
     ├── Data:     nexus-data-commons, nexus-data-rdbc, nexus-data-orm, nexus-data-redis,
-    │             nexus-data-mongodb, nexus-data-annotations, nexus-flyway
+    │             nexus-data-mongodb, nexus-data-annotations, nexus-data-macros, nexus-flyway
     ├── Security: nexus-security, nexus-session
     ├── AOP:      nexus-aop, nexus-tx
-    ├── Messaging:nexus-events, nexus-kafka, nexus-amqp, nexus-integration, nexus-websocket-stomp
-    ├── Infra:    nexus-runtime, nexus-core, nexus-macros, nexus-lombok
-    ├── Cloud:    nexus-cloud, nexus-ai, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
-    ├── Resilience:nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator
-    ├── Enterprise:nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws, nexus-i18n
-    └── Tooling:  nexus-test, nexus-shell, nexus-benches, nexus-validation, nexus-cache
+    ├── Messaging:nexus-events, nexus-events-macros, nexus-kafka, nexus-amqp,
+    │             nexus-integration, nexus-websocket-stomp
+    ├── Infra:    nexus-runtime, nexus-core, nexus-macros, nexus-lombok, nexus-config,
+    │             nexus-exceptions, nexus-spel
+    ├── Cloud:    nexus-cloud, nexus-ai, nexus-agent, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
+    ├── Resilience:nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator,
+    │             nexus-retry, nexus-retry-macros
+    ├── Enterprise:nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws,
+    │             nexus-i18n, nexus-modulith
+    └── Tooling:  nexus-test, nexus-shell, nexus-shell-macros, nexus-benches, nexus-validation,
+                  nexus-validation-annotations, nexus-cache
 ```
 
 ## 🛠️ Development
@@ -538,7 +543,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha Version**
 >
-> Nexus is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **58 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
+> Nexus is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **62 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
 
 | Phase | Status | Description |
 |-------|--------|-------------|
@@ -550,7 +555,7 @@ cargo clippy --workspace -- -D warnings
 | Phase 5 | ✅ Complete | Observability |
 | Phase 6 | ✅ Complete | Web3 Integration |
 | Phase 7 | ✅ Complete | Performance & Hardening |
-| Phase 8 | 🔄 In Progress | Data Layer (R2DBC, ORM, Redis, MongoDB, Flyway) |
+| Phase 8 | 🔄 In Progress | Data Layer (R2DBC, ORM, Redis, MongoDB, Flyway) — 8.1–8.3 core modules complete, structural refactoring ongoing |
 
 See [implementation plan](docs/design/implementation-plan.md) for details.
 
