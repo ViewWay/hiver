@@ -3,8 +3,8 @@
 ## Version / 版本
 
 **Version**: 0.1.0-alpha
-**Date**: 2026-01-23
-**Status**: Draft / 草稿
+**Date**: 2026-05-31
+**Status**: Active (Phases 0-7 Complete, Phase 8 In Progress) / 活跃（阶段 0-7 完成，阶段 8 进行中）
 
 ---
 
