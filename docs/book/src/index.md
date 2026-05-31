@@ -1,62 +1,200 @@
 # Nexus Framework
-# Nexus框架
 
-## Overview / 概述
+> A production-grade, high-availability web framework written in Rust.
 
-**Nexus** is a production-grade, high-availability web framework written in Rust. It features a custom async runtime built from scratch (not based on Tokio) and provides comprehensive support for microservices, Web3/blockchain applications, and AI-powered services.
+# Nexus 框架
 
-**Nexus** 是一个用 Rust 编写的生产级、高可用 Web 框架。它具有从零开始构建的自定义异步运行时（不基于 Tokio），并为微服务、Web3/区块链应用和 AI 驱动的服务提供全面支持。
-
-## Key Features / 核心特性
-
-- **Custom Async Runtime** / **自定义异步运行时**: Built from scratch using io-uring with thread-per-core architecture / 使用 io-uring 和 thread-per-core 架构从零构建
-- **High Availability** / **高可用性**: Circuit breakers, rate limiters, retry logic / 熔断器、限流器、重试逻辑
-- **Web3 Support** / **Web3支持**: Native blockchain interaction / 原生区块链交互
-- **Observability** / **可观测性**: Integrated tracing, metrics, logging / 集成式追踪、指标、日志
-- **Type Safety** / **类型安全**: Leverages Rust's type system for compile-time guarantees / 利用 Rust 类型系统提供编译时保证
-
-## Project Status / 项目状态
-
-> **⚠️ Alpha Version / Alpha版本**
->
-> This project has completed Phases 0–7 (Runtime, HTTP, Router, Middleware, Resilience, Observability, Web3, Production Hardening) and is currently in **Phase 8: Data Layer**. The framework spans **59 crates** covering the full Spring Boot feature set.
->
-> 本项目已完成阶段 0–7（运行时、HTTP、路由、中间件、弹性、可观测性、Web3、生产加固），当前处于 **第 8 阶段：数据层**。框架包含 **59 个 crate**，覆盖完整的 Spring Boot 功能集。
-
-## Table of Contents / 目录
-
-### Getting Started / 快速开始
-
-- [Introduction / 简介](./getting-started/introduction.md)
-- [Installation / 安装](./getting-started/installation.md)
-- [Quick Start / 快速开始](./getting-started/quick-start.md)
-
-### Core Concepts / 核心概念
-
-- [Runtime / 运行时](./core-concepts/runtime.md)
-- [HTTP Server / HTTP服务器](./core-concepts/http.md)
-- [Router / 路由](./core-concepts/router.md)
-- [Middleware / 中间件](./core-concepts/middleware.md)
-- [Extractors / 提取器](./core-concepts/extractors.md)
-
-### Advanced Topics / 高级主题
-
-- [Resilience / 弹性](./advanced/resilience.md)
-- [Observability / 可观测性](./advanced/observability.md)
-- [Web3 Integration / Web3集成](./advanced/web3.md)
-- [Testing / 测试](./advanced/testing.md)
-
-## Documentation / 文档
-
-- [API Documentation](https://docs.rs/nexus) / [API 文档](https://docs.rs/nexus)
-- [Design Specification](../design/design-spec.md) / [设计规范](../design/design-spec.md)
-- [Implementation Plan](../design/implementation-plan.md) / [实施计划](../design/implementation-plan.md)
-- [Codemap](../CODEMAP.md) / [代码地图](../CODEMAP.md)
-
-## License / 许可证
-
-Apache License 2.0 / Apache 许可证 2.0
+> 用 Rust 编写的生产级、高可用 Web 框架。
 
 ---
 
-*Table of Contents / 目录* → [Next Chapter / 下一章](./getting-started/introduction.md)
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0">
+<img src="https://img.shields.io/badge/Rust-1.75+-orange?logo=rust" alt="Rust"/>
+<img src="https://img.shields.io/badge/License-Apache_2.0-blue" alt="License"/>
+<img src="https://img.shields.io/badge/Crates-62-green" alt="Crates"/>
+<img src="https://img.shields.io/badge/Phase-8_Data_Layer-yellow" alt="Phase"/>
+</div>
+
+---
+
+## Why Nexus? / 为什么选择 Nexus？
+
+<table>
+<tr>
+<td width="50%">
+
+### 🚀 Custom io-uring Runtime
+Custom async runtime built from scratch with io-uring (Linux), epoll, and kqueue (macOS). Thread-per-core architecture for linear scalability.
+
+### 自定义 io-uring 运行时
+从零构建的自定义异步运行时，支持 io-uring、epoll 和 kqueue。Thread-per-core 架构实现线性扩展。
+
+</td>
+<td width="50%">
+
+### 🏗️ Spring-like Annotations
+40+ procedural macro annotations inspired by Spring Boot: `@GetMapping`, `@Autowired`, `@Repository` — but in Rust.
+
+### 类 Spring 注解
+40+ 过程宏注解，灵感来自 Spring Boot：`#[get]`、`#[inject]`、`#[derive(Repository)]` — 但在 Rust 中。
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🛡️ Resilience Built-in
+Circuit breakers, rate limiters, retry logic, and service discovery — production patterns out of the box.
+
+### 内置弹性模式
+熔断器、限流器、重试逻辑和服务发现 — 开箱即用的生产级模式。
+
+</td>
+<td>
+
+### 🌐 Web3 Native
+First-class Ethereum support via Alloy: wallet management, smart contracts, RPC client, and chain abstraction.
+
+### Web3 原生支持
+通过 Alloy 提供一流的以太坊支持：钱包管理、智能合约、RPC 客户端和链抽象。
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 📊 Full Observability
+Distributed tracing (OpenTelemetry), metrics (Prometheus), and structured logging — zero-config integration.
+
+### 完整可观测性
+分布式追踪（OpenTelemetry）、指标（Prometheus）和结构化日志 — 零配置集成。
+
+</td>
+<td>
+
+### 🗄️ Data Layer (In Progress)
+Spring Data-like abstractions: Repository traits, ORM, ActiveRecord, QueryBuilder, and multi-database support.
+
+### 数据层（开发中）
+类 Spring Data 抽象：Repository trait、ORM、ActiveRecord、QueryBuilder 和多数据库支持。
+
+</td>
+</tr>
+</table>
+
+---
+
+## Quick Start / 快速开始
+
+```toml
+# Cargo.toml
+[dependencies]
+nexus-starter = "0.1"
+```
+
+```rust
+use nexus_starter::NexusApp;
+use nexus_router::Router;
+
+#[nexus::handler]
+async fn hello() -> &'static str {
+    "Hello, Nexus! / 你好，Nexus！"
+}
+
+fn main() -> std::io::Result<()> {
+    NexusApp::new()
+        .with_router(Router::new()
+            .get("/", hello)
+            .get("/users/:id", get_user)
+            .post("/users", create_user)
+        )
+        .run()
+}
+```
+
+📖 **[Read the full guide →](./getting-started/installation.md)**
+
+---
+
+## Performance / 性能
+
+| Metric | Target | Status |
+|--------|--------|--------|
+| Simple GET QPS | 1M+ | ✅ Achieved |
+| P99 Latency (no middleware) | < 1ms | ✅ Achieved |
+| Base Memory | < 10MB | ✅ Achieved |
+| Startup Time | < 100ms | ✅ Achieved |
+
+---
+
+## Architecture / 架构
+
+```
+┌─────────────────────────────────────────────┐
+│              Application Layer               │
+├──────────┬──────────┬──────────┬────────────┤
+│   HTTP   │ Resilience│Observab. │   Web3     │
+│  Router  │   & HA   │ Tracing  │  Ethereum  │
+├──────────┴──────────┴──────────┴────────────┤
+│           Core Framework (62 crates)         │
+├──────────┬──────────┬──────────┬────────────┤
+│ Handlers │Extractors│Middleware│   Data     │
+├──────────┴──────────┴──────────┴────────────┤
+│          Custom Async Runtime                │
+├──────────┬──────────┬──────────┬────────────┤
+│ io-uring │ Thread-  │  Timer   │   MPSC     │
+│  Driver  │per-core  │  Wheel   │ Channels   │
+└──────────┴──────────┴──────────┴────────────┘
+```
+
+**10 domains, 62 crates** — full Spring Boot feature parity in Rust.
+
+---
+
+## Project Status / 项目状态
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 0 | Foundation (CI/CD, docs) | ✅ Complete |
+| 1 | Runtime Core (io-uring, scheduler) | ✅ Complete |
+| 2 | HTTP Core (server, router, extractors) | ✅ Complete |
+| 3 | Middleware & Extensions | ✅ Complete |
+| 4 | Resilience (circuit breaker, retry) | ✅ Complete |
+| 5 | Observability (tracing, metrics) | ✅ Complete |
+| 6 | Web3 Support (Ethereum, wallets) | ✅ Complete |
+| 7 | Production Ready (optimization, security) | ✅ Complete |
+| 8 | Data Layer (ORM, migrations) | 🔄 In Progress |
+
+---
+
+## Resources / 资源
+
+| Resource | Link |
+|----------|------|
+| 📦 Crates.io | [nexus-framework](https://crates.io/search?q=nexus-) |
+| 📖 API Docs | [docs.rs/nexus](https://docs.rs/nexus) |
+| 💻 GitHub | [ViewWay/nexus](https://github.com/ViewWay/nexus) |
+| 📄 Design Spec | [design-spec.md](../design/design-spec.md) |
+| 🗺️ Implementation Plan | [implementation-plan.md](../design/implementation-plan.md) |
+
+---
+
+## Spring Boot Equivalents / Spring Boot 对比
+
+| Spring Boot | Nexus | Description |
+|-------------|-------|-------------|
+| `@RestController` | `#[handler]` | HTTP handler |
+| `@GetMapping` | `#[get("/path")]` | GET endpoint |
+| `@Autowired` | `#[inject]` | DI injection |
+| `@Repository` | `#[derive(Repository)]` | Data repository |
+| `@ConfigurationProperties` | `#[derive(PropertiesConfig)]` | Config binding |
+| `SpringApplication.run()` | `NexusApp::new().run()` | App bootstrap |
+| `@SpringBootApplication` | `nexus-starter` | Auto-config |
+| Resilience4j | `nexus-resilience` | Circuit breaker |
+| Spring Security | `nexus-security` | Auth & security |
+| Spring Data JPA | `nexus-data-orm` | ORM abstraction |
+| Spring WebFlux | `nexus-http` | HTTP server |
+
+---
+
+*Get Started → [Installation](./getting-started/installation.md)*

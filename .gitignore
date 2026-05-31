@@ -31,4 +31,4 @@ examples/**/pnpm-lock.yaml
 .env.*
 !.env.example
 .cache/*
-.claude/*
+.claude/*docs/book/book/

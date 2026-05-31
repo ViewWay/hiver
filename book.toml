@@ -6,8 +6,8 @@
 [book]
 title = "Nexus Framework Guide / Nexus框架指南"
 authors = ["Nexus Team"]
+description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-like annotations, and comprehensive feature set."
 language = "zh-CN"
-multilingual = true
 src = "docs/book/src"
 
 [build]
@@ -30,8 +30,10 @@ command = "mdbook-mermaid"
 default-theme = "light"
 preferred-dark-theme = "coal"
 smart-punctuation = true
-git-repository-url = "https://github.com/nexus-framework/nexus"
-edit-url-template = "https://github.com/nexus-framework/nexus/edit/main/{path}"
+site-url = "/nexus/"
+git-repository-url = "https://github.com/ViewWay/nexus"
+edit-url-template = "https://github.com/ViewWay/nexus/edit/main/{path}"
+additional-css = ["theme/nexus.css"]
 
 [output.html.search]
 enable = true
