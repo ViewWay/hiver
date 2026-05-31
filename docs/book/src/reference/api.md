@@ -1,5 +1,7 @@
-# API Documentation
-# API文档
+# API Reference / API 参考
+
+> **Status**: 62 Crates, 10 Domains / 62 个 Crate，10 个功能域
+> **状态**: 全阶段完成 ✅
 
 Nexus provides comprehensive API documentation across multiple channels.
 Nexus 通过多个渠道提供全面的 API 文档。
@@ -10,35 +12,147 @@ Nexus 通过多个渠道提供全面的 API 文档。
 
 | Resource / 资源 | Link / 链接 | Description / 描述 |
 |-----------------|-------------|---------------------|
-| **API Quick Reference** | [api-quick-reference.md](../../../api/api-quick-reference.md) | Common patterns and types |
+| **AI-Optimized Reference** | [AGENTS.md](../../../api/AGENTS.md) | Compact LLM-injectable reference (62 crates) |
+| **JSON Schema** | [api-schema.json](../../../api/api-schema.json) | Machine-parseable API catalog |
+| **Full API Reference** | [full-api-reference.md](../../../api/full-api-reference.md) | Human-readable with code examples |
 | **Annotations Reference** | [annotations-reference.md](../../../api/annotations-reference.md) | All 150+ procedural macros |
-| **API Specification** | [api-spec.md](../../../api/api-spec.md) | Detailed API documentation |
-| **Codemap** | [CODEMAP.md](../../../CODEMAP.md) | Full crate reference, macro index |
-| **docs.rs** | [docs.rs/nexus](https://docs.rs/nexus) | Auto-generated API docs |
+| **Codemap** | [CODEMAP.md](../../../CODEMAP.md) | Full crate reference, dependency graph |
+| **docs.rs** | [docs.rs/nexus](https://docs.rs/nexus) | Auto-generated rustdoc |
 
 ---
 
-## Core Crates / 核心 Crate
+## Architecture Domains / 架构域
+
+### Runtime & Core / 运行时与核心
 
 | Crate | Description / 描述 |
 |-------|---------------------|
 | `nexus-runtime` | Custom async runtime (io-uring/epoll/kqueue) |
-| `nexus-http` | HTTP server, Request, Response, Server |
-| `nexus-router` | Router with path parameters, state, middleware |
-| `nexus-middleware` | Middleware trait and implementations (CORS, compression, timeout) |
+| `nexus-core` | Core types, error handling |
+| `nexus-http` | HTTP/1.1 server, Request, Response |
+| `nexus-router` | Router with path params, state, middleware |
+| `nexus-middleware` | Middleware trait (CORS, compression, timeout) |
 | `nexus-extractors` | Request parameter extraction |
-| `nexus-macros` | 150+ Spring Boot-style procedural macros |
+| `nexus-response` | Response builders |
 
-## Data Crates / 数据 Crate
+### Data Layer / 数据层
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-data-commons` | Repository traits, Page, Sort, entity metadata |
-| `nexus-data-rdbc` | Reactive database access (DatabaseClient, connection pool) |
-| `nexus-data-orm` | ActiveRecord, Model derive, query builder |
+| `nexus-data-commons` | Repository traits, Page/Sort, entity metadata |
+| `nexus-data-rdbc` | Reactive database client, connection pool, RowMapper |
+| `nexus-data-orm` | ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations |
 | `nexus-data-redis` | Redis template, distributed locks, caching |
 | `nexus-data-mongodb` | MongoDB template and repository |
 | `nexus-flyway` | Database migration framework |
+| `nexus-data-annotations` | `@Entity`, `@Table`, `@Column`, `@Id` |
+| `nexus-data-macros` | `#[derive(Model)]`, `#[derive(Repository)]` |
+
+### Resilience & Observability / 弹性与可观测性
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-resilience` | Circuit breaker, rate limiter, retry, timeout |
+| `nexus-observability` | Distributed tracing, metrics, structured logging |
+
+### Web3 / 区块链
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-web3` | Chain abstraction, wallet, transactions, RPC, smart contracts |
+
+### IoC & AOP / 控制反转与切面
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-ioc` | Dependency injection container, `@Component`, `@Autowired` |
+| `nexus-aop` | Aspect-oriented programming, `@Aspect` |
+
+### Enterprise / 企业级
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-security` | Authentication, authorization, password encoding |
+| `nexus-validation` | Bean Validation (JSR 380) |
+| `nexus-validation-annotations` | `@NotNull`, `@Size`, `@Email`, `@Pattern` |
+| `nexus-scheduling` | `@Scheduled` cron/fixed-rate/delay tasks |
+| `nexus-i18n` | Internationalization, MessageSource |
+
+### AI & Cloud / AI 与云
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-ai` | AI/LLM integration, chat models, embeddings |
+| `nexus-agent` | AI agent framework (Spring AI Agent) |
+| `nexus-cloud` | Cloud-native support, service discovery |
+| `nexus-ws` | WebSocket server/client |
+
+### Tooling & Starter / 工具与启动器
+
+| Crate | Description / 描述 |
+|-------|---------------------|
+| `nexus-macros` | 150+ procedural macros |
+| `nexus-lombok` | `@Data`, `@Getter`, `@Setter`, `@Builder` |
+| `nexus-retry-macros` | `@Retryable`, `@Recover` |
+| `nexus-spel` | Spring Expression Language engine |
+| `nexus-modulith` | Modular monolith support |
+| `nexus-starter` | Auto-configuration, one-line startup |
+| `nexus-test` | Test utilities, TestClient |
+
+---
+
+## Quick API Patterns / 常用 API 模式
+
+### Server Startup / 启动服务器
+
+```rust
+use nexus_http::Server;
+use nexus_router::Router;
+
+fn main() -> std::io::Result<()> {
+    let mut rt = nexus_runtime::Runtime::new()?;
+    rt.block_on(async {
+        let app = Router::new()
+            .get("/", || async { "Hello, Nexus!" });
+        Server::bind("0.0.0.0:8080").run(app).await
+    })
+}
+```
+
+### Using Starter / 使用启动器
+
+```rust
+use nexus_starter::NexusApp;
+
+fn main() -> std::io::Result<()> {
+    NexusApp::new()
+        .with_router(Router::new().get("/", handler))
+        .run()
+}
+```
+
+### Data Repository / 数据仓库
+
+```rust
+use nexus_data_orm::prelude::*;
+use nexus_data_annotations::{Entity, Table, Id, Column};
+
+#[derive(Entity, Table, Model)]
+#[table_name = "users"]
+struct User {
+    #[id]
+    id: i64,
+    #[column]
+    name: String,
+    email: String,
+}
+
+// Auto-generated by #[derive(Repository)]
+impl UserRepository {
+    async fn find_by_email(&self, email: &str) -> Result<Option<User>> { ... }
+    async fn find_by_name_and_email(&self, name: &str, email: &str) -> Result<Vec<User>> { ... }
+}
+```
 
 ---
 
