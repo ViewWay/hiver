@@ -628,7 +628,7 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
         }
 
-        // Implement CrudRepository using QueryBuilder/ActiveRecord
+        // Implement CrudRepository using parameterized queries
         #[async_trait::async_trait]
         impl nexus_data_commons::CrudRepository<#entity_type, #id_type> for #struct_name {
             type Error = nexus_data_commons::Error;
@@ -636,10 +636,10 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             async fn save(&self, entity: #entity_type) -> Result<#entity_type, Self::Error> {
                 let pk = entity.primary_key().map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
                 let sql = format!(
-                    "INSERT INTO {} (id) VALUES ({}) ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id",
-                    self.table, pk
+                    "INSERT INTO {} (id) VALUES ($1) ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id",
+                    self.table
                 );
-                self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                self.client.execute_params(&sql, &[nexus_data_rdbc::QueryParam::Text(pk)]).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
                 Ok(entity)
             }
 
@@ -652,8 +652,9 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
 
             async fn find_by_id(&self, id: #id_type) -> Result<Option<#entity_type>, Self::Error> {
-                let sql = format!("SELECT * FROM {} WHERE id = {}", self.table, id);
-                match self.client.fetch_one(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))? {
+                let sql = format!("SELECT * FROM {} WHERE id = $1", self.table);
+                let id_param = nexus_data_rdbc::QueryParam::Text(id.to_string());
+                match self.client.fetch_one_params(&sql, &[id_param]).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))? {
                     Some(row) => row.deserialize().map(Some).map_err(|e| nexus_data_commons::Error::other(e.to_string())),
                     None => Ok(None),
                 }
@@ -691,15 +692,16 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             }
 
             async fn delete_by_id(&self, id: #id_type) -> Result<bool, Self::Error> {
-                let sql = format!("DELETE FROM {} WHERE id = {}", self.table, id);
-                let affected = self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let sql = format!("DELETE FROM {} WHERE id = $1", self.table);
+                let id_param = nexus_data_rdbc::QueryParam::Text(id.to_string());
+                let affected = self.client.execute_params(&sql, &[id_param]).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
                 Ok(affected > 0)
             }
 
             async fn delete(&self, entity: #entity_type) -> Result<bool, Self::Error> {
                 let pk = entity.primary_key().map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
-                let sql = format!("DELETE FROM {} WHERE id = {}", self.table, pk);
-                let affected = self.client.execute_cmd(&sql).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
+                let sql = format!("DELETE FROM {} WHERE id = $1", self.table);
+                let affected = self.client.execute_params(&sql, &[nexus_data_rdbc::QueryParam::Text(pk)]).await.map_err(|e| nexus_data_commons::Error::other(e.to_string()))?;
                 Ok(affected > 0)
             }
 

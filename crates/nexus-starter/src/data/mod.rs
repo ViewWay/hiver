@@ -14,7 +14,7 @@ use nexus_tx::SqlxTransactionManager;
 pub use nexus_data_rdbc::{
     DatabaseClient, TransactionManager, PoolConfig,
 };
-pub use nexus_data_rdbc::connection::ConnectionPool;
+pub use nexus_data_rdbc::SqlxPoolClient;
 
 /// Database type detected from JDBC-style URL.
 /// 从 JDBC 风格 URL 检测的数据库类型。
@@ -130,8 +130,9 @@ impl DataSourceConfig {
     /// let config = DataSourceConfig::new("postgresql://localhost/mydb");
     /// let pool = config.create_pool().await?;
     /// ```
-    pub async fn create_pool(&self) -> Result<ConnectionPool, nexus_data_rdbc::R2dbcError> {
-        ConnectionPool::connect_with_config(&self.url, self.pool_config()).await
+    #[cfg(feature = "sqlx")]
+    pub async fn create_pool(&self) -> Result<SqlxPoolClient, nexus_data_rdbc::R2dbcError> {
+        SqlxPoolClient::connect_with_options(&self.url, self.max_connections).await
     }
 }
 

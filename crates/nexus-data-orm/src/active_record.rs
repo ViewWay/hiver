@@ -71,8 +71,7 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
         );
         match client
             .fetch_one_params(&sql, &params)
-            .await
-            .map_err(|e| crate::Error::unknown(format!("insert failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -119,8 +118,7 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
         );
         match client
             .fetch_one_params(&sql, &params)
-            .await
-            .map_err(|e| crate::Error::unknown(format!("update failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -215,8 +213,7 @@ pub trait OptimisticLock: Save {
 
         match client
             .fetch_one_params(&sql, &params)
-            .await
-            .map_err(|e| crate::Error::unknown(format!("versioned update failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -251,8 +248,7 @@ pub trait Delete: Send + Sync + Model + Sized {
         let sql = format!("DELETE FROM {} WHERE id = $1", Self::table_name());
         client
             .execute_params(&sql, &[QueryParam::Text(pk)])
-            .await
-            .map_err(|e| crate::Error::unknown(format!("delete failed: {e}")))?;
+            .await?;
         Ok(())
     }
 
@@ -273,8 +269,7 @@ pub trait Delete: Send + Sync + Model + Sized {
         let sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), cond);
         client
             .execute_params(&sql, params)
-            .await
-            .map_err(|e| crate::Error::unknown(format!("delete_where failed: {e}")))?;
+            .await?;
         Ok(0)
     }
 }
@@ -297,8 +292,7 @@ pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized {
         );
         match client
             .fetch_one_params(&sql, &[QueryParam::Text(pk.clone())])
-            .await
-            .map_err(|e| crate::Error::unknown(format!("refresh failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -328,8 +322,7 @@ pub trait Count: Send + Sync + Model {
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
         let rows = client
             .fetch_all(&sql)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("Count query failed: {e}")))?;
+            .await?;
         let cnt = rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -358,8 +351,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         let sql = format!("SELECT * FROM {} WHERE id = $1", Self::table_name());
         match client
             .fetch_one_params(&sql, &[QueryParam::Text(id_str)])
-            .await
-            .map_err(|e| crate::Error::unknown(format!("find_by_id failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -375,8 +367,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         let sql = format!("SELECT * FROM {}", Self::table_name());
         let rows = client
             .fetch_all(&sql)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("all failed: {e}")))?;
+            .await?;
         collect_rows(rows)
     }
 
@@ -394,8 +385,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
         let rows = client
             .fetch_all_params(&sql, params)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("find_by failed: {e}")))?;
+            .await?;
         collect_rows(rows)
     }
 
@@ -417,8 +407,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         );
         match client
             .fetch_one_params(&sql, params)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("find_one_by failed: {e}")))?
+            .await?
         {
             Some(row) => row
                 .deserialize()
@@ -465,8 +454,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         let count_sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
         let total_rows = client
             .fetch_all(&count_sql)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("count failed: {e}")))?;
+            .await?;
         let total_elements = total_rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -482,8 +470,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         );
         let rows = client
             .fetch_all(&data_sql)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("page query failed: {e}")))?;
+            .await?;
         let content = collect_rows(rows)?;
 
         Ok(Page::new(
@@ -500,8 +487,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
         let rows = client
             .fetch_all(&sql)
-            .await
-            .map_err(|e| crate::Error::query_build(format!("Count query failed: {e}")))?;
+            .await?;
         let cnt = rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -522,8 +508,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         );
         let rows = client
             .fetch_all_params(&sql, &[QueryParam::Text(id_str)])
-            .await
-            .map_err(|e| crate::Error::query_build(format!("exists_by_id failed: {e}")))?;
+            .await?;
         Ok(!rows.is_empty())
     }
 
