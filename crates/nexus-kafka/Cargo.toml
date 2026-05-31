@@ -53,7 +53,7 @@ async-trait = { workspace = true }
 futures = { workspace = true }
 
 # Kafka client / Kafka客户端
-rdkafka = { version = "0.36", optional = true, features = ["cmake-build", "tokio"] }
+rdkafka = { version = "0.39", optional = true, features = ["cmake-build", "tokio"] }
 
 # Logging / 日志
 tracing = { workspace = true }

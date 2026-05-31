@@ -44,10 +44,10 @@ testcontainers = "0.23"
 testcontainers-modules = { version = "0.11", features = ["postgres", "redis", "kafka", "rabbitmq"] }
 
 # Redis client
-redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }
+redis = { version = "0.32", features = ["aio", "tokio-comp", "connection-manager"] }
 
 # Kafka client
-rdkafka = { version = "0.36", features = ["cmake-build", "tokio"] }
+rdkafka = { version = "0.39", features = ["cmake-build", "tokio"] }
 
 # AMQP/RabbitMQ client
 lapin = "2.5"
