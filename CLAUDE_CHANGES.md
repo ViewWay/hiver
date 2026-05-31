@@ -15133,3 +15133,146 @@ Changed `crates/hiver-http/src/response.rs` from "pub fn body(mut self, body: Bo
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:20:35
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `Cargo.toml`
+### Change Record
+Modified file `Cargo.toml`. Approximately 17 lines changed.
+### Change Summary
+Changed `Cargo.toml` from "version = "0.1.0-alpha"; homepage = "https://hiver.viewway.io"" to "version = "0.1.0-alpha.6"; homepage = "https://viewway.github.io/hiver"".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:23:26
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `.github/workflows/release.yml`
+### Change Record
+Modified file `.github/workflows/release.yml`. Approximately 196 lines changed.
+### Change Summary
+Changed `.github/workflows/release.yml` from "- "v[0-9]+.[0-9]+.[0-9]+"; # Core crates (publish order matters for dependencies); # 核心 crate（发布顺序对依赖关系很重要）" to "- "v*"; # Publish order follows dependency tiers (dependencies first).; # 发布顺序遵循依赖层级（被依赖的先发布）。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:27:40
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 12 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty)))" to ".filter_map(|f| f.ident.as_ref().map(|id| (id.clone(), &f.ty)))".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:27:41
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 22 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to ".filter_map(|f| f.ident.as_ref().map(|id| (id.clone(), &f.ty))); f.ident.as_ref().map(|id| (id.clone(), &f.ty)).filter(|...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:03
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 31 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; .filter_map(|f| f.ident.as_ref().map(|id| (id.clone(), &f.ty))); f.ident.as_ref().map(|id| (id....".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:05
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 40 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; .filter_map(|f| f.ident.as_ref().map(|id| (id.clone(), &f.ty)))".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:08
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; }).collect::<Vec<_>>();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:10
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 58 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; }).collect::<Vec<_>>();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:12
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 67 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; }).collect::<Vec<_>>();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:14
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 76 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; }).collect::<Vec<_>>();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:28:16
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-validation-annotations/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-validation-annotations/src/lib.rs`. Approximately 85 lines changed.
+### Change Summary
+Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty))); f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_att..." to "}).collect::<Vec<_>>();; }).collect::<Vec<_>>();; }).collect::<Vec<_>>();".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

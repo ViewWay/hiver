@@ -1,7 +1,7 @@
 [package]
 name = "hiver-ai"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 description = "Spring AI equivalent - AI integration for Hiver Framework"
 # 中文描述: Spring AI 等价物 - Hiver 框架的 AI 集成
 

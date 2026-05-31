@@ -10,6 +10,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [0.1.0-alpha.5] - 2026-02-01
 
@@ -83,6 +110,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All 117 hiver-http tests passing (increased from 105)
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [0.1.0-alpha.4] - 2026-02-01
 
@@ -158,6 +212,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All 75 hiver-starter tests passing
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [0.1.0-alpha.3] - 2026-01-30
 
@@ -254,6 +335,33 @@ This release marks the completion of Phase 7: Production Ready. All development 
   - Fixed `black_box` deprecation warning (use `std::hint::black_box`)
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [Unreleased] / 未发布
 
@@ -444,6 +552,33 @@ This release marks the completion of Phases 2-6, delivering a production-ready w
 - Cache examples
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [0.1.0-alpha.1] - 2026-01-23
 
@@ -519,6 +654,33 @@ This release marks the completion of Phase 1, delivering a fully functional asyn
 - Multi-platform CI (Linux, macOS, Windows) / 多平台 CI
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## [0.0.1] - 2026-01-21
 
@@ -534,6 +696,33 @@ This release marks the completion of Phase 1, delivering a fully functional asyn
 - Contributing guidelines / 贡献指南
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 ## Roadmap / 路线图
 
@@ -549,6 +738,33 @@ This release marks the completion of Phase 1, delivering a fully functional asyn
 | Phase 7 | 🔄 In Progress | Production Ready / 生产就绪 |
 
 ---
+## [0.1.0-alpha.6] - 2026-05-31
+
+### Changed / 变更
+
+- **Project renamed from Nexus to Hiver** / **项目从 Nexus 重命名为 Hiver**
+  - All crates renamed from `nexus-*` to `hiver-*` prefix
+  - 全部 crate 从 `nexus-*` 重命名为 `hiver-*` 前缀
+  - All module names, types, documentation updated consistently
+  - 全部模块名、类型名、文档一致性更新
+- **Version unification** / **版本统一**
+  - All crates now inherit version from workspace (`0.1.0-alpha.6`)
+  - 全部 crate 现在从 workspace 继承版本号
+  - `hiver-starter` metadata unified with workspace settings
+  - `hiver-starter` 元数据统一为 workspace 设置
+- **CI/CD improvements** / **CI/CD 改进**
+  - Release workflow expanded from 21 to 62 crates
+  - 发布工作流从 21 个 crate 扩展到 62 个
+  - Tag pattern now supports prerelease versions (e.g., `v0.1.0-alpha.6`)
+  - Tag 匹配模式现在支持预发布版本
+
+### Added / 新增
+
+- `hiver-validation-annotations` added to workspace members
+  `hiver-validation-annotations` 添加到 workspace 成员
+
+---
+
 
 [Unreleased]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.5...HEAD
 [0.1.0-alpha.5]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.4...v0.1.0-alpha.5

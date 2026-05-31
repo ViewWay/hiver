@@ -27,13 +27,13 @@
 
 [package]
 name = "hiver-starter"
-version = "0.1.0"
+version.workspace = true
 description = "Spring Boot-style auto-configuration for Hiver Framework"
 documentation = "https://docs.rs/hiver-starter"
-repository = "https://github.com/hiver-rs/hiver"
+repository.workspace = true
 license = "MIT OR Apache-2.0"
-edition = "2021"
-rust-version = "1.75"
+edition.workspace = true
+rust-version.workspace = true
 
 [features]
 default = ["core", "web"]

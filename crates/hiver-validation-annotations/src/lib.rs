@@ -114,7 +114,7 @@ pub fn derive_not_null(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -172,7 +172,7 @@ pub fn derive_email(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -243,7 +243,7 @@ pub fn derive_size(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -303,7 +303,7 @@ pub fn derive_min(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -363,7 +363,7 @@ pub fn derive_max(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -425,7 +425,7 @@ pub fn derive_pattern(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -496,7 +496,7 @@ pub fn derive_length(input: TokenStream) -> TokenStream {
                 }
             }
         }
-    });
+    }).collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -533,7 +533,7 @@ fn extract_fields_with_validation(input: &syn::DeriveInput) -> Vec<(proc_macro2:
 
     fields
         .iter()
-        .filter_map(|f| f.ident.as_ref().map(|id| (id, &f.ty)))
+        .filter_map(|f| f.ident.as_ref().map(|id| (id.clone(), &f.ty)))
         .collect()
 }
 
@@ -559,7 +559,7 @@ fn extract_email_fields(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, &s
                     .unwrap_or(false)
             });
 
-            f.ident.as_ref().map(|id| (id, &f.ty)).filter(|_| has_email_attr)
+            f.ident.as_ref().map(|id| (id.clone(), &f.ty)).filter(|_| has_email_attr)
         })
         .collect()
 }

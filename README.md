@@ -9,7 +9,7 @@
     <img alt="build status" src="https://github.com/ViewWay/hiver/workflows/CI/badge.svg" />
 </a>
 <a href="https://codecov.io/gh/ViewWay/hiver">
-    <img alt="codecov" src="https://img.gov/ViewWay/hiver/branch/main/graph/badge.svg" />
+    <img alt="codecov" src="https://codecov.io/gh/ViewWay/hiver/branch/main/graph/badge.svg" />
 </a>
 <br>
 <a href="https://crates.io/crates/hiver"><img alt="crates.io" src="https://img.shields.io/crates/v/hiver" /></a>

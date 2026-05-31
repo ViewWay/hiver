@@ -1,7 +1,7 @@
 [package]
 name = "hiver-retry"
-version = "0.1.0-alpha"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 hiver-resilience = { path = "../hiver-resilience" }
