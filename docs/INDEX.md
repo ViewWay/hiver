@@ -58,6 +58,12 @@ docs/
 | [api-spec.md](api/api-spec.md) | Complete API specification / 完整的 API 规范 |
 | [api-quick-reference.md](api/api-quick-reference.md) | API quick reference / API 快速参考 |
 | [annotations-reference.md](api/annotations-reference.md) | Annotations reference / 注解参考 |
+| [AGENTS.md](api/AGENTS.md) | AI-optimized compact API reference (62 crates) / AI 优化版 API 参考 |
+| [api-schema.json](api/api-schema.json) | Machine-parseable JSON schema (62 crates) / 机器可读 JSON Schema |
+| [full-api-reference.md](api/full-api-reference.md) | Human-readable full API reference / 人类可读完整 API 参考 |
+| [AGENTS.md](api/AGENTS.md) | AI-optimized compact API reference (62 crates) / AI 优化版 API 参考 |
+| [api-schema.json](api/api-schema.json) | Machine-parseable JSON schema (62 crates) / 机器可读 JSON Schema |
+| [full-api-reference.md](api/full-api-reference.md) | Human-readable full API reference / 人类可读完整 API 参考 |
 
 ---
 

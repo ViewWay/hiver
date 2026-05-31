@@ -1,7 +1,7 @@
 # Resilience / 弹性
 
-> **Status**: Phase 4 In Progress 🔄  
-> **状态**: 第4阶段进行中 🔄
+> **Status**: Phase 4 Complete ✅
+> **状态**: 第4阶段完成 ✅
 
 Nexus provides comprehensive resilience patterns to make your applications fault-tolerant and highly available.
 
