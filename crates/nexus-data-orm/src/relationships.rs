@@ -37,14 +37,9 @@
 
 use std::collections::HashMap;
 
+use crate::query::validate_identifier;
 use crate::{Error, Model, Result};
 use nexus_data_rdbc::{DatabaseClient, QueryParam};
-
-/// Check if a string is a valid SQL identifier (alphanumeric + underscore only).
-/// 检查字符串是否为有效的 SQL 标识符（仅字母数字和下划线）。
-fn is_valid_identifier(name: &str) -> bool {
-    !name.is_empty() && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
-}
 
 /// Relationship type
 /// 关系类型
@@ -370,8 +365,8 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     /// 调用者**必须**在事务中执行此方法以保证原子性。
     /// 如果 INSERT 在 DELETE 成功后失败，可能导致数据丢失。
     pub async fn sync<C: DatabaseClient>(&self, client: &C, related_ids: &[impl ToString]) -> Result<()> {
-        debug_assert!(is_valid_identifier(&self.join_table), "Invalid join table: {}", self.join_table);
-        debug_assert!(is_valid_identifier(&self.foreign_key), "Invalid foreign key: {}", self.foreign_key);
+        debug_assert!(validate_identifier(&self.join_table), "Invalid join table: {}", self.join_table);
+        debug_assert!(validate_identifier(&self.foreign_key), "Invalid foreign key: {}", self.foreign_key);
         // Delete all current associations / 删除所有当前关联
         let delete_sql = format!(
             "DELETE FROM {} WHERE {} = $1",

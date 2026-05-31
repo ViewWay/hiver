@@ -450,22 +450,24 @@ impl<M: Model> QueryBuilder<M> {
     ///     .join(JoinType::Inner, "posts", "users.id = posts.user_id")
     ///     .all().await?;
     /// ```
-    /// Validate a JOIN ON condition to reject SQL injection patterns.
-    /// 验证 JOIN ON 条件以拒绝 SQL 注入模式。
-    fn validate_on_condition(on: &str) {
+    /// Validate a raw SQL condition to reject injection patterns.
+    /// 验证原始 SQL 条件以拒绝注入模式。
+    fn validate_raw_condition(condition: &str, context: &str) {
         assert!(
-            !on.contains('\'') && !on.contains(';') && !on.contains("--") && !on.contains("/*"),
-            "JOIN ON condition contains disallowed characters (quotes, semicolons, or comments): {on}"
+            !condition.contains('\'') && !condition.contains(';') && !condition.contains("--") && !condition.contains("/*"),
+            "{context} contains disallowed characters (quotes, semicolons, or comments): {condition}"
         );
     }
 
+    /// Add a JOIN clause.
+    /// 添加 JOIN 子句。
     #[must_use]
     pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self {
         assert!(
             validate_identifier(table),
             "join table must contain only alphanumeric characters and underscores, got: {table}"
         );
-        Self::validate_on_condition(on);
+        Self::validate_raw_condition(on, "JOIN ON condition");
         self.joins.push(Join::new(join_type, table, on));
         self
     }
@@ -518,10 +520,7 @@ impl<M: Model> QueryBuilder<M> {
     /// 该条件是直接插入 HAVING 子句的原始 SQL 片段。
     #[must_use]
     pub fn having(mut self, condition: &str) -> Self {
-        assert!(
-            !condition.contains('\'') && !condition.contains(';') && !condition.contains("--") && !condition.contains("/*"),
-            "HAVING condition contains disallowed characters (quotes, semicolons, or comments): {condition}"
-        );
+        Self::validate_raw_condition(condition, "HAVING condition");
         self.having = Some(condition.to_string());
         self
     }
