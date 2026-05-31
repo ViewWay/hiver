@@ -36,7 +36,7 @@
 //! let updated = user.update_versioned(&client).await?;
 //! ```
 
-use crate::query::QueryBuilder;
+use crate::query::{QueryBuilder, validate_identifier};
 use crate::relationships::{EagerQueryBuilder, enforce_cascade};
 use crate::Model;
 use crate::Result;
@@ -425,6 +425,11 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
                     s.orders
                         .iter()
                         .map(|o| {
+                            assert!(
+                                validate_identifier(&o.property),
+                                "Invalid sort property: {}",
+                                o.property
+                            );
                             format!(
                                 "{} {}",
                                 o.property,

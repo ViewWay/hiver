@@ -533,32 +533,45 @@ pub enum Condition {
 impl Condition {
     /// Convert condition to SQL fragment
     /// 将条件转换为 SQL 片段
+    /// Validate that a field/identifier contains only safe characters.
+    /// 验证字段/标识符仅包含安全字符。
+    fn validate_field(field: &str) {
+        assert!(
+            !field.is_empty() && field.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.'),
+            "Invalid SQL identifier: {field}"
+        );
+    }
+
     pub fn to_sql(&self) -> String {
         match self {
-            Self::Eq { field, value } => format!("{} = {}", field, value.to_sql()),
-            Self::Ne { field, value } => format!("{} != {}", field, value.to_sql()),
-            Self::Gt { field, value } => format!("{} > {}", field, value.to_sql()),
-            Self::Ge { field, value } => format!("{} >= {}", field, value.to_sql()),
-            Self::Lt { field, value } => format!("{} < {}", field, value.to_sql()),
-            Self::Le { field, value } => format!("{} <= {}", field, value.to_sql()),
-            Self::Like { field, pattern } => format!("{} LIKE '{}'", field, pattern),
-            Self::NotLike { field, pattern } => format!("{} NOT LIKE '{}'", field, pattern),
+            Self::Eq { field, value } => { Self::validate_field(field); format!("{} = {}", field, value.to_sql()) }
+            Self::Ne { field, value } => { Self::validate_field(field); format!("{} != {}", field, value.to_sql()) }
+            Self::Gt { field, value } => { Self::validate_field(field); format!("{} > {}", field, value.to_sql()) }
+            Self::Ge { field, value } => { Self::validate_field(field); format!("{} >= {}", field, value.to_sql()) }
+            Self::Lt { field, value } => { Self::validate_field(field); format!("{} < {}", field, value.to_sql()) }
+            Self::Le { field, value } => { Self::validate_field(field); format!("{} <= {}", field, value.to_sql()) }
+            Self::Like { field, pattern } => { Self::validate_field(field); format!("{} LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', "")) }
+            Self::NotLike { field, pattern } => { Self::validate_field(field); format!("{} NOT LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', "")) }
             Self::In { field, values } => {
+                Self::validate_field(field);
                 let vals: Vec<String> = values.iter().map(|v| v.to_sql()).collect();
                 format!("{} IN ({})", field, vals.join(", "))
             },
             Self::NotIn { field, values } => {
+                Self::validate_field(field);
                 let vals: Vec<String> = values.iter().map(|v| v.to_sql()).collect();
                 format!("{} NOT IN ({})", field, vals.join(", "))
             },
             Self::Between { field, low, high } => {
+                Self::validate_field(field);
                 format!("{} BETWEEN {} AND {}", field, low.to_sql(), high.to_sql())
             },
             Self::NotBetween { field, low, high } => {
+                Self::validate_field(field);
                 format!("{} NOT BETWEEN {} AND {}", field, low.to_sql(), high.to_sql())
             },
-            Self::IsNull { field } => format!("{} IS NULL", field),
-            Self::IsNotNull { field } => format!("{} IS NOT NULL", field),
+            Self::IsNull { field } => { Self::validate_field(field); format!("{} IS NULL", field) }
+            Self::IsNotNull { field } => { Self::validate_field(field); format!("{} IS NOT NULL", field) }
             Self::And(conditions) => {
                 let conds: Vec<String> = conditions.iter().map(|c| c.to_sql()).collect();
                 format!("({})", conds.join(" AND "))
@@ -631,7 +644,7 @@ impl Value {
             Self::I64(n) => n.to_string(),
             Self::F32(n) => n.to_string(),
             Self::F64(n) => n.to_string(),
-            Self::String(s) => format!("'{}'", s.replace('\'', "''")),
+            Self::String(s) => format!("'{}'", s.replace('\'', "''").replace('\0', "")),
             Self::Bytes(b) => format!("x'{}'", hex::encode(b)),
         }
     }

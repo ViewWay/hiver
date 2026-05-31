@@ -131,6 +131,7 @@ pub trait DatabaseClient: Send + Sync {
 
     /// Execute a parameterized query and return all rows
     /// 执行参数化查询并返回所有行
+    #[allow(deprecated)]
     async fn fetch_all_params(&self, sql: &str, params: &[QueryParam]) -> Result<Vec<Row>> {
         let interpolated = interpolate_params(sql, params);
         self.fetch_all(&interpolated).await
@@ -138,6 +139,7 @@ pub trait DatabaseClient: Send + Sync {
 
     /// Execute a parameterized query and return the first row
     /// 执行参数化查询并返回第一行
+    #[allow(deprecated)]
     async fn fetch_one_params(&self, sql: &str, params: &[QueryParam]) -> Result<Option<Row>> {
         let interpolated = interpolate_params(sql, params);
         self.fetch_one(&interpolated).await
@@ -145,6 +147,7 @@ pub trait DatabaseClient: Send + Sync {
 
     /// Execute a parameterized command and return affected rows
     /// 执行参数化命令并返回受影响行数
+    #[allow(deprecated)]
     async fn execute_params(&self, sql: &str, params: &[QueryParam]) -> Result<u64> {
         let interpolated = interpolate_params(sql, params);
         self.execute_cmd(&interpolated).await
@@ -182,11 +185,26 @@ pub trait DatabaseClient: Send + Sync {
     async fn close(&self) -> Result<()>;
 }
 
-/// Replace `$1, $2, ...` placeholders with SQL literals
-/// 将 `$1, $2, ...` 占位符替换为 SQL 字面量
+/// Replace `$1, $2, ...` placeholders with SQL literals.
+/// 将 `$1, $2, ...` 占位符替换为 SQL 字面量。
+///
+/// # Security Warning / 安全警告
+///
+/// This is a **fallback** that performs client-side string interpolation.
+/// It does NOT provide the same security guarantees as server-side parameter binding.
+/// Concrete `DatabaseClient` implementations SHOULD override `fetch_all_params`,
+/// `fetch_one_params`, and `execute_params` to use real parameterized queries.
+///
+/// 这是执行客户端字符串插值的**降级方案**，不提供与服务器端参数绑定相同的安全保证。
+/// 具体的 `DatabaseClient` 实现应覆盖 `fetch_all_params`、`fetch_one_params` 和 `execute_params`
+/// 以使用真正的参数化查询。
+#[deprecated = "Override fetch_all_params/fetch_one_params/execute_params in DatabaseClient implementations instead"]
 fn interpolate_params(sql: &str, params: &[QueryParam]) -> String {
     let mut result = sql.to_string();
-    for (i, param) in params.iter().enumerate() {
+    // Replace from highest index to lowest to prevent re-replacement
+    // when a parameter value contains `$N` patterns.
+    // 从最高索引到最低索引替换，防止参数值中的 `$N` 模式被二次替换。
+    for (i, param) in params.iter().enumerate().rev() {
         let placeholder = format!("${}", i + 1);
         result = result.replace(&placeholder, &param.to_sql_literal());
     }
@@ -198,6 +216,7 @@ pub use nexus_data_commons::ToSql;
 /// No-op client for testing SQL builders without a real database
 /// 无操作客户端，用于测试 SQL 构建器无需真实数据库
 #[cfg(test)]
+#[allow(deprecated)]
 pub(crate) struct NoopClient;
 
 #[cfg(test)]

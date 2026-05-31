@@ -33,7 +33,7 @@ use crate::{Error, Model, Result};
 use nexus_data_rdbc::{DatabaseClient, QueryParam};
 use std::marker::PhantomData;
 
-fn validate_identifier(name: &str) -> bool {
+pub(crate) fn validate_identifier(name: &str) -> bool {
     !name.is_empty()
         && name
             .chars()
@@ -373,6 +373,12 @@ impl<M: Model> QueryBuilder<M> {
     // untrusted user input into the condition string.
     #[must_use = "QueryBuilder is consumed by each method; chain calls or use the final result"]
     pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
+        let placeholder_count = condition.matches('?').count();
+        assert_eq!(
+            placeholder_count, params.len(),
+            "where_() placeholder count ({}) != params count ({})",
+            placeholder_count, params.len()
+        );
         self.wheres.push(WhereClause {
             condition: condition.to_string(),
             params: params.to_vec(),
