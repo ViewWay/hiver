@@ -29,7 +29,7 @@ bytes = { workspace = true }
 
 # Concurrency utilities / 并发工具 (Spring Task Executor)
 rustc-hash = "2.1"
-flume = "0.11"
+flume = "0.12"
 num_cpus = "1.16"
 crossbeam = "0.8"
 

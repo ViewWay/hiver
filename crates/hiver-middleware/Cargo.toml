@@ -54,7 +54,7 @@ tokio = { workspace = true, features = ["time"] }
 async-compression = { workspace = true, features = ["tokio", "brotli", "gzip", "zstd", "deflate"], optional = true }
 # Synchronous compression libraries (fallback when async-compression not available)
 flate2 = { version = "1.0", optional = true }
-brotli = { version = "7.0", optional = true }
+brotli = { version = "8.0", optional = true }
 
 # Bytes utilities / 字节工具
 bytes = { workspace = true }
