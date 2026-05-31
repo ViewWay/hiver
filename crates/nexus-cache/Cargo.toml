@@ -71,7 +71,7 @@ dashmap = { workspace = true }
 once_cell = { workspace = true }
 
 # Redis cache backend (optional) / Redis 缓存后端（可选）
-redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"], optional = true }
+redis = { version = "0.32", features = ["aio", "tokio-comp", "connection-manager"], optional = true }
 nexus-data-redis = { path = "../nexus-data-redis", optional = true }
 
 # MessagePack serialization (optional) / MessagePack 序列化（可选）

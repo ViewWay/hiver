@@ -29,7 +29,7 @@ bytes = { workspace = true }
 
 # Concurrency utilities / 并发工具 (Spring Task Executor)
 rustc-hash = "2.1"
-flume = "0.11"
+flume = "0.12"
 num_cpus = "1.16"
 crossbeam = "0.8"
 
@@ -67,23 +67,23 @@ libc = "0.2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 # For kqueue support on macOS
-kqueue = "1.0"
+kqueue = "1.2"
 
 [target.'cfg(target_os = "freebsd")'.dependencies]
 # For kqueue support on FreeBSD
-kqueue = "1.0"
+kqueue = "1.2"
 
 [target.'cfg(target_os = "netbsd")'.dependencies]
 # For kqueue support on NetBSD
-kqueue = "1.0"
+kqueue = "1.2"
 
 [target.'cfg(target_os = "openbsd")'.dependencies]
 # For kqueue support on OpenBSD
-kqueue = "1.0"
+kqueue = "1.2"
 
 [target.'cfg(target_os = "dragonfly")'.dependencies]
 # For kqueue support on DragonFlyBSD
-kqueue = "1.0"
+kqueue = "1.2"
 
 [dev-dependencies]
 # Testing / 测试 (Spring Test)
