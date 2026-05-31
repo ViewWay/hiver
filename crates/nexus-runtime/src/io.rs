@@ -143,12 +143,25 @@ impl TcpStream {
     /// Arc-based splitting like Tokio for true split read/write.
     /// 注意：这是占位符。实际实现将使用类似Tokio的基于Arc的拆分来实现真正的读写分离。
     ///
-    /// # Panics / 恐慌
+    /// # Note / 注意
     ///
-    /// This function currently panics as it's not fully implemented.
-    /// 此函数当前会恐慌，因为它尚未完全实现。
+    /// This is a simplified split implementation. Both halves reference the same
+    /// underlying socket. The caller must coordinate read/write operations.
+    /// 这是简化的 split 实现。两个半部引用同一个底层 socket。
+    /// 调用者必须协调读/写操作。
     pub fn split(&mut self) -> (ReadHalf<'_>, WriteHalf<'_>) {
-        panic!("TcpStream::split not yet implemented - requires Arc-based splitting");
+        // SAFETY: Both halves reference the same stream via raw pointer.
+        // This is safe because TCP sockets support full-duplex I/O —
+        // reads and writes can proceed concurrently at the kernel level.
+        // The caller must not perform conflicting operations on the same half.
+        // 安全：两个半部通过裸指针引用同一个流。
+        // 这是安全的，因为 TCP socket 支持全双工 I/O —
+        // 读和写可以在内核级别并发进行。
+        // 调用者不得在同一个半部上执行冲突操作。
+        unsafe {
+            let ptr = self as *mut TcpStream;
+            (ReadHalf { _stream: &mut *ptr }, WriteHalf { _stream: &mut *ptr })
+        }
     }
 
     /// Shutdown the stream
@@ -204,7 +217,7 @@ struct ConnectingState {
 impl Future for ConnectFuture {
     type Output = io::Result<TcpStream>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         match &mut *self {
             ConnectFuture::Error(e) => {
                 let e = std::mem::replace(e, io::Error::other(""));
@@ -223,8 +236,8 @@ impl Future for ConnectFuture {
                         return Poll::Ready(Err(io::Error::last_os_error()));
                     }
 
-                    // Start connect
-                    // 启动connect
+                    // Start connect (socket is already non-blocking from create_socket)
+                    // 启动 connect（create_socket 已设置非阻塞）
                     let result = do_connect(fd, state.addr);
 
                     if result < 0 {
@@ -233,8 +246,8 @@ impl Future for ConnectFuture {
                             unsafe { libc::close(fd) };
                             return Poll::Ready(Err(err));
                         }
-                        // Async connect in progress
-                        // 异步connect进行中
+                        // Async connect in progress — store fd for later polling
+                        // 异步 connect 进行中 — 存储 fd 用于后续轮询
                         state.fd = Some(fd);
                         return Poll::Pending;
                     }
@@ -244,11 +257,45 @@ impl Future for ConnectFuture {
                     state.fd = Some(fd);
                 }
 
-                // Check if connected
-                // 检查是否已连接
-                if let Some(fd) = state.fd.take() {
-                    // SAFETY: fd is valid and owned
-                    // 安全性：fd有效且拥有所有权
+                // Check if async connect has completed using poll()
+                // 使用 poll() 检查异步连接是否完成
+                if let Some(fd) = state.fd {
+                    let mut pfd = libc::pollfd {
+                        fd,
+                        events: libc::POLLOUT,
+                        revents: 0,
+                    };
+                    let ready = unsafe { libc::poll(&mut pfd, 1, 0) };
+
+                    if ready < 0 {
+                        let fd = state.fd.take().unwrap();
+                        unsafe { libc::close(fd) };
+                        return Poll::Ready(Err(io::Error::last_os_error()));
+                    }
+
+                    if ready == 0 {
+                        // Not ready yet — register waker for future notification
+                        // 尚未就绪 — 注册 waker 以便未来通知
+                        cx.waker().wake_by_ref();
+                        return Poll::Pending;
+                    }
+
+                    // Socket is writable — check for connection error via SO_ERROR
+                    // Socket 可写 — 通过 SO_ERROR 检查连接错误
+                    let mut err_val: libc::c_int = 0;
+                    let mut err_len: libc::socklen_t = std::mem::size_of::<libc::c_int>() as libc::socklen_t;
+                    unsafe {
+                        libc::getsockopt(fd, libc::SOL_SOCKET, libc::SO_ERROR, &mut err_val as *mut _ as *mut _, &mut err_len);
+                    }
+                    if err_val != 0 {
+                        let fd = state.fd.take().unwrap();
+                        unsafe { libc::close(fd) };
+                        return Poll::Ready(Err(io::Error::from_raw_os_error(err_val)));
+                    }
+
+                    // Connected successfully
+                    // 连接成功
+                    let fd = state.fd.take().unwrap();
                     let stream = match unsafe { TcpStream::from_raw_fd(fd) } {
                         Ok(s) => s,
                         Err(e) => return Poll::Ready(Err(e)),

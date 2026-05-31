@@ -430,7 +430,7 @@ impl TimerWheel {
         // 插入到轮和注册表中
         self.insert_timer_inner(timer);
 
-        TimerHandle::new(id, self)
+        TimerHandle::new(id)
     }
 
     /// Insert a timer with the specified duration and associated waker
@@ -451,7 +451,7 @@ impl TimerWheel {
 
         self.insert_timer_inner(timer);
 
-        TimerHandle::new(id, self)
+        TimerHandle::new(id)
     }
 
     /// Get the next timer expiration time in milliseconds
@@ -477,37 +477,32 @@ impl Default for TimerWheel {
 /// 定时器句柄
 ///
 /// Can be used to cancel the timer before it expires.
+/// The handle references the global timer wheel, which has static lifetime.
 /// 可用于在定时器到期前取消它。
+/// 句柄引用全局时间轮，全局时间轮具有静态生命周期。
 #[derive(Clone)]
 pub struct TimerHandle {
     #[allow(dead_code)]
     id: u64,
-    #[allow(dead_code)]
-    wheel: *const TimerWheel,
 }
 
+// SAFETY: TimerHandle only contains a u64 — no raw pointers or non-Send data.
+// 安全：TimerHandle 只包含 u64 — 没有裸指针或非 Send 数据。
 unsafe impl Send for TimerHandle {}
 
 impl TimerHandle {
     /// Cancel this timer
     /// 取消此定时器
     pub fn cancel(&self) {
-        // SAFETY: The wheel pointer is valid as long as the global timer exists
-        // 安全：只要全局定时器存在，wheel指针就是有效的
-        unsafe {
-            if let Some(wheel_ref) = self.wheel.as_ref() {
-                wheel_ref.cancel_timer(self.id);
-            }
-        }
+        // Access the global timer wheel directly — it has static lifetime
+        // 直接访问全局时间轮 — 它具有静态生命周期
+        global_timer().cancel_timer(self.id);
     }
 
     /// Create a new timer handle
     /// 创建新的定时器句柄
-    fn new(id: u64, wheel: &TimerWheel) -> Self {
-        Self {
-            id,
-            wheel: wheel as *const _,
-        }
+    fn new(id: u64) -> Self {
+        Self { id }
     }
 }
 

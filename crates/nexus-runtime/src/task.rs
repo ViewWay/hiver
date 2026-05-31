@@ -587,9 +587,12 @@ where
                     break;
                 },
                 Poll::Pending => {
-                    // Continue polling (busy wait for simplicity)
-                    // 继续轮询（为简单起见使用忙等待）
-                    std::hint::spin_loop();
+                    // Yield to avoid busy-wait burning CPU.
+                    // A 1ms sleep is a reasonable trade-off between
+                    // responsiveness and CPU usage for a blocking executor.
+                    // 让出 CPU 避免忙等烧 CPU。
+                    // 1ms 休眠在响应性和 CPU 使用之间是合理的折衷。
+                    std::thread::sleep(std::time::Duration::from_millis(1));
                 },
             }
         }

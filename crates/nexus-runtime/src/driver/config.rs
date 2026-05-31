@@ -228,7 +228,16 @@ impl DriverFactory {
                 std::io::ErrorKind::Unsupported,
                 "kqueue driver is only available on macOS/BSD",
             )),
-            DriverType::Auto => unreachable!(),
+            DriverType::Auto => {
+                // Auto should have been resolved by detect_best_driver() above.
+                // If we reach here, detection failed — return a clear error.
+                // Auto 应该已被上面的 detect_best_driver() 解析。
+                // 如果到达这里，说明检测失败 — 返回明确的错误。
+                Err(std::io::Error::new(
+                    std::io::ErrorKind::Unsupported,
+                    "Failed to detect a suitable driver for this platform",
+                ))
+            }
         }
     }
 

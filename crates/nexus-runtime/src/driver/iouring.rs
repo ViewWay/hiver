@@ -212,17 +212,54 @@ pub struct IoUringDriver {
     submit_queue: UnsafeCell<Vec<SubmitEntry>>,
     /// Completion queue / 完成队列（用于应用层）
     completion_queue: UnsafeCell<Vec<Option<CompletionEntry>>>,
+    /// Actual mmap size for submission queue ring / 提交队列环形缓冲区的实际 mmap 尺寸
+    sq_ring_mmap_size: usize,
+    /// Actual mmap size for completion queue ring / 完成队列环形缓冲区的实际 mmap 尺寸
+    cq_ring_mmap_size: usize,
+    /// Thread ID that created this driver (for debug safety checks)
+    /// 创建此驱动程序的线程 ID（用于调试安全检查）
+    #[cfg(debug_assertions)]
+    owner_thread: std::thread::ThreadId,
 }
 
-// SAFETY: IoUringDriver can be sent between threads
-// IoUringDriver可以在线程间发送
+// SAFETY: IoUringDriver can be sent between threads.
+// The internal UnsafeCell fields are only accessed from the owning thread
+// in the thread-per-core model (each core has its own driver instance).
+// IoUringDriver 可以在线程间发送。
+// 内部 UnsafeCell 字段仅在 thread-per-core 模型中由所属线程访问
+// （每个核心有自己的驱动实例）。
 unsafe impl Send for IoUringDriver {}
 
-// SAFETY: IoUringDriver can be shared between threads (uses atomic operations and memory barriers)
-// IoUringDriver可以在线程间共享（使用原子操作和内存屏障）
+// SAFETY: IoUringDriver uses atomic operations for shared state (sq_head, sq_tail, etc.).
+// The UnsafeCell<Vec<...>> fields (submit_queue, completion_queue) are only accessed
+// from the driver's owning thread in the thread-per-core architecture.
+// Debug builds include thread-id checks to catch misuse.
+// IoUringDriver 使用原子操作管理共享状态（sq_head, sq_tail 等）。
+// UnsafeCell<Vec<...>> 字段（submit_queue, completion_queue）仅在
+// thread-per-core 架构中由驱动所属线程访问。
+// Debug 构建包含线程 ID 检查以捕获误用。
 unsafe impl Sync for IoUringDriver {}
 
 impl IoUringDriver {
+    /// Assert that the caller is the thread that created this driver.
+    /// In debug builds, panics if called from a different thread.
+    /// 断言调用者是创建此驱动程序的线程。
+    /// Debug 构建中，如果从不同线程调用则 panic。
+    #[inline]
+    #[cfg(debug_assertions)]
+    fn assert_owner(&self) {
+        assert_eq!(
+            std::thread::current().id(),
+            self.owner_thread,
+            "IoUringDriver accessed from wrong thread: thread-per-core violation"
+        );
+    }
+
+    /// No-op in release builds / Release 构建中无操作
+    #[inline]
+    #[cfg(not(debug_assertions))]
+    fn assert_owner(&self) {}
+
     /// Create a new io_uring driver with default configuration
     /// 使用默认配置创建新的io_uring driver
     ///
@@ -394,6 +431,10 @@ impl IoUringDriver {
             }),
             submit_queue: UnsafeCell::new(vec![SubmitEntry::new(-1, 0, 0); capacity]),
             completion_queue: UnsafeCell::new(vec![None; capacity]),
+            sq_ring_mmap_size: sq_ring_size,
+            cq_ring_mmap_size: cq_ring_size,
+            #[cfg(debug_assertions)]
+            owner_thread: std::thread::current().id(),
         })
     }
 
@@ -468,17 +509,13 @@ impl IoUringDriver {
 
 impl Drop for IoUringDriver {
     fn drop(&mut self) {
-        let sq_ring_size = unsafe {
-            // Approximate size for munmap
-            // 大小估算用于munmap
-            0x1000
-        };
-        let cq_ring_size = 0x1000;
+        // Use the actual mmap sizes stored during setup, not hardcoded values
+        // 使用 setup 时存储的实际 mmap 尺寸，而非硬编码值
         let sqes_size = self.capacity * std::mem::size_of::<SubmissionQueueEntry>();
 
         unsafe {
-            libc::munmap(self.sq_ring, sq_ring_size);
-            libc::munmap(self.cq_ring, cq_ring_size);
+            libc::munmap(self.sq_ring, self.sq_ring_mmap_size);
+            libc::munmap(self.cq_ring, self.cq_ring_mmap_size);
             libc::munmap(self.sqes as *mut _, sqes_size);
             libc::close(self.ring_fd);
         }
@@ -497,6 +534,7 @@ impl Driver for IoUringDriver {
 
         // Process all pending submissions from our internal queue
         // 处理内部队列中所有挂起的提交
+        self.assert_owner();
         let len = self.state.sq_len.load(Ordering::Acquire);
         for i in 0..len {
             let submit_queue = unsafe { &*self.submit_queue.get() };
@@ -573,6 +611,7 @@ impl Driver for IoUringDriver {
 
         // Process completion queue
         // 处理完成队列
+        self.assert_owner();
         let mut completed = 0;
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = unsafe { *self.cq.tail };
@@ -614,6 +653,7 @@ impl Driver for IoUringDriver {
     }
 
     fn get_submission(&self) -> Option<&mut SubmitEntry> {
+        self.assert_owner();
         let len = self.state.sq_len.load(Ordering::Acquire);
 
         if len >= self.capacity {
@@ -629,6 +669,7 @@ impl Driver for IoUringDriver {
     }
 
     fn get_completion(&self) -> Option<&CompletionEntry> {
+        self.assert_owner();
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = self.state.cq_tail.load(Ordering::Acquire);
 
@@ -644,6 +685,7 @@ impl Driver for IoUringDriver {
     }
 
     fn advance_completion(&self) {
+        self.assert_owner();
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = self.state.cq_tail.load(Ordering::Acquire);
 
