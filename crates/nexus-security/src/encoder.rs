@@ -66,12 +66,13 @@ impl Default for BcryptPasswordEncoder {
 
 impl PasswordEncoder for BcryptPasswordEncoder {
     fn encode(&self, raw: &str) -> String {
-        bcrypt::hash(raw, self.cost).unwrap_or_else(|_| {
-            // Fallback to simple hash on error
-            use md5::{Digest, Md5};
-            let hash = Md5::digest(raw.as_bytes());
-            hex::encode(hash)
-        })
+        // SECURITY: Never silently degrade to a weaker hash algorithm.
+        // If bcrypt fails, that's a fatal error requiring investigation.
+        // 安全：绝不静默降级到更弱的哈希算法。
+        // 如果 bcrypt 失败，那是需要调查的致命错误。
+        bcrypt::hash(raw, self.cost).expect(
+            "BCrypt encoding failed — this is a fatal error, not a condition for fallback",
+        )
     }
 
     fn matches(&self, raw: &str, encoded: &str) -> bool {
@@ -224,27 +225,61 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         use rand::Rng;
         use sha2::Sha256;
 
-        // Generate salt
+        type HmacSha256 = Hmac<Sha256>;
+
+        // Generate random salt
+        // 生成随机盐
         let salt: Vec<u8> = (0..self.salt_length)
             .map(|_| rand::rng().random())
             .collect();
 
-        // Derive key
-        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("unexpected error");
-        mac.update(&salt);
+        // PBKDF2 key derivation per RFC 2898:
+        // DK = T1 || T2 || ... || Tdklen/hlen
+        // Ti = F(Password, Salt, c, i)
+        // F(Password, Salt, c, i) = U1 ^ U2 ^ ... ^ Uc
+        // U1 = PRF(Password, Salt || INT(i))
+        // U2 = PRF(Password, U1)
+        // ...
+        // PBKDF2 密钥推导（RFC 2898）
+        let hash_len = 32; // SHA-256 output size / SHA-256 输出长度
+        let blocks_needed = (self.key_length + hash_len - 1) / hash_len;
+        let mut dk = Vec::with_capacity(blocks_needed * hash_len);
 
-        for _ in 1..self.iterations {
-            mac.update(b"\0");
+        for block_idx in 1..=blocks_needed {
+            // U1 = PRF(Password, Salt || INT(block_idx))
+            let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
+                .expect("HMAC accepts any key length");
+            mac.update(&salt);
+            mac.update(&(block_idx as u32).to_be_bytes());
+            let mut u = mac.finalize().into_bytes();
+            let mut result = u.clone();
+
+            // U2..Uc: each iteration applies PRF(Password, U_prev)
+            // 每次迭代应用 PRF(Password, U_prev)
+            for _ in 1..self.iterations {
+                let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
+                    .expect("HMAC accepts any key length");
+                mac.update(&u);
+                u = mac.finalize().into_bytes();
+                // XOR: result ^= u
+                for (r, u_byte) in result.iter_mut().zip(u.iter()) {
+                    *r ^= u_byte;
+                }
+            }
+
+            dk.extend_from_slice(&result);
         }
 
-        let result = mac.finalize().into_bytes();
+        // Truncate to desired key length
+        // 截断到所需密钥长度
+        dk.truncate(self.key_length);
 
         // Format: iterations$salt$key
         format!(
             "{}${}${}",
             self.iterations,
             hex::encode(&salt),
-            hex::encode(&result[..self.key_length.min(result.len())])
+            hex::encode(&dk)
         )
     }
 
@@ -269,23 +304,45 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
             Err(_) => return false,
         };
 
-        // Derive key from raw password
+        // Derive key from raw password using the same PBKDF2 (RFC 2898)
+        // 使用相同的 PBKDF2（RFC 2898）从原始密码派生密钥
         use hmac::Hmac;
         use hmac::Mac;
         use sha2::Sha256;
 
-        let mut mac = Hmac::<Sha256>::new_from_slice(raw.as_bytes()).expect("unexpected error");
-        mac.update(&salt);
+        type HmacSha256 = Hmac<Sha256>;
+        let hash_len = 32;
 
-        for _ in 1..iterations {
-            mac.update(b"\0");
+        let blocks_needed = (expected_key.len() + hash_len - 1) / hash_len;
+        let mut dk = Vec::with_capacity(blocks_needed * hash_len);
+
+        for block_idx in 1..=blocks_needed {
+            let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
+                .expect("HMAC accepts any key length");
+            mac.update(&salt);
+            mac.update(&(block_idx as u32).to_be_bytes());
+            let mut u = mac.finalize().into_bytes();
+            let mut result = u.clone();
+
+            for _ in 1..iterations {
+                let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
+                    .expect("HMAC accepts any key length");
+                mac.update(&u);
+                u = mac.finalize().into_bytes();
+                for (r, u_byte) in result.iter_mut().zip(u.iter()) {
+                    *r ^= u_byte;
+                }
+            }
+
+            dk.extend_from_slice(&result);
         }
 
-        let result = mac.finalize().into_bytes();
-        let derived_key = &result[..expected_key.len().min(result.len())];
+        dk.truncate(expected_key.len());
 
+        // Constant-time comparison to prevent timing attacks
+        // 常量时间比较以防止时序攻击
         use subtle::ConstantTimeEq;
-        derived_key.ct_eq(&expected_key).into()
+        dk.ct_eq(&expected_key).into()
     }
 }
 
