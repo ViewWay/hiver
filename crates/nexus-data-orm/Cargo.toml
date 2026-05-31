@@ -32,6 +32,9 @@ nexus-data-commons = { path = "../nexus-data-commons" }
 # Data RDBC for reactive database access
 nexus-data-rdbc = { path = "../nexus-data-rdbc" }
 
+# Transaction support
+nexus-tx = { path = "../nexus-tx" }
+
 # Data macros for Model derive
 nexus-data-macros = { path = "../nexus-data-macros" }
 

@@ -262,10 +262,7 @@ pub trait Delete: Send + Sync + Model + Sized {
     where
         Self: Sized,
     {
-        let mut cond = condition.to_string();
-        for (param_idx, _) in (1u32..).zip(params.iter()) {
-            cond = cond.replacen('?', &format!("${param_idx}"), 1);
-        }
+        let cond = nexus_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), cond);
         client
             .execute_params(&sql, params)
@@ -378,10 +375,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         condition: &str,
         params: &[QueryParam],
     ) -> Result<Vec<Self>> {
-        let mut cond = condition.to_string();
-        for (param_idx, _) in (1u32..).zip(params.iter()) {
-            cond = cond.replacen('?', &format!("${param_idx}"), 1);
-        }
+        let cond = nexus_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
         let rows = client
             .fetch_all_params(&sql, params)
@@ -396,10 +390,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         condition: &str,
         params: &[QueryParam],
     ) -> Result<Option<Self>> {
-        let mut cond = condition.to_string();
-        for (param_idx, _) in (1u32..).zip(params.iter()) {
-            cond = cond.replacen('?', &format!("${param_idx}"), 1);
-        }
+        let cond = nexus_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!(
             "SELECT * FROM {} WHERE {} LIMIT 1",
             Self::table_name(),

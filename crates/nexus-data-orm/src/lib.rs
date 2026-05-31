@@ -69,6 +69,7 @@ pub mod migrations;
 pub mod mock_connection;
 pub mod projection;
 pub mod query_runtime;
+pub mod repository;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
 #[cfg(feature = "diesel")]

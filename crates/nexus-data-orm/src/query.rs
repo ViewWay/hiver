@@ -556,11 +556,8 @@ impl<M: Model> QueryBuilder<M> {
                 .wheres
                 .iter()
                 .map(|w| {
-                    let mut condition = w.condition.clone();
-                    for _param in &w.params {
-                        condition = condition.replacen('?', &format!("${param_idx}"), 1);
-                        param_idx += 1;
-                    }
+                    let condition = nexus_data_commons::replace_placeholders(&w.condition, w.params.len(), param_idx);
+                    param_idx += w.params.len() as u32;
                     condition
                 })
                 .collect();
@@ -672,11 +669,8 @@ impl<M: Model> QueryBuilder<M> {
                 .wheres
                 .iter()
                 .map(|w| {
-                    let mut condition = w.condition.clone();
-                    for _ in &w.params {
-                        condition = condition.replacen('?', &format!("${param_idx}"), 1);
-                        param_idx += 1;
-                    }
+                    let condition = nexus_data_commons::replace_placeholders(&w.condition, w.params.len(), param_idx);
+                    param_idx += w.params.len() as u32;
                     condition
                 })
                 .collect();

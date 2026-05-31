@@ -156,6 +156,26 @@ impl ToSql for bool {
     }
 }
 
+/// Replace `?` placeholders in a SQL fragment with `$N` positional parameters.
+/// 将 SQL 片段中的 `?` 占位符替换为 `$N` 位置参数。
+///
+/// # Example / 示例
+///
+/// ```rust
+/// use nexus_data_commons::replace_placeholders;
+/// let sql = replace_placeholders("name = ? AND age > ?", 2, 1);
+/// assert_eq!(sql, "name = $1 AND age > $2");
+/// ```
+pub fn replace_placeholders(sql: &str, param_count: usize, start_idx: u32) -> String {
+    let mut result = sql.to_string();
+    let mut idx = start_idx;
+    for _ in 0..param_count {
+        result = result.replacen('?', &format!("${idx}"), 1);
+        idx += 1;
+    }
+    result
+}
+
 /// Version of the data-commons module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
