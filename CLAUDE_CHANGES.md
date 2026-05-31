@@ -15991,3 +15991,16 @@ Changed `rust-toolchain.toml` from "channel = "1.93"; components = ["rustfmt", "
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:06:32
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `LICENSE`
+### Change Record
+Modified file `LICENSE`. Approximately 265 lines changed.
+### Change Summary
+Changed `LICENSE` from "# hiver Framework License; # hiver 框架许可证; Copyright 2025-2026 hiver Framework Contributors" to "# Hiver Framework - Dual License; # Hiver 框架 - 双重许可; Copyright 2025-2026 Hiver Framework Contributors".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
