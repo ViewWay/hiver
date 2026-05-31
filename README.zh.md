@@ -1,15 +1,15 @@
 <div align="center">
 <p><img alt="Nexus" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Nexus" /></p>
 <p>
-    <a href="https://github.com/nexus-rs/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;
-    <a href="https://github.com/nexus-rs/nexus/blob/main/README.zh.md">简体中文</a>
+    <a href="https://github.com/ViewWay/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;
+    <a href="https://github.com/ViewWay/nexus/blob/main/README.zh.md">简体中文</a>
 </p>
 <p>
-<a href="https://github.com/nexus-rs/nexus/actions">
-    <img alt="build status" src="https://github.com/nexus-rs/nexus/workflows/CI/badge.svg" />
+<a href="https://github.com/ViewWay/nexus/actions">
+    <img alt="build status" src="https://github.com/ViewWay/nexus/workflows/CI/badge.svg" />
 </a>
-<a href="https://codecov.io/gh/nexus-rs/nexus">
-    <img alt="codecov" src="https://img.gov/nexus-rs/nexus/branch/main/graph/badge.svg" />
+<a href="https://codecov.io/gh/ViewWay/nexus">
+    <img alt="codecov" src="https://img.gov/ViewWay/nexus/branch/main/graph/badge.svg" />
 </a>
 <br>
 <a href="https://crates.io/crates/nexus"><img alt="crates.io" src="https://img.shields.io/crates/v/nexus" /></a>
@@ -520,7 +520,7 @@ nexus-starter (Spring Boot 自动配置)
 
 ```bash
 # 克隆仓库
-git clone https://github.com/nexus-rs/nexus.git
+git clone https://github.com/ViewWay/nexus.git
 cd nexus
 
 # 构建
