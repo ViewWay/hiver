@@ -29,11 +29,17 @@ Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定
 ## 🎯 功能特性
 
 - **自定义运行时** - 支持 io-uring 的 thread-per-core 架构
+- **类 Spring 注解** - `#[controller]`、`#[service]`、`#[repository]`、`#[autowired]`、`#[transactional]`、`@Cacheable`、`@PreAuthorize` 等 40+ 注解
+- **数据层** - R2DBC、ORM（ActiveRecord）、Redis、MongoDB、Flyway 迁移、JPA 风格 `#[Entity]`/`#[Table]`/`#[Id]`/`#[Column]`
+- **AI 集成** - OpenAI、Anthropic、Ollama 聊天模型；嵌入；向量存储；函数调用
+- **消息队列** - Kafka、AMQP/RabbitMQ、Spring Events、Spring Integration EIP 模式
+- **云原生** - 服务发现、负载均衡、网关、配置中心、Feign 客户端
+- **安全** - JWT、OAuth2 授权服务器、RBAC、CSRF、`@PreAuthorize`、`@Secured`
 - **高可用** - 熔断器、限流器、重试逻辑
-- **原生 Web3** - 内置区块链和智能合约支持
-- **可观测性** - 兼容 OpenTelemetry 的追踪/指标
-- **类型安全** - 利用 Rust 的类型系统
-- **类 Spring** - Spring Boot 开发者熟悉的模式
+- **原生 Web3** - 内置区块链和智能合约支持（ERC20/ERC721）
+- **可观测性** - 分布式追踪、Micrometer 兼容指标、OpenAPI/Swagger
+- **企业级** - 批处理、状态机、LDAP、Vault、SOAP WS、GraphQL、gRPC、国际化
+- **工具链** - Lombok 风格派生宏、Spring Shell REPL、测试容器、Mock Beans
 
 ## ⚡️ 快速开始
 
@@ -476,33 +482,38 @@ Nexus 从根本上设计为高性能：
 
 | 资源 | 链接 |
 |------|------|
+| **代码地图** | [CODEMAP.md](docs/CODEMAP.md) — 完整 crate 参考、宏索引、依赖图 |
 | **书籍** | [docs.nexusframework.com](https://docs.nexusframework.com) |
 | **API 文档** | [docs.rs/nexus](https://docs.rs/nexus) |
 | **设计规范** | [design-spec.md](docs/design-spec.md) |
 | **实施计划** | [implementation-plan.md](docs/design/implementation-plan.md) |
+| **文档索引** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
 | **示例** | [examples/](examples/) |
 
 ## 🏗️ 架构
 
+**62 个 crate**，覆盖 10 个功能领域。详见 [CODEMAP.md](docs/CODEMAP.md)。
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    应用程序层                                 │
-├─────────────────────────────────────────────────────────────┤
-│  处理器    │  中间件    │  提取器    │  响应                 │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                     Nexus 运行时                              │
-├─────────────────────────────────────────────────────────────┤
-│  任务调度器  │  I/O 驱动器  │  定时器  │  执行器             │
-│  (Thread-per-Core)  │  (io-uring)   │                          │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                     系统层                                   │
-├─────────────────────────────────────────────────────────────┤
-│       io-uring (Linux) / epoll / kqueue                      │
-└─────────────────────────────────────────────────────────────┘
+nexus-starter (Spring Boot 自动配置)
+    │
+    ├── Web:      nexus-http, nexus-router, nexus-extractors, nexus-middleware,
+    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi, nexus-graphql
+    ├── 数据层:   nexus-data-commons, nexus-data-rdbc, nexus-data-orm, nexus-data-redis,
+    │             nexus-data-mongodb, nexus-data-annotations, nexus-data-macros, nexus-flyway
+    ├── 安全:     nexus-security, nexus-session
+    ├── AOP:      nexus-aop, nexus-tx
+    ├── 消息:     nexus-events, nexus-events-macros, nexus-kafka, nexus-amqp,
+    │             nexus-integration, nexus-websocket-stomp
+    ├── 基础设施: nexus-runtime, nexus-core, nexus-macros, nexus-lombok, nexus-config,
+    │             nexus-exceptions, nexus-spel
+    ├── 云原生:   nexus-cloud, nexus-ai, nexus-agent, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
+    ├── 弹性:     nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator,
+    │             nexus-retry, nexus-retry-macros
+    ├── 企业级:   nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws,
+    │             nexus-i18n, nexus-modulith
+    └── 工具链:   nexus-test, nexus-shell, nexus-shell-macros, nexus-benches, nexus-validation,
+                  nexus-validation-annotations, nexus-cache
 ```
 
 ## 🛠️ 开发
@@ -532,7 +543,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha 版本**
 >
-> Nexus 目前处于 **第 7 阶段：生产就绪**（100% 完成）。第 0-7 阶段全部完成，包括自定义异步运行时、HTTP 服务器、中间件系统、弹性模式、可观测性、Web3 支持和性能基准测试。
+> Nexus 目前处于 **第 8 阶段：数据层**（进行中）。第 0–7 阶段已完成。框架现有 **62 个 crate**，覆盖完整的 Spring Boot 功能集——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。
 
 | 阶段 | 状态 | 描述 |
 |------|------|------|
@@ -544,6 +555,7 @@ cargo clippy --workspace -- -D warnings
 | Phase 5 | ✅ 完成 | 可观测性 |
 | Phase 6 | ✅ 完成 | Web3 集成 |
 | Phase 7 | ✅ 完成 | 性能和加固 |
+| Phase 8 | 🔄 进行中 | 数据层（R2DBC、ORM、Redis、MongoDB、Flyway）— 8.1–8.3 核心模块已完成，结构重构进行中 |
 
 详情请参阅 [实施计划](docs/design/implementation-plan.md)。
 
