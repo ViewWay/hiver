@@ -450,12 +450,22 @@ impl<M: Model> QueryBuilder<M> {
     ///     .join(JoinType::Inner, "posts", "users.id = posts.user_id")
     ///     .all().await?;
     /// ```
+    /// Validate a JOIN ON condition to reject SQL injection patterns.
+    /// 验证 JOIN ON 条件以拒绝 SQL 注入模式。
+    fn validate_on_condition(on: &str) {
+        assert!(
+            !on.contains('\'') && !on.contains(';') && !on.contains("--") && !on.contains("/*"),
+            "JOIN ON condition contains disallowed characters (quotes, semicolons, or comments): {on}"
+        );
+    }
+
     #[must_use]
     pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self {
         assert!(
             validate_identifier(table),
             "join table must contain only alphanumeric characters and underscores, got: {table}"
         );
+        Self::validate_on_condition(on);
         self.joins.push(Join::new(join_type, table, on));
         self
     }
@@ -498,11 +508,19 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Add a having clause
     /// 添加 HAVING 子句
+    ///
+    /// # Security / 安全
+    ///
+    /// Callers MUST NOT pass untrusted user input into this condition string.
+    /// The condition is a raw SQL fragment interpolated directly into the HAVING clause.
+    ///
+    /// 调用者不得将不受信任的用户输入传入此条件字符串。
+    /// 该条件是直接插入 HAVING 子句的原始 SQL 片段。
     #[must_use]
     pub fn having(mut self, condition: &str) -> Self {
         assert!(
-            validate_identifier(condition),
-            "having column must contain only alphanumeric characters and underscores, got: {condition}"
+            !condition.contains('\'') && !condition.contains(';') && !condition.contains("--") && !condition.contains("/*"),
+            "HAVING condition contains disallowed characters (quotes, semicolons, or comments): {condition}"
         );
         self.having = Some(condition.to_string());
         self

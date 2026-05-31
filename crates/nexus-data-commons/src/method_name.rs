@@ -100,6 +100,18 @@ pub enum Condition {
         /// Field name / 字段名
         field: String,
     },
+    /// Not like: field NOT LIKE value
+    /// 不匹配
+    NotLike {
+        /// Field name / 字段名
+        field: String,
+    },
+    /// Not in: field NOT IN (values)
+    /// 不包含于
+    NotIn {
+        /// Field name / 字段名
+        field: String,
+    },
     /// IS NULL: field IS NULL
     /// 为空
     IsNull {
@@ -153,6 +165,8 @@ impl Condition {
             | Condition::LessThan { field }
             | Condition::Between { field }
             | Condition::In { field }
+            | Condition::NotLike { field }
+            | Condition::NotIn { field }
             | Condition::IsNull { field }
             | Condition::IsNotNull { field }
             | Condition::True { field }
@@ -176,6 +190,8 @@ impl Condition {
             Condition::LessThan { .. } => "<",
             Condition::Between { .. } => "BETWEEN",
             Condition::In { .. } => "IN",
+            Condition::NotLike { .. } => "NOT LIKE",
+            Condition::NotIn { .. } => "NOT IN",
             Condition::IsNull { .. } => "IS NULL",
             Condition::IsNotNull { .. } => "IS NOT NULL",
             Condition::True { .. } => "=",
@@ -690,7 +706,7 @@ impl MethodName {
             ConditionType::Like => Condition::Like {
                 field: field.to_string(),
             },
-            ConditionType::NotLike => Condition::NotEquals {
+            ConditionType::NotLike => Condition::NotLike {
                 field: field.to_string(),
             },
             ConditionType::StartingWith => Condition::StartingWith {
@@ -723,7 +739,7 @@ impl MethodName {
             ConditionType::In => Condition::In {
                 field: field.to_string(),
             },
-            ConditionType::NotIn => Condition::NotEquals {
+            ConditionType::NotIn => Condition::NotIn {
                 field: field.to_string(),
             },
             ConditionType::IsNull => Condition::IsNull {
