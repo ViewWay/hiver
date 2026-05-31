@@ -1,0 +1,66 @@
+/* ===== Nexus Framework Brand Theme ===== */
+
+:root {
+    --nexus-primary: #0066CC;
+    --nexus-primary-dark: #004C99;
+    --nexus-primary-light: #E8F0FE;
+    --nexus-accent: #FF6B35;
+    --nexus-bg-light: #FAFBFC;
+    --nexus-bg-sidebar: #F0F4F8;
+    --nexus-text: #2C3E50;
+    --nexus-text-muted: #6B7280;
+    --nexus-code-bg: #F5F7FA;
+    --nexus-border: #E1E8ED;
+}
+
+/* Sidebar */
+.sidebar { border-right: 2px solid var(--nexus-border) !important; background: var(--nexus-bg-sidebar) !important; }
+.menu-title { color: var(--nexus-primary) !important; font-weight: 800 !important; font-size: 1.3em !important; letter-spacing: -0.02em; }
+
+/* Content */
+.content { max-width: 960px; line-height: 1.7; color: var(--nexus-text); }
+.content h1 { border-bottom: 3px solid var(--nexus-primary); padding-bottom: 0.5rem; color: var(--nexus-primary-dark); }
+.content h2 { border-bottom: 1px solid var(--nexus-border); padding-bottom: 0.3rem; }
+.content h3 { color: var(--nexus-primary-dark); }
+
+/* Code */
+code { background: var(--nexus-code-bg) !important; border-radius: 4px; padding: 0.15em 0.4em; font-size: 0.9em; }
+pre { border: 1px solid var(--nexus-border) !important; border-radius: 8px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 1rem !important; }
+pre code { background: transparent !important; padding: 0; }
+
+/* Tables */
+.content table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.95em; }
+.content th { background: var(--nexus-primary); color: white; padding: 0.6rem 1rem; text-align: left; font-weight: 600; }
+.content td { padding: 0.5rem 1rem; border-bottom: 1px solid var(--nexus-border); }
+.content tr:hover { background: var(--nexus-primary-light); }
+
+/* Links */
+.content a { color: var(--nexus-primary); text-decoration: none; border-bottom: 1px solid transparent; transition: border-bottom 0.2s; }
+.content a:hover { border-bottom-color: var(--nexus-primary); }
+
+/* Blockquotes */
+blockquote { border-left: 4px solid var(--nexus-primary) !important; background: var(--nexus-bg-light); padding: 0.8rem 1.2rem !important; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+
+/* Navigation */
+.nav-chapters { color: var(--nexus-primary) !important; }
+.nav-chapters:hover { color: var(--nexus-accent) !important; }
+
+/* Search */
+#searchbar { border: 1px solid var(--nexus-border); border-radius: 6px; padding: 0.5rem 0.8rem; }
+#searchbar:focus { border-color: var(--nexus-primary); box-shadow: 0 0 0 3px var(--nexus-primary-light); outline: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--nexus-bg-light); }
+::-webkit-scrollbar-thumb { background: var(--nexus-border); border-radius: 4px; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .content { padding: 1rem; }
+    .content table { display: block; overflow-x: auto; }
+}
+
+/* Print */
+@media print {
+    .sidebar, .nav-chapters, #theme-list, #searchbar { display: none !important; }
+}

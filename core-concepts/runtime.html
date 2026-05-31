@@ -1,0 +1,1138 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Runtime / 运行时 - Nexus Framework Guide / Nexus框架指南</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-like annotations, and comprehensive feature set.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-3ecb9f02.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="runtime--运行时"><a class="header" href="#runtime--运行时">Runtime / 运行时</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Phase 1 Complete ✅<br><strong>状态</strong>: 第1阶段已完成 ✅</p>
+</blockquote>
+<hr>
+<h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
+<p>The Nexus runtime (<code>nexus-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
+<p>Nexus 运行时（<code>nexus-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
+<h2 id="key-design-principles--核心设计原则"><a class="header" href="#key-design-principles--核心设计原则">Key Design Principles / 核心设计原则</a></h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                     Nexus Runtime                            │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   Task      │  │   Timer     │  │   Channel   │         │
+│  │  Scheduler  │  │   Wheel     │  │   (MPSC)    │         │
+│  └──────┬──────┘  └──────┬──────┘  └─────────────┘         │
+│         │                │                                  │
+│  ┌──────┴────────────────┴──────┐                          │
+│  │         I/O Driver           │                          │
+│  │  io-uring / epoll / kqueue   │                          │
+│  └──────────────────────────────┘                          │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>Why custom runtime?</strong> / <strong>为什么自定义运行时？</strong></p>
+<ol>
+<li><strong>io-uring first</strong> - Linux 5.1+ offers 70% fewer syscalls vs epoll</li>
+<li><strong>Thread-per-core</strong> - Better cache locality, no lock contention</li>
+<li><strong>Optimized for web</strong> - Tailored for HTTP request/response patterns</li>
+<li><strong>Zero overhead</strong> - Only pay for what you use</li>
+</ol>
+<p><strong>io-uring优先</strong> - Linux 5.1+ 比 epoll 减少 70% 系统调用<br><strong>Thread-per-core</strong> - 更好的缓存局部性，无锁竞争<br><strong>为 Web 优化</strong> - 针对 HTTP 请求/响应模式定制<br><strong>零开销</strong> - 只为使用的功能付费</p>
+<hr>
+<h2 id="getting-started--入门"><a class="header" href="#getting-started--入门">Getting Started / 入门</a></h2>
+<h3 id="installation--安装"><a class="header" href="#installation--安装">Installation / 安装</a></h3>
+<p>Add to your <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[dependencies]
+nexus-runtime = "0.1.0-alpha"
+</code></pre>
+<h3 id="hello-runtime--你好运行时"><a class="header" href="#hello-runtime--你好运行时">Hello Runtime / 你好，运行时</a></h3>
+<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+
+fn main() -&gt; std::io::Result&lt;()&gt; {
+    // Create runtime / 创建运行时
+    let mut runtime = Runtime::new()?;
+    
+    // Execute async code / 执行异步代码
+    runtime.block_on(async {
+        println!("Hello from Nexus runtime!");
+    })?;
+    
+    Ok(())
+}</code></pre>
+<h3 id="with-configuration--带配置"><a class="header" href="#with-configuration--带配置">With Configuration / 带配置</a></h3>
+<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, DriverType};
+use std::time::Duration;
+
+fn main() -&gt; std::io::Result&lt;()&gt; {
+    let mut runtime = Runtime::builder()
+        .worker_threads(4)              // 4 worker threads
+        .driver_type(DriverType::Auto)  // Auto-detect best driver
+        .io_entries(512)                // I/O queue depth
+        .park_timeout(Duration::from_millis(100))
+        .build()?;
+    
+    runtime.block_on(async {
+        // Your async code here
+    })?;
+    
+    Ok(())
+}</code></pre>
+<hr>
+<h2 id="io-drivers--io-驱动器"><a class="header" href="#io-drivers--io-驱动器">I/O Drivers / I/O 驱动器</a></h2>
+<h3 id="automatic-driver-selection--自动驱动选择"><a class="header" href="#automatic-driver-selection--自动驱动选择">Automatic Driver Selection / 自动驱动选择</a></h3>
+<p>Nexus automatically selects the best I/O driver for your platform:</p>
+<p>Nexus 自动为您的平台选择最佳 I/O 驱动器：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Platform</th><th>Primary Driver</th><th>Fallback</th><th>Performance</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Linux 5.1+</strong></td><td>io-uring</td><td>epoll</td><td>⚡⚡⚡ Best</td></tr>
+<tr><td><strong>Linux &lt; 5.1</strong></td><td>epoll</td><td>-</td><td>⚡⚡ Good</td></tr>
+<tr><td><strong>macOS/BSD</strong></td><td>kqueue</td><td>-</td><td>⚡⚡ Good</td></tr>
+<tr><td><strong>Windows</strong></td><td>IOCP (planned)</td><td>-</td><td>📋 Future</td></tr>
+</tbody>
+</table>
+</div>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{Runtime, DriverType};
+
+// Auto-detect (recommended) / 自动检测（推荐）
+let runtime = Runtime::new()?;
+
+// Or force specific driver / 或强制特定驱动
+let runtime = Runtime::builder()
+    .driver_type(DriverType::IOUring)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h3 id="io-uring-the-modern-approach--io-uring现代方法"><a class="header" href="#io-uring-the-modern-approach--io-uring现代方法">io-uring: The Modern Approach / io-uring：现代方法</a></h3>
+<p><strong>Traditional epoll</strong> / <strong>传统epoll</strong>:</p>
+<pre><code>每个I/O操作需要2+次系统调用：
+1. submit操作（syscall）
+2. epoll_wait（syscall）
+3. read/write（syscall）
+
+Result: High syscall overhead
+结果：高系统调用开销
+</code></pre>
+<p><strong>io-uring</strong> / <strong>io-uring</strong>:</p>
+<pre><code>批量I/O操作只需1次系统调用：
+1. 提交10个操作到SQ（submission queue）
+2. io_uring_enter（syscall）
+3. 从CQ（completion queue）读取结果（无syscall）
+
+Result: 70% fewer syscalls, 40% lower latency
+结果：减少70%系统调用，降低40%延迟
+</code></pre>
+<p><strong>Visual Comparison</strong> / <strong>可视化对比</strong>:</p>
+<pre><code>epoll:                           io-uring:
+用户态   内核态                   用户态   内核态
+
+accept() ────► [syscall]         [SQE] ────┐
+                                 [SQE]      │
+read() ──────► [syscall]         [SQE]      ├─► [syscall]
+                                 [SQE]      │   (1 time)
+write() ─────► [syscall]         [SQE] ────┘
+                                     ▼
+epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
+                                 [CQE]
+                                 [CQE]
+
+4 syscalls                       1 syscall
+</code></pre>
+<hr>
+<h2 id="task-scheduling--任务调度"><a class="header" href="#task-scheduling--任务调度">Task Scheduling / 任务调度</a></h2>
+<h3 id="thread-per-core-scheduler--thread-per-core-调度器"><a class="header" href="#thread-per-core-scheduler--thread-per-core-调度器">Thread-per-Core Scheduler / Thread-per-Core 调度器</a></h3>
+<p><strong>Design Philosophy</strong> / <strong>设计哲学</strong>:</p>
+<p>Each CPU core runs an independent task queue with no synchronization:</p>
+<p>每个 CPU 核心运行独立的任务队列，无需同步：</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│            Thread-per-core Architecture                      │
+│            Thread-per-core 架构                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Core 0         Core 1         Core 2         Core 3        │
+│  ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐       │
+│  │Queue │      │Queue │      │Queue │      │Queue │       │
+│  │ [T1] │      │ [T5] │      │ [T9] │      │[T13] │       │
+│  │ [T2] │      │ [T6] │      │[T10] │      │[T14] │       │
+│  │ [T3] │      │ [T7] │      │[T11] │      │[T15] │       │
+│  │ [T4] │      │ [T8] │      │[T12] │      │[T16] │       │
+│  └──────┘      └──────┘      └──────┘      └──────┘       │
+│     │              │              │              │          │
+│     ▼              ▼              ▼              ▼          │
+│  ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐       │
+│  │Driver│      │Driver│      │Driver│      │Driver│       │
+│  │ (io) │      │ (io) │      │ (io) │      │ (io) │       │
+│  └──────┘      └──────┘      └──────┘      └──────┘       │
+│                                                              │
+│  Benefits / 优势:                                           │
+│  ✅ No lock contention / 无锁竞争                            │
+│  ✅ Better CPU cache locality / 更好的CPU缓存局部性           │
+│  ✅ Predictable latency / 可预测的延迟                       │
+│  ✅ Linear scalability / 线性可扩展性                        │
+│                                                              │
+│  Trade-offs / 权衡:                                         │
+│  ⚠️ Possible load imbalance / 可能的负载不平衡               │
+│  ⚠️ Not ideal for CPU-bound tasks / 不适合CPU密集型任务      │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="timer-wheel--时间轮"><a class="header" href="#timer-wheel--时间轮">Timer Wheel / 时间轮</a></h2>
+<h3 id="hierarchical-4-wheel-design--分层-4-轮设计"><a class="header" href="#hierarchical-4-wheel-design--分层-4-轮设计">Hierarchical 4-Wheel Design / 分层 4 轮设计</a></h3>
+<p>Nexus uses a hierarchical timer wheel for O(1) timer operations:</p>
+<p>Nexus 使用分层时间轮实现 O(1) 定时器操作：</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│              Hierarchical Timer Wheel                        │
+│              分层时间轮                                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Wheel 0: 1ms precision × 256 slots = 0-255ms               │
+│  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐                 │
+│  │ 0 │ 1 │ 2 │...│254│255│   │   │   │   │  1ms/slot       │
+│  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘                 │
+│         ▲                                                     │
+│         │ Current tick / 当前刻度                            │
+│         │ Overflow ↓                                         │
+│                                                              │
+│  Wheel 1: 256ms × 256 slots = 0-65s                         │
+│  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐                 │
+│  │ 0 │ 1 │ 2 │...│254│255│   │   │   │   │  256ms/slot     │
+│  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘                 │
+│         │ Overflow ↓                                         │
+│                                                              │
+│  Wheel 2: 65s × 256 slots = 0-4.6h                          │
+│  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐                 │
+│  │ 0 │ 1 │ 2 │...│254│255│   │   │   │   │  65s/slot       │
+│  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘                 │
+│         │ Overflow ↓                                         │
+│                                                              │
+│  Wheel 3: 4.6h × 256 slots = 0-49 days                      │
+│  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐                 │
+│  │ 0 │ 1 │ 2 │...│254│255│   │   │   │   │  4.6h/slot      │
+│  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘                 │
+│                                                              │
+│  Operations / 操作:                                          │
+│  ✅ Insert: O(1) - Find slot by time / 按时间找槽位          │
+│  ✅ Remove: O(1) - Direct access / 直接访问                  │
+│  ✅ Tick: O(1) amortized - Process expired / 处理过期        │
+│  ✅ Memory: O(n) where n = timer count / n=定时器数量        │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="timer-api--定时器-api"><a class="header" href="#timer-api--定时器-api">Timer API / 定时器 API</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{sleep, sleep_until, Duration, Instant};
+
+async fn timer_examples() {
+    // Sleep for duration / 休眠一段时间
+    sleep(Duration::from_secs(2)).await;
+    println!("2 seconds passed");
+    
+    // Sleep until specific time / 休眠到特定时间
+    let deadline = Instant::now() + Duration::from_secs(5);
+    sleep_until(deadline).await;
+    
+    // Periodic timer / 周期定时器
+    loop {
+        sleep(Duration::from_millis(100)).await;
+        println!("Tick every 100ms");
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="timeout-pattern--超时模式"><a class="header" href="#timeout-pattern--超时模式">Timeout Pattern / 超时模式</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{select_two, sleep, Duration};
+use nexus_runtime::select::SelectTwoOutput;
+
+async fn with_timeout() {
+    let operation = async {
+        // Slow operation / 慢操作
+        expensive_computation().await
+    };
+    
+    let timeout = sleep(Duration::from_secs(5));
+    
+    match select_two(operation, timeout).await {
+        SelectTwoOutput::First(result) =&gt; {
+            println!("Completed: {:?}", result);
+        }
+        SelectTwoOutput::Second(_) =&gt; {
+            println!("Timeout!");
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="async-channels--异步通道"><a class="header" href="#async-channels--异步通道">Async Channels / 异步通道</a></h2>
+<h3 id="mpsc-channels--mpsc-通道"><a class="header" href="#mpsc-channels--mpsc-通道">MPSC Channels / MPSC 通道</a></h3>
+<p>Multiple-producer, single-consumer channels for task communication:</p>
+<p>多生产者、单消费者通道用于任务通信：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{bounded, unbounded, spawn};
+
+async fn channel_demo() {
+    // Bounded channel (backpressure) / 有界通道（背压）
+    let (tx, rx) = bounded::&lt;i32&gt;(10);
+    
+    // Spawn producer / 生成生产者
+    spawn(async move {
+        for i in 0..20 {
+            tx.send(i).await.unwrap();
+            println!("Sent: {}", i);
+        }
+    });
+    
+    // Consume values / 消费值
+    while let Ok(value) = rx.recv().await {
+        println!("Received: {}", value);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="bounded-vs-unbounded--有界-vs-无界"><a class="header" href="#bounded-vs-unbounded--有界-vs-无界">Bounded vs Unbounded / 有界 vs 无界</a></h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                  Bounded Channel                             │
+│                  有界通道                                     │
+├─────────────────────────────────────────────────────────────┤
+│  ✅ Backpressure: Senders wait when full                     │
+│  ✅ Bounded memory usage                                     │
+│  ✅ Flow control                                             │
+│  ⚠️ Can block senders                                        │
+│                                                              │
+│  Use for: / 适用于：                                         │
+│  - Network I/O                                               │
+│  - Rate limiting                                             │
+│  - Resource management                                       │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                 Unbounded Channel                            │
+│                 无界通道                                      │
+├─────────────────────────────────────────────────────────────┤
+│  ✅ No blocking on send                                      │
+│  ✅ Always available                                         │
+│  ⚠️ Unbounded memory growth                                  │
+│  ⚠️ Can cause OOM                                            │
+│                                                              │
+│  Use for: / 适用于：                                         │
+│  - Rare events                                               │
+│  - Shutdown signals                                          │
+│  - Low-frequency messages                                    │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>Example</strong> / <strong>示例</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{bounded, unbounded};
+
+// Producer-consumer with backpressure / 带背压的生产者-消费者
+let (tx, rx) = bounded::&lt;WorkItem&gt;(100);
+
+// Shutdown signal (rare event) / 关闭信号（罕见事件）
+let (shutdown_tx, shutdown_rx) = unbounded::&lt;()&gt;();
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="task-spawning--任务生成"><a class="header" href="#task-spawning--任务生成">Task Spawning / 任务生成</a></h2>
+<h3 id="basic-task-spawning--基本任务生成"><a class="header" href="#basic-task-spawning--基本任务生成">Basic Task Spawning / 基本任务生成</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{spawn, JoinHandle};
+
+async fn task_example() {
+    // Spawn single task / 生成单个任务
+    let handle = spawn(async {
+        println!("Background task");
+        42
+    });
+    
+    // Wait for result / 等待结果
+    let result = handle.wait().await.unwrap();
+    assert_eq!(result, 42);
+}
+<span class="boring">}</span></code></pre>
+<h3 id="concurrent-tasks--并发任务"><a class="header" href="#concurrent-tasks--并发任务">Concurrent Tasks / 并发任务</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::spawn;
+
+async fn parallel_processing() {
+    let mut handles = Vec::new();
+    
+    // Spawn 10 tasks / 生成 10 个任务
+    for i in 0..10 {
+        let handle = spawn(async move {
+            // Process item / 处理项目
+            process_item(i).await
+        });
+        handles.push(handle);
+    }
+    
+    // Wait for all / 等待全部完成
+    for handle in handles {
+        let result = handle.wait().await.unwrap();
+        println!("Result: {:?}", result);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="task-lifecycle--任务生命周期"><a class="header" href="#task-lifecycle--任务生命周期">Task Lifecycle / 任务生命周期</a></h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    Task Lifecycle                            │
+│                    任务生命周期                               │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  spawn()                                                     │
+│    │                                                         │
+│    ▼                                                         │
+│  Created ──────────► Running                                │
+│  创建                运行                                     │
+│                        │                                     │
+│                        │ poll() returns Pending              │
+│                        ▼                                     │
+│                     Waiting ◄─────┐                         │
+│                     等待           │                         │
+│                        │          │                         │
+│                        │ wake()   │ poll() → Pending        │
+│                        │          │                         │
+│                        └──────────┘                         │
+│                        │                                     │
+│                        │ poll() returns Ready                │
+│                        ▼                                     │
+│                    Completed                                 │
+│                    完成                                      │
+│                        │                                     │
+│                        ▼                                     │
+│              JoinHandle::wait() returns result               │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="select-macro--select-宏"><a class="header" href="#select-macro--select-宏">Select! Macro / Select! 宏</a></h2>
+<p>Wait on multiple futures concurrently:</p>
+<p>并发等待多个 future：</p>
+<h3 id="select-two--选择两个"><a class="header" href="#select-two--选择两个">Select Two / 选择两个</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{select_two, bounded};
+use nexus_runtime::select::SelectTwoOutput;
+
+async fn select_demo() {
+    let (tx1, rx1) = bounded::&lt;i32&gt;(1);
+    let (tx2, rx2) = bounded::&lt;String&gt;(1);
+    
+    tx1.send(42).await.unwrap();
+    
+    // Wait on both futures / 等待两个future
+    match select_two(rx1.recv(), rx2.recv()).await {
+        SelectTwoOutput::First(v) =&gt; {
+            println!("Received int: {:?}", v);
+        }
+        SelectTwoOutput::Second(v) =&gt; {
+            println!("Received string: {:?}", v);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="select-multiple--选择多个"><a class="header" href="#select-multiple--选择多个">Select Multiple / 选择多个</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::select_multiple;
+use nexus_runtime::select::SelectMultipleOutput;
+
+async fn select_many() {
+    let futures = vec![
+        Box::pin(async { fetch_user(1).await }),
+        Box::pin(async { fetch_user(2).await }),
+        Box::pin(async { fetch_user(3).await }),
+    ];
+    
+    // Returns the first completed result / 返回第一个完成的结果
+    match select_multiple(futures).await {
+        SelectMultipleOutput::Completed(index, user) =&gt; {
+            println!("User at index {}: {:?}", index, user);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="network-io--网络-io"><a class="header" href="#network-io--网络-io">Network I/O / 网络 I/O</a></h2>
+<h3 id="tcp-server--tcp-服务器"><a class="header" href="#tcp-server--tcp-服务器">TCP Server / TCP 服务器</a></h3>
+<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, io::TcpListener, spawn};
+
+fn main() -&gt; std::io::Result&lt;()&gt; {
+    let mut runtime = Runtime::new()?;
+    
+    runtime.block_on(async {
+        let listener = TcpListener::bind("127.0.0.1:8080").await?;
+        println!("Listening on 127.0.0.1:8080");
+        
+        loop {
+            let (mut stream, addr) = listener.accept().await?;
+            println!("Connection from: {}", addr);
+            
+            // Spawn task for each connection / 为每个连接生成任务
+            spawn(async move {
+                let mut buf = [0u8; 1024];
+                
+                loop {
+                    // Read data / 读取数据
+                    let n = stream.read(&amp;mut buf).await?;
+                    if n == 0 { break; } // Connection closed / 连接关闭
+                    
+                    // Echo back / 回显
+                    stream.write_all(&amp;buf[..n]).await?;
+                }
+                
+                Ok::&lt;_, std::io::Error&gt;(())
+            });
+        }
+    })?;
+    
+    Ok(())
+}</code></pre>
+<h3 id="tcp-client--tcp-客户端"><a class="header" href="#tcp-client--tcp-客户端">TCP Client / TCP 客户端</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{Runtime, io::TcpStream};
+
+async fn tcp_client() -&gt; std::io::Result&lt;()&gt; {
+    // Connect to server / 连接到服务器
+    let mut stream = TcpStream::connect("127.0.0.1:8080").await?;
+    
+    // Send data / 发送数据
+    stream.write_all(b"Hello, server!").await?;
+    
+    // Read response / 读取响应
+    let mut buf = [0u8; 1024];
+    let n = stream.read(&amp;mut buf).await?;
+    
+    println!("Server response: {}", String::from_utf8_lossy(&amp;buf[..n]));
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre>
+<h3 id="udp-socket--udp-套接字"><a class="header" href="#udp-socket--udp-套接字">UDP Socket / UDP 套接字</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{Runtime, io::UdpSocket};
+
+async fn udp_example() -&gt; std::io::Result&lt;()&gt; {
+    // Bind socket / 绑定套接字
+    let socket = UdpSocket::bind("127.0.0.1:0").await?;
+    
+    // Send datagram / 发送数据报
+    socket.send_to(b"Hello, UDP!", "127.0.0.1:8080").await?;
+    
+    // Receive datagram / 接收数据报
+    let mut buf = [0u8; 1024];
+    let (n, addr) = socket.recv_from(&amp;mut buf).await?;
+    
+    println!("Received from {}: {}", 
+        addr, 
+        String::from_utf8_lossy(&amp;buf[..n])
+    );
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="advanced-topics--高级主题"><a class="header" href="#advanced-topics--高级主题">Advanced Topics / 高级主题</a></h2>
+<h3 id="runtime-configuration--运行时配置"><a class="header" href="#runtime-configuration--运行时配置">Runtime Configuration / 运行时配置</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{Runtime, DriverType};
+use std::time::Duration;
+
+let runtime = Runtime::builder()
+    // ===== Scheduler Configuration / 调度器配置 =====
+    .worker_threads(8)              // 8 worker threads (default: CPU count)
+    .queue_size(1024)               // Task queue size (default: 256)
+    .thread_name("my-worker")       // Thread name prefix
+    
+    // ===== Driver Configuration / 驱动配置 =====
+    .driver_type(DriverType::Auto)  // Auto | IOUring | Epoll | Kqueue
+    .io_entries(2048)               // I/O queue depth (default: 256)
+    
+    // ===== Thread Parking / 线程休眠 =====
+    .enable_parking(true)           // Allow threads to park when idle
+    .park_timeout(Duration::from_millis(100))
+    
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h3 id="driver-configuration--驱动配置"><a class="header" href="#driver-configuration--驱动配置">Driver Configuration / 驱动配置</a></h3>
+<p>The <code>DriverConfig</code> builder provides fine-grained control over I/O driver behavior:</p>
+<p><code>DriverConfig</code> 构建器提供对 I/O 驱动器行为的精细控制：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::driver::DriverConfig;
+
+let config = DriverConfig::builder()
+    .entries(2048)              // SQ/CQ size (rounded to next power of 2)
+    .submit_wait(true)          // Wait for completion on submit (blocking mode)
+    .cpu_affinity(0)            // Pin driver thread to CPU core 0
+    .defer_wakeup(true)         // Enable deferred task wake-up
+    .max_ops_per_fd(64)         // Max concurrent operations per file descriptor
+    .build();
+<span class="boring">}</span></code></pre>
+<p>Then pass the config when building the runtime:</p>
+<p>然后在构建运行时时传入配置：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::{Runtime, RuntimeConfig, DriverType};
+
+// Build a RuntimeConfig with custom driver settings
+// 使用自定义驱动设置构建 RuntimeConfig
+let mut config = RuntimeConfig::default();
+config.driver_type = DriverType::IOUring;
+config.driver_io = driver_config;
+
+let mut runtime = Runtime::builder()
+    .config(config)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h3 id="performance-tuning--性能调优"><a class="header" href="#performance-tuning--性能调优">Performance Tuning / 性能调优</a></h3>
+<p><strong>For high-throughput web servers</strong> / <strong>高吞吐量 Web 服务器</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let runtime = Runtime::builder()
+    .worker_threads(num_cpus::get())    // One thread per core
+    .driver_type(DriverType::IOUring)   // Use io-uring on Linux
+    .io_entries(1024)                   // Large I/O queue
+    .enable_parking(false)              // Never park threads
+    .build()?;
+<span class="boring">}</span></code></pre>
+<p><strong>For low-latency services</strong> / <strong>低延迟服务</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let runtime = Runtime::builder()
+    .worker_threads(num_cpus::get())
+    .io_entries(256)                    // Smaller queue for lower latency
+    .park_timeout(Duration::from_millis(10))  // Quick wake-up
+    .build()?;
+<span class="boring">}</span></code></pre>
+<p><strong>For CPU-bound workloads</strong> / <strong>CPU 密集型工作负载</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::driver::DriverConfig;
+
+let driver_config = DriverConfig::builder()
+    .entries(512)
+    .submit_wait(true)                  // Blocking submit for CPU efficiency
+    .cpu_affinity(0)                    // Pin to specific core
+    .defer_wakeup(false)                // Immediate wake-up
+    .build();
+
+let mut config = RuntimeConfig::default();
+config.driver_io = driver_config;
+
+let runtime = Runtime::builder()
+    .worker_threads(num_cpus::get())
+    .config(config)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h3 id="platform-specific-optimizations--平台特定优化"><a class="header" href="#platform-specific-optimizations--平台特定优化">Platform-Specific Optimizations / 平台特定优化</a></h3>
+<p><strong>Linux io-uring</strong> / <strong>Linux io-uring</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::driver::DriverConfig;
+
+let config = DriverConfig::builder()
+    .entries(2048)              // SQ/CQ size (rounded to next power of 2)
+    .submit_wait(false)         // Non-blocking submit for async
+    .cpu_affinity(0)            // Pin driver thread to core 0
+    .defer_wakeup(true)         // Batch wake-ups for efficiency
+    .max_ops_per_fd(64)         // More ops per FD for high throughput
+    .build();
+
+let mut runtime_config = RuntimeConfig::default();
+runtime_config.driver_type = DriverType::IOUring;
+runtime_config.driver_io = config;
+
+let mut runtime = Runtime::builder()
+    .config(runtime_config)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<p><strong>macOS kqueue</strong> / <strong>macOS kqueue</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// kqueue is used automatically on macOS / macOS 自动使用 kqueue
+// No special configuration needed / 无需特殊配置
+let runtime = Runtime::new()?;
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="best-practices--最佳实践"><a class="header" href="#best-practices--最佳实践">Best Practices / 最佳实践</a></h2>
+<h3 id="1-task-management--任务管理"><a class="header" href="#1-task-management--任务管理">1. Task Management / 任务管理</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ✅ Good: Spawn tasks for concurrent work / 好：为并发工作生成任务
+for request in requests {
+    spawn(async move {
+        handle_request(request).await
+    });
+}
+
+// ❌ Bad: Sequential processing / 不好：顺序处理
+for request in requests {
+    handle_request(request).await; // Blocks other requests
+}
+<span class="boring">}</span></code></pre>
+<h3 id="2-channel-usage--通道使用"><a class="header" href="#2-channel-usage--通道使用">2. Channel Usage / 通道使用</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ✅ Good: Use bounded channels for backpressure / 好：使用有界通道实现背压
+let (tx, rx) = bounded::&lt;Message&gt;(100);
+
+// ❌ Bad: Unbounded can cause memory issues / 不好：无界可能导致内存问题
+let (tx, rx) = unbounded::&lt;Message&gt;();
+<span class="boring">}</span></code></pre>
+<h3 id="3-error-handling--错误处理"><a class="header" href="#3-error-handling--错误处理">3. Error Handling / 错误处理</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ✅ Good: Handle errors properly / 好：正确处理错误
+spawn(async {
+    match risky_operation().await {
+        Ok(result) =&gt; process(result),
+        Err(e) =&gt; {
+            tracing::error!("Operation failed: {}", e);
+            // Handle error / 处理错误
+        }
+    }
+});
+
+// ❌ Bad: Unhandled panics crash the runtime / 不好：未处理的panic会崩溃运行时
+spawn(async {
+    risky_operation().await.unwrap(); // Can panic!
+});
+<span class="boring">}</span></code></pre>
+<h3 id="4-resource-cleanup--资源清理"><a class="header" href="#4-resource-cleanup--资源清理">4. Resource Cleanup / 资源清理</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use nexus_runtime::spawn;
+
+async fn resource_example() {
+    let file = open_file().await?;
+    
+    // ✅ Good: Use guards for cleanup / 好：使用guard清理
+    let _guard = FileGuard(file);
+    
+    // ❌ Bad: Easy to forget cleanup / 不好：容易忘记清理
+    // ... do work ...
+    // close_file(file); // What if early return?
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="performance-tips--性能技巧"><a class="header" href="#performance-tips--性能技巧">Performance Tips / 性能技巧</a></h2>
+<h3 id="1-choose-the-right-driver--选择合适的驱动"><a class="header" href="#1-choose-the-right-driver--选择合适的驱动">1. Choose the Right Driver / 选择合适的驱动</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// For web servers (I/O-bound) on Linux / Linux上的Web服务器（I/O密集）
+let runtime = Runtime::builder()
+    .worker_threads(num_cpus::get())
+    .driver_type(DriverType::IOUring)  // Best for I/O-bound
+    .build()?;
+
+// For systems without io-uring / 没有io-uring的系统
+let runtime = Runtime::builder()
+    .worker_threads(num_cpus::get())
+    .driver_type(DriverType::Epoll)     // Fallback on Linux
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h3 id="2-batch-io-operations--批量-io-操作"><a class="header" href="#2-batch-io-operations--批量-io-操作">2. Batch I/O Operations / 批量 I/O 操作</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ Bad: Many small writes / 不好：许多小写入
+for byte in data {
+    stream.write(&amp;[byte]).await?;  // Many syscalls
+}
+
+// ✅ Good: Batch writes / 好：批量写入
+stream.write_all(&amp;data).await?;    // One syscall
+<span class="boring">}</span></code></pre>
+<h3 id="3-tune-queue-sizes--调整队列大小"><a class="header" href="#3-tune-queue-sizes--调整队列大小">3. Tune Queue Sizes / 调整队列大小</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// High throughput: Larger queues / 高吞吐量：更大队列
+let runtime = Runtime::builder()
+    .queue_size(1024)
+    .io_entries(2048)
+    .build()?;
+
+// Low latency: Smaller queues / 低延迟：更小队列
+let runtime = Runtime::builder()
+    .queue_size(256)
+    .io_entries(512)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="debugging--调试"><a class="header" href="#debugging--调试">Debugging / 调试</a></h2>
+<h3 id="enable-runtime-logging--启用运行时日志"><a class="header" href="#enable-runtime-logging--启用运行时日志">Enable Runtime Logging / 启用运行时日志</a></h3>
+<pre class="playground"><code class="language-rust">use tracing_subscriber;
+
+fn main() -&gt; std::io::Result&lt;()&gt; {
+    // Initialize tracing / 初始化追踪
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_target(true)
+        .init();
+    
+    let mut runtime = Runtime::new()?;
+    runtime.block_on(async {
+        // Debug logs will show runtime events
+        // 调试日志将显示运行时事件
+    })?;
+    
+    Ok(())
+}</code></pre>
+<h3 id="common-issues--常见问题"><a class="header" href="#common-issues--常见问题">Common Issues / 常见问题</a></h3>
+<p><strong>Issue</strong> / <strong>问题</strong>: Task not progressing / 任务无进展</p>
+<p><strong>Cause</strong> / <strong>原因</strong>: Forgot to <code>.await</code> a future</p>
+<p><strong>Solution</strong> / <strong>解决方案</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ Bad / 不好
+let result = some_future();  // Not awaited!
+
+// ✅ Good / 好
+let result = some_future().await;
+<span class="boring">}</span></code></pre>
+<hr>
+<p><strong>Issue</strong> / <strong>问题</strong>: High CPU usage when idle / 空闲时高CPU使用</p>
+<p><strong>Cause</strong> / <strong>原因</strong>: Thread parking disabled</p>
+<p><strong>Solution</strong> / <strong>解决方案</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let runtime = Runtime::builder()
+    .enable_parking(true)           // Enable parking
+    .park_timeout(Duration::from_millis(100))
+    .build()?;
+<span class="boring">}</span></code></pre>
+<hr>
+<p><strong>Issue</strong> / <strong>问题</strong>: Slow startup / 启动慢</p>
+<p><strong>Cause</strong> / <strong>原因</strong>: io-uring initialization overhead</p>
+<p><strong>Solution</strong> / <strong>解决方案</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Use epoll on systems where io-uring setup is slow
+// 在io-uring设置慢的系统上使用epoll
+let runtime = Runtime::builder()
+    .driver_type(DriverType::Epoll)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="testing--测试"><a class="header" href="#testing--测试">Testing / 测试</a></h2>
+<h3 id="unit-testing-with-runtime--使用运行时进行单元测试"><a class="header" href="#unit-testing-with-runtime--使用运行时进行单元测试">Unit Testing with Runtime / 使用运行时进行单元测试</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use nexus_runtime::Runtime;
+
+    #[test]
+    fn test_async_function() {
+        let mut runtime = Runtime::new().unwrap();
+        
+        runtime.block_on(async {
+            let result = async_operation().await;
+            assert_eq!(result, expected_value);
+        }).unwrap();
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="integration-testing--集成测试"><a class="header" href="#integration-testing--集成测试">Integration Testing / 集成测试</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// tests/integration_test.rs
+use nexus_runtime::{Runtime, spawn, bounded};
+
+#[test]
+fn test_concurrent_tasks() {
+    let mut runtime = Runtime::new().unwrap();
+    
+    runtime.block_on(async {
+        let (tx, rx) = bounded::&lt;i32&gt;(10);
+        
+        // Spawn producer / 生成生产者
+        spawn(async move {
+            for i in 0..10 {
+                tx.send(i).await.unwrap();
+            }
+        });
+        
+        // Verify all values received / 验证接收所有值
+        let mut sum = 0;
+        while let Ok(value) = rx.recv().await {
+            sum += value;
+        }
+        assert_eq!(sum, 45); // 0+1+2+...+9
+    }).unwrap();
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<h2 id="comparison-with-other-runtimes--与其他运行时对比"><a class="header" href="#comparison-with-other-runtimes--与其他运行时对比">Comparison with Other Runtimes / 与其他运行时对比</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th>Nexus</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>I/O Backend</strong></td><td>io-uring first</td><td>epoll/kqueue</td><td>epoll/kqueue</td><td>io-uring only</td></tr>
+<tr><td><strong>Scheduler</strong></td><td>Thread-per-core</td><td>Work-stealing</td><td>Work-stealing</td><td>Thread-per-core</td></tr>
+<tr><td><strong>Timer</strong></td><td>Hierarchical wheel</td><td>Slab heap</td><td>Wheel</td><td>Wheel</td></tr>
+<tr><td><strong>QPS Target</strong></td><td>1M+</td><td>~800K</td><td>~600K</td><td>1M+</td></tr>
+<tr><td><strong>P99 Latency</strong></td><td>&lt; 1ms</td><td>~1.5ms</td><td>~2ms</td><td>~1ms</td></tr>
+<tr><td><strong>Memory (idle)</strong></td><td>&lt; 10MB</td><td>~16MB</td><td>~12MB</td><td>~8MB</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Why choose Nexus?</strong> / <strong>为什么选择 Nexus？</strong></p>
+<ul>
+<li>✅ Best I/O performance on Linux (io-uring)</li>
+<li>✅ Multi-platform support (Linux/macOS/BSD)</li>
+<li>✅ Lower latency for web servers</li>
+<li>✅ Integrated with Nexus framework features</li>
+<li>✅ Better cache locality (thread-per-core)</li>
+</ul>
+<hr>
+<h2 id="further-reading--延伸阅读"><a class="header" href="#further-reading--延伸阅读">Further Reading / 延伸阅读</a></h2>
+<ul>
+<li><strong><a href="./http.html">HTTP Server</a></strong> - Build web services with Nexus</li>
+<li><strong><a href="./router.html">Router</a></strong> - HTTP request routing</li>
+<li><strong><a href="./middleware.html">Middleware</a></strong> - Request/response processing</li>
+<li><strong><a href="./extractors.html">Extractors</a></strong> - Type-safe data extraction</li>
+</ul>
+<h3 id="external-resources--外部资源"><a class="header" href="#external-resources--外部资源">External Resources / 外部资源</a></h3>
+<ul>
+<li><a href="https://kernel.dk/io_uring.pdf">io-uring Paper</a> - Linux async I/O</li>
+<li><a href="https://github.com/bytedance/monoio">Monoio</a> - Similar runtime design</li>
+<li><a href="https://github.com/DataDog/glommio">Glommio</a> - Thread-per-core architecture</li>
+</ul>
+<hr>
+<p><em>← <a href="../getting-started/quick-start.html">Previous / 上一页</a> | <a href="./http.html">Next / 下一页</a> →</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../getting-started/tutorial.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../core-concepts/http.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../getting-started/tutorial.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../core-concepts/http.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-c22b7243.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
