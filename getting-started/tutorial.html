@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Tutorial / 教程 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Tutorial / 教程 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -197,27 +197,27 @@ cargo new my-api --bin
 cd my-api
 
 # Add Nexus dependencies / 添加Nexus依赖
-cargo add nexus-runtime nexus-http nexus-router nexus-extractors
-cargo add nexus-runtime
+cargo add hiver-runtime hiver-http hiver-router hiver-extractors
+cargo add hiver-runtime
 </code></pre>
 <h3 id="update-cargotoml--更新cargotoml"><a class="header" href="#update-cargotoml--更新cargotoml">Update Cargo.toml / 更新Cargo.toml</a></h3>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1"
-nexus-http = "0.1"
-nexus-router = "0.1"
-nexus-extractors = "0.1"
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1"
+hiver-http = "0.1"
+hiver-router = "0.1"
+hiver-extractors = "0.1"
+hiver-runtime = "0.1.0-alpha"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 </code></pre>
 <hr>
 <h2 id="2-hello-world--你好世界"><a class="header" href="#2-hello-world--你好世界">2. Hello World / 你好世界</a></h2>
 <h3 id="minimal-server--最小服务器"><a class="header" href="#minimal-server--最小服务器">Minimal Server / 最小服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_http::Server;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/", || async { "Hello, Nexus!" });
@@ -239,9 +239,9 @@ curl http://localhost:8080/
 <h3 id="path-parameters--路径参数"><a class="header" href="#path-parameters--路径参数">Path Parameters / 路径参数</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Request, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::Path;
+</span>use hiver_http::{Request, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::Path;
 
 async fn get_user(Path(id): Path&lt;String&gt;) -&gt; Response {
     Response::builder()
@@ -283,7 +283,7 @@ let app = Router::new()
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use serde::Deserialize;
-use nexus_extractors::Json;
+use hiver_extractors::Json;
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -301,7 +301,7 @@ async fn create_user(Json(payload): Json&lt;CreateUserRequest&gt;) -&gt; Respons
 <h3 id="query-parameters--查询参数"><a class="header" href="#query-parameters--查询参数">Query Parameters / 查询参数</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Query;
+</span>use hiver_extractors::Query;
 use std::collections::HashMap;
 
 async fn search_users(Query(params): Query&lt;HashMap&lt;String, String&gt;&gt;) -&gt; Response {
@@ -314,7 +314,7 @@ async fn search_users(Query(params): Query&lt;HashMap&lt;String, String&gt;&gt;)
 <h3 id="headers--请求头"><a class="header" href="#headers--请求头">Headers / 请求头</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Header;
+</span>use hiver_extractors::Header;
 
 async fn get_auth_user(Header(authorization): Header&lt;String&gt;) -&gt; Response {
     // Validate token / 验证令牌
@@ -333,8 +333,8 @@ async fn get_auth_user(Header(authorization): Header&lt;String&gt;) -&gt; Respon
 <h3 id="logging-middleware--日志中间件"><a class="header" href="#logging-middleware--日志中间件">Logging Middleware / 日志中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Middleware;
-use nexus_http::Request;
+</span>use hiver_middleware::Middleware;
+use hiver_http::Request;
 use std::sync::Arc;
 
 struct Logger;
@@ -343,8 +343,8 @@ impl Middleware for Logger {
     fn handle(
         &amp;self,
         req: Request,
-        next: nexus_middleware::Next,
-    ) -&gt; nexus_middleware::BoxFuture&lt;'static, Result&lt;Response, nexus_http::Error&gt;&gt; {
+        next: hiver_middleware::Next,
+    ) -&gt; hiver_middleware::BoxFuture&lt;'static, Result&lt;Response, hiver_http::Error&gt;&gt; {
         println!("{} {}", req.method(), req.uri());
         next.run(req)
     }
@@ -358,7 +358,7 @@ let app = Router::new()
 <h3 id="cors-middleware--cors中间件"><a class="header" href="#cors-middleware--cors中间件">CORS Middleware / CORS中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Cors;
+</span>use hiver_middleware::Cors;
 
 let app = Router::new()
     .middleware(std::sync::Arc::new(
@@ -428,7 +428,7 @@ async fn list_users(
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let pool = PgPool::connect("postgres://localhost/mydb").await?;
 
@@ -451,11 +451,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </span>#[cfg(test)]
 mod tests {
     use super::*;
-    use nexus_http::Request;
+    use hiver_http::Request;
 
     #[test]
     fn test_hello_world() -&gt; std::io::Result&lt;()&gt; {
-        let runtime = nexus_runtime::Runtime::new()?;
+        let runtime = hiver_runtime::Runtime::new()?;
         runtime.block_on(async {
             let req = Request::builder()
                 .uri("/")
@@ -475,12 +475,12 @@ mod tests {
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// tests/api_test.rs
-use nexus_http::Server;
-use nexus_router::Router;
+use hiver_http::Server;
+use hiver_router::Router;
 
 #[test]
 fn test_api_endpoint() -&gt; std::io::Result&lt;()&gt; {
-    let runtime = nexus_runtime::Runtime::new()?;
+    let runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/api/health", || async { {"status": "ok"} });
@@ -501,9 +501,9 @@ fn test_api_endpoint() -&gt; std::io::Result&lt;()&gt; {
 <span class="boring">}</span></code></pre>
 <hr>
 <h2 id="complete-example--完整示例"><a class="header" href="#complete-example--完整示例">Complete Example / 完整示例</a></h2>
-<pre class="playground"><code class="language-rust">use nexus_http::{Server, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::{Json, Path, Query};
+<pre class="playground"><code class="language-rust">use hiver_http::{Server, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::{Json, Path, Query};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -548,7 +548,7 @@ async fn health() -&gt; &amp;'static str {
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/health", health)
@@ -571,7 +571,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <li>Explore <a href="../core-concepts/middleware.html">Middleware</a> for advanced request processing</li>
 <li>Learn about <a href="../advanced/resilience.html">Resilience</a> patterns</li>
 <li>Check <a href="../advanced/observability.html">Observability</a> for monitoring</li>
-<li>See <a href="https://github.com/ViewWay/nexus/tree/main/examples">Examples</a> for more</li>
+<li>See <a href="https://github.com/ViewWay/hiver/tree/main/examples">Examples</a> for more</li>
 </ul>
 <hr>
 <p><em>← <a href="./quick-start.html">Previous / 上一页</a> | <a href="../core-concepts/runtime.html">Next / 下一页</a> →</em></p>

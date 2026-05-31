@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Installation / 安装 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Installation / 安装 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -217,20 +217,20 @@ sudo apt-get install liburing-dev
 <p>Nexus is modular — add only what you need:
 Nexus 是模块化的 — 只添加你需要的：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
-nexus-middleware = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
+hiver-middleware = "0.1.0-alpha"
 </code></pre>
 <p>Or use cargo-add:
 或使用 cargo-add：</p>
-<pre><code class="language-bash">cargo add nexus-runtime nexus-http nexus-router
+<pre><code class="language-bash">cargo add hiver-runtime hiver-http hiver-router
 </code></pre>
 <h3 id="from-git-repository--从-git-仓库安装"><a class="header" href="#from-git-repository--从-git-仓库安装">From Git Repository / 从 Git 仓库安装</a></h3>
 <p>To use the latest development version:
 使用最新的开发版本：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = { git = "https://github.com/ViewWay/nexus", package = "nexus-runtime" }
+hiver-runtime = { git = "https://github.com/ViewWay/hiver", package = "hiver-runtime" }
 </code></pre>
 <h2 id="verifying-installation--验证安装"><a class="header" href="#verifying-installation--验证安装">Verifying Installation / 验证安装</a></h2>
 <p>Create a simple test project:
@@ -241,11 +241,11 @@ cd hello-nexus
 <p>Edit <code>Cargo.toml</code>:
 编辑 <code>Cargo.toml</code>：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 </code></pre>
 <p>Edit <code>src/main.rs</code>:
 编辑 <code>src/main.rs</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+<pre class="playground"><code class="language-rust">use hiver_runtime::Runtime;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     let runtime = Runtime::new()?;
@@ -263,7 +263,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 如果你看到输出，说明安装成功！</p>
 <h2 id="building-from-source--从源码构建"><a class="header" href="#building-from-source--从源码构建">Building from Source / 从源码构建</a></h2>
 <pre><code class="language-bash"># Clone the repository / 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
+git clone https://github.com/ViewWay/hiver.git
 cd nexus
 
 # Build all crates / 构建所有 crate

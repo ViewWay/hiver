@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Resilience / 弹性 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Resilience / 弹性 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -210,7 +210,7 @@
 <p>防止级联故障：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{CircuitBreaker, CircuitBreakerConfig};
+</span>use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig};
 use std::time::Duration;
 
 // Create circuit breaker / 创建熔断器
@@ -240,7 +240,7 @@ async fn call_external_api() -&gt; Result&lt;String, Error&gt; {
 <p>控制请求速率：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{RateLimiter, RateLimiterType};
+</span>use hiver_resilience::{RateLimiter, RateLimiterType};
 
 // Token bucket rate limiter / Token bucket限流器
 let limiter = RateLimiter::builder()
@@ -261,7 +261,7 @@ async fn process_request() -&gt; Result&lt;Response, Error&gt; {
 <p>带退避的自动重试：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{RetryPolicy, retry};
+</span>use hiver_resilience::{RetryPolicy, retry};
 use std::time::Duration;
 
 // Exponential backoff / 指数退避
@@ -283,7 +283,7 @@ async fn call_api() -&gt; Result&lt;String, Error&gt; {
 <p>强制执行请求超时：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::Timeout;
+</span>use hiver_resilience::Timeout;
 use std::time::Duration;
 
 // Create timeout / 创建超时
@@ -302,7 +302,7 @@ async fn call_slow_api() -&gt; Result&lt;String, Error&gt; {
 <p>组合多个弹性模式：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
+</span>use hiver_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
 
 struct ResilientClient {
     circuit: CircuitBreaker,
@@ -339,7 +339,7 @@ impl ResilientClient {
 <tr><td><code>@RateLimiter</code></td><td><code>RateLimiter</code></td><td>Rate limiting</td></tr>
 <tr><td><code>@Retry</code></td><td><code>RetryPolicy</code></td><td>Retry with backoff</td></tr>
 <tr><td><code>@Timeout</code></td><td><code>Timeout</code></td><td>Request timeout</td></tr>
-<tr><td>Resilience4j</td><td><code>nexus-resilience</code></td><td>Resilience library</td></tr>
+<tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Resilience library</td></tr>
 </tbody>
 </table>
 </div>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Configuration / 配置 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Configuration / 配置 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -189,7 +189,7 @@ Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、�
 <li><strong>Multiple Formats</strong> / <strong>多格式</strong> — Properties, YAML, TOML, JSON</li>
 <li><strong>Environment Variables</strong> / <strong>环境变量</strong> — Override any config value</li>
 <li><strong>Profiles</strong> / <strong>配置文件</strong> — Environment-specific configurations (dev/prod/test)</li>
-<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>nexus-starter</code></li>
+<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>hiver-starter</code></li>
 <li><strong>Type-Safe Binding</strong> / <strong>类型安全绑定</strong> — <code>#[derive(PropertiesConfig)]</code></li>
 </ul>
 <hr>
@@ -251,7 +251,7 @@ logging.level=INFO
 <h2 id="type-safe-configuration--类型安全配置"><a class="header" href="#type-safe-configuration--类型安全配置">Type-Safe Configuration / 类型安全配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, PropertiesConfig};
+</span>use hiver_config::{Config, PropertiesConfig};
 use serde::Deserialize;
 
 #[derive(PropertiesConfig, Deserialize)]
@@ -300,13 +300,13 @@ export NEXUS_PROFILE=prod
 <p>使用文件命名约定的环境特定配置：</p>
 <pre><code>config/
 ├── nexus.toml                # Default / 默认
-├── nexus-dev.toml            # Development / 开发
-├── nexus-prod.toml           # Production / 生产
-└── nexus-test.toml           # Testing / 测试
+├── hiver-dev.toml            # Development / 开发
+├── hiver-prod.toml           # Production / 生产
+└── hiver-test.toml           # Testing / 测试
 </code></pre>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, Profile};
+</span>use hiver_config::{Config, Profile};
 
 // Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
@@ -319,7 +319,7 @@ let config = Config::builder()
     .build()?;
 <span class="boring">}</span></code></pre>
 <p><strong>Profile-specific overrides</strong> / <strong>配置文件覆盖</strong>:</p>
-<pre><code class="language-toml"># nexus-dev.toml
+<pre><code class="language-toml"># hiver-dev.toml
 [logging]
 level = "DEBUG"
 mode = "verbose"
@@ -327,7 +327,7 @@ mode = "verbose"
 [database]
 url = "postgres://localhost/mydb_dev"
 </code></pre>
-<pre><code class="language-toml"># nexus-prod.toml
+<pre><code class="language-toml"># hiver-prod.toml
 [logging]
 level = "WARN"
 mode = "simple"
@@ -338,10 +338,10 @@ pool_size = 50
 </code></pre>
 <hr>
 <h2 id="auto-configuration--自动配置"><a class="header" href="#auto-configuration--自动配置">Auto-Configuration / 自动配置</a></h2>
-<p><code>nexus-starter</code> provides Spring Boot-style auto-configuration:
-<code>nexus-starter</code> 提供 Spring Boot 风格的自动配置：</p>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
-use nexus_router::Router;
+<p><code>hiver-starter</code> provides Spring Boot-style auto-configuration:
+<code>hiver-starter</code> 提供 Spring Boot 风格的自动配置：</p>
+<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     NexusApp::new()

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Quick Start / 快速开始 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Quick Start / 快速开始 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,29 +179,29 @@
 <p>This guide will help you create your first Nexus application in under 5 minutes.
 本指南将帮助您在 5 分钟内创建第一个 Nexus 应用。</p>
 <h2 id="create-a-new-project--创建新项目"><a class="header" href="#create-a-new-project--创建新项目">Create a New Project / 创建新项目</a></h2>
-<pre><code class="language-bash">cargo new my-nexus-app
-cd my-nexus-app
+<pre><code class="language-bash">cargo new my-hiver-app
+cd my-hiver-app
 </code></pre>
 <h2 id="add-dependencies--添加依赖"><a class="header" href="#add-dependencies--添加依赖">Add Dependencies / 添加依赖</a></h2>
 <p>Edit your <code>Cargo.toml</code>:
 编辑您的 <code>Cargo.toml</code>：</p>
 <pre><code class="language-toml">[package]
-name = "my-nexus-app"
+name = "my-hiver-app"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 </code></pre>
 <h2 id="hello-world-server--hello-world-服务器"><a class="header" href="#hello-world-server--hello-world-服务器">Hello World Server / Hello World 服务器</a></h2>
 <p>Replace <code>src/main.rs</code> with:
 用以下内容替换 <code>src/main.rs</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_runtime::task::block_on;
+<pre class="playground"><code class="language-rust">use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_runtime::task::block_on;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt; {
     // Initialize logging / 初始化日志
@@ -219,7 +219,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
     })
 }
 
-async fn handle_request(req: nexus_http::Request) -&gt; Result&lt;Response, nexus_http::Error&gt; {
+async fn handle_request(req: hiver_http::Request) -&gt; Result&lt;Response, hiver_http::Error&gt; {
     let path = req.path();
     
     match path {
@@ -257,11 +257,11 @@ curl http://localhost:8080/unknown
 # Output: Not Found
 </code></pre>
 <h2 id="using-the-router--使用路由器"><a class="header" href="#using-the-router--使用路由器">Using the Router / 使用路由器</a></h2>
-<p>For more complex routing, use <code>nexus-router</code>:
-对于更复杂的路由，使用 <code>nexus-router</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_http::{Body, Response, StatusCode};
-use nexus_router::{Router, Path};
-use nexus_runtime::task::block_on;
+<p>For more complex routing, use <code>hiver-router</code>:
+对于更复杂的路由，使用 <code>hiver-router</code>：</p>
+<pre class="playground"><code class="language-rust">use hiver_http::{Body, Response, StatusCode};
+use hiver_router::{Router, Path};
+use hiver_runtime::task::block_on;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt; {
     tracing_subscriber::fmt::init();
@@ -276,7 +276,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
 
     block_on(async {
         // Start server with router / 使用路由器启动服务器
-        nexus_http::Server::bind("127.0.0.1:8080")
+        hiver_http::Server::bind("127.0.0.1:8080")
             .run(move |req| {
                 let router = router.clone();
                 async move { router.handle(req).await }
@@ -285,14 +285,14 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
     })
 }
 
-async fn index(_req: nexus_http::Request) -&gt; Response {
+async fn index(_req: hiver_http::Request) -&gt; Response {
     Response::builder()
         .status(StatusCode::OK)
         .body(Body::from("Welcome to Nexus!"))
         .unwrap()
 }
 
-async fn get_user(req: nexus_http::Request) -&gt; Response {
+async fn get_user(req: hiver_http::Request) -&gt; Response {
     // Extract path parameter / 提取路径参数
     let id = req.path_var("id").unwrap_or("unknown");
     
@@ -303,7 +303,7 @@ async fn get_user(req: nexus_http::Request) -&gt; Response {
         .unwrap()
 }
 
-async fn create_user(_req: nexus_http::Request) -&gt; Response {
+async fn create_user(_req: hiver_http::Request) -&gt; Response {
     Response::builder()
         .status(StatusCode::CREATED)
         .body(Body::from(r#"{"status": "created"}"#))
@@ -312,7 +312,7 @@ async fn create_user(_req: nexus_http::Request) -&gt; Response {
 <h2 id="json-response-example--json-响应示例"><a class="header" href="#json-response-example--json-响应示例">JSON Response Example / JSON 响应示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Body, Response, StatusCode};
+</span>use hiver_http::{Body, Response, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -322,7 +322,7 @@ struct User {
     email: String,
 }
 
-async fn get_user_json(_req: nexus_http::Request) -&gt; Response {
+async fn get_user_json(_req: hiver_http::Request) -&gt; Response {
     let user = User {
         id: 1,
         name: "Alice".to_string(),
@@ -342,7 +342,7 @@ async fn get_user_json(_req: nexus_http::Request) -&gt; Response {
 <h2 id="using-async-tasks--使用异步任务"><a class="header" href="#using-async-tasks--使用异步任务">Using Async Tasks / 使用异步任务</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{spawn, sleep, Duration};
+</span>use hiver_runtime::{spawn, sleep, Duration};
 
 async fn background_task() {
     // Spawn a background task / 生成后台任务
@@ -363,7 +363,7 @@ async fn background_task() {
 <h2 id="using-channels--使用通道"><a class="header" href="#using-channels--使用通道">Using Channels / 使用通道</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::channel::bounded;
+</span>use hiver_runtime::channel::bounded;
 
 async fn channel_example() {
     let (tx, rx) = bounded::&lt;String&gt;(10);

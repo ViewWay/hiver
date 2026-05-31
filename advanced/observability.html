@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Observability / 可观测性 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Observability / 可观测性 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -207,7 +207,7 @@
 <p>跨服务追踪请求：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{Tracer, Span};
+</span>use hiver_observability::{Tracer, Span};
 
 // Create tracer / 创建追踪器
 let tracer = Tracer::new("my-service");
@@ -238,7 +238,7 @@ span.end();
 <p>收集应用程序指标：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Counter, Gauge, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Counter, Gauge, Histogram};
 
 // Get metrics registry / 获取指标注册表
 let metrics = MetricsRegistry::default();
@@ -275,7 +275,7 @@ request_duration.observe(start.elapsed().as_secs_f64());
 <p>带上下文的结构化日志：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::log;
+</span>use hiver_observability::log;
 use tracing::{info, error, warn};
 
 // Basic logging / 基本日志
@@ -316,7 +316,7 @@ log::error!("Error message");
 </tbody>
 </table>
 </div>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     // Configure logging based on environment
@@ -360,12 +360,12 @@ max_files = 7
 INFO n.http.server: Request received
 </code></pre>
 <p><strong>Spring Boot Style Startup / Spring Boot 风格启动</strong>:</p>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::Logger;
-#[cfg(feature = "nexus-format")]
-use nexus_observability::{Banner, StartupLogger};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::Logger;
+#[cfg(feature = "hiver-format")]
+use hiver_observability::{Banner, StartupLogger};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    #[cfg(feature = "nexus-format")]
+    #[cfg(feature = "hiver-format")]
     {
         // Print banner / 打印横幅
         Banner::print("MyApp", "0.1.0", 8080);
@@ -412,7 +412,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h3 id="with-http-server--与http服务器集成"><a class="header" href="#with-http-server--与http服务器集成">With HTTP Server / 与HTTP服务器集成</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{tracer, metrics, log};
+</span>use hiver_observability::{tracer, metrics, log};
 
 async fn handler(req: Request) -&gt; Response {
     // Start span / 开始span

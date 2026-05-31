@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Extractors / 提取器 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Extractors / 提取器 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -183,19 +183,19 @@
 <p><strong>1. Two <code>FromRequest</code> traits / 两个 <code>FromRequest</code> trait</strong></p>
 <p>The codebase defines <strong>two separate</strong> <code>FromRequest</code> traits that serve different layers:</p>
 <ul>
-<li><strong><code>nexus_http::FromRequest</code></strong> (in <code>nexus-http</code>): Uses <code>async fn from_request(req: &amp;Request) -&gt; Result&lt;Self&gt;</code>. This is the trait used by the <code>#[handler]</code> proc-macro to perform automatic parameter extraction.</li>
-<li><strong><code>nexus_extractors::FromRequest</code></strong> (in <code>nexus-extractors</code>): Uses <code>fn from_request(req: &amp;Request) -&gt; ExtractorFuture&lt;Self&gt;</code> where <code>ExtractorFuture&lt;T&gt; = Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;T, ExtractorError&gt;&gt; + Send&gt;&gt;</code>. This is the trait used when implementing custom extractors manually with the extractor infrastructure.</li>
+<li><strong><code>hiver_http::FromRequest</code></strong> (in <code>hiver-http</code>): Uses <code>async fn from_request(req: &amp;Request) -&gt; Result&lt;Self&gt;</code>. This is the trait used by the <code>#[handler]</code> proc-macro to perform automatic parameter extraction.</li>
+<li><strong><code>hiver_extractors::FromRequest</code></strong> (in <code>hiver-extractors</code>): Uses <code>fn from_request(req: &amp;Request) -&gt; ExtractorFuture&lt;Self&gt;</code> where <code>ExtractorFuture&lt;T&gt; = Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;T, ExtractorError&gt;&gt; + Send&gt;&gt;</code>. This is the trait used when implementing custom extractors manually with the extractor infrastructure.</li>
 </ul>
-<p>When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use <code>nexus_extractors::FromRequest</code> unless noted otherwise.</p>
+<p>When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use <code>hiver_extractors::FromRequest</code> unless noted otherwise.</p>
 <p><strong>2. Extractor-style handler signatures require the proc-macro system / 提取器风格的处理器签名需要过程宏系统</strong></p>
-<p>Handler function signatures with multiple extractor parameters (e.g., <code>async fn handler(Path(id): Path&lt;u64&gt;, Query(params): Query&lt;Params&gt;)</code>) <strong>only work</strong> when the function is decorated with the <code>#[handler]</code> attribute macro from <code>nexus-macros</code>. The <code>#[handler]</code> macro generates a wrapper that accepts a raw <code>Request</code>, calls <code>FromRequest::from_request()</code> for each parameter, and then invokes the original function.</p>
+<p>Handler function signatures with multiple extractor parameters (e.g., <code>async fn handler(Path(id): Path&lt;u64&gt;, Query(params): Query&lt;Params&gt;)</code>) <strong>only work</strong> when the function is decorated with the <code>#[handler]</code> attribute macro from <code>hiver-macros</code>. The <code>#[handler]</code> macro generates a wrapper that accepts a raw <code>Request</code>, calls <code>FromRequest::from_request()</code> for each parameter, and then invokes the original function.</p>
 <p>Plain handler functions registered via <code>Router::get()</code> (or <code>.post()</code>, etc.) have the signature <code>fn(Request, Arc&lt;S&gt;) -&gt; Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;Response&gt;&gt; + Send&gt;&gt;</code> and must manually extract data from the <code>Request</code>.</p>
-<p>The route-attribute macros (<code>#[get]</code>, <code>#[post]</code>, etc. from <code>nexus-macros</code>) register a raw function with the router and do <strong>not</strong> perform parameter extraction on their own. To get automatic extraction, combine <code>#[handler]</code> with a route attribute, or use <code>#[handler]</code> and register the wrapper manually.</p>
+<p>The route-attribute macros (<code>#[get]</code>, <code>#[post]</code>, etc. from <code>hiver-macros</code>) register a raw function with the router and do <strong>not</strong> perform parameter extraction on their own. To get automatic extraction, combine <code>#[handler]</code> with a route attribute, or use <code>#[handler]</code> and register the wrapper manually.</p>
 </blockquote>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Path, Query, Json, State, Header};
+</span>use hiver_extractors::{Path, Query, Json, State, Header};
 
 async fn handler(
     Path(id): Path&lt;u64&gt;,           // From URL path / 从 URL 路径
@@ -213,7 +213,7 @@ async fn handler(
 从 URL 路径段提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Path;
+</span>use hiver_extractors::Path;
 
 // Route: /users/:id
 // URL: /users/123
@@ -249,7 +249,7 @@ public User getUser(@PathVariable Long id) { ... }
 从 URL 查询字符串提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Query;
+</span>use hiver_extractors::Query;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -278,7 +278,7 @@ public List&lt;User&gt; listUsers(
 从请求体提取并反序列化 JSON。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Json;
+</span>use hiver_extractors::Json;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -301,7 +301,7 @@ public User createUser(@RequestBody CreateUser user) { ... }
 提取 URL 编码的表单数据。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Form;
+</span>use hiver_extractors::Form;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -323,7 +323,7 @@ public void login(@ModelAttribute LoginForm form) { ... }
 提取共享的应用状态。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::State;
+</span>use hiver_extractors::State;
 use std::sync::Arc;
 
 struct AppState {
@@ -354,7 +354,7 @@ private UserService userService;
 从 HTTP 请求头提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Header, NamedHeader};
+</span>use hiver_extractors::{Header, NamedHeader};
 
 // Extract specific header / 提取特定头
 async fn handler(
@@ -388,7 +388,7 @@ public void getData(@RequestHeader("Authorization") String auth) { ... }
 从 cookie 提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Cookie, NamedCookie};
+</span>use hiver_extractors::{Cookie, NamedCookie};
 
 // Named cookie / 命名 cookie
 async fn handler(
@@ -415,8 +415,8 @@ public void profile(@CookieValue("session_id") String session) { ... }
 实现 <code>FromRequest</code> trait：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{FromRequest, ExtractorError, ExtractorFuture};
-use nexus_http::Request;
+</span>use hiver_extractors::{FromRequest, ExtractorError, ExtractorFuture};
+use hiver_http::Request;
 
 struct CurrentUser {
     id: u64,
@@ -486,8 +486,8 @@ pub enum ExtractorError {
 <h2 id="complete-example--完整示例"><a class="header" href="#complete-example--完整示例">Complete Example / 完整示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Path, Query, Json, State, Header};
-use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_extractors::{Path, Query, Json, State, Header};
+use hiver_http::{Response, StatusCode, Body};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Nexus Framework Guide / Nexus框架指南</title>
+        <title>Hiver Framework Guide / Hiver框架指南</title>
         <meta name="robots" content="noindex">
 
 
@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-20df9491.js";
+            window.path_to_searchindex_js = "searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-3ecb9f02.js"></script>
+        <script src="toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -138,7 +138,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -175,11 +175,11 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="nexus-framework"><a class="header" href="#nexus-framework">Nexus Framework</a></h1>
+                        <h1 id="hiver-framework"><a class="header" href="#hiver-framework">Hiver Framework</a></h1>
 <blockquote>
 <p>A production-grade, high-availability web framework written in Rust.</p>
 </blockquote>
-<h1 id="nexus-框架"><a class="header" href="#nexus-框架">Nexus 框架</a></h1>
+<h1 id="hiver-框架"><a class="header" href="#hiver-框架">Hiver 框架</a></h1>
 <blockquote>
 <p>用 Rust 编写的生产级、高可用 Web 框架。</p>
 </blockquote>
@@ -245,12 +245,12 @@
 <h2 id="quick-start--快速开始"><a class="header" href="#quick-start--快速开始">Quick Start / 快速开始</a></h2>
 <pre><code class="language-toml"># Cargo.toml
 [dependencies]
-nexus-starter = "0.1"
+hiver-starter = "0.1"
 </code></pre>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+use hiver_router::Router;
 
-#[nexus::handler]
+#[hiver::handler]
 async fn hello() -&gt; &amp;'static str {
     "Hello, Nexus! / 你好，Nexus！"
 }
@@ -327,9 +327,9 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><th>Resource</th><th>Link</th></tr>
 </thead>
 <tbody>
-<tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=nexus-">nexus-framework</a></td></tr>
+<tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=hiver-">hiver-framework</a></td></tr>
 <tr><td>📖 API Docs</td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td></tr>
-<tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/nexus">ViewWay/nexus</a></td></tr>
+<tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/hiver">ViewWay/hiver</a></td></tr>
 <tr><td>📄 Design Spec</td><td><a href="../design/design-spec.html">design-spec.md</a></td></tr>
 <tr><td>🗺️ Implementation Plan</td><td><a href="../design/implementation-plan.html">implementation-plan.md</a></td></tr>
 </tbody>
@@ -349,11 +349,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><td><code>@Repository</code></td><td><code>#[derive(Repository)]</code></td><td>Data repository</td></tr>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Config binding</td></tr>
 <tr><td><code>SpringApplication.run()</code></td><td><code>NexusApp::new().run()</code></td><td>App bootstrap</td></tr>
-<tr><td><code>@SpringBootApplication</code></td><td><code>nexus-starter</code></td><td>Auto-config</td></tr>
-<tr><td>Resilience4j</td><td><code>nexus-resilience</code></td><td>Circuit breaker</td></tr>
-<tr><td>Spring Security</td><td><code>nexus-security</code></td><td>Auth &amp; security</td></tr>
-<tr><td>Spring Data JPA</td><td><code>nexus-data-orm</code></td><td>ORM abstraction</td></tr>
-<tr><td>Spring WebFlux</td><td><code>nexus-http</code></td><td>HTTP server</td></tr>
+<tr><td><code>@SpringBootApplication</code></td><td><code>hiver-starter</code></td><td>Auto-config</td></tr>
+<tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Circuit breaker</td></tr>
+<tr><td>Spring Security</td><td><code>hiver-security</code></td><td>Auth &amp; security</td></tr>
+<tr><td>Spring Data JPA</td><td><code>hiver-data-orm</code></td><td>ORM abstraction</td></tr>
+<tr><td>Spring WebFlux</td><td><code>hiver-http</code></td><td>HTTP server</td></tr>
 </tbody>
 </table>
 </div>
@@ -391,7 +391,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </ul>
 <h2 id="architecture-overview--架构概览"><a class="header" href="#architecture-overview--架构概览">Architecture Overview / 架构概览</a></h2>
 <p><strong>62 crates</strong> across 10 functional domains:</p>
-<pre><code>nexus-starter (Spring Boot auto-configuration)
+<pre><code>hiver-starter (Spring Boot auto-configuration)
     │
     ├── Web:      HTTP server, router, extractors, middleware, response, HATEOAS, OpenAPI
     ├── Data:     Commons, RDBC, ORM (ActiveRecord), Redis, MongoDB, Flyway
@@ -450,7 +450,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </table>
 </div>
 <hr>
-<p><em>← <a href="#nexus-framework">Previous / 上一页</a> | <a href="#installation">Next / 下一页</a> →</em></p>
+<p><em>← <a href="#hiver-framework">Previous / 上一页</a> | <a href="#installation">Next / 下一页</a> →</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
 <h1 id="安装"><a class="header" href="#安装">安装</a></h1>
@@ -495,20 +495,20 @@ sudo apt-get install liburing-dev
 <p>Nexus is modular — add only what you need:
 Nexus 是模块化的 — 只添加你需要的：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
-nexus-middleware = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
+hiver-middleware = "0.1.0-alpha"
 </code></pre>
 <p>Or use cargo-add:
 或使用 cargo-add：</p>
-<pre><code class="language-bash">cargo add nexus-runtime nexus-http nexus-router
+<pre><code class="language-bash">cargo add hiver-runtime hiver-http hiver-router
 </code></pre>
 <h3 id="from-git-repository--从-git-仓库安装"><a class="header" href="#from-git-repository--从-git-仓库安装">From Git Repository / 从 Git 仓库安装</a></h3>
 <p>To use the latest development version:
 使用最新的开发版本：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = { git = "https://github.com/ViewWay/nexus", package = "nexus-runtime" }
+hiver-runtime = { git = "https://github.com/ViewWay/hiver", package = "hiver-runtime" }
 </code></pre>
 <h2 id="verifying-installation--验证安装"><a class="header" href="#verifying-installation--验证安装">Verifying Installation / 验证安装</a></h2>
 <p>Create a simple test project:
@@ -519,11 +519,11 @@ cd hello-nexus
 <p>Edit <code>Cargo.toml</code>:
 编辑 <code>Cargo.toml</code>：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 </code></pre>
 <p>Edit <code>src/main.rs</code>:
 编辑 <code>src/main.rs</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+<pre class="playground"><code class="language-rust">use hiver_runtime::Runtime;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     let runtime = Runtime::new()?;
@@ -541,7 +541,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 如果你看到输出，说明安装成功！</p>
 <h2 id="building-from-source--从源码构建"><a class="header" href="#building-from-source--从源码构建">Building from Source / 从源码构建</a></h2>
 <pre><code class="language-bash"># Clone the repository / 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
+git clone https://github.com/ViewWay/hiver.git
 cd nexus
 
 # Build all crates / 构建所有 crate
@@ -591,29 +591,29 @@ Windows 支持仍在开发中。目前请使用 WSL2。</p>
 <p>This guide will help you create your first Nexus application in under 5 minutes.
 本指南将帮助您在 5 分钟内创建第一个 Nexus 应用。</p>
 <h2 id="create-a-new-project--创建新项目"><a class="header" href="#create-a-new-project--创建新项目">Create a New Project / 创建新项目</a></h2>
-<pre><code class="language-bash">cargo new my-nexus-app
-cd my-nexus-app
+<pre><code class="language-bash">cargo new my-hiver-app
+cd my-hiver-app
 </code></pre>
 <h2 id="add-dependencies--添加依赖"><a class="header" href="#add-dependencies--添加依赖">Add Dependencies / 添加依赖</a></h2>
 <p>Edit your <code>Cargo.toml</code>:
 编辑您的 <code>Cargo.toml</code>：</p>
 <pre><code class="language-toml">[package]
-name = "my-nexus-app"
+name = "my-hiver-app"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 </code></pre>
 <h2 id="hello-world-server--hello-world-服务器"><a class="header" href="#hello-world-server--hello-world-服务器">Hello World Server / Hello World 服务器</a></h2>
 <p>Replace <code>src/main.rs</code> with:
 用以下内容替换 <code>src/main.rs</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_runtime::task::block_on;
+<pre class="playground"><code class="language-rust">use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_runtime::task::block_on;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt; {
     // Initialize logging / 初始化日志
@@ -631,7 +631,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
     })
 }
 
-async fn handle_request(req: nexus_http::Request) -&gt; Result&lt;Response, nexus_http::Error&gt; {
+async fn handle_request(req: hiver_http::Request) -&gt; Result&lt;Response, hiver_http::Error&gt; {
     let path = req.path();
     
     match path {
@@ -669,11 +669,11 @@ curl http://localhost:8080/unknown
 # Output: Not Found
 </code></pre>
 <h2 id="using-the-router--使用路由器"><a class="header" href="#using-the-router--使用路由器">Using the Router / 使用路由器</a></h2>
-<p>For more complex routing, use <code>nexus-router</code>:
-对于更复杂的路由，使用 <code>nexus-router</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_http::{Body, Response, StatusCode};
-use nexus_router::{Router, Path};
-use nexus_runtime::task::block_on;
+<p>For more complex routing, use <code>hiver-router</code>:
+对于更复杂的路由，使用 <code>hiver-router</code>：</p>
+<pre class="playground"><code class="language-rust">use hiver_http::{Body, Response, StatusCode};
+use hiver_router::{Router, Path};
+use hiver_runtime::task::block_on;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt; {
     tracing_subscriber::fmt::init();
@@ -688,7 +688,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
 
     block_on(async {
         // Start server with router / 使用路由器启动服务器
-        nexus_http::Server::bind("127.0.0.1:8080")
+        hiver_http::Server::bind("127.0.0.1:8080")
             .run(move |req| {
                 let router = router.clone();
                 async move { router.handle(req).await }
@@ -697,14 +697,14 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
     })
 }
 
-async fn index(_req: nexus_http::Request) -&gt; Response {
+async fn index(_req: hiver_http::Request) -&gt; Response {
     Response::builder()
         .status(StatusCode::OK)
         .body(Body::from("Welcome to Nexus!"))
         .unwrap()
 }
 
-async fn get_user(req: nexus_http::Request) -&gt; Response {
+async fn get_user(req: hiver_http::Request) -&gt; Response {
     // Extract path parameter / 提取路径参数
     let id = req.path_var("id").unwrap_or("unknown");
     
@@ -715,7 +715,7 @@ async fn get_user(req: nexus_http::Request) -&gt; Response {
         .unwrap()
 }
 
-async fn create_user(_req: nexus_http::Request) -&gt; Response {
+async fn create_user(_req: hiver_http::Request) -&gt; Response {
     Response::builder()
         .status(StatusCode::CREATED)
         .body(Body::from(r#"{"status": "created"}"#))
@@ -724,7 +724,7 @@ async fn create_user(_req: nexus_http::Request) -&gt; Response {
 <h2 id="json-response-example--json-响应示例"><a class="header" href="#json-response-example--json-响应示例">JSON Response Example / JSON 响应示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Body, Response, StatusCode};
+</span>use hiver_http::{Body, Response, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -734,7 +734,7 @@ struct User {
     email: String,
 }
 
-async fn get_user_json(_req: nexus_http::Request) -&gt; Response {
+async fn get_user_json(_req: hiver_http::Request) -&gt; Response {
     let user = User {
         id: 1,
         name: "Alice".to_string(),
@@ -754,7 +754,7 @@ async fn get_user_json(_req: nexus_http::Request) -&gt; Response {
 <h2 id="using-async-tasks--使用异步任务"><a class="header" href="#using-async-tasks--使用异步任务">Using Async Tasks / 使用异步任务</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{spawn, sleep, Duration};
+</span>use hiver_runtime::{spawn, sleep, Duration};
 
 async fn background_task() {
     // Spawn a background task / 生成后台任务
@@ -775,7 +775,7 @@ async fn background_task() {
 <h2 id="using-channels--使用通道"><a class="header" href="#using-channels--使用通道">Using Channels / 使用通道</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::channel::bounded;
+</span>use hiver_runtime::channel::bounded;
 
 async fn channel_example() {
     let (tx, rx) = bounded::&lt;String&gt;(10);
@@ -826,27 +826,27 @@ cargo new my-api --bin
 cd my-api
 
 # Add Nexus dependencies / 添加Nexus依赖
-cargo add nexus-runtime nexus-http nexus-router nexus-extractors
-cargo add nexus-runtime
+cargo add hiver-runtime hiver-http hiver-router hiver-extractors
+cargo add hiver-runtime
 </code></pre>
 <h3 id="update-cargotoml--更新cargotoml"><a class="header" href="#update-cargotoml--更新cargotoml">Update Cargo.toml / 更新Cargo.toml</a></h3>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1"
-nexus-http = "0.1"
-nexus-router = "0.1"
-nexus-extractors = "0.1"
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1"
+hiver-http = "0.1"
+hiver-router = "0.1"
+hiver-extractors = "0.1"
+hiver-runtime = "0.1.0-alpha"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 </code></pre>
 <hr>
 <h2 id="2-hello-world--你好世界"><a class="header" href="#2-hello-world--你好世界">2. Hello World / 你好世界</a></h2>
 <h3 id="minimal-server--最小服务器"><a class="header" href="#minimal-server--最小服务器">Minimal Server / 最小服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_http::Server;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/", || async { "Hello, Nexus!" });
@@ -868,9 +868,9 @@ curl http://localhost:8080/
 <h3 id="path-parameters--路径参数"><a class="header" href="#path-parameters--路径参数">Path Parameters / 路径参数</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Request, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::Path;
+</span>use hiver_http::{Request, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::Path;
 
 async fn get_user(Path(id): Path&lt;String&gt;) -&gt; Response {
     Response::builder()
@@ -912,7 +912,7 @@ let app = Router::new()
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use serde::Deserialize;
-use nexus_extractors::Json;
+use hiver_extractors::Json;
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -930,7 +930,7 @@ async fn create_user(Json(payload): Json&lt;CreateUserRequest&gt;) -&gt; Respons
 <h3 id="query-parameters--查询参数"><a class="header" href="#query-parameters--查询参数">Query Parameters / 查询参数</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Query;
+</span>use hiver_extractors::Query;
 use std::collections::HashMap;
 
 async fn search_users(Query(params): Query&lt;HashMap&lt;String, String&gt;&gt;) -&gt; Response {
@@ -943,7 +943,7 @@ async fn search_users(Query(params): Query&lt;HashMap&lt;String, String&gt;&gt;)
 <h3 id="headers--请求头"><a class="header" href="#headers--请求头">Headers / 请求头</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Header;
+</span>use hiver_extractors::Header;
 
 async fn get_auth_user(Header(authorization): Header&lt;String&gt;) -&gt; Response {
     // Validate token / 验证令牌
@@ -962,8 +962,8 @@ async fn get_auth_user(Header(authorization): Header&lt;String&gt;) -&gt; Respon
 <h3 id="logging-middleware--日志中间件"><a class="header" href="#logging-middleware--日志中间件">Logging Middleware / 日志中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Middleware;
-use nexus_http::Request;
+</span>use hiver_middleware::Middleware;
+use hiver_http::Request;
 use std::sync::Arc;
 
 struct Logger;
@@ -972,8 +972,8 @@ impl Middleware for Logger {
     fn handle(
         &amp;self,
         req: Request,
-        next: nexus_middleware::Next,
-    ) -&gt; nexus_middleware::BoxFuture&lt;'static, Result&lt;Response, nexus_http::Error&gt;&gt; {
+        next: hiver_middleware::Next,
+    ) -&gt; hiver_middleware::BoxFuture&lt;'static, Result&lt;Response, hiver_http::Error&gt;&gt; {
         println!("{} {}", req.method(), req.uri());
         next.run(req)
     }
@@ -987,7 +987,7 @@ let app = Router::new()
 <h3 id="cors-middleware--cors中间件"><a class="header" href="#cors-middleware--cors中间件">CORS Middleware / CORS中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Cors;
+</span>use hiver_middleware::Cors;
 
 let app = Router::new()
     .middleware(std::sync::Arc::new(
@@ -1057,7 +1057,7 @@ async fn list_users(
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let pool = PgPool::connect("postgres://localhost/mydb").await?;
 
@@ -1080,11 +1080,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </span>#[cfg(test)]
 mod tests {
     use super::*;
-    use nexus_http::Request;
+    use hiver_http::Request;
 
     #[test]
     fn test_hello_world() -&gt; std::io::Result&lt;()&gt; {
-        let runtime = nexus_runtime::Runtime::new()?;
+        let runtime = hiver_runtime::Runtime::new()?;
         runtime.block_on(async {
             let req = Request::builder()
                 .uri("/")
@@ -1104,12 +1104,12 @@ mod tests {
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// tests/api_test.rs
-use nexus_http::Server;
-use nexus_router::Router;
+use hiver_http::Server;
+use hiver_router::Router;
 
 #[test]
 fn test_api_endpoint() -&gt; std::io::Result&lt;()&gt; {
-    let runtime = nexus_runtime::Runtime::new()?;
+    let runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/api/health", || async { {"status": "ok"} });
@@ -1130,9 +1130,9 @@ fn test_api_endpoint() -&gt; std::io::Result&lt;()&gt; {
 <span class="boring">}</span></code></pre>
 <hr>
 <h2 id="complete-example--完整示例"><a class="header" href="#complete-example--完整示例">Complete Example / 完整示例</a></h2>
-<pre class="playground"><code class="language-rust">use nexus_http::{Server, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::{Json, Path, Query};
+<pre class="playground"><code class="language-rust">use hiver_http::{Server, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::{Json, Path, Query};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -1177,7 +1177,7 @@ async fn health() -&gt; &amp;'static str {
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/health", health)
@@ -1200,7 +1200,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <li>Explore <a href="#middleware">Middleware</a> for advanced request processing</li>
 <li>Learn about <a href="#resilience--弹性">Resilience</a> patterns</li>
 <li>Check <a href="#observability--可观测性">Observability</a> for monitoring</li>
-<li>See <a href="https://github.com/ViewWay/nexus/tree/main/examples">Examples</a> for more</li>
+<li>See <a href="https://github.com/ViewWay/hiver/tree/main/examples">Examples</a> for more</li>
 </ul>
 <hr>
 <p><em>← <a href="#quick-start">Previous / 上一页</a> | <a href="#runtime--运行时">Next / 下一页</a> →</em></p>
@@ -1211,8 +1211,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </blockquote>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
-<p>The Nexus runtime (<code>nexus-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
-<p>Nexus 运行时（<code>nexus-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
+<p>The Nexus runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
+<p>Nexus 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
 <h2 id="key-design-principles--核心设计原则"><a class="header" href="#key-design-principles--核心设计原则">Key Design Principles / 核心设计原则</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                     Nexus Runtime                            │
@@ -1241,10 +1241,10 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="installation--安装"><a class="header" href="#installation--安装">Installation / 安装</a></h3>
 <p>Add to your <code>Cargo.toml</code>:</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 </code></pre>
 <h3 id="hello-runtime--你好运行时"><a class="header" href="#hello-runtime--你好运行时">Hello Runtime / 你好，运行时</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+<pre class="playground"><code class="language-rust">use hiver_runtime::Runtime;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     // Create runtime / 创建运行时
@@ -1258,7 +1258,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     Ok(())
 }</code></pre>
 <h3 id="with-configuration--带配置"><a class="header" href="#with-configuration--带配置">With Configuration / 带配置</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, DriverType};
+<pre class="playground"><code class="language-rust">use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
@@ -1295,7 +1295,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </div>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, DriverType};
+</span>use hiver_runtime::{Runtime, DriverType};
 
 // Auto-detect (recommended) / 自动检测（推荐）
 let runtime = Runtime::new()?;
@@ -1422,7 +1422,7 @@ epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
 <h3 id="timer-api--定时器-api"><a class="header" href="#timer-api--定时器-api">Timer API / 定时器 API</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{sleep, sleep_until, Duration, Instant};
+</span>use hiver_runtime::{sleep, sleep_until, Duration, Instant};
 
 async fn timer_examples() {
     // Sleep for duration / 休眠一段时间
@@ -1443,8 +1443,8 @@ async fn timer_examples() {
 <h3 id="timeout-pattern--超时模式"><a class="header" href="#timeout-pattern--超时模式">Timeout Pattern / 超时模式</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{select_two, sleep, Duration};
-use nexus_runtime::select::SelectTwoOutput;
+</span>use hiver_runtime::{select_two, sleep, Duration};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn with_timeout() {
     let operation = async {
@@ -1471,7 +1471,7 @@ async fn with_timeout() {
 <p>多生产者、单消费者通道用于任务通信：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{bounded, unbounded, spawn};
+</span>use hiver_runtime::{bounded, unbounded, spawn};
 
 async fn channel_demo() {
     // Bounded channel (backpressure) / 有界通道（背压）
@@ -1525,7 +1525,7 @@ async fn channel_demo() {
 <p><strong>Example</strong> / <strong>示例</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{bounded, unbounded};
+</span>use hiver_runtime::{bounded, unbounded};
 
 // Producer-consumer with backpressure / 带背压的生产者-消费者
 let (tx, rx) = bounded::&lt;WorkItem&gt;(100);
@@ -1538,7 +1538,7 @@ let (shutdown_tx, shutdown_rx) = unbounded::&lt;()&gt;();
 <h3 id="basic-task-spawning--基本任务生成"><a class="header" href="#basic-task-spawning--基本任务生成">Basic Task Spawning / 基本任务生成</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{spawn, JoinHandle};
+</span>use hiver_runtime::{spawn, JoinHandle};
 
 async fn task_example() {
     // Spawn single task / 生成单个任务
@@ -1555,7 +1555,7 @@ async fn task_example() {
 <h3 id="concurrent-tasks--并发任务"><a class="header" href="#concurrent-tasks--并发任务">Concurrent Tasks / 并发任务</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::spawn;
+</span>use hiver_runtime::spawn;
 
 async fn parallel_processing() {
     let mut handles = Vec::new();
@@ -1614,8 +1614,8 @@ async fn parallel_processing() {
 <h3 id="select-two--选择两个"><a class="header" href="#select-two--选择两个">Select Two / 选择两个</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{select_two, bounded};
-use nexus_runtime::select::SelectTwoOutput;
+</span>use hiver_runtime::{select_two, bounded};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn select_demo() {
     let (tx1, rx1) = bounded::&lt;i32&gt;(1);
@@ -1637,8 +1637,8 @@ async fn select_demo() {
 <h3 id="select-multiple--选择多个"><a class="header" href="#select-multiple--选择多个">Select Multiple / 选择多个</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::select_multiple;
-use nexus_runtime::select::SelectMultipleOutput;
+</span>use hiver_runtime::select_multiple;
+use hiver_runtime::select::SelectMultipleOutput;
 
 async fn select_many() {
     let futures = vec![
@@ -1658,7 +1658,7 @@ async fn select_many() {
 <hr>
 <h2 id="network-io--网络-io"><a class="header" href="#network-io--网络-io">Network I/O / 网络 I/O</a></h2>
 <h3 id="tcp-server--tcp-服务器"><a class="header" href="#tcp-server--tcp-服务器">TCP Server / TCP 服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, io::TcpListener, spawn};
+<pre class="playground"><code class="language-rust">use hiver_runtime::{Runtime, io::TcpListener, spawn};
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut runtime = Runtime::new()?;
@@ -1694,7 +1694,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="tcp-client--tcp-客户端"><a class="header" href="#tcp-client--tcp-客户端">TCP Client / TCP 客户端</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, io::TcpStream};
+</span>use hiver_runtime::{Runtime, io::TcpStream};
 
 async fn tcp_client() -&gt; std::io::Result&lt;()&gt; {
     // Connect to server / 连接到服务器
@@ -1715,7 +1715,7 @@ async fn tcp_client() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="udp-socket--udp-套接字"><a class="header" href="#udp-socket--udp-套接字">UDP Socket / UDP 套接字</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, io::UdpSocket};
+</span>use hiver_runtime::{Runtime, io::UdpSocket};
 
 async fn udp_example() -&gt; std::io::Result&lt;()&gt; {
     // Bind socket / 绑定套接字
@@ -1741,7 +1741,7 @@ async fn udp_example() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="runtime-configuration--运行时配置"><a class="header" href="#runtime-configuration--运行时配置">Runtime Configuration / 运行时配置</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, DriverType};
+</span>use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 let runtime = Runtime::builder()
@@ -1765,7 +1765,7 @@ let runtime = Runtime::builder()
 <p><code>DriverConfig</code> 构建器提供对 I/O 驱动器行为的精细控制：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -1779,7 +1779,7 @@ let config = DriverConfig::builder()
 <p>然后在构建运行时时传入配置：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, RuntimeConfig, DriverType};
+</span>use hiver_runtime::{Runtime, RuntimeConfig, DriverType};
 
 // Build a RuntimeConfig with custom driver settings
 // 使用自定义驱动设置构建 RuntimeConfig
@@ -1814,7 +1814,7 @@ let mut runtime = Runtime::builder()
 <p><strong>For CPU-bound workloads</strong> / <strong>CPU 密集型工作负载</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let driver_config = DriverConfig::builder()
     .entries(512)
@@ -1835,7 +1835,7 @@ let runtime = Runtime::builder()
 <p><strong>Linux io-uring</strong> / <strong>Linux io-uring</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -1908,7 +1908,7 @@ spawn(async {
 <h3 id="4-resource-cleanup--资源清理"><a class="header" href="#4-resource-cleanup--资源清理">4. Resource Cleanup / 资源清理</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::spawn;
+</span>use hiver_runtime::spawn;
 
 async fn resource_example() {
     let file = open_file().await?;
@@ -2026,7 +2026,7 @@ let runtime = Runtime::builder()
 </span><span class="boring">fn main() {
 </span>#[cfg(test)]
 mod tests {
-    use nexus_runtime::Runtime;
+    use hiver_runtime::Runtime;
 
     #[test]
     fn test_async_function() {
@@ -2043,7 +2043,7 @@ mod tests {
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// tests/integration_test.rs
-use nexus_runtime::{Runtime, spawn, bounded};
+use hiver_runtime::{Runtime, spawn, bounded};
 
 #[test]
 fn test_concurrent_tasks() {
@@ -2090,7 +2090,7 @@ fn test_concurrent_tasks() {
 <li>✅ Best I/O performance on Linux (io-uring)</li>
 <li>✅ Multi-platform support (Linux/macOS/BSD)</li>
 <li>✅ Lower latency for web servers</li>
-<li>✅ Integrated with Nexus framework features</li>
+<li>✅ Integrated with Hiver Framework features</li>
 <li>✅ Better cache locality (thread-per-core)</li>
 </ul>
 <hr>
@@ -2112,8 +2112,8 @@ fn test_concurrent_tasks() {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="http-server"><a class="header" href="#http-server">HTTP Server</a></h1>
 <h1 id="http服务器"><a class="header" href="#http服务器">HTTP服务器</a></h1>
-<p>The <code>nexus-http</code> crate provides HTTP server and client implementations optimized for the Nexus runtime.</p>
-<p><code>nexus-http</code> crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。</p>
+<p>The <code>hiver-http</code> crate provides HTTP server and client implementations optimized for the Nexus runtime.</p>
+<p><code>hiver-http</code> crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。</p>
 <h2 id="overview--概述-1"><a class="header" href="#overview--概述-1">Overview / 概述</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    HTTP Request Flow                         │
@@ -2135,7 +2135,7 @@ fn test_concurrent_tasks() {
 <h3 id="request--请求"><a class="header" href="#request--请求">Request / 请求</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Request;
+</span>use hiver_http::Request;
 
 async fn handle(req: Request) -&gt; Response {
     // Access request properties / 访问请求属性
@@ -2164,7 +2164,7 @@ async fn handle(req: Request) -&gt; Response {
 <h3 id="response--响应"><a class="header" href="#response--响应">Response / 响应</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_http::{Response, StatusCode, Body};
 
 // Builder pattern / 构建器模式
 let response = Response::builder()
@@ -2186,7 +2186,7 @@ let json_resp = Response::json(&amp;value);
 <h3 id="body--请求体响应体"><a class="header" href="#body--请求体响应体">Body / 请求体/响应体</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Body;
+</span>use hiver_http::Body;
 
 // From string / 从字符串
 let body = Body::from("Hello, World!");
@@ -2203,7 +2203,7 @@ let body = Body::empty();
 <h3 id="status-codes--状态码"><a class="header" href="#status-codes--状态码">Status Codes / 状态码</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::StatusCode;
+</span>use hiver_http::StatusCode;
 
 // Common status codes / 常用状态码
 StatusCode::OK              // 200
@@ -2218,7 +2218,7 @@ StatusCode::INTERNAL_SERVER_ERROR  // 500
 <h2 id="server-configuration--服务器配置"><a class="header" href="#server-configuration--服务器配置">Server Configuration / 服务器配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Server;
+</span>use hiver_http::Server;
 
 // Basic server / 基础服务器
 Server::bind("127.0.0.1:8080")
@@ -2238,7 +2238,7 @@ Server::bind("0.0.0.0:8080")
 <p><code>IntoResponse</code> trait 允许任何类型转换为 HTTP 响应：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{IntoResponse, Response};
+</span>use hiver_http::{IntoResponse, Response};
 
 // Built-in implementations / 内置实现
 
@@ -2260,7 +2260,7 @@ vec![1, 2, 3].into_response()
 从请求中提取数据：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::FromRequest;
+</span>use hiver_http::FromRequest;
 
 // Built-in extractors / 内置提取器
 impl FromRequest for String { /* body as string */ }
@@ -2286,7 +2286,7 @@ impl FromRequest for Json&lt;T&gt; { /* JSON body */ }
 <h2 id="example-json-api--示例json-api"><a class="header" href="#example-json-api--示例json-api">Example: JSON API / 示例：JSON API</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Body, Json, Request, Response, StatusCode};
+</span>use hiver_http::{Body, Json, Request, Response, StatusCode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -2333,15 +2333,15 @@ async fn create_user(req: Request) -&gt; Response {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="router"><a class="header" href="#router">Router</a></h1>
 <h1 id="路由"><a class="header" href="#路由">路由</a></h1>
-<p>The <code>nexus-router</code> crate provides high-performance HTTP request routing using a trie-based data structure.</p>
-<p><code>nexus-router</code> crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。</p>
+<p>The <code>hiver-router</code> crate provides high-performance HTTP request routing using a trie-based data structure.</p>
+<p><code>hiver-router</code> crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。</p>
 <h2 id="overview--概述-2"><a class="header" href="#overview--概述-2">Overview / 概述</a></h2>
 <p>The router maps HTTP method + path combinations to handler functions:</p>
 <p>路由器将 HTTP 方法 + 路径组合映射到处理函数：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
-use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_router::Router;
+use hiver_http::{Response, StatusCode, Body};
 
 let router = Router::new()
     .get("/", index)
@@ -2389,7 +2389,7 @@ async fn get_user(req: Request) -&gt; Response {
 <h2 id="http-methods--http-方法"><a class="header" href="#http-methods--http-方法">HTTP Methods / HTTP 方法</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
+</span>use hiver_router::Router;
 
 let router = Router::new()
     .get("/resource", handler)      // GET
@@ -2407,7 +2407,7 @@ let router = Router::new()
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::sync::Arc;
-use nexus_router::Router;
+use hiver_router::Router;
 
 let router = Router::new()
     .get("/", index)
@@ -2469,8 +2469,8 @@ async fn get_user(req: Request) -&gt; Response {
 </table>
 </div>
 <h2 id="complete-example--完整示例-1"><a class="header" href="#complete-example--完整示例-1">Complete Example / 完整示例</a></h2>
-<pre class="playground"><code class="language-rust">use nexus_router::Router;
-use nexus_http::{Body, Request, Response, Result, StatusCode};
+<pre class="playground"><code class="language-rust">use hiver_router::Router;
+use hiver_http::{Body, Request, Response, Result, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -2534,8 +2534,8 @@ Response ←  Middleware 1  ←  Middleware 2  ←  Result
 <h2 id="middleware-trait--中间件-trait"><a class="header" href="#middleware-trait--中间件-trait">Middleware Trait / 中间件 Trait</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+</span>use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -2555,7 +2555,7 @@ pub trait Middleware&lt;S&gt;: Send + Sync + 'static {
 <h3 id="logger-middleware--日志中间件"><a class="header" href="#logger-middleware--日志中间件">Logger Middleware / 日志中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::LoggerMiddleware;
+</span>use hiver_middleware::LoggerMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -2568,7 +2568,7 @@ let router = Router::new()
 <h3 id="cors-middleware--cors-中间件"><a class="header" href="#cors-middleware--cors-中间件">CORS Middleware / CORS 中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::{CorsMiddleware, CorsConfig};
+</span>use hiver_middleware::{CorsMiddleware, CorsConfig};
 
 // Allow all origins / 允许所有来源
 let cors = CorsMiddleware::any();
@@ -2589,7 +2589,7 @@ let router = Router::new()
 <h3 id="timeout-middleware--超时中间件"><a class="header" href="#timeout-middleware--超时中间件">Timeout Middleware / 超时中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::TimeoutMiddleware;
+</span>use hiver_middleware::TimeoutMiddleware;
 use std::time::Duration;
 use std::sync::Arc;
 
@@ -2600,7 +2600,7 @@ let router = Router::new()
 <h3 id="compression-middleware--压缩中间件"><a class="header" href="#compression-middleware--压缩中间件">Compression Middleware / 压缩中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::CompressionMiddleware;
+</span>use hiver_middleware::CompressionMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -2613,8 +2613,8 @@ let router = Router::new()
 <h3 id="function-based-middleware--函数式中间件"><a class="header" href="#function-based-middleware--函数式中间件">Function-based Middleware / 函数式中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+</span>use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::sync::Arc;
 
 async fn auth_middleware&lt;S&gt;(req: Request, state: Arc&lt;S&gt;, next: Next&lt;S&gt;) -&gt; Result&lt;Response&gt; {
@@ -2641,8 +2641,8 @@ async fn auth_middleware&lt;S&gt;(req: Request, state: Arc&lt;S&gt;, next: Next&
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::Arc;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 
 struct TimingMiddleware;
 
@@ -2683,8 +2683,8 @@ use std::future::Future;
 use std::sync::Arc;
 use std::collections::HashMap;
 use tokio::sync::RwLock;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result, Body, StatusCode};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result, Body, StatusCode};
 
 struct RateLimitMiddleware {
     requests_per_second: u32,
@@ -2799,8 +2799,8 @@ let router = Router::new()
 <h2 id="complete-example--完整示例-2"><a class="header" href="#complete-example--完整示例-2">Complete Example / 完整示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
-use nexus_middleware::{
+</span>use hiver_router::Router;
+use hiver_middleware::{
     LoggerMiddleware, 
     CorsMiddleware, 
     TimeoutMiddleware,
@@ -2844,19 +2844,19 @@ fn build_router() -&gt; Router {
 <p><strong>1. Two <code>FromRequest</code> traits / 两个 <code>FromRequest</code> trait</strong></p>
 <p>The codebase defines <strong>two separate</strong> <code>FromRequest</code> traits that serve different layers:</p>
 <ul>
-<li><strong><code>nexus_http::FromRequest</code></strong> (in <code>nexus-http</code>): Uses <code>async fn from_request(req: &amp;Request) -&gt; Result&lt;Self&gt;</code>. This is the trait used by the <code>#[handler]</code> proc-macro to perform automatic parameter extraction.</li>
-<li><strong><code>nexus_extractors::FromRequest</code></strong> (in <code>nexus-extractors</code>): Uses <code>fn from_request(req: &amp;Request) -&gt; ExtractorFuture&lt;Self&gt;</code> where <code>ExtractorFuture&lt;T&gt; = Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;T, ExtractorError&gt;&gt; + Send&gt;&gt;</code>. This is the trait used when implementing custom extractors manually with the extractor infrastructure.</li>
+<li><strong><code>hiver_http::FromRequest</code></strong> (in <code>hiver-http</code>): Uses <code>async fn from_request(req: &amp;Request) -&gt; Result&lt;Self&gt;</code>. This is the trait used by the <code>#[handler]</code> proc-macro to perform automatic parameter extraction.</li>
+<li><strong><code>hiver_extractors::FromRequest</code></strong> (in <code>hiver-extractors</code>): Uses <code>fn from_request(req: &amp;Request) -&gt; ExtractorFuture&lt;Self&gt;</code> where <code>ExtractorFuture&lt;T&gt; = Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;T, ExtractorError&gt;&gt; + Send&gt;&gt;</code>. This is the trait used when implementing custom extractors manually with the extractor infrastructure.</li>
 </ul>
-<p>When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use <code>nexus_extractors::FromRequest</code> unless noted otherwise.</p>
+<p>When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use <code>hiver_extractors::FromRequest</code> unless noted otherwise.</p>
 <p><strong>2. Extractor-style handler signatures require the proc-macro system / 提取器风格的处理器签名需要过程宏系统</strong></p>
-<p>Handler function signatures with multiple extractor parameters (e.g., <code>async fn handler(Path(id): Path&lt;u64&gt;, Query(params): Query&lt;Params&gt;)</code>) <strong>only work</strong> when the function is decorated with the <code>#[handler]</code> attribute macro from <code>nexus-macros</code>. The <code>#[handler]</code> macro generates a wrapper that accepts a raw <code>Request</code>, calls <code>FromRequest::from_request()</code> for each parameter, and then invokes the original function.</p>
+<p>Handler function signatures with multiple extractor parameters (e.g., <code>async fn handler(Path(id): Path&lt;u64&gt;, Query(params): Query&lt;Params&gt;)</code>) <strong>only work</strong> when the function is decorated with the <code>#[handler]</code> attribute macro from <code>hiver-macros</code>. The <code>#[handler]</code> macro generates a wrapper that accepts a raw <code>Request</code>, calls <code>FromRequest::from_request()</code> for each parameter, and then invokes the original function.</p>
 <p>Plain handler functions registered via <code>Router::get()</code> (or <code>.post()</code>, etc.) have the signature <code>fn(Request, Arc&lt;S&gt;) -&gt; Pin&lt;Box&lt;dyn Future&lt;Output = Result&lt;Response&gt;&gt; + Send&gt;&gt;</code> and must manually extract data from the <code>Request</code>.</p>
-<p>The route-attribute macros (<code>#[get]</code>, <code>#[post]</code>, etc. from <code>nexus-macros</code>) register a raw function with the router and do <strong>not</strong> perform parameter extraction on their own. To get automatic extraction, combine <code>#[handler]</code> with a route attribute, or use <code>#[handler]</code> and register the wrapper manually.</p>
+<p>The route-attribute macros (<code>#[get]</code>, <code>#[post]</code>, etc. from <code>hiver-macros</code>) register a raw function with the router and do <strong>not</strong> perform parameter extraction on their own. To get automatic extraction, combine <code>#[handler]</code> with a route attribute, or use <code>#[handler]</code> and register the wrapper manually.</p>
 </blockquote>
 <h2 id="overview--概述-4"><a class="header" href="#overview--概述-4">Overview / 概述</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Path, Query, Json, State, Header};
+</span>use hiver_extractors::{Path, Query, Json, State, Header};
 
 async fn handler(
     Path(id): Path&lt;u64&gt;,           // From URL path / 从 URL 路径
@@ -2874,7 +2874,7 @@ async fn handler(
 从 URL 路径段提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Path;
+</span>use hiver_extractors::Path;
 
 // Route: /users/:id
 // URL: /users/123
@@ -2910,7 +2910,7 @@ public User getUser(@PathVariable Long id) { ... }
 从 URL 查询字符串提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Query;
+</span>use hiver_extractors::Query;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -2939,7 +2939,7 @@ public List&lt;User&gt; listUsers(
 从请求体提取并反序列化 JSON。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Json;
+</span>use hiver_extractors::Json;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -2962,7 +2962,7 @@ public User createUser(@RequestBody CreateUser user) { ... }
 提取 URL 编码的表单数据。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::Form;
+</span>use hiver_extractors::Form;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -2984,7 +2984,7 @@ public void login(@ModelAttribute LoginForm form) { ... }
 提取共享的应用状态。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::State;
+</span>use hiver_extractors::State;
 use std::sync::Arc;
 
 struct AppState {
@@ -3015,7 +3015,7 @@ private UserService userService;
 从 HTTP 请求头提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Header, NamedHeader};
+</span>use hiver_extractors::{Header, NamedHeader};
 
 // Extract specific header / 提取特定头
 async fn handler(
@@ -3049,7 +3049,7 @@ public void getData(@RequestHeader("Authorization") String auth) { ... }
 从 cookie 提取值。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Cookie, NamedCookie};
+</span>use hiver_extractors::{Cookie, NamedCookie};
 
 // Named cookie / 命名 cookie
 async fn handler(
@@ -3076,8 +3076,8 @@ public void profile(@CookieValue("session_id") String session) { ... }
 实现 <code>FromRequest</code> trait：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{FromRequest, ExtractorError, ExtractorFuture};
-use nexus_http::Request;
+</span>use hiver_extractors::{FromRequest, ExtractorError, ExtractorFuture};
+use hiver_http::Request;
 
 struct CurrentUser {
     id: u64,
@@ -3147,8 +3147,8 @@ pub enum ExtractorError {
 <h2 id="complete-example--完整示例-3"><a class="header" href="#complete-example--完整示例-3">Complete Example / 完整示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_extractors::{Path, Query, Json, State, Header};
-use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_extractors::{Path, Query, Json, State, Header};
+use hiver_http::{Response, StatusCode, Body};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -3345,7 +3345,7 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-11"><a class="header" href="#overview--概述-11">Overview / 概述</a></h2>
-<p>Nexus Security provides comprehensive authentication, authorization, and security features similar to Spring Security.</p>
+<p>Hiver Security provides comprehensive authentication, authorization, and security features similar to Spring Security.</p>
 <hr>
 <h2 id="status--状态-6"><a class="header" href="#status--状态-6">Status / 状态</a></h2>
 <p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
@@ -3446,7 +3446,7 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p>防止级联故障：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{CircuitBreaker, CircuitBreakerConfig};
+</span>use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig};
 use std::time::Duration;
 
 // Create circuit breaker / 创建熔断器
@@ -3476,7 +3476,7 @@ async fn call_external_api() -&gt; Result&lt;String, Error&gt; {
 <p>控制请求速率：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{RateLimiter, RateLimiterType};
+</span>use hiver_resilience::{RateLimiter, RateLimiterType};
 
 // Token bucket rate limiter / Token bucket限流器
 let limiter = RateLimiter::builder()
@@ -3497,7 +3497,7 @@ async fn process_request() -&gt; Result&lt;Response, Error&gt; {
 <p>带退避的自动重试：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{RetryPolicy, retry};
+</span>use hiver_resilience::{RetryPolicy, retry};
 use std::time::Duration;
 
 // Exponential backoff / 指数退避
@@ -3519,7 +3519,7 @@ async fn call_api() -&gt; Result&lt;String, Error&gt; {
 <p>强制执行请求超时：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::Timeout;
+</span>use hiver_resilience::Timeout;
 use std::time::Duration;
 
 // Create timeout / 创建超时
@@ -3538,7 +3538,7 @@ async fn call_slow_api() -&gt; Result&lt;String, Error&gt; {
 <p>组合多个弹性模式：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
+</span>use hiver_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
 
 struct ResilientClient {
     circuit: CircuitBreaker,
@@ -3575,7 +3575,7 @@ impl ResilientClient {
 <tr><td><code>@RateLimiter</code></td><td><code>RateLimiter</code></td><td>Rate limiting</td></tr>
 <tr><td><code>@Retry</code></td><td><code>RetryPolicy</code></td><td>Retry with backoff</td></tr>
 <tr><td><code>@Timeout</code></td><td><code>Timeout</code></td><td>Request timeout</td></tr>
-<tr><td>Resilience4j</td><td><code>nexus-resilience</code></td><td>Resilience library</td></tr>
+<tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Resilience library</td></tr>
 </tbody>
 </table>
 </div>
@@ -3623,7 +3623,7 @@ impl ResilientClient {
 <p>跨服务追踪请求：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{Tracer, Span};
+</span>use hiver_observability::{Tracer, Span};
 
 // Create tracer / 创建追踪器
 let tracer = Tracer::new("my-service");
@@ -3654,7 +3654,7 @@ span.end();
 <p>收集应用程序指标：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Counter, Gauge, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Counter, Gauge, Histogram};
 
 // Get metrics registry / 获取指标注册表
 let metrics = MetricsRegistry::default();
@@ -3691,7 +3691,7 @@ request_duration.observe(start.elapsed().as_secs_f64());
 <p>带上下文的结构化日志：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::log;
+</span>use hiver_observability::log;
 use tracing::{info, error, warn};
 
 // Basic logging / 基本日志
@@ -3732,7 +3732,7 @@ log::error!("Error message");
 </tbody>
 </table>
 </div>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     // Configure logging based on environment
@@ -3776,12 +3776,12 @@ max_files = 7
 INFO n.http.server: Request received
 </code></pre>
 <p><strong>Spring Boot Style Startup / Spring Boot 风格启动</strong>:</p>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::Logger;
-#[cfg(feature = "nexus-format")]
-use nexus_observability::{Banner, StartupLogger};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::Logger;
+#[cfg(feature = "hiver-format")]
+use hiver_observability::{Banner, StartupLogger};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    #[cfg(feature = "nexus-format")]
+    #[cfg(feature = "hiver-format")]
     {
         // Print banner / 打印横幅
         Banner::print("MyApp", "0.1.0", 8080);
@@ -3828,7 +3828,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h3 id="with-http-server--与http服务器集成"><a class="header" href="#with-http-server--与http服务器集成">With HTTP Server / 与HTTP服务器集成</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{tracer, metrics, log};
+</span>use hiver_observability::{tracer, metrics, log};
 
 async fn handler(req: Request) -&gt; Response {
     // Start span / 开始span
@@ -3895,7 +3895,7 @@ async fn handler(req: Request) -&gt; Response {
 </ul>
 <hr>
 <h2 id="quick-start--快速开始-1"><a class="header" href="#quick-start--快速开始-1">Quick Start / 快速开始</a></h2>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{
+<pre><code class="language-rust no_run ignore">use hiver_web3::{
     ChainConfig, ChainId, Eip155Chain,
     LocalWallet, Address, Contract, FunctionSelector, RpcClient
 };
@@ -3923,13 +3923,13 @@ call_data.extend_from_slice(&amp;selector.0);
 call_data.extend_from_slice(&amp;[0u8; 12]); // Pad to 32 bytes
 call_data.extend_from_slice(&amp;address.0);
 
-let result = rpc.call_contract(&amp;usdc_address, &amp;call_data, nexus_web3::BlockNumber::Latest).await?;
+let result = rpc.call_contract(&amp;usdc_address, &amp;call_data, hiver_web3::BlockNumber::Latest).await?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <hr>
 <h2 id="features--功能"><a class="header" href="#features--功能">Features / 功能</a></h2>
 <h3 id="chain-configuration--链配置"><a class="header" href="#chain-configuration--链配置">Chain Configuration / 链配置</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{ChainConfig, ChainId, Eip155Chain};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{ChainConfig, ChainId, Eip155Chain};
 
 // Pre-configured chains / 预配置的链
 let mainnet = ChainConfig::ethereum_mainnet();
@@ -3944,11 +3944,11 @@ let custom = ChainConfig::new(
     vec!["https://rpc.example.com".to_string()],
 );</code></pre>
 <h3 id="wallet-management--钱包管理"><a class="header" href="#wallet-management--钱包管理">Wallet Management / 钱包管理</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{LocalWallet, Wallet, Address};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{LocalWallet, Wallet, Address};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>// Create new wallet / 创建新钱包
-let wallet = LocalWallet::new(nexus_web3::Eip155Chain::ETHEREUM);
+let wallet = LocalWallet::new(hiver_web3::Eip155Chain::ETHEREUM);
 let address = wallet.address();
 println!("Address: {}", address.to_checksummed());
 
@@ -3962,7 +3962,7 @@ let signature = wallet.sign_hash(&amp;hash)?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="transaction-building--交易构建"><a class="header" href="#transaction-building--交易构建">Transaction Building / 交易构建</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{
+<pre><code class="language-rust no_run ignore">use hiver_web3::{
     TransactionBuilder, TxType, Address,
     Eip155Chain, LocalWallet
 };
@@ -3986,7 +3986,7 @@ let signed_tx = wallet.sign_transaction(&amp;tx)?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="rpc-client--rpc客户端"><a class="header" href="#rpc-client--rpc客户端">RPC Client / RPC客户端</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{RpcClient, Address, BlockNumber};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{RpcClient, Address, BlockNumber};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -4004,7 +4004,7 @@ let nonce = rpc.get_transaction_count(&amp;address, BlockNumber::Latest).await?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="smart-contracts--智能合约"><a class="header" href="#smart-contracts--智能合约">Smart Contracts / 智能合约</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{Contract, FunctionSelector, Address, RpcClient};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{Contract, FunctionSelector, Address, RpcClient};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -4022,7 +4022,7 @@ call_data.extend_from_slice(&amp;user_address.0);
 let result = contract.call_read_only(&amp;selector, &amp;call_data).await?;
 
 // Using ERC20 constants / 使用ERC20常量
-use nexus_web3::ERC20;
+use hiver_web3::ERC20;
 assert_eq!(ERC20::BALANCE_OF.0, [0x70, 0xa0, 0x82, 0x31]);
 assert_eq!(ERC20::TRANSFER.0, [0xa9, 0x05, 0x9c, 0xbb]);
 <span class="boring">Ok(())
@@ -4118,7 +4118,7 @@ mod tests {
 
     #[test]
     fn test_handler() -&gt; std::io::Result&lt;()&gt; {
-        let rt = nexus_runtime::Runtime::new()?;
+        let rt = hiver_runtime::Runtime::new()?;
         rt.block_on(async {
             let response = handler(Request::default()).await;
             assert_eq!(response.status(), StatusCode::OK);
@@ -4132,7 +4132,7 @@ mod tests {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_path_extractor() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let req = Request::builder()
             .uri("/users/123")
@@ -4167,11 +4167,11 @@ fn test_json_response() {
 <h3 id="testclient--测试客户端"><a class="header" href="#testclient--测试客户端">TestClient / 测试客户端</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_test::TestClient;
+</span>use hiver_test::TestClient;
 
 #[test]
 fn test_api() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = create_app();
         let client = TestClient::new(app);
@@ -4203,7 +4203,7 @@ fn test_api() -&gt; std::io::Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_cors_middleware() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let cors = Cors::new()
             .allow_origin("*")
@@ -4229,12 +4229,12 @@ fn test_cors_middleware() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="testing-repository--测试仓库"><a class="header" href="#testing-repository--测试仓库">Testing Repository / 测试仓库</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_data_rdbc::DatabaseClient;
-use nexus_data_orm::prelude::*;
+</span>use hiver_data_rdbc::DatabaseClient;
+use hiver_data_orm::prelude::*;
 
 #[test]
 fn test_repository_crud() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         // Use test database / 使用测试数据库
         let client = DatabaseClient::connect("sqlite::memory:").await?;
@@ -4273,7 +4273,7 @@ fn test_repository_crud() -&gt; Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_derived_queries() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let repo = setup_test_repo().await?;
 
@@ -4296,11 +4296,11 @@ fn test_derived_queries() -&gt; Result&lt;()&gt; {
 <h3 id="testing-migrations--测试迁移"><a class="header" href="#testing-migrations--测试迁移">Testing Migrations / 测试迁移</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_flyway::{Flyway, MigrationConfig};
+</span>use hiver_flyway::{Flyway, MigrationConfig};
 
 #[test]
 fn test_migrations() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let mut flyway = Flyway::new(MigrationConfig {
             locations: vec!["migrations".to_string()],
@@ -4319,7 +4319,7 @@ fn test_migrations() -&gt; Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let server = start_test_server().await;
         let client = reqwest::Client::new();
@@ -4561,13 +4561,13 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-runtime</code></td><td>Custom async runtime (io-uring/epoll/kqueue)</td></tr>
-<tr><td><code>nexus-core</code></td><td>Core types, error handling</td></tr>
-<tr><td><code>nexus-http</code></td><td>HTTP/1.1 server, Request, Response</td></tr>
-<tr><td><code>nexus-router</code></td><td>Router with path params, state, middleware</td></tr>
-<tr><td><code>nexus-middleware</code></td><td>Middleware trait (CORS, compression, timeout)</td></tr>
-<tr><td><code>nexus-extractors</code></td><td>Request parameter extraction</td></tr>
-<tr><td><code>nexus-response</code></td><td>Response builders</td></tr>
+<tr><td><code>hiver-runtime</code></td><td>Custom async runtime (io-uring/epoll/kqueue)</td></tr>
+<tr><td><code>hiver-core</code></td><td>Core types, error handling</td></tr>
+<tr><td><code>hiver-http</code></td><td>HTTP/1.1 server, Request, Response</td></tr>
+<tr><td><code>hiver-router</code></td><td>Router with path params, state, middleware</td></tr>
+<tr><td><code>hiver-middleware</code></td><td>Middleware trait (CORS, compression, timeout)</td></tr>
+<tr><td><code>hiver-extractors</code></td><td>Request parameter extraction</td></tr>
+<tr><td><code>hiver-response</code></td><td>Response builders</td></tr>
 </tbody>
 </table>
 </div>
@@ -4578,14 +4578,14 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-data-commons</code></td><td>Repository traits, Page/Sort, entity metadata</td></tr>
-<tr><td><code>nexus-data-rdbc</code></td><td>Reactive database client, connection pool, RowMapper</td></tr>
-<tr><td><code>nexus-data-orm</code></td><td>ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations</td></tr>
-<tr><td><code>nexus-data-redis</code></td><td>Redis template, distributed locks, caching</td></tr>
-<tr><td><code>nexus-data-mongodb</code></td><td>MongoDB template and repository</td></tr>
-<tr><td><code>nexus-flyway</code></td><td>Database migration framework</td></tr>
-<tr><td><code>nexus-data-annotations</code></td><td><code>@Entity</code>, <code>@Table</code>, <code>@Column</code>, <code>@Id</code></td></tr>
-<tr><td><code>nexus-data-macros</code></td><td><code>#[derive(Model)]</code>, <code>#[derive(Repository)]</code></td></tr>
+<tr><td><code>hiver-data-commons</code></td><td>Repository traits, Page/Sort, entity metadata</td></tr>
+<tr><td><code>hiver-data-rdbc</code></td><td>Reactive database client, connection pool, RowMapper</td></tr>
+<tr><td><code>hiver-data-orm</code></td><td>ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations</td></tr>
+<tr><td><code>hiver-data-redis</code></td><td>Redis template, distributed locks, caching</td></tr>
+<tr><td><code>hiver-data-mongodb</code></td><td>MongoDB template and repository</td></tr>
+<tr><td><code>hiver-flyway</code></td><td>Database migration framework</td></tr>
+<tr><td><code>hiver-data-annotations</code></td><td><code>@Entity</code>, <code>@Table</code>, <code>@Column</code>, <code>@Id</code></td></tr>
+<tr><td><code>hiver-data-macros</code></td><td><code>#[derive(Model)]</code>, <code>#[derive(Repository)]</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -4596,8 +4596,8 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-resilience</code></td><td>Circuit breaker, rate limiter, retry, timeout</td></tr>
-<tr><td><code>nexus-observability</code></td><td>Distributed tracing, metrics, structured logging</td></tr>
+<tr><td><code>hiver-resilience</code></td><td>Circuit breaker, rate limiter, retry, timeout</td></tr>
+<tr><td><code>hiver-observability</code></td><td>Distributed tracing, metrics, structured logging</td></tr>
 </tbody>
 </table>
 </div>
@@ -4608,7 +4608,7 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-web3</code></td><td>Chain abstraction, wallet, transactions, RPC, smart contracts</td></tr>
+<tr><td><code>hiver-web3</code></td><td>Chain abstraction, wallet, transactions, RPC, smart contracts</td></tr>
 </tbody>
 </table>
 </div>
@@ -4619,8 +4619,8 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-ioc</code></td><td>Dependency injection container, <code>@Component</code>, <code>@Autowired</code></td></tr>
-<tr><td><code>nexus-aop</code></td><td>Aspect-oriented programming, <code>@Aspect</code></td></tr>
+<tr><td><code>hiver-ioc</code></td><td>Dependency injection container, <code>@Component</code>, <code>@Autowired</code></td></tr>
+<tr><td><code>hiver-aop</code></td><td>Aspect-oriented programming, <code>@Aspect</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -4631,11 +4631,11 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-security</code></td><td>Authentication, authorization, password encoding</td></tr>
-<tr><td><code>nexus-validation</code></td><td>Bean Validation (JSR 380)</td></tr>
-<tr><td><code>nexus-validation-annotations</code></td><td><code>@NotNull</code>, <code>@Size</code>, <code>@Email</code>, <code>@Pattern</code></td></tr>
-<tr><td><code>nexus-scheduling</code></td><td><code>@Scheduled</code> cron/fixed-rate/delay tasks</td></tr>
-<tr><td><code>nexus-i18n</code></td><td>Internationalization, MessageSource</td></tr>
+<tr><td><code>hiver-security</code></td><td>Authentication, authorization, password encoding</td></tr>
+<tr><td><code>hiver-validation</code></td><td>Bean Validation (JSR 380)</td></tr>
+<tr><td><code>hiver-validation-annotations</code></td><td><code>@NotNull</code>, <code>@Size</code>, <code>@Email</code>, <code>@Pattern</code></td></tr>
+<tr><td><code>hiver-scheduling</code></td><td><code>@Scheduled</code> cron/fixed-rate/delay tasks</td></tr>
+<tr><td><code>hiver-i18n</code></td><td>Internationalization, MessageSource</td></tr>
 </tbody>
 </table>
 </div>
@@ -4646,10 +4646,10 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-ai</code></td><td>AI/LLM integration, chat models, embeddings</td></tr>
-<tr><td><code>nexus-agent</code></td><td>AI agent framework (Spring AI Agent)</td></tr>
-<tr><td><code>nexus-cloud</code></td><td>Cloud-native support, service discovery</td></tr>
-<tr><td><code>nexus-ws</code></td><td>WebSocket server/client</td></tr>
+<tr><td><code>hiver-ai</code></td><td>AI/LLM integration, chat models, embeddings</td></tr>
+<tr><td><code>hiver-agent</code></td><td>AI agent framework (Spring AI Agent)</td></tr>
+<tr><td><code>hiver-cloud</code></td><td>Cloud-native support, service discovery</td></tr>
+<tr><td><code>hiver-ws</code></td><td>WebSocket server/client</td></tr>
 </tbody>
 </table>
 </div>
@@ -4660,24 +4660,24 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-macros</code></td><td>150+ procedural macros</td></tr>
-<tr><td><code>nexus-lombok</code></td><td><code>@Data</code>, <code>@Getter</code>, <code>@Setter</code>, <code>@Builder</code></td></tr>
-<tr><td><code>nexus-retry-macros</code></td><td><code>@Retryable</code>, <code>@Recover</code></td></tr>
-<tr><td><code>nexus-spel</code></td><td>Spring Expression Language engine</td></tr>
-<tr><td><code>nexus-modulith</code></td><td>Modular monolith support</td></tr>
-<tr><td><code>nexus-starter</code></td><td>Auto-configuration, one-line startup</td></tr>
-<tr><td><code>nexus-test</code></td><td>Test utilities, TestClient</td></tr>
+<tr><td><code>hiver-macros</code></td><td>150+ procedural macros</td></tr>
+<tr><td><code>hiver-lombok</code></td><td><code>@Data</code>, <code>@Getter</code>, <code>@Setter</code>, <code>@Builder</code></td></tr>
+<tr><td><code>hiver-retry-macros</code></td><td><code>@Retryable</code>, <code>@Recover</code></td></tr>
+<tr><td><code>hiver-spel</code></td><td>Spring Expression Language engine</td></tr>
+<tr><td><code>hiver-modulith</code></td><td>Modular monolith support</td></tr>
+<tr><td><code>hiver-starter</code></td><td>Auto-configuration, one-line startup</td></tr>
+<tr><td><code>hiver-test</code></td><td>Test utilities, TestClient</td></tr>
 </tbody>
 </table>
 </div>
 <hr>
 <h2 id="quick-api-patterns--常用-api-模式"><a class="header" href="#quick-api-patterns--常用-api-模式">Quick API Patterns / 常用 API 模式</a></h2>
 <h3 id="server-startup--启动服务器"><a class="header" href="#server-startup--启动服务器">Server Startup / 启动服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_http::Server;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut rt = nexus_runtime::Runtime::new()?;
+    let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
             .get("/", || async { "Hello, Nexus!" });
@@ -4685,7 +4685,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     })
 }</code></pre>
 <h3 id="using-starter--使用启动器"><a class="header" href="#using-starter--使用启动器">Using Starter / 使用启动器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     NexusApp::new()
@@ -4695,8 +4695,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="data-repository--数据仓库"><a class="header" href="#data-repository--数据仓库">Data Repository / 数据仓库</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_data_orm::prelude::*;
-use nexus_data_annotations::{Entity, Table, Id, Column};
+</span>use hiver_data_orm::prelude::*;
+use hiver_data_annotations::{Entity, Table, Id, Column};
 
 #[derive(Entity, Table, Model)]
 #[table_name = "users"]
@@ -4777,7 +4777,7 @@ Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、�
 <li><strong>Multiple Formats</strong> / <strong>多格式</strong> — Properties, YAML, TOML, JSON</li>
 <li><strong>Environment Variables</strong> / <strong>环境变量</strong> — Override any config value</li>
 <li><strong>Profiles</strong> / <strong>配置文件</strong> — Environment-specific configurations (dev/prod/test)</li>
-<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>nexus-starter</code></li>
+<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>hiver-starter</code></li>
 <li><strong>Type-Safe Binding</strong> / <strong>类型安全绑定</strong> — <code>#[derive(PropertiesConfig)]</code></li>
 </ul>
 <hr>
@@ -4839,7 +4839,7 @@ logging.level=INFO
 <h2 id="type-safe-configuration--类型安全配置"><a class="header" href="#type-safe-configuration--类型安全配置">Type-Safe Configuration / 类型安全配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, PropertiesConfig};
+</span>use hiver_config::{Config, PropertiesConfig};
 use serde::Deserialize;
 
 #[derive(PropertiesConfig, Deserialize)]
@@ -4888,13 +4888,13 @@ export NEXUS_PROFILE=prod
 <p>使用文件命名约定的环境特定配置：</p>
 <pre><code>config/
 ├── nexus.toml                # Default / 默认
-├── nexus-dev.toml            # Development / 开发
-├── nexus-prod.toml           # Production / 生产
-└── nexus-test.toml           # Testing / 测试
+├── hiver-dev.toml            # Development / 开发
+├── hiver-prod.toml           # Production / 生产
+└── hiver-test.toml           # Testing / 测试
 </code></pre>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, Profile};
+</span>use hiver_config::{Config, Profile};
 
 // Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
@@ -4907,7 +4907,7 @@ let config = Config::builder()
     .build()?;
 <span class="boring">}</span></code></pre>
 <p><strong>Profile-specific overrides</strong> / <strong>配置文件覆盖</strong>:</p>
-<pre><code class="language-toml"># nexus-dev.toml
+<pre><code class="language-toml"># hiver-dev.toml
 [logging]
 level = "DEBUG"
 mode = "verbose"
@@ -4915,7 +4915,7 @@ mode = "verbose"
 [database]
 url = "postgres://localhost/mydb_dev"
 </code></pre>
-<pre><code class="language-toml"># nexus-prod.toml
+<pre><code class="language-toml"># hiver-prod.toml
 [logging]
 level = "WARN"
 mode = "simple"
@@ -4926,10 +4926,10 @@ pool_size = 50
 </code></pre>
 <hr>
 <h2 id="auto-configuration--自动配置"><a class="header" href="#auto-configuration--自动配置">Auto-Configuration / 自动配置</a></h2>
-<p><code>nexus-starter</code> provides Spring Boot-style auto-configuration:
-<code>nexus-starter</code> 提供 Spring Boot 风格的自动配置：</p>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
-use nexus_router::Router;
+<p><code>hiver-starter</code> provides Spring Boot-style auto-configuration:
+<code>hiver-starter</code> 提供 Spring Boot 风格的自动配置：</p>
+<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     NexusApp::new()
@@ -5071,7 +5071,7 @@ cargo fuzz run compression
 <h2 id="optimization-tips--优化技巧"><a class="header" href="#optimization-tips--优化技巧">Optimization Tips / 优化技巧</a></h2>
 <h3 id="linux-production--linux生产环境"><a class="header" href="#linux-production--linux生产环境">Linux (Production) / Linux（生产环境）</a></h3>
 <ol>
-<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>nexus-runtime</code></li>
+<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>hiver-runtime</code></li>
 <li><strong>Tune io-uring SQ/CQ sizes</strong> — <code>IoUringDriver::with_sq_entries(256)</code></li>
 <li><strong>CPU affinity</strong> — bind each runtime thread to a specific core</li>
 <li><strong>Disable unnecessary middleware</strong> — each middleware adds latency</li>
@@ -5086,13 +5086,13 @@ cargo fuzz run compression
 <li><strong>Reuse <code>Bytes</code> buffers</strong> — avoid unnecessary cloning</li>
 <li><strong>Use <code>&amp;str</code> over <code>String</code></strong> in handlers when possible</li>
 <li><strong>Keep middleware chains short</strong> — minimize per-request overhead</li>
-<li><strong>Monitor with <code>nexus-observability</code></strong> — identify bottlenecks via tracing</li>
+<li><strong>Monitor with <code>hiver-observability</code></strong> — identify bottlenecks via tracing</li>
 </ol>
 <hr>
 <h2 id="performance-monitoring--性能监控"><a class="header" href="#performance-monitoring--性能监控">Performance Monitoring / 性能监控</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Histogram};
 use std::time::Instant;
 
 let metrics = MetricsRegistry::default();
@@ -5134,7 +5134,7 @@ Nexus 提供受 Spring Security 启发的全面安全功能。</p>
 <h3 id="basic-authentication--基本认证"><a class="header" href="#basic-authentication--基本认证">Basic Authentication / 基本认证</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::{Authentication, AuthenticationManager};
+</span>use hiver_security::{Authentication, AuthenticationManager};
 
 let auth_manager = AuthenticationManager::new();
 let auth = auth_manager.authenticate(username, password).await?;
@@ -5142,7 +5142,7 @@ let auth = auth_manager.authenticate(username, password).await?;
 <h3 id="jwt-authentication--jwt-认证-1"><a class="header" href="#jwt-authentication--jwt-认证-1">JWT Authentication / JWT 认证</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::jwt::{JwtProvider, JwtConfig, Claims};
+</span>use hiver_security::jwt::{JwtProvider, JwtConfig, Claims};
 use std::time::Duration;
 
 // Configure JWT / 配置 JWT
@@ -5163,8 +5163,8 @@ assert_eq!(verified.sub(), "user123");
 <h3 id="jwt-middleware--jwt-中间件"><a class="header" href="#jwt-middleware--jwt-中间件">JWT Middleware / JWT 中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Middleware;
-use nexus_security::jwt::JwtProvider;
+</span>use hiver_middleware::Middleware;
+use hiver_security::jwt::JwtProvider;
 
 struct JwtAuth {
     provider: JwtProvider,
@@ -5199,7 +5199,7 @@ impl Middleware for JwtAuth {
 <h3 id="method-level-security--方法级安全"><a class="header" href="#method-level-security--方法级安全">Method-Level Security / 方法级安全</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_macros::pre_authorize;
+</span>use hiver_macros::pre_authorize;
 
 #[pre_authorize("hasRole('ADMIN')")]
 async fn delete_user(id: u64) -&gt; Result&lt;(), Error&gt; {
@@ -5209,7 +5209,7 @@ async fn delete_user(id: u64) -&gt; Result&lt;(), Error&gt; {
 <h3 id="role-based-security--基于角色的安全"><a class="header" href="#role-based-security--基于角色的安全">Role-Based Security / 基于角色的安全</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_macros::secured;
+</span>use hiver_macros::secured;
 
 #[secured("ROLE_USER")]
 async fn get_profile() -&gt; Result&lt;Profile, Error&gt; {
@@ -5220,7 +5220,7 @@ async fn get_profile() -&gt; Result&lt;Profile, Error&gt; {
 <h2 id="password-encoding--密码编码"><a class="header" href="#password-encoding--密码编码">Password Encoding / 密码编码</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::{PasswordEncoder, BcryptPasswordEncoder};
+</span>use hiver_security::{PasswordEncoder, BcryptPasswordEncoder};
 
 // Default bcrypt encoder / 默认 bcrypt 编码器
 let encoder = PasswordEncoder::bcrypt();
@@ -5239,7 +5239,7 @@ assert!(is_valid);
 <h2 id="input-validation--输入验证"><a class="header" href="#input-validation--输入验证">Input Validation / 输入验证</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_validation_annotations::{NotNull, Size, Email, Pattern};
+</span>use hiver_validation_annotations::{NotNull, Size, Email, Pattern};
 
 struct CreateUserRequest {
     #[not_null]
@@ -5258,7 +5258,7 @@ struct CreateUserRequest {
 <h2 id="security-headers--安全头"><a class="header" href="#security-headers--安全头">Security Headers / 安全头</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::SecurityHeaders;
+</span>use hiver_middleware::SecurityHeaders;
 
 let app = Router::new()
     .middleware(Arc::new(SecurityHeaders::default()
@@ -5272,7 +5272,7 @@ let app = Router::new()
 <h2 id="cors-configuration--cors-配置"><a class="header" href="#cors-configuration--cors-配置">CORS Configuration / CORS 配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Cors;
+</span>use hiver_middleware::Cors;
 
 let cors = Cors::new()
     .allow_origin("https://example.com")

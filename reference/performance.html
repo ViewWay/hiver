@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Performance / 性能 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Performance / 性能 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -269,7 +269,7 @@ cargo fuzz run compression
 <h2 id="optimization-tips--优化技巧"><a class="header" href="#optimization-tips--优化技巧">Optimization Tips / 优化技巧</a></h2>
 <h3 id="linux-production--linux生产环境"><a class="header" href="#linux-production--linux生产环境">Linux (Production) / Linux（生产环境）</a></h3>
 <ol>
-<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>nexus-runtime</code></li>
+<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>hiver-runtime</code></li>
 <li><strong>Tune io-uring SQ/CQ sizes</strong> — <code>IoUringDriver::with_sq_entries(256)</code></li>
 <li><strong>CPU affinity</strong> — bind each runtime thread to a specific core</li>
 <li><strong>Disable unnecessary middleware</strong> — each middleware adds latency</li>
@@ -284,13 +284,13 @@ cargo fuzz run compression
 <li><strong>Reuse <code>Bytes</code> buffers</strong> — avoid unnecessary cloning</li>
 <li><strong>Use <code>&amp;str</code> over <code>String</code></strong> in handlers when possible</li>
 <li><strong>Keep middleware chains short</strong> — minimize per-request overhead</li>
-<li><strong>Monitor with <code>nexus-observability</code></strong> — identify bottlenecks via tracing</li>
+<li><strong>Monitor with <code>hiver-observability</code></strong> — identify bottlenecks via tracing</li>
 </ol>
 <hr>
 <h2 id="performance-monitoring--性能监控"><a class="header" href="#performance-monitoring--性能监控">Performance Monitoring / 性能监控</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Histogram};
 use std::time::Instant;
 
 let metrics = MetricsRegistry::default();

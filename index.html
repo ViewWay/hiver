@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Nexus Framework / Nexus框架 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Hiver Framework / Nexus框架 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-20df9491.js";
+            window.path_to_searchindex_js = "searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-3ecb9f02.js"></script>
+        <script src="toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -174,11 +174,11 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="nexus-framework"><a class="header" href="#nexus-framework">Nexus Framework</a></h1>
+                        <h1 id="hiver-framework"><a class="header" href="#hiver-framework">Hiver Framework</a></h1>
 <blockquote>
 <p>A production-grade, high-availability web framework written in Rust.</p>
 </blockquote>
-<h1 id="nexus-框架"><a class="header" href="#nexus-框架">Nexus 框架</a></h1>
+<h1 id="hiver-框架"><a class="header" href="#hiver-框架">Hiver 框架</a></h1>
 <blockquote>
 <p>用 Rust 编写的生产级、高可用 Web 框架。</p>
 </blockquote>
@@ -244,12 +244,12 @@
 <h2 id="quick-start--快速开始"><a class="header" href="#quick-start--快速开始">Quick Start / 快速开始</a></h2>
 <pre><code class="language-toml"># Cargo.toml
 [dependencies]
-nexus-starter = "0.1"
+hiver-starter = "0.1"
 </code></pre>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+use hiver_router::Router;
 
-#[nexus::handler]
+#[hiver::handler]
 async fn hello() -&gt; &amp;'static str {
     "Hello, Nexus! / 你好，Nexus！"
 }
@@ -326,9 +326,9 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><th>Resource</th><th>Link</th></tr>
 </thead>
 <tbody>
-<tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=nexus-">nexus-framework</a></td></tr>
+<tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=hiver-">hiver-framework</a></td></tr>
 <tr><td>📖 API Docs</td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td></tr>
-<tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/nexus">ViewWay/nexus</a></td></tr>
+<tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/hiver">ViewWay/hiver</a></td></tr>
 <tr><td>📄 Design Spec</td><td><a href="../design/design-spec.html">design-spec.md</a></td></tr>
 <tr><td>🗺️ Implementation Plan</td><td><a href="../design/implementation-plan.html">implementation-plan.md</a></td></tr>
 </tbody>
@@ -348,11 +348,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><td><code>@Repository</code></td><td><code>#[derive(Repository)]</code></td><td>Data repository</td></tr>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Config binding</td></tr>
 <tr><td><code>SpringApplication.run()</code></td><td><code>NexusApp::new().run()</code></td><td>App bootstrap</td></tr>
-<tr><td><code>@SpringBootApplication</code></td><td><code>nexus-starter</code></td><td>Auto-config</td></tr>
-<tr><td>Resilience4j</td><td><code>nexus-resilience</code></td><td>Circuit breaker</td></tr>
-<tr><td>Spring Security</td><td><code>nexus-security</code></td><td>Auth &amp; security</td></tr>
-<tr><td>Spring Data JPA</td><td><code>nexus-data-orm</code></td><td>ORM abstraction</td></tr>
-<tr><td>Spring WebFlux</td><td><code>nexus-http</code></td><td>HTTP server</td></tr>
+<tr><td><code>@SpringBootApplication</code></td><td><code>hiver-starter</code></td><td>Auto-config</td></tr>
+<tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Circuit breaker</td></tr>
+<tr><td>Spring Security</td><td><code>hiver-security</code></td><td>Auth &amp; security</td></tr>
+<tr><td>Spring Data JPA</td><td><code>hiver-data-orm</code></td><td>ORM abstraction</td></tr>
+<tr><td>Spring WebFlux</td><td><code>hiver-http</code></td><td>HTTP server</td></tr>
 </tbody>
 </table>
 </div>

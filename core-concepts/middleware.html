@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Middleware / 中间件 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Middleware / 中间件 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-20df9491.js";
+            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3ecb9f02.js"></script>
+        <script src="../toc-2dff6247.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -186,8 +186,8 @@ Response ←  Middleware 1  ←  Middleware 2  ←  Result
 <h2 id="middleware-trait--中间件-trait"><a class="header" href="#middleware-trait--中间件-trait">Middleware Trait / 中间件 Trait</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+</span>use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -207,7 +207,7 @@ pub trait Middleware&lt;S&gt;: Send + Sync + 'static {
 <h3 id="logger-middleware--日志中间件"><a class="header" href="#logger-middleware--日志中间件">Logger Middleware / 日志中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::LoggerMiddleware;
+</span>use hiver_middleware::LoggerMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -220,7 +220,7 @@ let router = Router::new()
 <h3 id="cors-middleware--cors-中间件"><a class="header" href="#cors-middleware--cors-中间件">CORS Middleware / CORS 中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::{CorsMiddleware, CorsConfig};
+</span>use hiver_middleware::{CorsMiddleware, CorsConfig};
 
 // Allow all origins / 允许所有来源
 let cors = CorsMiddleware::any();
@@ -241,7 +241,7 @@ let router = Router::new()
 <h3 id="timeout-middleware--超时中间件"><a class="header" href="#timeout-middleware--超时中间件">Timeout Middleware / 超时中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::TimeoutMiddleware;
+</span>use hiver_middleware::TimeoutMiddleware;
 use std::time::Duration;
 use std::sync::Arc;
 
@@ -252,7 +252,7 @@ let router = Router::new()
 <h3 id="compression-middleware--压缩中间件"><a class="header" href="#compression-middleware--压缩中间件">Compression Middleware / 压缩中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::CompressionMiddleware;
+</span>use hiver_middleware::CompressionMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -265,8 +265,8 @@ let router = Router::new()
 <h3 id="function-based-middleware--函数式中间件"><a class="header" href="#function-based-middleware--函数式中间件">Function-based Middleware / 函数式中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+</span>use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::sync::Arc;
 
 async fn auth_middleware&lt;S&gt;(req: Request, state: Arc&lt;S&gt;, next: Next&lt;S&gt;) -&gt; Result&lt;Response&gt; {
@@ -293,8 +293,8 @@ async fn auth_middleware&lt;S&gt;(req: Request, state: Arc&lt;S&gt;, next: Next&
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::Arc;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 
 struct TimingMiddleware;
 
@@ -335,8 +335,8 @@ use std::future::Future;
 use std::sync::Arc;
 use std::collections::HashMap;
 use tokio::sync::RwLock;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result, Body, StatusCode};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result, Body, StatusCode};
 
 struct RateLimitMiddleware {
     requests_per_second: u32,
@@ -451,8 +451,8 @@ let router = Router::new()
 <h2 id="complete-example--完整示例"><a class="header" href="#complete-example--完整示例">Complete Example / 完整示例</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
-use nexus_middleware::{
+</span>use hiver_router::Router;
+use hiver_middleware::{
     LoggerMiddleware, 
     CorsMiddleware, 
     TimeoutMiddleware,
