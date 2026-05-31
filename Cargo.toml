@@ -62,6 +62,7 @@ members = [
     "crates/hiver-lombok",
     "crates/hiver-spel",
     "crates/hiver-modulith",
+    "crates/hiver-cli",
     "tests",
     "examples",
 ]
@@ -257,6 +258,9 @@ alloy-rpc-types = "1.5"
 # CLI / 命令行
 # Equivalent to: Spring Shell
 clap = { version = "4.5", features = ["derive"] }
+dialoguer = "0.11"
+indicatif = "0.17"
+console = "0.15"
 rustyline = "15"
 colored = "2"
 

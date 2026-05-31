@@ -169,7 +169,9 @@ jobs:
           # Tier 4: Aggregation crates (depend on many others).
           # 聚合 crate（依赖大量其他 crate）。
           - crate: hiver-test
+          - hiver-cli
             path: crates/hiver-test
+          - hiver-cli
           - crate: hiver-starter
             path: crates/hiver-starter
 
