@@ -452,7 +452,7 @@ fn main() -> std::io::Result<()> {
 - Explore [Middleware](../core-concepts/middleware.md) for advanced request processing
 - Learn about [Resilience](../advanced/resilience.md) patterns
 - Check [Observability](../advanced/observability.md) for monitoring
-- See [Examples](https://github.com/nexus-rs/nexus/tree/main/examples) for more
+- See [Examples](https://github.com/ViewWay/nexus/tree/main/examples) for more
 
 ---
 

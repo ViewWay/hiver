@@ -235,6 +235,8 @@ docs/
 - **Phase 4 (Resilience)**: [Implementation plan § Phase 4](design/implementation-plan.md), [Phase 4 completion](reports/phase4-completion.md)
 - **Phase 5 (Observability)**: [Implementation plan § Phase 5](design/implementation-plan.md), [Phase 5 completion](reports/phase5-completion.md)
 - **Phase 6 (Web3)**: [Implementation plan § Phase 6](design/implementation-plan.md), [Phase 6 completion](reports/phase6-completion.md)
+- **Phase 7 (Performance & Hardening)**: [Implementation plan § Phase 7](design/implementation-plan.md)
+- **Phase 8 (Data Layer)**: [Data layer implementation](reports/nexus-data-full-implementation.md), [Data layer docs](data-layer.md)
 
 ### By Spring Boot Feature / 按 Spring Boot 功能查找
 

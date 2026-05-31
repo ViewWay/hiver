@@ -148,6 +148,7 @@
 |-------|------:|-------------------|----------------|
 | **nexus-cloud** | 5,824 | Spring Cloud | `ServiceDiscovery`, `LoadBalancer`, `Gateway`, `ConfigServerClient`, `CircuitBreaker`, `FeignClient` |
 | **nexus-ai** | 6,396 | Spring AI | `ChatClient`, `OpenAiChatModel`, `AnthropicChatModel`, `OllamaChatModel`, `EmbeddingModel`, `VectorStore`, `PromptTemplate`, `ToolRegistry` |
+| **nexus-agent** | 1,901 | Spring AI Agent | `Agent`, `ReActAgent`, `AgentChain`, `MapReduceAgent`, `RouterAgent`, `PromptTemplate` |
 | **nexus-web3** | 4,280 | — (unique) | `ChainConfig`, `Contract` (ERC20/ERC721), `Wallet`, `RpcClient`, `TransactionBuilder` |
 | **nexus-vault** | 2,351 | Spring Vault | `VaultClient`, `KV`, `PKI`, `Transit`, `Lease`, health check |
 | **nexus-ldap** | 1,192 | Spring LDAP | `LdapTemplate`, `LdapRepository`, `LdapPool`, `ObjectDirectoryMapper`, `LdapQueryBuilder` |
@@ -163,6 +164,7 @@
 | **nexus-schedule** | 616 | Spring @Scheduled | `@Scheduled` (fixed_rate, cron, initial_delay) |
 | **nexus-state-machine** | 1,728 | Spring StateMachine | `StateMachine`, `State`, `Transition`, `Guard`, `Action`, `StateData` |
 | **nexus-retry** | 665 | Spring Retry | `#[retry]`, `#[recover]`, `RetryTemplate` |
+| **nexus-modulith** | 571 | Spring Modulith | `Module`, `ModuleRegistry`, `DomainEvent`, `EventPublisher`, `verify_modules` |
 
 ### Validation & Error / 校验与错误
 
@@ -179,6 +181,7 @@
 | **nexus-test** | 3,786 | Spring Test | `TestClient`, `TestApplication`, `MockBean`, `WebTestClient`, `ContainerSet` (Postgres/Redis/Kafka) |
 | **nexus-shell** | 2,840 | Spring Shell | `Shell`, `Repl`, `CommandRegistry`, `Banner`, `PromptStyle`, `InputValidator` |
 | **nexus-lombok** | 1,525 | Project Lombok | `#[derive(Getter)]`/`#[derive(Setter)]`/`#[derive(Data)]`/`#[derive(Builder)]`/`#[derive(Value)]`/`#[derive(With)]`/`#[derive(AllArgsConstructor)]`/`#[derive(NoArgsConstructor)]` |
+| **nexus-spel** | 693 | Spring SpEL | `SpelContext`, `SpelEvaluator`, `SpelExpr`, `SpelError`, `hasRole`/`hasAuthority` expressions |
 | **nexus-benches** | 562 | — | HTTP server, router, extractors benchmarks |
 | **nexus-events-macros** | 291 | Spring Events (proc-macro) | `#[EventListener]`, `#[TransactionalEventListener]` |
 | **nexus-retry-macros** | 255 | Spring Retry (proc-macro) | `#[retry]`, `#[recover]` |
@@ -306,7 +309,7 @@ nexus-core ◄── nexus-http ◄── nexus-router ◄── nexus-middlewar
     ├── nexus-observability ◄── nexus-micrometer                │
     ├── nexus-resilience                                        │
     ├── nexus-cloud                                             │
-    ├── nexus-ai                                                │
+    ├── nexus-ai ──► nexus-agent                                │
     ├── nexus-kafka                                             │
     ├── nexus-amqp                                              │
     ├── nexus-test                                              │
