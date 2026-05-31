@@ -1,0 +1,57 @@
+[package]
+name = "hiver-events"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Event mechanism for Hiver Framework.
+Nexus框架的事件机制。
+Equivalent to: Spring Events, ApplicationEventPublisher, @EventListener
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+# Core types / 核心类型
+hiver-core = { path = "../hiver-core" }
+serde = { workspace = true, features = ["derive"] }
+
+# Async runtime / 异步运行时
+tokio = { workspace = true, features = ["sync", "rt", "time"] }
+async-trait = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# Type erasure / 类型擦除
+erased-serde = "0.4"
+
+# Time / 时间
+chrono = { workspace = true }
+
+# UUID / UUID
+uuid = { workspace = true, features = ["v4", "serde"] }
+
+# Utilities / 工具
+dashmap = "6.1"
+
+# Tracing / 追踪
+tracing = { workspace = true }
+
+# Macros / 宏
+hiver-events-macros = { path = "../hiver-events-macros" }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

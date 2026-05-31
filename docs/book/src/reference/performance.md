@@ -106,7 +106,7 @@ cargo fuzz run compression
 
 ### Linux (Production) / Linux（生产环境）
 
-1. **Enable io-uring** — requires Linux kernel 5.1+, automatic on `nexus-runtime`
+1. **Enable io-uring** — requires Linux kernel 5.1+, automatic on `hiver-runtime`
 2. **Tune io-uring SQ/CQ sizes** — `IoUringDriver::with_sq_entries(256)`
 3. **CPU affinity** — bind each runtime thread to a specific core
 4. **Disable unnecessary middleware** — each middleware adds latency
@@ -121,14 +121,14 @@ cargo fuzz run compression
 1. **Reuse `Bytes` buffers** — avoid unnecessary cloning
 2. **Use `&str` over `String`** in handlers when possible
 3. **Keep middleware chains short** — minimize per-request overhead
-4. **Monitor with `nexus-observability`** — identify bottlenecks via tracing
+4. **Monitor with `hiver-observability`** — identify bottlenecks via tracing
 
 ---
 
 ## Performance Monitoring / 性能监控
 
 ```rust
-use nexus_observability::{MetricsRegistry, Histogram};
+use hiver_observability::{MetricsRegistry, Histogram};
 use std::time::Instant;
 
 let metrics = MetricsRegistry::default();

@@ -1,0 +1,68 @@
+[package]
+name = "hiver-test"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Testing framework for Hiver Framework.
+Nexus框架的测试框架。
+Equivalent to: Spring Boot Test (@SpringBootTest, @MockBean, TestContainers)
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Macro dependencies / 宏依赖
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+darling = { workspace = true }
+
+# Async runtime / 异步运行时
+hiver-runtime = { path = "../hiver-runtime" }
+hiver-http = { path = "../hiver-http" }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+# HTTP / HTTP
+http = { workspace = true }
+hyper = { workspace = true }
+reqwest = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Test utilities / 测试工具
+once_cell = { workspace = true }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+# Testcontainers (Docker-based integration test containers)
+# Testcontainers（基于Docker的集成测试容器）
+testcontainers = "0.27"
+testcontainers-modules = { version = "0.15", features = ["postgres", "redis", "kafka"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+trybuild = { workspace = true }

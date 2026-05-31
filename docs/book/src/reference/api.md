@@ -27,77 +27,77 @@ Nexus 通过多个渠道提供全面的 API 文档。
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-runtime` | Custom async runtime (io-uring/epoll/kqueue) |
-| `nexus-core` | Core types, error handling |
-| `nexus-http` | HTTP/1.1 server, Request, Response |
-| `nexus-router` | Router with path params, state, middleware |
-| `nexus-middleware` | Middleware trait (CORS, compression, timeout) |
-| `nexus-extractors` | Request parameter extraction |
-| `nexus-response` | Response builders |
+| `hiver-runtime` | Custom async runtime (io-uring/epoll/kqueue) |
+| `hiver-core` | Core types, error handling |
+| `hiver-http` | HTTP/1.1 server, Request, Response |
+| `hiver-router` | Router with path params, state, middleware |
+| `hiver-middleware` | Middleware trait (CORS, compression, timeout) |
+| `hiver-extractors` | Request parameter extraction |
+| `hiver-response` | Response builders |
 
 ### Data Layer / 数据层
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-data-commons` | Repository traits, Page/Sort, entity metadata |
-| `nexus-data-rdbc` | Reactive database client, connection pool, RowMapper |
-| `nexus-data-orm` | ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations |
-| `nexus-data-redis` | Redis template, distributed locks, caching |
-| `nexus-data-mongodb` | MongoDB template and repository |
-| `nexus-flyway` | Database migration framework |
-| `nexus-data-annotations` | `@Entity`, `@Table`, `@Column`, `@Id` |
-| `nexus-data-macros` | `#[derive(Model)]`, `#[derive(Repository)]` |
+| `hiver-data-commons` | Repository traits, Page/Sort, entity metadata |
+| `hiver-data-rdbc` | Reactive database client, connection pool, RowMapper |
+| `hiver-data-orm` | ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations |
+| `hiver-data-redis` | Redis template, distributed locks, caching |
+| `hiver-data-mongodb` | MongoDB template and repository |
+| `hiver-flyway` | Database migration framework |
+| `hiver-data-annotations` | `@Entity`, `@Table`, `@Column`, `@Id` |
+| `hiver-data-macros` | `#[derive(Model)]`, `#[derive(Repository)]` |
 
 ### Resilience & Observability / 弹性与可观测性
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-resilience` | Circuit breaker, rate limiter, retry, timeout |
-| `nexus-observability` | Distributed tracing, metrics, structured logging |
+| `hiver-resilience` | Circuit breaker, rate limiter, retry, timeout |
+| `hiver-observability` | Distributed tracing, metrics, structured logging |
 
 ### Web3 / 区块链
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-web3` | Chain abstraction, wallet, transactions, RPC, smart contracts |
+| `hiver-web3` | Chain abstraction, wallet, transactions, RPC, smart contracts |
 
 ### IoC & AOP / 控制反转与切面
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-ioc` | Dependency injection container, `@Component`, `@Autowired` |
-| `nexus-aop` | Aspect-oriented programming, `@Aspect` |
+| `hiver-ioc` | Dependency injection container, `@Component`, `@Autowired` |
+| `hiver-aop` | Aspect-oriented programming, `@Aspect` |
 
 ### Enterprise / 企业级
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-security` | Authentication, authorization, password encoding |
-| `nexus-validation` | Bean Validation (JSR 380) |
-| `nexus-validation-annotations` | `@NotNull`, `@Size`, `@Email`, `@Pattern` |
-| `nexus-scheduling` | `@Scheduled` cron/fixed-rate/delay tasks |
-| `nexus-i18n` | Internationalization, MessageSource |
+| `hiver-security` | Authentication, authorization, password encoding |
+| `hiver-validation` | Bean Validation (JSR 380) |
+| `hiver-validation-annotations` | `@NotNull`, `@Size`, `@Email`, `@Pattern` |
+| `hiver-scheduling` | `@Scheduled` cron/fixed-rate/delay tasks |
+| `hiver-i18n` | Internationalization, MessageSource |
 
 ### AI & Cloud / AI 与云
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-ai` | AI/LLM integration, chat models, embeddings |
-| `nexus-agent` | AI agent framework (Spring AI Agent) |
-| `nexus-cloud` | Cloud-native support, service discovery |
-| `nexus-ws` | WebSocket server/client |
+| `hiver-ai` | AI/LLM integration, chat models, embeddings |
+| `hiver-agent` | AI agent framework (Spring AI Agent) |
+| `hiver-cloud` | Cloud-native support, service discovery |
+| `hiver-ws` | WebSocket server/client |
 
 ### Tooling & Starter / 工具与启动器
 
 | Crate | Description / 描述 |
 |-------|---------------------|
-| `nexus-macros` | 150+ procedural macros |
-| `nexus-lombok` | `@Data`, `@Getter`, `@Setter`, `@Builder` |
-| `nexus-retry-macros` | `@Retryable`, `@Recover` |
-| `nexus-spel` | Spring Expression Language engine |
-| `nexus-modulith` | Modular monolith support |
-| `nexus-starter` | Auto-configuration, one-line startup |
-| `nexus-test` | Test utilities, TestClient |
+| `hiver-macros` | 150+ procedural macros |
+| `hiver-lombok` | `@Data`, `@Getter`, `@Setter`, `@Builder` |
+| `hiver-retry-macros` | `@Retryable`, `@Recover` |
+| `hiver-spel` | Spring Expression Language engine |
+| `hiver-modulith` | Modular monolith support |
+| `hiver-starter` | Auto-configuration, one-line startup |
+| `hiver-test` | Test utilities, TestClient |
 
 ---
 
@@ -106,11 +106,11 @@ Nexus 通过多个渠道提供全面的 API 文档。
 ### Server Startup / 启动服务器
 
 ```rust
-use nexus_http::Server;
-use nexus_router::Router;
+use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -> std::io::Result<()> {
-    let mut rt = nexus_runtime::Runtime::new()?;
+    let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
             .get("/", || async { "Hello, Nexus!" });
@@ -122,7 +122,7 @@ fn main() -> std::io::Result<()> {
 ### Using Starter / 使用启动器
 
 ```rust
-use nexus_starter::NexusApp;
+use hiver_starter::NexusApp;
 
 fn main() -> std::io::Result<()> {
     NexusApp::new()
@@ -134,8 +134,8 @@ fn main() -> std::io::Result<()> {
 ### Data Repository / 数据仓库
 
 ```rust
-use nexus_data_orm::prelude::*;
-use nexus_data_annotations::{Entity, Table, Id, Column};
+use hiver_data_orm::prelude::*;
+use hiver_data_annotations::{Entity, Table, Id, Column};
 
 #[derive(Entity, Table, Model)]
 #[table_name = "users"]

@@ -111,7 +111,7 @@ max_files = 7               # Number of log files to keep
 ### Basic Configuration / 基本配置
 
 ```rust
-use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = LoggerConfig {
@@ -128,7 +128,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### Profile-based Configuration / 基于 Profile 的配置
 
 ```rust
-use nexus_observability::log::{Logger, LoggerConfig};
+use hiver_observability::log::{Logger, LoggerConfig};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let profile = Some("dev".to_string());
@@ -142,11 +142,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### With nexus-config Integration / 与 nexus-config 集成
+### With hiver-config Integration / 与 hiver-config 集成
 
 ```rust
-use nexus_config::Config;
-use nexus_observability::log::Logger;
+use hiver_config::Config;
+use hiver_observability::log::Logger;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::builder()
@@ -196,7 +196,7 @@ fn handle_user(user_id: i64, action: &str) {
 
 ```rust
 use tracing::{info, warn, error};
-use nexus_http::Request;
+use hiver_http::Request;
 
 async fn handle_request(req: Request) -> Response {
     let method = req.method().as_str();
@@ -320,9 +320,9 @@ public class Application {
 
 ```rust
 // Nexus
-use nexus_starter::prelude::*;
+use hiver_starter::prelude::*;
 
-#[nexus_main]
+#[hiver_main]
 struct Application;
 
 fn main() {
@@ -419,5 +419,5 @@ impl LogMode {
 ## See Also / 另请参阅
 
 - [Observability Guide](docs/book/src/advanced/observability.md) - Full observability documentation
-- [nexus-observability API](https://docs.rs/nexus-observability) - API documentation
+- [hiver-observability API](https://docs.rs/hiver-observability) - API documentation
 - [Spring Boot Logging](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging) - Spring Boot reference

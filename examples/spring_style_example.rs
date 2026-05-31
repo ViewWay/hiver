@@ -24,14 +24,14 @@
 //! }
 //! ```
 
-use nexus_observability::log::{Logger, LoggerFactory};
+use hiver_observability::log::{Logger, LoggerFactory};
 
 // ============================================================================
 // @SpringBootApplication equivalent
 // @SpringBootApplication 等价物
 // ============================================================================
 
-#[nexus_macros::main]
+#[hiver_macros::main]
 struct Application;
 
 // ============================================================================
@@ -39,8 +39,8 @@ struct Application;
 // @RestController 等价物
 // ============================================================================
 
-#[nexus_macros::controller]
-#[nexus_macros::slf4j] // Equivalent to Lombok @Slf4j
+#[hiver_macros::controller]
+#[hiver_macros::slf4j] // Equivalent to Lombok @Slf4j
 struct DemoController {
     // Logger is automatically added by #[slf4j] macro
     // 日志记录器由 #[slf4j] 宏自动添加
@@ -49,7 +49,7 @@ struct DemoController {
 impl DemoController {
     // Equivalent to @GetMapping("/helloworld")
     // 等价于 @GetMapping("/helloworld")
-    #[nexus_macros::get("/helloworld")]
+    #[hiver_macros::get("/helloworld")]
     fn hello(&self) -> &'static str {
         self.log()
             .info(format_args!("Handling /helloworld request"));
@@ -58,7 +58,7 @@ impl DemoController {
 
     // Equivalent to @GetMapping("/user/{id}")
     // 等价于 @GetMapping("/user/{id}")
-    #[nexus_macros::get("/user/{id}")]
+    #[hiver_macros::get("/user/{id}")]
     fn get_user(&self, id: u64) -> String {
         self.log()
             .info(format_args!("Getting user with id: {}", id));
@@ -67,8 +67,8 @@ impl DemoController {
 
     // Equivalent to @PostMapping("/user")
     // 等价于 @PostMapping("/user")
-    #[nexus_macros::post("/user")]
-    fn create_user(&self, #[nexus_macros::body] user: String) -> String {
+    #[hiver_macros::post("/user")]
+    fn create_user(&self, #[hiver_macros::body] user: String) -> String {
         self.log().info(format_args!("Creating user: {}", user));
         format!("Created: {}", user)
     }
@@ -79,8 +79,8 @@ impl DemoController {
 // @Service 等价物
 // ============================================================================
 
-#[nexus_macros::service]
-#[nexus_macros::slf4j]
+#[hiver_macros::service]
+#[hiver_macros::slf4j]
 struct UserService {
     repository: std::sync::Arc<UserRepository>,
 }
@@ -90,7 +90,7 @@ impl UserService {
         Self { repository }
     }
 
-    #[nexus_macros::cacheable("users")]
+    #[hiver_macros::cacheable("users")]
     async fn find_by_id(&self, id: u64) -> Option<String> {
         self.log().debug(format_args!("Finding user by id: {}", id));
         self.repository.find_by_id(id).await
@@ -102,7 +102,7 @@ impl UserService {
 // @Repository 等价物
 // ============================================================================
 
-#[nexus_macros::repository]
+#[hiver_macros::repository]
 trait UserRepository: Send + Sync {
     async fn find_by_id(&self, id: u64) -> Option<String>;
 }
@@ -131,7 +131,7 @@ fn main() -> std::io::Result<()> {
 /*
 // Equivalent to @ConfigurationProperties
 // 等价于 @ConfigurationProperties
-#[nexus_macros::config(prefix = "app")]
+#[hiver_macros::config(prefix = "app")]
 struct AppConfig {
     name: String,
     port: u16,
@@ -139,8 +139,8 @@ struct AppConfig {
 
 // Equivalent to @Profile("dev")
 // 等价于 @Profile("dev")
-#[nexus_macros::profile("dev")]
-#[nexus_macros::service]
+#[hiver_macros::profile("dev")]
+#[hiver_macros::service]
 struct DevService {
     // Only available in dev profile
     // 仅在dev配置文件中可用
@@ -148,7 +148,7 @@ struct DevService {
 
 // Equivalent to @Transactional
 // 等价于 @Transactional
-#[nexus_macros::transactional]
+#[hiver_macros::transactional]
 async fn transfer_money(from: u64, to: u64, amount: f64) -> Result<(), Error> {
     // Database operations here will be executed in a transaction
     // 这里的数据库操作将在事务中执行
@@ -157,7 +157,7 @@ async fn transfer_money(from: u64, to: u64, amount: f64) -> Result<(), Error> {
 
 // Equivalent to @Scheduled(cron = "0 * * * * *")
 // 等价于 @Scheduled(cron = "0 * * * * *")
-#[nexus_macros::scheduled(cron = "0 * * * * *")]
+#[hiver_macros::scheduled(cron = "0 * * * * *")]
 async fn cleanup_task() {
     // Run every hour
     // 每小时运行一次
@@ -165,7 +165,7 @@ async fn cleanup_task() {
 
 // Equivalent to @ExceptionHandler
 // 等价于 @ExceptionHandler
-#[nexus_macros::exception_handler]
+#[hiver_macros::exception_handler]
 async fn handle_not_found(e: NotFoundError) -> Response {
     Response::builder()
         .status(404)

@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 #[allow(dead_code)]
 fn demo_query_runtime() {
-    use nexus_data_rdbc::{QueryMetadata, ParamStyle, QueryType};
+    use hiver_data_rdbc::{QueryMetadata, ParamStyle, QueryType};
 
     // Define query metadata (normally extracted from @Query annotation)
     // 定义查询元数据（通常从 @Query 注解中提取）
@@ -44,7 +44,7 @@ fn demo_query_runtime() {
 
 #[allow(dead_code)]
 fn demo_validation_runtime() {
-    use nexus_http::validation::{ValidationHelpers, ValidationErrors};
+    use hiver_http::validation::{ValidationHelpers, ValidationErrors};
 
     // Create validation errors
     // 创建验证错误
@@ -85,7 +85,7 @@ fn demo_validation_runtime() {
 
 #[allow(dead_code)]
 fn demo_aop_runtime() {
-    use nexus_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
+    use hiver_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
     use std::any::Any;
 
     // Create a join point
@@ -127,7 +127,7 @@ fn demo_aop_runtime() {
 
 #[allow(dead_code)]
 fn demo_transactional_runtime() {
-    use nexus_data_annotations::transactional::{
+    use hiver_data_annotations::transactional::{
         TransactionalConfig, IsolationLevel, Propagation,
     };
 
@@ -164,20 +164,20 @@ struct User {
 
 /// Validation implementation for User
 /// User 的验证实现
-impl nexus_http::validation::Validatable for User {
-    fn validate(&self) -> Result<(), nexus_http::validation::ValidationErrors> {
-        let mut errors = nexus_http::validation::ValidationErrors::new();
+impl hiver_http::validation::Validatable for User {
+    fn validate(&self) -> Result<(), hiver_http::validation::ValidationErrors> {
+        let mut errors = hiver_http::validation::ValidationErrors::new();
 
         // Validate username
         // 验证用户名
-        if let Some(error) = nexus_http::validation::ValidationHelpers::require_non_empty(
+        if let Some(error) = hiver_http::validation::ValidationHelpers::require_non_empty(
             "username",
             &self.username,
         ) {
             errors.add(error);
         }
 
-        if let Some(error) = nexus_http::validation::ValidationHelpers::require_min_length(
+        if let Some(error) = hiver_http::validation::ValidationHelpers::require_min_length(
             "username",
             &self.username,
             3,
@@ -187,7 +187,7 @@ impl nexus_http::validation::Validatable for User {
 
         // Validate email
         // 验证邮箱
-        if let Some(error) = nexus_http::validation::ValidationHelpers::require_email_format(
+        if let Some(error) = hiver_http::validation::ValidationHelpers::require_email_format(
             "email",
             &self.email,
         ) {
@@ -196,7 +196,7 @@ impl nexus_http::validation::Validatable for User {
 
         // Validate age
         // 验证年龄
-        if let Some(error) = nexus_http::validation::ValidationHelpers::require_min("age", self.age, 18)
+        if let Some(error) = hiver_http::validation::ValidationHelpers::require_min("age", self.age, 18)
         {
             errors.add(error);
         }
@@ -245,7 +245,7 @@ impl UserService {
     /// Create user (would use @Transactional in real implementation)
     /// 创建用户（实际实现中会使用 @Transactional）
     #[allow(dead_code)]
-    fn create_user(&mut self, user: User) -> Result<(), nexus_http::validation::ValidationErrors> {
+    fn create_user(&mut self, user: User) -> Result<(), hiver_http::validation::ValidationErrors> {
         // Validate user
         // 验证用户
         user.validate()?;

@@ -1,9 +1,9 @@
-# Nexus Framework Examples
-# Nexus 框架示例
+# Hiver Framework Examples
+# Hiver 框架示例
 
-This directory contains example applications demonstrating various Nexus framework features.
+This directory contains example applications demonstrating various Hiver Framework features.
 
-本目录包含演示 Nexus 框架各种功能的示例应用程序。
+本目录包含演示 Hiver 框架各种功能的示例应用程序。
 
 ---
 
@@ -83,12 +83,12 @@ cargo run --release
 **File**: `runtime-echo-server/src/main.rs`
 
 Demonstrates:
-- Basic TCP server with nexus-runtime
+- Basic TCP server with hiver-runtime
 - Connection handling
 - Task spawning for concurrent clients
 
 演示：
-- 使用 nexus-runtime 的基本 TCP 服务器
+- 使用 hiver-runtime 的基本 TCP 服务器
 - 连接处理
 - 为并发客户端生成任务
 
@@ -359,9 +359,9 @@ cargo run --example cache_example
 ### Basic HTTP Server Template / 基本 HTTP 服务器模板
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 
-#[nexus::main]
+#[hiver::main]
 async fn main() -> Result<()> {
     let app = Router::new()
         .get("/", index);
@@ -381,7 +381,7 @@ async fn index() -> &'static str {
 ### JSON API Template / JSON API 模板
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -406,7 +406,7 @@ async fn create_user(Json(user): Json<User>) -> Result<Json<User>, Error> {
 ### Middleware Template / 中间件模板
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 struct CustomMiddleware;
 
@@ -436,7 +436,7 @@ impl<S> Middleware<S> for CustomMiddleware {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nexus::test::TestClient;
+    use hiver::test::TestClient;
 
     #[tokio::test]
     async fn test_index() {
@@ -454,7 +454,7 @@ mod tests {
 
 ```rust
 // tests/integration_test.rs
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 #[tokio::test]
 async fn test_full_application() {
@@ -571,7 +571,7 @@ hey -n 100000 -c 100 http://127.0.0.1:8080/
 ### Pattern 1: Basic HTTP Handler / 模式 1：基本 HTTP 处理器
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 async fn handler() -> &'static str {
     "Hello, World!"
@@ -583,7 +583,7 @@ let app = Router::new().get("/", handler);
 ### Pattern 2: JSON API / 模式 2：JSON API
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
@@ -602,7 +602,7 @@ let app = Router::new().get("/users/:id", get_user);
 ### Pattern 3: State Management / 模式 3：状态管理
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -625,7 +625,7 @@ let app = Router::new()
 ### Pattern 4: Error Handling / 模式 4：错误处理
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 async fn handler() -> Result<Json<User>, Error> {
     let user = find_user(1).await

@@ -22,7 +22,7 @@ Phase 6 Web3 支持实施现已**完成**。所有计划组件包括链抽象、
 ### ✅ 1. Chain Abstraction (链抽象)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/chain.rs` - Eip155Chain, ChainId, ChainConfig, Block, BlockNumber
+- `crates/hiver-web3/src/chain.rs` - Eip155Chain, ChainId, ChainConfig, Block, BlockNumber
 
 **Features / 功能**:
 - EIP-155 chain ID support
@@ -33,7 +33,7 @@ Phase 6 Web3 支持实施现已**完成**。所有计划组件包括链抽象、
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::{ChainId, ChainConfig, Eip155Chain};
+use hiver_web3::{ChainId, ChainConfig, Eip155Chain};
 
 let mainnet = ChainConfig::ethereum_mainnet();
 let polygon = ChainConfig::polygon();
@@ -50,7 +50,7 @@ assert_eq!(bsc.chain_id.as_u64(), 56);
 ### ✅ 2. Wallet Management (钱包管理)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/wallet.rs` - Wallet trait, LocalWallet, Address, Signature
+- `crates/hiver-web3/src/wallet.rs` - Wallet trait, LocalWallet, Address, Signature
 
 **Features / 功能**:
 - Wallet trait for wallet abstraction
@@ -62,7 +62,7 @@ assert_eq!(bsc.chain_id.as_u64(), 56);
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::{LocalWallet, Wallet, Address};
+use hiver_web3::{LocalWallet, Wallet, Address};
 
 let wallet = LocalWallet::new(Eip155Chain::ETHEREUM);
 let address = wallet.address();
@@ -78,7 +78,7 @@ let signature = wallet.sign(message)?;
 ### ✅ 3. Transaction Builder (交易构建器)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/tx.rs` - Transaction, TransactionBuilder, TxType, TxHash
+- `crates/hiver-web3/src/tx.rs` - Transaction, TransactionBuilder, TxType, TxHash
 
 **Features / 功能**:
 - TxType enum (Legacy, Eip2930, Eip1559)
@@ -89,7 +89,7 @@ let signature = wallet.sign(message)?;
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::{TransactionBuilder, TxType};
+use hiver_web3::{TransactionBuilder, TxType};
 
 let tx = TransactionBuilder::new()
     .ty(TxType::Eip1559)
@@ -108,7 +108,7 @@ let tx = TransactionBuilder::new()
 ### ✅ 4. HTTP RPC Client (HTTP RPC客户端)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/rpc.rs` - RpcClient, JSON-RPC calls
+- `crates/hiver-web3/src/rpc.rs` - RpcClient, JSON-RPC calls
 
 **Features / 功能**:
 - HTTP-based JSON-RPC client
@@ -120,7 +120,7 @@ let tx = TransactionBuilder::new()
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::RpcClient;
+use hiver_web3::RpcClient;
 
 let client = RpcClient::new("https://eth.llamarpc.com")?;
 
@@ -134,7 +134,7 @@ let gas_price = client.get_gas_price().await?;
 ### ✅ 5. Smart Contract Interface (智能合约接口)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/contract.rs` - Contract, FunctionSelector, CallParams, ERC20, ERC721
+- `crates/hiver-web3/src/contract.rs` - Contract, FunctionSelector, CallParams, ERC20, ERC721
 
 **Features / 功能**:
 - Contract interface for smart contract interaction
@@ -147,7 +147,7 @@ let gas_price = client.get_gas_price().await?;
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::{Contract, FunctionSelector, ERC20};
+use hiver_web3::{Contract, FunctionSelector, ERC20};
 
 let contract = Contract::new(token_address, &client);
 
@@ -164,7 +164,7 @@ let result = contract.call_read_only(&selector, &params).await?;
 ### ✅ 6. WebSocket Event Subscriptions (WebSocket事件订阅)
 
 **Files / 文件**:
-- `crates/nexus-web3/src/subscribe.rs` - WsClient, SubscriptionManager, Subscription types
+- `crates/hiver-web3/src/subscribe.rs` - WsClient, SubscriptionManager, Subscription types
 
 **Features / 功能**:
 - WebSocket client for real-time event subscriptions
@@ -175,7 +175,7 @@ let result = contract.call_read_only(&selector, &params).await?;
 
 **API Example / API示例**:
 ```rust
-use nexus_web3::{WsClient, SubscriptionType, LogFilter};
+use hiver_web3::{WsClient, SubscriptionType, LogFilter};
 use futures_util::StreamExt;
 
 let client = WsClient::connect("wss://eth.llamarpc.com").await?;
@@ -227,7 +227,7 @@ let mut logs = client.subscribe_logs(filter).await?;
 │  │   Client    │  │  Subscribe  │  │  Abstraction│    │
 │  └─────────────┘  └─────────────┘  └─────────────┘    │
 ├─────────────────────────────────────────────────────────┤
-│                    nexus-runtime Layer                   │
+│                    hiver-runtime Layer                   │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
 │  │   Task      │  │    Time     │  │   Network   │    │
 │  │  (spawn)    │  │  (sleep)    │  │  (tcp/ws)   │    │
@@ -242,15 +242,15 @@ let mut logs = client.subscribe_logs(filter).await?;
 ## Files Modified / 已修改文件
 
 ### Core Web3 / Web3 核心
-- `crates/nexus-web3/src/lib.rs` - Added subscribe module exports
-- `crates/nexus-web3/src/chain.rs` - Chain abstraction (already implemented)
-- `crates/nexus-web3/src/wallet.rs` - Wallet management (already implemented)
-- `crates/nexus-web3/src/tx.rs` - Transaction builder (already implemented)
-- `crates/nexus-web3/src/rpc.rs` - HTTP RPC client (already implemented)
-- `crates/nexus-web3/src/contract.rs` - Smart contract interface (already implemented)
+- `crates/hiver-web3/src/lib.rs` - Added subscribe module exports
+- `crates/hiver-web3/src/chain.rs` - Chain abstraction (already implemented)
+- `crates/hiver-web3/src/wallet.rs` - Wallet management (already implemented)
+- `crates/hiver-web3/src/tx.rs` - Transaction builder (already implemented)
+- `crates/hiver-web3/src/rpc.rs` - HTTP RPC client (already implemented)
+- `crates/hiver-web3/src/contract.rs` - Smart contract interface (already implemented)
 
 ### New Files / 新增文件
-- `crates/nexus-web3/src/subscribe.rs` - WebSocket subscription support
+- `crates/hiver-web3/src/subscribe.rs` - WebSocket subscription support
 
 ### Examples / 示例
 - `examples/src/web3_example.rs` - Added WebSocket subscription example

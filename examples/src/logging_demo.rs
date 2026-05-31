@@ -19,7 +19,7 @@
 //! NEXUS_LOG_MODE=simple cargo run --bin logging_demo
 //! ```
 
-use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 use tracing::{info, warn, error, debug, trace};
 
 #[tokio::main]

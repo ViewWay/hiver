@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **utoipa Integration Preparation** / **utoipa 集成准备**
   - Added `utoipa` (v5) to workspace dependencies
   - Added `utoipa-swagger-ui` (v8) with actix-web and axum features
-  - Added `nexus-openapi` crate to workspace members
+  - Added `hiver-openapi` crate to workspace members
   - OpenAPI/Swagger documentation infrastructure ready
 
 ### Tests / 测试
@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 10 new tests for unified response structures
 - Added 28 new tests for parameter validation
 - Added 12 new tests for multipart file handling
-- All 117 nexus-http tests passing (increased from 105)
+- All 117 hiver-http tests passing (increased from 105)
 
 ---
 
@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Macros / 宏
 
 - **Prelude Module Updates** / **Prelude 模块更新**
-  - Enabled `nexus_main` macro re-export
+  - Enabled `hiver_main` macro re-export
   - Enabled all component annotation macros:
     - `controller`, `service`, `repository`, `component`, `configuration`, `bean`
   - Enabled routing macros: `get`, `post`, `put`, `delete`, `patch`, etc.
@@ -155,7 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added 5 tests for DataSourceConfig functionality
 - Added 2 tests for TaskScheduler enhancements
-- All 75 nexus-starter tests passing
+- All 75 hiver-starter tests passing
 
 ---
 
@@ -364,7 +364,7 @@ This release marks the completion of Phase 7: Production Ready. All development 
 
 #### Code / 代码
 
-- Fixed conflicting `Bean` trait implementation in `nexus-core/src/reflect.rs`
+- Fixed conflicting `Bean` trait implementation in `hiver-core/src/reflect.rs`
   - Removed redundant manual `impl Bean for TestBean {}` from test module
   - Blanket implementation `impl<T: Any> Bean for T` already covers all types
 
@@ -550,10 +550,10 @@ This release marks the completion of Phase 1, delivering a fully functional asyn
 
 ---
 
-[Unreleased]: https://github.com/nexus-framework/nexus/compare/v0.1.0-alpha.5...HEAD
-[0.1.0-alpha.5]: https://github.com/nexus-framework/nexus/compare/v0.1.0-alpha.4...v0.1.0-alpha.5
-[0.1.0-alpha.4]: https://github.com/nexus-framework/nexus/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
-[0.1.0-alpha.3]: https://github.com/nexus-framework/nexus/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
-[0.1.0-alpha.2]: https://github.com/nexus-framework/nexus/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
-[0.1.0-alpha.1]: https://github.com/nexus-framework/nexus/compare/v0.0.1...v0.1.0-alpha.1
-[0.0.1]: https://github.com/nexus-framework/nexus/releases/tag/v0.0.1
+[Unreleased]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.5...HEAD
+[0.1.0-alpha.5]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.4...v0.1.0-alpha.5
+[0.1.0-alpha.4]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
+[0.1.0-alpha.3]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
+[0.1.0-alpha.2]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
+[0.1.0-alpha.1]: https://github.com/hiver-framework/nexus/compare/v0.0.1...v0.1.0-alpha.1
+[0.0.1]: https://github.com/hiver-framework/nexus/releases/tag/v0.0.1

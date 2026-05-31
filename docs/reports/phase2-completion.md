@@ -22,17 +22,17 @@ Phase 2 HTTP Core 实现已**完成**。所有计划组件均已实现并验证�
 ### ✅ 1. Request Types (统一请求类型)
 
 **Files / 文件**:
-- `crates/nexus-http/src/request.rs` - Request wrapper around `http::Request<Body>`
+- `crates/hiver-http/src/request.rs` - Request wrapper around `http::Request<Body>`
 
 **Features / 功能**:
 - Wraps `http::Request<Body>` for compatibility with http crate
 - Path variables extraction (`path_vars`)
 - Query parameters extraction (`query_params`)
 - Request builder pattern
-- Method conversion (nexus-http ↔ http)
+- Method conversion (hiver-http ↔ http)
 
 **Extractors Integration / 提取器集成**:
-- All extractors in `nexus-extractors` re-export `nexus-http::Request`
+- All extractors in `hiver-extractors` re-export `hiver-http::Request`
 - Path, Query, Json, Form, State, Header, Cookie extractors all working
 
 ---
@@ -40,10 +40,10 @@ Phase 2 HTTP Core 实现已**完成**。所有计划组件均已实现并验证�
 ### ✅ 2. HTTP/1.1 Parser (HTTP/1.1 解析器)
 
 **Files / 文件**:
-- `crates/nexus-http/src/proto/mod.rs` - Module exports
-- `crates/nexus-http/src/proto/request.rs` - Request parsing with httparse
-- `crates/nexus-http/src/proto/response.rs` - Response encoding
-- `crates/nexus-http/src/proto/context.rs` - Connection context (HTTP version, keep-alive)
+- `crates/hiver-http/src/proto/mod.rs` - Module exports
+- `crates/hiver-http/src/proto/request.rs` - Request parsing with httparse
+- `crates/hiver-http/src/proto/response.rs` - Response encoding
+- `crates/hiver-http/src/proto/context.rs` - Connection context (HTTP version, keep-alive)
 
 **Features / 功能**:
 - Efficient parsing using `httparse` crate
@@ -54,7 +54,7 @@ Phase 2 HTTP Core 实现已**完成**。所有计划组件均已实现并验证�
 
 **API Example / API示例**:
 ```rust
-use nexus_http::proto::{parse_request, encode_response};
+use hiver_http::proto::{parse_request, encode_response};
 
 // Parse request from bytes
 let (request, bytes_used) = parse_request(data, &ctx)?;
@@ -68,12 +68,12 @@ let bytes = encode_response(&response, &ctx)?;
 ### ✅ 3. HTTP Server (HTTP 服务器)
 
 **Files / 文件**:
-- `crates/nexus-http/src/server.rs` - Server implementation with runtime integration
-- `crates/nexus-http/src/conn.rs` - Connection tracking and state management
-- `crates/nexus-http/src/service.rs` - HttpService trait for handlers
+- `crates/hiver-http/src/server.rs` - Server implementation with runtime integration
+- `crates/hiver-http/src/conn.rs` - Connection tracking and state management
+- `crates/hiver-http/src/service.rs` - HttpService trait for handlers
 
 **Features / 功能**:
-- Thread-per-core architecture using nexus-runtime
+- Thread-per-core architecture using hiver-runtime
 - TCP listener with address binding
 - Connection pooling and keep-alive
 - Graceful shutdown support
@@ -82,7 +82,7 @@ let bytes = encode_response(&response, &ctx)?;
 
 **Server API / 服务器API**:
 ```rust
-use nexus_http::Server;
+use hiver_http::Server;
 
 let server = Server::bind("127.0.0.1:8080")
     .max_connections(10000)
@@ -97,8 +97,8 @@ let server = Server::bind("127.0.0.1:8080")
 ### ✅ 4. Router with Matchit (使用 Matchit 的路由器)
 
 **Files / 文件**:
-- `crates/nexus-router/src/trie.rs` - Trie-based router using matchit
-- `crates/nexus-router/src/router.rs` - High-level Router with middleware support
+- `crates/hiver-router/src/trie.rs` - Trie-based router using matchit
+- `crates/hiver-router/src/router.rs` - High-level Router with middleware support
 
 **Features / 功能**:
 - Efficient trie-based routing using `matchit` crate
@@ -110,7 +110,7 @@ let server = Server::bind("127.0.0.1:8080")
 
 **Router API / 路由器API**:
 ```rust
-use nexus_router::Router;
+use hiver_router::Router;
 
 let app = Router::with_state(app_state)
     .get("/", "Hello")
@@ -124,13 +124,13 @@ let app = Router::with_state(app_state)
 ### ✅ 5. Extractors (提取器)
 
 **Files / 文件**:
-- `crates/nexus-extractors/src/path.rs` - Path parameter extraction (@PathVariable)
-- `crates/nexus-extractors/src/query.rs` - Query parameter extraction (@RequestParam)
-- `crates/nexus-extractors/src/json.rs` - JSON body extraction (@RequestBody)
-- `crates/nexus-extractors/src/form.rs` - Form data extraction (@ModelAttribute)
-- `crates/nexus-extractors/src/state.rs` - Application state access (@Autowired)
-- `crates/nexus-extractors/src/header.rs` - Header extraction (@RequestHeader)
-- `crates/nexus-extractors/src/cookie.rs` - Cookie extraction (@CookieValue)
+- `crates/hiver-extractors/src/path.rs` - Path parameter extraction (@PathVariable)
+- `crates/hiver-extractors/src/query.rs` - Query parameter extraction (@RequestParam)
+- `crates/hiver-extractors/src/json.rs` - JSON body extraction (@RequestBody)
+- `crates/hiver-extractors/src/form.rs` - Form data extraction (@ModelAttribute)
+- `crates/hiver-extractors/src/state.rs` - Application state access (@Autowired)
+- `crates/hiver-extractors/src/header.rs` - Header extraction (@RequestHeader)
+- `crates/hiver-extractors/src/cookie.rs` - Cookie extraction (@CookieValue)
 
 **Features / 功能**:
 - All Spring Boot equivalents implemented
@@ -144,11 +144,11 @@ let app = Router::with_state(app_state)
 ### ✅ 6. Middleware System (中间件系统)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/middleware.rs` - MiddlewareStack
-- `crates/nexus-middleware/src/logger.rs` - Request/response logging
-- `crates/nexus-middleware/src/cors.rs` - CORS support (@CrossOrigin)
-- `crates/nexus-middleware/src/timeout.rs` - Request timeout (@RequestTimeout)
-- `crates/nexus-router/src/router.rs` - Middleware trait and Next wrapper
+- `crates/hiver-middleware/src/middleware.rs` - MiddlewareStack
+- `crates/hiver-middleware/src/logger.rs` - Request/response logging
+- `crates/hiver-middleware/src/cors.rs` - CORS support (@CrossOrigin)
+- `crates/hiver-middleware/src/timeout.rs` - Request timeout (@RequestTimeout)
+- `crates/hiver-router/src/router.rs` - Middleware trait and Next wrapper
 
 **Features / 功能**:
 - Middleware trait for request/response processing
@@ -159,8 +159,8 @@ let app = Router::with_state(app_state)
 
 **Middleware API / 中间件API**:
 ```rust
-use nexus_router::Router;
-use nexus_middleware::{LoggerMiddleware, CorsMiddleware, CorsConfig};
+use hiver_router::Router;
+use hiver_middleware::{LoggerMiddleware, CorsMiddleware, CorsConfig};
 
 let app = Router::new()
     .middleware(Arc::new(LoggerMiddleware::new()))
@@ -241,7 +241,7 @@ curl -X POST http://127.0.0.1:8080/users
 │  │   accept)   │  │   encode)   │  │   ice)      │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘    │
 ├─────────────────────────────────────────────────────────┤
-│                    nexus-runtime Layer                   │
+│                    hiver-runtime Layer                   │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
 │  │  TcpListen- │  │   Task      │  │   Time      │    │
 │  │    er       │  │  (spawn)    │  │  (sleep)    │    │
@@ -309,41 +309,41 @@ With Phase 2 complete, the framework now has:
 ## Files Modified / 已修改文件
 
 ### Core HTTP / HTTP 核心
-- `crates/nexus-http/src/lib.rs`
-- `crates/nexus-http/src/server.rs`
-- `crates/nexus-http/src/conn.rs`
-- `crates/nexus-http/src/service.rs`
-- `crates/nexus-http/src/proto/mod.rs`
-- `crates/nexus-http/src/proto/request.rs`
-- `crates/nexus-http/src/proto/response.rs`
-- `crates/nexus-http/src/proto/context.rs`
+- `crates/hiver-http/src/lib.rs`
+- `crates/hiver-http/src/server.rs`
+- `crates/hiver-http/src/conn.rs`
+- `crates/hiver-http/src/service.rs`
+- `crates/hiver-http/src/proto/mod.rs`
+- `crates/hiver-http/src/proto/request.rs`
+- `crates/hiver-http/src/proto/response.rs`
+- `crates/hiver-http/src/proto/context.rs`
 
 ### Router / 路由器
-- `crates/nexus-router/src/lib.rs`
-- `crates/nexus-router/src/router.rs`
-- `crates/nexus-router/src/trie.rs`
+- `crates/hiver-router/src/lib.rs`
+- `crates/hiver-router/src/router.rs`
+- `crates/hiver-router/src/trie.rs`
 
 ### Extractors / 提取器
-- `crates/nexus-extractors/src/lib.rs`
-- `crates/nexus-extractors/src/path.rs`
-- `crates/nexus-extractors/src/query.rs`
-- `crates/nexus-extractors/src/json.rs`
-- `crates/nexus-extractors/src/form.rs`
-- `crates/nexus-extractors/src/state.rs`
-- `crates/nexus-extractors/src/header.rs`
-- `crates/nexus-extractors/src/cookie.rs`
+- `crates/hiver-extractors/src/lib.rs`
+- `crates/hiver-extractors/src/path.rs`
+- `crates/hiver-extractors/src/query.rs`
+- `crates/hiver-extractors/src/json.rs`
+- `crates/hiver-extractors/src/form.rs`
+- `crates/hiver-extractors/src/state.rs`
+- `crates/hiver-extractors/src/header.rs`
+- `crates/hiver-extractors/src/cookie.rs`
 
 ### Middleware / 中间件
-- `crates/nexus-middleware/src/lib.rs`
-- `crates/nexus-middleware/src/middleware.rs`
-- `crates/nexus-middleware/src/logger.rs`
-- `crates/nexus-middleware/src/cors.rs`
-- `crates/nexus-middleware/src/timeout.rs`
+- `crates/hiver-middleware/src/lib.rs`
+- `crates/hiver-middleware/src/middleware.rs`
+- `crates/hiver-middleware/src/logger.rs`
+- `crates/hiver-middleware/src/cors.rs`
+- `crates/hiver-middleware/src/timeout.rs`
 
 ### Examples / 示例
 - `examples/src/hello_world.rs`
 - `examples/src/router_demo.rs`
-- `examples/src/middleware_demo.rs` (fixed to use nexus-runtime sleep)
+- `examples/src/middleware_demo.rs` (fixed to use hiver-runtime sleep)
 
 ---
 

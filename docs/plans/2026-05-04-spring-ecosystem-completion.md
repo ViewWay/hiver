@@ -4,9 +4,9 @@
 
 **Goal:** 将 Nexus 打造成 Rust 生态中对标整个 Spring 生态系统的生产级框架。
 
-**Architecture:** 基于现有 47-crate / 120K 行代码基础，补充缺失的 11 个 Spring 对标模块，同时强化已有模块的完整度到生产级。每个模块独立为 workspace crate，遵循 nexus-* 命名规范。
+**Architecture:** 基于现有 47-crate / 120K 行代码基础，补充缺失的 11 个 Spring 对标模块，同时强化已有模块的完整度到生产级。每个模块独立为 workspace crate，遵循 hiver-* 命名规范。
 
-**Tech Stack:** Rust, tokio, io-uring, thiserror/anyhow, rmp-serde, 现有 nexus-runtime/nexus-core
+**Tech Stack:** Rust, tokio, io-uring, thiserror/anyhow, rmp-serde, 现有 hiver-runtime/hiver-core
 
 ---
 
@@ -16,37 +16,37 @@
 
 | 对标 Spring | Nexus Crate | 代码量 | 状态 |
 |-------------|------------|--------|------|
-| Spring Framework (Core) | nexus-core | 1,627 | 基础完成 |
-| Spring Boot | nexus-starter | 6,883 | 已完成 |
-| Spring Security | nexus-security | 5,139 | 已完成 |
-| Spring Data | nexus-data-* (6 crates) | 14,785 | 已完成 |
-| Spring Cloud | nexus-cloud | 1,992 | 基础完成 |
-| Spring Integration | nexus-integration | 3,901 | 已完成 |
-| Spring Batch | nexus-batch | 4,649 | 已完成 |
-| Spring AMQP | nexus-amqp | 2,217 | 已完成 |
-| Spring Kafka | nexus-kafka | 1,498 | 已完成 |
-| Spring Statemachine | nexus-state-machine | 1,689 | 已完成 |
-| WebSocket STOMP | nexus-websocket-stomp | 1,463 | 已完成 |
-| Flyway | nexus-flyway | 1,598 | 已完成 |
-| Micrometer | nexus-micrometer | 1,693 | 已完成 |
-| OpenAPI/Swagger | nexus-openapi | 3,873 | 已完成 |
-| HTTP Server | nexus-http | 8,691 | 已完成 |
-| Async Runtime | nexus-runtime | 8,205 | 已完成 |
-| AOP | nexus-aop | 1,040 | 基础完成 |
+| Spring Framework (Core) | hiver-core | 1,627 | 基础完成 |
+| Spring Boot | hiver-starter | 6,883 | 已完成 |
+| Spring Security | hiver-security | 5,139 | 已完成 |
+| Spring Data | hiver-data-* (6 crates) | 14,785 | 已完成 |
+| Spring Cloud | hiver-cloud | 1,992 | 基础完成 |
+| Spring Integration | hiver-integration | 3,901 | 已完成 |
+| Spring Batch | hiver-batch | 4,649 | 已完成 |
+| Spring AMQP | hiver-amqp | 2,217 | 已完成 |
+| Spring Kafka | hiver-kafka | 1,498 | 已完成 |
+| Spring Statemachine | hiver-state-machine | 1,689 | 已完成 |
+| WebSocket STOMP | hiver-websocket-stomp | 1,463 | 已完成 |
+| Flyway | hiver-flyway | 1,598 | 已完成 |
+| Micrometer | hiver-micrometer | 1,693 | 已完成 |
+| OpenAPI/Swagger | hiver-openapi | 3,873 | 已完成 |
+| HTTP Server | hiver-http | 8,691 | 已完成 |
+| Async Runtime | hiver-runtime | 8,205 | 已完成 |
+| AOP | hiver-aop | 1,040 | 基础完成 |
 
 ### ❌ 缺失模块 (11 个)
 
-1. **Spring for GraphQL** → nexus-graphql
-2. **Spring HATEOAS** → nexus-hateoas
-3. **Spring REST Docs** → nexus-restdocs
-4. **Spring Cloud Data Flow** → nexus-cloud-dataflow
-5. **Spring CredHub** → nexus-credhub
-6. **Spring LDAP** → nexus-ldap
-7. **Spring Shell** → nexus-shell
-8. **Spring Vault** → nexus-vault
-9. **Spring Web Flow** → nexus-webflow
-10. **Spring Web Services (SOAP)** → nexus-ws
-11. **Spring AI** → nexus-ai
+1. **Spring for GraphQL** → hiver-graphql
+2. **Spring HATEOAS** → hiver-hateoas
+3. **Spring REST Docs** → hiver-restdocs
+4. **Spring Cloud Data Flow** → hiver-cloud-dataflow
+5. **Spring CredHub** → hiver-credhub
+6. **Spring LDAP** → hiver-ldap
+7. **Spring Shell** → hiver-shell
+8. **Spring Vault** → hiver-vault
+9. **Spring Web Flow** → hiver-webflow
+10. **Spring Web Services (SOAP)** → hiver-ws
+11. **Spring AI** → hiver-ai
 
 ---
 
@@ -54,29 +54,29 @@
 
 ### Phase 8: Core Gaps — 核心缺失模块 [优先]
 
-#### Task 8.1: nexus-graphql (Spring for GraphQL)
+#### Task 8.1: hiver-graphql (Spring for GraphQL)
 
 **Files:**
-- Create: `crates/nexus-graphql/Cargo.toml`
-- Create: `crates/nexus-graphql/src/lib.rs`
-- Create: `crates/nexus-graphql/src/schema.rs`
-- Create: `crates/nexus-graphql/src/resolver.rs`
-- Create: `crates/nexus-graphql/src/query.rs`
-- Create: `crates/nexus-graphql/src/mutation.rs`
-- Create: `crates/nexus-graphql/src/subscription.rs`
-- Create: `crates/nexus-graphql/src/context.rs`
-- Create: `crates/nexus-graphql/src/error.rs`
-- Create: `crates/nexus-graphql/src/macros.rs`
-- Create: `crates/nexus-graphql/src/prelude.rs`
+- Create: `crates/hiver-graphql/Cargo.toml`
+- Create: `crates/hiver-graphql/src/lib.rs`
+- Create: `crates/hiver-graphql/src/schema.rs`
+- Create: `crates/hiver-graphql/src/resolver.rs`
+- Create: `crates/hiver-graphql/src/query.rs`
+- Create: `crates/hiver-graphql/src/mutation.rs`
+- Create: `crates/hiver-graphql/src/subscription.rs`
+- Create: `crates/hiver-graphql/src/context.rs`
+- Create: `crates/hiver-graphql/src/error.rs`
+- Create: `crates/hiver-graphql/src/macros.rs`
+- Create: `crates/hiver-graphql/src/prelude.rs`
 
 **功能对标:**
 - Schema-first GraphQL with async resolvers
 - `@QueryMapping`, `@MutationMapping`, `@SubscriptionMapping` macros
 - `@SchemaMapping` for type-level resolvers
 - GraphQL context with DataLoader support
-- Subscription via WebSocket (reuse nexus-websocket-stomp)
+- Subscription via WebSocket (reuse hiver-websocket-stomp)
 - Error handling with GraphQL error types
-- Integration with nexus-http router (`/graphql` endpoint)
+- Integration with hiver-http router (`/graphql` endpoint)
 - GraphiQL playground support
 
 **Step 1:** Create crate structure + Cargo.toml with juniper/async-graphql dependencies
@@ -89,18 +89,18 @@
 **Step 8:** Write integration tests
 **Step 9:** Update Cargo.toml workspace members
 
-#### Task 8.2: nexus-hateoas (Spring HATEOAS)
+#### Task 8.2: hiver-hateoas (Spring HATEOAS)
 
 **Files:**
-- Create: `crates/nexus-hateoas/Cargo.toml`
-- Create: `crates/nexus-hateoas/src/lib.rs`
-- Create: `crates/nexus-hateoas/src/link.rs`
-- Create: `crates/nexus-hateoas/src/entity_model.rs`
-- Create: `crates/nexus-hateoas/src/collection_model.rs`
-- Create: `crates/nexus-hateoas/src/representation_model.rs`
-- Create: `crates/nexus-hateoas/src/affordance.rs`
-- Create: `crates/nexus-hateoas/src/link_builder.rs`
-- Create: `crates/nexus-hateoas/src/prelude.rs`
+- Create: `crates/hiver-hateoas/Cargo.toml`
+- Create: `crates/hiver-hateoas/src/lib.rs`
+- Create: `crates/hiver-hateoas/src/link.rs`
+- Create: `crates/hiver-hateoas/src/entity_model.rs`
+- Create: `crates/hiver-hateoas/src/collection_model.rs`
+- Create: `crates/hiver-hateoas/src/representation_model.rs`
+- Create: `crates/hiver-hateoas/src/affordance.rs`
+- Create: `crates/hiver-hateoas/src/link_builder.rs`
+- Create: `crates/hiver-hateoas/src/prelude.rs`
 
 **功能对标:**
 - `Link` type with HAL, HAL-FORMS, UBER formats
@@ -120,25 +120,25 @@
 **Step 7:** Write tests + examples
 **Step 8:** Update workspace
 
-#### Task 8.3: nexus-restdocs (Spring REST Docs)
+#### Task 8.3: hiver-restdocs (Spring REST Docs)
 
 **Files:**
-- Create: `crates/nexus-restdocs/Cargo.toml`
-- Create: `crates/nexus-restdocs/src/lib.rs`
-- Create: `crates/nexus-restdocs/src/snippet.rs`
-- Create: `crates/nexus-restdocs/src/document.rs`
-- Create: `crates/nexus-restdocs/src/asciidoc.rs`
-- Create: `crates/nexus-restdocs/src/markdown.rs`
-- Create: `crates/nexus-restdocs/src/curl.rs`
-- Create: `crates/nexus-restdocs/src/httpie.rs`
-- Create: `crates/nexus-restdocs/src/prelude.rs`
+- Create: `crates/hiver-restdocs/Cargo.toml`
+- Create: `crates/hiver-restdocs/src/lib.rs`
+- Create: `crates/hiver-restdocs/src/snippet.rs`
+- Create: `crates/hiver-restdocs/src/document.rs`
+- Create: `crates/hiver-restdocs/src/asciidoc.rs`
+- Create: `crates/hiver-restdocs/src/markdown.rs`
+- Create: `crates/hiver-restdocs/src/curl.rs`
+- Create: `crates/hiver-restdocs/src/httpie.rs`
+- Create: `crates/hiver-restdocs/src/prelude.rs`
 
 **功能对标:**
 - Request/response snippet generation
 - Path parameter / query parameter / header / field documentation
 - AsciiDoc / Markdown output
 - curl / httpie request examples
-- Integration with nexus-test (TestClient)
+- Integration with hiver-test (TestClient)
 - Auto-generated API documentation from test cases
 
 **Step 1:** Create crate + Cargo.toml
@@ -147,30 +147,30 @@
 **Step 4:** Implement AsciiDoc writer
 **Step 5:** Implement Markdown writer
 **Step 6:** Implement curl/httpie command generators
-**Step 7:** Integrate with nexus-test TestClient
+**Step 7:** Integrate with hiver-test TestClient
 **Step 8:** Write tests + examples
 **Step 9:** Update workspace
 
 ### Phase 9: Cloud & Data — 云原生与数据流
 
-#### Task 9.1: nexus-cloud-dataflow (Spring Cloud Data Flow)
+#### Task 9.1: hiver-cloud-dataflow (Spring Cloud Data Flow)
 
 **Files:**
-- Create: `crates/nexus-cloud-dataflow/Cargo.toml`
-- Create: `crates/nexus-cloud-dataflow/src/lib.rs`
-- Create: `crates/nexus-cloud-dataflow/src/stream.rs`
-- Create: `crates/nexus-cloud-dataflow/src/task.rs`
-- Create: `crates/nexus-cloud-dataflow/src/pipeline.rs`
-- Create: `crates/nexus-cloud-dataflow/src/source.rs`
-- Create: `crates/nexus-cloud-dataflow/src/processor.rs`
-- Create: `crates/nexus-cloud-dataflow/src/sink.rs`
-- Create: `crates/nexus-cloud-dataflow/src/prelude.rs`
+- Create: `crates/hiver-cloud-dataflow/Cargo.toml`
+- Create: `crates/hiver-cloud-dataflow/src/lib.rs`
+- Create: `crates/hiver-cloud-dataflow/src/stream.rs`
+- Create: `crates/hiver-cloud-dataflow/src/task.rs`
+- Create: `crates/hiver-cloud-dataflow/src/pipeline.rs`
+- Create: `crates/hiver-cloud-dataflow/src/source.rs`
+- Create: `crates/hiver-cloud-dataflow/src/processor.rs`
+- Create: `crates/hiver-cloud-dataflow/src/sink.rs`
+- Create: `crates/hiver-cloud-dataflow/src/prelude.rs`
 
 **功能对标:**
 - Stream DSL (Source → Processor → Sink)
 - Task/Batch job launcher
 - Pipeline orchestration
-- Message channel binding via nexus-amqp / nexus-kafka
+- Message channel binding via hiver-amqp / hiver-kafka
 - Deployment manifest generation
 - Dashboard API endpoints
 
@@ -183,18 +183,18 @@
 **Step 7:** Write tests
 **Step 8:** Update workspace
 
-#### Task 9.2: nexus-credhub (Spring CredHub)
+#### Task 9.2: hiver-credhub (Spring CredHub)
 
 **Files:**
-- Create: `crates/nexus-credhub/Cargo.toml`
-- Create: `crates/nexus-credhub/src/lib.rs`
-- Create: `crates/nexus-credhub/src/client.rs`
-- Create: `crates/nexus-credhub/src/credential.rs`
-- Create: `crates/nexus-credhub/src/permission.rs`
-- Create: `crates/nexus-credhub/src/certificate.rs`
-- Create: `crates/nexus-credhub/src/interpolate.rs`
-- Create: `crates/nexus-credhub/src/error.rs`
-- Create: `crates/nexus-credhub/src/prelude.rs`
+- Create: `crates/hiver-credhub/Cargo.toml`
+- Create: `crates/hiver-credhub/src/lib.rs`
+- Create: `crates/hiver-credhub/src/client.rs`
+- Create: `crates/hiver-credhub/src/credential.rs`
+- Create: `crates/hiver-credhub/src/permission.rs`
+- Create: `crates/hiver-credhub/src/certificate.rs`
+- Create: `crates/hiver-credhub/src/interpolate.rs`
+- Create: `crates/hiver-credhub/src/error.rs`
+- Create: `crates/hiver-credhub/src/prelude.rs`
 
 **功能对标:**
 - CredHub API client (REST/HTTPS)
@@ -213,20 +213,20 @@
 **Step 7:** Write tests
 **Step 8:** Update workspace
 
-#### Task 9.3: nexus-ldap (Spring LDAP)
+#### Task 9.3: hiver-ldap (Spring LDAP)
 
 **Files:**
-- Create: `crates/nexus-ldap/Cargo.toml`
-- Create: `crates/nexus-ldap/src/lib.rs`
-- Create: `crates/nexus-ldap/src/client.rs`
-- Create: `crates/nexus-ldap/src/template.rs`
-- Create: `crates/nexus-ldap/src/query.rs`
-- Create: `crates/nexus-ldap/src/entry.rs`
-- Create: `crates/nexus-ldap/src/attributes.rs`
-- Create: `crates/nexus-ldap/src/odm.rs`
-- Create: `crates/nexus-ldap/src/pool.rs`
-- Create: `crates/nexus-ldap/src/error.rs`
-- Create: `crates/nexus-ldap/src/prelude.rs`
+- Create: `crates/hiver-ldap/Cargo.toml`
+- Create: `crates/hiver-ldap/src/lib.rs`
+- Create: `crates/hiver-ldap/src/client.rs`
+- Create: `crates/hiver-ldap/src/template.rs`
+- Create: `crates/hiver-ldap/src/query.rs`
+- Create: `crates/hiver-ldap/src/entry.rs`
+- Create: `crates/hiver-ldap/src/attributes.rs`
+- Create: `crates/hiver-ldap/src/odm.rs`
+- Create: `crates/hiver-ldap/src/pool.rs`
+- Create: `crates/hiver-ldap/src/error.rs`
+- Create: `crates/hiver-ldap/src/prelude.rs`
 
 **功能对标:**
 - LDAP client with connection pooling
@@ -235,7 +235,7 @@
 - `@Entry`, `@Attribute`, `@Dn` macros
 - Search/query builder
 - Authentication bind
-- Integration with nexus-security for LDAP auth provider
+- Integration with hiver-security for LDAP auth provider
 
 **Step 1:** Create crate + Cargo.toml
 **Step 2:** Implement LDAP client + pool
@@ -247,19 +247,19 @@
 **Step 8:** Write tests
 **Step 9:** Update workspace
 
-#### Task 9.4: nexus-vault (Spring Vault)
+#### Task 9.4: hiver-vault (Spring Vault)
 
 **Files:**
-- Create: `crates/nexus-vault/Cargo.toml`
-- Create: `crates/nexus-vault/src/lib.rs`
-- Create: `crates/nexus-vault/src/client.rs`
-- Create: `crates/nexus-vault/src/template.rs`
-- Create: `crates/nexus-vault/src/transit.rs`
-- Create: `crates/nexus-vault/src/kv.rs`
-- Create: `crates/nexus-vault/src/pki.rs`
-- Create: `crates/nexus-vault/src/auth.rs`
-- Create: `crates/nexus-vault/src/error.rs`
-- Create: `crates/nexus-vault/src/prelude.rs`
+- Create: `crates/hiver-vault/Cargo.toml`
+- Create: `crates/hiver-vault/src/lib.rs`
+- Create: `crates/hiver-vault/src/client.rs`
+- Create: `crates/hiver-vault/src/template.rs`
+- Create: `crates/hiver-vault/src/transit.rs`
+- Create: `crates/hiver-vault/src/kv.rs`
+- Create: `crates/hiver-vault/src/pki.rs`
+- Create: `crates/hiver-vault/src/auth.rs`
+- Create: `crates/hiver-vault/src/error.rs`
+- Create: `crates/hiver-vault/src/prelude.rs`
 
 **功能对标:**
 - Vault REST API client
@@ -283,21 +283,21 @@
 
 ### Phase 10: Web & Shell — Web 服务与 CLI
 
-#### Task 10.1: nexus-ws (Spring Web Services / SOAP)
+#### Task 10.1: hiver-ws (Spring Web Services / SOAP)
 
 **Files:**
-- Create: `crates/nexus-ws/Cargo.toml`
-- Create: `crates/nexus-ws/src/lib.rs`
-- Create: `crates/nexus-ws/src/wsdl.rs`
-- Create: `crates/nexus-ws/src/soap.rs`
-- Create: `crates/nexus-ws/src/endpoint.rs`
-- Create: `crates/nexus-ws/src/message.rs`
-- Create: `crates/nexus-ws/src/xsd.rs`
-- Create: `crates/nexus-ws/src/client.rs`
-- Create: `crates/nexus-ws/src/server.rs`
-- Create: `crates/nexus-ws/src/macros.rs`
-- Create: `crates/nexus-ws/src/error.rs`
-- Create: `crates/nexus-ws/src/prelude.rs`
+- Create: `crates/hiver-ws/Cargo.toml`
+- Create: `crates/hiver-ws/src/lib.rs`
+- Create: `crates/hiver-ws/src/wsdl.rs`
+- Create: `crates/hiver-ws/src/soap.rs`
+- Create: `crates/hiver-ws/src/endpoint.rs`
+- Create: `crates/hiver-ws/src/message.rs`
+- Create: `crates/hiver-ws/src/xsd.rs`
+- Create: `crates/hiver-ws/src/client.rs`
+- Create: `crates/hiver-ws/src/server.rs`
+- Create: `crates/hiver-ws/src/macros.rs`
+- Create: `crates/hiver-ws/src/error.rs`
+- Create: `crates/hiver-ws/src/prelude.rs`
 
 **功能对标:**
 - SOAP 1.1/1.2 server
@@ -307,7 +307,7 @@
 - SOAP client with WSDL import
 - WS-Security (UsernameToken, X.509)
 - WS-Addressing
-- Integration with nexus-http
+- Integration with hiver-http
 
 **Step 1:** Create crate + Cargo.toml
 **Step 2:** Implement SOAP message types
@@ -319,20 +319,20 @@
 **Step 8:** Write tests
 **Step 9:** Update workspace
 
-#### Task 10.2: nexus-shell (Spring Shell)
+#### Task 10.2: hiver-shell (Spring Shell)
 
 **Files:**
-- Create: `crates/nexus-shell/Cargo.toml`
-- Create: `crates/nexus-shell/src/lib.rs`
-- Create: `crates/nexus-shell/src/shell.rs`
-- Create: `crates/nexus-shell/src/command.rs`
-- Create: `crates/nexus-shell/src/parameter.rs`
-- Create: `crates/nexus-shell/src/completer.rs`
-- Create: `crates/nexus-shell/src/formatter.rs`
-- Create: `crates/nexus-shell/src/history.rs`
-- Create: `crates/nexus-shell/src/script.rs`
-- Create: `crates/nexus-shell/src/macros.rs`
-- Create: `crates/nexus-shell/src/prelude.rs`
+- Create: `crates/hiver-shell/Cargo.toml`
+- Create: `crates/hiver-shell/src/lib.rs`
+- Create: `crates/hiver-shell/src/shell.rs`
+- Create: `crates/hiver-shell/src/command.rs`
+- Create: `crates/hiver-shell/src/parameter.rs`
+- Create: `crates/hiver-shell/src/completer.rs`
+- Create: `crates/hiver-shell/src/formatter.rs`
+- Create: `crates/hiver-shell/src/history.rs`
+- Create: `crates/hiver-shell/src/script.rs`
+- Create: `crates/hiver-shell/src/macros.rs`
+- Create: `crates/hiver-shell/src/prelude.rs`
 
 **功能对标:**
 - Interactive shell with readline
@@ -342,7 +342,7 @@
 - Command history persistence
 - Script file execution
 - Colored output formatters (table, JSON)
-- Integration with nexus-starter for auto-configuration
+- Integration with hiver-starter for auto-configuration
 
 **Step 1:** Create crate + Cargo.toml
 **Step 2:** Implement shell loop + readline
@@ -354,21 +354,21 @@
 **Step 8:** Write tests
 **Step 9:** Update workspace
 
-#### Task 10.3: nexus-webflow (Spring Web Flow)
+#### Task 10.3: hiver-webflow (Spring Web Flow)
 
 **Files:**
-- Create: `crates/nexus-webflow/Cargo.toml`
-- Create: `crates/nexus-webflow/src/lib.rs`
-- Create: `crates/nexus-webflow/src/flow.rs`
-- Create: `crates/nexus-webflow/src/state.rs`
-- Create: `crates/nexus-webflow/src/transition.rs`
-- Create: `crates/nexus-webflow/src/action.rs`
-- Create: `crates/nexus-webflow/src/decision.rs`
-- Create: `crates/nexus-webflow/src/view.rs`
-- Create: `crates/nexus-webflow/src/registry.rs`
-- Create: `crates/nexus-webflow/src/conversation.rs`
-- Create: `crates/nexus-webflow/src/builder.rs`
-- Create: `crates/nexus-webflow/src/prelude.rs`
+- Create: `crates/hiver-webflow/Cargo.toml`
+- Create: `crates/hiver-webflow/src/lib.rs`
+- Create: `crates/hiver-webflow/src/flow.rs`
+- Create: `crates/hiver-webflow/src/state.rs`
+- Create: `crates/hiver-webflow/src/transition.rs`
+- Create: `crates/hiver-webflow/src/action.rs`
+- Create: `crates/hiver-webflow/src/decision.rs`
+- Create: `crates/hiver-webflow/src/view.rs`
+- Create: `crates/hiver-webflow/src/registry.rs`
+- Create: `crates/hiver-webflow/src/conversation.rs`
+- Create: `crates/hiver-webflow/src/builder.rs`
+- Create: `crates/hiver-webflow/src/prelude.rs`
 
 **功能对标:**
 - Flow definition DSL (declarative + programmatic)
@@ -393,21 +393,21 @@
 
 ### Phase 11: AI & Final — AI 集成与收尾
 
-#### Task 11.1: nexus-ai (Spring AI)
+#### Task 11.1: hiver-ai (Spring AI)
 
 **Files:**
-- Create: `crates/nexus-ai/Cargo.toml`
-- Create: `crates/nexus-ai/src/lib.rs`
-- Create: `crates/nexus-ai/src/chat.rs`
-- Create: `crates/nexus-ai/src/embedding.rs`
-- Create: `crates/nexus-ai/src/image.rs`
-- Create: `crates/nexus-ai/src/audio.rs`
-- Create: `crates/nexus-ai/src/model.rs`
-- Create: `crates/nexus-ai/src/prompt.rs`
-- Create: `crates/nexus-ai/src/vectordb.rs`
-- Create: `crates/nexus-ai/src/rag.rs`
-- Create: `crates/nexus-ai/src/output.rs`
-- Create: `crates/nexus-ai/src/prelude.rs`
+- Create: `crates/hiver-ai/Cargo.toml`
+- Create: `crates/hiver-ai/src/lib.rs`
+- Create: `crates/hiver-ai/src/chat.rs`
+- Create: `crates/hiver-ai/src/embedding.rs`
+- Create: `crates/hiver-ai/src/image.rs`
+- Create: `crates/hiver-ai/src/audio.rs`
+- Create: `crates/hiver-ai/src/model.rs`
+- Create: `crates/hiver-ai/src/prompt.rs`
+- Create: `crates/hiver-ai/src/vectordb.rs`
+- Create: `crates/hiver-ai/src/rag.rs`
+- Create: `crates/hiver-ai/src/output.rs`
+- Create: `crates/hiver-ai/src/prelude.rs`
 
 **功能对标:**
 - ChatClient with multi-model support (OpenAI, Anthropic, Ollama, etc.)
@@ -435,13 +435,13 @@
 #### Task 11.2: Quality Hardening — 已有模块强化
 
 **低代码量模块 (< 1,000 行) 需要检查完整性:**
-- nexus-benches (0 lines — 空壳)
-- nexus-data-redis (823 行)
-- nexus-data-mongodb (832 行)
-- nexus-exceptions (837 行)
-- nexus-retry (640 行)
-- nexus-schedule (588 行)
-- nexus-validation-annotations (782 行)
+- hiver-benches (0 lines — 空壳)
+- hiver-data-redis (823 行)
+- hiver-data-mongodb (832 行)
+- hiver-exceptions (837 行)
+- hiver-retry (640 行)
+- hiver-schedule (588 行)
+- hiver-validation-annotations (782 行)
 
 **Step 1:** 审查每个低代码量模块的实现完整性
 **Step 2:** 补齐缺失的 API 和类型
@@ -462,17 +462,17 @@
 
 | 优先级 | 模块 | 理由 |
 |--------|------|------|
-| 🔴 P0 | nexus-graphql | GraphQL 是微服务标配 |
-| 🔴 P0 | nexus-hateoas | REST 超媒体核心 |
-| 🟡 P1 | nexus-ai | AI 是当前热点 |
-| 🟡 P1 | nexus-ldap | 企业安全必备 |
-| 🟡 P1 | nexus-vault | 密钥管理标配 |
-| 🟢 P2 | nexus-ws (SOAP) | 遗留系统集成 |
-| 🟢 P2 | nexus-shell | CLI 工具框架 |
-| 🟢 P2 | nexus-restdocs | API 文档自动生成 |
-| 🟢 P2 | nexus-webflow | 有状态 Web 流程 |
-| 🔵 P3 | nexus-cloud-dataflow | 数据管道编排 |
-| 🔵 P3 | nexus-credhub | Cloud Foundry 专用 |
+| 🔴 P0 | hiver-graphql | GraphQL 是微服务标配 |
+| 🔴 P0 | hiver-hateoas | REST 超媒体核心 |
+| 🟡 P1 | hiver-ai | AI 是当前热点 |
+| 🟡 P1 | hiver-ldap | 企业安全必备 |
+| 🟡 P1 | hiver-vault | 密钥管理标配 |
+| 🟢 P2 | hiver-ws (SOAP) | 遗留系统集成 |
+| 🟢 P2 | hiver-shell | CLI 工具框架 |
+| 🟢 P2 | hiver-restdocs | API 文档自动生成 |
+| 🟢 P2 | hiver-webflow | 有状态 Web 流程 |
+| 🔵 P3 | hiver-cloud-dataflow | 数据管道编排 |
+| 🔵 P3 | hiver-credhub | Cloud Foundry 专用 |
 | 🔵 P3 | Quality Hardening | 已有模块完善 |
 
 ---

@@ -1,5 +1,5 @@
-# Nexus Framework - Security Audit Report
-# Nexus 框架 - 安全审计报告
+# Hiver Framework - Security Audit Report
+# Hiver 框架 - 安全审计报告
 
 ## Audit Information / 审计信息
 
@@ -8,7 +8,7 @@
 | **Date / 日期** | 2026-01-25 |
 | **Version / 版本** | 0.1.0-alpha |
 | **Auditor / 审计员** | Nexus Security Team |
-| **Scope / 范围** | All nexus-* crates |
+| **Scope / 范围** | All hiver-* crates |
 | **Methodology / 方法** | Static analysis, code review |
 
 ---
@@ -34,7 +34,7 @@
 
 ### 🔴 CRITICAL-1: Weak Password Hashing Fallback (弱密码哈希回退)
 
-**Location / 位置**: `crates/nexus-security/src/encoder.rs:71-76`
+**Location / 位置**: `crates/hiver-security/src/encoder.rs:71-76`
 
 **Issue / 问题**:
 ```rust
@@ -74,7 +74,7 @@ fn encode(&self, raw: &str) -> String {
 
 ### 🔴 CRITICAL-2: Incorrect PBKDF2 Implementation (错误的 PBKDF2 实现)
 
-**Location / 位置**: `crates/nexus-security/src/encoder.rs:237-252`
+**Location / 位置**: `crates/hiver-security/src/encoder.rs:237-252`
 
 **Issue / 问题**:
 ```rust
@@ -117,7 +117,7 @@ pbkdf2_hmac::<Sha256>(
 
 ### 🔴 CRITICAL-3: MD5 Used for Remember Me (MD5 用于记住我功能)
 
-**Location / 位置**: `crates/nexus-security/src/auth.rs:405-419`
+**Location / 位置**: `crates/hiver-security/src/auth.rs:405-419`
 
 **Issue / 问题**:
 ```rust
@@ -160,7 +160,7 @@ pub fn new(key: &str) -> Self {
 
 ### 🟠 HIGH-1: No Input Size Limits (无输入大小限制)
 
-**Location / 位置**: `crates/nexus-extractors/src/json.rs:97-129`
+**Location / 位置**: `crates/hiver-extractors/src/json.rs:97-129`
 
 **Issue / 问题**:
 ```rust
@@ -196,7 +196,7 @@ if body.len() > MAX_JSON_SIZE {
 
 ### 🟠 HIGH-2: unwrap() in Security Code (安全代码中的 unwrap)
 
-**Location / 位置**: Multiple locations in `nexus-security`
+**Location / 位置**: Multiple locations in `hiver-security`
 
 **Issue / 问题**:
 ```rust
@@ -221,7 +221,7 @@ Replace all `unwrap()` with proper error handling in security-sensitive code.
 
 ### 🟠 HIGH-3: Timing Attack Vulnerability in Password Comparison (密码比较的时间攻击漏洞)
 
-**Location / 位置**: `nexus-security/src/encoder.rs:109-111`
+**Location / 位置**: `hiver-security/src/encoder.rs:109-111`
 
 **Issue / 问题**:
 ```rust
@@ -257,7 +257,7 @@ raw.ct_eq(encoded.as_bytes()).into()
 
 ### 🟠 HIGH-4: Potential Username Enumeration (潜在的用户名枚举)
 
-**Location / 位置**: `nexus-security/src/auth.rs:314-323`
+**Location / 位置**: `hiver-security/src/auth.rs:314-323`
 
 **Issue / 问题**:
 ```rust
@@ -306,7 +306,7 @@ Authentication endpoints don't have built-in rate limiting.
 
 **Recommendation / 建议**:
 ```rust
-use nexus_resilience::rate_limit::RateLimiter;
+use hiver_resilience::rate_limit::RateLimiter;
 
 // Built-in rate limiter for auth
 let auth_rate_limiter = RateLimiter::token_bucket(
@@ -324,7 +324,7 @@ let auth_rate_limiter = RateLimiter::token_bucket(
 
 ### 🟡 MEDIUM-1: Missing Content-Type Validation (缺少 Content-Type 验证)
 
-**Location / 位置**: `nexus-extractors/src/json.rs:110-118`
+**Location / 位置**: `hiver-extractors/src/json.rs:110-118`
 
 **Issue / 问题**:
 ```rust
@@ -552,7 +552,7 @@ Before deploying to production:
 
 ## Conclusion / 结论
 
-The Nexus framework has a **solid security foundation** with proper password hashing (BCrypt), authentication, and authorization structures. However, there are **3 critical vulnerabilities** that must be addressed before production deployment.
+The Hiver Framework has a **solid security foundation** with proper password hashing (BCrypt), authentication, and authorization structures. However, there are **3 critical vulnerabilities** that must be addressed before production deployment.
 
 **Key Strengths / 关键优势**:
 - ✅ Strong authentication framework

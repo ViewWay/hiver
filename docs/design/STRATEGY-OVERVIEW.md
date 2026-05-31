@@ -42,91 +42,91 @@
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-runtime | Custom async runtime (io-uring/epoll/kqueue) / 自定义异步运行时 | ✅ Complete |
-| nexus-core | Core types and abstractions / 核心类型与抽象 | ✅ Complete |
-| nexus-http | HTTP/1.1 server & client / HTTP/1.1 服务端与客户端 | ✅ Complete |
-| nexus-router | Router & middleware system / 路由与中间件系统 | ✅ Complete |
-| nexus-middleware | Middleware implementations / 中间件实现 | ✅ Complete |
-| nexus-extractors | Request extractors / 请求提取器 | ✅ Complete |
-| nexus-response | Response builders / 响应构建器 | ✅ Complete |
+| hiver-runtime | Custom async runtime (io-uring/epoll/kqueue) / 自定义异步运行时 | ✅ Complete |
+| hiver-core | Core types and abstractions / 核心类型与抽象 | ✅ Complete |
+| hiver-http | HTTP/1.1 server & client / HTTP/1.1 服务端与客户端 | ✅ Complete |
+| hiver-router | Router & middleware system / 路由与中间件系统 | ✅ Complete |
+| hiver-middleware | Middleware implementations / 中间件实现 | ✅ Complete |
+| hiver-extractors | Request extractors / 请求提取器 | ✅ Complete |
+| hiver-response | Response builders / 响应构建器 | ✅ Complete |
 
 ### Domain 2: Data Layer / 数据层
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-data-commons | Repository traits, Page/Sort, MethodName::parse() | ✅ Complete |
-| nexus-data-rdbc | DatabaseClient, Connection pool, RowMapper, ResultSetExtractor | ✅ Complete |
-| nexus-data-orm | ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges | ✅ Complete |
-| nexus-data-redis | Redis integration / Redis 集成 | 🚧 In Progress |
-| nexus-data-mongodb | MongoDB integration / MongoDB 集成 | 🚧 Planned |
-| nexus-flyway | Database migration support / 数据库迁移支持 | 🚧 Planned |
-| nexus-data-annotations | Data layer derive macros / 数据层派生宏 | 🚧 Planned |
-| nexus-data-macros | Procedural macros for data layer / 数据层过程宏 | 🚧 Planned |
+| hiver-data-commons | Repository traits, Page/Sort, MethodName::parse() | ✅ Complete |
+| hiver-data-rdbc | DatabaseClient, Connection pool, RowMapper, ResultSetExtractor | ✅ Complete |
+| hiver-data-orm | ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges | ✅ Complete |
+| hiver-data-redis | Redis integration / Redis 集成 | 🚧 In Progress |
+| hiver-data-mongodb | MongoDB integration / MongoDB 集成 | 🚧 Planned |
+| hiver-flyway | Database migration support / 数据库迁移支持 | 🚧 Planned |
+| hiver-data-annotations | Data layer derive macros / 数据层派生宏 | 🚧 Planned |
+| hiver-data-macros | Procedural macros for data layer / 数据层过程宏 | 🚧 Planned |
 
 ### Domain 3: Resilience & Observability / 弹性与可观测性
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-resilience | Circuit breaker, retry, rate limiter, service discovery / 熔断器、重试、限流、服务发现 | ✅ Complete |
-| nexus-observability | Distributed tracing, metrics, structured logging / 分布式追踪、指标、结构化日志 | ✅ Complete |
+| hiver-resilience | Circuit breaker, retry, rate limiter, service discovery / 熔断器、重试、限流、服务发现 | ✅ Complete |
+| hiver-observability | Distributed tracing, metrics, structured logging / 分布式追踪、指标、结构化日志 | ✅ Complete |
 
 ### Domain 4: Web3 / Web3
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-web3 | Chain abstraction, wallet management, transactions, RPC, smart contracts / 链抽象、钱包、交易、RPC、智能合约 | ✅ Complete |
+| hiver-web3 | Chain abstraction, wallet management, transactions, RPC, smart contracts / 链抽象、钱包、交易、RPC、智能合约 | ✅ Complete |
 
 ### Domain 5: IoC & AOP / 依赖注入与面向切面
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-ioc | Inversion of Control container / 控制反转容器 | ✅ 90% |
-| nexus-aop | Aspect-Oriented Programming support / 面向切面编程支持 | ✅ 90% |
+| hiver-ioc | Inversion of Control container / 控制反转容器 | ✅ 90% |
+| hiver-aop | Aspect-Oriented Programming support / 面向切面编程支持 | ✅ 90% |
 
 ### Domain 6: Security / 安全
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-security | Authentication & authorization / 认证与授权 | ✅ 80% |
-| nexus-validation | Validation framework / 验证框架 | ✅ Complete |
-| nexus-validation-annotations | Validation derive macros / 验证派生宏 | ✅ Complete |
+| hiver-security | Authentication & authorization / 认证与授权 | ✅ 80% |
+| hiver-validation | Validation framework / 验证框架 | ✅ Complete |
+| hiver-validation-annotations | Validation derive macros / 验证派生宏 | ✅ Complete |
 
 ### Domain 7: Enterprise / 企业级
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-scheduling | Task scheduling / 任务调度 | ✅ Complete |
-| nexus-i18n | Internationalization / 国际化 | ✅ Complete |
-| nexus-shell | Shell commands / Shell 命令 | ✅ Complete |
-| nexus-shell-macros | Shell procedural macros / Shell 过程宏 | ✅ Complete |
+| hiver-scheduling | Task scheduling / 任务调度 | ✅ Complete |
+| hiver-i18n | Internationalization / 国际化 | ✅ Complete |
+| hiver-shell | Shell commands / Shell 命令 | ✅ Complete |
+| hiver-shell-macros | Shell procedural macros / Shell 过程宏 | ✅ Complete |
 
 ### Domain 8: AI & Cloud / AI 与云
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-ai | AI integration framework / AI 集成框架 | 🚧 70% |
-| nexus-agent | Agent framework / Agent 框架 | 🚧 70% |
-| nexus-cloud | Cloud service abstraction / 云服务抽象 | 🚧 60% |
-| nexus-ws | WebSocket support / WebSocket 支持 | ✅ Complete |
+| hiver-ai | AI integration framework / AI 集成框架 | 🚧 70% |
+| hiver-agent | Agent framework / Agent 框架 | 🚧 70% |
+| hiver-cloud | Cloud service abstraction / 云服务抽象 | 🚧 60% |
+| hiver-ws | WebSocket support / WebSocket 支持 | ✅ Complete |
 
 ### Domain 9: Messaging & Events / 消息与事件
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-events | Event system / 事件系统 | 🚧 60% |
-| nexus-events-macros | Event procedural macros / 事件过程宏 | 🚧 60% |
+| hiver-events | Event system / 事件系统 | 🚧 60% |
+| hiver-events-macros | Event procedural macros / 事件过程宏 | 🚧 60% |
 
 ### Domain 10: Tooling & Starter / 工具与启动器
 
 | Crate / Crate | Description / 描述 | Status / 状态 |
 |-------------|-------------------|--------------|
-| nexus-macros | Core procedural macros / 核心过程宏 | ✅ Complete |
-| nexus-lombok | Lombok-style code generation / Lombok 风格代码生成 | ✅ Complete |
-| nexus-retry-macros | Retry attribute macros / 重试属性宏 | ✅ Complete |
-| nexus-spel | Spring EL expression support / Spring EL 表达式支持 | ✅ Complete |
-| nexus-modulith | Modular architecture support / 模块化架构支持 | ✅ Complete |
-| nexus-starter | Auto-configuration starter / 自动配置启动器 | ✅ 95% |
-| nexus-test | Test framework integration / 测试框架集成 | ✅ 85% |
+| hiver-macros | Core procedural macros / 核心过程宏 | ✅ Complete |
+| hiver-lombok | Lombok-style code generation / Lombok 风格代码生成 | ✅ Complete |
+| hiver-retry-macros | Retry attribute macros / 重试属性宏 | ✅ Complete |
+| hiver-spel | Spring EL expression support / Spring EL 表达式支持 | ✅ Complete |
+| hiver-modulith | Modular architecture support / 模块化架构支持 | ✅ Complete |
+| hiver-starter | Auto-configuration starter / 自动配置启动器 | ✅ 95% |
+| hiver-test | Test framework integration / 测试框架集成 | ✅ 85% |
 
 ---
 
@@ -211,7 +211,7 @@
 
 ```
 Completed / 已完成:
-├── ✅ 8.1 nexus-data-commons
+├── ✅ 8.1 hiver-data-commons
 │   ├── Repository<T, ID> trait
 │   ├── CrudRepository<T, ID> trait
 │   ├── PagingAndSortingRepository<T, ID> trait
@@ -219,14 +219,14 @@ Completed / 已完成:
 │   ├── Sort and Order
 │   └── MethodName::parse() for findByXxxAndYyy
 │
-├── ✅ 8.2 nexus-data-rdbc
+├── ✅ 8.2 hiver-data-rdbc
 │   ├── DatabaseClient
 │   ├── Connection pool
 │   ├── RowMapper trait
 │   ├── ResultSetExtractor trait
 │   └── Multi-database support
 │
-└── ✅ 8.3 nexus-data-orm
+└── ✅ 8.3 hiver-data-orm
     ├── ORM abstraction layer
     ├── ActiveRecord pattern
     ├── Model derive macro
@@ -237,11 +237,11 @@ Completed / 已完成:
 
 In Progress / 进行中:
 ├── 🚧 Structural refactoring of pre-existing mapper/executor/query_runtime modules
-├── 🚧 nexus-data-redis (Redis integration)
-├── 🚧 nexus-data-mongodb (MongoDB integration)
-├── 🚧 nexus-flyway (Migration tooling)
-├── 🚧 nexus-data-annotations (Derive macros)
-└── 🚧 nexus-data-macros (Procedural macros)
+├── 🚧 hiver-data-redis (Redis integration)
+├── 🚧 hiver-data-mongodb (MongoDB integration)
+├── 🚧 hiver-flyway (Migration tooling)
+├── 🚧 hiver-data-annotations (Derive macros)
+└── 🚧 hiver-data-macros (Procedural macros)
 ```
 
 ### Known Issues / 已知问题
@@ -347,7 +347,7 @@ In Progress / 进行中:
 
 - [ ] Phase 8 data layer structural refactoring / 数据层结构重构
 - [ ] 14 Dependabot vulnerability fixes / 14 个 Dependabot 漏洞修复
-- [ ] nexus-data-redis, nexus-data-mongodb completion / Redis/MongoDB 集成完成
+- [ ] hiver-data-redis, hiver-data-mongodb completion / Redis/MongoDB 集成完成
 - [ ] AI & Agent framework maturation / AI & Agent 框架成熟
 - [ ] Cloud & Messaging domain completion / 云与消息域完成
 - [ ] v1.0 final tag and publication / v1.0 最终标签与发布

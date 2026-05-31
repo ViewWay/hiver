@@ -9,9 +9,9 @@
 
 ## 执行摘要 / Executive Summary
 
-本报告对比了 Spring Framework 的核心功能与 Nexus 框架的当前实现状态，识别出缺失的功能模块和特性。
+本报告对比了 Spring Framework 的核心功能与 Hiver 框架的当前实现状态，识别出缺失的功能模块和特性。
 
-This report compares Spring Framework's core features with Nexus framework's current implementation status, identifying missing functional modules and features.
+This report compares Spring Framework's core features with Hiver Framework's current implementation status, identifying missing functional modules and features.
 
 ### 总体状态 / Overall Status
 
@@ -179,12 +179,12 @@ This report compares Spring Framework's core features with Nexus framework's cur
    - **建议**: Phase 8 新增（可基于sqlx）
 
 3. **事务管理 / Transaction Management**
-   - ❌ `@Transactional` (已有nexus-tx但未集成)
+   - ❌ `@Transactional` (已有hiver-tx但未集成)
    - ❌ 声明式事务
    - ❌ 事务传播行为
    - ❌ 事务隔离级别
    - **影响**: 无法管理数据库事务
-   - **建议**: Phase 8 实现（nexus-tx已存在）
+   - **建议**: Phase 8 实现（hiver-tx已存在）
 
 4. **Repository模式 / Repository Pattern**
    - ❌ `Repository<T, ID>` trait
@@ -240,16 +240,16 @@ This report compares Spring Framework's core features with Nexus framework's cur
    - ❌ `PasswordEncoder`
    - ❌ `SecurityContext`
    - **影响**: 无法进行用户认证
-   - **建议**: Phase 8 实现（nexus-security已有基础结构）
+   - **建议**: Phase 8 实现（hiver-security已有基础结构）
 
 2. **授权框架 / Authorization Framework**
-   - ❌ `@Secured` (nexus-security有但未集成)
-   - ❌ `@PreAuthorize` (nexus-security有但未集成)
+   - ❌ `@Secured` (hiver-security有但未集成)
+   - ❌ `@PreAuthorize` (hiver-security有但未集成)
    - ❌ `@PostAuthorize`
    - ❌ `@RolesAllowed`
    - ❌ 方法级安全
    - **影响**: 无法进行访问控制
-   - **建议**: Phase 8 集成nexus-security
+   - **建议**: Phase 8 集成hiver-security
 
 3. **JWT/OAuth2 / JWT/OAuth2**
    - ❌ JWT支持
@@ -365,7 +365,7 @@ This report compares Spring Framework's core features with Nexus framework's cur
 
 ### 7.1 已实现 ✅
 
-- ✅ 基础配置结构 (nexus-config存在但可能未完全实现)
+- ✅ 基础配置结构 (hiver-config存在但可能未完全实现)
 
 ### 7.2 缺失功能 ❌
 
@@ -377,14 +377,14 @@ This report compares Spring Framework's core features with Nexus framework's cur
    - ❌ `application-{profile}.yml`
    - ❌ 配置文件加载
    - **影响**: 无法使用配置文件
-   - **建议**: Phase 2 实现（nexus-config已有基础）
+   - **建议**: Phase 2 实现（hiver-config已有基础）
 
 2. **类型安全配置 / Type-Safe Configuration**
-   - ❌ `@ConfigurationProperties` (nexus-config有但可能未完全实现)
+   - ❌ `@ConfigurationProperties` (hiver-config有但可能未完全实现)
    - ❌ 配置类绑定
    - ❌ 配置验证
    - **影响**: 无法进行类型安全的配置
-   - **建议**: Phase 2 完善nexus-config
+   - **建议**: Phase 2 完善hiver-config
 
 3. **值注入 / Value Injection**
    - ❌ `@Value`
@@ -448,21 +448,21 @@ This report compares Spring Framework's core features with Nexus framework's cur
 
 ### 9.1 已存在但可能未完全实现
 
-- 🟡 nexus-cache模块存在，但需要验证实现完整性
+- 🟡 hiver-cache模块存在，但需要验证实现完整性
 
 ### 9.2 缺失功能 ❌
 
 1. **缓存注解 / Cache Annotations**
-   - ❌ `@Cacheable` (nexus-cache有但可能未完全实现)
-   - ❌ `@CacheEvict` (nexus-cache有但可能未完全实现)
-   - ❌ `@CachePut` (nexus-cache有但可能未完全实现)
+   - ❌ `@Cacheable` (hiver-cache有但可能未完全实现)
+   - ❌ `@CacheEvict` (hiver-cache有但可能未完全实现)
+   - ❌ `@CachePut` (hiver-cache有但可能未完全实现)
    - ❌ `@Caching`
    - ❌ `@CacheConfig`
    - **影响**: 无法使用声明式缓存
-   - **建议**: Phase 3 完善nexus-cache
+   - **建议**: Phase 3 完善hiver-cache
 
 2. **缓存管理器 / Cache Manager**
-   - ❌ `CacheManager` (nexus-cache有但需要验证)
+   - ❌ `CacheManager` (hiver-cache有但需要验证)
    - ❌ 多缓存支持
    - **影响**: 无法管理多个缓存
    - **建议**: Phase 3 完善
@@ -648,7 +648,7 @@ This report compares Spring Framework's core features with Nexus framework's cur
 12. **SSE** - `SseEmitter`
 13. **Actuator端点** - `/health`, `/metrics`
 14. **健康检查** - `HealthIndicator`
-15. **缓存完善** - 完善nexus-cache集成
+15. **缓存完善** - 完善hiver-cache集成
 
 ### P3 - 低优先级（Phase 6-9）
 
@@ -666,10 +666,10 @@ This report compares Spring Framework's core features with Nexus framework's cur
 
 | 模块 | 状态 | 需要验证 |
 |------|------|----------|
-| `nexus-config` | 🟡 存在 | 配置文件加载、@ConfigurationProperties实现 |
-| `nexus-security` | 🟡 存在 | 认证、授权集成 |
-| `nexus-tx` | 🟡 存在 | 事务管理集成 |
-| `nexus-cache` | 🟡 存在 | 缓存注解、管理器实现 |
+| `hiver-config` | 🟡 存在 | 配置文件加载、@ConfigurationProperties实现 |
+| `hiver-security` | 🟡 存在 | 认证、授权集成 |
+| `hiver-tx` | 🟡 存在 | 事务管理集成 |
+| `hiver-cache` | 🟡 存在 | 缓存注解、管理器实现 |
 
 ### 建议行动
 

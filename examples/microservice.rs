@@ -34,18 +34,18 @@
 //! cargo run --bin microservice
 //! ```
 
-use nexus_resilience::{
+use hiver_resilience::{
     CircuitBreaker, CircuitBreakerConfig, CircuitBreakerRegistry, CircuitState,
     ServiceDiscovery, ServiceInstance,
     RateLimiter, RateLimiterConfig,
     RetryPolicy, BackoffType, retry,
 };
-use nexus_observability::{
+use hiver_observability::{
     Tracer, TraceId,
     Counter, Histogram, MetricsRegistry,
     info, warn, error as log_error,
 };
-use nexus_http::{Request, Response, StatusCode};
+use hiver_http::{Request, Response, StatusCode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};

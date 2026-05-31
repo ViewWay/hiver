@@ -1,0 +1,42 @@
+[package]
+name = "hiver-data-commons"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Common data access abstractions for Hiver Framework"
+keywords = ["nexus", "data", "repository", "spring-data"]
+categories = ["database", "asynchronous"]
+
+[features]
+default = []
+
+# Query wrapper support (MyBatis-Plus style)
+query = []
+
+# Full features
+full = ["query"]
+
+[dependencies]
+# Async runtime
+hiver-runtime = { path = "../hiver-runtime" }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+
+# Async trait support
+async-trait = "0.1"
+
+# UUID support (for entity IDs)
+uuid = { version = "1.12", features = ["v4", "serde"] }
+
+# Chrono for datetime
+chrono = { version = "0.4", features = ["serde"] }
+
+# Hex encoding for bytes
+hex = "0.4"

@@ -1,0 +1,58 @@
+[package]
+name = "hiver-router"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Router and route matching for Hiver Framework.
+Nexus框架的路由器和路由匹配。
+Equivalent to: Spring MVC @RequestMapping, RouterFunction
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# HTTP types / HTTP类型 (Spring Web HTTP)
+http = { workspace = true }
+
+# Core types / 核心类型
+hiver-core = { path = "../hiver-core" }
+hiver-http = { path = "../hiver-http" }
+
+# Serialization / 序列化 (Spring Jackson JSON)
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Routing / 路由 (Spring MVC Routing)
+matchit = { workspace = true }
+regex = { workspace = true }
+percent-encoding = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# Utilities / 工具
+itertools = { workspace = true }
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+criterion = { workspace = true }
+
+# Benchmarks will be added in Phase 2
+# 基准测试将在第2阶段添加
+# [[bench]]
+# name = "router"
+# harness = false

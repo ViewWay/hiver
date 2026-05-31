@@ -1,5 +1,5 @@
 [package]
-name = "nexus-tests"
+name = "hiver-tests"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -15,16 +15,16 @@ integration-tests = []
 
 [dev-dependencies]
 # Nexus data crates
-nexus-data-commons = { path = "../crates/nexus-data-commons" }
-nexus-data-rdbc = { path = "../crates/nexus-data-rdbc", features = ["postgres", "mysql"] }
-nexus-data-orm = { path = "../crates/nexus-data-orm" }
-nexus-data-macros = { path = "../crates/nexus-data-macros" }
+hiver-data-commons = { path = "../crates/hiver-data-commons" }
+hiver-data-rdbc = { path = "../crates/hiver-data-rdbc", features = ["postgres", "mysql"] }
+hiver-data-orm = { path = "../crates/hiver-data-orm" }
+hiver-data-macros = { path = "../crates/hiver-data-macros" }
 
 # Nexus core and cross-crate test targets
-nexus-core = { path = "../crates/nexus-core" }
-nexus-config = { path = "../crates/nexus-config" }
-nexus-modulith = { path = "../crates/nexus-modulith" }
-nexus-state-machine = { path = "../crates/nexus-state-machine" }
+hiver-core = { path = "../crates/hiver-core" }
+hiver-config = { path = "../crates/hiver-config" }
+hiver-modulith = { path = "../crates/hiver-modulith" }
+hiver-state-machine = { path = "../crates/hiver-state-machine" }
 
 # Async runtime
 tokio = { workspace = true, features = ["full"] }

@@ -87,7 +87,7 @@ jobs:
 
           for file in $CRATES; do
             # Skip benches crate as it has special structure
-            if [[ "$file" == *"nexus-benches"* ]]; then
+            if [[ "$file" == *"hiver-benches"* ]]; then
               continue
             fi
 

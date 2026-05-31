@@ -1,0 +1,97 @@
+[package]
+name = "hiver-resilience"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+High availability patterns for Hiver Framework.
+Nexus框架的高可用模式。
+Equivalent to: Spring Cloud Circuit Breaker, Spring Retry, Resilience4j
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# HTTP types / HTTP类型 (Spring Web HTTP)
+http = { workspace = true }
+
+# Core types / 核心类型
+hiver-core = { path = "../hiver-core" }
+hiver-http = { path = "../hiver-http" }
+
+# Runtime / 运行时 (Spring Task Executor)
+hiver-runtime = { path = "../hiver-runtime" }
+
+# Observability / 可观测性 (Spring Cloud Sleuth, Micrometer)
+hiver-observability = { path = "../hiver-observability" }
+
+# Core container (IoC) / 核心容器 (Spring ApplicationContext)
+arc-swap = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+
+# Error handling / 错误处理 (Spring @Retryable, @CircuitBreaker)
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+error-stack = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Time / 时间 (Spring @Retry, backoff)
+time = { workspace = true }
+pin-project-lite = { workspace = true }
+
+# Random / 随机 (jitter in backoff)
+rand = { workspace = true }
+
+# Service discovery / 服务发现 (Spring Cloud Service Discovery)
+consul = { version = "0.4", optional = true }
+etcd-rs = { version = "1.0", optional = true }
+nacos = { version = "0.0", optional = true }
+
+# Async runtime / 异步运行时
+tokio = { workspace = true }
+
+# Metrics / 指标 (Spring Cloud Circuit Breaker Metrics)
+prometheus = { version = "0.14", optional = true }
+metrics = { workspace = true }
+
+# Tower middleware support (Spring Web Filter equivalent)
+tower = { workspace = true }
+
+[features]
+default = ["circuit-breaker", "rate-limit", "retry", "timeout", "bulkhead"]
+circuit-breaker = []
+rate-limit = []
+retry = []
+timeout = []
+bulkhead = []
+fallback = []
+discovery = ["dep:consul", "dep:etcd-rs", "dep:nacos"]
+metrics = ["dep:prometheus"]
+full = ["circuit-breaker", "rate-limit", "retry", "timeout", "bulkhead", "fallback", "discovery", "metrics"]
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+criterion = { workspace = true }
+
+# Benchmarks will be added in Phase 4
+# 基准测试将在第4阶段添加
+# [[bench]]
+# name = "resilience"
+# harness = false

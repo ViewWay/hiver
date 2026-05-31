@@ -19,7 +19,7 @@ This index provides a structured overview of all Nexus documentation.
 
 ### For Chinese Developers / 中国开发者
 
-1. **[nexus-mybatis-plus-style.md](./nexus-mybatis-plus-style.md)** - MyBatis-Plus style development / MyBatis-Plus 风格开发
+1. **[hiver-mybatis-plus-style.md](./hiver-mybatis-plus-style.md)** - MyBatis-Plus style development / MyBatis-Plus 风格开发
 2. **[DATA-LAYER-ADDENDUM.md](./DATA-LAYER-ADDENDUM.md)** - MyBatis-Plus implementation plan / MyBatis-Plus 实施计划
 
 ---
@@ -75,11 +75,11 @@ This index provides a structured overview of all Nexus documentation.
 
 **Core Implementation / 核心实施**:
 
-1. **[nexus-data-full-implementation.md](./nexus-data-full-implementation.md)** - Complete Data Layer plan
-   - nexus-data-commons (Repository abstractions) / Repository 抽象
-   - nexus-data-rdbc (R2DBC support) / R2DBC 支持
-   - nexus-data-orm (SeaORM/Diesel/SQLx) / ORM 集成
-   - nexus-data-migrations (Flyway-like) / 数据库迁移
+1. **[hiver-data-full-implementation.md](./hiver-data-full-implementation.md)** - Complete Data Layer plan
+   - hiver-data-commons (Repository abstractions) / Repository 抽象
+   - hiver-data-rdbc (R2DBC support) / R2DBC 支持
+   - hiver-data-orm (SeaORM/Diesel/SQLx) / ORM 集成
+   - hiver-data-migrations (Flyway-like) / 数据库迁移
    - Target API design and examples / 目标 API 设计和示例
 
 2. **[implementation-roadmap-data.md](./implementation-roadmap-data.md)** - Data Layer detailed roadmap
@@ -89,13 +89,13 @@ This index provides a structured overview of all Nexus documentation.
 
 3. **[DATA-LAYER-ADDENDUM.md](./DATA-LAYER-ADDENDUM.md)** - MyBatis-Plus support
    - Dual data layer strategy / 双数据层策略
-   - nexus-lombok (#[Data] macro) / Lombok 风格宏
-   - nexus-data-mybatisplus (BaseMapper, QueryWrapper) / MyBatis-Plus 核心功能
-   - nexus-scan (@MapperScan) / 组件扫描
+   - hiver-lombok (#[Data] macro) / Lombok 风格宏
+   - hiver-data-mybatisplus (BaseMapper, QueryWrapper) / MyBatis-Plus 核心功能
+   - hiver-scan (@MapperScan) / 组件扫描
 
 **Style Guides / 风格指南**:
 
-4. **[nexus-mybatis-plus-style.md](./nexus-mybatis-plus-style.md)** - MyBatis-Plus style development
+4. **[hiver-mybatis-plus-style.md](./hiver-mybatis-plus-style.md)** - MyBatis-Plus style development
    - Complete MyBatis-Plus API parity / 完整 MyBatis-Plus API 对等
    - QueryWrapper reference / QueryWrapper 参考
    - Migration examples from Java / 从 Java 迁移示例
@@ -145,8 +145,8 @@ This index provides a structured overview of all Nexus documentation.
 ### For Implementation / 实施
 
 **Data Layer / 数据层**:
-1. nexus-data-full-implementation.md (Spring Data style / Spring Data 风格)
-2. nexus-mybatis-plus-style.md (MyBatis-Plus style / MyBatis-Plus 风格)
+1. hiver-data-full-implementation.md (Spring Data style / Spring Data 风格)
+2. hiver-mybatis-plus-style.md (MyBatis-Plus style / MyBatis-Plus 风格)
 3. DATA-LAYER-ADDENDUM.md (dual strategy / 双策略)
 
 **Other Layers / 其他层**:
@@ -156,7 +156,7 @@ This index provides a structured overview of all Nexus documentation.
 
 **From Spring Boot / 从 Spring Boot**:
 1. MIGRATION-GUIDE.md (complete guide / 完整指南)
-2. nexus-mybatis-plus-style.md (if using MyBatis-Plus / 如果使用 MyBatis-Plus)
+2. hiver-mybatis-plus-style.md (if using MyBatis-Plus / 如果使用 MyBatis-Plus)
 
 ### For Understanding Gaps / 理解差距
 
@@ -209,10 +209,10 @@ Overall Completion: 45%
 
 ### Top 5 Critical Blockers / 前 5 个关键阻塞
 
-1. 🔴 **nexus-data-orm** (2 months) - ORM abstraction and ActiveRecord pattern / ORM 抽象和 ActiveRecord 模式
-2. 🔴 **nexus-autoconfigure** (1 month) - Too much boilerplate / 样板代码太多
+1. 🔴 **hiver-data-orm** (2 months) - ORM abstraction and ActiveRecord pattern / ORM 抽象和 ActiveRecord 模式
+2. 🔴 **hiver-autoconfigure** (1 month) - Too much boilerplate / 样板代码太多
 3. 🔴 **@Autowired** (1 month) - Manual DI is tedious / 手动 DI 很繁琐
-4. 🟡 **nexus-lombok** (0.5 months) - Too much getter/setter code / getter/setter 代码太多
+4. 🟡 **hiver-lombok** (0.5 months) - Too much getter/setter code / getter/setter 代码太多
 5. 🟡 **Integration testing** (1 month) - End-to-end test coverage / 端到端测试覆盖
 
 ---
@@ -227,7 +227,7 @@ docs/
 ├── STRATEGY-*.md                    # Strategy documents / 战略文档
 ├── MISSING-FEATURES-*.md            # Feature gap analysis / 功能差距分析
 ├── spring-*.md                      # Spring comparison / Spring 对比
-├── nexus-*-*.md                     # Nexus-specific docs / Nexus 特定文档
+├── hiver-*-*.md                     # Nexus-specific docs / Nexus 特定文档
 ├── implementation-*.md              # Implementation plans / 实施计划
 ├── MIGRATION-*.md                   # Migration guides / 迁移指南
 └── *-addendum.md                    # Addendums / 附录
@@ -257,8 +257,8 @@ Content in English / 英文内容
 | Understand the project / 了解项目 | STRATEGY-OVERVIEW.md |
 | See the roadmap / 查看路线图 | MASTER-ROADMAP.md |
 | Start implementing / 开始实施 | MISSING-FEATURES-QUICK-REF.md |
-| Build Data Layer / 构建数据层 | nexus-data-full-implementation.md |
-| Use MyBatis-Plus style / 使用 MyBatis-Plus 风格 | nexus-mybatis-plus-style.md |
+| Build Data Layer / 构建数据层 | hiver-data-full-implementation.md |
+| Use MyBatis-Plus style / 使用 MyBatis-Plus 风格 | hiver-mybatis-plus-style.md |
 | Migrate from Spring Boot / 从 Spring Boot 迁移 | MIGRATION-GUIDE.md |
 | Compare with Spring / 与 Spring 对比 | spring-boot-gap-analysis.md |
 | See all missing features / 查看所有缺失功能 | spring-missing-features.md |
@@ -311,8 +311,8 @@ Content in English / 英文内容
 ### For Developers / 开发者
 
 1. **MIGRATION-GUIDE.md** (15 min) - Learn how to migrate / 学习如何迁移
-2. **nexus-data-full-implementation.md** (30 min) - Data layer details / 数据层详情
-3. **nexus-mybatis-plus-style.md** (20 min) - MyBatis-Plus support / MyBatis-Plus 支持
+2. **hiver-data-full-implementation.md** (30 min) - Data layer details / 数据层详情
+3. **hiver-mybatis-plus-style.md** (20 min) - MyBatis-Plus support / MyBatis-Plus 支持
 
 ### For Contributors / 贡献者
 

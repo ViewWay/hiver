@@ -1,12 +1,12 @@
 [package]
-name = "nexus-examples"
+name = "hiver-examples"
 version = { workspace = true }
 publish = false
 edition = { workspace = true }
 rust-version = { workspace = true }
 
 description = """
-Example applications for Nexus framework.
+Example applications for Hiver Framework.
 Nexus框架的示例应用。
 Equivalent to: Spring Boot Samples, Spring PetClinic
 """
@@ -55,33 +55,33 @@ path = "src/stress_test.rs"
 
 [dependencies]
 # Core framework / 核心框架
-nexus-core = { path = "../crates/nexus-core" }
-nexus-http = { path = "../crates/nexus-http", features = ["full"] }
-nexus-router = { path = "../crates/nexus-router" }
-nexus-resilience = { path = "../crates/nexus-resilience" }
-nexus-validation = { path = "../crates/nexus-validation" }
+hiver-core = { path = "../crates/hiver-core" }
+hiver-http = { path = "../crates/hiver-http", features = ["full"] }
+hiver-router = { path = "../crates/hiver-router" }
+hiver-resilience = { path = "../crates/hiver-resilience" }
+hiver-validation = { path = "../crates/hiver-validation" }
 
 # Nexus Starter / 自动配置启动器
-nexus-starter = { path = "../crates/nexus-starter", features = ["core", "web"] }
-nexus-macros = { path = "../crates/nexus-macros" }
+hiver-starter = { path = "../crates/hiver-starter", features = ["core", "web"] }
+hiver-macros = { path = "../crates/hiver-macros" }
 
 # Observability / 可观测性
-nexus-observability = { path = "../crates/nexus-observability", features = ["nexus-format"] }
+hiver-observability = { path = "../crates/hiver-observability", features = ["hiver-format"] }
 
 # Cache / 缓存
-nexus-cache = { path = "../crates/nexus-cache" }
+hiver-cache = { path = "../crates/hiver-cache" }
 
 # Security / 安全
-nexus-security = { path = "../crates/nexus-security" }
+hiver-security = { path = "../crates/hiver-security" }
 
 # Data / 数据
-nexus-data-annotations = { path = "../crates/nexus-data-annotations" }
+hiver-data-annotations = { path = "../crates/hiver-data-annotations" }
 
 # Web3 / 区块链
-nexus-web3 = { path = "../crates/nexus-web3" }
+hiver-web3 = { path = "../crates/hiver-web3" }
 
 # gRPC
-nexus-grpc = { path = "../crates/nexus-grpc" }
+hiver-grpc = { path = "../crates/hiver-grpc" }
 
 # Async runtime / 异步运行时
 tokio = { workspace = true, features = ["full"] }

@@ -1,8 +1,8 @@
-# Nexus Framework
+# Hiver Framework
 
 > A production-grade, high-availability web framework written in Rust.
 
-# Nexus 框架
+# Hiver 框架
 
 > 用 Rust 编写的生产级、高可用 Web 框架。
 
@@ -89,14 +89,14 @@ Spring Data-like abstractions: Repository traits, ORM, ActiveRecord, QueryBuilde
 ```toml
 # Cargo.toml
 [dependencies]
-nexus-starter = "0.1"
+hiver-starter = "0.1"
 ```
 
 ```rust
-use nexus_starter::NexusApp;
-use nexus_router::Router;
+use hiver_starter::NexusApp;
+use hiver_router::Router;
 
-#[nexus::handler]
+#[hiver::handler]
 async fn hello() -> &'static str {
     "Hello, Nexus! / 你好，Nexus！"
 }
@@ -171,9 +171,9 @@ fn main() -> std::io::Result<()> {
 
 | Resource | Link |
 |----------|------|
-| 📦 Crates.io | [nexus-framework](https://crates.io/search?q=nexus-) |
+| 📦 Crates.io | [hiver-framework](https://crates.io/search?q=hiver-) |
 | 📖 API Docs | [docs.rs/nexus](https://docs.rs/nexus) |
-| 💻 GitHub | [ViewWay/nexus](https://github.com/ViewWay/nexus) |
+| 💻 GitHub | [ViewWay/hiver](https://github.com/ViewWay/hiver) |
 | 📄 Design Spec | [design-spec.md](../design/design-spec.md) |
 | 🗺️ Implementation Plan | [implementation-plan.md](../design/implementation-plan.md) |
 
@@ -189,11 +189,11 @@ fn main() -> std::io::Result<()> {
 | `@Repository` | `#[derive(Repository)]` | Data repository |
 | `@ConfigurationProperties` | `#[derive(PropertiesConfig)]` | Config binding |
 | `SpringApplication.run()` | `NexusApp::new().run()` | App bootstrap |
-| `@SpringBootApplication` | `nexus-starter` | Auto-config |
-| Resilience4j | `nexus-resilience` | Circuit breaker |
-| Spring Security | `nexus-security` | Auth & security |
-| Spring Data JPA | `nexus-data-orm` | ORM abstraction |
-| Spring WebFlux | `nexus-http` | HTTP server |
+| `@SpringBootApplication` | `hiver-starter` | Auto-config |
+| Resilience4j | `hiver-resilience` | Circuit breaker |
+| Spring Security | `hiver-security` | Auth & security |
+| Spring Data JPA | `hiver-data-orm` | ORM abstraction |
+| Spring WebFlux | `hiver-http` | HTTP server |
 
 ---
 

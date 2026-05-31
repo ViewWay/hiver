@@ -80,7 +80,7 @@ pub struct User {
 }
 
 // Mapper interface (trait) / Mapper 接口（trait）
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     // Inherits: insert(), delete_by_id(), update_by_id(), select_by_id(),
     //          select_list(), select_page(), etc. / 自动继承 CRUD 方法
@@ -104,7 +104,7 @@ async fn main() {
 struct Application;
 
 // Test / 测试
-#[nexus_test]
+#[hiver_test]
 async fn test_select() {
     let app = TestApplicationContext::bootstrap().await.unwrap();
     let user_mapper = app.get_mapper::<UserMapper>().unwrap();
@@ -126,20 +126,20 @@ async fn test_select() {
 ```
 nexus/
 ├── crates/
-│   ├── nexus-data-mybatisplus/        # MyBatis-Plus style (NEW)
+│   ├── hiver-data-mybatisplus/        # MyBatis-Plus style (NEW)
 │   │   ├── src/
 │   │   │   ├── lib.rs
 │   │   │   ├── mapper.rs              # BaseMapper trait
 │   │   │   ├── entity.rs              # Entity macros
 │   │   │   ├── query.rs               # QueryWrapper (like MyBatis-Plus)
 │   │   │   └── macros/
-│   │   │       ├── mapper.rs          # #[nexus_mapper] derive
+│   │   │       ├── mapper.rs          # #[hiver_mapper] derive
 │   │   │       ├── table.rs           # #[TableName] derive
 │   │   │       ├── data.rs            # #[Data] derive (Lombok)
 │   │   │       └── select.rs          # #[Select] attribute
 │   │   └── Cargo.toml
 │   │
-│   ├── nexus-lombok/                   # Lombok-style (NEW)
+│   ├── hiver-lombok/                   # Lombok-style (NEW)
 │   │   ├── src/
 │   │   │   ├── lib.rs
 │   │   │   ├── data.rs                # #[Data] macro
@@ -149,7 +149,7 @@ nexus/
 │   │   │   └── constructor.rs         # Constructor
 │   │   └── Cargo.toml
 │   │
-│   ├── nexus-scan/                     # Component scanning (NEW)
+│   ├── hiver-scan/                     # Component scanning (NEW)
 │   │   ├── src/
 │   │   │   ├── lib.rs
 │   │   │   ├── mapper_scan.rs         # @MapperScan
@@ -158,9 +158,9 @@ nexus/
 │   │   └── Cargo.toml
 │   │
 │   └── (existing crates) / （现有 crates）
-│       ├── nexus-data-commons/
-│       ├── nexus-data-rdbc/
-│       └── nexus-core/
+│       ├── hiver-data-commons/
+│       ├── hiver-data-rdbc/
+│       └── hiver-core/
 │
 └── examples/
     └── mybatisplus_demo/               # MyBatis-Plus style demo
@@ -184,7 +184,7 @@ nexus/
 **Purpose / 目的**: Auto-generate getters, setters, constructors / 自动生成 getters, setters, constructors
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[derive(Debug, Clone, Data)]  // Adds getters, setters, new()
 pub struct User {
@@ -229,7 +229,7 @@ impl User {
 **Purpose / 目的**: Map structs to database tables / 将结构体映射到数据库表
 
 ```rust
-use nexus_data_mybatisplus::{TableName, TableId, TableField};
+use hiver_data_mybatisplus::{TableName, TableId, TableField};
 
 #[TableName("user")]  // Map to table / 映射到表
 pub struct User {
@@ -265,7 +265,7 @@ pub struct User {
 **Purpose / 目的**: Automatic CRUD methods / 自动 CRUD 方法
 
 ```rust
-use nexus_data_mybatisplus::{BaseMapper, Mapper};
+use hiver_data_mybatisplus::{BaseMapper, Mapper};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -298,7 +298,7 @@ pub trait BaseMapper<T>: Send + Sync {
 **Usage / 使用**:
 
 ```rust
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     // No need to implement CRUD methods! / 无需实现 CRUD 方法！
 }
@@ -339,7 +339,7 @@ let page = mapper.select_page(
 **Purpose / 目的**: Build dynamic queries / 构建动态查询
 
 ```rust
-use nexus_data_mybatisplus::QueryWrapper;
+use hiver_data_mybatisplus::QueryWrapper;
 
 // Example 1: Simple query / 简单查询
 let wrapper = QueryWrapper::new()
@@ -425,7 +425,7 @@ impl QueryWrapper {
 **Purpose / 目的**: Custom SQL queries / 自定义 SQL 查询
 
 ```rust
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     // Simple query / 简单查询
     #[Select("SELECT * FROM user WHERE name = #{name}")]
@@ -472,7 +472,7 @@ pub trait UserMapper: BaseMapper<User> {
 **Purpose / 目的**: Scan and register mapper traits / 扫描并注册 mapper traits
 
 ```rust
-use nexus_scan::{Application, MapperScan};
+use hiver_scan::{Application, MapperScan};
 
 #[Application]
 #[MapperScan("crates/my_app/src/mapper")]  // Scan this directory / 扫描此目录
@@ -485,7 +485,7 @@ async fn main() {
 ```
 
 **Implementation / 实现**:
-1. Scan directory for traits with `#[nexus_mapper]` / 扫描带有 `#[nexus_mapper]` 的 trait
+1. Scan directory for traits with `#[hiver_mapper]` / 扫描带有 `#[hiver_mapper]` 的 trait
 2. Generate implementation using SQLx/SeaORM / 使用 SQLx/SeaORM 生成实现
 3. Register with IoC container / 注册到 IoC 容器
 4. Inject via `@Autowired` or `get_mapper()` / 通过 `@Autowired` 或 `get_mapper()` 注入
@@ -519,9 +519,9 @@ edition = "2021"
 
 [dependencies]
 nexus = "0.1"  # 或具体版本
-nexus-data-mybatisplus = "0.1"
-nexus-lombok = "0.1"
-nexus-scan = "0.1"
+hiver-data-mybatisplus = "0.1"
+hiver-lombok = "0.1"
+hiver-scan = "0.1"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio"] }
@@ -530,8 +530,8 @@ sqlx = { version = "0.7", features = ["postgres", "runtime-tokio"] }
 ### src/model/user.rs
 
 ```rust
-use nexus_lombok::Data;
-use nexus_data_mybatisplus::{TableName, TableId, TableField};
+use hiver_lombok::Data;
+use hiver_data_mybatisplus::{TableName, TableId, TableField};
 use serde::{Serialize, Deserialize};
 
 #[Data]  // Auto-generate getters, setters, constructor
@@ -558,11 +558,11 @@ pub struct User {
 ### src/mapper/user_mapper.rs
 
 ```rust
-use nexus_data_mybatisplus::{nexus_mapper, BaseMapper, Select, QueryWrapper};
+use hiver_data_mybatisplus::{hiver_mapper, BaseMapper, Select, QueryWrapper};
 use crate::model::User::User;
-use nexus_core::Error;
+use hiver_core::Error;
 
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     // Custom methods / 自定义方法
 
@@ -580,9 +580,9 @@ pub trait UserMapper: BaseMapper<User> {
 ### src/main.rs
 
 ```rust
-use nexus::NexusApplication;
-use nexus_scan::{Application, MapperScan};
-use nexus_lombok::Data;
+use hiver::NexusApplication;
+use hiver_scan::{Application, MapperScan};
+use hiver_lombok::Data;
 
 mod model;
 mod mapper;
@@ -605,11 +605,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### tests/user_test.rs
 
 ```rust
-use nexus_test::{nexus_test, TestApplicationContext};
+use hiver_test::{hiver_test, TestApplicationContext};
 use crate::mapper::user_mapper::UserMapper;
 use crate::model::User::User;
 
-#[nexus_test]  // Equivalent to @SpringBootTest
+#[hiver_test]  // Equivalent to @SpringBootTest
 async fn test_select() {
     // Bootstrap test context / 启动测试上下文
     let app = TestApplicationContext::bootstrap().await.unwrap();
@@ -650,7 +650,7 @@ async fn test_select() {
     assert!(user.is_some());
 
     // Test pagination / 测试分页
-    use nexus_data_commons::PageRequest;
+    use hiver_data_commons::PageRequest;
     let page = user_mapper.select_page(PageRequest::new(0, 10), None).await.unwrap();
     println!("Page {} of {}, total: {}",
         page.number + 1,
@@ -666,7 +666,7 @@ async fn test_select() {
 
 ### Phase 1: Foundation (2 months) / 基础（2 个月）
 
-**Week 1-2: nexus-lombok**
+**Week 1-2: hiver-lombok**
 - [ ] #[Data] derive macro
 - [ ] Getters for private fields
 - [ ] Setters for private fields
@@ -702,7 +702,7 @@ async fn test_select() {
 
 ### Phase 3: Mapper Macros (1.5 months) / Mapper 宏（1.5 个月）
 
-**Week 13-16: #[nexus_mapper]**
+**Week 13-16: #[hiver_mapper]**
 - [ ] Derive macro for mapper traits
 - [ ] Auto-implement BaseMapper methods
 - [ ] Custom method support
@@ -727,7 +727,7 @@ async fn test_select() {
 ### Phase 5: Testing & Documentation (0.5 months) / 测试与文档（0.5 个月）
 
 **Week 21-22: Test Framework**
-- [ ] @nexus_test attribute macro
+- [ ] @hiver_test attribute macro
 - [ ] TestApplicationContext
 - [ ] Mapper injection in tests
 - [ ] Example applications
@@ -759,7 +759,7 @@ async fn test_select() {
 | @SpringBootApplication / @Application | ✅ | ✅ | ✅ |
 | @MapperScan / @MapperScan | ✅ | ✅ | ✅ |
 | **Testing / 测试** |
-| @SpringBootTest / @nexus_test | ✅ | ✅ | ✅ |
+| @SpringBootTest / @hiver_test | ✅ | ✅ | ✅ |
 | **Performance / 性能** |
 | Startup time / 启动时间 | 2-5s | 2-5s | ~100ms ✅ |
 | Memory / 内存 | ~200MB | ~200MB | ~10MB ✅ |
@@ -844,13 +844,13 @@ pub struct User {
     pub email: String,
 }
 
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     #[Select("SELECT * FROM user WHERE username = #{username}")]
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
 }
 
-#[nexus_test]
+#[hiver_test]
 async fn test_select() {
     let app = TestApplicationContext::bootstrap().await.unwrap();
     let user_mapper = app.get_mapper::<UserMapper>().unwrap();
@@ -865,7 +865,7 @@ async fn test_select() {
 - `String` → `String`
 - `Integer` → `i32`
 - `@Autowired` → `app.get_mapper()`
-- `@Test` → `#[nexus_test]`
+- `@Test` → `#[hiver_test]`
 - Methods are `async` / 方法是 `async` 的
 - Return types use `Result<T, Error>` / 返回类型使用 `Result<T, Error>`
 
@@ -877,9 +877,9 @@ async fn test_select() {
 
 1. **Create crates / 创建 crates**:
    ```bash
-   mkdir -p crates/nexus-lombok
-   mkdir -p crates/nexus-data-mybatisplus
-   mkdir -p crates/nexus-scan
+   mkdir -p crates/hiver-lombok
+   mkdir -p crates/hiver-data-mybatisplus
+   mkdir -p crates/hiver-scan
    ```
 
 2. **Implement #[Data] macro / 实现 #[Data] 宏**:

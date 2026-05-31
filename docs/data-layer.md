@@ -23,7 +23,7 @@ Nexus 数据层提供类似 Spring Data 的完整数据访问抽象，包括：
 
 ## Crates / 包
 
-### nexus-data-commons
+### hiver-data-commons
 
 Core data abstractions equivalent to Spring Data Commons:
 - `Repository` - Base repository trait
@@ -41,7 +41,7 @@ Core data abstractions equivalent to Spring Data Commons:
 - `Sort` - 排序规范
 - 实体 trait：`AggregateRoot`、`Auditable`、`Versioned`、`SoftDeletable`
 
-### nexus-data-rdbc
+### hiver-data-rdbc
 
 Reactive database access equivalent to Spring R2DBC:
 - `Connection` - Database connection with pooling
@@ -57,7 +57,7 @@ Reactive database access equivalent to Spring R2DBC:
 - `Client` - 执行查询的数据库客户端
 - 支持 PostgreSQL、MySQL、SQLite (通过 SQLx)
 
-### nexus-data-orm
+### hiver-data-orm
 
 ORM integration equivalent to Spring Data JPA:
 - `Model` trait - Base model trait
@@ -81,7 +81,7 @@ ORM 集成，等价于 Spring Data JPA：
 - `Migration` 和 `Migrator` - 数据库迁移
 - `#[derive(Model)]` - 模型 derive 宏
 
-### nexus-data-macros
+### hiver-data-macros
 
 Procedural macros for the data layer:
 - `#[derive(Model)]` - Automatically implement Model trait
@@ -91,7 +91,7 @@ Procedural macros for the data layer:
 - `#[derive(Model)]` - 自动实现 Model trait
 - `#[model]` 属性 - 配置模型元数据
 
-### nexus-data-mongodb
+### hiver-data-mongodb
 
 MongoDB integration equivalent to Spring Data MongoDB:
 - `MongoTemplate` - Template for MongoDB operations
@@ -105,7 +105,7 @@ MongoDB 集成，等价于 Spring Data MongoDB：
 - `Aggregation` - 聚合管道支持
 - `BulkOperations` - 批量写入操作
 
-### nexus-data-redis
+### hiver-data-redis
 
 Redis integration equivalent to Spring Data Redis:
 - `RedisTemplate` - Template for Redis operations
@@ -119,7 +119,7 @@ Redis 集成，等价于 Spring Data Redis：
 - `RedisCache` - 基于 Redis 的缓存抽象
 - `RedisPipeline` - Redis 命令批处理管道
 
-### nexus-data-annotations
+### hiver-data-annotations
 
 Data layer annotation macros equivalent to Spring Data / JPA annotations:
 - `#[Entity]` - Mark a struct as a database entity
@@ -137,7 +137,7 @@ Data layer annotation macros equivalent to Spring Data / JPA annotations:
 - `#[Query]` - 定义自定义查询方法
 - `#[Transactional]` - 标记方法为事务性操作
 
-### nexus-tx
+### hiver-tx
 
 Transaction management equivalent to Spring Transaction:
 - `TransactionManager` - Transaction lifecycle management
@@ -151,7 +151,7 @@ Transaction management equivalent to Spring Transaction:
 - `IsolationLevel` - 事务隔离级别
 - `Propagation` - 事务传播行为
 
-### nexus-flyway
+### hiver-flyway
 
 Database migration framework equivalent to Flyway:
 - Versioned migrations with checksums
@@ -170,7 +170,7 @@ Database migration framework equivalent to Flyway:
 ### Defining a Model / 定义模型
 
 ```rust
-use nexus_data_orm::Model;
+use hiver_data_orm::Model;
 
 #[derive(Model, Debug, Clone)]
 #[model(table = "users")]
@@ -192,7 +192,7 @@ struct User {
 ### Repository Pattern / 仓储模式
 
 ```rust
-use nexus_data_commons::{CrudRepository, PageRequest};
+use hiver_data_commons::{CrudRepository, PageRequest};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -223,7 +223,7 @@ impl CrudRepository<User, i64> for SqlUserRepository {
 ### Query Builder / 查询构建器
 
 ```rust
-use nexus_data_orm::QueryBuilder;
+use hiver_data_orm::QueryBuilder;
 
 let users = User::query()
     .where_("email LIKE ?", &["%@example.com"])
@@ -237,10 +237,10 @@ let users = User::query()
 
 | Crate | Tests Passed | Status |
 |-------|--------------|--------|
-| nexus-data-commons | 27 | ✅ |
-| nexus-data-rdbc | 18 | ✅ |
-| nexus-data-orm | 24 | ✅ |
-| nexus-data-macros | 8 | ✅ |
+| hiver-data-commons | 27 | ✅ |
+| hiver-data-rdbc | 18 | ✅ |
+| hiver-data-orm | 24 | ✅ |
+| hiver-data-macros | 8 | ✅ |
 | **Total** | **77** | ✅ |
 
 ## Spring Data Equivalents / Spring Data 等价对照
@@ -264,6 +264,6 @@ let users = User::query()
 - [x] ORM integration (orm)
 - [x] Model derive macro (macros)
 - [ ] Database integration tests
-- [x] MongoDB support (nexus-data-mongodb)
-- [x] Redis support (nexus-data-redis)
+- [x] MongoDB support (hiver-data-mongodb)
+- [x] Redis support (hiver-data-redis)
 - [ ] Sea ORM sqlx 0.8.6 compatibility fix

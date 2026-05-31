@@ -9,9 +9,9 @@
   Nexus 文档更新进度 Nexus Documentation Update Progress
 ═══════════════════════════════════════════════════════════════
 
-  ✅ nexus-lombok README.md           100% Complete / 完成
-  ✅ nexus-data-annotations README.md  100% Complete / 完成
-  ✅ nexus-aop README.md               100% Complete / 完成
+  ✅ hiver-lombok README.md           100% Complete / 完成
+  ✅ hiver-data-annotations README.md  100% Complete / 完成
+  ✅ hiver-aop README.md               100% Complete / 完成
   ✅ ANNOTATION-GUIDE.md (NEW)         100% Complete / 完成
   ✅ README.zh.md                      Updated to 90% / 更新到 90%
 
@@ -24,7 +24,7 @@
 
 ## 📝 Updated Files / 更新的文件
 
-### 1. nexus-lombok/README.md ✅
+### 1. hiver-lombok/README.md ✅
 
 **Added Section / 新增章节**: "Annotation vs Plain Rust / 注解版本 vs 原生 Rust"
 
@@ -50,7 +50,7 @@ impl User {
 
 ---
 
-### 2. nexus-data-annotations/README.md ✅
+### 2. hiver-data-annotations/README.md ✅
 
 **Added Section / 新增章节**: "Annotation vs Plain Rust / 注解版本 vs 原生 Rust"
 
@@ -76,7 +76,7 @@ async fn find_by_id(&self, id: i64) -> Result<Option<User>>;
 
 ---
 
-### 3. nexus-aop/README.md ✅
+### 3. hiver-aop/README.md ✅
 
 **Added Section / 新增章节**: "Annotation vs Plain Rust / 注解版本 vs 原生 Rust"
 
@@ -148,13 +148,13 @@ docs/
 └── TRANSACTIONAL-UPGRADE-REPORT.md ← Created / 已创建
 
 crates/
-├── nexus-lombok/
+├── hiver-lombok/
 │   └── README.md                   ← Updated with comparison
-├── nexus-data-annotations/
+├── hiver-data-annotations/
 │   └── README.md                   ← Updated with comparison
-├── nexus-aop/
+├── hiver-aop/
 │   └── README.md                   ← Updated with comparison
-└── nexus-validation-annotations/
+└── hiver-validation-annotations/
     └── README.md                   ← (No changes needed)
 ```
 
@@ -270,9 +270,9 @@ Total:                 530 lines → 115 lines (78%)
 ### Getting Started / 入门指南
 
 - **[ANNOTATION-GUIDE.md](ANNOTATION-GUIDE.md)** - Complete guide / 完整指南
-- **[nexus-lombok/README.md](../crates/nexus-lombok/README.md)** - Lombok guide / Lombok 指南
-- **[nexus-data-annotations/README.md](../crates/nexus-data-annotations/README.md)** - Data guide / 数据指南
-- **[nexus-aop/README.md](../crates/nexus-aop/README.md)** - AOP guide / AOP 指南
+- **[hiver-lombok/README.md](../crates/hiver-lombok/README.md)** - Lombok guide / Lombok 指南
+- **[hiver-data-annotations/README.md](../crates/hiver-data-annotations/README.md)** - Data guide / 数据指南
+- **[hiver-aop/README.md](../crates/hiver-aop/README.md)** - AOP guide / AOP 指南
 
 ### Progress Reports / 进度报告
 

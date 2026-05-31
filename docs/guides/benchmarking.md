@@ -1,4 +1,4 @@
-# Nexus Framework - Benchmarking Guide
+# Hiver Framework - Benchmarking Guide
 # Nexus框架 - 性能基准测试指南
 
 **Version**: 0.1.0-alpha
@@ -25,7 +25,7 @@
 
 ### 1.1 Purpose / 目的
 
-This document provides comprehensive guidelines for benchmarking the Nexus framework to:
+This document provides comprehensive guidelines for benchmarking the Hiver Framework to:
 
 本文档提供了对Nexus框架进行基准测试的全面指南，以便：
 
@@ -152,7 +152,7 @@ nexus/
 #### 3.1.2 Cargo.toml Configuration / Cargo.toml配置
 
 ```toml
-# nexus-runtime/Cargo.toml
+# hiver-runtime/Cargo.toml
 
 [dev-dependencies]
 criterion = { version = "0.8", features = ["html_reports"] }
@@ -189,7 +189,7 @@ harness = false
 ```rust
 // benches/runtime_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use nexus_runtime::{Runtime, spawn};
+use hiver_runtime::{Runtime, spawn};
 
 fn bench_spawn_latency(c: &mut Criterion) {
     let mut runtime = Runtime::new().unwrap();
@@ -217,7 +217,7 @@ criterion_main!(benches);
 ```rust
 // benches/channel_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
-use nexus_runtime::{Runtime, bounded, unbounded};
+use hiver_runtime::{Runtime, bounded, unbounded};
 
 fn bench_bounded_channel(c: &mut Criterion) {
     let mut runtime = Runtime::new().unwrap();
@@ -256,7 +256,7 @@ criterion_main!(benches);
 ```rust
 // benches/timer_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use nexus_runtime::{Runtime, sleep};
+use hiver_runtime::{Runtime, sleep};
 use std::time::Duration;
 
 fn bench_timer_insert(c: &mut Criterion) {
@@ -297,7 +297,7 @@ criterion_main!(benches);
 ```rust
 // benches/scheduler_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use nexus_runtime::{Runtime, spawn};
+use hiver_runtime::{Runtime, spawn};
 
 fn bench_scheduler_throughput(c: &mut Criterion) {
     let mut runtime = Runtime::new().unwrap();
@@ -335,7 +335,7 @@ criterion_main!(benches);
 ```rust
 // benches/io_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
-use nexus_runtime::{Runtime, io::{TcpListener, TcpStream}};
+use hiver_runtime::{Runtime, io::{TcpListener, TcpStream}};
 
 fn bench_tcp_echo(c: &mut Criterion) {
     let mut runtime = Runtime::new().unwrap();
@@ -499,7 +499,7 @@ criterion_main!(benches);
 ```rust
 // benches/router_bench.rs
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
-use nexus_router::Router;
+use hiver_router::Router;
 
 fn bench_router_match(c: &mut Criterion) {
     let mut group = c.benchmark_group("router");
@@ -596,27 +596,27 @@ sudo cpupower frequency-set --governor performance
 
 ```bash
 # Linux perf / Linux性能分析
-perf record --call-graph=dwarf ./target/release/nexus-example
+perf record --call-graph=dwarf ./target/release/hiver-example
 perf report
 
 # Flamegraph generation / 火焰图生成
 cargo install flamegraph
-cargo flamegraph --bin nexus-example
+cargo flamegraph --bin hiver-example
 
 # macOS Instruments / macOS性能分析
-instruments -t "Time Profiler" ./target/release/nexus-example
+instruments -t "Time Profiler" ./target/release/hiver-example
 ```
 
 #### 5.3.2 Memory Profiling / 内存分析
 
 ```bash
 # Valgrind (Linux) / Valgrind内存分析
-valgrind --tool=massif ./target/release/nexus-example
+valgrind --tool=massif ./target/release/hiver-example
 massif-visualizer massif.out.*
 
 # Heaptrack (Linux) / Heaptrack内存追踪
-heaptrack ./target/release/nexus-example
-heaptrack_gui heaptrack.nexus-example.*
+heaptrack ./target/release/hiver-example
+heaptrack_gui heaptrack.hiver-example.*
 ```
 
 ---
@@ -691,7 +691,7 @@ oha -n 10000 -c 100 --json http://127.0.0.1:3000/ > results.json
 # Create test servers for comparison / 创建用于比较的测试服务器
 
 # 1. Nexus server / Nexus服务器
-cargo run --release --bin nexus-echo-server &
+cargo run --release --bin hiver-echo-server &
 NEXUS_PID=$!
 
 # 2. Actix server / Actix服务器
@@ -700,7 +700,7 @@ ACTIX_PID=$!
 
 # Run benchmarks / 运行基准测试
 echo "Benchmarking Nexus..."
-wrk -t4 -c100 -d30s http://127.0.0.1:3000/ > nexus_results.txt
+wrk -t4 -c100 -d30s http://127.0.0.1:3000/ > hiver_results.txt
 
 echo "Benchmarking Actix..."
 wrk -t4 -c100 -d30s http://127.0.0.1:3001/ > actix_results.txt
@@ -709,7 +709,7 @@ wrk -t4 -c100 -d30s http://127.0.0.1:3001/ > actix_results.txt
 kill $NEXUS_PID $ACTIX_PID
 
 # Compare results / 比较结果
-python scripts/compare_bench.py nexus_results.txt actix_results.txt
+python scripts/compare_bench.py hiver_results.txt actix_results.txt
 ```
 
 ---
@@ -922,7 +922,7 @@ netstat -s | grep -i drop
 
 set -e
 
-echo "🚀 Running Nexus Framework Benchmarks"
+echo "🚀 Running Hiver Framework Benchmarks"
 echo "======================================"
 
 # 1. Micro benchmarks / 微基准测试

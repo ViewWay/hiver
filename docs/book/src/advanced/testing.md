@@ -31,7 +31,7 @@ mod tests {
 
     #[test]
     fn test_handler() -> std::io::Result<()> {
-        let rt = nexus_runtime::Runtime::new()?;
+        let rt = hiver_runtime::Runtime::new()?;
         rt.block_on(async {
             let response = handler(Request::default()).await;
             assert_eq!(response.status(), StatusCode::OK);
@@ -46,7 +46,7 @@ mod tests {
 ```rust
 #[test]
 fn test_path_extractor() -> std::io::Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let req = Request::builder()
             .uri("/users/123")
@@ -85,11 +85,11 @@ fn test_json_response() {
 ### TestClient / 测试客户端
 
 ```rust
-use nexus_test::TestClient;
+use hiver_test::TestClient;
 
 #[test]
 fn test_api() -> std::io::Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = create_app();
         let client = TestClient::new(app);
@@ -122,7 +122,7 @@ fn test_api() -> std::io::Result<()> {
 ```rust
 #[test]
 fn test_cors_middleware() -> std::io::Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let cors = Cors::new()
             .allow_origin("*")
@@ -151,12 +151,12 @@ fn test_cors_middleware() -> std::io::Result<()> {
 ### Testing Repository / 测试仓库
 
 ```rust
-use nexus_data_rdbc::DatabaseClient;
-use nexus_data_orm::prelude::*;
+use hiver_data_rdbc::DatabaseClient;
+use hiver_data_orm::prelude::*;
 
 #[test]
 fn test_repository_crud() -> Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         // Use test database / 使用测试数据库
         let client = DatabaseClient::connect("sqlite::memory:").await?;
@@ -196,7 +196,7 @@ fn test_repository_crud() -> Result<()> {
 ```rust
 #[test]
 fn test_derived_queries() -> Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let repo = setup_test_repo().await?;
 
@@ -220,11 +220,11 @@ fn test_derived_queries() -> Result<()> {
 ### Testing Migrations / 测试迁移
 
 ```rust
-use nexus_flyway::{Flyway, MigrationConfig};
+use hiver_flyway::{Flyway, MigrationConfig};
 
 #[test]
 fn test_migrations() -> Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let mut flyway = Flyway::new(MigrationConfig {
             locations: vec!["migrations".to_string()],
@@ -245,7 +245,7 @@ fn test_migrations() -> Result<()> {
 ```rust
 #[test]
 fn test_full_flow() -> std::io::Result<()> {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let server = start_test_server().await;
         let client = reqwest::Client::new();

@@ -6,9 +6,9 @@
 ### Application / 应用
 
 ```rust,ignore
-use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_router::Router;
-use nexus_runtime::Runtime;
+use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_router::Router;
+use hiver_runtime::Runtime;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut runtime = Runtime::new()?;
@@ -50,7 +50,7 @@ let app = Router::new()
 ### Request / 请求
 
 ```rust,ignore
-use nexus_http::Request;
+use hiver_http::Request;
 
 pub async fn handler(req: Request) -> Response {
     let method = req.method();
@@ -63,7 +63,7 @@ pub async fn handler(req: Request) -> Response {
 ### Response / 响应
 
 ```rust,ignore
-use nexus_http::{Body, Response, StatusCode};
+use hiver_http::{Body, Response, StatusCode};
 
 // Convenience constructors
 Response::ok()                         // 200 OK, no body
@@ -100,7 +100,7 @@ async fn get_user(#[path_variable] id: String) -> Response {
 ### Query / 查询参数
 
 ```rust,ignore
-use nexus_macros::{get, request_param};
+use hiver_macros::{get, request_param};
 
 #[get("/search")]
 async fn search(#[request_param] q: String) -> Response {
@@ -111,7 +111,7 @@ async fn search(#[request_param] q: String) -> Response {
 ### JSON Body / JSON 请求体
 
 ```rust,ignore
-use nexus_macros::{post, request_body};
+use hiver_macros::{post, request_body};
 
 #[derive(Deserialize)]
 struct CreateUser {
@@ -133,7 +133,7 @@ async fn create_user(#[request_body] user: CreateUser) -> Response {
 ### Headers / 请求头
 
 ```rust,ignore
-use nexus_macros::{get, request_header};
+use hiver_macros::{get, request_header};
 
 #[get("/info")]
 async fn info(#[request_header] user_agent: String) -> Response {
@@ -145,7 +145,7 @@ async fn info(#[request_header] user_agent: String) -> Response {
 ### State / 状态
 
 ```rust,ignore
-use nexus_router::State;
+use hiver_router::State;
 
 #[derive(Clone)]
 struct AppState {
@@ -168,7 +168,7 @@ async fn list_users(req: Request, state: State<AppState>) -> Response {
 ### Creating Middleware / 创建中间件
 
 ```rust,ignore
-use nexus_middleware::{Middleware, Next};
+use hiver_middleware::{Middleware, Next};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -201,7 +201,7 @@ impl<S: Send + Sync + 'static> Middleware<S> for MyMiddleware {
 ### Built-in Middleware / 内置中间件
 
 ```rust,ignore
-use nexus_middleware::*;
+use hiver_middleware::*;
 
 // Logger
 .middleware(Arc::new(LoggerMiddleware::new()))
@@ -227,7 +227,7 @@ use nexus_middleware::*;
 ### Custom Error / 自定义错误
 
 ```rust,ignore
-use nexus_http::{Body, Response, StatusCode};
+use hiver_http::{Body, Response, StatusCode};
 
 #[derive(Debug)]
 enum AppError {
@@ -236,14 +236,14 @@ enum AppError {
     BadRequest(String),
 }
 
-impl From<AppError> for nexus_http::Error {
+impl From<AppError> for hiver_http::Error {
     fn from(err: AppError) -> Self {
         let (status, message) = match err {
             AppError::NotFound(id) => (StatusCode::NOT_FOUND, format!("{} not found", id)),
             AppError::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_string()),
             AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg),
         };
-        nexus_http::Error::new(status, message)
+        hiver_http::Error::new(status, message)
     }
 }
 ```
@@ -251,7 +251,7 @@ impl From<AppError> for nexus_http::Error {
 ### Result Response / 结果响应
 
 ```rust,ignore
-async fn get_user(req: Request) -> Result<Response, nexus_http::Error> {
+async fn get_user(req: Request) -> Result<Response, hiver_http::Error> {
     let id = req.param("id").unwrap_or("unknown");
     let user = user_service.find_by_id(id).await
         .ok_or_else(|| AppError::NotFound(id.to_string()))?;
@@ -270,7 +270,7 @@ async fn get_user(req: Request) -> Result<Response, nexus_http::Error> {
 ### Config Struct / 配置结构
 
 ```rust,ignore
-use nexus_macros::config;
+use hiver_macros::config;
 
 #[config(prefix = "app")]
 struct AppConfig {
@@ -283,7 +283,7 @@ struct AppConfig {
 ### Environment Variables / 环境变量
 
 ```rust,ignore
-use nexus_macros::value;
+use hiver_macros::value;
 
 #[value("${SERVER_PORT:8080}")]
 static SERVER_PORT: u16 = 8080;
@@ -299,7 +299,7 @@ static DATABASE_URL: &str = "postgresql://localhost/mydb";
 ### Controller / 控制器
 
 ```rust,ignore
-use nexus_macros::{main, controller, get, post};
+use hiver_macros::{main, controller, get, post};
 
 #[main]
 struct Application;
@@ -321,7 +321,7 @@ async fn create_user(#[request_body] user: CreateUser) -> Json<User> {
 ### Service / 服务
 
 ```rust,ignore
-use nexus_macros::{service, autowired};
+use hiver_macros::{service, autowired};
 
 #[service]
 struct UserService {
@@ -339,7 +339,7 @@ impl UserService {
 ### Transactional / 事务
 
 ```rust,ignore
-use nexus_macros::transactional;
+use hiver_macros::transactional;
 
 #[transactional]
 async fn transfer(from: &str, to: &str, amount: f64) -> Result<(), Error> {
@@ -353,7 +353,7 @@ async fn transfer(from: &str, to: &str, amount: f64) -> Result<(), Error> {
 ### Cacheable / 缓存
 
 ```rust,ignore
-use nexus_macros::{cacheable, cache_evict};
+use hiver_macros::{cacheable, cache_evict};
 
 #[cacheable("users")]
 async fn get_user(id: &str) -> Result<User, Error> {
@@ -369,7 +369,7 @@ async fn update_user(user: User) -> Result<User, Error> {
 ### Scheduled / 定时
 
 ```rust,ignore
-use nexus_macros::{scheduled, enable_scheduling};
+use hiver_macros::{scheduled, enable_scheduling};
 
 #[enable_scheduling]
 struct Scheduler;
@@ -392,7 +392,7 @@ async fn refresh_cache() {
 ### Circuit Breaker / 熔断器
 
 ```rust,ignore
-use nexus_resilience::CircuitBreaker;
+use hiver_resilience::CircuitBreaker;
 
 let breaker = CircuitBreaker::new(
     "external-api",  // name
@@ -408,7 +408,7 @@ let result = breaker.call(|| async {
 ### Retry / 重试
 
 ```rust,ignore
-use nexus_resilience::RetryPolicy;
+use hiver_resilience::RetryPolicy;
 
 let retry = RetryPolicy::exponential_backoff(
     3,    // max retries
@@ -427,7 +427,7 @@ let result = retry.retry(|| async {
 ### Tracing / 追踪
 
 ```rust,ignore
-use nexus_observability::trace::{Tracer, span};
+use hiver_observability::trace::{Tracer, span};
 
 #[span(name = "get_user")]
 async fn get_user(id: &str) -> User {
@@ -439,7 +439,7 @@ async fn get_user(id: &str) -> User {
 ### Logging / 日志
 
 ```rust,ignore
-use nexus_observability::log::Logger;
+use hiver_observability::log::Logger;
 
 let logger = LoggerFactory::get("my_service");
 
@@ -453,7 +453,7 @@ logger.info()
 ### Metrics / 指标
 
 ```rust,ignore
-use nexus_observability::metrics::{Counter, Histogram};
+use hiver_observability::metrics::{Counter, Histogram};
 
 let counter = Counter::new("requests_total", "Total requests");
 counter.inc();
@@ -468,28 +468,28 @@ histogram.observe(0.042);
 
 ```rust,ignore
 // HTTP types
-use nexus_http::{Body, Request, Response, Server, StatusCode};
+use hiver_http::{Body, Request, Response, Server, StatusCode};
 
 // Routing
-use nexus_router::Router;
+use hiver_router::Router;
 
 // Macros (controller, get, post, service, etc.)
-use nexus_macros::*;
+use hiver_macros::*;
 
 // Middleware
-use nexus_middleware::*;
+use hiver_middleware::*;
 
 // Runtime
-use nexus_runtime::Runtime;
+use hiver_runtime::Runtime;
 
 // Observability
-use nexus_observability::*;
+use hiver_observability::*;
 
 // Resilience
-use nexus_resilience::*;
+use hiver_resilience::*;
 
 // Web3
-use nexus_web3::*;
+use hiver_web3::*;
 ```
 
 ---
@@ -499,8 +499,8 @@ use nexus_web3::*;
 ### REST CRUD
 
 ```rust,ignore
-use nexus_http::{Body, Request, Response, StatusCode};
-use nexus_macros::{controller, get, post, put, delete, request_body, path_variable};
+use hiver_http::{Body, Request, Response, StatusCode};
+use hiver_macros::{controller, get, post, put, delete, request_body, path_variable};
 
 #[controller]
 struct UserController;
@@ -536,7 +536,7 @@ async fn create(#[request_body] user: CreateUser) -> Response {
 ### With Authentication / 带认证
 
 ```rust,ignore
-use nexus_macros::{get, request_header, pre_authorize};
+use hiver_macros::{get, request_header, pre_authorize};
 
 #[pre_authorize("isAuthenticated()")]
 #[get("/profile")]
@@ -553,7 +553,7 @@ async fn profile(#[request_header] auth: String) -> Response {
 ### With Validation / 带校验
 
 ```rust,ignore
-use nexus_macros::{post, validated, request_body};
+use hiver_macros::{post, validated, request_body};
 
 #[derive(Deserialize)]
 struct CreateUser {

@@ -1,8 +1,8 @@
-# Contributing to Nexus Framework
-# 为 Nexus 框架做贡献
+# Contributing to Hiver Framework
+# 为 Hiver 框架做贡献
 
-Thank you for your interest in contributing to Nexus Framework! This document provides guidelines for contributing.
-感谢您有兴趣为 Nexus 框架做贡献！本文档提供了贡献指南。
+Thank you for your interest in contributing to Hiver Framework! This document provides guidelines for contributing.
+感谢您有兴趣为 Hiver 框架做贡献！本文档提供了贡献指南。
 
 ## Table of Contents / 目录
 
@@ -72,7 +72,7 @@ rustup component add clippy rustfmt
 cargo build
 
 # Build a specific crate (faster iteration) / 构建特定 crate（更快的迭代）
-cargo build -p nexus-runtime
+cargo build -p hiver-runtime
 
 # Build with optimizations / 带优化构建
 cargo build --release
@@ -238,13 +238,13 @@ pub fn function(arg1: Type) -> ReturnType {
 cargo test
 
 # Run tests for a specific crate (recommended for faster iteration) / 运行特定 crate 的测试（推荐，更快的迭代）
-cargo test -p nexus-runtime
+cargo test -p hiver-runtime
 
 # Run tests with output / 运行测试并显示输出
-RUST_BACKTRACE=1 cargo test -p nexus-runtime -- --nocapture
+RUST_BACKTRACE=1 cargo test -p hiver-runtime -- --nocapture
 
 # Run a specific test / 运行特定测试
-cargo test -p nexus-runtime test_spawn_returns_value
+cargo test -p hiver-runtime test_spawn_returns_value
 ```
 
 ### Writing Tests / 编写测试
@@ -318,5 +318,5 @@ Before submitting your PR, ensure:
 
 ---
 
-Thank you for contributing to Nexus Framework! 🎉
-感谢您为 Nexus 框架做出贡献！🎉
+Thank you for contributing to Hiver Framework! 🎉
+感谢您为 Hiver 框架做出贡献！🎉

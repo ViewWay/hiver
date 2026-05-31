@@ -68,7 +68,7 @@ jobs:
       - name: Build Rust API documentation
         run: |
           cargo doc --all-features --no-deps --workspace 2>&1 || true
-          echo '<meta http-equiv="refresh" content="0; url=nexus_runtime">' > target/doc/index.html
+          echo '<meta http-equiv="refresh" content="0; url=hiver_runtime">' > target/doc/index.html
 
       - name: Merge documentation
         run: |

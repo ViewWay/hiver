@@ -22,13 +22,13 @@ Phase 1 运行时核心实施现已**完成**。已实现基于 io-uring（带 e
 ### ✅ 1. I/O Driver (I/O 驱动)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/driver/iouring.rs` - io-uring driver (Linux)
-- `crates/nexus-runtime/src/driver/epoll.rs` - epoll driver (Linux fallback)
-- `crates/nexus-runtime/src/driver/kqueue.rs` - kqueue driver (macOS/BSD)
-- `crates/nexus-runtime/src/driver/mod.rs` - Driver abstraction
-- `crates/nexus-runtime/src/driver/config.rs` - Driver configuration
-- `crates/nexus-runtime/src/driver/interest.rs` - I/O interest types
-- `crates/nexus-runtime/src/driver/queue.rs` - Event queue
+- `crates/hiver-runtime/src/driver/iouring.rs` - io-uring driver (Linux)
+- `crates/hiver-runtime/src/driver/epoll.rs` - epoll driver (Linux fallback)
+- `crates/hiver-runtime/src/driver/kqueue.rs` - kqueue driver (macOS/BSD)
+- `crates/hiver-runtime/src/driver/mod.rs` - Driver abstraction
+- `crates/hiver-runtime/src/driver/config.rs` - Driver configuration
+- `crates/hiver-runtime/src/driver/interest.rs` - I/O interest types
+- `crates/hiver-runtime/src/driver/queue.rs` - Event queue
 
 **Features / 功能**:
 - io-uring support on Linux (kernel 5.1+)
@@ -40,7 +40,7 @@ Phase 1 运行时核心实施现已**完成**。已实现基于 io-uring（带 e
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::io::{TcpListener, TcpStream};
+use hiver_runtime::io::{TcpListener, TcpStream};
 
 // Bind listener
 let listener = TcpListener::bind("127.0.0.1:8080").await?;
@@ -57,11 +57,11 @@ loop {
 ### ✅ 2. Task Scheduler (任务调度器)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/scheduler/local.rs` - Local scheduler (thread-per-core)
-- `crates/nexus-runtime/src/scheduler/work_stealing.rs` - Work-stealing scheduler
-- `crates/nexus-runtime/src/scheduler/queue.rs` - Task queue
-- `crates/nexus-runtime/src/scheduler/handle.rs` - Task handle
-- `crates/nexus-runtime/src/scheduler/mod.rs` - Scheduler module
+- `crates/hiver-runtime/src/scheduler/local.rs` - Local scheduler (thread-per-core)
+- `crates/hiver-runtime/src/scheduler/work_stealing.rs` - Work-stealing scheduler
+- `crates/hiver-runtime/src/scheduler/queue.rs` - Task queue
+- `crates/hiver-runtime/src/scheduler/handle.rs` - Task handle
+- `crates/hiver-runtime/src/scheduler/mod.rs` - Scheduler module
 
 **Features / 功能**:
 - Thread-per-core architecture
@@ -72,7 +72,7 @@ loop {
 
 **Scheduler Types / 调度器类型**:
 ```rust
-use nexus_runtime::scheduler::{LocalScheduler, WorkStealingScheduler};
+use hiver_runtime::scheduler::{LocalScheduler, WorkStealingScheduler};
 
 // Thread-per-core (default)
 let scheduler = LocalScheduler::new();
@@ -86,7 +86,7 @@ let scheduler = WorkStealingScheduler::new(num_cpus);
 ### ✅ 3. Timer Driver (定时器驱动)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/time.rs` - Timer implementation
+- `crates/hiver-runtime/src/time.rs` - Timer implementation
 
 **Features / 功能**:
 - Hierarchical timing wheel
@@ -97,7 +97,7 @@ let scheduler = WorkStealingScheduler::new(num_cpus);
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::time::{sleep, Duration, Instant};
+use hiver_runtime::time::{sleep, Duration, Instant};
 
 // Async sleep
 sleep(Duration::from_secs(1)).await;
@@ -113,8 +113,8 @@ let elapsed = start.elapsed();
 ### ✅ 4. Runtime (运行时)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/runtime.rs` - Runtime builder & executor
-- `crates/nexus-runtime/src/lib.rs` - Public API exports
+- `crates/hiver-runtime/src/runtime.rs` - Runtime builder & executor
+- `crates/hiver-runtime/src/lib.rs` - Public API exports
 
 **Features / 功能**:
 - Builder pattern for configuration
@@ -125,13 +125,13 @@ let elapsed = start.elapsed();
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::Runtime;
+use hiver_runtime::Runtime;
 
 #[tokio::main]
 async fn main() {
     let runtime = Runtime::new()
         .worker_threads(4)
-        .thread_name("nexus-worker")
+        .thread_name("hiver-worker")
         .build()
         .unwrap();
 
@@ -147,7 +147,7 @@ async fn main() {
 ### ✅ 5. Task System (任务系统)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/task.rs` - Task spawning & handles
+- `crates/hiver-runtime/src/task.rs` - Task spawning & handles
 
 **Features / 功能**:
 - `spawn()` for creating tasks
@@ -158,7 +158,7 @@ async fn main() {
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::task::spawn;
+use hiver_runtime::task::spawn;
 
 let handle = spawn(async {
     // Async work
@@ -174,7 +174,7 @@ let result = handle.await.unwrap();
 ### ✅ 6. Channels (通道)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/channel.rs` - MPSC channel implementation
+- `crates/hiver-runtime/src/channel.rs` - MPSC channel implementation
 
 **Features / 功能**:
 - Multi-producer, single-consumer (MPSC)
@@ -184,7 +184,7 @@ let result = handle.await.unwrap();
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::channel::{channel, Sender, Receiver};
+use hiver_runtime::channel::{channel, Sender, Receiver};
 
 let (tx, rx) = channel::<i32>(100);
 
@@ -202,7 +202,7 @@ let value = rx.recv().await.unwrap();
 ### ✅ 7. Select! Macro (Select! 宏)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/select.rs` - Select macro implementation
+- `crates/hiver-runtime/src/select.rs` - Select macro implementation
 
 **Features / 功能**:
 - Wait on multiple async operations
@@ -212,7 +212,7 @@ let value = rx.recv().await.unwrap();
 
 **API Example / API示例**:
 ```rust
-use nexus_runtime::select;
+use hiver_runtime::select;
 
 select! {
     value = rx1.recv() => {
@@ -232,7 +232,7 @@ select! {
 ### ✅ 8. I/O Primitives (I/O 原语)
 
 **Files / 文件**:
-- `crates/nexus-runtime/src/io.rs` - I/O types
+- `crates/hiver-runtime/src/io.rs` - I/O types
 
 **Features / 功能**:
 - `TcpListener` - TCP server
@@ -306,29 +306,29 @@ select! {
 ## Files Created / 创建的文件
 
 ### Core Runtime / 运行时核心
-- `crates/nexus-runtime/src/lib.rs`
-- `crates/nexus-runtime/src/runtime.rs`
-- `crates/nexus-runtime/src/task.rs`
-- `crates/nexus-runtime/src/time.rs`
-- `crates/nexus-runtime/src/io.rs`
-- `crates/nexus-runtime/src/channel.rs`
-- `crates/nexus-runtime/src/select.rs`
+- `crates/hiver-runtime/src/lib.rs`
+- `crates/hiver-runtime/src/runtime.rs`
+- `crates/hiver-runtime/src/task.rs`
+- `crates/hiver-runtime/src/time.rs`
+- `crates/hiver-runtime/src/io.rs`
+- `crates/hiver-runtime/src/channel.rs`
+- `crates/hiver-runtime/src/select.rs`
 
 ### I/O Driver / I/O 驱动
-- `crates/nexus-runtime/src/driver/mod.rs`
-- `crates/nexus-runtime/src/driver/iouring.rs`
-- `crates/nexus-runtime/src/driver/epoll.rs`
-- `crates/nexus-runtime/src/driver/kqueue.rs`
-- `crates/nexus-runtime/src/driver/config.rs`
-- `crates/nexus-runtime/src/driver/interest.rs`
-- `crates/nexus-runtime/src/driver/queue.rs`
+- `crates/hiver-runtime/src/driver/mod.rs`
+- `crates/hiver-runtime/src/driver/iouring.rs`
+- `crates/hiver-runtime/src/driver/epoll.rs`
+- `crates/hiver-runtime/src/driver/kqueue.rs`
+- `crates/hiver-runtime/src/driver/config.rs`
+- `crates/hiver-runtime/src/driver/interest.rs`
+- `crates/hiver-runtime/src/driver/queue.rs`
 
 ### Scheduler / 调度器
-- `crates/nexus-runtime/src/scheduler/mod.rs`
-- `crates/nexus-runtime/src/scheduler/local.rs`
-- `crates/nexus-runtime/src/scheduler/work_stealing.rs`
-- `crates/nexus-runtime/src/scheduler/queue.rs`
-- `crates/nexus-runtime/src/scheduler/handle.rs`
+- `crates/hiver-runtime/src/scheduler/mod.rs`
+- `crates/hiver-runtime/src/scheduler/local.rs`
+- `crates/hiver-runtime/src/scheduler/work_stealing.rs`
+- `crates/hiver-runtime/src/scheduler/queue.rs`
+- `crates/hiver-runtime/src/scheduler/handle.rs`
 
 ---
 

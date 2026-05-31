@@ -115,8 +115,8 @@ docs/
 | Report / 报告 | Description / 描述 |
 |--------------|-------------------|
 | [DATA-LAYER-ADDENDUM.md](reports/DATA-LAYER-ADDENDUM.md) | Data layer addendum / 数据层附录 |
-| [nexus-data-full-implementation.md](reports/nexus-data-full-implementation.md) | Nexus data full implementation / Nexus 数据完整实现 |
-| [nexus-mybatis-plus-style.md](reports/nexus-mybatis-plus-style.md) | MyBatis-Plus style implementation / MyBatis-Plus 风格实现 |
+| [hiver-data-full-implementation.md](reports/hiver-data-full-implementation.md) | Nexus data full implementation / Nexus 数据完整实现 |
+| [hiver-mybatis-plus-style.md](reports/hiver-mybatis-plus-style.md) | MyBatis-Plus style implementation / MyBatis-Plus 风格实现 |
 | [LOMBOK-QUICK-REF.md](reports/LOMBOK-QUICK-REF.md) | Lombok quick reference / Lombok 快速参考 |
 
 ---
@@ -228,7 +228,7 @@ docs/
 
 - **Authentication / 认证**: See [Security chapter in book](book/src/reference/security.md), [JWT authentication report](reports/JWT-AUTHENTICATION-REPORT.md)
 - **Annotations / 注解**: See [Annotations reference](api/annotations-reference.md), [Annotation guide](reports/ANNOTATION-GUIDE.md)
-- **Middleware / 中间件**: See [Middleware concepts](book/src/core-concepts/middleware.md), [Middleware README](../crates/nexus-middleware/README.md)
+- **Middleware / 中间件**: See [Middleware concepts](book/src/core-concepts/middleware.md), [Middleware README](../crates/hiver-middleware/README.md)
 - **Resilience / 弹性**: See [Resilience chapter](book/src/advanced/resilience.md)
 - **Web3**: See [Web3 chapter](book/src/advanced/web3.md)
 
@@ -242,12 +242,12 @@ docs/
 - **Phase 5 (Observability)**: [Implementation plan § Phase 5](design/implementation-plan.md), [Phase 5 completion](reports/phase5-completion.md)
 - **Phase 6 (Web3)**: [Implementation plan § Phase 6](design/implementation-plan.md), [Phase 6 completion](reports/phase6-completion.md)
 - **Phase 7 (Performance & Hardening)**: [Implementation plan § Phase 7](design/implementation-plan.md)
-- **Phase 8 (Data Layer)**: [Data layer implementation](reports/nexus-data-full-implementation.md), [Data layer docs](data-layer.md)
+- **Phase 8 (Data Layer)**: [Data layer implementation](reports/hiver-data-full-implementation.md), [Data layer docs](data-layer.md)
 
 ### By Spring Boot Feature / 按 Spring Boot 功能查找
 
 - **Spring Security**: [Security reference](book/src/reference/security.md), [Spring comparison](spring-boot/spring-comparison.md)
-- **Spring Data**: [Data layer implementation](reports/nexus-data-full-implementation.md), [MyBatis-Plus style](reports/nexus-mybatis-plus-style.md)
+- **Spring Data**: [Data layer implementation](reports/hiver-data-full-implementation.md), [MyBatis-Plus style](reports/hiver-mybatis-plus-style.md)
 - **Spring Web MVC**: [HTTP concepts](book/src/core-concepts/http.md), [Router concepts](book/src/core-concepts/router.md)
 - **Spring Boot Actuator**: [Observability chapter](book/src/advanced/observability.md)
 

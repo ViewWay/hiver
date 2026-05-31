@@ -20,7 +20,7 @@
 
 ### 1. ✅ 编译时属性宏 / Compile-time Attribute Macro
 
-**File**: `crates/nexus-data-annotations/src/transactional_macro.rs` (~380 LOC)
+**File**: `crates/hiver-data-annotations/src/transactional_macro.rs` (~380 LOC)
 
 **Features / 功能**:
 - 完整的属性解析器，支持所有事务属性
@@ -70,8 +70,8 @@
 ## 📚 完整示例 / Complete Example
 
 ```rust
-use nexus_data_annotations::Transactional;
-use nexus_data_annotations::transactional::{IsolationLevel, Propagation};
+use hiver_data_annotations::Transactional;
+use hiver_data_annotations::transactional::{IsolationLevel, Propagation};
 
 // Basic usage / 基本用法
 #[Transactional]
@@ -109,7 +109,7 @@ async fn critical_operation(&self) -> Result<(), Error> {
 
 ## 📁 新增文件 / New Files
 
-1. **`crates/nexus-data-annotations/src/transactional_macro.rs`** (~380 LOC)
+1. **`crates/hiver-data-annotations/src/transactional_macro.rs`** (~380 LOC)
    - @Transactional 属性宏实现
    - 属性解析器
    - 代码生成逻辑
@@ -121,7 +121,7 @@ async fn critical_operation(&self) -> Result<(), Error> {
 
 ## 🔧 更新文件 / Updated Files
 
-1. **`crates/nexus-data-annotations/src/lib.rs`**
+1. **`crates/hiver-data-annotations/src/lib.rs`**
    - 添加 `transactional_macro` 模块
    - 导出 `Transactional` 宏
    - 添加完整的文档注释
@@ -329,7 +329,7 @@ Nested          ━━━━━━━━━━━━             Slowest (savepo
 
 ```rust
 // Import / 导入
-use nexus_data_annotations::Transactional;
+use hiver_data_annotations::Transactional;
 
 // Default / 默认
 #[Transactional]

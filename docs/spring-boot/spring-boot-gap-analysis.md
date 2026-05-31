@@ -26,7 +26,7 @@
 | @Query 注解 | @Query("SELECT...") | ❌ | ❌ 0% | P0 |
 | 分页排序 | Pageable, Page | ❌ | ❌ 0% | P0 |
 | 关联关系 | @OneToMany, @ManyToOne | ❌ | ❌ 0% | P0 |
-| 事务管理 | @Transactional | nexus-tx | ⚠️ 50% | P1 |
+| 事务管理 | @Transactional | hiver-tx | ⚠️ 50% | P1 |
 | **Spring Data JDBC** | **✅** | **❌** | **❌ 0%** | **P0** |
 | JdbcTemplate | JdbcTemplate | ❌ | ❌ 0% | P0 |
 | 简单 CRUD | jdbcOperations.query() | ❌ | ❌ 0% | P0 |
@@ -162,90 +162,90 @@
 
 ### 🔴 P0 - 核心缺失（阻塞 CRUD 开发）
 
-1. **`nexus-data`** - Spring Data JPA 对等物
+1. **`hiver-data`** - Spring Data JPA 对等物
    - Repository 接口抽象
    - 自动 CRUD 实现
    - 查询方法命名规则解析
    - 分页和排序支持
 
-2. **`nexus-data-jpa`** - JPA 规范实现
+2. **`hiver-data-jpa`** - JPA 规范实现
    - @Entity 注解
    - EntityManager 集成
    - 关联关系映射
 
-3. **`nexus-data-jdbc`** - JDBC 简化操作
+3. **`hiver-data-jdbc`** - JDBC 简化操作
    - JdbcTemplate 对等物
    - 简单查询和更新
    - 批量操作
 
-4. **`nexus-orm`** - ORM 集成
+4. **`hiver-orm`** - ORM 集成
    - Diesel 集成
    - SeaORM 集成
    - SQLx 集成
 
 ### 🟡 P1 - 重要缺失（影响开发体验）
 
-5. **`nexus-data-redis`** - Redis 客户端
+5. **`hiver-data-redis`** - Redis 客户端
    - Redis 操作
    - Pub/Sub
    - 事务支持
 
-6. **`nexus-cache-annotations`** - 缓存注解
+6. **`hiver-cache-annotations`** - 缓存注解
    - @Cacheable 宏
    - @CachePut 宏
    - @CacheEvict 宏
 
-7. **`nexus-amqp`** - RabbitMQ 客户端
+7. **`hiver-amqp`** - RabbitMQ 客户端
    - AMQP 协议支持
    - 消息监听器
 
-8. **`nexus-kafka`** - Kafka 客户端
+8. **`hiver-kafka`** - Kafka 客户端
    - Kafka 生产者/消费者
    - 消息序列化
 
-9. **`nexus-oauth2`** - OAuth2 客户端
+9. **`hiver-oauth2`** - OAuth2 客户端
    - OAuth2 登录流程
    - OIDC 支持
 
-10. **`nexus-openapi`** - OpenAPI 文档生成
+10. **`hiver-openapi`** - OpenAPI 文档生成
     - 自动文档生成
     - Swagger UI 集成
 
-11. **`nexus-async`** - 异步任务支持
+11. **`hiver-async`** - 异步任务支持
     - @Async 宏
     - 线程池配置
 
-12. **`nexus-migration`** - 数据库迁移
+12. **`hiver-migration`** - 数据库迁移
     - 版本管理
     - 向上/向下迁移
 
-13. **`nexus-test`** - 测试支持
+13. **`hiver-test`** - 测试支持
     - 集成测试工具
     - Mock 工具
 
 ### 🟢 P2 - 增强功能
 
-14. **`nexus-mail`** - 邮件发送
+14. **`hiver-mail`** - 邮件发送
     - SMTP 客户端
     - 邮件模板
 
-15. **`nexus-ldap`** - LDAP 集成
+15. **`hiver-ldap`** - LDAP 集成
     - LDAP 认证
     - 目录服务
 
-16. **`nexus-websocket`** - WebSocket 增强
+16. **`hiver-websocket`** - WebSocket 增强
     - STOMP 协议
     - SOCKJS 支持
 
-17. **`nexus-grpc`** - gRPC 支持
+17. **`hiver-grpc`** - gRPC 支持
     - gRPC 服务
     - Protobuf 集成
 
-18. **`nexus-graphql`** - GraphQL 支持
+18. **`hiver-graphql`** - GraphQL 支持
     - GraphQL 查询
     - Schema 定义
 
-19. **`nexus-quartz`** - Quartz 集成
+19. **`hiver-quartz`** - Quartz 集成
     - 分布式任务调度
     - 持久化任务
 
@@ -279,6 +279,6 @@
 5. ❌ **缺少测试工具** - 难以编写测试
 
 **建议的开发优先级：**
-1. **P0**: nexus-data, nexus-data-jdbc, nexus-orm（立即开始）
-2. **P1**: nexus-data-redis, nexus-openapi, nexus-migration（第二阶段）
-3. **P2**: nexus-mail, nexus-grpc, nexus-graphql（第三阶段）
+1. **P0**: hiver-data, hiver-data-jdbc, hiver-orm（立即开始）
+2. **P1**: hiver-data-redis, hiver-openapi, hiver-migration（第二阶段）
+3. **P2**: hiver-mail, hiver-grpc, hiver-graphql（第三阶段）

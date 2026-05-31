@@ -1,5 +1,5 @@
-# Nexus Framework - User Guide
-# Nexus 框架 - 用户指南
+# Hiver Framework - User Guide
+# Hiver 框架 - 用户指南
 
 ## Table of Contents / 目录
 
@@ -25,18 +25,18 @@ Create a new Rust project with Nexus:
 
 ```bash
 # Create new project
-cargo new my-nexus-app
-cd my-nexus-app
+cargo new my-hiver-app
+cd my-hiver-app
 
 # Add Nexus dependency
-cargo add nexus nexus-macros
+cargo add nexus hiver-macros
 ```
 
 **Cargo.toml / 货物清单**:
 ```toml
 [dependencies]
 nexus = "0.1"
-nexus-macros = "0.1"
+hiver-macros = "0.1"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 ```
@@ -45,8 +45,8 @@ serde = { version = "1", features = ["derive"] }
 
 `src/main.rs`:
 ```rust,ignore
-use nexus::prelude::*;
-use nexus_macros::{main, controller, get};
+use hiver::prelude::*;
+use hiver_macros::{main, controller, get};
 
 #[main]
 struct Application;
@@ -83,7 +83,7 @@ curl http://localhost:8080/hello/World
 ### Recommended Structure / 推荐结构
 
 ```
-my-nexus-app/
+my-hiver-app/
 ├── Cargo.toml
 ├── src/
 │   ├── main.rs              # Entry point
@@ -124,7 +124,7 @@ resolver = "3"
 
 [workspace.dependencies]
 nexus = "0.1"
-nexus-macros = "0.1"
+hiver-macros = "0.1"
 ```
 
 ---
@@ -207,8 +207,8 @@ nexus-macros = "0.1"
 ### Basic Routing / 基本路由
 
 ```rust,ignore
-use nexus::prelude::*;
-use nexus_macros::{controller, get, post, put, delete};
+use hiver::prelude::*;
+use hiver_macros::{controller, get, post, put, delete};
 
 #[controller]
 struct UserController;
@@ -246,7 +246,7 @@ async fn delete_user(id: String) -> Status {
 ### Route Groups / 路由组
 
 ```rust,ignore
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 fn create_router() -> Router {
     Router::new()
@@ -300,8 +300,8 @@ async fn serve_file(path: String) -> Result<Response> {
 ### Extractors / 提取器
 
 ```rust,ignore
-use nexus::extractors::*;
-use nexus_macros::{get, post};
+use hiver::extractors::*;
+use hiver_macros::{get, post};
 
 #[get("/search")]
 async fn search(
@@ -395,8 +395,8 @@ async fn login(
 ### Creating Middleware / 创建中间件
 
 ```rust,ignore
-use nexus::prelude::*;
-use nexus_middleware::{Middleware, Next};
+use hiver::prelude::*;
+use hiver_middleware::{Middleware, Next};
 
 struct AuthMiddleware;
 
@@ -435,10 +435,10 @@ impl Middleware for AuthMiddleware {
 ### Using Middleware / 使用中间件
 
 ```rust,ignore
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 fn main() -> std::io::Result<()> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
     let app = Router::new()
         .get("/public", public_handler)
@@ -463,8 +463,8 @@ fn protected_routes() -> Router {
 ### Built-in Middleware / 内置中间件
 
 ```rust,ignore
-use nexus_middleware::*;
-use nexus::prelude::*;
+use hiver_middleware::*;
+use hiver::prelude::*;
 
 fn app_with_middleware() -> Router {
     Router::new()
@@ -500,7 +500,7 @@ fn app_with_middleware() -> Router {
 ### Application State / 应用状态
 
 ```rust,ignore
-use nexus::prelude::*;
+use hiver::prelude::*;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -511,7 +511,7 @@ struct AppState {
 }
 
 fn main() -> std::io::Result<()> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
     let state = AppState {
         db: Arc::new(Database::connect("postgresql://...").await),
@@ -542,8 +542,8 @@ async fn list_users(
 ### IoC Container / IoC 容器
 
 ```rust,ignore
-use nexus_core::{Container, Bean};
-use nexus_macros::{configuration, bean};
+use hiver_core::{Container, Bean};
+use hiver_macros::{configuration, bean};
 
 #[configuration]
 struct AppConfig;
@@ -584,7 +584,7 @@ async fn get_user(
 ### Custom Errors / 自定义错误
 
 ```rust,ignore
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 #[derive(Debug)]
 enum AppError {
@@ -670,7 +670,7 @@ format = "json"
 ### Loading Configuration / 加载配置
 
 ```rust,ignore
-use nexus_macros::config;
+use hiver_macros::config;
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone)]
@@ -699,7 +699,7 @@ fn load_config() -> Result<AppConfig, ConfigError> {
 ### Environment Variables / 环境变量
 
 ```rust,ignore
-use nexus_macros::value;
+use hiver_macros::value;
 
 #[value("${SERVER_PORT:8080}")]
 static SERVER_PORT: u16 = 8080;
@@ -746,7 +746,7 @@ mod tests {
 
 **tests/api_tests.rs**:
 ```rust,ignore
-use nexus::prelude::*;
+use hiver::prelude::*;
 use reqwest::Client;
 
 #[tokio::test]
@@ -794,11 +794,11 @@ async fn test_create_user() {
 ### Common Imports / 常用导入
 
 ```rust,ignore
-use nexus::prelude::*;  // Core types
-use nexus_macros::*;    // All macros
-use nexus::extractors::*;  // All extractors
-use nexus_middleware::*;   // Middleware
-use nexus_core::*;     // IoC container
+use hiver::prelude::*;  // Core types
+use hiver_macros::*;    // All macros
+use hiver::extractors::*;  // All extractors
+use hiver_middleware::*;   // Middleware
+use hiver_core::*;     // IoC container
 ```
 
 ### Common Annotations / 常用注解

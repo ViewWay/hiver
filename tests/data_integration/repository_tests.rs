@@ -2,7 +2,7 @@
 //! 仓储集成测试
 
 use async_trait::async_trait;
-use nexus_data_commons::{Repository, CrudRepository, Error};
+use hiver_data_commons::{Repository, CrudRepository, Error};
 use crate::data_integration::helpers::*;
 
 /// Mock repository for testing

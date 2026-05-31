@@ -132,8 +132,8 @@ docs/
 | Original / 原始 | New / 新位置 |
 |----------------|-------------|
 | `DATA-LAYER-ADDENDUM.md` | `reports/DATA-LAYER-ADDENDUM.md` |
-| `nexus-data-full-implementation.md` | `reports/nexus-data-full-implementation.md` |
-| `nexus-mybatis-plus-style.md` | `reports/nexus-mybatis-plus-style.md` |
+| `hiver-data-full-implementation.md` | `reports/hiver-data-full-implementation.md` |
+| `hiver-mybatis-plus-style.md` | `reports/hiver-mybatis-plus-style.md` |
 | `LOMBOK-QUICK-REF.md` | `reports/LOMBOK-QUICK-REF.md` |
 
 **Count**: 30 files / 30个文件

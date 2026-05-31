@@ -14,10 +14,10 @@
 //! - `Router::route()` → `@RequestMapping`
 //! - `Path` → `@PathVariable`
 
-use nexus_router::Router;
-use nexus_http::{Response, StatusCode, Body};
-use nexus_http::header;
-use nexus_http::content_type;
+use hiver_router::Router;
+use hiver_http::{Response, StatusCode, Body};
+use hiver_http::header;
+use hiver_http::content_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

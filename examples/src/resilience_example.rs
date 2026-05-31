@@ -12,7 +12,7 @@
 //! - `RetryPolicy` → Resilience4j Retry
 //! - `ServiceDiscovery` → Spring Cloud Service Discovery
 
-use nexus_resilience::{
+use hiver_resilience::{
     CircuitBreaker, CircuitBreakerConfig, CircuitState,
     RetryPolicy,
 };

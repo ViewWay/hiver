@@ -1,9 +1,9 @@
 # Router
 # 路由
 
-The `nexus-router` crate provides high-performance HTTP request routing using a trie-based data structure.
+The `hiver-router` crate provides high-performance HTTP request routing using a trie-based data structure.
 
-`nexus-router` crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。
+`hiver-router` crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。
 
 ## Overview / 概述
 
@@ -12,8 +12,8 @@ The router maps HTTP method + path combinations to handler functions:
 路由器将 HTTP 方法 + 路径组合映射到处理函数：
 
 ```rust
-use nexus_router::Router;
-use nexus_http::{Response, StatusCode, Body};
+use hiver_router::Router;
+use hiver_http::{Response, StatusCode, Body};
 
 let router = Router::new()
     .get("/", index)
@@ -69,7 +69,7 @@ async fn get_user(req: Request) -> Response {
 ## HTTP Methods / HTTP 方法
 
 ```rust
-use nexus_router::Router;
+use hiver_router::Router;
 
 let router = Router::new()
     .get("/resource", handler)      // GET
@@ -90,7 +90,7 @@ Use `.middleware()` with `Arc<dyn Middleware<S>>` to add middleware:
 
 ```rust
 use std::sync::Arc;
-use nexus_router::Router;
+use hiver_router::Router;
 
 let router = Router::new()
     .get("/", index)
@@ -150,8 +150,8 @@ The trie-based router provides O(n) route matching where n is the path length, r
 ## Complete Example / 完整示例
 
 ```rust
-use nexus_router::Router;
-use nexus_http::{Body, Request, Response, Result, StatusCode};
+use hiver_router::Router;
+use hiver_http::{Body, Request, Response, Result, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]

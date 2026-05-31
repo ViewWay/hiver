@@ -4,8 +4,8 @@
 //! Demonstrates the structured logging output format.
 //! 演示结构化日志输出格式。
 
-use nexus_observability::log::{LogFormat, LogLevel, Logger, LoggerConfig};
-use nexus_observability::nexus_format::{Banner, StartupLogger};
+use hiver_observability::log::{LogFormat, LogLevel, Logger, LoggerConfig};
+use hiver_observability::hiver_format::{Banner, StartupLogger};
 use tracing::{Level, debug, error, info, span, warn};
 
 #[tokio::main]

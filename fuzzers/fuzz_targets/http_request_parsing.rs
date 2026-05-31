@@ -7,7 +7,7 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use nexus_http::Request;
+use hiver_http::Request;
 
 fuzz_target!(|data: &[u8]| {
     // Skip if data is too large
@@ -34,7 +34,7 @@ fuzz_target!(|data: &[u8]| {
                     let _ = Request::builder()
                         .method(method)
                         .uri(path)
-                        .body(nexus_http::Body::empty());
+                        .body(hiver_http::Body::empty());
 
                     // Test with version if present / 如果有版本则测试
                     if parts.len() >= 3 {
@@ -43,7 +43,7 @@ fuzz_target!(|data: &[u8]| {
                             let _ = Request::builder()
                                 .method(method)
                                 .uri(path)
-                                .body(nexus_http::Body::empty());
+                                .body(hiver_http::Body::empty());
                         }
                     }
                 }

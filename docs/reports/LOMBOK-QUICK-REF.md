@@ -27,7 +27,7 @@
 
 | # | 注解 Annotation | 状态 Status | 位置 Location |
 |---|---------------|-----------|-------------|
-| 1 | `#[slf4j]` | ✅ 完整 | nexus-macros/lib.rs:634 |
+| 1 | `#[slf4j]` | ✅ 完整 | hiver-macros/lib.rs:634 |
 
 **使用示例**:
 ```rust
@@ -76,7 +76,7 @@ self.log.info("message");
 ### 最常用：`#[Data]` (90% 的场景)
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]  // 一行搞定！
 #[TableName("user")]
@@ -98,7 +98,7 @@ pub struct User {
 ### Builder 模式：`#[Builder]`
 
 ```rust
-use nexus_lombok::Builder;
+use hiver_lombok::Builder;
 
 #[Builder]
 pub struct User {
@@ -117,7 +117,7 @@ let user = User::builder()
 ### 不可变对象：`#[Value]`
 
 ```rust
-use nexus_lombok::Value;
+use hiver_lombok::Value;
 
 #[Value]
 pub struct User {
@@ -293,7 +293,7 @@ let user = User::builder()
 
 - **完整计划**: [LOMBOK-IMPLEMENTATION.md](./LOMBOK-IMPLEMENTATION.md)
 - **Spring 注解状态**: [SPRING-ANNOTATIONS-STATUS.md](./SPRING-ANNOTATIONS-STATUS.md)
-- **MyBatis-Plus 风格**: [nexus-mybatis-plus-style.md](./nexus-mybatis-plus-style.md)
+- **MyBatis-Plus 风格**: [hiver-mybatis-plus-style.md](./hiver-mybatis-plus-style.md)
 
 ---
 
@@ -304,8 +304,8 @@ let user = User::builder()
 ```bash
 # 1. 创建 crate
 cd crates
-mkdir nexus-lombok
-cd nexus-lombok
+mkdir hiver-lombok
+cd hiver-lombok
 cargo init --lib
 
 # 2. 添加依赖

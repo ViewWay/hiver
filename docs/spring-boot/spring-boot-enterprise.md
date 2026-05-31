@@ -954,7 +954,7 @@ public class UserService {
 #### Nexus - RBAC 实现
 
 ```rust
-use nexus_security::{Role, Permission, DataScope};
+use hiver_security::{Role, Permission, DataScope};
 use std::collections::{HashSet, HashMap};
 
 // 1. 数据模型
@@ -1236,7 +1236,7 @@ public class UserService {
 #### Nexus - 日志聚合
 
 ```rust
-use nexus_observability::log::{Logger, LoggerFactory, LogConfig};
+use hiver_observability::log::{Logger, LoggerFactory, LogConfig};
 use serde_json::json;
 
 #[service]
@@ -1605,7 +1605,7 @@ public class UserService {
 
 ```rust
 use reqwest::Client;
-use nexus_macros::service;
+use hiver_macros::service;
 
 #[service]
 pub struct OrderClient {
@@ -1688,7 +1688,7 @@ impl UserService {
 | **数据权限 / Data Scope** | @DataScope | DataScope trait | ⚠️ 60% |
 | **API 文档 / Swagger** | springdoc-openapi | utoipa | ⚠️ 80% |
 | **Postman 集成** | 自动导出 | JSON 生成 | ⚠️ 70% |
-| **结构化日志 / JSON Log** | Logback | nexus-observability | ✅ 85% |
+| **结构化日志 / JSON Log** | Logback | hiver-observability | ✅ 85% |
 | **Docker 部署** | 标准支持 | 标准支持 | ✅ 100% |
 | **服务发现 / Discovery** | Eureka | Consul | ⚠️ 60% |
 | **配置中心 / Config** | Spring Cloud Config | Consul/etcd | ⚠️ 60% |
@@ -1716,7 +1716,7 @@ impl UserService {
 
 ## 学习总结 / Conclusion
 
-通过对比 Spring Boot 和 Nexus 框架的 24 章内容，我们可以看到：
+通过对比 Spring Boot 和 Hiver 框架的 24 章内容，我们可以看到：
 
 ### 已完成 / Completed
 - ✅ 基础 CRUD 功能

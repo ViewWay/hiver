@@ -5,8 +5,8 @@
 //!
 //! 此示例演示了在 Nexus 框架中使用 @Transactional 注解进行自动事务管理。
 
-use nexus_data_annotations::Transactional;
-use nexus_data_annotations::transactional::{
+use hiver_data_annotations::Transactional;
+use hiver_data_annotations::transactional::{
     IsolationLevel, Propagation, TransactionalConfig,
 };
 use std::sync::Arc;
@@ -260,9 +260,9 @@ impl OrderService {
 // Example 4: Combining with Other Annotations / 与其他注解结合
 // ============================================================================
 
-use nexus_data_annotations::{Entity, Table, Id, Column};
-use nexus_http::validation::{Validatable, ValidationHelpers};
-use nexus_http::validation::ValidationErrors;
+use hiver_data_annotations::{Entity, Table, Id, Column};
+use hiver_http::validation::{Validatable, ValidationHelpers};
+use hiver_http::validation::ValidationErrors;
 
 /// User entity with annotations
 /// 带注解的用户实体

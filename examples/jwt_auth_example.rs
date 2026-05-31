@@ -35,9 +35,9 @@
 //!   -H "Authorization: Bearer TOKEN"
 //! ```
 
-use nexus_http::{Request, Response, StatusCode};
-use nexus_middleware::{JwtAuthenticationMiddleware, JwtRequestExt};
-use nexus_security::{
+use hiver_http::{Request, Response, StatusCode};
+use hiver_middleware::{JwtAuthenticationMiddleware, JwtRequestExt};
+use hiver_security::{
     Authority, Authentication, AuthenticationManager, PasswordEncoder,
     Role, SimpleAuthenticationManager, User, UserService, JwtUtil,
 };
@@ -154,18 +154,18 @@ impl InMemoryUserService {
 
 #[async_trait::async_trait]
 impl UserService for InMemoryUserService {
-    async fn load_user_by_username(&self, username: &str) -> nexus_security::SecurityResult<Arc<dyn nexus_security::UserDetails>> {
+    async fn load_user_by_username(&self, username: &str) -> hiver_security::SecurityResult<Arc<dyn hiver_security::UserDetails>> {
         let users = self.users.read().await;
         users
             .get(username)
-            .map(|u| Arc::new(u.clone()) as Arc<dyn nexus_security::UserDetails>)
-            .ok_or_else(|| nexus_security::SecurityError::UserNotFound(username.to_string()))
+            .map(|u| Arc::new(u.clone()) as Arc<dyn hiver_security::UserDetails>)
+            .ok_or_else(|| hiver_security::SecurityError::UserNotFound(username.to_string()))
     }
 
-    async fn create_user(&self, user: User) -> nexus_security::SecurityResult<()> {
+    async fn create_user(&self, user: User) -> hiver_security::SecurityResult<()> {
         let mut users = self.users.write().await;
         if users.contains_key(&user.username) {
-            return Err(nexus_security::SecurityError::UserAlreadyExists(
+            return Err(hiver_security::SecurityError::UserAlreadyExists(
                 user.username,
             ));
         }
@@ -173,10 +173,10 @@ impl UserService for InMemoryUserService {
         Ok(())
     }
 
-    async fn update_user(&self, user: User) -> nexus_security::SecurityResult<()> {
+    async fn update_user(&self, user: User) -> hiver_security::SecurityResult<()> {
         let mut users = self.users.write().await;
         if !users.contains_key(&user.username) {
-            return Err(nexus_security::SecurityError::UserNotFound(
+            return Err(hiver_security::SecurityError::UserNotFound(
                 user.username,
             ));
         }
@@ -184,11 +184,11 @@ impl UserService for InMemoryUserService {
         Ok(())
     }
 
-    async fn delete_user(&self, username: &str) -> nexus_security::SecurityResult<()> {
+    async fn delete_user(&self, username: &str) -> hiver_security::SecurityResult<()> {
         let mut users = self.users.write().await;
         users
             .remove(username)
-            .ok_or_else(|| nexus_security::SecurityError::UserNotFound(username.to_string()))?;
+            .ok_or_else(|| hiver_security::SecurityError::UserNotFound(username.to_string()))?;
         Ok(())
     }
 
@@ -675,7 +675,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("═══════════════════════════════════════════════════════════════\n");
 
         // Simulate JWT verification and add auth to request
-        use nexus_security::JwtUtil;
+        use hiver_security::JwtUtil;
 
         match JwtUtil::verify_token(jwt_token) {
             Ok(claims) => {
@@ -692,7 +692,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .unwrap();
 
                 // Inject authentication into request extensions
-                let auth = nexus_security::JwtAuthentication::from_claims(&claims);
+                let auth = hiver_security::JwtAuthentication::from_claims(&claims);
                 request.extensions_mut().insert(auth);
 
                 let response = user_controller.get_current_user(&request).await;
@@ -723,7 +723,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // Re-inject authentication
         let claims = JwtUtil::verify_token(jwt_token).unwrap();
-        let auth = nexus_security::JwtAuthentication::from_claims(&claims);
+        let auth = hiver_security::JwtAuthentication::from_claims(&claims);
         request.extensions_mut().insert(auth);
 
         let response = user_controller.get_all_users(&request).await;
@@ -779,7 +779,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             // Inject admin authentication
             let claims = JwtUtil::verify_token(admin_jwt).unwrap();
-            let auth = nexus_security::JwtAuthentication::from_claims(&claims);
+            let auth = hiver_security::JwtAuthentication::from_claims(&claims);
             request.extensions_mut().insert(auth);
 
             let response = user_controller.get_all_users(&request).await;

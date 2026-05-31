@@ -33,42 +33,42 @@ nexus/
 ```
 
 **Crates Created / 创建的 Crates**:
-- `nexus-runtime` - Custom async runtime
-- `nexus-core` - Core types & IoC container
-- `nexus-http` - HTTP server & client
-- `nexus-router` - Routing & middleware
-- `nexus-extractors` - Request parameter extraction
-- `nexus-response` - Response builders
-- `nexus-middleware` - HTTP middleware
-- `nexus-resilience` - HA patterns (circuit breaker, retry, rate limit)
-- `nexus-observability` - Tracing, metrics, logging
-- `nexus-config` - Configuration management
-- `nexus-cache` - Cache abstraction
-- `nexus-tx` - Transaction management
-- `nexus-security` - Security module
-- `nexus-cloud` - Cloud native support
-- `nexus-schedule` - Scheduled tasks
-- `nexus-multipart` - File upload
-- `nexus-validation` - Data validation
-- `nexus-exceptions` - Exception handling
-- `nexus-actuator` - Monitoring endpoints
-- `nexus-web3` - Web3/blockchain support
-- `nexus-macros` - Procedural macros (150+ annotations)
-- `nexus-data-commons` - Data access commons
-- `nexus-data-rdbc` - Reactive database access
-- `nexus-data-annotations` - Data access annotations
-- `nexus-validation-annotations` - Validation annotations
-- `nexus-lombok` - Lombok-style macros
-- `nexus-aop` - AOP/aspect programming
-- `nexus-benches` - Benchmark suites
+- `hiver-runtime` - Custom async runtime
+- `hiver-core` - Core types & IoC container
+- `hiver-http` - HTTP server & client
+- `hiver-router` - Routing & middleware
+- `hiver-extractors` - Request parameter extraction
+- `hiver-response` - Response builders
+- `hiver-middleware` - HTTP middleware
+- `hiver-resilience` - HA patterns (circuit breaker, retry, rate limit)
+- `hiver-observability` - Tracing, metrics, logging
+- `hiver-config` - Configuration management
+- `hiver-cache` - Cache abstraction
+- `hiver-tx` - Transaction management
+- `hiver-security` - Security module
+- `hiver-cloud` - Cloud native support
+- `hiver-schedule` - Scheduled tasks
+- `hiver-multipart` - File upload
+- `hiver-validation` - Data validation
+- `hiver-exceptions` - Exception handling
+- `hiver-actuator` - Monitoring endpoints
+- `hiver-web3` - Web3/blockchain support
+- `hiver-macros` - Procedural macros (150+ annotations)
+- `hiver-data-commons` - Data access commons
+- `hiver-data-rdbc` - Reactive database access
+- `hiver-data-annotations` - Data access annotations
+- `hiver-validation-annotations` - Validation annotations
+- `hiver-lombok` - Lombok-style macros
+- `hiver-aop` - AOP/aspect programming
+- `hiver-benches` - Benchmark suites
 
 ---
 
 ### ✅ 2. IoC Container (IoC 容器)
 
 **Files / 文件**:
-- `crates/nexus-core/src/container.rs` - Container, BeanRegistry, BeanFactory
-- `crates/nexus-core/src/bean.rs` - Bean definition & lifecycle
+- `crates/hiver-core/src/container.rs` - Container, BeanRegistry, BeanFactory
+- `crates/hiver-core/src/bean.rs` - Bean definition & lifecycle
 
 **Features / 功能**:
 - Bean registration and lookup
@@ -79,7 +79,7 @@ nexus/
 
 **API Example / API示例**:
 ```rust
-use nexus_core::{Container, Bean};
+use hiver_core::{Container, Bean};
 
 let mut container = Container::new();
 
@@ -233,12 +233,12 @@ rust-version = "1.93"
 - `.github/workflows/*.yml` - CI/CD pipelines
 
 ### Core / 核心
-- `crates/nexus-core/src/lib.rs`
-- `crates/nexus-core/src/container.rs`
-- `crates/nexus-core/src/bean.rs`
-- `crates/nexus-core/src/context.rs`
-- `crates/nexus-core/src/error.rs`
-- `crates/nexus-core/src/extension.rs`
+- `crates/hiver-core/src/lib.rs`
+- `crates/hiver-core/src/container.rs`
+- `crates/hiver-core/src/bean.rs`
+- `crates/hiver-core/src/context.rs`
+- `crates/hiver-core/src/error.rs`
+- `crates/hiver-core/src/extension.rs`
 
 ### Documentation / 文档
 - `docs/design-spec.md`

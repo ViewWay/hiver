@@ -58,9 +58,9 @@
 
 ### New This Session / 本次会议新增
 
-#### 1. ✅ Query Runtime Module (nexus-data-rdbc)
+#### 1. ✅ Query Runtime Module (hiver-data-rdbc)
 
-**File**: `crates/nexus-data-rdbc/src/query_runtime.rs` (~490 LOC)
+**File**: `crates/hiver-data-rdbc/src/query_runtime.rs` (~490 LOC)
 
 **Features / 功能**:
 - `QueryMetadata` - Extract query information from annotations
@@ -74,7 +74,7 @@
 
 **Example / 示例**:
 ```rust
-use nexus_data_rdbc::{QueryMetadata, ParamStyle, QueryType};
+use hiver_data_rdbc::{QueryMetadata, ParamStyle, QueryType};
 
 let metadata = QueryMetadata {
     sql: "SELECT * FROM users WHERE id = :id".to_string(),
@@ -86,9 +86,9 @@ let metadata = QueryMetadata {
 let user: Option<User> = executor.fetch_one(&metadata, &params).await?;
 ```
 
-#### 2. ✅ Validation Module (nexus-http)
+#### 2. ✅ Validation Module (hiver-http)
 
-**File**: `crates/nexus-http/src/validation.rs` (~560 LOC)
+**File**: `crates/hiver-http/src/validation.rs` (~560 LOC)
 
 **Features / 功能**:
 - `ValidationError` - Detailed validation error information
@@ -108,7 +108,7 @@ let user: Option<User> = executor.fetch_one(&metadata, &params).await?;
 
 **Example / 示例**:
 ```rust
-use nexus_http::validation::{Validatable, ValidationHelpers};
+use hiver_http::validation::{Validatable, ValidationHelpers};
 
 impl Validatable for CreateUserRequest {
     fn validate(&self) -> Result<(), ValidationErrors> {
@@ -131,9 +131,9 @@ impl Validatable for CreateUserRequest {
 }
 ```
 
-#### 3. ✅ AOP Runtime Module (nexus-aop)
+#### 3. ✅ AOP Runtime Module (hiver-aop)
 
-**File**: `crates/nexus-aop/src/runtime.rs` (~620 LOC)
+**File**: `crates/hiver-aop/src/runtime.rs` (~620 LOC)
 
 **Features / 功能**:
 - `JoinPoint` - Represents a method execution point
@@ -152,7 +152,7 @@ impl Validatable for CreateUserRequest {
 
 **Example / 示例**:
 ```rust
-use nexus_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
+use hiver_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
 
 // Create join point
 let join_point = JoinPoint::new(
@@ -172,9 +172,9 @@ if pointcut.matches(&join_point) {
 }
 ```
 
-#### 4. ✅ Transactional Runtime Module (nexus-data-annotations)
+#### 4. ✅ Transactional Runtime Module (hiver-data-annotations)
 
-**File**: `crates/nexus-data-annotations/src/transactional.rs` (~620 LOC)
+**File**: `crates/hiver-data-annotations/src/transactional.rs` (~620 LOC)
 
 **Features / 功能**:
 - `TransactionalConfig` - Transaction configuration
@@ -205,7 +205,7 @@ if pointcut.matches(&join_point) {
 
 **Example / 示例**:
 ```rust
-use nexus_data_annotations::transactional::{
+use hiver_data_annotations::transactional::{
     TransactionalExecutor, TransactionalConfig, IsolationLevel, Propagation,
 };
 
@@ -262,25 +262,25 @@ fn main() {
 
 ### Runtime Modules / 运行时模块
 
-1. **`crates/nexus-data-rdbc/src/query_runtime.rs`** (~490 LOC)
+1. **`crates/hiver-data-rdbc/src/query_runtime.rs`** (~490 LOC)
    - Query metadata extraction
    - Parameter binding (4 styles)
    - Query execution engine
    - Row-to-entity mapping
 
-2. **`crates/nexus-http/src/validation.rs`** (~560 LOC)
+2. **`crates/hiver-http/src/validation.rs`** (~560 LOC)
    - Validation error types
    - Validatable trait
    - 8 validation helpers
    - HTTP middleware
 
-3. **`crates/nexus-aop/src/runtime.rs`** (~620 LOC)
+3. **`crates/hiver-aop/src/runtime.rs`** (~620 LOC)
    - JoinPoint implementation
    - Pointcut expression parser
    - Aspect registry
    - Global registry
 
-4. **`crates/nexus-data-annotations/src/transactional.rs`** (~620 LOC)
+4. **`crates/hiver-data-annotations/src/transactional.rs`** (~620 LOC)
    - Transactional config
    - 5 isolation levels
    - 7 propagation behaviors
@@ -296,13 +296,13 @@ fn main() {
 
 ### Updated Files / 更新的文件
 
-6. **`crates/nexus-data-rdbc/src/row.rs`** - Added `to_json()` methods
-7. **`crates/nexus-data-rdbc/src/lib.rs`** - Exported query_runtime module
-8. **`crates/nexus-http/src/lib.rs`** - Exported validation module
-9. **`crates/nexus-aop/src/lib.rs`** - Exported runtime module
-10. **`crates/nexus-aop/Cargo.toml`** - Added tokio, once_cell dependencies
-11. **`crates/nexus-data-annotations/src/lib.rs`** - Exported transactional module
-12. **`crates/nexus-data-annotations/Cargo.toml`** - Added tokio, rand dependencies
+6. **`crates/hiver-data-rdbc/src/row.rs`** - Added `to_json()` methods
+7. **`crates/hiver-data-rdbc/src/lib.rs`** - Exported query_runtime module
+8. **`crates/hiver-http/src/lib.rs`** - Exported validation module
+9. **`crates/hiver-aop/src/lib.rs`** - Exported runtime module
+10. **`crates/hiver-aop/Cargo.toml`** - Added tokio, once_cell dependencies
+11. **`crates/hiver-data-annotations/src/lib.rs`** - Exported transactional module
+12. **`crates/hiver-data-annotations/Cargo.toml`** - Added tokio, rand dependencies
 
 ---
 
@@ -426,10 +426,10 @@ Propagation::Nested
 ### Complete Example: User Management System
 
 ```rust
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
-use nexus_http::validation::{Validatable, ValidationHelpers};
-use nexus_aop::{Aspect, Before, After};
-use nexus_data_annotations::transactional::{Transactional, IsolationLevel};
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_http::validation::{Validatable, ValidationHelpers};
+use hiver_aop::{Aspect, Before, After};
+use hiver_data_annotations::transactional::{Transactional, IsolationLevel};
 use serde::{Serialize, Deserialize};
 
 // Entity with annotations
@@ -586,10 +586,10 @@ async fn create_user_endpoint(
 
 ```toml
 [dependencies]
-nexus-data-rdbc = "0.1"
-nexus-data-annotations = "0.1"
-nexus-http = "0.1"
-nexus-aop = "0.1"
+hiver-data-rdbc = "0.1"
+hiver-data-annotations = "0.1"
+hiver-http = "0.1"
+hiver-aop = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.40", features = ["full"] }
 ```
@@ -598,17 +598,17 @@ tokio = { version = "1.40", features = ["full"] }
 
 ```rust
 // Query runtime
-use nexus_data_rdbc::{QueryMetadata, ParamStyle, QueryType, AnnotatedQueryExecutor};
+use hiver_data_rdbc::{QueryMetadata, ParamStyle, QueryType, AnnotatedQueryExecutor};
 
 // Validation
-use nexus_http::validation::{Validatable, ValidationHelpers, ValidationMiddleware};
+use hiver_http::validation::{Validatable, ValidationHelpers, ValidationMiddleware};
 
 // AOP
-use nexus_aop::{Aspect, Before, After, Around};
-use nexus_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
+use hiver_aop::{Aspect, Before, After, Around};
+use hiver_aop::runtime::{JoinPoint, PointcutExpression, global_registry};
 
 // Transactional
-use nexus_data_annotations::transactional::{
+use hiver_data_annotations::transactional::{
     TransactionalConfig, TransactionalExecutor, IsolationLevel, Propagation,
 };
 ```

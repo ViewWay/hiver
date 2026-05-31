@@ -30,13 +30,13 @@
 //! cargo run --bin web3_dapp
 //! ```
 
-use nexus_web3::{
+use hiver_web3::{
     chain::{ChainConfig, ChainId},
     wallet::{Address, LocalWallet, Wallet, Signature, WalletError},
 };
-use nexus_http::{Request, Response, StatusCode};
-use nexus_observability::{Tracer, info, warn, error as log_error};
-use nexus_cache::{CacheConfig, Cached, MemoryCache};
+use hiver_http::{Request, Response, StatusCode};
+use hiver_observability::{Tracer, info, warn, error as log_error};
+use hiver_cache::{CacheConfig, Cached, MemoryCache};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;

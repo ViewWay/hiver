@@ -24,7 +24,7 @@ jobs:
         run: echo NEXT_VERSION=$(sed -nE 's/^\s*version = "(.*?)"/\1/p' Cargo.toml) >> $GITHUB_ENV
 
       - name: Check published version
-        run: echo PREV_VERSION=$(cargo search nexus-runtime --limit 1 | sed -nE 's/^[^"]*"//; s/".*//p') >> $GITHUB_ENV
+        run: echo PREV_VERSION=$(cargo search hiver-runtime --limit 1 | sed -nE 's/^[^"]*"//; s/".*//p') >> $GITHUB_ENV
 
   publish:
     runs-on: ubuntu-latest
@@ -36,48 +36,48 @@ jobs:
         package:
           # Core crates (publish order matters for dependencies)
           # 核心 crate（发布顺序对依赖关系很重要）
-          - crate: nexus-runtime
-            path: crates/nexus-runtime
-          - crate: nexus-core
-            path: crates/nexus-core
-          - crate: nexus-http
-            path: crates/nexus-http
-          - crate: nexus-router
-            path: crates/nexus-router
-          - crate: nexus-extractors
-            path: crates/nexus-extractors
-          - crate: nexus-response
-            path: crates/nexus-response
-          - crate: nexus-middleware
-            path: crates/nexus-middleware
-          - crate: nexus-macros
-            path: crates/nexus-macros
-          - crate: nexus-resilience
-            path: crates/nexus-resilience
-          - crate: nexus-observability
-            path: crates/nexus-observability
-          - crate: nexus-config
-            path: crates/nexus-config
-          - crate: nexus-cache
-            path: crates/nexus-cache
-          - crate: nexus-security
-            path: crates/nexus-security
-          - crate: nexus-tx
-            path: crates/nexus-tx
-          - crate: nexus-cloud
-            path: crates/nexus-cloud
-          - crate: nexus-schedule
-            path: crates/nexus-schedule
-          - crate: nexus-multipart
-            path: crates/nexus-multipart
-          - crate: nexus-validation
-            path: crates/nexus-validation
-          - crate: nexus-exceptions
-            path: crates/nexus-exceptions
-          - crate: nexus-actuator
-            path: crates/nexus-actuator
-          - crate: nexus-web3
-            path: crates/nexus-web3
+          - crate: hiver-runtime
+            path: crates/hiver-runtime
+          - crate: hiver-core
+            path: crates/hiver-core
+          - crate: hiver-http
+            path: crates/hiver-http
+          - crate: hiver-router
+            path: crates/hiver-router
+          - crate: hiver-extractors
+            path: crates/hiver-extractors
+          - crate: hiver-response
+            path: crates/hiver-response
+          - crate: hiver-middleware
+            path: crates/hiver-middleware
+          - crate: hiver-macros
+            path: crates/hiver-macros
+          - crate: hiver-resilience
+            path: crates/hiver-resilience
+          - crate: hiver-observability
+            path: crates/hiver-observability
+          - crate: hiver-config
+            path: crates/hiver-config
+          - crate: hiver-cache
+            path: crates/hiver-cache
+          - crate: hiver-security
+            path: crates/hiver-security
+          - crate: hiver-tx
+            path: crates/hiver-tx
+          - crate: hiver-cloud
+            path: crates/hiver-cloud
+          - crate: hiver-schedule
+            path: crates/hiver-schedule
+          - crate: hiver-multipart
+            path: crates/hiver-multipart
+          - crate: hiver-validation
+            path: crates/hiver-validation
+          - crate: hiver-exceptions
+            path: crates/hiver-exceptions
+          - crate: hiver-actuator
+            path: crates/hiver-actuator
+          - crate: hiver-web3
+            path: crates/hiver-web3
     steps:
       - name: Checkout
         uses: actions/checkout@v6

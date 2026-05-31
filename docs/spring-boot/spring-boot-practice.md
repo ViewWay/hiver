@@ -175,8 +175,8 @@ public class FileController {
 #### Nexus - 文件上传
 
 ```rust
-use nexus::prelude::*;
-use nexus_macros::{controller, post, get};
+use hiver::prelude::*;
+use hiver_macros::{controller, post, get};
 use multer::{Multipart, Field};
 use std::path::PathBuf;
 use uuid::Uuid;
@@ -532,8 +532,8 @@ public class NotificationController {
 #### Nexus - 定时任务与异步
 
 ```rust
-use nexus_runtime::scheduler::{Scheduler, TaskSchedule};
-use nexus_macros::scheduled;
+use hiver_runtime::scheduler::{Scheduler, TaskSchedule};
+use hiver_macros::scheduled;
 use std::sync::Arc;
 use tokio::task::JoinHandle;
 
@@ -1084,7 +1084,7 @@ public User getUser(@PathVariable Long id) {
 #### Nexus - CORS 中间件
 
 ```rust
-use nexus_middleware::{CorsMiddleware, CorsConfig};
+use hiver_middleware::{CorsMiddleware, CorsConfig};
 
 // 1. 全局 CORS 配置
 #[tokio::main]
@@ -1613,7 +1613,7 @@ public class UserQuery {
 #### Nexus - 分页实现
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 // 1. 分页请求
 #[derive(Debug, Deserialize)]
@@ -2043,7 +2043,7 @@ public class ExportController {
 #### Nexus - 文件导出
 
 ```rust
-use nexus::prelude::*;
+use hiver::prelude::*;
 use csv::Writer;
 use calamine::{Writer as XlsxWriter, Workbook};
 use std::io::Cursor;

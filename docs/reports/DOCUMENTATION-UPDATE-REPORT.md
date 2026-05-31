@@ -9,10 +9,10 @@
   Documentation Update Progress / 文档更新进度
 ═══════════════════════════════════════════════════════════════
 
-  ✅ nexus-security README.md              100% Complete / 完成
-  ✅ nexus-middleware README.md           100% Complete / 完成
-  ✅ nexus-data-annotations README.md    100% Complete / 完成
-  ✅ nexus-cache README.md                 100% Complete / 完成
+  ✅ hiver-security README.md              100% Complete / 完成
+  ✅ hiver-middleware README.md           100% Complete / 完成
+  ✅ hiver-data-annotations README.md    100% Complete / 完成
+  ✅ hiver-cache README.md                 100% Complete / 完成
   ✅ API Specification (api-spec.md)         100% Complete / 完成
 
 ═══════════════════════════════════════════════════════════════
@@ -24,9 +24,9 @@
 
 ## 📝 Updated Documentation / 更新的文档
 
-### 1. nexus-security/README.md
+### 1. hiver-security/README.md
 
-**Location**: [`crates/nexus-security/README.md`](../crates/nexus-security/README.md)
+**Location**: [`crates/hiver-security/README.md`](../crates/hiver-security/README.md)
 
 **Updates** / **更新**:
 
@@ -43,7 +43,7 @@
 
 3. **Basic Usage** - Added JWT authentication example:
    ```rust
-   use nexus_security::{JwtUtil, JwtTokenProvider, Authority, Role};
+   use hiver_security::{JwtUtil, JwtTokenProvider, Authority, Role};
 
    let token = JwtUtil::create_token("123", "alice", &authorities)?;
    let claims = JwtUtil::verify_token(&token)?;
@@ -63,9 +63,9 @@
 
 ---
 
-### 2. nexus-middleware/README.md
+### 2. hiver-middleware/README.md
 
-**Location**: [`crates/nexus-middleware/README.md`](../crates/nexus-middleware/README.md)
+**Location**: [`crates/hiver-middleware/README.md`](../crates/hiver-middleware/README.md)
 
 **Updates** / **更新**:
 
@@ -81,7 +81,7 @@
 
 3. **Basic Usage** - Updated to include JWT middleware:
    ```rust
-   use nexus_middleware::{CorsMiddleware, CompressionMiddleware, LoggerMiddleware, JwtAuthenticationMiddleware};
+   use hiver_middleware::{CorsMiddleware, CompressionMiddleware, LoggerMiddleware, JwtAuthenticationMiddleware};
 
    Server::bind("0.0.0.0:3000")
        .middleware(CorsMiddleware::permissive())
@@ -110,9 +110,9 @@
 
 ---
 
-### 3. nexus-data-annotations/README.md
+### 3. hiver-data-annotations/README.md
 
-**Location**: [`crates/nexus-data-annotations/README.md`](../crates/nexus-data-annotations/README.md)
+**Location**: [`crates/hiver-data-annotations/README.md`](../crates/hiver-data-annotations/README.md)
 
 **Updates** / **更新**:
 
@@ -137,9 +137,9 @@
 
 ---
 
-### 4. nexus-cache/README.md
+### 4. hiver-cache/README.md
 
-**Location**: [`crates/nexus-cache/README.md`](../crates/nexus-cache/README.md)
+**Location**: [`crates/hiver-cache/README.md`](../crates/hiver-cache/README.md)
 
 **Updates** / **更新**:
 
@@ -285,16 +285,16 @@ All documentation maintains:
 ## 📦 Files Modified / 修改的文件
 
 ```
-crates/nexus-security/
+crates/hiver-security/
 └── README.md                                    ✅ Updated (added JWT)
 
-crates/nexus-middleware/
+crates/hiver-middleware/
 └── README.md                                    ✅ Updated (added JWT middleware)
 
-crates/nexus-data-annotations/
+crates/hiver-data-annotations/
 └── README.md                                    ✅ Updated (added CRUD, pagination, @PreAuthorize)
 
-crates/nexus-cache/
+crates/hiver-cache/
 └── README.md                                    ✅ Updated (added conditional caching)
 
 docs/
@@ -404,17 +404,17 @@ All documentation follows:
 
 | Crate / 包 | New Features / 新功能 | Status / 状态 |
 |----------|-------------------|----------|
-| **nexus-security** | JWT authentication | ✅ |
-| **nexus-middleware** | JWT authentication middleware | ✅ |
-| **nexus-data-annotations** | Repository CRUD, pagination, @PreAuthorize | ✅ |
-| **nexus-cache** | Conditional caching | ✅ |
+| **hiver-security** | JWT authentication | ✅ |
+| **hiver-middleware** | JWT authentication middleware | ✅ |
+| **hiver-data-annotations** | Repository CRUD, pagination, @PreAuthorize | ✅ |
+| **hiver-cache** | Conditional caching | ✅ |
 
 ### Documentation Locations / 文档位置
 
-- **Security Guide**: [`crates/nexus-security/README.md`](../crates/nexus-security/README.md)
-- **Middleware Guide**: [`crates/nexus-middleware/README.md`](../crates/nexus-middleware/README.md)
-- **Data Annotations Guide**: [`crates/nexus-data-annotations/README.md`](../crates/nexus-data-annotations/README.md)
-- **Cache Guide**: [`crates/nexus-cache/README.md`](../crates/nexus-cache/README.md)
+- **Security Guide**: [`crates/hiver-security/README.md`](../crates/hiver-security/README.md)
+- **Middleware Guide**: [`crates/hiver-middleware/README.md`](../crates/hiver-middleware/README.md)
+- **Data Annotations Guide**: [`crates/hiver-data-annotations/README.md`](../crates/hiver-data-annotations/README.md)
+- **Cache Guide**: [`crates/hiver-cache/README.md`](../crates/hiver-cache/README.md)
 - **API Reference**: [`docs/api-spec.md`](docs/api-spec.md) (Section 12.4)
 
 ### Related Reports / 相关报告

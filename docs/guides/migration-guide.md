@@ -70,7 +70,7 @@ public class Application {
 }
 
 // Nexus
-use nexus_macros::main;
+use hiver_macros::main;
 
 #[main]
 struct Application;
@@ -90,7 +90,7 @@ public class UserController {
 }
 
 // Nexus
-use nexus_macros::{controller, get};
+use hiver_macros::{controller, get};
 
 #[controller]
 struct UserController;

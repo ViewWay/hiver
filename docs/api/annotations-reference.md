@@ -1,8 +1,8 @@
 # Nexus Annotations Reference
 # Nexus 注解参考手册
 
-Complete reference for all Spring Boot-style procedural macros in Nexus Framework.
-Nexus 框架中所有 Spring Boot 风格过程宏的完整参考。
+Complete reference for all Spring Boot-style procedural macros in Hiver Framework.
+Hiver 框架中所有 Spring Boot 风格过程宏的完整参考。
 
 **Version**: 0.1.0
 **Date**: 2026-01-25
@@ -50,7 +50,7 @@ Marks the main application entry point.
 **Spring 等价物**: `@SpringBootApplication`
 
 ```rust,ignore
-use nexus_macros::main;
+use hiver_macros::main;
 
 #[main]
 struct Application;
@@ -72,7 +72,7 @@ Marks a struct as a REST controller.
 **Spring Equivalent**: `@RestController` / `@Controller`
 
 ```rust,ignore
-use nexus_macros::{controller, get};
+use hiver_macros::{controller, get};
 
 #[controller]
 struct DemoController;
@@ -111,7 +111,7 @@ Marks a class as a controller that returns views, not JSON.
 | `#[trace(path)]` | `@RequestMapping(method=TRACE)` | TRACE |
 
 ```rust,ignore
-use nexus_macros::{get, post, put, delete};
+use hiver_macros::{get, post, put, delete};
 
 #[get("/users/:id")]
 async fn get_user(id: String) -> String {
@@ -142,7 +142,7 @@ Generic request mapping for any HTTP method.
 **Spring Equivalent**: `@RequestMapping`
 
 ```rust,ignore
-use nexus_macros::request_mapping;
+use hiver_macros::request_mapping;
 
 #[request_mapping(path = "/api/data", method = "GET")]
 async fn get_data() -> &'static str {
@@ -158,7 +158,7 @@ Configure CORS for the endpoint.
 **Spring Equivalent**: `@CrossOrigin`
 
 ```rust,ignore
-use nexus_macros::{cross_origin, get};
+use hiver_macros::{cross_origin, get};
 
 #[cross_origin(origins = "*")]
 #[get("/api/data")]
@@ -179,7 +179,7 @@ Marks a struct as a service.
 **Spring Equivalent**: `@Service`
 
 ```rust,ignore
-use nexus_macros::service;
+use hiver_macros::service;
 use std::sync::Arc;
 
 #[service]
@@ -202,7 +202,7 @@ Marks a trait as a repository.
 **Spring Equivalent**: `@Repository` / `JpaRepository`
 
 ```rust,ignore
-use nexus_macros::repository;
+use hiver_macros::repository;
 
 #[repository]
 trait UserRepository: Send + Sync {
@@ -219,7 +219,7 @@ Marks a struct as a Spring component.
 **Spring Equivalent**: `@Component`
 
 ```rust,ignore
-use nexus_macros::component;
+use hiver_macros::component;
 
 #[component]
 struct EmailService {
@@ -246,7 +246,7 @@ Mark a parameter as extracted from path variable.
 **Spring Equivalent**: `@PathVariable`
 
 ```rust,ignore
-use nexus_macros::{get, path_variable};
+use hiver_macros::{get, path_variable};
 
 #[get("/users/:id")]
 async fn get_user(#[path_variable] id: String) -> String {
@@ -262,7 +262,7 @@ Mark a parameter as extracted from query string.
 **Spring Equivalent**: `@RequestParam`
 
 ```rust,ignore
-use nexus_macros::{get, request_param};
+use hiver_macros::{get, request_param};
 
 #[get("/search")]
 async fn search(#[request_param] q: String) -> String {
@@ -278,7 +278,7 @@ Mark a parameter as extracted from request header.
 **Spring Equivalent**: `@RequestHeader`
 
 ```rust,ignore
-use nexus_macros::{get, request_header};
+use hiver_macros::{get, request_header};
 
 #[get("/info")]
 async fn info(#[request_header] user_agent: String) -> String {
@@ -294,7 +294,7 @@ Mark a parameter as extracted from cookie.
 **Spring Equivalent**: `@CookieValue`
 
 ```rust,ignore
-use nexus_macros::{get, cookie_value};
+use hiver_macros::{get, cookie_value};
 
 #[get("/pref")]
 async fn preferences(#[cookie_value] theme: String) -> String {
@@ -310,7 +310,7 @@ Mark a parameter as extracted from request body.
 **Spring Equivalent**: `@RequestBody`
 
 ```rust,ignore
-use nexus_macros::{post, request_body};
+use hiver_macros::{post, request_body};
 
 #[post("/users")]
 async fn create_user(#[request_body] user: CreateUser) -> String {
@@ -358,7 +358,7 @@ Marks a struct as configuration properties.
 **Spring Equivalent**: `@ConfigurationProperties`
 
 ```rust,ignore
-use nexus_macros::config;
+use hiver_macros::config;
 
 #[config(prefix = "app")]
 struct AppConfig {
@@ -382,7 +382,7 @@ Marks a class as a source of bean definitions.
 **Spring Equivalent**: `@Configuration`
 
 ```rust,ignore
-use nexus_macros::configuration;
+use hiver_macros::configuration;
 
 #[configuration]
 struct AppConfig {
@@ -398,7 +398,7 @@ Marks a method as a bean producer.
 **Spring Equivalent**: `@Bean`
 
 ```rust,ignore
-use nexus_macros::{configuration, bean};
+use hiver_macros::{configuration, bean};
 
 #[configuration]
 struct AppConfig;
@@ -419,7 +419,7 @@ Inject a value from environment or config.
 **Spring Equivalent**: `@Value`
 
 ```rust,ignore
-use nexus_macros::value;
+use hiver_macros::value;
 
 #[value("${app.name}")]
 static APP_NAME: &str = "Nexus Application";
@@ -436,7 +436,7 @@ Only enable component when specific profile is active.
 **Spring Equivalent**: `@Profile`
 
 ```rust,ignore
-use nexus_macros::{service, profile};
+use hiver_macros::{service, profile};
 
 #[profile("dev")]
 #[service]
@@ -565,7 +565,7 @@ Enable method-level validation.
 **Spring Equivalent**: `@Validated`
 
 ```rust,ignore
-use nexus_macros::{post, validated};
+use hiver_macros::{post, validated};
 
 #[post("/users")]
 async fn create_user(#[validated] user: User) -> Result<User, Error> {
@@ -674,7 +674,7 @@ Cache the result of a method.
 **Spring Equivalent**: `@Cacheable`
 
 ```rust,ignore
-use nexus_macros::cacheable;
+use hiver_macros::cacheable;
 
 #[cacheable("users")]
 async fn get_user(id: u64) -> Option<User> {
@@ -722,7 +722,7 @@ Marks a function to be scheduled.
 **Spring Equivalent**: `@Scheduled`
 
 ```rust,ignore
-use nexus_macros::scheduled;
+use hiver_macros::scheduled;
 
 #[scheduled(cron = "0 * * * * *")] // Every hour
 async fn cleanup_task() {
@@ -782,7 +782,7 @@ Marks a function or method to be executed within a transaction.
 **Spring Equivalent**: `@Transactional`
 
 ```rust,ignore
-use nexus_macros::transactional;
+use hiver_macros::transactional;
 
 #[transactional]
 async fn transfer_money(from: Account, to: Account, amount: f64) -> Result<(), Error> {
@@ -816,7 +816,7 @@ Mark a method as requiring authentication.
 **Spring Equivalent**: `@Secured`
 
 ```rust,ignore
-use nexus_macros::secured;
+use hiver_macros::secured;
 
 #[secured("ROLE_ADMIN")]
 async fn admin_only() -> String {
@@ -832,7 +832,7 @@ Pre-authorize method access based on expression.
 **Spring Equivalent**: `@PreAuthorize`
 
 ```rust,ignore
-use nexus_macros::pre_authorize;
+use hiver_macros::pre_authorize;
 
 #[pre_authorize("hasRole('ADMIN')")]
 async fn admin_method() -> String {
@@ -869,7 +869,7 @@ Define roles required for access.
 **Spring Equivalent**: `@RolesAllowed`
 
 ```rust,ignore
-use nexus_macros::roles_allowed;
+use hiver_macros::roles_allowed;
 
 #[roles_allowed("ADMIN", "MANAGER")]
 async fn management_only() -> String {
@@ -917,7 +917,7 @@ Set the response status for an exception handler.
 **Spring Equivalent**: `@ResponseStatus`
 
 ```rust,ignore
-use nexus_macros::{response_status, exception_handler};
+use hiver_macros::{response_status, exception_handler};
 
 #[response_status(code = 404, reason = "Not Found")]
 #[exception_handler]
@@ -949,7 +949,7 @@ Mark method as exception handler.
 **Spring Equivalent**: `@ExceptionHandler`
 
 ```rust,ignore
-use nexus_macros::exception_handler;
+use hiver_macros::exception_handler;
 
 #[exception_handler]
 async fn handle_not_found(e: NotFoundError) -> Response {
@@ -1018,7 +1018,7 @@ Mark an interface as a Feign client.
 **Spring Equivalent**: `@FeignClient`
 
 ```rust,ignore
-use nexus_macros::feign_client;
+use hiver_macros::feign_client;
 
 #[feign_client("https://api.example.com")]
 trait ApiClient {
@@ -1137,11 +1137,11 @@ Automatically adds a logger field to the struct.
 **Spring Equivalent**: `@Slf4j` (Lombok)
 
 ```rust,ignore
-use nexus_macros::slf4j;
+use hiver_macros::slf4j;
 
 #[slf4j]
 struct MyController {
-    // The macro automatically adds: log: nexus_observability::log::LoggerHandle
+    // The macro automatically adds: log: hiver_observability::log::LoggerHandle
 }
 
 impl MyController {
@@ -1157,7 +1157,7 @@ Creates a static logger in the current scope.
 在当前作用域中创建静态日志记录器。
 
 ```rust,ignore
-use nexus_macros::logger;
+use hiver_macros::logger;
 
 #[logger]
 fn my_function() {
@@ -1240,7 +1240,7 @@ Derive macro for FromRequest trait.
 FromRequest trait 的派生宏。
 
 ```rust,ignore
-use nexus_macros::FromRequest;
+use hiver_macros::FromRequest;
 
 #[derive(FromRequest)]
 struct User {
@@ -1255,7 +1255,7 @@ Derive macro for IntoResponse trait.
 IntoResponse trait 的派生宏。
 
 ```rust,ignore
-use nexus_macros::IntoResponse;
+use hiver_macros::IntoResponse;
 
 #[derive(IntoResponse)]
 struct User {
@@ -1327,11 +1327,11 @@ struct User {
 **Why snake_case? / 为什么使用 snake_case？**
 
 Rust uses `snake_case` for function and macro names by convention, while Java/C# use `camelCase`.
-The Nexus framework follows Rust conventions for idiomatic code while providing
+The Hiver Framework follows Rust conventions for idiomatic code while providing
 Spring Boot functionality.
 
 Rust 按照约定对函数和宏名称使用 `snake_case`，而 Java/C# 使用 `camelCase`。
-Nexus 框架遵循 Rust 约定以编写惯用代码，同时提供 Spring Boot 功能。
+Hiver 框架遵循 Rust 约定以编写惯用代码，同时提供 Spring Boot 功能。
 
 | Spring (Java) | Nexus (Rust) |
 |---------------|--------------|
@@ -1352,10 +1352,10 @@ Some annotations require specific feature flags:
 
 ```toml
 [dependencies]
-nexus-macros = { version = "0.1", features = ["full"] }
+hiver-macros = { version = "0.1", features = ["full"] }
 
 # Optional features / 可选功能
-nexus-macros = { version = "0.1", features = [
+hiver-macros = { version = "0.1", features = [
     "rpc",      # RPC client support / RPC 客户端支持
     "ws",       # WebSocket support / WebSocket 支持
     "web3",     # Web3 support / Web3 支持

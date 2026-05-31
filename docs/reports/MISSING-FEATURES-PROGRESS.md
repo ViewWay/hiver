@@ -29,7 +29,7 @@
 **Status**: ✅ **Complete** / **完成**
 
 **Files Created**:
-- [`crates/nexus-data-annotations/src/repository.rs`](../crates/nexus-data-annotations/src/repository.rs)
+- [`crates/hiver-data-annotations/src/repository.rs`](../crates/hiver-data-annotations/src/repository.rs)
 
 **Features Implemented**:
 ```rust
@@ -79,7 +79,7 @@ trait UserRepository: CrudRepository<User, i64> { }
 **Status**: ✅ **Complete** / **完成**
 
 **Files Created**:
-- [`crates/nexus-data-annotations/src/repository.rs`](../crates/nexus-data-annotations/src/repository.rs) (same as above)
+- [`crates/hiver-data-annotations/src/repository.rs`](../crates/hiver-data-annotations/src/repository.rs) (same as above)
 
 **Features Implemented**:
 ```rust
@@ -138,9 +138,9 @@ let page = repository.find_all_pageable(&pageable).await?;
 **Status**: ✅ **Complete** / **完成**
 
 **Files Created**:
-- [`crates/nexus-data-annotations/src/pre_authorize_macro.rs`](../crates/nexus-data-annotations/src/pre_authorize_macro.rs)
+- [`crates/hiver-data-annotations/src/pre_authorize_macro.rs`](../crates/hiver-data-annotations/src/pre_authorize_macro.rs)
 - [`examples/pre_authorize_example.rs`](../examples/pre_authorize_example.rs)
-- [`crates/nexus-data-annotations/tests/pre_authorize_test.rs`](../crates/nexus-data-annotations/tests/pre_authorize_test.rs)
+- [`crates/hiver-data-annotations/tests/pre_authorize_test.rs`](../crates/hiver-data-annotations/tests/pre_authorize_test.rs)
 
 **Features Implemented**:
 ```rust
@@ -216,9 +216,9 @@ async fn update_profile(&self, id: i64, data: UpdateData) -> Result<(), Error> {
 **Status**: ✅ **Complete** / **完成**
 
 **Files Created**:
-- [`crates/nexus-cache/src/condition_evaluator.rs`](../crates/nexus-cache/src/condition_evaluator.rs)
+- [`crates/hiver-cache/src/condition_evaluator.rs`](../crates/hiver-cache/src/condition_evaluator.rs)
 - [`examples/cache_with_conditions.rs`](../examples/cache_with_conditions.rs)
-- [`crates/nexus-cache/tests/cache_conditions_test.rs`](../crates/nexus-cache/tests/cache_conditions_test.rs)
+- [`crates/hiver-cache/tests/cache_conditions_test.rs`](../crates/hiver-cache/tests/cache_conditions_test.rs)
 
 **Features Implemented**:
 
@@ -403,8 +403,8 @@ Total:                  300 lines → 21 lines (93% reduction)
    - [`examples/cache_with_conditions.rs`](../examples/cache_with_conditions.rs) - Cache conditions
 
 3. **Tests Created** / 创建的测试:
-   - [`crates/nexus-data-annotations/tests/pre_authorize_test.rs`](../crates/nexus-data-annotations/tests/pre_authorize_test.rs) - 20+ tests
-   - [`crates/nexus-cache/tests/cache_conditions_test.rs`](../crates/nexus-cache/tests/cache_conditions_test.rs) - 30+ tests
+   - [`crates/hiver-data-annotations/tests/pre_authorize_test.rs`](../crates/hiver-data-annotations/tests/pre_authorize_test.rs) - 20+ tests
+   - [`crates/hiver-cache/tests/cache_conditions_test.rs`](../crates/hiver-cache/tests/cache_conditions_test.rs) - 30+ tests
 
 ---
 
@@ -457,9 +457,9 @@ Total:                  300 lines → 21 lines (93% reduction)
 
 ### Implementation / 实现
 
-- [Repository Implementation](../crates/nexus-data-annotations/src/repository.rs)
-- [PreAuthorize Macro](../crates/nexus-data-annotations/src/pre_authorize_macro.rs)
-- [Cache Condition Evaluator](../crates/nexus-cache/src/condition_evaluator.rs)
+- [Repository Implementation](../crates/hiver-data-annotations/src/repository.rs)
+- [PreAuthorize Macro](../crates/hiver-data-annotations/src/pre_authorize_macro.rs)
+- [Cache Condition Evaluator](../crates/hiver-cache/src/condition_evaluator.rs)
 
 ### Examples / 示例
 
@@ -468,8 +468,8 @@ Total:                  300 lines → 21 lines (93% reduction)
 
 ### Tests / 测试
 
-- [PreAuthorize Tests](../crates/nexus-data-annotations/tests/pre_authorize_test.rs)
-- [Cache Conditions Tests](../crates/nexus-cache/tests/cache_conditions_test.rs)
+- [PreAuthorize Tests](../crates/hiver-data-annotations/tests/pre_authorize_test.rs)
+- [Cache Conditions Tests](../crates/hiver-cache/tests/cache_conditions_test.rs)
 
 ### Documentation / 文档
 

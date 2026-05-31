@@ -13,7 +13,7 @@
 //! - `StatusCode` → `HttpStatus`
 //! - `Body` → `Response body`
 
-use nexus_http::{
+use hiver_http::{
     header, content_type, Body, IntoResponse, Json, Response, StatusCode,
 };
 use serde::{Deserialize, Serialize};

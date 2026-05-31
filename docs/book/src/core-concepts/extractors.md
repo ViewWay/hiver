@@ -11,23 +11,23 @@ Nexus 中的提取器提供了一种类型安全的方式从 HTTP 请求中提�
 >
 > The codebase defines **two separate** `FromRequest` traits that serve different layers:
 >
-> - **`nexus_http::FromRequest`** (in `nexus-http`): Uses `async fn from_request(req: &Request) -> Result<Self>`. This is the trait used by the `#[handler]` proc-macro to perform automatic parameter extraction.
-> - **`nexus_extractors::FromRequest`** (in `nexus-extractors`): Uses `fn from_request(req: &Request) -> ExtractorFuture<Self>` where `ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorError>> + Send>>`. This is the trait used when implementing custom extractors manually with the extractor infrastructure.
+> - **`hiver_http::FromRequest`** (in `hiver-http`): Uses `async fn from_request(req: &Request) -> Result<Self>`. This is the trait used by the `#[handler]` proc-macro to perform automatic parameter extraction.
+> - **`hiver_extractors::FromRequest`** (in `hiver-extractors`): Uses `fn from_request(req: &Request) -> ExtractorFuture<Self>` where `ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorError>> + Send>>`. This is the trait used when implementing custom extractors manually with the extractor infrastructure.
 >
-> When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use `nexus_extractors::FromRequest` unless noted otherwise.
+> When writing a custom extractor, be sure to implement the correct trait for your use case. The code examples in this document use `hiver_extractors::FromRequest` unless noted otherwise.
 >
 > **2. Extractor-style handler signatures require the proc-macro system / 提取器风格的处理器签名需要过程宏系统**
 >
-> Handler function signatures with multiple extractor parameters (e.g., `async fn handler(Path(id): Path<u64>, Query(params): Query<Params>)`) **only work** when the function is decorated with the `#[handler]` attribute macro from `nexus-macros`. The `#[handler]` macro generates a wrapper that accepts a raw `Request`, calls `FromRequest::from_request()` for each parameter, and then invokes the original function.
+> Handler function signatures with multiple extractor parameters (e.g., `async fn handler(Path(id): Path<u64>, Query(params): Query<Params>)`) **only work** when the function is decorated with the `#[handler]` attribute macro from `hiver-macros`. The `#[handler]` macro generates a wrapper that accepts a raw `Request`, calls `FromRequest::from_request()` for each parameter, and then invokes the original function.
 >
 > Plain handler functions registered via `Router::get()` (or `.post()`, etc.) have the signature `fn(Request, Arc<S>) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>` and must manually extract data from the `Request`.
 >
-> The route-attribute macros (`#[get]`, `#[post]`, etc. from `nexus-macros`) register a raw function with the router and do **not** perform parameter extraction on their own. To get automatic extraction, combine `#[handler]` with a route attribute, or use `#[handler]` and register the wrapper manually.
+> The route-attribute macros (`#[get]`, `#[post]`, etc. from `hiver-macros`) register a raw function with the router and do **not** perform parameter extraction on their own. To get automatic extraction, combine `#[handler]` with a route attribute, or use `#[handler]` and register the wrapper manually.
 
 ## Overview / 概述
 
 ```rust
-use nexus_extractors::{Path, Query, Json, State, Header};
+use hiver_extractors::{Path, Query, Json, State, Header};
 
 async fn handler(
     Path(id): Path<u64>,           // From URL path / 从 URL 路径
@@ -48,7 +48,7 @@ Extract values from URL path segments.
 从 URL 路径段提取值。
 
 ```rust
-use nexus_extractors::Path;
+use hiver_extractors::Path;
 
 // Route: /users/:id
 // URL: /users/123
@@ -88,7 +88,7 @@ Extract values from URL query string.
 从 URL 查询字符串提取值。
 
 ```rust
-use nexus_extractors::Query;
+use hiver_extractors::Query;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -121,7 +121,7 @@ Extract and deserialize JSON from request body.
 从请求体提取并反序列化 JSON。
 
 ```rust
-use nexus_extractors::Json;
+use hiver_extractors::Json;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -148,7 +148,7 @@ Extract URL-encoded form data.
 提取 URL 编码的表单数据。
 
 ```rust
-use nexus_extractors::Form;
+use hiver_extractors::Form;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -174,7 +174,7 @@ Extract shared application state.
 提取共享的应用状态。
 
 ```rust
-use nexus_extractors::State;
+use hiver_extractors::State;
 use std::sync::Arc;
 
 struct AppState {
@@ -209,7 +209,7 @@ Extract values from HTTP headers.
 从 HTTP 请求头提取值。
 
 ```rust
-use nexus_extractors::{Header, NamedHeader};
+use hiver_extractors::{Header, NamedHeader};
 
 // Extract specific header / 提取特定头
 async fn handler(
@@ -247,7 +247,7 @@ Extract values from cookies.
 从 cookie 提取值。
 
 ```rust
-use nexus_extractors::{Cookie, NamedCookie};
+use hiver_extractors::{Cookie, NamedCookie};
 
 // Named cookie / 命名 cookie
 async fn handler(
@@ -278,8 +278,8 @@ Implement the `FromRequest` trait:
 实现 `FromRequest` trait：
 
 ```rust
-use nexus_extractors::{FromRequest, ExtractorError, ExtractorFuture};
-use nexus_http::Request;
+use hiver_extractors::{FromRequest, ExtractorError, ExtractorFuture};
+use hiver_http::Request;
 
 struct CurrentUser {
     id: u64,
@@ -347,8 +347,8 @@ pub enum ExtractorError {
 ## Complete Example / 完整示例
 
 ```rust
-use nexus_extractors::{Path, Query, Json, State, Header};
-use nexus_http::{Response, StatusCode, Body};
+use hiver_extractors::{Path, Query, Json, State, Header};
+use hiver_http::{Response, StatusCode, Body};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

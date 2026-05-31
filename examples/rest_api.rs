@@ -21,14 +21,14 @@
 //! cargo run --bin rest_api
 //! ```
 
-use nexus_cache::{CacheConfig, Cached, CachePutExec, CacheEvictExec, MemoryCache};
-use nexus_data_annotations::{Entity, Table, Id, Column, Transactional};
-use nexus_data_annotations::transactional::IsolationLevel;
-use nexus_http::validation::{Validatable, ValidationErrors, ValidationHelpers};
-use nexus_http::{Request, Response, StatusCode};
-use nexus_observability::{Tracer, Span, SpanId, TraceId, info, error as log_error};
-use nexus_resilience::rate_limit::{RateLimiter, RateLimiterConfig};
-use nexus_security::{
+use hiver_cache::{CacheConfig, Cached, CachePutExec, CacheEvictExec, MemoryCache};
+use hiver_data_annotations::{Entity, Table, Id, Column, Transactional};
+use hiver_data_annotations::transactional::IsolationLevel;
+use hiver_http::validation::{Validatable, ValidationErrors, ValidationHelpers};
+use hiver_http::{Request, Response, StatusCode};
+use hiver_observability::{Tracer, Span, SpanId, TraceId, info, error as log_error};
+use hiver_resilience::rate_limit::{RateLimiter, RateLimiterConfig};
+use hiver_security::{
     Authority, JwtUtil, PasswordEncoder, Role, User,
     Authentication, AuthenticationManager, SimpleAuthenticationManager,
 };
@@ -75,13 +75,13 @@ impl Validatable for Product {
             errors.add(err);
         }
         if self.price <= 0.0 {
-            errors.add(nexus_http::validation::ValidationError::new(
+            errors.add(hiver_http::validation::ValidationError::new(
                 "price",
                 "Price must be positive",
             ));
         }
         if self.stock < 0 {
-            errors.add(nexus_http::validation::ValidationError::new(
+            errors.add(hiver_http::validation::ValidationError::new(
                 "stock",
                 "Stock cannot be negative",
             ));
@@ -485,7 +485,7 @@ impl AuthController {
         // TODO: 在生产环境中，使用真正的数据库支持的用户服务
         Self {
             users: Arc::new(RwLock::new(HashMap::new())),
-            password_encoder: Arc::new(nexus_security::NoOpPasswordEncoder),
+            password_encoder: Arc::new(hiver_security::NoOpPasswordEncoder),
         }
     }
 

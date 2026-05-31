@@ -1,0 +1,38 @@
+[package]
+name = "hiver-exceptions"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Global exception handling for Hiver Framework.
+Nexus框架的全局异常处理。
+Equivalent to: Spring @ControllerAdvice, @ExceptionHandler
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Workspace dependencies
+hiver-http = { path = "../hiver-http" }
+hiver-core = { path = "../hiver-core" }
+
+# External dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full", "test-util"] }

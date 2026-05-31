@@ -29,19 +29,19 @@ cargo new my-api --bin
 cd my-api
 
 # Add Nexus dependencies / 添加Nexus依赖
-cargo add nexus-runtime nexus-http nexus-router nexus-extractors
-cargo add nexus-runtime
+cargo add hiver-runtime hiver-http hiver-router hiver-extractors
+cargo add hiver-runtime
 ```
 
 ### Update Cargo.toml / 更新Cargo.toml
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1"
-nexus-http = "0.1"
-nexus-router = "0.1"
-nexus-extractors = "0.1"
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1"
+hiver-http = "0.1"
+hiver-router = "0.1"
+hiver-extractors = "0.1"
+hiver-runtime = "0.1.0-alpha"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ```
@@ -53,11 +53,11 @@ serde_json = "1"
 ### Minimal Server / 最小服务器
 
 ```rust
-use nexus_http::Server;
-use nexus_router::Router;
+use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -> std::io::Result<()> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/", || async { "Hello, Nexus!" });
@@ -86,9 +86,9 @@ curl http://localhost:8080/
 ### Path Parameters / 路径参数
 
 ```rust
-use nexus_http::{Request, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::Path;
+use hiver_http::{Request, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::Path;
 
 async fn get_user(Path(id): Path<String>) -> Response {
     Response::builder()
@@ -135,7 +135,7 @@ let app = Router::new()
 
 ```rust
 use serde::Deserialize;
-use nexus_extractors::Json;
+use hiver_extractors::Json;
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -154,7 +154,7 @@ async fn create_user(Json(payload): Json<CreateUserRequest>) -> Response {
 ### Query Parameters / 查询参数
 
 ```rust
-use nexus_extractors::Query;
+use hiver_extractors::Query;
 use std::collections::HashMap;
 
 async fn search_users(Query(params): Query<HashMap<String, String>>) -> Response {
@@ -168,7 +168,7 @@ async fn search_users(Query(params): Query<HashMap<String, String>>) -> Response
 ### Headers / 请求头
 
 ```rust
-use nexus_extractors::Header;
+use hiver_extractors::Header;
 
 async fn get_auth_user(Header(authorization): Header<String>) -> Response {
     // Validate token / 验证令牌
@@ -190,8 +190,8 @@ async fn get_auth_user(Header(authorization): Header<String>) -> Response {
 ### Logging Middleware / 日志中间件
 
 ```rust
-use nexus_middleware::Middleware;
-use nexus_http::Request;
+use hiver_middleware::Middleware;
+use hiver_http::Request;
 use std::sync::Arc;
 
 struct Logger;
@@ -200,8 +200,8 @@ impl Middleware for Logger {
     fn handle(
         &self,
         req: Request,
-        next: nexus_middleware::Next,
-    ) -> nexus_middleware::BoxFuture<'static, Result<Response, nexus_http::Error>> {
+        next: hiver_middleware::Next,
+    ) -> hiver_middleware::BoxFuture<'static, Result<Response, hiver_http::Error>> {
         println!("{} {}", req.method(), req.uri());
         next.run(req)
     }
@@ -216,7 +216,7 @@ let app = Router::new()
 ### CORS Middleware / CORS中间件
 
 ```rust
-use nexus_middleware::Cors;
+use hiver_middleware::Cors;
 
 let app = Router::new()
     .middleware(std::sync::Arc::new(
@@ -297,7 +297,7 @@ async fn list_users(
 }
 
 fn main() -> std::io::Result<()> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let pool = PgPool::connect("postgres://localhost/mydb").await?;
 
@@ -324,11 +324,11 @@ fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nexus_http::Request;
+    use hiver_http::Request;
 
     #[test]
     fn test_hello_world() -> std::io::Result<()> {
-        let runtime = nexus_runtime::Runtime::new()?;
+        let runtime = hiver_runtime::Runtime::new()?;
         runtime.block_on(async {
             let req = Request::builder()
                 .uri("/")
@@ -349,12 +349,12 @@ mod tests {
 
 ```rust
 // tests/api_test.rs
-use nexus_http::Server;
-use nexus_router::Router;
+use hiver_http::Server;
+use hiver_router::Router;
 
 #[test]
 fn test_api_endpoint() -> std::io::Result<()> {
-    let runtime = nexus_runtime::Runtime::new()?;
+    let runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/api/health", || async { {"status": "ok"} });
@@ -379,9 +379,9 @@ fn test_api_endpoint() -> std::io::Result<()> {
 ## Complete Example / 完整示例
 
 ```rust
-use nexus_http::{Server, Response, StatusCode};
-use nexus_router::{Router, Params};
-use nexus_extractors::{Json, Path, Query};
+use hiver_http::{Server, Response, StatusCode};
+use hiver_router::{Router, Params};
+use hiver_extractors::{Json, Path, Query};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -426,7 +426,7 @@ async fn health() -> &'static str {
 }
 
 fn main() -> std::io::Result<()> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
             .get("/health", health)
@@ -452,7 +452,7 @@ fn main() -> std::io::Result<()> {
 - Explore [Middleware](../core-concepts/middleware.md) for advanced request processing
 - Learn about [Resilience](../advanced/resilience.md) patterns
 - Check [Observability](../advanced/observability.md) for monitoring
-- See [Examples](https://github.com/ViewWay/nexus/tree/main/examples) for more
+- See [Examples](https://github.com/ViewWay/hiver/tree/main/examples) for more
 
 ---
 

@@ -1,7 +1,7 @@
 # GitHub Actions Workflows / GitHub Actions 工作流
 
-This directory contains the complete CI/CD pipeline configuration for the Nexus framework.
-此目录包含 Nexus 框架的完整 CI/CD 流水线配置。
+This directory contains the complete CI/CD pipeline configuration for the Hiver Framework.
+此目录包含 Hiver 框架的完整 CI/CD 流水线配置。
 
 ## Overview / 概述
 
@@ -228,27 +228,27 @@ cargo tarpaulin --all-features --out Xml
 | `publish` | Publish crates in dependency order |
 
 **Published Crates** (in order):
-1. nexus-runtime
-2. nexus-core
-3. nexus-http
-4. nexus-router
-5. nexus-extractors
-6. nexus-response
-7. nexus-middleware
-8. nexus-macros
-9. nexus-resilience
-10. nexus-observability
-11. nexus-config
-12. nexus-cache
-13. nexus-security
-14. nexus-tx
-15. nexus-cloud
-16. nexus-schedule
-17. nexus-multipart
-18. nexus-validation
-19. nexus-exceptions
-20. nexus-actuator
-21. nexus-web3
+1. hiver-runtime
+2. hiver-core
+3. hiver-http
+4. hiver-router
+5. hiver-extractors
+6. hiver-response
+7. hiver-middleware
+8. hiver-macros
+9. hiver-resilience
+10. hiver-observability
+11. hiver-config
+12. hiver-cache
+13. hiver-security
+14. hiver-tx
+15. hiver-cloud
+16. hiver-schedule
+17. hiver-multipart
+18. hiver-validation
+19. hiver-exceptions
+20. hiver-actuator
+21. hiver-web3
 
 **Secrets Required**:
 - `CRATES_TOKEN`: crates.io API token
@@ -393,11 +393,11 @@ cargo criterion --workspace --all-features
 - 🍺 Homebrew formula generation
 
 **Artifacts**:
-- `nexus-x86_64-unknown-linux-gnu`
-- `nexus-aarch64-unknown-linux-gnu`
-- `nexus-x86_64-apple-darwin`
-- `nexus-aarch64-apple-darwin`
-- `nexus-x86_64-pc-windows-msvc.exe`
+- `hiver-x86_64-unknown-linux-gnu`
+- `hiver-aarch64-unknown-linux-gnu`
+- `hiver-x86_64-apple-darwin`
+- `hiver-aarch64-apple-darwin`
+- `hiver-x86_64-pc-windows-msvc.exe`
 
 **Estimated Runtime**: 30-45 minutes
 

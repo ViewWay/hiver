@@ -8,17 +8,17 @@
 //! Run with: cargo run --bin spring_boot_logging_demo
 //! 运行: cargo run --bin spring_boot_logging_demo
 
-use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_observability::log::{LogFormat, LogLevel, Logger, LoggerConfig};
-use nexus_runtime::task::block_on;
+use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_observability::log::{LogFormat, LogLevel, Logger, LoggerConfig};
+use hiver_runtime::task::block_on;
 
-#[cfg(feature = "nexus-format")]
-use nexus_observability::{Banner, StartupLogger};
+#[cfg(feature = "hiver-format")]
+use hiver_observability::{Banner, StartupLogger};
 
 fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Initialize Spring Boot style logging
     // 初始化 Spring Boot 风格日志
-    #[cfg(feature = "nexus-format")]
+    #[cfg(feature = "hiver-format")]
     {
         // Print banner (equivalent to Spring Boot banner)
         // 打印横幅（等价于 Spring Boot 横幅）
@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         startup.log_initialization_completed(532);
     }
 
-    #[cfg(not(feature = "nexus-format"))]
+    #[cfg(not(feature = "hiver-format"))]
     {
         // Fallback to default logging
         // 回退到默认日志
@@ -58,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Run the async server using the runtime
     // 使用运行时运行异步服务器
     block_on(async {
-        #[cfg(feature = "nexus-format")]
+        #[cfg(feature = "hiver-format")]
         {
             let startup = StartupLogger::new();
             let server = Server::bind("127.0.0.1:8080").run(handle_request).await?;
@@ -73,7 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
         }
 
-        #[cfg(not(feature = "nexus-format"))]
+        #[cfg(not(feature = "hiver-format"))]
         {
             let _server = Server::bind("127.0.0.1:8080").run(handle_request).await?;
             Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
@@ -83,7 +83,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
 /// Handle incoming HTTP requests
 /// 处理传入的HTTP请求
-async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http::Error> {
+async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http::Error> {
     let path = req.path();
     let method = req.method();
 

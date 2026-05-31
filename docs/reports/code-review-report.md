@@ -1,4 +1,4 @@
-# Nexus Framework - 代码与文档审查报告
+# Hiver Framework - 代码与文档审查报告
 # Code & Documentation Review Report
 
 **日期 / Date**: 2026-01-24  
@@ -75,7 +75,7 @@
 **完成度**: 100%
 
 **已实现模块**:
-- ✅ `nexus-runtime`: 完整的异步运行时
+- ✅ `hiver-runtime`: 完整的异步运行时
   - ✅ I/O Driver (io-uring/epoll/kqueue)
   - ✅ Task Scheduler (thread-per-core + work-stealing)
   - ✅ Timer Wheel (hierarchical)
@@ -100,18 +100,18 @@
 **完成度**: 0% (占位符)
 
 **待实现模块**:
-- ⚠️ `nexus-http`: HTTP服务器和客户端
+- ⚠️ `hiver-http`: HTTP服务器和客户端
   - ⚠️ HTTP类型定义 (P2-1)
   - ⚠️ 零拷贝HTTP解析器 (P2-2)
   - ⚠️ HTTP/1.1服务器 (P2-7)
-- ⚠️ `nexus-router`: 路由系统
+- ⚠️ `hiver-router`: 路由系统
   - ⚠️ Trie路由匹配 (P2-3)
   - ⚠️ 路径参数提取 (P2-4)
-- ⚠️ `nexus-extractors`: 提取器
+- ⚠️ `hiver-extractors`: 提取器
   - ⚠️ Path/Query/Json/Form提取器 (P2-8)
-- ⚠️ `nexus-response`: 响应构建器
+- ⚠️ `hiver-response`: 响应构建器
   - ⚠️ IntoResponse trait (P2-6)
-- ⚠️ `nexus-core`: 核心类型
+- ⚠️ `hiver-core`: 核心类型
   - ⚠️ Error类型 (部分占位符)
   - ⚠️ Context类型 (占位符)
   - ⚠️ Extension系统 (占位符)
@@ -173,8 +173,8 @@
 4. ⚠️ 双语注释不完整
 
 **需要改进的模块**:
-- `nexus-runtime`: 部分API需要更详细的文档
-- `nexus-core`: 占位符代码需要文档
+- `hiver-runtime`: 部分API需要更详细的文档
+- `hiver-core`: 占位符代码需要文档
 - 其他模块: 待实现时补充
 
 **建议 / Recommendations**:

@@ -4962,6 +4962,1235 @@ dependencies = [
 ]
 
 [[package]]
+name = "hiver-actuator"
+version = "0.1.0-alpha"
+dependencies = [
+ "hiver-core",
+ "hiver-http",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-agent"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "futures",
+ "hiver-ai",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-ai"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures",
+ "mockito",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-amqp"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "futures",
+ "hiver-runtime",
+ "lapin",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "urlencoding",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-aop"
+version = "0.1.0-alpha"
+dependencies = [
+ "darling 0.23.0",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+ "tokio",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-async"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "futures",
+ "hiver-core",
+ "parking_lot",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-batch"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "hiver-core",
+ "serde",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-benches"
+version = "0.1.0-alpha"
+dependencies = [
+ "criterion",
+ "hiver-data-orm",
+ "hiver-extractors",
+ "hiver-http",
+ "hiver-router",
+ "hiver-runtime",
+ "hiver-security",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "hiver-cache"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "criterion",
+ "dashmap",
+ "futures",
+ "hiver-data-redis",
+ "hiver-runtime",
+ "metrics",
+ "moka",
+ "once_cell",
+ "quick_cache",
+ "redis 0.27.6",
+ "rmp-serde",
+ "serde",
+ "serde_json",
+ "siphasher",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-cloud"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "consul",
+ "etcd-rs",
+ "futures",
+ "hex",
+ "hiver-resilience",
+ "hiver-runtime",
+ "http 1.4.1",
+ "hyper 1.10.1",
+ "hyper-util",
+ "mockito",
+ "rand 0.9.4",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "ulid",
+]
+
+[[package]]
+name = "hiver-config"
+version = "0.1.0-alpha"
+dependencies = [
+ "aes-gcm",
+ "anyhow",
+ "base64 0.22.1",
+ "chrono",
+ "config",
+ "dotenvy",
+ "hex",
+ "hiver-runtime",
+ "hmac",
+ "indexmap 2.14.0",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "rand 0.9.4",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sha2",
+ "syn 2.0.117",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "toml 0.9.12+spec-1.1.0",
+ "tracing",
+ "validator",
+ "yaml-rust2 0.11.0",
+]
+
+[[package]]
+name = "hiver-core"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "arc-swap",
+ "async-trait",
+ "bevy_reflect",
+ "bytes",
+ "criterion",
+ "dashmap",
+ "error-stack",
+ "futures",
+ "hiver-runtime",
+ "http 1.4.1",
+ "http-body 1.0.1",
+ "http-body-util",
+ "hyper 1.10.1",
+ "indexmap 2.14.0",
+ "itertools 0.14.0",
+ "once_cell",
+ "parking_lot",
+ "pin-project-lite",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-data-annotations"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "darling 0.23.0",
+ "darling_core 0.23.0",
+ "hiver-security",
+ "proc-macro2",
+ "quote",
+ "rand 0.9.4",
+ "serde",
+ "serde_json",
+ "syn 2.0.117",
+ "thiserror 2.0.18",
+ "tokio",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-data-commons"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "hex",
+ "hiver-runtime",
+ "serde",
+ "thiserror 2.0.18",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-data-macros"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "darling 0.23.0",
+ "hiver-data-commons",
+ "hiver-data-orm",
+ "hiver-data-rdbc",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "hiver-data-mongodb"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "futures-util",
+ "hiver-data-commons",
+ "hiver-data-macros",
+ "hiver-runtime",
+ "mongodb",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-data-orm"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "diesel",
+ "futures-util",
+ "hiver-data-commons",
+ "hiver-data-macros",
+ "hiver-data-rdbc",
+ "hiver-runtime",
+ "hiver-tx",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-data-rdbc"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures-util",
+ "hiver-data-commons",
+ "hiver-runtime",
+ "hiver-tx",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-data-redis"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "deadpool",
+ "deadpool-redis",
+ "futures-util",
+ "hiver-data-commons",
+ "hiver-data-macros",
+ "hiver-runtime",
+ "redis 0.27.6",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-events"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dashmap",
+ "erased-serde 0.4.10",
+ "hiver-core",
+ "hiver-events-macros",
+ "serde",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-events-macros"
+version = "0.1.0-alpha"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "hiver-examples"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "env_logger 0.11.10",
+ "hiver-cache",
+ "hiver-core",
+ "hiver-data-annotations",
+ "hiver-grpc",
+ "hiver-http",
+ "hiver-macros",
+ "hiver-observability",
+ "hiver-resilience",
+ "hiver-router",
+ "hiver-security",
+ "hiver-starter",
+ "hiver-validation",
+ "hiver-web3",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-exceptions"
+version = "0.1.0-alpha"
+dependencies = [
+ "hiver-core",
+ "hiver-http",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-extractors"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "email_address",
+ "futures",
+ "hiver-core",
+ "hiver-http",
+ "http 1.4.1",
+ "multer",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "thiserror 2.0.18",
+ "tokio",
+ "validator",
+]
+
+[[package]]
+name = "hiver-flyway"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "serde",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-graphql"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-graphql",
+ "async-trait",
+ "futures",
+ "hiver-core",
+ "hiver-http",
+ "hiver-router",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-grpc"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "futures",
+ "http 1.4.1",
+ "prost 0.13.5",
+ "prost-types 0.13.5",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-stream",
+ "tonic 0.12.3",
+ "tower 0.4.13",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-hateoas"
+version = "0.1.0-alpha"
+dependencies = [
+ "hiver-core",
+ "hiver-http",
+ "hiver-router",
+ "http 1.4.1",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "hiver-http"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "criterion",
+ "futures",
+ "futures-rustls",
+ "h2 0.4.14",
+ "h3",
+ "h3-quinn",
+ "hiver-core",
+ "hiver-runtime",
+ "http 1.4.1",
+ "http-body 1.0.1",
+ "http-body-util",
+ "httparse",
+ "hyper 1.10.1",
+ "hyper-util",
+ "once_cell",
+ "pin-project-lite",
+ "quinn",
+ "regex",
+ "rustls 0.23.40",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-rustls 0.26.4",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-i18n"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "hiver-core",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-integration"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "hiver-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-kafka"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "futures",
+ "hiver-runtime",
+ "once_cell",
+ "rdkafka",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-ldap"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "hiver-core",
+ "ldap3",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-lombok"
+version = "0.1.0-alpha"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn 2.0.117",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-macros"
+version = "0.1.0-alpha"
+dependencies = [
+ "darling 0.23.0",
+ "hiver-core",
+ "hiver-runtime",
+ "http 1.4.1",
+ "inventory",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn 2.0.117",
+ "tokio",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-micrometer"
+version = "0.1.0-alpha"
+dependencies = [
+ "criterion",
+ "hiver-core",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "opentelemetry 0.31.0",
+ "opentelemetry_sdk 0.31.0",
+ "prometheus",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-middleware"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-compression",
+ "brotli 7.0.0",
+ "bytes",
+ "csrf",
+ "flate2",
+ "futures",
+ "governor",
+ "headers",
+ "hiver-core",
+ "hiver-http",
+ "hiver-router",
+ "hiver-runtime",
+ "hiver-security",
+ "http 1.4.1",
+ "mime_guess",
+ "pin-project-lite",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tower 0.5.3",
+ "tower-http",
+ "tower_governor",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-modulith"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "futures",
+ "hiver-runtime",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-multipart"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "futures",
+ "hiver-core",
+ "hiver-http",
+ "multer",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-observability"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "hiver-config",
+ "hiver-runtime",
+ "http 1.4.1",
+ "hyper 1.10.1",
+ "log",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "once_cell",
+ "opentelemetry 0.31.0",
+ "opentelemetry-jaeger",
+ "opentelemetry-otlp",
+ "opentelemetry_sdk 0.31.0",
+ "prometheus",
+ "serde",
+ "serde_json",
+ "slog",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tracing",
+ "tracing-appender",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-openapi"
+version = "0.1.0-alpha"
+dependencies = [
+ "chrono",
+ "hiver-core",
+ "hiver-http",
+ "http 1.4.1",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "thiserror 2.0.18",
+ "tokio",
+ "utoipa",
+ "utoipa-swagger-ui",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-resilience"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "arc-swap",
+ "async-trait",
+ "consul",
+ "criterion",
+ "dashmap",
+ "error-stack",
+ "etcd-rs",
+ "futures",
+ "hiver-core",
+ "hiver-http",
+ "hiver-observability",
+ "hiver-runtime",
+ "http 1.4.1",
+ "metrics",
+ "nacos",
+ "parking_lot",
+ "pin-project-lite",
+ "prometheus",
+ "rand 0.9.4",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tower 0.5.3",
+]
+
+[[package]]
+name = "hiver-response"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "askama",
+ "bytes",
+ "chrono",
+ "handlebars",
+ "hiver-core",
+ "http 1.4.1",
+ "http-body 1.0.1",
+ "indexmap 2.14.0",
+ "mime",
+ "mime_guess",
+ "serde",
+ "serde_json",
+ "tera",
+ "thiserror 2.0.18",
+ "tokio",
+ "zip",
+]
+
+[[package]]
+name = "hiver-retry"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "hiver-resilience",
+ "hiver-retry-macros",
+ "tokio",
+]
+
+[[package]]
+name = "hiver-retry-macros"
+version = "0.1.0-alpha"
+dependencies = [
+ "darling 0.23.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "hiver-router"
+version = "0.1.0-alpha"
+dependencies = [
+ "criterion",
+ "hiver-core",
+ "hiver-http",
+ "http 1.4.1",
+ "itertools 0.14.0",
+ "matchit 0.9.2",
+ "percent-encoding",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
+name = "hiver-runtime"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "arc-swap",
+ "bytes",
+ "criterion",
+ "crossbeam",
+ "dashmap",
+ "flume",
+ "futures",
+ "futures-util",
+ "io-uring",
+ "kqueue",
+ "libc",
+ "num_cpus",
+ "once_cell",
+ "parking_lot",
+ "pin-project",
+ "pin-project-lite",
+ "proptest",
+ "quickcheck",
+ "quickcheck_macros",
+ "rustc-hash 2.1.1",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tracing",
+ "tracing-core",
+]
+
+[[package]]
+name = "hiver-schedule"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "hiver-macros",
+ "hiver-runtime",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tokio-cron-scheduler",
+ "tracing",
+ "ulid",
+]
+
+[[package]]
+name = "hiver-security"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "bcrypt",
+ "chrono",
+ "futures",
+ "hex",
+ "hiver-http",
+ "hiver-runtime",
+ "hmac",
+ "http 1.4.1",
+ "jsonwebtoken 10.4.0",
+ "md-5 0.11.0",
+ "once_cell",
+ "rand 0.9.4",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "sha2",
+ "subtle",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "urlencoding",
+]
+
+[[package]]
+name = "hiver-session"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "hiver-core",
+ "hiver-data-mongodb",
+ "hiver-data-redis",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-shell"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "colored",
+ "hiver-core",
+ "hiver-shell-macros",
+ "rustyline",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hiver-shell-macros"
+version = "0.1.0-alpha"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "hiver-spel"
+version = "0.1.0-alpha"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "hiver-starter"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "hiver-actuator",
+ "hiver-cache",
+ "hiver-config",
+ "hiver-data-rdbc",
+ "hiver-http",
+ "hiver-macros",
+ "hiver-middleware",
+ "hiver-observability",
+ "hiver-router",
+ "hiver-runtime",
+ "hiver-schedule",
+ "hiver-security",
+ "hiver-tx",
+ "inventory",
+ "num_cpus",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sqlx",
+ "tokio",
+ "toml 0.8.23",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "hiver-state-machine"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "hiver-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
+name = "hiver-test"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "darling 0.23.0",
+ "futures",
+ "hiver-http",
+ "hiver-runtime",
+ "http 1.4.1",
+ "hyper 1.10.1",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "syn 2.0.117",
+ "testcontainers",
+ "testcontainers-modules",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-tests"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "futures",
+ "hiver-config",
+ "hiver-core",
+ "hiver-data-commons",
+ "hiver-data-macros",
+ "hiver-data-orm",
+ "hiver-data-rdbc",
+ "hiver-modulith",
+ "hiver-state-machine",
+ "lapin",
+ "rdkafka",
+ "redis 0.27.6",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "testcontainers",
+ "testcontainers-modules",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-tx"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "futures",
+ "hiver-http",
+ "hiver-runtime",
+ "once_cell",
+ "sea-orm",
+ "serde",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-postgres",
+]
+
+[[package]]
+name = "hiver-validation"
+version = "0.1.0-alpha"
+dependencies = [
+ "chrono",
+ "email_address",
+ "hiver-core",
+ "hiver-http",
+ "log",
+ "once_cell",
+ "regex",
+ "serde",
+ "thiserror 2.0.18",
+ "tokio-test",
+ "url",
+ "uuid",
+ "validator",
+]
+
+[[package]]
+name = "hiver-vault"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "chrono",
+ "futures",
+ "hiver-core",
+ "mockito",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "hiver-web3"
+version = "0.1.0-alpha"
+dependencies = [
+ "alloy",
+ "alloy-consensus 2.0.5",
+ "alloy-network 1.8.3",
+ "alloy-primitives",
+ "alloy-rpc-types 1.8.3",
+ "alloy-transport 1.8.3",
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "bip39",
+ "chrono",
+ "futures",
+ "getrandom 0.3.4",
+ "hex",
+ "hiver-runtime",
+ "hmac",
+ "http 1.4.1",
+ "hyper 1.10.1",
+ "hyper-util",
+ "indexmap 2.14.0",
+ "rand 0.9.4",
+ "reqwest 0.12.28",
+ "secp256k1 0.31.1",
+ "serde",
+ "serde_json",
+ "sha3 0.10.9",
+ "thiserror 2.0.18",
+ "time",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+]
+
+[[package]]
+name = "hiver-websocket-stomp"
+version = "0.1.0-alpha"
+dependencies = [
+ "async-trait",
+ "base64 0.22.1",
+ "bytes",
+ "futures-util",
+ "hiver-core",
+ "hiver-http",
+ "hiver-router",
+ "md-5 0.11.0",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tokio-tungstenite",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "hiver-ws"
+version = "0.1.0-alpha"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "chrono",
+ "hmac",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
 name = "hkdf"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6512,1235 +7741,6 @@ name = "ndk-context"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "27b02d87554356db9e9a873add8782d4ea6e3e58ea071a9adb9a2e8ddb884a8b"
-
-[[package]]
-name = "nexus-actuator"
-version = "0.1.0-alpha"
-dependencies = [
- "nexus-core",
- "nexus-http",
- "serde",
- "serde_json",
- "sysinfo",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-agent"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "futures",
- "nexus-ai",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-ai"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "futures",
- "mockito",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-amqp"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "lapin",
- "nexus-runtime",
- "once_cell",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "urlencoding",
- "uuid",
-]
-
-[[package]]
-name = "nexus-aop"
-version = "0.1.0-alpha"
-dependencies = [
- "darling 0.23.0",
- "once_cell",
- "proc-macro2",
- "quote",
- "syn 2.0.117",
- "tokio",
- "trybuild",
-]
-
-[[package]]
-name = "nexus-async"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "futures",
- "nexus-core",
- "parking_lot",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-batch"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "nexus-core",
- "serde",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-benches"
-version = "0.1.0-alpha"
-dependencies = [
- "criterion",
- "nexus-data-orm",
- "nexus-extractors",
- "nexus-http",
- "nexus-router",
- "nexus-runtime",
- "nexus-security",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "nexus-cache"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "criterion",
- "dashmap",
- "futures",
- "metrics",
- "moka",
- "nexus-data-redis",
- "nexus-runtime",
- "once_cell",
- "quick_cache",
- "redis 0.27.6",
- "rmp-serde",
- "serde",
- "serde_json",
- "siphasher",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-cloud"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "consul",
- "etcd-rs",
- "futures",
- "hex",
- "http 1.4.1",
- "hyper 1.10.1",
- "hyper-util",
- "mockito",
- "nexus-resilience",
- "nexus-runtime",
- "rand 0.9.4",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "ulid",
-]
-
-[[package]]
-name = "nexus-config"
-version = "0.1.0-alpha"
-dependencies = [
- "aes-gcm",
- "anyhow",
- "base64 0.22.1",
- "chrono",
- "config",
- "dotenvy",
- "hex",
- "hmac",
- "indexmap 2.14.0",
- "nexus-runtime",
- "once_cell",
- "proc-macro2",
- "quote",
- "rand 0.9.4",
- "serde",
- "serde_json",
- "serde_yaml",
- "sha2",
- "syn 2.0.117",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "toml 0.9.12+spec-1.1.0",
- "tracing",
- "validator",
- "yaml-rust2 0.11.0",
-]
-
-[[package]]
-name = "nexus-core"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "arc-swap",
- "async-trait",
- "bevy_reflect",
- "bytes",
- "criterion",
- "dashmap",
- "error-stack",
- "futures",
- "http 1.4.1",
- "http-body 1.0.1",
- "http-body-util",
- "hyper 1.10.1",
- "indexmap 2.14.0",
- "itertools 0.14.0",
- "nexus-runtime",
- "once_cell",
- "parking_lot",
- "pin-project-lite",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
-]
-
-[[package]]
-name = "nexus-data-annotations"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "darling 0.23.0",
- "darling_core 0.23.0",
- "nexus-security",
- "proc-macro2",
- "quote",
- "rand 0.9.4",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "thiserror 2.0.18",
- "tokio",
- "trybuild",
-]
-
-[[package]]
-name = "nexus-data-commons"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "hex",
- "nexus-runtime",
- "serde",
- "thiserror 2.0.18",
- "uuid",
-]
-
-[[package]]
-name = "nexus-data-macros"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "darling 0.23.0",
- "nexus-data-commons",
- "nexus-data-orm",
- "nexus-data-rdbc",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 2.0.117",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "nexus-data-mongodb"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "futures-util",
- "mongodb",
- "nexus-data-commons",
- "nexus-data-macros",
- "nexus-runtime",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-data-orm"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "diesel",
- "futures-util",
- "nexus-data-commons",
- "nexus-data-macros",
- "nexus-data-rdbc",
- "nexus-runtime",
- "nexus-tx",
- "sea-orm",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-data-rdbc"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "futures-util",
- "nexus-data-commons",
- "nexus-runtime",
- "nexus-tx",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-data-redis"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "deadpool",
- "deadpool-redis",
- "futures-util",
- "nexus-data-commons",
- "nexus-data-macros",
- "nexus-runtime",
- "redis 0.27.6",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-events"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "dashmap",
- "erased-serde 0.4.10",
- "nexus-core",
- "nexus-events-macros",
- "serde",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-events-macros"
-version = "0.1.0-alpha"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "nexus-examples"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "env_logger 0.11.10",
- "nexus-cache",
- "nexus-core",
- "nexus-data-annotations",
- "nexus-grpc",
- "nexus-http",
- "nexus-macros",
- "nexus-observability",
- "nexus-resilience",
- "nexus-router",
- "nexus-security",
- "nexus-starter",
- "nexus-validation",
- "nexus-web3",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-exceptions"
-version = "0.1.0-alpha"
-dependencies = [
- "nexus-core",
- "nexus-http",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-extractors"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "email_address",
- "futures",
- "http 1.4.1",
- "multer",
- "nexus-core",
- "nexus-http",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "thiserror 2.0.18",
- "tokio",
- "validator",
-]
-
-[[package]]
-name = "nexus-flyway"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "serde",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-graphql"
-version = "0.1.0-alpha"
-dependencies = [
- "async-graphql",
- "async-trait",
- "futures",
- "nexus-core",
- "nexus-http",
- "nexus-router",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-grpc"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "futures",
- "http 1.4.1",
- "prost 0.13.5",
- "prost-types 0.13.5",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-stream",
- "tonic 0.12.3",
- "tower 0.4.13",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-hateoas"
-version = "0.1.0-alpha"
-dependencies = [
- "http 1.4.1",
- "nexus-core",
- "nexus-http",
- "nexus-router",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "nexus-http"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "bytes",
- "criterion",
- "futures",
- "futures-rustls",
- "h2 0.4.14",
- "h3",
- "h3-quinn",
- "http 1.4.1",
- "http-body 1.0.1",
- "http-body-util",
- "httparse",
- "hyper 1.10.1",
- "hyper-util",
- "nexus-core",
- "nexus-runtime",
- "once_cell",
- "pin-project-lite",
- "quinn",
- "regex",
- "rustls 0.23.40",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "thiserror 2.0.18",
- "tokio",
- "tokio-rustls 0.26.4",
- "tracing",
-]
-
-[[package]]
-name = "nexus-i18n"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "nexus-core",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-integration"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "nexus-core",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-kafka"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "nexus-runtime",
- "once_cell",
- "rdkafka",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-ldap"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "ldap3",
- "nexus-core",
- "parking_lot",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-lombok"
-version = "0.1.0-alpha"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "trybuild",
-]
-
-[[package]]
-name = "nexus-macros"
-version = "0.1.0-alpha"
-dependencies = [
- "darling 0.23.0",
- "http 1.4.1",
- "inventory",
- "nexus-core",
- "nexus-runtime",
- "proc-macro2",
- "quote",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "tokio",
- "trybuild",
-]
-
-[[package]]
-name = "nexus-micrometer"
-version = "0.1.0-alpha"
-dependencies = [
- "criterion",
- "metrics",
- "metrics-exporter-prometheus",
- "nexus-core",
- "opentelemetry 0.31.0",
- "opentelemetry_sdk 0.31.0",
- "prometheus",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
-]
-
-[[package]]
-name = "nexus-middleware"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-compression",
- "brotli 7.0.0",
- "bytes",
- "csrf",
- "flate2",
- "futures",
- "governor",
- "headers",
- "http 1.4.1",
- "mime_guess",
- "nexus-core",
- "nexus-http",
- "nexus-router",
- "nexus-runtime",
- "nexus-security",
- "pin-project-lite",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tower 0.5.3",
- "tower-http",
- "tower_governor",
- "tracing",
-]
-
-[[package]]
-name = "nexus-modulith"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "futures",
- "nexus-runtime",
- "once_cell",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-multipart"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "bytes",
- "futures",
- "multer",
- "nexus-core",
- "nexus-http",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-observability"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "chrono",
- "http 1.4.1",
- "hyper 1.10.1",
- "log",
- "metrics",
- "metrics-exporter-prometheus",
- "nexus-config",
- "nexus-runtime",
- "once_cell",
- "opentelemetry 0.31.0",
- "opentelemetry-jaeger",
- "opentelemetry-otlp",
- "opentelemetry_sdk 0.31.0",
- "prometheus",
- "serde",
- "serde_json",
- "slog",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tracing",
- "tracing-appender",
- "tracing-opentelemetry",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
-name = "nexus-openapi"
-version = "0.1.0-alpha"
-dependencies = [
- "chrono",
- "http 1.4.1",
- "nexus-core",
- "nexus-http",
- "serde",
- "serde_json",
- "serde_yaml",
- "thiserror 2.0.18",
- "tokio",
- "utoipa",
- "utoipa-swagger-ui",
- "uuid",
-]
-
-[[package]]
-name = "nexus-resilience"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "arc-swap",
- "async-trait",
- "consul",
- "criterion",
- "dashmap",
- "error-stack",
- "etcd-rs",
- "futures",
- "http 1.4.1",
- "metrics",
- "nacos",
- "nexus-core",
- "nexus-http",
- "nexus-observability",
- "nexus-runtime",
- "parking_lot",
- "pin-project-lite",
- "prometheus",
- "rand 0.9.4",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tower 0.5.3",
-]
-
-[[package]]
-name = "nexus-response"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "askama",
- "bytes",
- "chrono",
- "handlebars",
- "http 1.4.1",
- "http-body 1.0.1",
- "indexmap 2.14.0",
- "mime",
- "mime_guess",
- "nexus-core",
- "serde",
- "serde_json",
- "tera",
- "thiserror 2.0.18",
- "tokio",
- "zip",
-]
-
-[[package]]
-name = "nexus-retry"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "nexus-resilience",
- "nexus-retry-macros",
- "tokio",
-]
-
-[[package]]
-name = "nexus-retry-macros"
-version = "0.1.0-alpha"
-dependencies = [
- "darling 0.23.0",
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "nexus-router"
-version = "0.1.0-alpha"
-dependencies = [
- "criterion",
- "http 1.4.1",
- "itertools 0.14.0",
- "matchit 0.9.2",
- "nexus-core",
- "nexus-http",
- "percent-encoding",
- "regex",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
-]
-
-[[package]]
-name = "nexus-runtime"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "arc-swap",
- "bytes",
- "criterion",
- "crossbeam",
- "dashmap",
- "flume",
- "futures",
- "futures-util",
- "io-uring",
- "kqueue",
- "libc",
- "num_cpus",
- "once_cell",
- "parking_lot",
- "pin-project",
- "pin-project-lite",
- "proptest",
- "quickcheck",
- "quickcheck_macros",
- "rustc-hash 2.1.1",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tracing",
- "tracing-core",
-]
-
-[[package]]
-name = "nexus-schedule"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "nexus-macros",
- "nexus-runtime",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tokio-cron-scheduler",
- "tracing",
- "ulid",
-]
-
-[[package]]
-name = "nexus-security"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "bcrypt",
- "chrono",
- "futures",
- "hex",
- "hmac",
- "http 1.4.1",
- "jsonwebtoken 10.4.0",
- "md-5 0.11.0",
- "nexus-http",
- "nexus-runtime",
- "once_cell",
- "rand 0.9.4",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "sha2",
- "subtle",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "urlencoding",
-]
-
-[[package]]
-name = "nexus-session"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "chrono",
- "nexus-core",
- "nexus-data-mongodb",
- "nexus-data-redis",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
-]
-
-[[package]]
-name = "nexus-shell"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "colored",
- "nexus-core",
- "nexus-shell-macros",
- "rustyline",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-shell-macros"
-version = "0.1.0-alpha"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "nexus-spel"
-version = "0.1.0-alpha"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "nexus-starter"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "inventory",
- "nexus-actuator",
- "nexus-cache",
- "nexus-config",
- "nexus-data-rdbc",
- "nexus-http",
- "nexus-macros",
- "nexus-middleware",
- "nexus-observability",
- "nexus-router",
- "nexus-runtime",
- "nexus-schedule",
- "nexus-security",
- "nexus-tx",
- "num_cpus",
- "once_cell",
- "serde",
- "serde_json",
- "serde_yaml",
- "sqlx",
- "tokio",
- "toml 0.8.23",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "nexus-state-machine"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "nexus-core",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
-]
-
-[[package]]
-name = "nexus-test"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "darling 0.23.0",
- "futures",
- "http 1.4.1",
- "hyper 1.10.1",
- "nexus-http",
- "nexus-runtime",
- "once_cell",
- "proc-macro2",
- "quote",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "syn 2.0.117",
- "testcontainers",
- "testcontainers-modules",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "trybuild",
-]
-
-[[package]]
-name = "nexus-tests"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "futures",
- "lapin",
- "nexus-config",
- "nexus-core",
- "nexus-data-commons",
- "nexus-data-macros",
- "nexus-data-orm",
- "nexus-data-rdbc",
- "nexus-modulith",
- "nexus-state-machine",
- "rdkafka",
- "redis 0.27.6",
- "serde",
- "serde_json",
- "sqlx",
- "testcontainers",
- "testcontainers-modules",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-tx"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "nexus-http",
- "nexus-runtime",
- "once_cell",
- "sea-orm",
- "serde",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "tokio-postgres",
-]
-
-[[package]]
-name = "nexus-validation"
-version = "0.1.0-alpha"
-dependencies = [
- "chrono",
- "email_address",
- "log",
- "nexus-core",
- "nexus-http",
- "once_cell",
- "regex",
- "serde",
- "thiserror 2.0.18",
- "tokio-test",
- "url",
- "uuid",
- "validator",
-]
-
-[[package]]
-name = "nexus-vault"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "chrono",
- "futures",
- "mockito",
- "nexus-core",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "nexus-web3"
-version = "0.1.0-alpha"
-dependencies = [
- "alloy",
- "alloy-consensus 2.0.5",
- "alloy-network 1.8.3",
- "alloy-primitives",
- "alloy-rpc-types 1.8.3",
- "alloy-transport 1.8.3",
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "bip39",
- "chrono",
- "futures",
- "getrandom 0.3.4",
- "hex",
- "hmac",
- "http 1.4.1",
- "hyper 1.10.1",
- "hyper-util",
- "indexmap 2.14.0",
- "nexus-runtime",
- "rand 0.9.4",
- "reqwest 0.12.28",
- "secp256k1 0.31.1",
- "serde",
- "serde_json",
- "sha3 0.10.9",
- "thiserror 2.0.18",
- "time",
- "tokio",
- "tokio-tungstenite",
- "tungstenite",
- "url",
-]
-
-[[package]]
-name = "nexus-websocket-stomp"
-version = "0.1.0-alpha"
-dependencies = [
- "async-trait",
- "base64 0.22.1",
- "bytes",
- "futures-util",
- "md-5 0.11.0",
- "nexus-core",
- "nexus-http",
- "nexus-router",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tokio-tungstenite",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "nexus-ws"
-version = "0.1.0-alpha"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "chrono",
- "hmac",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.18",
- "tokio",
-]
 
 [[package]]
 name = "nibble_vec"

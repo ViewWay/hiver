@@ -177,11 +177,11 @@ public class SecurityConfig {
 #### Nexus - Security Config
 
 ```rust
-use nexus_security::{
+use hiver_security::{
     SecurityConfig, PasswordEncoder, AuthenticationManager,
     SecurityMiddleware, JwtAuthenticationProvider
 };
-use nexus_macros::{config, service};
+use hiver_macros::{config, service};
 
 #[config(prefix = "security")]
 pub struct SecurityConfig {
@@ -365,8 +365,8 @@ public class AuthController {
 #### Nexus - Login Flow
 
 ```rust
-use nexus_security::{AuthenticationManager, JwtTokenProvider, PasswordEncoder};
-use nexus_macros::{controller, post};
+use hiver_security::{AuthenticationManager, JwtTokenProvider, PasswordEncoder};
+use hiver_macros::{controller, post};
 use serde::{Deserialize, Serialize};
 
 // 1. 登录请求
@@ -854,8 +854,8 @@ public class UserController {
 #### Nexus - RBAC 权限模型
 
 ```rust
-use nexus_security::{HasRole, HasPermission, AuthContext};
-use nexus_macros::{controller, get, post, put, delete};
+use hiver_security::{HasRole, HasPermission, AuthContext};
+use hiver_macros::{controller, get, post, put, delete};
 
 // 1. 用户实体
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1062,8 +1062,8 @@ public class LoginAttemptService {
 #### Nexus - 登录拦截与限制
 
 ```rust
-use nexus_resilience::rate_limit::RateLimiter;
-use nexus_observability::log::Logger;
+use hiver_resilience::rate_limit::RateLimiter;
+use hiver_observability::log::Logger;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -1369,7 +1369,7 @@ public class CreateUserRequest {
 ```rust
 use utoipa::{OpenApi, OpenApiSpec, ToSchema};
 use utoipa_swagger_ui::SwaggerUi;
-use nexus_macros::{controller, get, post};
+use hiver_macros::{controller, get, post};
 
 // 1. OpenAPI 配置
 #[derive(OpenApi)]
@@ -1621,8 +1621,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 #### Nexus - 日志配置
 
 ```rust
-use nexus_observability::log::{Logger, LoggerFactory, Level, LogConfig};
-use nexus_macros::config;
+use hiver_observability::log::{Logger, LoggerFactory, Level, LogConfig};
+use hiver_macros::config;
 
 #[config(prefix = "logging")]
 pub struct LoggingConfig {
@@ -1803,7 +1803,7 @@ public class CustomMetrics {
 #### Nexus - Observability 模块
 
 ```rust
-use nexus_observability::{
+use hiver_observability::{
     metrics::{Counter, Histogram, Gauge},
     health::{HealthChecker, HealthStatus},
     trace::{Tracer, Span},
@@ -1952,15 +1952,15 @@ impl UserService {
 
 | 功能 / Feature | Spring Boot | Nexus | 完成度 |
 |----------------|-------------|-------|--------|
-| **JWT 认证 / JWT Auth** | Spring Security | nexus-security | ✅ 90% |
+| **JWT 认证 / JWT Auth** | Spring Security | hiver-security | ✅ 90% |
 | **权限控制 / RBAC** | @PreAuthorize | #[require_permission] | ⚠️ 75% |
 | **登录拦截 / Login Intercept** | @Aspect | Interceptor | ⚠️ 70% |
-| **登录限制 / Rate Limit** | 自定义 | nexus-resilience | ✅ 90% |
+| **登录限制 / Rate Limit** | 自定义 | hiver-resilience | ✅ 90% |
 | **API 文档 / Swagger** | springdoc-openapi | utoipa | ⚠️ 80% |
-| **日志系统 / Logging** | Logback | nexus-observability | ✅ 85% |
+| **日志系统 / Logging** | Logback | hiver-observability | ✅ 85% |
 | **健康检查 / Health Check** | Actuator | HealthChecker | ✅ 85% |
 | **指标收集 / Metrics** | Micrometer | Prometheus | ✅ 85% |
-| **分布式追踪 / Tracing** | Spring Cloud Sleuth | nexus-observability | ✅ 85% |
+| **分布式追踪 / Tracing** | Spring Cloud Sleuth | hiver-observability | ✅ 85% |
 
 ### 待补充功能 / Features to Add
 

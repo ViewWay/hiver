@@ -6,16 +6,16 @@
 
 **预计时间：** 4-6 个月
 
-### 8.1 nexus-data-rdbc (1.5 个月) / 响应式数据库
+### 8.1 hiver-data-rdbc (1.5 个月) / 响应式数据库
 
 **目标：** 类似 Spring Data R2DBC，提供响应式数据库操作
 
 ```rust
 // 目标 API
-use nexus_data_rdbc::{DatabaseClient, RowMapper, ResultSetExtractor};
+use hiver_data_rdbc::{DatabaseClient, RowMapper, ResultSetExtractor};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
@@ -51,13 +51,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 3. ✅ ResultSetExtractor trait
 4. ✅ 参数化查询（防止 SQL 注入）
 5. ✅ 批量操作
-6. ✅ 事务集成（与 nexus-tx）
+6. ✅ 事务集成（与 hiver-tx）
 7. ✅ 连接池管理
 8. ✅ 多数据库支持（PostgreSQL, MySQL, SQLite）
 
 **文件结构：**
 ```
-crates/nexus-data-rdbc/
+crates/hiver-data-rdbc/
 ├── src/
 │   ├── lib.rs              # 公共 API
 │   ├── client.rs           # DatabaseClient
@@ -72,17 +72,17 @@ crates/nexus-data-rdbc/
 └── Cargo.toml
 ```
 
-### 8.2 nexus-data-orm (2 个月) / ORM 集成
+### 8.2 hiver-data-orm (2 个月) / ORM 集成
 
 **目标：** 集成主流 Rust ORM，提供统一抽象
 
 ```rust
 // 目标 API（ActiveRecord 版本）
-use nexus_data_orm::{Model, ActiveRecord};
-use nexus_data_rdbc::DatabaseClient;
+use hiver_data_orm::{Model, ActiveRecord};
+use hiver_data_rdbc::DatabaseClient;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
     let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 **文件结构：**
 ```
-crates/nexus-data-orm/
+crates/hiver-data-orm/
 ├── src/
 │   ├── lib.rs              # 公共 API
 │   ├── model.rs            # Model trait
@@ -140,17 +140,17 @@ crates/nexus-data-orm/
 └── Cargo.toml
 ```
 
-### 8.3 nexus-data-commons (2.5 个月) / Repository 抽象
+### 8.3 hiver-data-commons (2.5 个月) / Repository 抽象
 
 **目标：** 类似 Spring Data JPA，提供声明式 Repository
 
 ```rust
 // 目标 API
-use nexus_data_commons::{CrudRepository, PageRequest, Page};
-use nexus_data_rdbc::DatabaseClient;
+use hiver_data_commons::{CrudRepository, PageRequest, Page};
+use hiver_data_rdbc::DatabaseClient;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
     let client = DatabaseClient::connect("postgresql://...").await.unwrap();
 
@@ -197,7 +197,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 **文件结构：**
 ```
-crates/nexus-data-commons/
+crates/hiver-data-commons/
 ├── src/
 │   ├── lib.rs                    # 公共 API
 │   ├── repository.rs             # Repository traits
@@ -213,16 +213,16 @@ crates/nexus-data-commons/
 └── Cargo.toml
 ```
 
-### 8.4 nexus-flyway (1 个月) / 数据库迁移
+### 8.4 hiver-flyway (1 个月) / 数据库迁移
 
 **目标：** 类似 Flyway/Liquibase，管理数据库版本
 
 ```rust
 // 目标 API
-use nexus_flyway::{Migration, Migrator};
+use hiver_flyway::{Migration, Migrator};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut runtime = nexus_runtime::Runtime::new()?;
+    let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
     let migrator = Migrator::new("postgresql://...").await.unwrap();
 
@@ -259,49 +259,49 @@ CREATE TABLE users (
 
 ## 🎯 Phase 9: 增强功能 (P1) / 增强功能
 
-### 9.1 nexus-data-redis (1 个月)
+### 9.1 hiver-data-redis (1 个月)
 - ✅ Redis 客户端封装
 - ✅ 数据结构操作（String, Hash, List, Set, ZSet）
 - ✅ Pub/Sub
 - ✅ 事务支持
 - ✅ 连接池
 
-### 9.2 nexus-cache-annotations (0.5 个月)
+### 9.2 hiver-cache-annotations (0.5 个月)
 - ✅ #[Cacheable] 宏
 - ✅ #[CachePut] 宏
 - ✅ #[CacheEvict] 宏
 - ✅ CacheManager 集成
 
-### 9.3 nexus-openapi (1 个月)
+### 9.3 hiver-openapi (1 个月)
 - ✅ OpenAPI 3.0 规范生成
 - ✅ 自动文档注解
 - ✅ Swagger UI 集成
 - ✅ 类型Schema推断
 
-### 9.4 nexus-amqp (1 个月)
+### 9.4 hiver-amqp (1 个月)
 - ✅ RabbitMQ 客户端
 - ✅ 声明式队列配置
 - ✅ 消息监听器宏
 - ✅ 消息转换器
 
-### 9.5 nexus-kafka (1 个月)
+### 9.5 hiver-kafka (1 个月)
 - ✅ Kafka 生产者/消费者
 - ✅ 消息序列化
 - ✅ 消费者组管理
 - ✅ 偏移量管理
 
-### 9.6 nexus-oauth2 (1.5 个月)
+### 9.6 hiver-oauth2 (1.5 个月)
 - ✅ OAuth2 客户端
 - ✅ 授权码流程
 - ✅ OIDC 支持
 - ✅ Token 管理
 
-### 9.7 nexus-async (0.5 个月)
+### 9.7 hiver-async (0.5 个月)
 - ✅ #[Async] 宏
 - ✅ 线程池配置
 - ✅ 任务结果获取
 
-### 9.8 nexus-test (1 个月)
+### 9.8 hiver-test (1 个月)
 - ✅ 集成测试工具
 - ✅ Mock 工具
 - ✅ 测试容器（Testcontainers）
@@ -312,36 +312,36 @@ CREATE TABLE users (
 | 阶段 | Crates | 时间 | 优先级 |
 |------|--------|------|--------|
 | **Phase 8** | | **6 个月** | **P0** |
-| 8.1 | nexus-data-rdbc | 1.5 个月 | P0 |
-| 8.2 | nexus-data-orm | 2 个月 | P0 |
-| 8.3 | nexus-data-commons | 2.5 个月 | P0 |
-| 8.4 | nexus-flyway | 1 个月 | P1 |
+| 8.1 | hiver-data-rdbc | 1.5 个月 | P0 |
+| 8.2 | hiver-data-orm | 2 个月 | P0 |
+| 8.3 | hiver-data-commons | 2.5 个月 | P0 |
+| 8.4 | hiver-flyway | 1 个月 | P1 |
 | **Phase 9** | | **8.5 个月** | **P1** |
-| 9.1 | nexus-data-redis | 1 个月 | P1 |
-| 9.2 | nexus-cache-annotations | 0.5 个月 | P1 |
-| 9.3 | nexus-openapi | 1 个月 | P1 |
-| 9.4 | nexus-amqp | 1 个月 | P1 |
-| 9.5 | nexus-kafka | 1 个月 | P1 |
-| 9.6 | nexus-oauth2 | 1.5 个月 | P1 |
-| 9.7 | nexus-async | 0.5 个月 | P1 |
-| 9.8 | nexus-test | 1 个月 | P1 |
+| 9.1 | hiver-data-redis | 1 个月 | P1 |
+| 9.2 | hiver-cache-annotations | 0.5 个月 | P1 |
+| 9.3 | hiver-openapi | 1 个月 | P1 |
+| 9.4 | hiver-amqp | 1 个月 | P1 |
+| 9.5 | hiver-kafka | 1 个月 | P1 |
+| 9.6 | hiver-oauth2 | 1.5 个月 | P1 |
+| 9.7 | hiver-async | 0.5 个月 | P1 |
+| 9.8 | hiver-test | 1 个月 | P1 |
 
 **总计：** Phase 8-9 需要 **14.5 个月**
 
 ## 🎯 里程碑 / 里程碑
 
 ### Milestone 1: RDBC 基础（1.5 个月）
-- ✅ nexus-data-rdbc 完成
+- ✅ hiver-data-rdbc 完成
 - ✅ 可以进行基础的 CRUD 操作
 - ✅ 示例：用户管理 API
 
 ### Milestone 2: ORM 集成（3.5 个月）
-- ✅ nexus-data-orm 完成
+- ✅ hiver-data-orm 完成
 - ✅ 可以使用 ActiveRecord 模式
 - ✅ 示例：博客系统（含关联关系）
 
 ### Milestone 3: Repository 抽象（6 个月）
-- ✅ nexus-data-commons 完成
+- ✅ hiver-data-commons 完成
 - ✅ 可以使用声明式 Repository
 - ✅ 示例：电商系统（完整 CRUD）
 
@@ -369,7 +369,7 @@ CREATE TABLE users (
 
 ## 🚀 立即行动计划 / 立即行动计划
 
-### 第 1 步：创建 nexus-data-rdbc（本周）
+### 第 1 步：创建 hiver-data-rdbc（本周）
 - [x] 创建 crate 目录结构
 - [x] 实现 DatabaseClient 基础
 - [x] 添加查询方法

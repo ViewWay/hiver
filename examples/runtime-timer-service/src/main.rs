@@ -7,7 +7,7 @@
 //! Run with: cargo run --example runtime-timer-service
 //! 运行: cargo run --example runtime-timer-service
 
-use nexus_runtime::{Runtime, spawn, sleep, sleep_until, Duration, Instant};
+use hiver_runtime::{Runtime, spawn, sleep, sleep_until, Duration, Instant};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};

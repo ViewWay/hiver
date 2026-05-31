@@ -42,17 +42,17 @@ nexus/
 │   └── examples/                 # Example code / 示例代码
 │
 ├── crates/                       # Workspace crates / 工作空间crate
-│   ├── nexus-runtime/            # Custom async runtime / 自定义async runtime
-│   ├── nexus-core/               # Core framework types / 核心框架类型
-│   ├── nexus-http/               # HTTP server & client / HTTP服务端和客户端
-│   ├── nexus-router/             # Router & middleware / 路由和中间件
-│   ├── nexus-extractors/         # Request extractors / 请求提取器
-│   ├── nexus-response/           # Response builders / 响应构建器
-│   ├── nexus-resilience/         # HA patterns (circuit breaker, etc.) / HA模式
-│   ├── nexus-observability/      # Tracing, metrics, logging / 可观测性
-│   ├── nexus-web3/               # Blockchain & Web3 support / 区块链支持
-│   ├── nexus-macros/             # Procedural macros / 过程宏
-│   └── nexus-cli/                # CLI tools / CLI工具
+│   ├── hiver-runtime/            # Custom async runtime / 自定义async runtime
+│   ├── hiver-core/               # Core framework types / 核心框架类型
+│   ├── hiver-http/               # HTTP server & client / HTTP服务端和客户端
+│   ├── hiver-router/             # Router & middleware / 路由和中间件
+│   ├── hiver-extractors/         # Request extractors / 请求提取器
+│   ├── hiver-response/           # Response builders / 响应构建器
+│   ├── hiver-resilience/         # HA patterns (circuit breaker, etc.) / HA模式
+│   ├── hiver-observability/      # Tracing, metrics, logging / 可观测性
+│   ├── hiver-web3/               # Blockchain & Web3 support / 区块链支持
+│   ├── hiver-macros/             # Procedural macros / 过程宏
+│   └── hiver-cli/                # CLI tools / CLI工具
 │
 ├── examples/                     # Example applications / 示例应用
 ├── tests/                        # Integration tests / 集成测试
@@ -76,18 +76,18 @@ nexus/
 
 ### 2.1 Crate Names / Crate命名
 
-- Use lowercase with hyphens: `nexus-runtime`
-- Prefix with `nexus-` for framework crates
+- Use lowercase with hyphens: `hiver-runtime`
+- Prefix with `hiver-` for framework crates
 - Keep names short and descriptive
 
 ```toml
 # Good / 推荐
-nexus-runtime
-nexus-http
-nexus-web3
+hiver-runtime
+hiver-http
+hiver-web3
 
 # Bad / 避免
-nexus_async_runtime_for_web_servers
+hiver_async_runtime_for_web_servers
 runtime
 nexusAsyncRuntime
 ```
@@ -235,8 +235,8 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
 // 3. First-party crates (external) / 内部外部crate
-use nexus_http::Request;
-use nexus_runtime::Runtime;
+use hiver_http::Request;
+use hiver_runtime::Runtime;
 
 // 4. Local modules / 本地模块
 use crate::config::Config;
@@ -573,7 +573,7 @@ impl ErrorContext {
 /// # Examples / 示例
 ///
 /// ```
-/// use nexus::Router;
+/// use hiver::Router;
 ///
 /// let app = Router::new()
 ///     .get("/", || async { "Hello, World!" });
@@ -634,7 +634,7 @@ where
 /// # Example / 示例
 ///
 /// ```rust
-/// use nexus::{Handler, Request, Response};
+/// use hiver::{Handler, Request, Response};
 ///
 /// async fn hello_world() -> &'static str {
 ///     "Hello, World!"
@@ -665,7 +665,7 @@ pub trait Handler<T>: Clone + Send + Sync + 'static {
 //! # Nexus HTTP Server Module
 //! # Nexus HTTP服务器模块
 //!
-//! This module provides the HTTP server implementation for the Nexus framework.
+//! This module provides the HTTP server implementation for the Hiver Framework.
 //! 此模块为Nexus框架提供HTTP服务器实现。
 //!
 //! ## Features / 功能
@@ -678,8 +678,8 @@ pub trait Handler<T>: Clone + Send + Sync + 'static {
 //! ## Usage / 用法
 //!
 //! ```rust,no_run
-//! use nexus::HttpServer;
-//! use nexus::Router;
+//! use hiver::HttpServer;
+//! use hiver::Router;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -738,7 +738,7 @@ mod tests {
 ```rust
 // tests/integration.rs
 
-use nexus::prelude::*;
+use hiver::prelude::*;
 
 #[tokio::test]
 async fn test_full_request_flow() {
@@ -770,7 +770,7 @@ async fn test_circuit_breaker_opens_on_threshold() {
 // benches/router_bench.rs
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
-use nexus::Router;
+use hiver::Router;
 
 fn bench_route_matching(c: &mut Criterion) {
     let mut group = c.benchmark_group("route_matching");

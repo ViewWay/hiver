@@ -174,7 +174,28 @@
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"microservice.rs\"$/d' examples/Cargo.toml)",
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"web3_dapp.rs\"$/d' examples/Cargo.toml)",
       "Bash(sed -i '' '/\\\\[\\\\[bin\\\\]\\\\]$/,/path = \"grpc_service.rs\"$/d' examples/Cargo.toml)",
-      "mcp__plugin_claude-mem_mcp-search__smart_outline"
+      "mcp__plugin_claude-mem_mcp-search__smart_outline",
+      "Bash(git stash *)",
+      "mcp__plugin_ecc_sequential-thinking__sequentialthinking",
+      "Bash(test -f .github/workflows/*.yml)",
+      "Bash(cp /tmp/intro-update.md docs/book/src/getting-started/introduction.md)",
+      "Bash(gh auth *)",
+      "mcp__plugin_ecc_exa__web_search_exa",
+      "Bash(awk '/name = \"thrift\"/{found=1} found && /version =/{print; found=0}' /Users/yimiliya/RustroverProjects/nexus/Cargo.lock)",
+      "Bash(awk '/name = \"jsonwebtoken\"/{found=1} found && /version =/{print; found=0}' /Users/yimiliya/RustroverProjects/nexus/Cargo.lock)",
+      "WebSearch",
+      "Read(//Users/yimiliya/.cargo/**)",
+      "Bash(CARGO_SOURCE_CRATES_IO_REPLACE_WITH=tuna cargo update -p ruint --precise 1.16.1)",
+      "mcp__plugin_ecc_github__search_code",
+      "Bash(CARGO_SOURCE_CRATES_IO_REGISTRY=\"sparse+https://index.crates.io/\" cargo update -p ruint --precise 1.16.1)",
+      "Bash(awk '/^\\\\[\\\\[package\\\\]\\\\]/{pkg=\"\"} /^name = \"/{pkg=$0} /\"thrift\"/ && pkg != \"\" && !/^name = \"thrift\"/{print pkg; pkg=\"\"}' Cargo.lock)",
+      "Bash(awk '/^\\\\[\\\\[package\\\\]\\\\]/{pkg=\"\"; deps=\"\"} /^name = \"/{gsub\\(/\"/, \"\", $3\\); pkg=$3} /^version = \"/{gsub\\(/\"/, \"\", $3\\); ver=$3} /^dependencies = \\\\[/{getline; deps=\"\"} /\"jsonwebtoken\"/{print pkg \" \" ver}' Cargo.lock)",
+      "Bash(awk '/^\\\\[\\\\[package\\\\]\\\\]/{pkg=\"\"; deps=\"\"} /^name = \"/{gsub\\(/\"/, \"\", $3\\); pkg=$3} /^version = \"/{gsub\\(/\"/, \"\", $3\\); ver=$3} /\"rustls-webpki 0.101\"/{print pkg \" \" ver}' Cargo.lock)",
+      "Bash(cp ~/.cargo/config.toml.bak ~/.cargo/config.toml)",
+      "Bash(sed -i '' 's|registry = \"sparse+https://mirrors.ustc.edu.cn/crates.io-index/\"|registry = \"sparse+https://index.crates.io/\"|' ~/.cargo/config.toml)",
+      "Bash(sed -i '' \"s/replace-with = 'ustc'/# replace-with = 'ustc'  # temporarily disabled/\" ~/.cargo/config.toml)",
+      "Bash(cp ~/.cargo/config.toml.bak ~/.cargo/config.toml.nustc)",
+      "Bash(sed -i '' \"s/replace-with = 'ustc'/# replace-with = 'ustc'/\" ~/.cargo/config.toml)"
     ]
   }
 }

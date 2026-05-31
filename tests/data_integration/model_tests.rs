@@ -1,7 +1,7 @@
 //! Model integration tests
 //! 模型集成测试
 
-use nexus_data_orm::Model;
+use hiver_data_orm::Model;
 
 /// Test User model with derive macro
 #[derive(Model, Debug, Clone, PartialEq)]

@@ -1,7 +1,7 @@
 {
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cargo build -p nexus-ldap 2>&1\",\"timeout\":300000,\"description\":\"Build nexus-ldap to verify fixes\"}",
-  "error": "Exit code 101\n   Compiling nexus-core v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-core)\n   Compiling nexus-ldap v0.1.0-alpha (/Users/yimiliya/RustroverProjects/nexus/crates/nexus-ldap)\nerror[E0425]: cannot find type `E` in this scope\n   --> crates/nexus-ldap/src/repository.rs:124:34\n    |\n124 |     _marker: PhantomData<(T, ID, E)>,\n    |                                  ^\n    |\n   ::: /Users/yimiliya/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/libra...",
-  "timestamp": "2026-05-29T15:14:26.100Z",
-  "retry_count": 2
+  "tool_name": "mcp__plugin_ecc_playwright__browser_navigate",
+  "tool_input_preview": "{\"url\":\"http://localhost:5173\"}",
+  "error": "### Error\nError: Extension connection timeout. Make sure the \"Playwright MCP Bridge\" extension is installed. See https://github.com/microsoft/playwright-mcp/blob/main/packages/extension/README.md for installation instructions.",
+  "timestamp": "2026-05-31T14:41:07.545Z",
+  "retry_count": 1
 }

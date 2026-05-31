@@ -20,12 +20,12 @@
 - ❌ 前端静态资源需要手动刷新
 - ❌ 开发效率低下
 
-**需要实现：nexus-devtools**
+**需要实现：hiver-devtools**
 
 ```rust
 // 目标功能
 // 文件监听 + 自动重启
-[dependencies.nexus_devtools]
+[dependencies.hiver_devtools]
 version = "0.1.0"
 
 // 开发模式自动启用
@@ -51,7 +51,7 @@ version = "0.1.0"
 - ❌ 需要手动创建大量文件
 - ❌ 新手学习曲线陡峭
 
-**需要实现：nexus-cli**
+**需要实现：hiver-cli**
 
 ```bash
 # 目标 CLI
@@ -82,26 +82,26 @@ nexus generate controller UserController
 | **Mappings** | /actuator/mappings | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **Cron Info** | /actuator/croninfo | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**当前 nexus-actuator 缺失：**
+**当前 hiver-actuator 缺失：**
 
 ```rust
 // 需要添加的功能
-#[nexus_endpoint(id = "heapdump", enabledWhen = false)]
+#[hiver_endpoint(id = "heapdump", enabledWhen = false)]
 pub async fn heap_dump() -> Response {
     // 堆转信息
 }
 
-#[nexus_endpoint(id = "threaddump")]
+#[hiver_endpoint(id = "threaddump")]
 pub async fn thread_dump() -> Response {
     // 线程转储
 }
 
-#[nexus_endpoint(id = "scheduledtasks")]
+#[hiver_endpoint(id = "scheduledtasks")]
 pub async fn scheduled_tasks() -> Response {
     // 定时任务列表
 }
 
-#[nexus_endpoint(id = "env")]
+#[hiver_endpoint(id = "env")]
 pub async fn environment_info() -> Response {
     // 环境变量
 }
@@ -128,22 +128,22 @@ pub async fn environment_info() -> Response {
 **最严重缺失：@Scope 和 @Conditional**
 
 ```rust
-// 当前 nexus-core 无法实现的
-#[nexus_component]
+// 当前 hiver-core 无法实现的
+#[hiver_component]
 pub struct RequestScopedBean {
     // ❌ 无法实现 Request 作用域
 }
 
 // 需要实现的目标
-#[nexus_component]
-#[nexus_scope(Scope::Request)]
+#[hiver_component]
+#[hiver_scope(Scope::Request)]
 pub struct RequestContext {
-    #[nexus_autowired]
+    #[hiver_autowired]
     user_service: Arc<UserService>,
 }
 
-#[nexus_component]
-#[nexus_conditional_on_property(name = "feature.enabled")]
+#[hiver_component]
+#[hiver_conditional_on_property(name = "feature.enabled")]
 pub struct ConditionalBean {
     // 只有配置启用时才创建
 }
@@ -170,25 +170,25 @@ pub struct ConditionalBean {
 - ❌ 无法实现动态查询
 - ❌ 配置灵活性极低
 
-**需要实现：nexus-spel**
+**需要实现：hiver-spel**
 
 ```rust
 // 目标 API
-#[nexus_component]
-#[nexus_configuration]
+#[hiver_component]
+#[hiver_configuration]
 pub struct AppConfig {
-    #[nexus_value("#{app.name}")]
+    #[hiver_value("#{app.name}")]
     app_name: String,
 
-    #[nexus_value("#{cache.ttl:PT30S}")]
+    #[hiver_value("#{cache.ttl:PT30S}")]
     cache_ttl: Duration,
 
-    #[nexus_value("#{datasource.url}")]
+    #[hiver_value("#{datasource.url}")]
     database_url: String,
 }
 
 // 在 Repository 中使用 SpEL
-#[nexus_query("#{#entityName} WHERE status = 'ACTIVE'")]
+#[hiver_query("#{#entityName} WHERE status = 'ACTIVE'")]
 async fn find_active_users(&self) -> Result<Vec<User>, Error>;
 ```
 
@@ -226,21 +226,21 @@ async fn find_active_users(&self) -> Result<Vec<User>, Error>;
 - ❌ 无法实现国际化
 - ❌ 只能使用英语
 
-**需要实现：nexus-i18n**
+**需要实现：hiver-i18n**
 
 ```rust
 // 目标 API
-#[nexus_component]
+#[hiver_component]
 pub struct UserService {
-    #[nexus_message_source("messages")]
+    #[hiver_message_source("messages")]
     messages: MessageSource,
 
-    #[nexus_locale_context]
+    #[hiver_locale_context]
     locale: Locale,
 }
 
 pub struct User {
-    #[nexus_localized_message_code("user.created")]
+    #[hiver_localized_message_code("user.created")]
     name: String,
 }
 ```
@@ -259,21 +259,21 @@ pub struct User {
 | **SchedulingConfigurer** | 调度配置 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@Async** | 异步任务执行 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要增强：nexus-schedule**
+**需要增强：hiver-schedule**
 
 ```rust
 // 需要添加的功能
-#[nexus_component]
-#[nexus_enable_scheduling]
+#[hiver_component]
+#[hiver_enable_scheduling]
 pub struct SchedulerConfig {
-    #[nexus_scheduled(cron = "0 */5 * * * * ?")]
+    #[hiver_scheduled(cron = "0 */5 * * * * ?")]
     async fn cleanup_task(&self);
 
-    #[nexus_scheduled(fixedRate = 5000)]
+    #[hiver_scheduled(fixedRate = 5000)]
     async fn health_check_task(&self);
 
     // Cron 序列
-    #[nexus_cron_sequence(cron = "0 */1 * * * * ?")]
+    #[hiver_cron_sequence(cron = "0 */1 * * * * ?")]
     async fn cron_sequence_task(&self);
 }
 ```
@@ -297,13 +297,13 @@ pub struct SchedulerConfig {
 - ❌ 无法实现行级安全
 - ❌ 无法实现资源级权限
 
-**需要实现：nexus-security-acl**
+**需要实现：hiver-security-acl**
 
 ```rust
 // 目标 API
-#[nexus_component]
+#[hiver_component]
 pub struct DocumentService {
-    #[nexus_acl(
+    #[hiver_acl(
         permissions = ["READ", "WRITE"],
         roles = ["ADMIN", "EDITOR"]
     )]
@@ -329,13 +329,13 @@ pub struct AclConfig {
 | **@RolesAllowed** | @RolesAllowed | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @Secured | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@PreAuthorize** | @PreAuthorize | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
-| | @nexus_secured | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
+| | @hiver_secured | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@PostAuthorize** | @PostAuthorize | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐ |
 | **@Secured** | @Secured | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@Anonymous** | 允许匿名访问 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
-| | @nexus_allow_anonymous | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
+| | @hiver_allow_anonymous | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@Authentication** | 认证检查 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
-| | @nexus_authenticated | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
+| | @hiver_authenticated | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@ReactiveCredentialsControllerMethod** | 响应式认证 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
 ---
@@ -362,7 +362,7 @@ pub struct AclConfig {
 | **Cookie 管理** | CookieCsrfTokenRepository | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | Token | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要实现：nexus-security-rememberme**
+**需要实现：hiver-security-rememberme**
 
 ---
 
@@ -395,7 +395,7 @@ pub struct AclConfig {
 | **请求重试** | Retryable | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **负载均衡器** | LoadBalancer | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-cloud-loadbalancer**
+**需要实现：hiver-cloud-loadbalancer**
 
 ---
 
@@ -413,7 +413,7 @@ pub struct AclConfig {
 | **配置版本控制** | 版本管理 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **环境继承** | profile 继承 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要实现：nexus-cloud-config**
+**需要实现：hiver-cloud-config**
 
 ---
 
@@ -448,7 +448,7 @@ pub struct AclConfig {
 | **Channel Interceptor** | 通道拦截器 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **Message Bridge** | 消息桥接 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要实现：nexus-integration**
+**需要实现：hiver-integration**
 
 ---
 
@@ -537,7 +537,7 @@ pub struct AclConfig {
 | | Testcontainers | 容器化测试 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @Sql | SQL 测试脚本 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-test**
+**需要实现：hiver-test**
 
 ---
 
@@ -573,7 +573,7 @@ pub struct AclConfig {
 | | SockJS 支持 | SockJS | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | Session 管理 | 会话管理 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要增强：nexus-middleware-websocket**
+**需要增强：hiver-middleware-websocket**
 
 ---
 
@@ -589,7 +589,7 @@ pub struct AclConfig {
 | | 双向通信 | Bidirectional | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | 心跳机制 | Heartbeat | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-rsocket**
+**需要实现：hiver-rsocket**
 
 ---
 
@@ -602,7 +602,7 @@ pub struct AclConfig {
 | | Event Emitter | 事件发射器 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | Stream 端点 | /stream 端点 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要实现：nexus-sse**
+**需要实现：hiver-sse**
 
 ---
 
@@ -656,7 +656,7 @@ pub struct AclConfig {
 | | Jaeger 集成 | Jaeger | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | 采样率 | Sampling | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-tracing-enhanced**
+**需要实现：hiver-tracing-enhanced**
 
 ---
 
@@ -687,7 +687,7 @@ pub struct AclConfig {
 | | 自适应函数 | Adaptive | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | 函数组合器 | Function Composing | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-function**
+**需要实现：hiver-function**
 
 ---
 
@@ -707,7 +707,7 @@ pub struct AclConfig {
 | | **背压** | Backpressure | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐⭐ |
 | | **广播** | Broadcast | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-reactive-advanced**
+**需要实现：hiver-reactive-advanced**
 
 ---
 
@@ -723,7 +723,7 @@ pub struct AclConfig {
 | | 快速启动 | 启动时间 < 100ms | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | 低内存占用 | 内存占用 < 50MB | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 
-**需要实现：nexus-native**
+**需要实现：hiver-native**
 
 ---
 
@@ -742,7 +742,7 @@ pub struct AclConfig {
 | | 超时和灰度 | Progressive Delivery | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | 故障注入 | Chaos Engineering | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-service-mesh**
+**需要实现：hiver-service-mesh**
 
 ---
 
@@ -770,7 +770,7 @@ pub struct AclConfig {
 | | spring security test | 安全测试 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | spring shell | Shell 交互 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 
-**需要实现：nexus-cli**
+**需要实现：hiver-cli**
 
 ---
 
@@ -788,7 +788,7 @@ pub struct AclConfig {
 | 6 | **@AOP** | 面向切面 | 无法横切关注点 | 1 个月 |
 | 7 | **@EventListener** | 事件机制 | 无事件驱动 | 0.5 个月 |
 | 8 | **@RefreshScope** | 配置刷新 | 无法动态配置 | 0.5 个月 |
-| 9 | **@Transactional** | 事务测试 | 测试困难 | 已有 nexus-tx |
+| 9 | **@Transactional** | 事务测试 | 测试困难 | 已有 hiver-tx |
 | 10 | **@SpringBootTest** | 集成测试 | 测试困难 | 1 个月 |
 
 ### **🟡 P1 - 重要功能（应该实现）**
@@ -798,19 +798,19 @@ pub struct AclConfig {
 | 11 | **@PreAuthorize** | 方法安全 | 无细粒度权限 | 1.5 个月 |
 | 12 | **OAuth2** | 第三方登录 | 无法 OAuth 登录 | 2 个月 |
 | 13 | **@Async** | 异步任务 | 无异步执行 | 0.5 个月 |
-| 14 | **@Scheduled** | 定时任务 | 无高级调度 | 已有 nexus-schedule (需增强) |
-| 15 | **@Retry** | 重试机制 | 需手动实现 | 已有 nexus-resilience (部分) |
+| 14 | **@Scheduled** | 定时任务 | 无高级调度 | 已有 hiver-schedule (需增强) |
+| 15 | **@Retry** | 重试机制 | 需手动实现 | 已有 hiver-resilience (部分) |
 | 16 | **OpenAPI 文档** | API 文档 | 无自动文档 | 1 个月 |
-| 17 | **@Transactional** | 事务管理 | 需要手动管理 | 已有 nexus-tx (部分) |
-| 18 | **@Cacheable** | 缓存注解 | 手动缓存 | 已有 nexus-cache (需增强) |
-| 19 | **@Async** | 异步方法 | 手动 spawn | 已有 nexus-runtime |
+| 17 | **@Transactional** | 事务管理 | 需要手动管理 | 已有 hiver-tx (部分) |
+| 18 | **@Cacheable** | 缓存注解 | 手动缓存 | 已有 hiver-cache (需增强) |
+| 19 | **@Async** | 异步方法 | 手动 spawn | 已有 hiver-runtime |
 | 20 | **MessageChannel** | 消息通道 | 无消息集成 | 3 个月 |
 
 ### **🟢 P2 - 增强功能（可选实现）**
 
 | 序号 | 功能 | Spring | 影响 | 预计时间 |
 |-----|------|-------|------|----------|
-| 21 | **@Cron** | Cron 表达式 | 需手动实现 | 已有 nexus-schedule |
+| 21 | **@Cron** | Cron 表达式 | 需手动实现 | 已有 hiver-schedule |
 | 22 | **@Conditional** | 条件配置 | 无条件创建 | 1 个月 |
 | 23 | **@Lazy** | 延迟加载 | 无法优化启动 | 0.5 个月 |
 | 24 | **@Profile** | 环境配置 | 无环境隔离 | 0.5 个月 |
@@ -850,11 +850,11 @@ pub struct AclConfig {
 
 ### **最关键的 5 项（立即开始）**
 
-1. ⭐⭐⭐⭐⭐ **nexus-data-rdbc** - 数据访问基础（1.5个月）
-2. ⭐⭐⭐⭐⭐ **nexus-data-commons** - Repository 抽象（1.5个月）
-3. ⭐⭐⭐⭐⭐ **nexus-autoconfigure** - 自动配置（1 个月）
-4. ⭐⭐⭐⭐⭐ **nexus-starter** - Starter 机制（1个月）
-5. ⭐⭐⭐⭐⭐ **nexus-aop** - 面向切面（1个月）
+1. ⭐⭐⭐⭐⭐ **hiver-data-rdbc** - 数据访问基础（1.5个月）
+2. ⭐⭐⭐⭐⭐ **hiver-data-commons** - Repository 抽象（1.5个月）
+3. ⭐⭐⭐⭐⭐ **hiver-autoconfigure** - 自动配置（1 个月）
+4. ⭐⭐⭐⭐⭐ **hiver-starter** - Starter 机制（1个月）
+5. ⭐⭐⭐⭐⭐ **hiver-aop** - 面向切面（1个月）
 
 **完成后：**
 - ✅ 可以进行 CRUD 开发

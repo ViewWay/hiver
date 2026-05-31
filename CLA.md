@@ -3,19 +3,19 @@
 
 ## Purpose / 目的
 
-This Contributor License Agreement ("Agreement") is entered into between the contributor ("You") and the Nexus Framework project ("We"). By submitting any contribution to the Nexus Framework project, you agree to the terms of this Agreement.
+This Contributor License Agreement ("Agreement") is entered into between the contributor ("You") and the Hiver Framework project ("We"). By submitting any contribution to the Hiver Framework project, you agree to the terms of this Agreement.
 
-本贡献者许可协议（"协议"）由贡献者（"您"）与 Nexus 框架项目（"我们"）之间订立。通过向 Nexus 框架项目提交任何贡献，您同意本协议的条款。
+本贡献者许可协议（"协议"）由贡献者（"您"）与 Hiver 框架项目（"我们"）之间订立。通过向 Hiver 框架项目提交任何贡献，您同意本协议的条款。
 
 ## 1. Definitions / 定义
 
-**1.1 "Contribution"** means any work of authorship that You intentionally submit to the Nexus Framework project for inclusion in the project, including but not limited to source code, documentation, tests, and design specifications.
+**1.1 "Contribution"** means any work of authorship that You intentionally submit to the Hiver Framework project for inclusion in the project, including but not limited to source code, documentation, tests, and design specifications.
 
-**"贡献"** 指您有意提交给 Nexus 框架项目以纳入项目的任何原创作品，包括但不限于源代码、文档、测试和设计规范。
+**"贡献"** 指您有意提交给 Hiver 框架项目以纳入项目的任何原创作品，包括但不限于源代码、文档、测试和设计规范。
 
-**1.2 "Project"** means the Nexus Framework software project and all related assets, including the source code, documentation, websites, and other materials.
+**1.2 "Project"** means the Hiver Framework software project and all related assets, including the source code, documentation, websites, and other materials.
 
-**"项目"** 指 Nexus 框架软件项目及所有相关资产，包括源代码、文档、网站和其他材料。
+**"项目"** 指 Hiver 框架软件项目及所有相关资产，包括源代码、文档、网站和其他材料。
 
 ## 2. Grant of License / 许可授予
 
@@ -53,13 +53,13 @@ This Contributor License Agreement ("Agreement") is entered into between the con
 
 ## 5. Acceptance / 接受
 
-By clicking "I agree" in the CLA bot, or by explicitly signing this agreement, or by submitting a contribution to the Nexus Framework project, You accept and agree to be bound by the terms of this Agreement.
+By clicking "I agree" in the CLA bot, or by explicitly signing this agreement, or by submitting a contribution to the Hiver Framework project, You accept and agree to be bound by the terms of this Agreement.
 
-通过在 CLA 机器人中点击"我同意"，或明确签署本协议，或向 Nexus 框架项目提交贡献，您接受并同意受本协议条款的约束。
+通过在 CLA 机器人中点击"我同意"，或明确签署本协议，或向 Hiver 框架项目提交贡献，您接受并同意受本协议条款的约束。
 
 ---
 
 **Version / 版本**: 1.0
 **Effective Date / 生效日期**: 2026-01-23
-**Project / 项目**: Nexus Framework
+**Project / 项目**: Hiver Framework
 **License / 许可证**: Apache License 2.0

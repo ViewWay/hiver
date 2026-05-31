@@ -1,0 +1,56 @@
+[package]
+name = "hiver-modulith"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Modular monolith support for Hiver Framework.
+Nexus框架的模块化单体支持。
+Equivalent to: Spring Modulith
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = []
+
+[lints]
+workspace = true
+
+[dependencies]
+# Async runtime / 异步运行时
+hiver-runtime = { path = "../hiver-runtime" }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+# Utilities / 工具
+chrono = { workspace = true }
+once_cell = { workspace = true }
+
+# Async runtime / 异步运行时
+tokio = { workspace = true, features = ["sync", "macros", "rt"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

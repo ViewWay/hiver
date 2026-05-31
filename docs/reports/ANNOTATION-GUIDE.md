@@ -19,9 +19,9 @@
 
 ## Overview / 概述
 
-Nexus 框架提供了一套完整的 Spring Boot 风格注解，帮助开发者减少样板代码，提高开发效率。
+Hiver 框架提供了一套完整的 Spring Boot 风格注解，帮助开发者减少样板代码，提高开发效率。
 
-The Nexus framework provides a complete set of Spring Boot-style annotations to help developers reduce boilerplate and improve productivity.
+The Hiver Framework provides a complete set of Spring Boot-style annotations to help developers reduce boilerplate and improve productivity.
 
 ### Key Benefits / 核心优势
 
@@ -127,11 +127,11 @@ impl UserRepository {
 #### ✅ Nexus Annotations / Nexus 注解
 
 ```rust
-use nexus_lombok::Data;
-use nexus_data_annotations::{Entity, Table, Id, Column, Query, Insert};
-use nexus_http::validation::{Validatable, ValidationHelpers};
-use nexus_aop::{Aspect, Before, After};
-use nexus_data_annotations::Transactional;
+use hiver_lombok::Data;
+use hiver_data_annotations::{Entity, Table, Id, Column, Query, Insert};
+use hiver_http::validation::{Validatable, ValidationHelpers};
+use hiver_aop::{Aspect, Before, After};
+use hiver_data_annotations::Transactional;
 
 // Entity (8 lines - generates 80+ lines of code)
 #[Entity]
@@ -243,7 +243,7 @@ impl User {
 #### With Annotation / 有注解
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]
 pub struct User {
@@ -285,7 +285,7 @@ async fn find_user(db: &Database, id: i64) -> Result<Option<User>, Error> {
 #### With Annotation / 有注解
 
 ```rust
-use nexus_data_annotations::{Entity, Table, Id, Query};
+use hiver_data_annotations::{Entity, Table, Id, Query};
 
 #[Entity]
 #[Table(name = "users")]
@@ -342,7 +342,7 @@ fn create_user(username: &str, email: &str, age: i32) -> Result<(), String> {
 #### With Annotation / 有注解
 
 ```rust
-use nexus_http::validation::{Validatable, ValidationHelpers};
+use hiver_http::validation::{Validatable, ValidationHelpers};
 
 struct CreateUserRequest {
     #[not_null]
@@ -405,7 +405,7 @@ struct UserService {
 #### With Annotation / 有注解
 
 ```rust
-use nexus_aop::{Aspect, Before, After};
+use hiver_aop::{Aspect, Before, After};
 
 // Define aspect once / 定义切面一次
 #[Aspect]
@@ -478,7 +478,7 @@ impl PaymentService {
 #### With Annotation / 有注解
 
 ```rust
-use nexus_data_annotations::Transactional;
+use hiver_data_annotations::Transactional;
 
 impl PaymentService {
     #[Transactional(isolation = ReadCommitted)]
@@ -536,11 +536,11 @@ impl ProductService {
 #### ✅ Nexus Annotations
 
 ```rust
-use nexus_lombok::Data;
-use nexus_data_annotations::*;
-use nexus_http::validation::*;
-use nexus_aop::*;
-use nexus_data_annotations::Transactional;
+use hiver_lombok::Data;
+use hiver_data_annotations::*;
+use hiver_http::validation::*;
+use hiver_aop::*;
+use hiver_data_annotations::Transactional;
 
 // Clean entity (~10 lines)
 #[Entity]
@@ -609,10 +609,10 @@ impl ProductService {
 
 ```toml
 [dependencies]
-nexus-lombok = "0.1"
-nexus-data-annotations = "0.1"
-nexus-validation-annotations = "0.1"
-nexus-aop = "0.1"
+hiver-lombok = "0.1"
+hiver-data-annotations = "0.1"
+hiver-validation-annotations = "0.1"
+hiver-aop = "0.1"
 ```
 
 ### Step 2: Replace Boilerplate / 替换样板代码

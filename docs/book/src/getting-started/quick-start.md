@@ -7,8 +7,8 @@ This guide will help you create your first Nexus application in under 5 minutes.
 ## Create a New Project / 创建新项目
 
 ```bash
-cargo new my-nexus-app
-cd my-nexus-app
+cargo new my-hiver-app
+cd my-hiver-app
 ```
 
 ## Add Dependencies / 添加依赖
@@ -18,14 +18,14 @@ Edit your `Cargo.toml`:
 
 ```toml
 [package]
-name = "my-nexus-app"
+name = "my-hiver-app"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 ```
@@ -36,8 +36,8 @@ Replace `src/main.rs` with:
 用以下内容替换 `src/main.rs`：
 
 ```rust
-use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_runtime::task::block_on;
+use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_runtime::task::block_on;
 
 fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Initialize logging / 初始化日志
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     })
 }
 
-async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http::Error> {
+async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http::Error> {
     let path = req.path();
     
     match path {
@@ -102,13 +102,13 @@ curl http://localhost:8080/unknown
 
 ## Using the Router / 使用路由器
 
-For more complex routing, use `nexus-router`:
-对于更复杂的路由，使用 `nexus-router`：
+For more complex routing, use `hiver-router`:
+对于更复杂的路由，使用 `hiver-router`：
 
 ```rust
-use nexus_http::{Body, Response, StatusCode};
-use nexus_router::{Router, Path};
-use nexus_runtime::task::block_on;
+use hiver_http::{Body, Response, StatusCode};
+use hiver_router::{Router, Path};
+use hiver_runtime::task::block_on;
 
 fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     tracing_subscriber::fmt::init();
@@ -123,7 +123,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     block_on(async {
         // Start server with router / 使用路由器启动服务器
-        nexus_http::Server::bind("127.0.0.1:8080")
+        hiver_http::Server::bind("127.0.0.1:8080")
             .run(move |req| {
                 let router = router.clone();
                 async move { router.handle(req).await }
@@ -132,14 +132,14 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     })
 }
 
-async fn index(_req: nexus_http::Request) -> Response {
+async fn index(_req: hiver_http::Request) -> Response {
     Response::builder()
         .status(StatusCode::OK)
         .body(Body::from("Welcome to Nexus!"))
         .unwrap()
 }
 
-async fn get_user(req: nexus_http::Request) -> Response {
+async fn get_user(req: hiver_http::Request) -> Response {
     // Extract path parameter / 提取路径参数
     let id = req.path_var("id").unwrap_or("unknown");
     
@@ -150,7 +150,7 @@ async fn get_user(req: nexus_http::Request) -> Response {
         .unwrap()
 }
 
-async fn create_user(_req: nexus_http::Request) -> Response {
+async fn create_user(_req: hiver_http::Request) -> Response {
     Response::builder()
         .status(StatusCode::CREATED)
         .body(Body::from(r#"{"status": "created"}"#))
@@ -161,7 +161,7 @@ async fn create_user(_req: nexus_http::Request) -> Response {
 ## JSON Response Example / JSON 响应示例
 
 ```rust
-use nexus_http::{Body, Response, StatusCode};
+use hiver_http::{Body, Response, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -171,7 +171,7 @@ struct User {
     email: String,
 }
 
-async fn get_user_json(_req: nexus_http::Request) -> Response {
+async fn get_user_json(_req: hiver_http::Request) -> Response {
     let user = User {
         id: 1,
         name: "Alice".to_string(),
@@ -192,7 +192,7 @@ async fn get_user_json(_req: nexus_http::Request) -> Response {
 ## Using Async Tasks / 使用异步任务
 
 ```rust
-use nexus_runtime::{spawn, sleep, Duration};
+use hiver_runtime::{spawn, sleep, Duration};
 
 async fn background_task() {
     // Spawn a background task / 生成后台任务
@@ -214,7 +214,7 @@ async fn background_task() {
 ## Using Channels / 使用通道
 
 ```rust
-use nexus_runtime::channel::bounded;
+use hiver_runtime::channel::bounded;
 
 async fn channel_example() {
     let (tx, rx) = bounded::<String>(10);

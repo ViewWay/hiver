@@ -1,8 +1,8 @@
 # Spring Boot 基础篇 - 第1-4章
 # Spring Boot Basics - Chapters 1-4
 
-> 基于 Spring Boot 官方文档与 Nexus 框架对比学习
-> Based on Spring Boot official documentation compared with Nexus framework
+> 基于 Spring Boot 官方文档与 Hiver 框架对比学习
+> Based on Spring Boot official documentation compared with Hiver Framework
 
 ---
 
@@ -29,7 +29,7 @@
 |----------------|-------------|-------|---------------|
 | **快速启动 / Quick Start** | 自动配置 | 零配置宏 | ✅ 已实现 |
 | **内嵌服务器 / Embedded Server** | Tomcat/Jetty | 内置 HTTP 服务器 | ✅ 已实现 |
-| **依赖注入 / DI** | IoC 容器 | IoC 容器 (nexus-core) | ✅ 已实现 |
+| **依赖注入 / DI** | IoC 容器 | IoC 容器 (hiver-core) | ✅ 已实现 |
 | **注解驱动 / Annotation-driven** | @RestController 等 | #[controller], #[get] 等 | ✅ 已实现 |
 | **生产就绪 / Production-ready** | Actuator | Observability 模块 | ✅ 已实现 |
 
@@ -55,8 +55,8 @@ public class QuickStartApplication {
 
 ```rust
 // Nexus - 最简单的 Hello World
-use nexus::prelude::*;
-use nexus_macros::{main, controller, get};
+use hiver::prelude::*;
+use hiver_macros::{main, controller, get};
 
 #[main]
 struct Application;
@@ -120,7 +120,7 @@ cd myapp
 # 编辑 Cargo.toml 添加依赖
 [dependencies]
 nexus = "0.1"
-nexus-macros = "0.1"
+hiver-macros = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 ```
@@ -147,13 +147,13 @@ tokio = { version = "1", features = ["full"] }
 ```toml
 [dependencies]
 # 核心框架
-nexus = { path = "../crates/nexus-core" }
+nexus = { path = "../crates/hiver-core" }
 # HTTP 服务器
-nexus-http = { path = "../crates/nexus-http" }
+hiver-http = { path = "../crates/hiver-http" }
 # 路由器
-nexus-router = { path = "../crates/nexus-router" }
+hiver-router = { path = "../crates/hiver-router" }
 # 宏支持
-nexus-macros = { path = "../crates/nexus-macros" }
+hiver-macros = { path = "../crates/hiver-macros" }
 # 序列化
 serde = { version = "1.0", features = ["derive"] }
 ```
@@ -199,11 +199,11 @@ spring:
 
 ```rust
 // 通过环境变量配置
-#[nexus_macros::value("${SERVER_PORT:8080}")]
+#[hiver_macros::value("${SERVER_PORT:8080}")]
 static SERVER_PORT: u16 = 8080;
 
 // 或通过配置结构体
-#[nexus_macros::config(prefix = "app")]
+#[hiver_macros::config(prefix = "app")]
 struct AppConfig {
     name: String,
     port: u16,
@@ -246,7 +246,7 @@ my-spring-boot-app/
 ### Nexus 标准项目结构 / Standard Nexus Structure
 
 ```
-my-nexus-app/
+my-hiver-app/
 ├── src/
 │   ├── main.rs                               # 启动文件
 │   ├── controllers/                          # 控制器模块
@@ -305,8 +305,8 @@ public class MyApplication {
 #### Nexus - main.rs
 
 ```rust
-use nexus::prelude::*;
-use nexus_macros::{main, controller, get};
+use hiver::prelude::*;
+use hiver_macros::{main, controller, get};
 
 #[main]  // 标记为主应用
 struct Application;
@@ -370,8 +370,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 ```rust
 // Controller 层
-use nexus_macros::{controller, get};
-use nexus::prelude::*;
+use hiver_macros::{controller, get};
+use hiver::prelude::*;
 
 #[controller]
 struct UserController;
@@ -472,8 +472,8 @@ public class UserController {
 #### Nexus - CRUD Controller
 
 ```rust
-use nexus::prelude::*;
-use nexus_macros::{controller, get, post, put, delete};
+use hiver::prelude::*;
+use hiver_macros::{controller, get, post, put, delete};
 use serde::{Deserialize, Serialize};
 
 #[controller]
@@ -734,7 +734,7 @@ async fn get_user(id: u64) -> Json<Result<User>> {
 基于以上对比分析，需要实现以下功能：
 
 1. **统一响应结构** (`Result<T>`)
-   - 创建 `nexus-response/src/result.rs`
+   - 创建 `hiver-response/src/result.rs`
    - 实现标准响应格式
 
 2. **参数校验集成**

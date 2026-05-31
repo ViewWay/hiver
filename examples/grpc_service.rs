@@ -42,14 +42,14 @@
 //! cargo run --bin grpc_service
 //! ```
 
-use nexus_grpc::{
+use hiver_grpc::{
     server::GrpcServer,
     client::GrpcChannelBuilder,
     interceptor::{InterceptorChain, LoggingInterceptor, AuthInterceptor, ServerInterceptor},
     GrpcError,
 };
-use nexus_observability::{Tracer, info, warn, error as log_error};
-use nexus_resilience::{
+use hiver_observability::{Tracer, info, warn, error as log_error};
+use hiver_resilience::{
     CircuitBreaker, CircuitBreakerConfig,
     RetryPolicy, BackoffType, retry,
 };

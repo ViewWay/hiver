@@ -11,7 +11,7 @@
 //! cargo run --bin stress_test
 //! ```
 
-use nexus_http::Response;
+use hiver_http::Response;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 use tokio::net::TcpListener;

@@ -1,0 +1,55 @@
+[package]
+name = "hiver-benches"
+version = { workspace = true }
+edition = { workspace = true }
+publish = false
+
+[lib]
+name = "hiver_benches"
+path = "lib.rs"
+
+[dependencies]
+hiver-http = { path = "../hiver-http" }
+hiver-runtime = { path = "../hiver-runtime" }
+hiver-router = { path = "../hiver-router" }
+hiver-extractors = { path = "../hiver-extractors" }
+hiver-security = { path = "../hiver-security" }
+hiver-data-orm = { path = "../hiver-data-orm" }
+criterion = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[[bench]]
+name = "http_server"
+harness = false
+path = "http_server.rs"
+
+[[bench]]
+name = "router"
+harness = false
+path = "router.rs"
+
+[[bench]]
+name = "extractors"
+harness = false
+path = "extractors.rs"
+
+[[bench]]
+name = "runtime_driver"
+harness = false
+path = "runtime_driver.rs"
+
+[[bench]]
+name = "http_techpower"
+harness = false
+path = "http_techpower.rs"
+
+[[bench]]
+name = "data_orm"
+harness = false
+path = "data_orm.rs"
+
+[[bench]]
+name = "security"
+harness = false
+path = "security.rs"

@@ -1,0 +1,105 @@
+[package]
+name = "hiver-web3"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Blockchain and Web3 support for Hiver Framework.
+Nexus框架的区块链和Web3支持。
+Equivalent to: Spring Web3 (community), Web3j
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["ethereum"]
+ethereum = ["dep:alloy", "dep:secp256k1", "dep:hyper", "dep:hyper-util"]
+wallet = ["ethereum", "dep:bip39"]
+rpc = ["dep:reqwest"]
+contract = ["ethereum", "alloy?/contract"]
+http = ["dep:hyper", "dep:hyper-util"]
+ws = ["dep:tokio", "dep:tokio-tungstenite", "dep:tungstenite"]
+full = ["ethereum", "wallet", "rpc", "contract", "http", "ws"]
+
+# Chain-specific features / 特定链功能
+# Equivalent to: Spring Cloud service discovery
+arbitrum = ["ethereum"]
+optimism = ["ethereum"]
+polygon = ["ethereum"]
+bnb = ["ethereum"]
+base = ["ethereum"]
+
+[dependencies]
+# Alloy - Ethereum primitives / Alloy以太坊原语
+alloy = { workspace = true, optional = true }
+alloy-consensus = { workspace = true, optional = true }
+alloy-primitives = { workspace = true, optional = true }
+alloy-transport = { workspace = true, optional = true }
+alloy-network = { workspace = true, optional = true }
+alloy-rpc-types = { workspace = true, optional = true }
+
+# Async runtime / 异步运行时
+hiver-runtime = { path = "../hiver-runtime" }
+
+# HTTP / HTTP (Spring RestTemplate, WebClient)
+http = { workspace = true }
+hyper = { workspace = true, optional = true }
+hyper-util = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+
+# WebSocket / WebSocket (Spring WebSocket)
+tokio-tungstenite = { workspace = true, optional = true }
+tungstenite = { workspace = true, optional = true }
+
+# Serialization / 序列化 (Spring Jackson)
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理 (Spring @ResponseStatus, @ExceptionHandler)
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Cryptography / 密码学 (Spring Security Crypto)
+secp256k1 = { workspace = true, optional = true }
+sha3 = { workspace = true }
+hmac = { workspace = true }
+rand = { workspace = true }
+getrandom = { workspace = true }
+
+# Hex encoding / 十六进制编码
+hex = { workspace = true }
+base64 = { workspace = true }
+
+# Mnemonic / 助记词 (BIP39, BIP32, BIP44)
+bip39 = { workspace = true, optional = true }
+
+# Time / 时间
+chrono = { workspace = true }
+time = { workspace = true }
+
+# Utilities / 工具
+url = { workspace = true }
+indexmap = { workspace = true }
+
+# Async runtime (needed for WebSocket features)
+tokio = { workspace = true, optional = true }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

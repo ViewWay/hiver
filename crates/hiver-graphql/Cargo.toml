@@ -1,0 +1,60 @@
+[package]
+name = "hiver-graphql"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+GraphQL support for Hiver Framework.
+Nexus框架的GraphQL支持。
+Equivalent to: Spring for GraphQL
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Core types / 核心类型
+hiver-core = { path = "../hiver-core" }
+hiver-http = { path = "../hiver-http" }
+hiver-router = { path = "../hiver-router" }
+
+# Serialization / 序列化 (Spring Jackson JSON)
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Async / 异步
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["sync", "time"] }
+futures = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+# Real GraphQL execution engine / 真实GraphQL执行引擎
+async-graphql = { version = "7.2", optional = true, features = ["chrono"] }
+
+# HTTP client for GraphQL client / HTTP客户端
+reqwest = { workspace = true, optional = true }
+
+[features]
+default = ["engine"]
+engine = ["dep:async-graphql"]
+client = ["dep:reqwest"]
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

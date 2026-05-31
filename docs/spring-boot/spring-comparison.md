@@ -68,7 +68,7 @@
 
 | Spring Boot | Nexus | 状态 | 说明 |
 |------------|-------|------|------|
-| Spring Security | ✅ | ✅ | `nexus-security` crate |
+| Spring Security | ✅ | ✅ | `hiver-security` crate |
 | @EnableWebSecurity | ✅ | ✅ | Security auto-config |
 | @Secured | ✅ | ✅ | `#[secured]` macro |
 | @PreAuthorize | ✅ | ✅ | `#[pre_authorize]` macro |
@@ -93,7 +93,7 @@
 | /info | ✅ | ✅ | `AppInfo` struct |
 | /env | ❌ | ❌ | 环境端点缺失 |
 | Micrometer | ❌ | ❌ | **指标门面缺失** |
-| Spring Boot Actuator | ✅ | ✅ | `nexus-actuator` crate |
+| Spring Boot Actuator | ✅ | ✅ | `hiver-actuator` crate |
 | Distributed Tracing | 🟡 | Phase 5 | 部分计划 |
 | OpenTelemetry | ❌ | ❌ | OTel集成缺失 |
 | Logging | `tracing` | ✅ | 日志已实现 |
@@ -124,7 +124,7 @@
 | @PropertySource | ✅ | ✅ | PropertySource支持 |
 | Environment abstraction | ✅ | ✅ | Environment已实现 |
 | Profile-based config | ✅ | ✅ | Profile管理已实现 |
-| Config Server integration | ✅ | ✅ | `ConfigClient` (nexus-cloud) |
+| Config Server integration | ✅ | ✅ | `ConfigClient` (hiver-cloud) |
 | Consul Config | 🟡 | 🟡 | Consul可选功能 |
 | RefreshScope | ✅ | ✅ | `RefreshScope` |
 
@@ -146,7 +146,7 @@
 | Gateway Routes | ✅ | ✅ | `GatewayRoute` struct |
 | Gateway Filters | ✅ | ✅ | `GatewayFilter` trait |
 | @EnableCircuitBreaker | ✅ | ✅ | `CircuitBreaker` trait |
-| Resilience4j | ✅ | ✅ | `nexus-resilience` 集成 |
+| Resilience4j | ✅ | ✅ | `hiver-resilience` 集成 |
 | LoadBalancer | ✅ | ✅ | `LoadBalancer` trait |
 | RoundRobin | ✅ | ✅ | `RoundRobinLoadBalancer` |
 | Random LB | ✅ | ✅ | `RandomLoadBalancer` |
@@ -248,7 +248,7 @@
 
 ### Phase A: IoC容器 / Dependency Injection
 ```rust
-nexus-ioc/
+hiver-ioc/
 ├── src/
 │   ├── component/     # Component annotations
 │   ├── context/       # ApplicationContext
@@ -259,7 +259,7 @@ nexus-ioc/
 
 ### Phase B: 数据访问 / Data Access
 ```rust
-nexus-data/
+hiver-data/
 ├── src/
 │   ├── repository/    # Repository pattern
 │   ├── entity/        # Entity annotations
@@ -270,7 +270,7 @@ nexus-data/
 
 ### Phase C: 安全 / Security
 ```rust
-nexus-security/
+hiver-security/
 ├── src/
 │   ├── auth/          # Authentication
 │   ├── authorization/ # Authorization
@@ -281,7 +281,7 @@ nexus-security/
 
 ### Phase D: 配置 / Configuration
 ```rust
-nexus-config/
+hiver-config/
 ├── src/
 │   ├── loader/        # Config loading
 │   ├── properties/    # .properties/.yml
@@ -291,7 +291,7 @@ nexus-config/
 
 ### Phase E: 缓存 / Caching
 ```rust
-nexus-cache/
+hiver-cache/
 ├── src/
 │   ├── cacheable/     # @Cacheable
 │   ├── manager/       # CacheManager
@@ -301,7 +301,7 @@ nexus-cache/
 
 ### Phase F: 定时任务 / Scheduling
 ```rust
-nexus-schedule/
+hiver-schedule/
 ├── src/
 │   ├── scheduled/     # @Scheduled
 │   ├── cron/          # Cron expressions
@@ -310,7 +310,7 @@ nexus-schedule/
 
 ### Phase G: WebSocket
 ```rust
-nexus-ws/
+hiver-ws/
 ├── src/
 │   ├── websocket/     # WebSocket
 │   ├── sse/           # Server-Sent Events
@@ -319,7 +319,7 @@ nexus-ws/
 
 ### Phase H: 文件上传
 ```rust
-nexus-upload/
+hiver-upload/
 ├── src/
 │   ├── multipart/     # Multipart support
 │   ├── upload/        # @RequestPart
@@ -328,7 +328,7 @@ nexus-upload/
 
 ### Phase I: Actuator (Observability)
 ```rust
-nexus-actuator/
+hiver-actuator/
 ├── src/
 │   ├── health/        # /health endpoint
 │   ├── metrics/       # /metrics endpoint
@@ -338,7 +338,7 @@ nexus-actuator/
 
 ### Phase J: 测试
 ```rust
-nexus-test/
+hiver-test/
 ├── src/
 │   ├── @BootTest      # Integration test
 │   ├── mock/          # Mocking support

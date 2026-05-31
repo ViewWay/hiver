@@ -2,8 +2,8 @@
 
 ## Overview / 概述
 
-`nexus-openapi` provides OpenAPI/Swagger documentation support for the Nexus framework, equivalent to SpringDoc OpenAPI in Spring Boot.
-`nexus-openapi` 为 Nexus 框架提供 OpenAPI/Swagger 文档支持，等价于 Spring Boot 中的 SpringDoc OpenAPI。
+`hiver-openapi` provides OpenAPI/Swagger documentation support for the Hiver Framework, equivalent to SpringDoc OpenAPI in Spring Boot.
+`hiver-openapi` 为 Hiver 框架提供 OpenAPI/Swagger 文档支持，等价于 Spring Boot 中的 SpringDoc OpenAPI。
 
 ## Features / 功能
 
@@ -18,7 +18,7 @@
 ### 1. Define Your API Schemas / 定义 API 模式
 
 ```rust
-use nexus_openapi::ToSchema;
+use hiver_openapi::ToSchema;
 use serde::Serialize;
 
 #[derive(Serialize, ToSchema)]
@@ -38,7 +38,7 @@ struct User {
 ### 2. Create OpenAPI Specification / 创建 OpenAPI 规范
 
 ```rust
-use nexus_openapi::{OpenApi, OpenApiConfig, InfoConfig};
+use hiver_openapi::{OpenApi, OpenApiConfig, InfoConfig};
 
 let openapi = OpenApi::new(OpenApiConfig {
     info: InfoConfig {
@@ -55,7 +55,7 @@ let openapi = OpenApi::new(OpenApiConfig {
 ### 3. Serve Swagger UI / 服务 Swagger UI
 
 ```rust
-use nexus_openapi::{SwaggerUi, SwaggerConfig};
+use hiver_openapi::{SwaggerUi, SwaggerConfig};
 
 let swagger = SwaggerUi::with_config(
     openapi,
@@ -84,7 +84,7 @@ let (body, status, headers) = swagger.handle("/api-docs");
 ### Complete API Documentation Example / 完整 API 文档示例
 
 ```rust
-use nexus_openapi::*;
+use hiver_openapi::*;
 use serde::{Deserialize, Serialize};
 
 // Define request/response schemas
@@ -150,7 +150,7 @@ let swagger = SwaggerUi::new(openapi);
 ### HTTP Framework Integration / HTTP 框架集成
 
 ```rust
-use nexus_openapi::*;
+use hiver_openapi::*;
 use http::StatusCode;
 
 // Create handler
@@ -167,7 +167,7 @@ assert!(response.body.contains("\"openapi\""));
 ### Custom Swagger UI Configuration / 自定义 Swagger UI 配置
 
 ```rust
-use nexus_openapi::{SwaggerConfig, ModelRendering, SyntaxHighlightTheme};
+use hiver_openapi::{SwaggerConfig, ModelRendering, SyntaxHighlightTheme};
 
 let config = SwaggerConfig::new()
     .path("/docs")

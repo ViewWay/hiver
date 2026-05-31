@@ -1,364 +1,62 @@
 {
   "agents": [
     {
-      "agent_id": "ad829426274a46a2b",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:42:04.171Z",
+      "agent_id": "a16eec9b8ccfe1b34",
+      "agent_type": "Explore",
+      "started_at": "2026-05-31T14:03:07.873Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:46:27.365Z",
-      "duration_ms": 263194
+      "completed_at": "2026-05-31T14:03:38.748Z",
+      "duration_ms": 30875
     },
     {
-      "agent_id": "a80e6202e460b5a53",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:43:59.915Z",
+      "agent_id": "a1c98bab7fc42da03",
+      "agent_type": "Explore",
+      "started_at": "2026-05-31T14:13:17.899Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:50:31.249Z",
-      "duration_ms": 391334
+      "completed_at": "2026-05-31T14:15:15.309Z",
+      "duration_ms": 117410
     },
     {
-      "agent_id": "a6ac305924ed32b31",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:44:00.165Z",
+      "agent_id": "a6890fc27ac0e4b3d",
+      "agent_type": "Explore",
+      "started_at": "2026-05-31T14:15:28.254Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:51:54.663Z",
-      "duration_ms": 474498
+      "completed_at": "2026-05-31T14:15:55.049Z",
+      "duration_ms": 26795
     },
     {
-      "agent_id": "ae08dcff01d1ede0e",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:44:00.239Z",
+      "agent_id": "a765916f8a4f73daf",
+      "agent_type": "Plan",
+      "started_at": "2026-05-31T14:16:41.745Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:48:56.479Z",
-      "duration_ms": 296240
+      "completed_at": "2026-05-31T14:18:52.575Z",
+      "duration_ms": 130830
     },
     {
-      "agent_id": "aa054b0c0b69edbe7",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:44:00.258Z",
+      "agent_id": "a73da38d8a73f7d6e",
+      "agent_type": "Explore",
+      "started_at": "2026-05-31T14:17:17.552Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:45:47.722Z",
-      "duration_ms": 107464
+      "completed_at": "2026-05-31T14:18:02.704Z",
+      "duration_ms": 45152
     },
     {
-      "agent_id": "a4432d35e399aee1e",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:44:00.304Z",
+      "agent_id": "a82eb85fc5990f7b4",
+      "agent_type": "frontend-developer",
+      "started_at": "2026-05-31T14:37:36.172Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-05-24T10:46:55.203Z",
-      "duration_ms": 174899
-    },
-    {
-      "agent_id": "a0f74b7b78af01e23",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:34.792Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:57:47.376Z",
-      "duration_ms": 252584
-    },
-    {
-      "agent_id": "a672700ffd1c24d73",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:34.937Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:58:12.266Z",
-      "duration_ms": 277329
-    },
-    {
-      "agent_id": "a2d711c065e5b32ca",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:34.992Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:57:02.435Z",
-      "duration_ms": 207443
-    },
-    {
-      "agent_id": "a8de9b94c8546e9b6",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:35.219Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:59:20.027Z",
-      "duration_ms": 344808
-    },
-    {
-      "agent_id": "af5beb9da845f4755",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:35.434Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:56:52.169Z",
-      "duration_ms": 196735
-    },
-    {
-      "agent_id": "a63245a9cb693bc27",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T10:53:35.498Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T10:58:46.604Z",
-      "duration_ms": 311106
-    },
-    {
-      "agent_id": "a7399be475756ded5",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:40.282Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:07:56.535Z",
-      "duration_ms": 376253
-    },
-    {
-      "agent_id": "a92dfad6ba43ebeb2",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.045Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:09:17.006Z",
-      "duration_ms": 455961
-    },
-    {
-      "agent_id": "ad299075f3cdc03e5",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.285Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:08:19.690Z",
-      "duration_ms": 398405
-    },
-    {
-      "agent_id": "a8f4f9415b269bf11",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.498Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:06:05.924Z",
-      "duration_ms": 264426
-    },
-    {
-      "agent_id": "a28b60df3741332c7",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.415Z",
-      "parent_mode": "none",
-      "status": "running"
-    },
-    {
-      "agent_id": "a4829209db2e59828",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.588Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:05:16.549Z",
-      "duration_ms": 214961
-    },
-    {
-      "agent_id": "aa07c8e2f9e34fcc1",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.620Z",
-      "parent_mode": "none",
-      "status": "running"
-    },
-    {
-      "agent_id": "a03d7332c0fb6da98",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.701Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:09:08.543Z",
-      "duration_ms": 446842
-    },
-    {
-      "agent_id": "a79175caf454dc71e",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.847Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:08:28.332Z",
-      "duration_ms": 406485
-    },
-    {
-      "agent_id": "ad26f4841af8b47ad",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:41.960Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:14:22.723Z",
-      "duration_ms": 760763
-    },
-    {
-      "agent_id": "ae571e11a734409b3",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:42.335Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:06:27.392Z",
-      "duration_ms": 285057
-    },
-    {
-      "agent_id": "a3db480fc3c819615",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:01:42.780Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:19:22.196Z",
-      "duration_ms": 1059416
-    },
-    {
-      "agent_id": "a1a08dfbf8435f00e",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:18:46.775Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:23:05.074Z",
-      "duration_ms": 258299
-    },
-    {
-      "agent_id": "a24edaf3baa409171",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T11:18:46.843Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T11:20:37.486Z",
-      "duration_ms": 110643
-    },
-    {
-      "agent_id": "ad1a2cd4c74c6798f",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-24T13:44:56.929Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-24T14:04:41.334Z",
-      "duration_ms": 1184405
-    },
-    {
-      "agent_id": "ad816bac2806d35fb",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T11:58:53.475Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T12:03:28.068Z",
-      "duration_ms": 274593
-    },
-    {
-      "agent_id": "accb92611aee01616",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T11:58:53.531Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T12:01:57.505Z",
-      "duration_ms": 183974
-    },
-    {
-      "agent_id": "aa99176453475ba5e",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T11:58:53.586Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T12:00:30.056Z",
-      "duration_ms": 96470
-    },
-    {
-      "agent_id": "afa3b32f686e00f39",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T13:59:30.492Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:05:29.449Z",
-      "duration_ms": 358957
-    },
-    {
-      "agent_id": "af0a105e7a956fa4a",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T13:59:30.545Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:08:29.801Z",
-      "duration_ms": 539256
-    },
-    {
-      "agent_id": "aeb5b3fee51291f4f",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T13:59:30.605Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:06:40.448Z",
-      "duration_ms": 429843
-    },
-    {
-      "agent_id": "a2b71c35ec4046954",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T14:19:00.445Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:26:26.879Z",
-      "duration_ms": 446434
-    },
-    {
-      "agent_id": "a05c9a4a0ed24a6d1",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T14:19:00.500Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:24:40.920Z",
-      "duration_ms": 340420
-    },
-    {
-      "agent_id": "a2e6e309131345896",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T14:45:42.056Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:51:02.155Z",
-      "duration_ms": 320099
-    },
-    {
-      "agent_id": "a2cdb311f68c11618",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T14:45:42.107Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:48:08.991Z",
-      "duration_ms": 146884
-    },
-    {
-      "agent_id": "ac80e985dc307f1e8",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T14:45:42.169Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T14:48:46.938Z",
-      "duration_ms": 184769
-    },
-    {
-      "agent_id": "afd69380a2d1589ac",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T15:09:47.497Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T15:12:36.601Z",
-      "duration_ms": 169104
-    },
-    {
-      "agent_id": "ac0879ccb53758ce1",
-      "agent_type": "backend-developer",
-      "started_at": "2026-05-29T15:09:47.547Z",
-      "parent_mode": "none",
-      "status": "completed",
-      "completed_at": "2026-05-29T15:15:03.128Z",
-      "duration_ms": 315581
+      "completed_at": "2026-05-31T14:39:39.049Z",
+      "duration_ms": 122877
     }
   ],
-  "total_spawned": 26,
-  "total_completed": 38,
+  "total_spawned": 6,
+  "total_completed": 6,
   "total_failed": 0,
-  "last_updated": "2026-05-29T15:15:03.230Z"
+  "last_updated": "2026-05-31T14:57:53.417Z"
 }

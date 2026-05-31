@@ -11,7 +11,7 @@
 //! - Profile-based configuration → `Config::builder().add_profile()`
 //! - Environment variables → `Config::builder().load_env()`
 
-use nexus_config::Config;
+use hiver_config::Config;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Configuration Example / 配置示例 ===\n");

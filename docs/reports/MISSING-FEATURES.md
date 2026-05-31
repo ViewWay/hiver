@@ -1,4 +1,4 @@
-# Nexus 框架缺失功能清单 / Missing Features in Nexus
+# Hiver 框架缺失功能清单 / Missing Features in Nexus
 # 生成时间 / Generated: 2026-01-25
 
 ## 📋 目录 / Table of Contents
@@ -748,7 +748,7 @@ let config: AppConfig = Config::builder()
 
 ### ✅ 已覆盖的核心功能 (93%)
 
-Nexus 框架在以下方面已完全对标 Spring Boot:
+Hiver 框架在以下方面已完全对标 Spring Boot:
 - ✅ Web 层 (100%)
 - ✅ 数据库基础 (100%)
 - ✅ AOP (100%)

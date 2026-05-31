@@ -38,15 +38,15 @@
 
 | Crate | Status | Files | LOC | Features |
 |-------|--------|-------|-----|----------|
-| **nexus-lombok** | ✅ 100% | 11 | ~580 | 8 Lombok macros |
-| **nexus-data-annotations** | ✅ 80% | 8 | ~400 | 9 Spring Data macros |
-| **nexus-validation-annotations** | ✅ 100% | 1 | ~765 | 8 Validation macros |
-| **nexus-aop** | ✅ 100% | 4 | ~350 | 5 AOP macros |
+| **hiver-lombok** | ✅ 100% | 11 | ~580 | 8 Lombok macros |
+| **hiver-data-annotations** | ✅ 80% | 8 | ~400 | 9 Spring Data macros |
+| **hiver-validation-annotations** | ✅ 100% | 1 | ~765 | 8 Validation macros |
+| **hiver-aop** | ✅ 100% | 4 | ~350 | 5 AOP macros |
 | **Total** | **✅ 95%** | **24** | **~2,095** | **30 macros** |
 
 ### New This Session / 本次会议新增
 
-1. ✅ **nexus-aop crate (100%)** - Complete AOP support
+1. ✅ **hiver-aop crate (100%)** - Complete AOP support
    - @Aspect - Marks struct as aspect
    - @Before - Before advice
    - @After - After advice
@@ -54,10 +54,10 @@
    - @Pointcut - Reusable pointcuts
 
 2. ✅ **All crates added to workspace**
-   - nexus-lombok ✅
-   - nexus-data-annotations ✅
-   - nexus-validation-annotations ✅
-   - nexus-aop ✅
+   - hiver-lombok ✅
+   - hiver-data-annotations ✅
+   - hiver-validation-annotations ✅
+   - hiver-aop ✅
 
 3. ✅ **Complete documentation for all crates**
    - README files
@@ -72,7 +72,7 @@
 
 ## 📦 Detailed Implementation Details / 详细实施细节
 
-### 1. nexus-lombok / Lombok 注解
+### 1. hiver-lombok / Lombok 注解
 
 **Purpose**: Reduce boilerplate code with Java Lombok-style macros
 **目标**: 使用 Java Lombok 风格的宏减少样板代码
@@ -121,7 +121,7 @@ pub struct Money {
 - Full test coverage
 - Bilingual documentation (English + Chinese)
 
-### 2. nexus-data-annotations / Spring Data 注解
+### 2. hiver-data-annotations / Spring Data 注解
 
 **Purpose**: Spring Data JPA + MyBatis-Plus style annotations
 **目标**: Spring Data JPA + MyBatis-Plus 风格注解
@@ -172,7 +172,7 @@ trait UserRepository {
 - 9 annotation macros
 - 5 comprehensive examples
 
-### 3. nexus-validation-annotations / 验证注解
+### 3. hiver-validation-annotations / 验证注解
 
 **Purpose**: Bean Validation style annotations
 **目标**: Bean Validation 风格注解
@@ -216,7 +216,7 @@ struct CreateUserRequest {
 - 8 validation derive macros
 - Complete helper functions
 
-### 4. nexus-aop / AOP 注解 🎉 NEW!
+### 4. hiver-aop / AOP 注解 🎉 NEW!
 
 **Purpose**: Spring AOP style aspect-oriented programming
 **目标**: Spring AOP 风格面向切面编程
@@ -292,17 +292,17 @@ impl LoggingAspect {
 
 ### Crate Documentation / Crate 文档
 
-1. **crates/nexus-lombok/README.md**
+1. **crates/hiver-lombok/README.md**
    - Complete Lombok guide
    - Migration from Java Lombok
    - All macro documentation
 
-2. **crates/nexus-data-annotations/README.md**
+2. **crates/hiver-data-annotations/README.md**
    - Spring Data + MyBatis-Plus guide
    - Entity mapping examples
    - Query examples
 
-3. **crates/nexus-aop/README.md**
+3. **crates/hiver-aop/README.md**
    - AOP concepts and patterns
    - Pointcut expressions
    - 10 practical examples
@@ -412,10 +412,10 @@ pub fn id(&self) -> &i64 {
 ### Complete Example: User Management System
 
 ```rust
-use nexus_lombok::Data;
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
-use nexus_validation_annotations::{Email, Size, Min};
-use nexus_aop::{Aspect, Before, After};
+use hiver_lombok::Data;
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_validation_annotations::{Email, Size, Min};
+use hiver_aop::{Aspect, Before, After};
 use serde::{Serialize, Deserialize};
 
 // Entity with combined annotations
@@ -551,10 +551,10 @@ fn main() {
 
 ```toml
 [dependencies]
-nexus-lombok = "0.1"
-nexus-data-annotations = "0.1"
-nexus-validation-annotations = "0.1"
-nexus-aop = "0.1"
+hiver-lombok = "0.1"
+hiver-data-annotations = "0.1"
+hiver-validation-annotations = "0.1"
+hiver-aop = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 ```
 
@@ -562,16 +562,16 @@ serde = { version = "1.0", features = ["derive"] }
 
 ```rust
 // Lombok
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 // Spring Data
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
 
 // Validation
-use nexus_validation_annotations::{Email, Size, Min};
+use hiver_validation_annotations::{Email, Size, Min};
 
 // AOP
-use nexus_aop::{Aspect, Before, After};
+use hiver_aop::{Aspect, Before, After};
 ```
 
 ---
@@ -583,17 +583,17 @@ use nexus_aop::{Aspect, Before, After};
 1. **Lombok Migration Guide**
    - Java: `@Data` → Rust: `#[Data]`
    - Java: `@Builder` → Rust: `#[Builder]`
-   - See: [crates/nexus-lombok/README.md](../crates/nexus-lombok/README.md)
+   - See: [crates/hiver-lombok/README.md](../crates/hiver-lombok/README.md)
 
 2. **Spring Data Migration Guide**
    - Java: `@Entity` → Rust: `#[Entity]`
    - Java: `@Query("SELECT...")` → Rust: `#[Query("SELECT...")]`
-   - See: [crates/nexus-data-annotations/README.md](../crates/nexus-data-annotations/README.md)
+   - See: [crates/hiver-data-annotations/README.md](../crates/hiver-data-annotations/README.md)
 
 3. **AOP Concepts**
    - Same concepts as Spring AOP
    - Pointcut expressions are identical
-   - See: [crates/nexus-aop/README.md](../crates/nexus-aop/README.md)
+   - See: [crates/hiver-aop/README.md](../crates/hiver-aop/README.md)
 
 ---
 

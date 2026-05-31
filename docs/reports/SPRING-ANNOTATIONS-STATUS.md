@@ -33,39 +33,39 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 | # | Spring 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
 | **应用启动 / Application** |
-| 1 | `@SpringBootApplication` | `#[main]` | ✅ 完整 | `nexus-macros/src/lib.rs:63` |
+| 1 | `@SpringBootApplication` | `#[main]` | ✅ 完整 | `hiver-macros/src/lib.rs:63` |
 | **组件注册 / Component Registration** |
-| 2 | `@Component` | `#[component]` | ✅ 完整 | `nexus-macros/src/lib.rs:407` |
-| 3 | `@Service` | `#[service]` | ✅ 完整 | `nexus-macros/src/lib.rs:162` |
-| 4 | `@Repository` | `#[repository]` | ✅ 完整 | `nexus-macros/src/lib.rs:220` |
-| 5 | `@Controller` | `#[controller]` | ✅ 完整 | `nexus-macros/src/lib.rs:114` |
+| 2 | `@Component` | `#[component]` | ✅ 完整 | `hiver-macros/src/lib.rs:407` |
+| 3 | `@Service` | `#[service]` | ✅ 完整 | `hiver-macros/src/lib.rs:162` |
+| 4 | `@Repository` | `#[repository]` | ✅ 完整 | `hiver-macros/src/lib.rs:220` |
+| 5 | `@Controller` | `#[controller]` | ✅ 完整 | `hiver-macros/src/lib.rs:114` |
 | **Web 路由 / Web Routing** |
-| 6 | `@GetMapping` | `#[get("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:384` |
-| 7 | `@PostMapping` | `#[post("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:385` |
-| 8 | `@PutMapping` | `#[put("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:386` |
-| 9 | `@DeleteMapping` | `#[delete("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:387` |
-| 10 | `@PatchMapping` | `#[patch("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:388` |
-| 11 | `@HeadMapping` | `#[head("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:389` |
-| 12 | `@OptionsMapping` | `#[options("/path")]` | ✅ 完整 | `nexus-macros/src/lib.rs:390` |
-| 13 | `@RequestMapping` | `Router::get()` 等 | ✅ 完整 | `nexus-router` crate |
+| 6 | `@GetMapping` | `#[get("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:384` |
+| 7 | `@PostMapping` | `#[post("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:385` |
+| 8 | `@PutMapping` | `#[put("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:386` |
+| 9 | `@DeleteMapping` | `#[delete("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:387` |
+| 10 | `@PatchMapping` | `#[patch("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:388` |
+| 11 | `@HeadMapping` | `#[head("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:389` |
+| 12 | `@OptionsMapping` | `#[options("/path")]` | ✅ 完整 | `hiver-macros/src/lib.rs:390` |
+| 13 | `@RequestMapping` | `Router::get()` 等 | ✅ 完整 | `hiver-router` crate |
 | **依赖注入 / Dependency Injection** |
-| 14 | `@Autowired` | `#[autowired]` | ✅ 完整 | `nexus-macros/src/lib.rs:435` |
+| 14 | `@Autowired` | `#[autowired]` | ✅ 完整 | `hiver-macros/src/lib.rs:435` |
 | **配置 / Configuration** |
-| 15 | `@ConfigurationProperties` | `#[config(prefix = "...")]` | ✅ 完整 | `nexus-macros/src/lib.rs:253` |
-| 16 | `@Value` | `#[value("${prop}")]` | ✅ 完整 | `nexus-macros/src/lib.rs:883` |
-| 17 | `@Profile` | `#[profile("dev")]` | ✅ 完整 | `nexus-macros/src/lib.rs:969` |
+| 15 | `@ConfigurationProperties` | `#[config(prefix = "...")]` | ✅ 完整 | `hiver-macros/src/lib.rs:253` |
+| 16 | `@Value` | `#[value("${prop}")]` | ✅ 完整 | `hiver-macros/src/lib.rs:883` |
+| 17 | `@Profile` | `#[profile("dev")]` | ✅ 完整 | `hiver-macros/src/lib.rs:969` |
 | **事务 / Transaction** |
-| 18 | `@Transactional` | `#[transactional]` | ✅ 完整 | `nexus-macros/src/transactional.rs` |
+| 18 | `@Transactional` | `#[transactional]` | ✅ 完整 | `hiver-macros/src/transactional.rs` |
 | **缓存 / Caching** |
-| 19 | `@Cacheable` | `#[cacheable("cache")]` | ✅ 基础 | `nexus-macros/src/lib.rs:748` |
-| 20 | `@CacheEvict` | `#[cache_evict("cache")]` | ✅ 基础 | `nexus-macros/src/lib.rs:798` |
-| 21 | `@CachePut` | `#[cache_put("cache")]` | ✅ 基础 | `nexus-macros/src/lib.rs:814` |
+| 19 | `@Cacheable` | `#[cacheable("cache")]` | ✅ 基础 | `hiver-macros/src/lib.rs:748` |
+| 20 | `@CacheEvict` | `#[cache_evict("cache")]` | ✅ 基础 | `hiver-macros/src/lib.rs:798` |
+| 21 | `@CachePut` | `#[cache_put("cache")]` | ✅ 基础 | `hiver-macros/src/lib.rs:814` |
 | **调度 / Scheduling** |
-| 22 | `@Scheduled` | `#[scheduled(cron = "...")]` | ✅ 部分 | `nexus-macros/src/lib.rs:468` |
+| 22 | `@Scheduled` | `#[scheduled(cron = "...")]` | ✅ 部分 | `hiver-macros/src/lib.rs:468` |
 | **异步 / Async** |
-| 23 | `@Async` | `#[async_fn]` | ✅ 基础 | `nexus-macros/src/lib.rs:544` |
+| 23 | `@Async` | `#[async_fn]` | ✅ 基础 | `hiver-macros/src/lib.rs:544` |
 | **日志 / Logging** |
-| 24 | `@Slf4j` (Lombok) | `#[slf4j]` | ✅ 完整 | `nexus-macros/src/lib.rs:634` |
+| 24 | `@Slf4j` (Lombok) | `#[slf4j]` | ✅ 完整 | `hiver-macros/src/lib.rs:634` |
 
 ### 🎯 特殊注解 / Special Annotations
 
@@ -91,29 +91,29 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 
 **Status / 状态**: ✅ **100% 完成** (2026-01-25)
 
-**Crate**: `nexus-lombok`
+**Crate**: `hiver-lombok`
 
 ### 📋 已实现的 Lombok 注解 / Implemented Lombok Annotations
 
 | # | Lombok 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
 | **核心注解 / Core** |
-| 1 | `@Data` | `#[Data]` | ✅ 完整 | `nexus-lombok/src/data.rs` |
-| 2 | `@Getter` | `#[Getter]` | ✅ 完整 | `nexus-lombok/src/getter.rs` |
-| 3 | `@Setter` | `#[Setter]` | ✅ 完整 | `nexus-lombok/src/setter.rs` |
-| 4 | `@AllArgsConstructor` | `#[AllArgsConstructor]` | ✅ 完整 | `nexus-lombok/src/constructor.rs` |
-| 5 | `@NoArgsConstructor` | `#[NoArgsConstructor] | ✅ 完整 | `nexus-lombok/src/constructor.rs` |
+| 1 | `@Data` | `#[Data]` | ✅ 完整 | `hiver-lombok/src/data.rs` |
+| 2 | `@Getter` | `#[Getter]` | ✅ 完整 | `hiver-lombok/src/getter.rs` |
+| 3 | `@Setter` | `#[Setter]` | ✅ 完整 | `hiver-lombok/src/setter.rs` |
+| 4 | `@AllArgsConstructor` | `#[AllArgsConstructor]` | ✅ 完整 | `hiver-lombok/src/constructor.rs` |
+| 5 | `@NoArgsConstructor` | `#[NoArgsConstructor] | ✅ 完整 | `hiver-lombok/src/constructor.rs` |
 | **高级注解 / Advanced** |
-| 6 | `@Builder` | `#[Builder]` | ✅ 完整 | `nexus-lombok/src/builder.rs` |
-| 7 | `@Value` | `#[Value]` | ✅ 完整 | `nexus-lombok/src/value.rs` |
-| 8 | `@With` | `#[With]` | ✅ 完整 | `nexus-lombok/src/with_method.rs` |
+| 6 | `@Builder` | `#[Builder]` | ✅ 完整 | `hiver-lombok/src/builder.rs` |
+| 7 | `@Value` | `#[Value]` | ✅ 完整 | `hiver-lombok/src/value.rs` |
+| 8 | `@With` | `#[With]` | ✅ 完整 | `hiver-lombok/src/with_method.rs` |
 | **日志 / Logging** |
-| 9 | `@Slf4j` | `#[slf4j]` | ✅ 完整 | `nexus-macros/src/lib.rs:634` |
+| 9 | `@Slf4j` | `#[slf4j]` | ✅ 完整 | `hiver-macros/src/lib.rs:634` |
 
 ### 💡 使用示例 / Usage Examples
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]  // Lombok 风格 - 一行搞定！
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -151,7 +151,7 @@ fn main() {
 
 - **完整计划**: [LOMBOK-IMPLEMENTATION.md](./LOMBOK-IMPLEMENTATION.md)
 - **快速参考**: [LOMBOK-QUICK-REF.md](./LOMBOK-QUICK-REF.md)
-- **README**: [crates/nexus-lombok/README.md](../crates/nexus-lombok/README.md)
+- **README**: [crates/hiver-lombok/README.md](../crates/hiver-lombok/README.md)
 
 ---
 
@@ -159,29 +159,29 @@ fn main() {
 
 **Status / 状态**: ✅ **80% 基础完成** (2026-01-25)
 
-**Crate**: `nexus-data-annotations`
+**Crate**: `hiver-data-annotations`
 
 ### 📋 已实现的 Spring Data 注解 / Implemented Spring Data Annotations
 
 | # | Spring Data 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|------------------|-----------|-----------|-------------|
 | **实体映射 / Entity Mapping** |
-| 1 | `@Entity` | `#[Entity]` | ✅ 完整 | `nexus-data-annotations/src/entity.rs` |
-| 2 | `@Table` | `#[Table(name = "...")]` | ✅ 完整 | `nexus-data-annotations/src/entity.rs` |
-| 3 | `@Id` | `#[Id]` | ✅ 完整 | `nexus-data-annotations/src/id.rs` |
-| 4 | `@GeneratedValue` | `#[GeneratedValue(strategy = "...")]` | ✅ 完整 | `nexus-data-annotations/src/id.rs` |
-| 5 | `@Column` | `#[Column(name = "...")]` | ✅ 完整 | `nexus-data-annotations/src/column.rs` |
+| 1 | `@Entity` | `#[Entity]` | ✅ 完整 | `hiver-data-annotations/src/entity.rs` |
+| 2 | `@Table` | `#[Table(name = "...")]` | ✅ 完整 | `hiver-data-annotations/src/entity.rs` |
+| 3 | `@Id` | `#[Id]` | ✅ 完整 | `hiver-data-annotations/src/id.rs` |
+| 4 | `@GeneratedValue` | `#[GeneratedValue(strategy = "...")]` | ✅ 完整 | `hiver-data-annotations/src/id.rs` |
+| 5 | `@Column` | `#[Column(name = "...")]` | ✅ 完整 | `hiver-data-annotations/src/column.rs` |
 | **查询 / Queries** |
-| 6 | `@Query` | `#[Query("SELECT ...")]` | ✅ 完整 | `nexus-data-annotations/src/query.rs` |
-| 7 | `@Insert` | `#[Insert("INSERT ...")]` | ✅ 完整 | `nexus-data-annotations/src/query.rs` |
-| 8 | `@Update` | `#[Update("UPDATE ...")]` | ✅ 完整 | `nexus-data-annotations/src/query.rs` |
-| 9 | `@Delete` | `#[Delete("DELETE ...")]` | ✅ 完整 | `nexus-data-annotations/src/query.rs` |
+| 6 | `@Query` | `#[Query("SELECT ...")]` | ✅ 完整 | `hiver-data-annotations/src/query.rs` |
+| 7 | `@Insert` | `#[Insert("INSERT ...")]` | ✅ 完整 | `hiver-data-annotations/src/query.rs` |
+| 8 | `@Update` | `#[Update("UPDATE ...")]` | ✅ 完整 | `hiver-data-annotations/src/query.rs` |
+| 9 | `@Delete` | `#[Delete("DELETE ...")]` | ✅ 完整 | `hiver-data-annotations/src/query.rs` |
 
 ### 💡 使用示例 / Usage Examples
 
 ```rust
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
-use nexus_lombok::Data;
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_lombok::Data;
 
 #[Entity]
 #[Table(name = "users")]
@@ -210,8 +210,8 @@ trait UserRepository {
 
 ### 📚 Spring Data 文档 / Spring Data Documentation
 
-- **README**: [crates/nexus-data-annotations/README.md](../crates/nexus-data-annotations/README.md)
-- **Examples**: [crates/nexus-data-annotations/examples/user_entity.rs](../crates/nexus-data-annotations/examples/user_entity.rs)
+- **README**: [crates/hiver-data-annotations/README.md](../crates/hiver-data-annotations/README.md)
+- **Examples**: [crates/hiver-data-annotations/examples/user_entity.rs](../crates/hiver-data-annotations/examples/user_entity.rs)
 
 ---
 
@@ -219,27 +219,27 @@ trait UserRepository {
 
 **Status / 状态**: ✅ **100% 完成** (2026-01-25) 🎉 NEW!
 
-**Crate**: `nexus-validation-annotations`
+**Crate**: `hiver-validation-annotations`
 
 ### 📋 已实现的 Validation 注解 / Implemented Validation Annotations
 
 | # | Validation 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|-----------------|-----------|-----------|-------------|
 | **触发器 / Trigger** |
-| 1 | `@Valid` | `#[Valid]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
+| 1 | `@Valid` | `#[Valid]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
 | **标准验证器 / Standard Validators** |
-| 2 | `@NotNull` | `#[derive(NotNull)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 3 | `@Email` | `#[derive(Email)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 4 | `@Size` | `#[derive(Size)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 5 | `@Min` | `#[derive(Min)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 6 | `@Max` | `#[derive(Max)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 7 | `@Pattern` | `#[derive(Pattern)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
-| 8 | `@Length` | `#[derive(Length)]` | ✅ 完整 | `nexus-validation-annotations/src/lib.rs` |
+| 2 | `@NotNull` | `#[derive(NotNull)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 3 | `@Email` | `#[derive(Email)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 4 | `@Size` | `#[derive(Size)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 5 | `@Min` | `#[derive(Min)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 6 | `@Max` | `#[derive(Max)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 7 | `@Pattern` | `#[derive(Pattern)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
+| 8 | `@Length` | `#[derive(Length)]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
 
 ### 💡 使用示例 / Usage Examples
 
 ```rust
-use nexus_validation_annotations::{Valid, NotNull, Email, Size, Min};
+use hiver_validation_annotations::{Valid, NotNull, Email, Size, Min};
 
 #[derive(NotNull)]
 struct CreateUserRequest {
@@ -272,25 +272,25 @@ async fn create_user(
 
 **Status / 状态**: ✅ **100% 完成** (2026-01-25) 🎉 NEW!
 
-**Crate**: `nexus-aop`
+**Crate**: `hiver-aop`
 
 ### 📋 已实现的 AOP 注解 / Implemented AOP Annotations
 
 | # | AOP 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|---------|-----------|-----------|-------------|
 | **切面 / Aspect** |
-| 1 | `@Aspect` | `#[Aspect]` | ✅ 完整 | `nexus-aop/src/aspect.rs` |
+| 1 | `@Aspect` | `#[Aspect]` | ✅ 完整 | `hiver-aop/src/aspect.rs` |
 | **通知 / Advice** |
-| 2 | `@Before` | `#[Before("...")]` | ✅ 完整 | `nexus-aop/src/advice.rs` |
-| 3 | `@After` | `#[After("...")]` | ✅ 完整 | `nexus-aop/src/advice.rs` |
-| 4 | `@Around` | `#[Around("...")]` | ✅ 完整 | `nexus-aop/src/advice.rs` |
+| 2 | `@Before` | `#[Before("...")]` | ✅ 完整 | `hiver-aop/src/advice.rs` |
+| 3 | `@After` | `#[After("...")]` | ✅ 完整 | `hiver-aop/src/advice.rs` |
+| 4 | `@Around` | `#[Around("...")]` | ✅ 完整 | `hiver-aop/src/advice.rs` |
 | **切点 / Pointcut** |
-| 5 | `@Pointcut` | `#[Pointcut("...")]` | ✅ 完整 | `nexus-aop/src/pointcut.rs` |
+| 5 | `@Pointcut` | `#[Pointcut("...")]` | ✅ 完整 | `hiver-aop/src/pointcut.rs` |
 
 ### 💡 使用示例 / Usage Examples
 
 ```rust
-use nexus_aop::{Aspect, Before, After, Around, Pointcut};
+use hiver_aop::{Aspect, Before, After, Around, Pointcut};
 
 #[Aspect]
 struct LoggingAspect;
@@ -329,8 +329,8 @@ impl LoggingAspect {
 
 ### 📚 AOP 文档 / AOP Documentation
 
-- **README**: [crates/nexus-aop/README.md](../crates/nexus-aop/README.md)
-- **Examples**: [crates/nexus-aop/examples/logging_aspect.rs](../crates/nexus-aop/examples/logging_aspect.rs)
+- **README**: [crates/hiver-aop/README.md](../crates/hiver-aop/README.md)
+- **Examples**: [crates/hiver-aop/examples/logging_aspect.rs](../crates/hiver-aop/examples/logging_aspect.rs)
 
 ---
 
@@ -385,9 +385,9 @@ impl LoggingAspect {
 | **缓存** | 3/3 | 0 | 100% ✅ |
 | **调度** | 1/1 | 0 | 100% ✅ (部分功能) |
 | **异步** | 1/1 | 0 | 100% ✅ (基础) |
-| **AOP** | 5/5 | 0 | 100% ✅ (nexus-aop) |
+| **AOP** | 5/5 | 0 | 100% ✅ (hiver-aop) |
 | **事件** | 0/1 | 1 | 0% ❌ |
-| **验证** | 8/8 | 0 | 100% ✅ (nexus-validation-annotations) |
+| **验证** | 8/8 | 0 | 100% ✅ (hiver-validation-annotations) |
 | **小计 Subtotal** | **19/20** | **1** | **95% ✅** |
 
 ### Spring Data / Spring Data
@@ -451,7 +451,7 @@ trait UserRepository: Repository<User, i64> {
 }
 
 // 3. 集成测试 (2 weeks)
-#[nexus_test]
+#[hiver_test]
 async fn test_crud() { }
 ```
 
@@ -531,7 +531,7 @@ let user = User::builder()
 
 ```rust
 // 1. @SpringBootTest (3 weeks)
-#[nexus_test]
+#[hiver_test]
 async fn test_user_crud() {
     let app = TestApplicationContext::bootstrap().await.unwrap();
     let user_repo = app.get_repository::<UserRepository>().unwrap();
@@ -542,7 +542,7 @@ async fn test_user_crud() {
 }
 
 // 2. @MockBean (2 weeks)
-#[nexus_test]
+#[hiver_test]
 async fn test_with_mock() {
     let app = TestApplicationContext::builder()
         .mock_bean::<UserService>()
@@ -698,7 +698,7 @@ pub struct User {
 }
 
 // ❌ 测试注解 Testing (5 weeks)
-#[nexus_test]  // TODO
+#[hiver_test]  // TODO
 async fn test_user_crud() { }
 ```
 

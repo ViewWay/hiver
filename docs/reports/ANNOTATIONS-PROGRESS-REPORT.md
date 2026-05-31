@@ -34,7 +34,7 @@
 
 ## ✅ Completed This Session / 本次会议完成的内容
 
-### 1. nexus-lombok Crate (100% - Previously Completed)
+### 1. hiver-lombok Crate (100% - Previously Completed)
 
 **Status**: ✅ Complete / 完成
 **Files**: 8 modules, ~580 lines of Rust code
@@ -55,7 +55,7 @@
 
 **Usage**:
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -72,7 +72,7 @@ pub struct User {
 // - user.with_id(...), user.with_username(...)
 ```
 
-### 2. nexus-data-annotations Crate (80% - Just Completed)
+### 2. hiver-data-annotations Crate (80% - Just Completed)
 
 **Status**: ✅ Basic Implementation Complete / 基础实现完成
 **Files**: 5 modules, ~400 lines of Rust code
@@ -87,8 +87,8 @@ pub struct User {
 
 **Features**:
 ```rust
-use nexus_data_annotations::{Entity, Table, Id, GeneratedValue, Column};
-use nexus_lombok::Data;
+use hiver_data_annotations::{Entity, Table, Id, GeneratedValue, Column};
+use hiver_lombok::Data;
 
 #[Entity]
 #[Table(name = "users")]
@@ -135,7 +135,7 @@ trait UserRepository {
 - ✅ `#{param}` - MyBatis-Plus style
 - ✅ `$1, $2` - Positional parameter (PostgreSQL style)
 
-### 3. nexus-validation-annotations Crate (100% - Just Completed)
+### 3. hiver-validation-annotations Crate (100% - Just Completed)
 
 **Status**: ✅ Complete / 完成
 **Files**: 1 module, ~765 lines of Rust code
@@ -149,7 +149,7 @@ trait UserRepository {
 
 **Features**:
 ```rust
-use nexus_validation_annotations::{Valid, NotNull, Email, Size, Min, Max, Pattern, Length};
+use hiver_validation_annotations::{Valid, NotNull, Email, Size, Min, Max, Pattern, Length};
 
 #[derive(NotNull)]
 struct CreateUserRequest {
@@ -192,17 +192,17 @@ async fn create_user(
 
 **Status**: ✅ Complete / 完成
 **Changes**:
-- ✅ Added nexus-data-annotations to workspace members
-- ✅ Added nexus-validation-annotations to workspace members
+- ✅ Added hiver-data-annotations to workspace members
+- ✅ Added hiver-validation-annotations to workspace members
 
 **Cargo.toml**:
 ```toml
 [workspace]
 members = [
     # ... existing crates ...
-    "crates/nexus-lombok",
-    "crates/nexus-data-annotations",
-    "crates/nexus-validation-annotations",
+    "crates/hiver-lombok",
+    "crates/hiver-data-annotations",
+    "crates/hiver-validation-annotations",
     "examples",
 ]
 ```
@@ -213,13 +213,13 @@ members = [
 
 ### This Session / 本次会议
 
-1. **crates/nexus-data-annotations/README.md**
+1. **crates/hiver-data-annotations/README.md**
    - Complete Spring Data + MyBatis-Plus guide
    - Migration examples from Java Spring
    - All annotation documentation
    - Usage examples
 
-2. **crates/nexus-data-annotations/examples/user_entity.rs**
+2. **crates/hiver-data-annotations/examples/user_entity.rs**
    - 5 complete examples
    - Entity with Spring Data annotations
    - Repository pattern with custom queries
@@ -227,7 +227,7 @@ members = [
    - Batch operations
    - Transaction operations
 
-3. **crates/nexus-data-annotations/tests/entity_test.rs**
+3. **crates/hiver-data-annotations/tests/entity_test.rs**
    - Entity annotation tests
    - Table annotation tests
    - Column annotation tests
@@ -236,9 +236,9 @@ members = [
 
 ### Previously Created / 之前创建的
 
-1. **crates/nexus-lombok/README.md**
-2. **crates/nexus-lombok/examples/user_entity.rs**
-3. **crates/nexus-lombok/tests/data_test.rs**
+1. **crates/hiver-lombok/README.md**
+2. **crates/hiver-lombok/examples/user_entity.rs**
+3. **crates/hiver-lombok/tests/data_test.rs**
 
 ---
 
@@ -246,9 +246,9 @@ members = [
 
 | Crate | Files | Lines of Code | Status | Test Coverage |
 |-------|-------|---------------|--------|---------------|
-| nexus-lombok | 11 | ~580 | ✅ 100% | ✅ Full |
-| nexus-data-annotations | 8 | ~400 | ✅ 80% | 🚧 Basic |
-| nexus-validation-annotations | 1 | ~765 | ✅ 100% | 📋 To Add |
+| hiver-lombok | 11 | ~580 | ✅ 100% | ✅ Full |
+| hiver-data-annotations | 8 | ~400 | ✅ 80% | 🚧 Basic |
+| hiver-validation-annotations | 1 | ~765 | ✅ 100% | 📋 To Add |
 | **Total** | **20** | **~1,745** | **✅ 87%** | **🚧 Good** |
 
 ---
@@ -342,9 +342,9 @@ members = [
 ### Complete Example: User Management
 
 ```rust
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
-use nexus_lombok::Data;
-use nexus_validation_annotations::{Email, Size, Min};
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_lombok::Data;
+use hiver_validation_annotations::{Email, Size, Min};
 use serde::{Serialize, Deserialize};
 
 // Entity with combined annotations
@@ -423,9 +423,9 @@ async fn create_user(
 
 ```toml
 [dependencies]
-nexus-lombok = "0.1"
-nexus-data-annotations = "0.1"
-nexus-validation-annotations = "0.1"
+hiver-lombok = "0.1"
+hiver-data-annotations = "0.1"
+hiver-validation-annotations = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 ```
 
@@ -433,13 +433,13 @@ serde = { version = "1.0", features = ["derive"] }
 
 ```rust
 // Lombok
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 // Spring Data
-use nexus_data_annotations::{Entity, Table, Id, Column, Query};
+use hiver_data_annotations::{Entity, Table, Id, Column, Query};
 
 // Validation
-use nexus_validation_annotations::{Email, Size, Min};
+use hiver_validation_annotations::{Email, Size, Min};
 ```
 
 ---

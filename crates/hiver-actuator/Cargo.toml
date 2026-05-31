@@ -1,0 +1,43 @@
+[package]
+name = "hiver-actuator"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Actuator endpoints for Hiver Framework.
+Nexus框架的Actuator端点。
+Equivalent to: Spring Boot Actuator
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = []
+
+[lints]
+workspace = true
+
+[dependencies]
+# Workspace dependencies
+hiver-http = { path = "../hiver-http" }
+hiver-core = { path = "../hiver-core" }
+
+# External dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true, features = ["sync", "time"] }
+sysinfo = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full", "test-util"] }

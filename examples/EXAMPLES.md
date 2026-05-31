@@ -1,12 +1,12 @@
 # Nexus Examples / Nexus 示例
 
-This directory contains comprehensive examples demonstrating all features of the Nexus framework.
-本目录包含演示 Nexus 框架所有功能的综合示例。
+This directory contains comprehensive examples demonstrating all features of the Hiver Framework.
+本目录包含演示 Hiver 框架所有功能的综合示例。
 
 ## Overview / 概述
 
-Each example corresponds to a specific crate in the Nexus framework and demonstrates:
-每个示例对应 Nexus 框架中的特定 crate，并演示：
+Each example corresponds to a specific crate in the Hiver Framework and demonstrates:
+每个示例对应 Hiver 框架中的特定 crate，并演示：
 - Core features and APIs / 核心功能和 API
 - Common usage patterns / 常见使用模式
 - Best practices / 最佳实践
@@ -500,24 +500,24 @@ examples/
 
 | Crate / Crate | Example / 示例 | Description / 描述 |
 |---------------|----------------|-------------------|
-| nexus-runtime | runtime-echo-server, runtime-chat-server, runtime-timer-service | Async runtime / 异步运行时 |
-| nexus-core | ioc_container_example | IoC container / IoC 容器 |
-| nexus-http | hello_world, json_api | HTTP server / HTTP 服务器 |
-| nexus-router | router_demo | Routing / 路由 |
-| nexus-extractors | router_demo, json_api | Request extractors / 请求提取器 |
-| nexus-response | hello_world, json_api | Response builders / 响应构建器 |
-| nexus-middleware | middleware_demo | Middleware / 中间件 |
-| nexus-resilience | resilience_example | Resilience patterns / 弹性模式 |
-| nexus-observability | logging_example, spring_boot_logging_demo | Logging & tracing / 日志和追踪 |
-| nexus-config | config_example | Configuration / 配置 |
-| nexus-cache | cache_example | Caching / 缓存 |
-| nexus-security | security_example | Authentication & authorization / 认证和授权 |
-| nexus-validation | validation_example | Request validation / 请求验证 |
-| nexus-multipart | multipart_example | File upload / 文件上传 |
-| nexus-schedule | schedule_example | Scheduled tasks / 定时任务 |
-| nexus-exceptions | exceptions_example | Error handling / 错误处理 |
-| nexus-actuator | actuator_example | Monitoring & management / 监控和管理 |
-| nexus-web3 | web3_example | Blockchain integration / 区块链集成 |
+| hiver-runtime | runtime-echo-server, runtime-chat-server, runtime-timer-service | Async runtime / 异步运行时 |
+| hiver-core | ioc_container_example | IoC container / IoC 容器 |
+| hiver-http | hello_world, json_api | HTTP server / HTTP 服务器 |
+| hiver-router | router_demo | Routing / 路由 |
+| hiver-extractors | router_demo, json_api | Request extractors / 请求提取器 |
+| hiver-response | hello_world, json_api | Response builders / 响应构建器 |
+| hiver-middleware | middleware_demo | Middleware / 中间件 |
+| hiver-resilience | resilience_example | Resilience patterns / 弹性模式 |
+| hiver-observability | logging_example, spring_boot_logging_demo | Logging & tracing / 日志和追踪 |
+| hiver-config | config_example | Configuration / 配置 |
+| hiver-cache | cache_example | Caching / 缓存 |
+| hiver-security | security_example | Authentication & authorization / 认证和授权 |
+| hiver-validation | validation_example | Request validation / 请求验证 |
+| hiver-multipart | multipart_example | File upload / 文件上传 |
+| hiver-schedule | schedule_example | Scheduled tasks / 定时任务 |
+| hiver-exceptions | exceptions_example | Error handling / 错误处理 |
+| hiver-actuator | actuator_example | Monitoring & management / 监控和管理 |
+| hiver-web3 | web3_example | Blockchain integration / 区块链集成 |
 
 ## Contributing / 贡献
 

@@ -1,8 +1,8 @@
 # Nexus Fuzzing Tests
 # Nexus Fuzzing 测试
 
-This directory contains fuzzing tests for the Nexus framework using `cargo-fuzz` and libFuzzer.
-此目录包含使用 `cargo-fuzz` 和 libFuzzer 的 Nexus 框架 fuzzing 测试。
+This directory contains fuzzing tests for the Hiver Framework using `cargo-fuzz` and libFuzzer.
+此目录包含使用 `cargo-fuzz` 和 libFuzzer 的 Hiver 框架 fuzzing 测试。
 
 ## Installation / 安装
 

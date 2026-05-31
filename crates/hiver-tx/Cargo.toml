@@ -1,0 +1,64 @@
+[package]
+name = "hiver-tx"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Transaction management for Hiver Framework.
+Nexus框架的事务管理。
+Equivalent to: Spring Transaction Management (@Transactional, TransactionTemplate)
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = []
+sqlx = ["dep:sqlx"]
+sea-orm = ["dep:sea-orm"]
+postgres = ["dep:tokio-postgres"]
+all = ["sqlx", "sea-orm", "postgres"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Async runtime / 异步运行时
+hiver-runtime = { path = "../hiver-runtime" }
+
+# Database / 数据库
+sqlx = { workspace = true, optional = true }
+sea-orm = { workspace = true, optional = true }
+tokio-postgres = { workspace = true, optional = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true }
+
+# Async runtime / 异步运行时 (for tokio::sync types)
+tokio = { workspace = true, features = ["sync"] }
+
+# HTTP / HTTP (for Request extensions)
+hiver-http = { path = "../hiver-http" }
+
+# Utilities / 工具
+once_cell = { workspace = true }
+
+[dev-dependencies]
+# Testing / 测试
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

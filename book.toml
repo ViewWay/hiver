@@ -4,8 +4,8 @@
 # 此文件配置mdBook文档生成器。
 
 [book]
-title = "Nexus Framework Guide / Nexus框架指南"
-authors = ["Nexus Team"]
+title = "Hiver Framework Guide / Hiver框架指南"
+authors = ["Hiver Team"]
 description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-like annotations, and comprehensive feature set."
 language = "zh-CN"
 src = "docs/book/src"
@@ -30,9 +30,9 @@ command = "mdbook-mermaid"
 default-theme = "light"
 preferred-dark-theme = "coal"
 smart-punctuation = true
-site-url = "/nexus/"
-git-repository-url = "https://github.com/ViewWay/nexus"
-edit-url-template = "https://github.com/ViewWay/nexus/edit/main/{path}"
+site-url = "/hiver/"
+git-repository-url = "https://github.com/ViewWay/hiver"
+edit-url-template = "https://github.com/ViewWay/hiver/edit/main/{path}"
 additional-css = ["theme/nexus.css"]
 
 [output.html.search]

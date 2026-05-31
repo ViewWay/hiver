@@ -42,7 +42,7 @@ Track requests across services:
 跨服务追踪请求：
 
 ```rust
-use nexus_observability::{Tracer, Span};
+use hiver_observability::{Tracer, Span};
 
 // Create tracer / 创建追踪器
 let tracer = Tracer::new("my-service");
@@ -76,7 +76,7 @@ Collect application metrics:
 收集应用程序指标：
 
 ```rust
-use nexus_observability::{MetricsRegistry, Counter, Gauge, Histogram};
+use hiver_observability::{MetricsRegistry, Counter, Gauge, Histogram};
 
 // Get metrics registry / 获取指标注册表
 let metrics = MetricsRegistry::default();
@@ -116,7 +116,7 @@ Structured logging with context:
 带上下文的结构化日志：
 
 ```rust
-use nexus_observability::log;
+use hiver_observability::log;
 use tracing::{info, error, warn};
 
 // Basic logging / 基本日志
@@ -155,7 +155,7 @@ Nexus 提供统一的日志系统，具有针对不同环境优化的两种模�
 | **Simple** | Production | Level + Module + Message only (~30% faster) |
 
 ```rust
-use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Configure logging based on environment
@@ -209,12 +209,12 @@ INFO n.http.server: Request received
 **Spring Boot Style Startup / Spring Boot 风格启动**:
 
 ```rust
-use nexus_observability::log::Logger;
-#[cfg(feature = "nexus-format")]
-use nexus_observability::{Banner, StartupLogger};
+use hiver_observability::log::Logger;
+#[cfg(feature = "hiver-format")]
+use hiver_observability::{Banner, StartupLogger};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    #[cfg(feature = "nexus-format")]
+    #[cfg(feature = "hiver-format")]
     {
         // Print banner / 打印横幅
         Banner::print("MyApp", "0.1.0", 8080);
@@ -268,7 +268,7 @@ See [Logging Configuration Guide](../../../logging.md) for detailed documentatio
 ### With HTTP Server / 与HTTP服务器集成
 
 ```rust
-use nexus_observability::{tracer, metrics, log};
+use hiver_observability::{tracer, metrics, log};
 
 async fn handler(req: Request) -> Response {
     // Start span / 开始span

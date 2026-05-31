@@ -22,7 +22,7 @@ Phase 5 可观测性实施现已**完成**。分布式追踪、指标收集和�
 ### ✅ 1. Distributed Tracing (分布式追踪)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/trace.rs` - Tracing implementation
+- `crates/hiver-observability/src/trace.rs` - Tracing implementation
 
 **Features / 功能**:
 - W3C Trace Context support
@@ -36,7 +36,7 @@ Phase 5 可观测性实施现已**完成**。分布式追踪、指标收集和�
 
 **API Example / API示例**:
 ```rust
-use nexus_observability::trace::{Tracer, Span, SpanContext};
+use hiver_observability::trace::{Tracer, Span, SpanContext};
 
 // Create a span
 let span = Tracer::new("user_service")
@@ -84,7 +84,7 @@ async fn get_user(id: &str) -> User {
 ### ✅ 2. Metrics Collection (指标收集)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/metrics.rs` - Metrics implementation
+- `crates/hiver-observability/src/metrics.rs` - Metrics implementation
 
 **Features / 功能**:
 - Counter (monotonic increment)
@@ -99,7 +99,7 @@ async fn get_user(id: &str) -> User {
 
 **API Example / API示例**:
 ```rust
-use nexus_observability::metrics::{Counter, Gauge, Histogram};
+use hiver_observability::metrics::{Counter, Gauge, Histogram};
 
 // Counter
 let request_count = Counter::new(
@@ -146,8 +146,8 @@ runtime_gc_duration_seconds
 ### ✅ 3. Structured Logging (结构化日志)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/log.rs` - Logging implementation
-- `crates/nexus-observability/src/nexus_format.rs` - Nexus log format
+- `crates/hiver-observability/src/log.rs` - Logging implementation
+- `crates/hiver-observability/src/hiver_format.rs` - Nexus log format
 
 **Features / 功能**:
 - Structured JSON logging
@@ -161,7 +161,7 @@ runtime_gc_duration_seconds
 
 **API Example / API示例**:
 ```rust
-use nexus_observability::log::{Logger, LoggerFactory};
+use hiver_observability::log::{Logger, LoggerFactory};
 
 let logger = LoggerFactory::get("my_service");
 
@@ -174,7 +174,7 @@ logger.info()
     .log();
 
 // Or use the #[slf4j] macro
-use nexus_macros::slf4j;
+use hiver_macros::slf4j;
 
 #[slf4j]
 struct MyService;
@@ -211,7 +211,7 @@ impl MyService {
 ### ✅ 4. Prometheus Export (Prometheus 导出)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/exporter/prometheus.rs` - Prometheus exporter
+- `crates/hiver-observability/src/exporter/prometheus.rs` - Prometheus exporter
 
 **Features / 功能**:
 - HTTP metrics endpoint (`/metrics`)
@@ -223,7 +223,7 @@ impl MyService {
 
 **API Example / API示例**:
 ```rust
-use nexus_observability::exporter::PrometheusExporter;
+use hiver_observability::exporter::PrometheusExporter;
 
 let exporter = PrometheusExporter::new()
     .bind("0.0.0.0:9090")
@@ -253,7 +253,7 @@ http_request_duration_seconds_count{method="GET",path="/api/users"} 100
 ### ✅ 5. Jaeger Export (Jaeger 导出)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/exporter/jaeger.rs` - Jaeger exporter
+- `crates/hiver-observability/src/exporter/jaeger.rs` - Jaeger exporter
 
 **Features / 功能**:
 - Thrift UDP export
@@ -264,7 +264,7 @@ http_request_duration_seconds_count{method="GET",path="/api/users"} 100
 
 **API Example / API示例**:
 ```rust
-use nexus_observability::exporter::JaegerExporter;
+use hiver_observability::exporter::JaegerExporter;
 
 let exporter = JaegerExporter::new()
     .agent_host("localhost")
@@ -279,7 +279,7 @@ let exporter = JaegerExporter::new()
 ### ✅ 6. OpenTelemetry Integration (OpenTelemetry 集成)
 
 **Files / 文件**:
-- `crates/nexus-observability/src/otel.rs` - OpenTelemetry bridge
+- `crates/hiver-observability/src/otel.rs` - OpenTelemetry bridge
 
 **Features / 功能**:
 - OpenTelemetry tracing API
@@ -362,19 +362,19 @@ let exporter = JaegerExporter::new()
 ## Files Created / 创建的文件
 
 ### Core Observability / 核心可观测性
-- `crates/nexus-observability/src/lib.rs`
-- `crates/nexus-observability/src/trace.rs`
-- `crates/nexus-observability/src/metrics.rs`
-- `crates/nexus-observability/src/log.rs`
-- `crates/nexus-observability/src/nexus_format.rs`
+- `crates/hiver-observability/src/lib.rs`
+- `crates/hiver-observability/src/trace.rs`
+- `crates/hiver-observability/src/metrics.rs`
+- `crates/hiver-observability/src/log.rs`
+- `crates/hiver-observability/src/hiver_format.rs`
 
 ### Exporters / 导出器
-- `crates/nexus-observability/src/exporter/mod.rs`
-- `crates/nexus-observability/src/exporter/prometheus.rs`
-- `crates/nexus-observability/src/exporter/jaeger.rs`
+- `crates/hiver-observability/src/exporter/mod.rs`
+- `crates/hiver-observability/src/exporter/prometheus.rs`
+- `crates/hiver-observability/src/exporter/jaeger.rs`
 
 ### OpenTelemetry / OpenTelemetry
-- `crates/nexus-observability/src/otel.rs`
+- `crates/hiver-observability/src/otel.rs`
 
 ---
 

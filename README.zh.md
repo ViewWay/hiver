@@ -22,7 +22,7 @@
 </p>
 </div>
 
-# Nexus 框架
+# Hiver 框架
 
 Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。与使用 Tokio 的其他框架不同，Nexus 具有使用 io-uring 从头构建的自定义异步运行时，以实现最大性能。
 
@@ -49,17 +49,17 @@ Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1"
-nexus-http = { version = "0.1", features = ["full"] }
-nexus-router = "0.1"
-nexus-observability = "0.1"
+hiver-runtime = "0.1"
+hiver-http = { version = "0.1", features = ["full"] }
+hiver-router = "0.1"
+hiver-observability = "0.1"
 ```
 
 ### 基础 HTTP 服务器
 
 ```rust
-use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_runtime::Runtime;
+use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_runtime::Runtime;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化日志
@@ -80,7 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
 }
 
-async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http::Error> {
+async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http::Error> {
     Ok(Response::builder()
         .status(StatusCode::OK)
         .header("content-type", "text/plain")
@@ -102,13 +102,13 @@ async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http
 //! - 熔断器
 //! - 可观测性（追踪、指标）
 
-use nexus_http::{
+use hiver_http::{
     Body, Response, Server, StatusCode,
     Request, Result as HttpResult,
 };
-use nexus_router::Router;
-use nexus_runtime::Runtime;
-use nexus_observability::{tracing, metrics};
+use hiver_router::Router;
+use hiver_runtime::Runtime;
+use hiver_observability::{tracing, metrics};
 
 // ============================================================================
 // 数据模型
@@ -213,7 +213,7 @@ impl UserStore {
 /// GET /users - 列出所有用户
 async fn list_users(
     _req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     tracing::info!("Listing all users");
 
@@ -229,7 +229,7 @@ async fn list_users(
 /// GET /users/:id - 按 ID 获取用户
 async fn get_user(
     req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     // 提取路径参数
     let id = req
@@ -254,7 +254,7 @@ async fn get_user(
 /// POST /users - 创建新用户
 async fn create_user(
     mut req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     // 解析请求体
     let body = std::pin::pin(&mut req)
@@ -287,9 +287,9 @@ async fn create_user(
 // 错误转换
 // ============================================================================
 
-impl From<ApiError> for nexus_http::Error {
+impl From<ApiError> for hiver_http::Error {
     fn from(err: ApiError) -> Self {
-        nexus_http::Error::new(err.status_code(), err.message())
+        hiver_http::Error::new(err.status_code(), err.message())
     }
 }
 
@@ -309,13 +309,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 构建路由器
     let app = Router::new()
         // GET /users - 列出用户
-        .route("/users", nexus_router::Method::GET, list_users)
+        .route("/users", hiver_router::Method::GET, list_users)
 
         // GET /users/:id - 获取用户
-        .route("/users/:id", nexus_router::Method::GET, get_user)
+        .route("/users/:id", hiver_router::Method::GET, get_user)
 
         // POST /users - 创建用户
-        .route("/users", nexus_router::Method::POST, create_user)
+        .route("/users", hiver_router::Method::POST, create_user)
 
         // 添加状态
         .with_state(store);
@@ -359,7 +359,7 @@ curl http://localhost:8080/users
 Nexus 提供统一的日志系统，具有两种模式：**Verbose**（开发）和 **Simple**（生产）。
 
 ```rust
-use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 基于配置文件自动选择模式
@@ -399,8 +399,8 @@ export NEXUS_PROFILE=prod  # dev->verbose, prod->simple
 ### 弹性模式
 
 ```rust
-use nexus_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
-use nexus_http::Request;
+use hiver_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
+use hiver_http::Request;
 
 // 熔断器
 let breaker = CircuitBreaker::new(
@@ -430,7 +430,7 @@ async fn call_external_api(req: Request) -> Result<Response, Error> {
 ### Web3 支持
 
 ```rust
-use nexus_web3::{
+use hiver_web3::{
     Chain, ChainConfig, LocalWallet, RpcClient,
     Transaction, TransactionBuilder, TxType,
 };
@@ -495,25 +495,25 @@ Nexus 从根本上设计为高性能：
 **62 个 crate**，覆盖 10 个功能领域。详见 [CODEMAP.md](docs/CODEMAP.md)。
 
 ```
-nexus-starter (Spring Boot 自动配置)
+hiver-starter (Spring Boot 自动配置)
     │
-    ├── Web:      nexus-http, nexus-router, nexus-extractors, nexus-middleware,
-    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi, nexus-graphql
-    ├── 数据层:   nexus-data-commons, nexus-data-rdbc, nexus-data-orm, nexus-data-redis,
-    │             nexus-data-mongodb, nexus-data-annotations, nexus-data-macros, nexus-flyway
-    ├── 安全:     nexus-security, nexus-session
-    ├── AOP:      nexus-aop, nexus-tx
-    ├── 消息:     nexus-events, nexus-events-macros, nexus-kafka, nexus-amqp,
-    │             nexus-integration, nexus-websocket-stomp
-    ├── 基础设施: nexus-runtime, nexus-core, nexus-macros, nexus-lombok, nexus-config,
-    │             nexus-exceptions, nexus-spel
-    ├── 云原生:   nexus-cloud, nexus-ai, nexus-agent, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
-    ├── 弹性:     nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator,
-    │             nexus-retry, nexus-retry-macros
-    ├── 企业级:   nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws,
-    │             nexus-i18n, nexus-modulith
-    └── 工具链:   nexus-test, nexus-shell, nexus-shell-macros, nexus-benches, nexus-validation,
-                  nexus-validation-annotations, nexus-cache
+    ├── Web:      hiver-http, hiver-router, hiver-extractors, hiver-middleware,
+    │             hiver-response, hiver-hateoas, hiver-multipart, hiver-openapi, hiver-graphql
+    ├── 数据层:   hiver-data-commons, hiver-data-rdbc, hiver-data-orm, hiver-data-redis,
+    │             hiver-data-mongodb, hiver-data-annotations, hiver-data-macros, hiver-flyway
+    ├── 安全:     hiver-security, hiver-session
+    ├── AOP:      hiver-aop, hiver-tx
+    ├── 消息:     hiver-events, hiver-events-macros, hiver-kafka, hiver-amqp,
+    │             hiver-integration, hiver-websocket-stomp
+    ├── 基础设施: hiver-runtime, hiver-core, hiver-macros, hiver-lombok, hiver-config,
+    │             hiver-exceptions, hiver-spel
+    ├── 云原生:   hiver-cloud, hiver-ai, hiver-agent, hiver-web3, hiver-vault, hiver-ldap, hiver-grpc
+    ├── 弹性:     hiver-resilience, hiver-observability, hiver-micrometer, hiver-actuator,
+    │             hiver-retry, hiver-retry-macros
+    ├── 企业级:   hiver-batch, hiver-state-machine, hiver-async, hiver-schedule, hiver-ws,
+    │             hiver-i18n, hiver-modulith
+    └── 工具链:   hiver-test, hiver-shell, hiver-shell-macros, hiver-benches, hiver-validation,
+                  hiver-validation-annotations, hiver-cache
 ```
 
 ## 🛠️ 开发
@@ -530,7 +530,7 @@ cargo build --workspace
 cargo test --workspace
 
 # 运行基准测试
-cargo bench -p nexus-runtime
+cargo bench -p hiver-runtime
 
 # 格式化
 cargo fmt --all
@@ -581,4 +581,4 @@ Nexus 汲取了多种语言优秀框架的灵感：
 
 ---
 
-**Nexus 框架** — 为 Web 开发的未来而构建。
+**Hiver 框架** — 为 Web 开发的未来而构建。

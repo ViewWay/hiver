@@ -3,7 +3,7 @@
 
 **生成日期 / Generated Date**: 2026-01-24  
 **分析范围 / Analysis Scope**: Spring Framework 6.x 核心模块实现原理  
-**对比框架 / Comparison Framework**: Nexus Framework
+**对比框架 / Comparison Framework**: Hiver Framework
 
 ---
 
@@ -133,7 +133,7 @@ public class UserService {
 #### 已实现 ✅
 
 ```rust
-// nexus-core/src/container.rs
+// hiver-core/src/container.rs
 pub struct Container {
     beans: Arc<RwLock<BeanStore>>,
     extensions: Extensions,
@@ -394,13 +394,13 @@ public class GlobalExceptionHandler {
 #### 已实现 ✅
 
 ```rust
-// nexus-router/src/router.rs
+// hiver-router/src/router.rs
 pub struct Router {
     routes: Arc<RouteTable>,
     middleware: Arc<Vec<Arc<dyn Middleware>>>,
 }
 
-// nexus-extractors/src/path.rs
+// hiver-extractors/src/path.rs
 pub struct Path<T>(pub T);
 
 impl<T: DeserializeOwned> FromRequest for Path<T> {
@@ -642,7 +642,7 @@ public class UserDao {
 
 #### 已存在但未集成
 
-- 🟡 `nexus-tx` - 事务管理模块存在
+- 🟡 `hiver-tx` - 事务管理模块存在
 - ❌ 无ORM集成
 - ❌ 无Repository模式
 - ❌ 无JDBC抽象
@@ -662,9 +662,9 @@ public class UserDao {
    - **建议**: 实现Repository trait和查询解析
 
 3. **事务集成**
-   - 🟡 `nexus-tx`存在但未与数据访问集成
+   - 🟡 `hiver-tx`存在但未与数据访问集成
    - ❌ 无声明式事务
-   - **建议**: 集成`nexus-tx`到数据访问层
+   - **建议**: 集成`hiver-tx`到数据访问层
 
 4. **分页排序**
    - ❌ `Pageable`, `Page<T>`
@@ -690,7 +690,7 @@ public class UserDao {
    ```
 
 3. **集成事务管理**
-   - 将`nexus-tx`集成到Repository
+   - 将`hiver-tx`集成到Repository
    - 支持`#[transactional]`注解
    - 支持传播行为和隔离级别
 
@@ -767,7 +767,7 @@ public class SecurityConfig {
 #### 已实现 ✅
 
 ```rust
-// nexus-security/src/auth.rs
+// hiver-security/src/auth.rs
 pub struct Authentication {
     pub principal: String,
     pub credentials: Option<String>,
@@ -953,14 +953,14 @@ public class DynamicConfig {
 #### 已实现 ✅
 
 ```rust
-// nexus-config/src/config.rs
+// hiver-config/src/config.rs
 pub struct Config {
     environment: Arc<Environment>,
     files: Arc<RwLock<Vec<PathBuf>>>,
     values: Arc<RwLock<IndexMap<String, Value>>>,
 }
 
-// nexus-config/src/properties.rs
+// hiver-config/src/properties.rs
 #[derive(PropertiesConfig, Deserialize)]
 #[prefix = "app.datasource"]
 struct DataSourceConfig {
@@ -1234,7 +1234,7 @@ class UserServiceTest {
 
 1. **集成测试框架**
    ```rust
-   #[nexus_test]
+   #[hiver_test]
    async fn test_create_user() {
        let app = create_test_app().await;
        let client = TestClient::new(app);
@@ -1250,7 +1250,7 @@ class UserServiceTest {
 
 2. **Mock支持**
    ```rust
-   #[nexus_test]
+   #[hiver_test]
    async fn test_user_service() {
        let mut mock_repo = MockUserRepository::new();
        mock_repo.expect_find_by_id()
@@ -1267,7 +1267,7 @@ class UserServiceTest {
 #### 优先级P1
 
 1. **测试框架**
-   - 实现`#[nexus_test]`宏
+   - 实现`#[hiver_test]`宏
    - 实现`TestClient`
    - 支持应用上下文创建
 
@@ -1321,7 +1321,7 @@ class UserServiceTest {
    - 易于使用
 
 2. **HTTP测试**: 自定义TestClient
-   - 基于nexus-http
+   - 基于hiver-http
    - 支持JSON/Form等
 
 #### 配置管理
@@ -1435,7 +1435,7 @@ public class DataSourceAutoConfiguration {
 #### 实现建议
 
 ```rust
-// nexus-boot/src/auto_config.rs
+// hiver-boot/src/auto_config.rs
 
 /// Auto-configuration trait
 pub trait AutoConfiguration: Send + Sync {
@@ -1564,8 +1564,8 @@ public class GatewayApplication {
 
 #### 已存在但未完全实现
 
-- 🟡 `nexus-resilience` - 弹性模块存在（占位符）
-- 🟡 `nexus-cloud` - 云模块存在（部分实现）
+- 🟡 `hiver-resilience` - 弹性模块存在（占位符）
+- 🟡 `hiver-cloud` - 云模块存在（部分实现）
 
 #### 缺失功能 ❌
 
@@ -1573,7 +1573,7 @@ public class GatewayApplication {
    - ❌ Eureka集成
    - ❌ Consul集成
    - ❌ Nacos集成
-   - **建议**: Phase 4实现（nexus-cloud已有基础）
+   - **建议**: Phase 4实现（hiver-cloud已有基础）
 
 2. **配置中心**
    - ❌ Config Server
@@ -1585,7 +1585,7 @@ public class GatewayApplication {
    - ❌ 路由规则
    - ❌ 负载均衡
    - ❌ 限流/熔断
-   - **建议**: Phase 7实现（nexus-cloud已有gateway结构）
+   - **建议**: Phase 7实现（hiver-cloud已有gateway结构）
 
 ### 10.3 实现建议 / Implementation Recommendations
 
@@ -1601,7 +1601,7 @@ public class GatewayApplication {
    ```
 
 2. **熔断器完善**
-   - 完善nexus-resilience中的CircuitBreaker
+   - 完善hiver-resilience中的CircuitBreaker
    - 实现状态机
    - 支持fallback
 
@@ -1651,7 +1651,7 @@ public class GatewayApplication {
 | **@Entity** | JPA注解 | ❌ 未实现 | ❌ 需要实现 |
 | **Repository** | 代理创建 | ❌ 未实现 | ❌ 需要实现trait |
 | **@Query** | JPQL解析 | ❌ 未实现 | ❌ 需要实现 |
-| **@Transactional** | AOP代理 | 🟡 nexus-tx存在 | ⚠️ 需要集成 |
+| **@Transactional** | AOP代理 | 🟡 hiver-tx存在 | ⚠️ 需要集成 |
 | **JdbcTemplate** | JDBC抽象 | ❌ 未实现 | ❌ 建议基于sqlx |
 | **分页排序** | Pageable/Page | ❌ 未实现 | ❌ 需要实现 |
 
@@ -2098,7 +2098,7 @@ pub struct Model {
 #### Repository实现
 
 ```rust
-// nexus-data/src/repository.rs
+// hiver-data/src/repository.rs
 
 pub trait Repository<T, ID>: Send + Sync {
     async fn find_by_id(&self, id: ID) -> Result<Option<T>>;
@@ -2142,7 +2142,7 @@ mock! {
 #### 测试客户端
 
 ```rust
-// nexus-test/src/client.rs
+// hiver-test/src/client.rs
 
 pub struct TestClient {
     app: Router,
@@ -2181,7 +2181,7 @@ impl TestRequest {
 #### Redis集成
 
 ```rust
-// nexus-cache/src/redis.rs
+// hiver-cache/src/redis.rs
 
 use redis::AsyncCommands;
 
@@ -2215,7 +2215,7 @@ where
 ### 15.1 全局异常处理实现示例 / Global Exception Handler Example
 
 ```rust
-// nexus-http/src/exception.rs
+// hiver-http/src/exception.rs
 
 /// Exception handler trait
 pub trait ExceptionHandler<E>: Send + Sync
@@ -2259,7 +2259,7 @@ impl ExceptionHandler<NotFound> for GlobalExceptionHandler {
 ### 15.2 参数校验实现示例 / Validation Example
 
 ```rust
-// nexus-extractors/src/valid.rs
+// hiver-extractors/src/valid.rs
 
 use validator::Validate;
 
@@ -2296,7 +2296,7 @@ async fn create_user(#[valid] Json(req): Json<CreateUserRequest>) -> Result<User
 ### 15.3 BeanPostProcessor实现示例 / BeanPostProcessor Example
 
 ```rust
-// nexus-core/src/post_processor.rs
+// hiver-core/src/post_processor.rs
 
 pub trait BeanPostProcessor: Send + Sync {
     fn post_process_before_init(

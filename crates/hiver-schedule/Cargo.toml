@@ -1,0 +1,63 @@
+[package]
+name = "hiver-schedule"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Spring Scheduling equivalent for Hiver Framework.
+Nexus框架的Spring Scheduling等价功能。
+Equivalent to: Spring @Scheduled, @Async, @EnableScheduling
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Async runtime / 异步运行时
+# Equivalent to: Spring TaskExecutor, @Async
+hiver-runtime = { path = "../hiver-runtime" }
+tokio = { workspace = true, features = ["sync", "time", "rt"] }
+
+# Macros / 宏
+# Equivalent to: Spring @Scheduled annotation processing
+hiver-macros = { path = "../hiver-macros" }
+
+# Async traits / 异步trait
+# Equivalent to: Spring @Async method support
+async-trait = { workspace = true }
+
+# Time / 时间
+# Equivalent to: Spring Scheduling time utilities
+chrono = { workspace = true }
+time = { workspace = true }
+
+# Scheduling / 调度
+# Equivalent to: Spring @Scheduled, TaskScheduler
+tokio-cron-scheduler = { workspace = true }
+
+# Tracing / 追踪
+# Equivalent to: Spring Scheduling logging
+tracing = { workspace = true }
+
+# Utilities / 工具
+ulid = { workspace = true }
+
+# Error handling / 错误处理
+# Equivalent to: Spring Scheduling exception handling
+thiserror = { workspace = true }
+
+[dev-dependencies]
+# Testing / 测试
+# Equivalent to: Spring Test scheduling support
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -1,5 +1,5 @@
 [package]
-name = "nexus-fuzz"
+name = "hiver-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2021"
@@ -11,10 +11,10 @@ cargo-fuzz = true
 libfuzzer-sys = "0.4"
 
 # Dependencies for fuzz targets
-nexus-http = { path = "../crates/nexus-http" }
-nexus-router = { path = "../crates/nexus-router" }
-nexus-middleware = { path = "../crates/nexus-middleware" }
-nexus-runtime = { path = "../crates/nexus-runtime" }
+hiver-http = { path = "../crates/hiver-http" }
+hiver-router = { path = "../crates/hiver-router" }
+hiver-middleware = { path = "../crates/hiver-middleware" }
+hiver-runtime = { path = "../crates/hiver-runtime" }
 
 # Prevent dependency on workspace packages
 [workspace]

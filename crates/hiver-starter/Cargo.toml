@@ -1,0 +1,114 @@
+# Nexus Starter - Spring Boot风格的自动配置 / Spring Boot-style Auto-Configuration
+#
+# 提供开箱即用的自动配置能力
+# Provides out-of-the-box auto-configuration capabilities
+#
+# # Equivalent to Spring Boot Starters / 等价于 Spring Boot Starters
+#
+# - `hiver-starter` (web feature) → `spring-boot-starter-web`
+# - `hiver-starter` (security feature) → `spring-boot-starter-security`
+# - `hiver-starter` (data feature) → `spring-boot-starter-data-jpa`
+# - `hiver-starter` (cache feature) → `spring-boot-starter-cache`
+# - `hiver-starter` (full feature) → All features enabled
+#
+# # Quick Start / 快速开始
+#
+# ```toml
+# [dependencies]
+# hiver-starter = { version = "0.1", features = ["full"] }
+# ```
+#
+# ```rust,no_run,ignore
+# use hiver_starter::prelude::*;
+#
+# #[hiver_main]
+# struct Application;
+# ```
+
+[package]
+name = "hiver-starter"
+version = "0.1.0"
+description = "Spring Boot-style auto-configuration for Hiver Framework"
+documentation = "https://docs.rs/hiver-starter"
+repository = "https://github.com/hiver-rs/nexus"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+rust-version = "1.75"
+
+[features]
+default = ["core", "web"]
+
+# 核心功能（始终启用）
+core = ["hiver-macros", "dep:hiver-config", "dep:hiver-observability"]
+
+# 可观测性（日志、追踪、指标）
+observability = ["dep:hiver-observability"]
+
+# Web 服务器
+web = ["hiver-http", "hiver-router", "hiver-middleware"]
+
+# 安全
+security = ["hiver-security", "web"]
+
+# 数据访问
+data = ["hiver-data-rdbc", "hiver-tx", "hiver-tx/sqlx", "dep:sqlx"]
+
+# SQLx integration (optional)
+sqlx = ["dep:sqlx"]
+
+# 缓存
+cache = ["hiver-cache"]
+
+# 定时任务
+schedule = ["hiver-schedule"]
+
+# 监控端点
+actuator = ["hiver-actuator"]
+
+# 全功能
+full = ["web", "security", "data", "cache", "schedule", "actuator"]
+
+# 开发模式（包含测试支持）
+dev = ["full"]
+
+[dependencies]
+# 框架核心
+hiver-macros = { path = "../hiver-macros", optional = true }
+hiver-config = { path = "../hiver-config", optional = true }
+hiver-runtime = { path = "../hiver-runtime", optional = true }
+hiver-observability = { path = "../hiver-observability", optional = true, features = ["hiver-format"] }
+
+# Web
+hiver-http = { path = "../hiver-http", optional = true }
+hiver-router = { path = "../hiver-router", optional = true }
+hiver-middleware = { path = "../hiver-middleware", optional = true }
+
+# 其他模块
+hiver-security = { path = "../hiver-security", optional = true }
+hiver-data-rdbc = { path = "../hiver-data-rdbc", optional = true }
+hiver-tx = { path = "../hiver-tx", optional = true }
+sqlx = { workspace = true, optional = true, features = ["runtime-tokio", "postgres"] }
+hiver-cache = { path = "../hiver-cache", optional = true }
+hiver-schedule = { path = "../hiver-schedule", optional = true }
+hiver-actuator = { path = "../hiver-actuator", optional = true }
+
+# 外部依赖
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["fs", "io-util"] }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt"] }
+once_cell = { workspace = true }
+inventory = { workspace = true }
+num_cpus = "1.16"
+
+# 配置解析
+toml = "0.8"
+serde_yaml = "0.9"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+
+[lints]
+workspace = true

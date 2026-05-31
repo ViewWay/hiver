@@ -1,7 +1,7 @@
 //! Migration integration tests
 //! 迁移集成测试
 
-use nexus_data_orm::migrations::Migration;
+use hiver_data_orm::migrations::Migration;
 use crate::data_integration::helpers::*;
 
 #[cfg(test)]

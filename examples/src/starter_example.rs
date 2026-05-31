@@ -3,8 +3,8 @@
 //! Nexus Starter 自动配置示例
 //! Nexus Starter Auto-Configuration Example
 //!
-//! 这个示例展示了如何使用 nexus-starter 的 Spring Boot 风格自动配置。
-//! This example demonstrates how to use nexus-starter's Spring Boot-style auto-configuration.
+//! 这个示例展示了如何使用 hiver-starter 的 Spring Boot 风格自动配置。
+//! This example demonstrates how to use hiver-starter's Spring Boot-style auto-configuration.
 //!
 //! # 运行方式 / How to Run
 //!
@@ -14,20 +14,20 @@
 //!
 //! # 功能特性 / Features
 //!
-//! - `#[nexus_main]` 宏自动配置应用 / Auto-configuration via `#[nexus_main]` macro
+//! - `#[hiver_main]` 宏自动配置应用 / Auto-configuration via `#[hiver_main]` macro
 //! - `ApplicationContext` IoC 容器 / `ApplicationContext` IoC container
 //! - 自动配置加载器 / Auto-configuration loader
 //! - 优先级排序的配置执行 / Priority-ordered configuration execution
 
-use nexus_macros::nexus_main;
-use nexus_starter::ApplicationContext;
+use hiver_macros::hiver_main;
+use hiver_starter::ApplicationContext;
 
 /// 应用程序主结构
 /// Main application structure
 ///
-/// 使用 `#[nexus_main]` 宏标记，等价于 Spring Boot 的 `@SpringBootApplication`。
-/// Marked with `#[nexus_main]` macro, equivalent to Spring Boot's `@SpringBootApplication`.
-#[nexus_main]
+/// 使用 `#[hiver_main]` 宏标记，等价于 Spring Boot 的 `@SpringBootApplication`。
+/// Marked with `#[hiver_main]` macro, equivalent to Spring Boot's `@SpringBootApplication`.
+#[hiver_main]
 struct Application;
 
 fn main() -> anyhow::Result<()> {

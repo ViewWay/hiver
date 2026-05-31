@@ -11,10 +11,10 @@
 //! - `@Autowired` → Constructor injection
 //! - `ApplicationContext` → Bean lookup and lifecycle management
 
-use nexus_core::container::{
+use hiver_core::container::{
     ApplicationContext, BeanRegistration, Container, PostConstruct, PreDestroy,
 };
-use nexus_core::error::{Error, Result};
+use hiver_core::error::{Error, Result};
 use std::sync::Arc;
 
 // ============================================================================
@@ -339,7 +339,7 @@ fn main() -> Result<()> {
             println!("[EmailService] @PreDestroy - disconnecting from {}", email.smtp_server);
             Ok(())
         })
-        .scope(nexus_core::bean::Scope::Singleton)
+        .scope(hiver_core::bean::Scope::Singleton)
         .lazy(false);
 
     container.register_with(email_registration)?;

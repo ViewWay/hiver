@@ -31,9 +31,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **In Progress:**
 - **Phase 8**: Data Layer (6 months, P0 blocking)
-  - 8.1 nexus-data-commons: Repository traits, Page/Sort, entity metadata, `MethodName::parse()` for findByXxxAndYyy ✅
-  - 8.2 nexus-data-rdbc: DatabaseClient, Connection pool, RowMapper, ResultSetExtractor ✅
-  - 8.3 nexus-data-orm: ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges ✅
+  - 8.1 hiver-data-commons: Repository traits, Page/Sort, entity metadata, `MethodName::parse()` for findByXxxAndYyy ✅
+  - 8.2 hiver-data-rdbc: DatabaseClient, Connection pool, RowMapper, ResultSetExtractor ✅
+  - 8.3 hiver-data-orm: ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges ✅
   - Pre-existing code in mapper/executor/query_runtime modules needs structural refactoring
 
 **All Development Complete:**
@@ -64,18 +64,18 @@ nexus/
 ├── CLAUDE.md                     # This file
 ├── docs/                         # Documentation
 ├── crates/                       # Workspace crates
-│   ├── nexus-runtime/            # Custom async runtime
-│   ├── nexus-core/               # Core types
-│   ├── nexus-http/               # HTTP server & client
-│   ├── nexus-router/             # Router & middleware
-│   ├── nexus-extractors/         # Request extractors
-│   ├── nexus-response/           # Response builders
-│   ├── nexus-resilience/         # HA patterns
-│   ├── nexus-observability/      # Tracing, metrics, logging
-│   ├── nexus-web3/               # Blockchain & Web3
-│   ├── nexus-macros/             # Procedural macros
-│   ├── nexus-middleware/         # Middleware implementations
-│   ├── nexus-starter/            # Auto-configuration starter
+│   ├── hiver-runtime/            # Custom async runtime
+│   ├── hiver-core/               # Core types
+│   ├── hiver-http/               # HTTP server & client
+│   ├── hiver-router/             # Router & middleware
+│   ├── hiver-extractors/         # Request extractors
+│   ├── hiver-response/           # Response builders
+│   ├── hiver-resilience/         # HA patterns
+│   ├── hiver-observability/      # Tracing, metrics, logging
+│   ├── hiver-web3/               # Blockchain & Web3
+│   ├── hiver-macros/             # Procedural macros
+│   ├── hiver-middleware/         # Middleware implementations
+│   ├── hiver-starter/            # Auto-configuration starter
 │   └── ...                       # Other crates
 ├── examples/                     # Example applications
 │   └── src/
@@ -246,7 +246,7 @@ trait Runnable { }       // Use explicit action name
 
 | Category | Convention | Example |
 |----------|-----------|---------|
-| Crates | kebab-case | `nexus-runtime` |
+| Crates | kebab-case | `hiver-runtime` |
 | Types | UpperCamelCase | `BcryptPasswordEncoder` |
 | Functions | snake_case | `get_user()` |
 | Constants | SCREAMING_SNAKE_CASE | `MAX_CONNECTIONS` |

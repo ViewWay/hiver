@@ -7,13 +7,13 @@ use std::sync::Arc;
 
 #[test]
 fn test_core_container_create() {
-    use nexus_core::container::Container;
+    use hiver_core::container::Container;
     let _container = Container::new();
 }
 
 #[tokio::test]
 async fn test_core_reactive_flux() {
-    use nexus_core::reactive::Flux;
+    use hiver_core::reactive::Flux;
     use futures::StreamExt;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5]);
     let collected: Vec<i32> = flux.collect().await;
@@ -22,7 +22,7 @@ async fn test_core_reactive_flux() {
 
 #[tokio::test]
 async fn test_core_reactive_flux_backpressure() {
-    use nexus_core::reactive::Flux;
+    use hiver_core::reactive::Flux;
     use futures::StreamExt;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5, 6]);
     let buffered = flux.on_backpressure_buffer(10);
@@ -34,7 +34,7 @@ async fn test_core_reactive_flux_backpressure() {
 
 #[test]
 fn test_config_encryption_round_trip() {
-    use nexus_config::ConfigEncryptor;
+    use hiver_config::ConfigEncryptor;
     let encryptor = ConfigEncryptor::new("my-secret-passphrase");
     let plaintext = "my-secret-password";
     let encrypted = encryptor.encrypt(plaintext).unwrap();
@@ -46,7 +46,7 @@ fn test_config_encryption_round_trip() {
 
 #[test]
 fn test_config_encryption_non_encrypted_passthrough() {
-    use nexus_config::ConfigEncryptor;
+    use hiver_config::ConfigEncryptor;
     let encryptor = ConfigEncryptor::new("my-secret-passphrase");
     let result = encryptor.maybe_decrypt("just-a-normal-value").unwrap();
     assert_eq!(result, "just-a-normal-value");
@@ -56,7 +56,7 @@ fn test_config_encryption_non_encrypted_passthrough() {
 
 #[test]
 fn test_modulith_register_and_verify() {
-    use nexus_modulith::{Module, ModuleRegistry, verify_modules};
+    use hiver_modulith::{Module, ModuleRegistry, verify_modules};
 
     struct ModA;
     impl Module for ModA {
@@ -80,7 +80,7 @@ fn test_modulith_register_and_verify() {
 
 #[test]
 fn test_modulith_detects_cycle() {
-    use nexus_modulith::{Module, ModuleRegistry, verify_modules};
+    use hiver_modulith::{Module, ModuleRegistry, verify_modules};
 
     struct ModX;
     impl Module for ModX {
@@ -105,7 +105,7 @@ fn test_modulith_detects_cycle() {
 
 #[tokio::test]
 async fn test_modulith_domain_events() {
-    use nexus_modulith::{DomainEvent, EventPublisher, EventHandler, InMemoryEventPublisher};
+    use hiver_modulith::{DomainEvent, EventPublisher, EventHandler, InMemoryEventPublisher};
     use serde::Serialize;
 
     #[derive(Serialize)]
@@ -133,9 +133,9 @@ async fn test_modulith_domain_events() {
 
 #[test]
 fn test_statemachine_with_persistence() {
-    use nexus_state_machine::persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot};
-    use nexus_state_machine::state::StateData;
-    use nexus_state_machine::{Event, State, StateMachineBuilder};
+    use hiver_state_machine::persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot};
+    use hiver_state_machine::state::StateData;
+    use hiver_state_machine::{Event, State, StateMachineBuilder};
 
     #[derive(Debug, Clone, PartialEq, Eq)]
     enum OrderState { Pending, Confirmed, Shipped }
@@ -179,8 +179,8 @@ fn test_statemachine_with_persistence() {
 
 #[test]
 fn test_statemachine_visualization() {
-    use nexus_state_machine::config::{StateMachineConfig, StateConfig, TransitionConfig};
-    use nexus_state_machine::visualizer::{DiagramFormat, StateMachineVisualizer};
+    use hiver_state_machine::config::{StateMachineConfig, StateConfig, TransitionConfig};
+    use hiver_state_machine::visualizer::{DiagramFormat, StateMachineVisualizer};
 
     let config = StateMachineConfig::new("order", "Pending")
         .add_state(StateConfig::new("Pending"))
@@ -202,8 +202,8 @@ fn test_statemachine_visualization() {
 
 #[test]
 fn test_statemachine_fork_join() {
-    use nexus_state_machine::regions::{ForkJoinRegion, Region};
-    use nexus_state_machine::state::State;
+    use hiver_state_machine::regions::{ForkJoinRegion, Region};
+    use hiver_state_machine::state::State;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
     enum S { A1, A2, B1, B2 }
@@ -226,7 +226,7 @@ fn test_statemachine_fork_join() {
 
 #[test]
 fn test_statemachine_timers() {
-    use nexus_state_machine::timer::{StateMachineTimer, TimerScheduler};
+    use hiver_state_machine::timer::{StateMachineTimer, TimerScheduler};
     use std::time::Duration;
 
     let mut scheduler = TimerScheduler::new();

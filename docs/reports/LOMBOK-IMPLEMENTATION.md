@@ -4,7 +4,7 @@
 
 ## 📋 Overview / 概述
 
-本文档详细规划 Nexus 框架对 Java Lombok 注解的完整支持。
+本文档详细规划 Hiver 框架对 Java Lombok 注解的完整支持。
 
 **目标**：提供完整的 Lombok 风格注解，减少样板代码，提升开发体验。
 **Target**: Complete Lombok-style annotation support to reduce boilerplate and improve DX.
@@ -35,7 +35,7 @@ Lombok 注解支持统计 Statistics:
 
 | # | Lombok 注解 | Nexus 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
-| 1 | `@Slf4j` | `#[slf4j]` | ✅ 完整 | `nexus-macros/src/lib.rs:634` |
+| 1 | `@Slf4j` | `#[slf4j]` | ✅ 完整 | `hiver-macros/src/lib.rs:634` |
 
 **现有实现**：
 ```rust
@@ -137,7 +137,7 @@ impl User {
 
 **实现细节**:
 ```rust
-// crates/nexus-lombok/src/data.rs
+// crates/hiver-lombok/src/data.rs
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -292,7 +292,7 @@ pub struct User {
 
 **实现细节**:
 ```rust
-// crates/nexus-lombok/src/getter.rs
+// crates/hiver-lombok/src/getter.rs
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -734,7 +734,7 @@ public void readFile() throws IOException {
 
 **Rust Nexus - 目标 API**:
 ```rust
-use nexus_lombok::Cleanup;
+use hiver_lombok::Cleanup;
 
 async fn process_file() -> Result<(), Error> {
     #[Cleanup]
@@ -773,7 +773,7 @@ public void readFile() {
 
 **Rust Nexus - 目标 API**:
 ```rust
-use nexus_lombok::SneakyThrows;
+use hiver_lombok::SneakyThrows;
 
 #[SneakyThrows]  // 自动将 ? 转换为 unwrap() 或 panic
 fn read_file() -> String {
@@ -859,7 +859,7 @@ fn read_file() -> String {
 - [ ] 示例代码
 - [ ] 发布准备
 
-**交付物**: 生产就绪的 nexus-lombok crate
+**交付物**: 生产就绪的 hiver-lombok crate
 
 ---
 
@@ -867,7 +867,7 @@ fn read_file() -> String {
 
 ```
 crates/
-└── nexus-lombok/
+└── hiver-lombok/
     ├── Cargo.toml
     ├── src/
     │   ├── lib.rs                    # 公共 API
@@ -898,8 +898,8 @@ crates/
 ### 示例 1: User Entity / 用户实体
 
 ```rust
-use nexus_lombok::Data;
-use nexus_data_mybatisplus::{TableName, TableId, TableField};
+use hiver_lombok::Data;
+use hiver_data_mybatisplus::{TableName, TableId, TableField};
 use serde::{Serialize, Deserialize};
 
 #[Data]  // Lombok 风格
@@ -947,7 +947,7 @@ async fn main() {
 ### 示例 2: Builder Pattern / Builder 模式
 
 ```rust
-use nexus_lombok::Builder;
+use hiver_lombok::Builder;
 
 #[Builder]
 pub struct User {
@@ -973,7 +973,7 @@ async fn main() {
 ### 示例 3: 不可变对象 / Immutable Object
 
 ```rust
-use nexus_lombok::Value;
+use hiver_lombok::Value;
 
 #[Value]  // 不可变 + getter + with_ 方法
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1001,8 +1001,8 @@ async fn main() {
 ### 示例 4: MyBatis-Plus 风格 / MyBatis-Plus Style
 
 ```rust
-use nexus_lombok::{Data, Getter, Setter};
-use nexus_data_mybatisplus::{TableName, TableId, TableField};
+use hiver_lombok::{Data, Getter, Setter};
+use hiver_data_mybatisplus::{TableName, TableId, TableField};
 
 #[Data]  // 自动生成 getter, setter, constructor
 #[TableName("user")]
@@ -1020,7 +1020,7 @@ pub struct User {
 }
 
 // 与 MyBatis-Plus 风格的 Mapper 配合使用
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     #[Select("SELECT * FROM user WHERE id = #{id}")]
     async fn find_by_id(&self, id: i64) -> Result<Option<User>, Error>;
@@ -1035,13 +1035,13 @@ pub trait UserMapper: BaseMapper<User> {
 
 ```toml
 [dependencies]
-nexus-lombok = "0.1.0"
+hiver-lombok = "0.1.0"
 ```
 
 ### 基础使用 / Basic Usage
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -114,16 +114,16 @@ Phase 7: Production Ready  [Month 18-24]  ████████████�
 ├── Example Applications ✅
 │   └── Web3 example ✅
 ├── Spring Boot Compatibility Modules ✅
-│   ├── nexus-events (ApplicationEventPublisher, @EventListener) ✅
-│   ├── nexus-async (Async Task Executor, @Async) ✅
-│   ├── nexus-i18n (Internationalization, MessageSource) ✅
-│   ├── nexus-batch (Batch Processing Framework) ✅
-│   ├── nexus-retry (Retry Framework, @Retryable) ✅
-│   ├── nexus-flyway (Database Migration) ✅
-│   ├── nexus-websocket-stomp (WebSocket + STOMP) ✅
-│   ├── nexus-micrometer (Metrics Collection) ✅
-│   ├── nexus-integration (Enterprise Integration Patterns) ✅
-│   └── nexus-state-machine (State Machine Framework) ✅
+│   ├── hiver-events (ApplicationEventPublisher, @EventListener) ✅
+│   ├── hiver-async (Async Task Executor, @Async) ✅
+│   ├── hiver-i18n (Internationalization, MessageSource) ✅
+│   ├── hiver-batch (Batch Processing Framework) ✅
+│   ├── hiver-retry (Retry Framework, @Retryable) ✅
+│   ├── hiver-flyway (Database Migration) ✅
+│   ├── hiver-websocket-stomp (WebSocket + STOMP) ✅
+│   ├── hiver-micrometer (Metrics Collection) ✅
+│   ├── hiver-integration (Enterprise Integration Patterns) ✅
+│   └── hiver-state-machine (State Machine Framework) ✅
 └── v1.0 Release (Pending - awaiting final release)
 ```
 
@@ -172,7 +172,7 @@ See [bug fix log](../bug-fixes/phase0.md) for issues encountered and resolved.
 #### Architecture / 架构
 
 ```rust
-nexus-runtime/
+hiver-runtime/
 ├── src/
 │   ├── driver/           # I/O drivers
 │   │   ├── mod.rs        # Driver trait and factory
@@ -270,7 +270,7 @@ All Phase 1 tasks completed successfully. The runtime provides:
 #### Architecture / 架构
 
 ```rust
-nexus-http/
+hiver-http/
 ├── src/
 │   ├── proto/            # HTTP protocol
 │   │   ├── request.rs    # Request type
@@ -283,14 +283,14 @@ nexus-http/
 │   │   └── http2.rs      # HTTP/2 (Phase 3)
 │   └── lib.rs
 
-nexus-router/
+hiver-router/
 ├── src/
 │   ├── trie.rs           # Route trie
 │   ├── params.rs         # Path parameters
 │   ├── router.rs         # Router type
 │   └── lib.rs
 
-nexus-extractors/
+hiver-extractors/
 ├── src/
 │   ├── path.rs           # Path extractor
 │   ├── query.rs          # Query extractor
@@ -398,7 +398,7 @@ Phase 2 已完成 ✅:
 #### Deliverables / 交付物
 
 - [x] 中间件系统
-  - [x] `Middleware` trait from `nexus-router`
+  - [x] `Middleware` trait from `hiver-router`
   - [x] `Next` 链式调用
   - [x] `MiddlewareStack` for managing middleware chains
 - [x] 内置中间件集合
@@ -440,7 +440,7 @@ Phase 2 已完成 ✅:
 #### Architecture / 架构
 
 ```rust
-nexus-resilience/
+hiver-resilience/
 ├── src/
 │   ├── circuit/          # Circuit breaker
 │   │   ├── breaker.rs    # Core breaker logic
@@ -522,7 +522,7 @@ nexus-resilience/
 #### Architecture / 架构
 
 ```rust
-nexus-observability/
+hiver-observability/
 ├── src/
 │   ├── trace/            # Distributed tracing
 │   │   ├── tracer.rs     # Tracer interface
@@ -585,7 +585,7 @@ nexus-observability/
 #### Architecture / 架构
 
 ```rust
-nexus-web3/
+hiver-web3/
 ├── src/
 │   ├── chain/            # Chain abstraction
 │   │   ├── trait.rs      # Chain trait
@@ -690,7 +690,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
 
 ```
                         ┌─────────────────┐
-                        │  nexus-runtime  │
+                        │  hiver-runtime  │
                         │    (P1: M0)     │
                         └────────┬────────┘
                                  │
@@ -698,7 +698,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
                 │                │                │
                 ▼                ▼                ▼
          ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-         │ nexus-http  │  │  nexus-core │  │nexus-macros │
+         │ hiver-http  │  │  hiver-core │  │hiver-macros │
          │  (P2: M1)   │  │  (P2: M2)   │  │  (P2: M3)   │
          └──────┬──────┘  └──────┬──────┘  └─────────────┘
                 │                │
@@ -706,7 +706,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
                 │        │                 │
                 ▼        ▼                 ▼
          ┌─────────────┬─────────┬─────────────────┐
-         │ nexus-router│  nexus  │ nexus-response  │
+         │ hiver-router│  nexus  │ hiver-response  │
          │  (P2: M4)   │extractors│   (P2: M5)      │
          └──────┬──────┴────┬─────┴────────┬────────┘
                 │           │              │
@@ -716,7 +716,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
                 │                │                │
                 ▼                ▼                ▼
          ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-         │  nexus-mw   │  │nexus-resil  │ │nexus-observ │
+         │  hiver-mw   │  │hiver-resil  │ │hiver-observ │
          │  (P3: M6)   │  │  (P4: M7)   │  │  (P5: M8)   │
          └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
                 │                │                │
@@ -724,7 +724,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
                                  │
                                  ▼
                           ┌─────────────┐
-                          │  nexus-web3 │
+                          │  hiver-web3 │
                           │  (P6: M9)   │
                           └─────────────┘
 ```
@@ -733,16 +733,16 @@ All Phase 7 development tasks completed successfully. The framework is productio
 
 | ID | Module | Phase | Critical Path | Description |
 |----|--------|-------|---------------|-------------|
-| M0 | nexus-runtime | P1 | ✅ | Async runtime core |
-| M1 | nexus-http | P2 | ✅ | HTTP protocol + Server |
-| M2 | nexus-core | P2 | ✅ | Core types + IoC |
-| M3 | nexus-macros | P2 | ✅ | Procedural macros |
-| M4 | nexus-router | P2 | ✅ | Routing system |
-| M5 | nexus-extractors | P2 | ✅ | Extractor system |
-| M6 | nexus-middleware | P3 | 🔄 | Middleware (partial) |
-| M7 | nexus-resilience | P4 | ❌ | HA patterns |
-| M8 | nexus-observability | P5 | 🔄 | Tracing/metrics (partial) |
-| M9 | nexus-web3 | P6 | ❌ | Blockchain |
+| M0 | hiver-runtime | P1 | ✅ | Async runtime core |
+| M1 | hiver-http | P2 | ✅ | HTTP protocol + Server |
+| M2 | hiver-core | P2 | ✅ | Core types + IoC |
+| M3 | hiver-macros | P2 | ✅ | Procedural macros |
+| M4 | hiver-router | P2 | ✅ | Routing system |
+| M5 | hiver-extractors | P2 | ✅ | Extractor system |
+| M6 | hiver-middleware | P3 | 🔄 | Middleware (partial) |
+| M7 | hiver-resilience | P4 | ❌ | HA patterns |
+| M8 | hiver-observability | P5 | 🔄 | Tracing/metrics (partial) |
+| M9 | hiver-web3 | P6 | ❌ | Blockchain |
 
 ---
 
@@ -752,7 +752,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
 
 | Crate | Version | Purpose | Optional |
 |-------|---------|---------|----------|
-| `tokio` | N/A | Replaced by nexus-runtime | - |
+| `tokio` | N/A | Replaced by hiver-runtime | - |
 | `bytes` | 1.5+ | Zero-copy bytes | No |
 | `http` | 1.0+ | HTTP types | No |
 | `http-body` | 1.0+ | Body trait | No |
@@ -770,49 +770,49 @@ All Phase 7 development tasks completed successfully. The framework is productio
 ### Internal Dependencies / 内部依赖
 
 ```
-nexus-runtime (M0)
+hiver-runtime (M0)
     └── [no internal dependencies]
 
-nexus-core (M2)
-    └── nexus-runtime
+hiver-core (M2)
+    └── hiver-runtime
 
-nexus-macros (M3)
+hiver-macros (M3)
     └── [no runtime dependencies]
 
-nexus-http (M1)
-    ├── nexus-runtime
-    ├── nexus-core
+hiver-http (M1)
+    ├── hiver-runtime
+    ├── hiver-core
     └── bytes, http
 
-nexus-extractors
-    ├── nexus-runtime
-    ├── nexus-http
+hiver-extractors
+    ├── hiver-runtime
+    ├── hiver-http
     └── serde
 
-nexus-router (M4)
-    ├── nexus-runtime
-    ├── nexus-http
-    └── nexus-core
+hiver-router (M4)
+    ├── hiver-runtime
+    ├── hiver-http
+    └── hiver-core
 
-nexus-response (M5)
-    ├── nexus-http
+hiver-response (M5)
+    ├── hiver-http
     └── serde
 
-nexus-mw (M6)
-    ├── nexus-runtime
-    ├── nexus-http
-    └── nexus-router
+hiver-mw (M6)
+    ├── hiver-runtime
+    ├── hiver-http
+    └── hiver-router
 
-nexus-resilience (M7)
-    ├── nexus-runtime
-    └── nexus-http
+hiver-resilience (M7)
+    ├── hiver-runtime
+    └── hiver-http
 
-nexus-observability (M8)
-    ├── nexus-runtime
+hiver-observability (M8)
+    ├── hiver-runtime
     └── tracing
 
-nexus-web3 (M9)
-    ├── nexus-runtime
+hiver-web3 (M9)
+    ├── hiver-runtime
     └── alloy
 ```
 
@@ -1052,11 +1052,11 @@ pub fn best_driver() -> Box<dyn Driver> {
 
 | Module | Target Coverage |
 |--------|----------------|
-| nexus-runtime | 95%+ |
-| nexus-http | 90%+ |
-| nexus-router | 90%+ |
-| nexus-resilience | 90%+ |
-| nexus-web3 | 85%+ |
+| hiver-runtime | 95%+ |
+| hiver-http | 90%+ |
+| hiver-router | 90%+ |
+| hiver-resilience | 90%+ |
+| hiver-web3 | 85%+ |
 | Others | 80%+ |
 
 ### Testing Tools / 测试工具
@@ -1223,10 +1223,10 @@ impl AiClient {
 | Role | FTE | Responsibilities |
 |------|-----|-----------------|
 | Tech Lead | 1 | Architecture, roadmap, review |
-| Runtime Engineer | 1 | nexus-runtime |
-| HTTP Engineer | 1 | nexus-http, nexus-router |
+| Runtime Engineer | 1 | hiver-runtime |
+| HTTP Engineer | 1 | hiver-http, hiver-router |
 | Full-Stack Engineer | 2 | Middleware, observability, examples |
-| Web3 Engineer | 1 | nexus-web3 |
+| Web3 Engineer | 1 | hiver-web3 |
 | DevOps Engineer | 0.5 | CI/CD, infrastructure |
 | Technical Writer | 0.5 | Documentation, tutorials |
 
@@ -1234,24 +1234,24 @@ impl AiClient {
 
 ## Appendix C: Spring Boot Compatibility Modules / Spring Boot 兼容模块
 
-本附录记录了 Nexus 框架中与 Spring Boot 对应的兼容模块。这些模块提供了类似 Spring Boot 的功能和开发体验。
+本附录记录了 Hiver 框架中与 Spring Boot 对应的兼容模块。这些模块提供了类似 Spring Boot 的功能和开发体验。
 
 ### Module Overview / 模块概览
 
 | Nexus 模块 | Spring Boot 对应 | 状态 | 描述 |
 |-----------|-----------------|------|------|
-| nexus-events | ApplicationEventPublisher, @EventListener | ✅ | 事件发布/订阅机制 |
-| nexus-async | @Async, TaskExecutor | ✅ | 异步任务执行 |
-| nexus-i18n | MessageSource, ResourceBundle | ✅ | 国际化支持 |
-| nexus-batch | Batch Framework (Job/Step/Reader/Writer) | ✅ | 批处理框架 |
-| nexus-retry | @Retryable, @Recover, RetryTemplate | ✅ | 重试机制 |
-| nexus-flyway | Flyway | ✅ | 数据库迁移 |
-| nexus-websocket-stomp | WebSocket + STOMP | ✅ | WebSocket 和 STOMP 协议 |
-| nexus-micrometer | Micrometer | ✅ | 指标收集（多后端支持） |
-| nexus-integration | Spring Integration | ✅ | 企业集成模式 |
-| nexus-state-machine | Spring State Machine | ✅ | 状态机框架 |
+| hiver-events | ApplicationEventPublisher, @EventListener | ✅ | 事件发布/订阅机制 |
+| hiver-async | @Async, TaskExecutor | ✅ | 异步任务执行 |
+| hiver-i18n | MessageSource, ResourceBundle | ✅ | 国际化支持 |
+| hiver-batch | Batch Framework (Job/Step/Reader/Writer) | ✅ | 批处理框架 |
+| hiver-retry | @Retryable, @Recover, RetryTemplate | ✅ | 重试机制 |
+| hiver-flyway | Flyway | ✅ | 数据库迁移 |
+| hiver-websocket-stomp | WebSocket + STOMP | ✅ | WebSocket 和 STOMP 协议 |
+| hiver-micrometer | Micrometer | ✅ | 指标收集（多后端支持） |
+| hiver-integration | Spring Integration | ✅ | 企业集成模式 |
+| hiver-state-machine | Spring State Machine | ✅ | 状态机框架 |
 
-### nexus-events / 事件机制
+### hiver-events / 事件机制
 
 **对应 Spring Boot**: ApplicationEventPublisher, @EventListener
 
@@ -1274,7 +1274,7 @@ pub trait ApplicationListener<E: ApplicationEvent>: Send + Sync {
 
 **测试覆盖**: 24 个测试通过
 
-### nexus-async / 异步任务
+### hiver-async / 异步任务
 
 **对应 Spring Boot**: @Async, TaskExecutor
 
@@ -1292,7 +1292,7 @@ pub trait TaskExecutor: Send + Sync {
 
 **测试覆盖**: 19 个测试通过
 
-### nexus-i18n / 国际化
+### hiver-i18n / 国际化
 
 **对应 Spring Boot**: MessageSource, ResourceBundle
 
@@ -1310,7 +1310,7 @@ pub trait MessageSource: Send + Sync {
 
 **测试覆盖**: 18 个测试通过
 
-### nexus-batch / 批处理
+### hiver-batch / 批处理
 
 **对应 Spring Boot**: Spring Batch (Job/Step/ItemReader/ItemWriter)
 
@@ -1328,7 +1328,7 @@ pub trait JobExecutor: Send + Sync {
 
 **测试覆盖**: 16 个测试通过
 
-### nexus-retry / 重试框架
+### hiver-retry / 重试框架
 
 **对应 Spring Boot**: @Retryable, @Recover, RetryTemplate
 
@@ -1347,7 +1347,7 @@ pub struct RetryTemplate {
 
 **测试覆盖**: 25 个测试通过
 
-### nexus-flyway / 数据库迁移
+### hiver-flyway / 数据库迁移
 
 **对应 Spring Boot**: Flyway
 
@@ -1358,7 +1358,7 @@ pub struct RetryTemplate {
 
 **测试覆盖**: 10 个测试通过
 
-### nexus-websocket-stomp / WebSocket + STOMP
+### hiver-websocket-stomp / WebSocket + STOMP
 
 **对应 Spring Boot**: WebSocket, STOMP
 
@@ -1377,7 +1377,7 @@ pub trait StompBroker: Send + Sync {
 
 **测试覆盖**: 17 个测试通过
 
-### nexus-micrometer / 指标收集
+### hiver-micrometer / 指标收集
 
 **对应 Spring Boot**: Micrometer
 
@@ -1388,7 +1388,7 @@ pub trait StompBroker: Send + Sync {
 
 **测试覆盖**: 32 个测试通过
 
-### nexus-integration / 企业集成
+### hiver-integration / 企业集成
 
 **对应 Spring Boot**: Spring Integration
 
@@ -1408,7 +1408,7 @@ pub trait MessageChannel: Send + Sync {
 
 **测试覆盖**: 40 个测试通过
 
-### nexus-state-machine / 状态机
+### hiver-state-machine / 状态机
 
 **对应 Spring Boot**: Spring State Machine
 
@@ -1437,16 +1437,16 @@ pub trait Event: Any + Debug + Send + Sync + PartialEq {
 
 | 模块 | 测试数量 |
 |------|---------|
-| nexus-events | 24 |
-| nexus-async | 19 |
-| nexus-i18n | 18 |
-| nexus-batch | 16 |
-| nexus-retry | 25 |
-| nexus-flyway | 10 |
-| nexus-websocket-stomp | 17 |
-| nexus-micrometer | 32 |
-| nexus-integration | 40 |
-| nexus-state-machine | 24 |
+| hiver-events | 24 |
+| hiver-async | 19 |
+| hiver-i18n | 18 |
+| hiver-batch | 16 |
+| hiver-retry | 25 |
+| hiver-flyway | 10 |
+| hiver-websocket-stomp | 17 |
+| hiver-micrometer | 32 |
+| hiver-integration | 40 |
+| hiver-state-machine | 24 |
 | **总计** | **225** |
 
 ---

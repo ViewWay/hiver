@@ -1,9 +1,9 @@
 # HTTP Server
 # HTTP服务器
 
-The `nexus-http` crate provides HTTP server and client implementations optimized for the Nexus runtime.
+The `hiver-http` crate provides HTTP server and client implementations optimized for the Nexus runtime.
 
-`nexus-http` crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。
+`hiver-http` crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。
 
 ## Overview / 概述
 
@@ -30,7 +30,7 @@ The `nexus-http` crate provides HTTP server and client implementations optimized
 ### Request / 请求
 
 ```rust
-use nexus_http::Request;
+use hiver_http::Request;
 
 async fn handle(req: Request) -> Response {
     // Access request properties / 访问请求属性
@@ -60,7 +60,7 @@ async fn handle(req: Request) -> Response {
 ### Response / 响应
 
 ```rust
-use nexus_http::{Response, StatusCode, Body};
+use hiver_http::{Response, StatusCode, Body};
 
 // Builder pattern / 构建器模式
 let response = Response::builder()
@@ -83,7 +83,7 @@ let json_resp = Response::json(&value);
 ### Body / 请求体/响应体
 
 ```rust
-use nexus_http::Body;
+use hiver_http::Body;
 
 // From string / 从字符串
 let body = Body::from("Hello, World!");
@@ -101,7 +101,7 @@ let body = Body::empty();
 ### Status Codes / 状态码
 
 ```rust
-use nexus_http::StatusCode;
+use hiver_http::StatusCode;
 
 // Common status codes / 常用状态码
 StatusCode::OK              // 200
@@ -117,7 +117,7 @@ StatusCode::INTERNAL_SERVER_ERROR  // 500
 ## Server Configuration / 服务器配置
 
 ```rust
-use nexus_http::Server;
+use hiver_http::Server;
 
 // Basic server / 基础服务器
 Server::bind("127.0.0.1:8080")
@@ -140,7 +140,7 @@ The `IntoResponse` trait allows any type to be converted to an HTTP response:
 `IntoResponse` trait 允许任何类型转换为 HTTP 响应：
 
 ```rust
-use nexus_http::{IntoResponse, Response};
+use hiver_http::{IntoResponse, Response};
 
 // Built-in implementations / 内置实现
 
@@ -164,7 +164,7 @@ Extract data from requests:
 从请求中提取数据：
 
 ```rust
-use nexus_http::FromRequest;
+use hiver_http::FromRequest;
 
 // Built-in extractors / 内置提取器
 impl FromRequest for String { /* body as string */ }
@@ -186,7 +186,7 @@ impl FromRequest for Json<T> { /* JSON body */ }
 ## Example: JSON API / 示例：JSON API
 
 ```rust
-use nexus_http::{Body, Json, Request, Response, StatusCode};
+use hiver_http::{Body, Json, Request, Response, StatusCode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]

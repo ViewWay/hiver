@@ -18,9 +18,9 @@ In addition to **Spring Data style** (Repository pattern), Nexus must also suppo
 ```rust
 // Entity / 实体
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[nexus_data(table = "users")]
+#[hiver_data(table = "users")]
 pub struct User {
-    #[nexus_data(id)]
+    #[hiver_data(id)]
     pub id: i32,
     pub username: String,
     pub email: String,
@@ -28,7 +28,7 @@ pub struct User {
 
 // Repository / Repository
 #[derive(RdbcRepository)]
-#[nexus_data(schema = "public")]
+#[hiver_data(schema = "public")]
 pub trait UserRepository: Repository<User, i32> {
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
 }
@@ -39,8 +39,8 @@ let user = repo.find_by_username("alice").await.unwrap();
 ```
 
 **Crates / Crates**:
-- nexus-data-commons (Repository traits)
-- nexus-data-rdbc (R2DBC implementation)
+- hiver-data-commons (Repository traits)
+- hiver-data-rdbc (R2DBC implementation)
 
 ### Pattern 2: MyBatis-Plus Style (Mapper Pattern) / MyBatis-Plus 风格（Mapper 模式）
 
@@ -63,7 +63,7 @@ pub struct User {
 }
 
 // Mapper / Mapper
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     #[Select("SELECT * FROM user WHERE username = #{username}")]
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
@@ -79,9 +79,9 @@ let users = mapper.select_list(Some(wrapper)).await.unwrap();
 ```
 
 **Crates / Crates**:
-- nexus-lombok (#[Data] macro)
-- nexus-data-mybatisplus (BaseMapper, QueryWrapper)
-- nexus-scan (@MapperScan)
+- hiver-lombok (#[Data] macro)
+- hiver-data-mybatisplus (BaseMapper, QueryWrapper)
+- hiver-scan (@MapperScan)
 
 ---
 
@@ -91,9 +91,9 @@ let users = mapper.select_list(Some(wrapper)).await.unwrap();
 
 | Crate / Crate | Time / 时间 | Priority / 优先级 |
 |--------------|-----------|-----------------|
-| nexus-data-commons | 1.5 months | P0 |
-| nexus-data-rdbc | 2 months | P0 |
-| nexus-data-orm | 1 month | P0 |
+| hiver-data-commons | 1.5 months | P0 |
+| hiver-data-rdbc | 2 months | P0 |
+| hiver-data-orm | 1 month | P0 |
 
 **Status / 状态**: ✅ Already planned in MASTER-ROADMAP.md / 已在主路线图中规划
 
@@ -101,9 +101,9 @@ let users = mapper.select_list(Some(wrapper)).await.unwrap();
 
 | Crate / Crate | Time / 时间 | Priority / 优先级 | Status / 状态 |
 |--------------|-----------|-----------------|---------------|
-| **nexus-lombok** | 0.5 months | 🔴 P0 (China) | 🆕 NEW |
-| **nexus-data-mybatisplus** | 1.5 months | 🔴 P0 (China) | 🆕 NEW |
-| **nexus-scan** | 0.5 months | 🔴 P0 (China) | 🆕 NEW |
+| **hiver-lombok** | 0.5 months | 🔴 P0 (China) | 🆕 NEW |
+| **hiver-data-mybatisplus** | 1.5 months | 🔴 P0 (China) | 🆕 NEW |
+| **hiver-scan** | 0.5 months | 🔴 P0 (China) | 🆕 NEW |
 
 **Total Data Layer Time / 数据层总时间**: 7 months (4.5 + 2.5, can be done in parallel) / 7 个月（可并行）
 
@@ -111,12 +111,12 @@ let users = mapper.select_list(Some(wrapper)).await.unwrap();
 
 ## 📦 Track B: MyBatis-Plus Style Implementation / MyBatis-Plus 风格实施
 
-### B.1 nexus-lombok (0.5 months) / Lombok 风格宏
+### B.1 hiver-lombok (0.5 months) / Lombok 风格宏
 
 **Goal / 目标**: Provide Lombok-like macros to reduce boilerplate / 提供 Lombok 风格宏减少样板代码
 
 ```rust
-use nexus_lombok::Data;
+use hiver_lombok::Data;
 
 #[Data]  // Generates getters, setters, constructor
 pub struct User {
@@ -154,7 +154,7 @@ impl User {
 - `quote` (code generation)
 - `proc-macro2` (token stream)
 
-### B.2 nexus-data-mybatisplus (1.5 months) / MyBatis-Plus 核心功能
+### B.2 hiver-data-mybatisplus (1.5 months) / MyBatis-Plus 核心功能
 
 **Goal / 目标**: MyBatis-Plus compatible API / MyBatis-Plus 兼容 API
 
@@ -163,7 +163,7 @@ impl User {
 #### 1. Entity Annotations / 实体注解
 
 ```rust
-use nexus_data_mybatisplus::{TableName, TableId, TableField};
+use hiver_data_mybatisplus::{TableName, TableId, TableField};
 
 #[TableName("user")]  // Table name / 表名
 pub struct User {
@@ -181,9 +181,9 @@ pub struct User {
 #### 2. BaseMapper Trait / BaseMapper Trait
 
 ```rust
-use nexus_data_mybatisplus::BaseMapper;
+use hiver_data_mybatisplus::BaseMapper;
 
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     // Inherits 20+ CRUD methods / 继承 20+ CRUD 方法
 
@@ -212,7 +212,7 @@ pub trait UserMapper: BaseMapper<User> {
 #### 3. QueryWrapper / QueryWrapper
 
 ```rust
-use nexus_data_mybatisplus::QueryWrapper;
+use hiver_data_mybatisplus::QueryWrapper;
 
 // Example 1: Simple query / 简单查询
 let wrapper = QueryWrapper::new()
@@ -284,12 +284,12 @@ async fn delete_by_id_custom(&self, id: i64) -> Result<u64, Error>;
 - Support nested parameters (e.g., `#{user.username}`) / 支持嵌套参数
 - Return type inference / 返回类型推断
 
-### B.3 nexus-scan (0.5 months) / 组件扫描
+### B.3 hiver-scan (0.5 months) / 组件扫描
 
 **Goal / 目的**: Automatically discover and register mappers / 自动发现和注册 mappers
 
 ```rust
-use nexus_scan::{Application, MapperScan};
+use hiver_scan::{Application, MapperScan};
 
 #[Application]  // Like @SpringBootApplication
 #[MapperScan("crates/my_app/src/mapper")]  // Scan for mappers
@@ -302,7 +302,7 @@ async fn main() {
 ```
 
 **Features / 功能**:
-- Scan directory for `#[nexus_mapper]` traits / 扫描带有 `#[nexus_mapper]` 的 trait
+- Scan directory for `#[hiver_mapper]` traits / 扫描带有 `#[hiver_mapper]` 的 trait
 - Generate SQLx implementations / 生成 SQLx 实现
 - Register with IoC container / 注册到 IoC 容器
 - Support `@ComponentScan` / 支持 `@ComponentScan`
@@ -314,9 +314,9 @@ async fn main() {
 | Aspect / 方面 | Spring Data Style / Spring Data 风格 | MyBatis-Plus Style / MyBatis-Plus 风格 |
 |--------------|-------------------------------------|-------------------------------------|
 | **Entity / 实体** |
-| Annotation / 注解 | `#[nexus_data(table = "...")]` | `#[TableName("...")]` |
-| ID field / ID 字段 | `#[nexus_data(id)]` | `#[TableId(type = "...")]` |
-| Column mapping / 列映射 | `#[nexus_data(column = "...")]` | `#[TableField("...")]` |
+| Annotation / 注解 | `#[hiver_data(table = "...")]` | `#[TableName("...")]` |
+| ID field / ID 字段 | `#[hiver_data(id)]` | `#[TableId(type = "...")]` |
+| Column mapping / 列映射 | `#[hiver_data(column = "...")]` | `#[TableField("...")]` |
 | **Interface / 接口** |
 | Pattern / 模式 | Repository trait | Mapper trait |
 | Base / 基类 | `Repository<T, ID>` | `BaseMapper<T>` |
@@ -345,8 +345,8 @@ async fn main() {
 
 **Option 1: Sequential / 顺序（推荐）**
 ```
-Month 1-4.5: Spring Data Style (nexus-data-commons, nexus-data-rdbc)
-Month 4.5-7: MyBatis-Plus Style (nexus-lombok, nexus-data-mybatisplus, nexus-scan)
+Month 1-4.5: Spring Data Style (hiver-data-commons, hiver-data-rdbc)
+Month 4.5-7: MyBatis-Plus Style (hiver-lombok, hiver-data-mybatisplus, hiver-scan)
 ```
 
 **Option 2: Parallel / 并行**
@@ -358,12 +358,12 @@ Month 1-2.5: MyBatis-Plus Style ────────────┘    (Can 
 
 **Recommended / 推荐**: Option 1 (Sequential)
 - Reason / 原因: Build Spring Data first for international market, then add MyBatis-Plus for Chinese market / 先为国际市场构建 Spring Data，再为中国市场添加 MyBatis-Plus
-- Shared foundation / 共享基础: Both can use nexus-data-commons abstractions / 两者都可以使用 nexus-data-commons 抽象
+- Shared foundation / 共享基础: Both can use hiver-data-commons abstractions / 两者都可以使用 hiver-data-commons 抽象
 
 ### Shared Abstractions / 共享抽象
 
 ```rust
-// nexus-data-commons - Shared by both patterns / 两种模式共享
+// hiver-data-commons - Shared by both patterns / 两种模式共享
 pub trait Entity {
     fn table_name() -> &'static str;
     fn primary_key() -> &'static str;
@@ -375,12 +375,12 @@ pub trait Page<T> {
     // ...
 }
 
-// nexus-data-rdbc implements Repository / nexus-data-rdbc 实现 Repository
+// hiver-data-rdbc implements Repository / hiver-data-rdbc 实现 Repository
 #[derive(RdbcRepository)]
 pub trait UserRepository: Repository<User, i32> { }
 
-// nexus-data-mybatisplus implements BaseMapper / nexus-data-mybatisplus 实现 BaseMapper
-#[nexus_mapper]
+// hiver-data-mybatisplus implements BaseMapper / hiver-data-mybatisplus 实现 BaseMapper
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> { }
 ```
 
@@ -437,7 +437,7 @@ pub struct User {
     pub email: String,
 }
 
-#[nexus_mapper]
+#[hiver_mapper]
 pub trait UserMapper: BaseMapper<User> {
     #[Select("SELECT * FROM user WHERE username = #{username}")]
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
@@ -496,20 +496,20 @@ pub struct UserService {
 1. **Create crates / 创建 crates**:
    ```bash
    cd crates
-   mkdir -p nexus-lombok/src
-   mkdir -p nexus-data-mybatisplus/src
-   mkdir -p nexus-scan/src
+   mkdir -p hiver-lombok/src
+   mkdir -p hiver-data-mybatisplus/src
+   mkdir -p hiver-scan/src
    ```
 
-2. **Initialize nexus-lombok / 初始化 nexus-lombok**:
+2. **Initialize hiver-lombok / 初始化 hiver-lombok**:
    ```bash
-   cd nexus-lombok
+   cd hiver-lombok
    cargo init --lib
    ```
 
 3. **Implement basic #[Data] macro / 实现基本 #[Data] 宏**:
    ```rust
-   // nexus-lombok/src/lib.rs
+   // hiver-lombok/src/lib.rs
    use proc_macro::TokenStream;
    use quote::quote;
    use syn::{parse_macro_input, DeriveInput};

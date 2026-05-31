@@ -47,12 +47,12 @@ error: optional dependencies in workspaces are not allowed
 
 **Cause / 原因**: Optional workspace dependencies are not supported by Cargo.
 
-**Fix / 修复**: Removed `alloy` from workspace `[dependencies]` section and defined it directly in `nexus-web3/Cargo.toml` with optional feature.
+**Fix / 修复**: Removed `alloy` from workspace `[dependencies]` section and defined it directly in `hiver-web3/Cargo.toml` with optional feature.
 
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml`
-- `/crates/nexus-web3/Cargo.toml`
+- `/crates/hiver-web3/Cargo.toml`
 
 ---
 
@@ -72,7 +72,7 @@ error: default `lib` targets are conflicting
 
 **Cause / 原因**: Package name was same as binary target name.
 
-**Fix / 修复**: Changed package name from `"examples"` to `"nexus-examples"` and defined explicit binary targets.
+**Fix / 修复**: Changed package name from `"examples"` to `"hiver-examples"` and defined explicit binary targets.
 
 **Files Modified / 修改的文件**:
 
@@ -100,9 +100,9 @@ error: failed to read bench file
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-runtime/Cargo.toml`
-- `/crates/nexus-core/Cargo.toml`
-- `/crates/nexus-http/Cargo.toml`
+- `/crates/hiver-runtime/Cargo.toml`
+- `/crates/hiver-core/Cargo.toml`
+- `/crates/hiver-http/Cargo.toml`
 
 ---
 
@@ -118,7 +118,7 @@ error: failed to read bench file
 error: failed to select a version for `path-prefix`
 ```
 
-**Location / 位置**: `crates/nexus-router/Cargo.toml`
+**Location / 位置**: `crates/hiver-router/Cargo.toml`
 
 **Cause / 原因**: `path-prefix` crate does not exist in the registry.
 
@@ -126,7 +126,7 @@ error: failed to select a version for `path-prefix`
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-router/Cargo.toml`
+- `/crates/hiver-router/Cargo.toml`
 
 ---
 
@@ -150,23 +150,23 @@ error: failed to find module files
 
 **Files Created / 创建的文件**:
 
-- `/crates/nexus-runtime/src/driver.rs`
-- `/crates/nexus-runtime/src/io.rs`
-- `/crates/nexus-runtime/src/task.rs`
-- `/crates/nexus-runtime/src/time.rs`
-- `/crates/nexus-core/src/error.rs`
-- `/crates/nexus-core/src/extension.rs`
-- `/crates/nexus-http/src/body.rs`
-- `/crates/nexus-http/src/server.rs`
-- `/crates/nexus-router/src/router.rs`
-- `/crates/nexus-router/src/params.rs`
-- `/crates/nexus-extractors/src/*.rs` (all extractor modules)
-- `/crates/nexus-response/src/*.rs` (all response modules)
-- `/crates/nexus-middleware/src/*.rs` (all middleware modules)
-- `/crates/nexus-resilience/src/*.rs` (all resilience modules)
-- `/crates/nexus-observability/src/*.rs` (all observability modules)
-- `/crates/nexus-web3/src/*.rs` (all web3 modules)
-- `/crates/nexus-macros/src/*.rs` (all macro modules)
+- `/crates/hiver-runtime/src/driver.rs`
+- `/crates/hiver-runtime/src/io.rs`
+- `/crates/hiver-runtime/src/task.rs`
+- `/crates/hiver-runtime/src/time.rs`
+- `/crates/hiver-core/src/error.rs`
+- `/crates/hiver-core/src/extension.rs`
+- `/crates/hiver-http/src/body.rs`
+- `/crates/hiver-http/src/server.rs`
+- `/crates/hiver-router/src/router.rs`
+- `/crates/hiver-router/src/params.rs`
+- `/crates/hiver-extractors/src/*.rs` (all extractor modules)
+- `/crates/hiver-response/src/*.rs` (all response modules)
+- `/crates/hiver-middleware/src/*.rs` (all middleware modules)
+- `/crates/hiver-resilience/src/*.rs` (all resilience modules)
+- `/crates/hiver-observability/src/*.rs` (all observability modules)
+- `/crates/hiver-web3/src/*.rs` (all web3 modules)
+- `/crates/hiver-macros/src/*.rs` (all macro modules)
 
 ---
 
@@ -182,7 +182,7 @@ error: failed to find module files
 error: expected identifier, found keyword `await`
 ```
 
-**Location / 位置**: `crates/nexus-runtime/src/task.rs`
+**Location / 位置**: `crates/hiver-runtime/src/task.rs`
 
 **Cause / 原因**: `await` is a reserved Rust keyword and cannot be used as a method name.
 
@@ -190,7 +190,7 @@ error: expected identifier, found keyword `await`
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-runtime/src/task.rs`
+- `/crates/hiver-runtime/src/task.rs`
 
 ---
 
@@ -206,7 +206,7 @@ error: expected identifier, found keyword `await`
 error: duplicate definitions
 ```
 
-**Location / 位置**: `crates/nexus-runtime/src/driver.rs`
+**Location / 位置**: `crates/hiver-runtime/src/driver.rs`
 
 **Cause / 原因**: Both a trait and type alias with the same name `Driver` were defined.
 
@@ -214,7 +214,7 @@ error: duplicate definitions
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-runtime/src/driver.rs`
+- `/crates/hiver-runtime/src/driver.rs`
 
 ---
 
@@ -232,10 +232,10 @@ error: expected item after doc comment
 
 **Location / 位置**:
 
-- `/crates/nexus-observability/src/log.rs`
-- `/crates/nexus-resilience/src/timeout.rs`
-- `/crates/nexus-resilience/src/discovery.rs`
-- `/crates/nexus-macros/src/handler.rs`
+- `/crates/hiver-observability/src/log.rs`
+- `/crates/hiver-resilience/src/timeout.rs`
+- `/crates/hiver-resilience/src/discovery.rs`
+- `/crates/hiver-macros/src/handler.rs`
 
 **Cause / 原因**: Module-level doc comments used `///` instead of `//!`.
 
@@ -243,10 +243,10 @@ error: expected item after doc comment
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-observability/src/log.rs`
-- `/crates/nexus-resilience/src/timeout.rs`
-- `/crates/nexus-resilience/src/discovery.rs`
-- `/crates/nexus-macros/src/handler.rs`
+- `/crates/hiver-observability/src/log.rs`
+- `/crates/hiver-resilience/src/timeout.rs`
+- `/crates/hiver-resilience/src/discovery.rs`
+- `/crates/hiver-macros/src/handler.rs`
 
 ---
 
@@ -262,7 +262,7 @@ error: expected item after doc comment
 error: missing generics for struct `http::Request`
 ```
 
-**Location / 位置**: `crates/nexus-middleware/src/middleware.rs`
+**Location / 位置**: `crates/hiver-middleware/src/middleware.rs`
 
 **Cause / 原因**: `http::Request` requires a generic parameter for the body type.
 
@@ -270,7 +270,7 @@ error: missing generics for struct `http::Request`
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-middleware/src/middleware.rs`
+- `/crates/hiver-middleware/src/middleware.rs`
 
 ---
 
@@ -287,7 +287,7 @@ error: `proc-macro` crate types currently cannot export any items other than fun
 error: functions tagged with `#[proc_macro_derive]` must currently reside in the root of the crate
 ```
 
-**Location / 位置**: `crates/nexus-macros/src/`
+**Location / 位置**: `crates/hiver-macros/src/`
 
 **Cause / 原因**: Proc-macro crates have strict requirements - only macro functions can be exported, and they must be at the crate root.
 
@@ -295,9 +295,9 @@ error: functions tagged with `#[proc_macro_derive]` must currently reside in the
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-macros/src/lib.rs`
-- `/crates/nexus-macros/src/handler.rs` (removed)
-- `/crates/nexus-macros/src/derive.rs` (removed)
+- `/crates/hiver-macros/src/lib.rs`
+- `/crates/hiver-macros/src/handler.rs` (removed)
+- `/crates/hiver-macros/src/derive.rs` (removed)
 
 ---
 
@@ -313,7 +313,7 @@ error: functions tagged with `#[proc_macro_derive]` must currently reside in the
 error: unresolved imports `path::Path`, `query::Query`
 ```
 
-**Location / 位置**: `crates/nexus-extractors/src/lib.rs`
+**Location / 位置**: `crates/hiver-extractors/src/lib.rs`
 
 **Cause / 原因**: The `path.rs` and `query.rs` files were empty and didn't define the expected types.
 
@@ -321,8 +321,8 @@ error: unresolved imports `path::Path`, `query::Query`
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-extractors/src/path.rs`
-- `/crates/nexus-extractors/src/query.rs`
+- `/crates/hiver-extractors/src/path.rs`
+- `/crates/hiver-extractors/src/query.rs`
 
 ---
 
@@ -338,7 +338,7 @@ error: unresolved imports `path::Path`, `query::Query`
 error: unresolved imports `tx::Transaction`, `tx::TransactionBuilder`
 ```
 
-**Location / 位置**: `crates/nexus-web3/src/lib.rs`
+**Location / 位置**: `crates/hiver-web3/src/lib.rs`
 
 **Cause / 原因**: The `tx.rs` module only defined `TxHash` but `lib.rs` tried to export additional types.
 
@@ -346,7 +346,7 @@ error: unresolved imports `tx::Transaction`, `tx::TransactionBuilder`
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-web3/src/tx.rs`
+- `/crates/hiver-web3/src/tx.rs`
 
 ---
 
@@ -433,18 +433,18 @@ error: unknown edition `2024`
 
 ```
 error[E0119]: conflicting implementations of trait `bean::Bean` for type `TestBean`
-   --> crates/nexus-core/src/reflect.rs:108:5
+   --> crates/hiver-core/src/reflect.rs:108:5
     |
 108 |     impl Bean for TestBean {}
     |     ^^^^^^^^^^^^^^^^^^^^^^ conflicting implementation for `TestBean`
     |
-   ::: crates/nexus-core/src/bean.rs:53:1
+   ::: crates/hiver-core/src/bean.rs:53:1
     |
  53 | impl<T: Any> Bean for T {}
     | ----------------------- first implementation here
 ```
 
-**Location / 位置**: `crates/nexus-core/src/reflect.rs`
+**Location / 位置**: `crates/hiver-core/src/reflect.rs`
 
 **Cause / 原因**: A blanket implementation `impl<T: Any> Bean for T` exists in `bean.rs`, which covers all types. The test module in `reflect.rs` had a redundant manual `impl Bean for TestBean {}` that conflicted with the blanket implementation.
 
@@ -452,7 +452,7 @@ error[E0119]: conflicting implementations of trait `bean::Bean` for type `TestBe
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-core/src/reflect.rs`
+- `/crates/hiver-core/src/reflect.rs`
 
 ---
 
@@ -464,7 +464,7 @@ error[E0119]: conflicting implementations of trait `bean::Bean` for type `TestBe
 
 **Issue / 问题**: TimerWheel struct was enhanced with timer_registry field for cancellation support, but required ensuring proper initialization order.
 
-**Location / 位置**: `crates/nexus-runtime/src/time.rs`
+**Location / 位置**: `crates/hiver-runtime/src/time.rs`
 
 **Cause / 原因**: Added timer_registry to TimerWheel struct for timer cancellation functionality.
 
@@ -475,111 +475,111 @@ error[E0119]: conflicting implementations of trait `bean::Bean` for type `TestBe
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-runtime/src/time.rs`
+- `/crates/hiver-runtime/src/time.rs`
 
 ---
 
-## Bug #019: Direct version specifications in nexus-openapi
+## Bug #019: Direct version specifications in hiver-openapi
 
-## Bug #019: nexus-openapi 中的直接版本规范
+## Bug #019: hiver-openapi 中的直接版本规范
 
 **Date / 日期**: 2026-01-26
 
 **Error / 错误**:
 
 ```
-❌ Found direct version specification in crates/nexus-openapi/Cargo.toml:
+❌ Found direct version specification in crates/hiver-openapi/Cargo.toml:
 utoipa = { version = "4", features = ["chrono", "uuid", "decimal"] }
 utoipa-swagger-ui = { version = "4", features = ["actix-web", "axum"] }
 ```
 
-**Location / 位置**: `crates/nexus-openapi/Cargo.toml` (lines 39-40)
+**Location / 位置**: `crates/hiver-openapi/Cargo.toml` (lines 39-40)
 
 **Cause / 原因**: Dependencies were using direct version specifications instead of workspace dependencies. This violates the workspace dependency convention where all shared dependencies should be defined in the root `Cargo.toml` and referenced with `{ workspace = true }`.
 
 **Fix / 修复**:
 1. Added `utoipa` and `utoipa-swagger-ui` to workspace `[workspace.dependencies]` in root `Cargo.toml`
-2. Updated `nexus-openapi/Cargo.toml` to use `{ workspace = true }` for both dependencies
+2. Updated `hiver-openapi/Cargo.toml` to use `{ workspace = true }` for both dependencies
 
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml` (added utoipa dependencies)
-- `/crates/nexus-openapi/Cargo.toml` (changed to workspace = true)
+- `/crates/hiver-openapi/Cargo.toml` (changed to workspace = true)
 
 ---
 
-## Bug #020: Direct version specifications in nexus-cloud
+## Bug #020: Direct version specifications in hiver-cloud
 
-## Bug #020: nexus-cloud 中的直接版本规范
+## Bug #020: hiver-cloud 中的直接版本规范
 
 **Date / 日期**: 2026-01-26
 
 **Error / 错误**:
 
 ```
-❌ Found direct version specification in crates/nexus-cloud/Cargo.toml:
+❌ Found direct version specification in crates/hiver-cloud/Cargo.toml:
 consul = { version = "0.4", optional = true }
 etcd-rs = { version = "1.0", optional = true }
 ```
 
-**Location / 位置**: `crates/nexus-cloud/Cargo.toml` (lines 66-67)
+**Location / 位置**: `crates/hiver-cloud/Cargo.toml` (lines 66-67)
 
 **Cause / 原因**: Dependencies were using direct version specifications instead of workspace dependencies. This violates the workspace dependency convention where all shared dependencies should be defined in the root `Cargo.toml` and referenced with `{ workspace = true }`.
 
 **Fix / 修复**:
 1. Added `consul` and `etcd-rs` to workspace `[workspace.dependencies]` in root `Cargo.toml`
-2. Updated `nexus-cloud/Cargo.toml` to use `{ workspace = true }` for both dependencies
+2. Updated `hiver-cloud/Cargo.toml` to use `{ workspace = true }` for both dependencies
 
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml` (added service discovery dependencies)
-- `/crates/nexus-cloud/Cargo.toml` (changed to workspace = true)
+- `/crates/hiver-cloud/Cargo.toml` (changed to workspace = true)
 
 ---
 
-## Bug #021: Direct version specifications in nexus-resilience
+## Bug #021: Direct version specifications in hiver-resilience
 
-## Bug #021: nexus-resilience 中的直接版本规范
+## Bug #021: hiver-resilience 中的直接版本规范
 
 **Date / 日期**: 2026-01-26
 
 **Error / 错误**:
 
 ```
-❌ Found direct version specification in crates/nexus-resilience/Cargo.toml:
+❌ Found direct version specification in crates/hiver-resilience/Cargo.toml:
 consul = { version = "0.4", optional = true }
 etcd-rs = { version = "1.0", optional = true }
 nacos = { version = "0.0", optional = true }
 ```
 
-**Location / 位置**: `crates/nexus-resilience/Cargo.toml` (lines 72-74)
+**Location / 位置**: `crates/hiver-resilience/Cargo.toml` (lines 72-74)
 
 **Cause / 原因**: Dependencies were using direct version specifications instead of workspace dependencies. This violates the workspace dependency convention where all shared dependencies should be defined in the root `Cargo.toml` and referenced with `{ workspace = true }`.
 
 **Fix / 修复**:
 1. Added `consul`, `etcd-rs`, and `nacos` to workspace `[workspace.dependencies]` in root `Cargo.toml`
-2. Updated `nexus-resilience/Cargo.toml` to use `{ workspace = true }` for all three dependencies
+2. Updated `hiver-resilience/Cargo.toml` to use `{ workspace = true }` for all three dependencies
 
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml` (added service discovery dependencies)
-- `/crates/nexus-resilience/Cargo.toml` (changed to workspace = true)
+- `/crates/hiver-resilience/Cargo.toml` (changed to workspace = true)
 
 ---
 
-## Bug #022: Direct version specifications in nexus-cloud and nexus-data-commons
+## Bug #022: Direct version specifications in hiver-cloud and hiver-data-commons
 
-## Bug #022: nexus-cloud 和 nexus-data-commons 中的直接版本规范
+## Bug #022: hiver-cloud 和 hiver-data-commons 中的直接版本规范
 
 **Date / 日期**: 2026-01-26
 
 **Error / 错误**:
 
 ```
-❌ Found direct version specification in crates/nexus-cloud/Cargo.toml:
+❌ Found direct version specification in crates/hiver-cloud/Cargo.toml:
 reqwest = { version = "0.12", features = ["json"] }
 
-❌ Found direct version specifications in crates/nexus-data-commons/Cargo.toml:
+❌ Found direct version specifications in crates/hiver-data-commons/Cargo.toml:
 serde = { version = "1.0.228", features = ["derive"] }
 chrono = { version = "0.4.43", features = ["serde"] }
 uuid = { version = "1.12", features = ["v4", "serde"] }
@@ -587,21 +587,21 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 ```
 
 **Location / 位置**:
-- `crates/nexus-cloud/Cargo.toml` (line 35)
-- `crates/nexus-data-commons/Cargo.toml` (lines 8, 11, 14, 18)
+- `crates/hiver-cloud/Cargo.toml` (line 35)
+- `crates/hiver-data-commons/Cargo.toml` (lines 8, 11, 14, 18)
 
 **Cause / 原因**: Dependencies were using direct version specifications instead of workspace dependencies.
 
 **Fix / 修复**:
-1. Changed `reqwest` to `{ workspace = true }` in nexus-cloud
-2. Completely rewrote nexus-data-commons/Cargo.toml to use workspace dependencies
+1. Changed `reqwest` to `{ workspace = true }` in hiver-cloud
+2. Completely rewrote hiver-data-commons/Cargo.toml to use workspace dependencies
 3. Added `serde_yml` to workspace dependencies
 
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml` (added serde_yml)
-- `/crates/nexus-cloud/Cargo.toml`
-- `/crates/nexus-data-commons/Cargo.toml`
+- `/crates/hiver-cloud/Cargo.toml`
+- `/crates/hiver-data-commons/Cargo.toml`
 
 ---
 
@@ -615,7 +615,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 
 ```
 error: key with no value, expected `=`
-  --> crates/nexus-runtime/Cargo.toml:90:9
+  --> crates/hiver-runtime/Cargo.toml:90:9
    |
 90 | criterio{ workspace = true }
    |         ^
@@ -655,12 +655,12 @@ error: `dependency.env_logger` was not found in `workspace.dependencies`
 **Files Modified / 修改的文件**:
 
 - `/Cargo.toml` (added missing dependencies)
-- `/crates/nexus-runtime/Cargo.toml`
-- `/crates/nexus-benches/Cargo.toml`
-- `/crates/nexus-core/Cargo.toml`
-- `/crates/nexus-http/Cargo.toml`
-- `/crates/nexus-resilience/Cargo.toml`
-- `/crates/nexus-router/Cargo.toml`
+- `/crates/hiver-runtime/Cargo.toml`
+- `/crates/hiver-benches/Cargo.toml`
+- `/crates/hiver-core/Cargo.toml`
+- `/crates/hiver-http/Cargo.toml`
+- `/crates/hiver-resilience/Cargo.toml`
+- `/crates/hiver-router/Cargo.toml`
 
 ---
 
@@ -680,9 +680,9 @@ error: `dependency.env_logger` was not found in `workspace.dependencies`
 
 ---
 
-## Bug #024: Missing regex dependency in nexus-http
+## Bug #024: Missing regex dependency in hiver-http
 
-## Bug #024: nexus-http 中缺失 regex 依赖
+## Bug #024: hiver-http 中缺失 regex 依赖
 
 **Date / 日期**: 2026-01-26
 
@@ -690,24 +690,24 @@ error: `dependency.env_logger` was not found in `workspace.dependencies`
 
 ```
 error[E0433]: failed to resolve: use of unresolved module or unlinked crate `regex`
-   --> crates/nexus-http/src/validation.rs:509:15
+   --> crates/hiver-http/src/validation.rs:509:15
     |
 509 |         match regex::Regex::new(pattern) {
     |               ^^^^^ use of unresolved module or unlinked crate `regex`
 ```
 
-**Location / 位置**: `crates/nexus-http/src/validation.rs:509`
+**Location / 位置**: `crates/hiver-http/src/validation.rs:509`
 
-**Cause / 原因**: The `regex` crate was used in validation.rs but not included in nexus-http's Cargo.toml dependencies.
+**Cause / 原因**: The `regex` crate was used in validation.rs but not included in hiver-http's Cargo.toml dependencies.
 
 **Fix / 修复**:
-1. Added `regex = { workspace = true }` to nexus-http/Cargo.toml dependencies
+1. Added `regex = { workspace = true }` to hiver-http/Cargo.toml dependencies
 2. Added `use regex;` import to validation.rs
 
 **Files Modified / 修改的文件**:
 
-- `/crates/nexus-http/Cargo.toml`
-- `/crates/nexus-http/src/validation.rs`
+- `/crates/hiver-http/Cargo.toml`
+- `/crates/hiver-http/src/validation.rs`
 
 ---
 
@@ -746,7 +746,7 @@ error[E0593]: closure is expected to take 1 argument, but it takes 0 arguments
 - `/examples/src/validation_example.rs` (simplified for in-progress development)
 - `/examples/src/upload_form.html` (created)
 - `/examples/Cargo.toml` (added derive feature for validator)
-- `/crates/nexus-http/Cargo.toml` (added regex dependency)
+- `/crates/hiver-http/Cargo.toml` (added regex dependency)
 
 ---
 

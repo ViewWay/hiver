@@ -55,11 +55,11 @@
 
 | # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
-| 20 | JWT 认证 | Spring Security | nexus-security | ✅ 90% | - |
+| 20 | JWT 认证 | Spring Security | hiver-security | ✅ 90% | - |
 | 21 | 权限控制 | `@PreAuthorize` | PermissionRegistry + Evaluator | ✅ 95% | - |
-| 22 | 登录限制 | 自定义 | nexus-resilience | ✅ 90% | - |
+| 22 | 登录限制 | 自定义 | hiver-resilience | ✅ 90% | - |
 | 23 | **API 文档** | Swagger 3 | OpenAPI 3.0 + Security Schemes | ✅ 95% | - |
-| 24 | 日志系统 | Logback | nexus-observability | ✅ 85% | - |
+| 24 | 日志系统 | Logback | hiver-observability | ✅ 85% | - |
 | 25 | 健康检查 | Actuator | HealthChecker | ✅ 85% | - |
 | 26 | 指标收集 | Micrometer | Prometheus | ✅ 85% | - |
 | 27 | 分布式追踪 | Sleuth | OpenTelemetry | ✅ 85% | - |
@@ -95,7 +95,7 @@
 | 47 | **配置中心** | Spring Cloud Config | Consul/etcd/RefreshScope | ✅ 85% | - |
 | 48 | 链路追踪 | Sleuth + Zipkin | OpenTelemetry | ✅ 85% | - |
 | 49 | 服务通信 | OpenFeign | reqwest | ✅ 90% | - |
-| 50 | **限流熔断** | Hystrix/Resilience4j | nexus-resilience | ✅ 90% | - |
+| 50 | **限流熔断** | Hystrix/Resilience4j | hiver-resilience | ✅ 90% | - |
 
 ---
 

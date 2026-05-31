@@ -35,9 +35,9 @@ Nexus uses `Router` + `Server` as separate types (no `Application` struct). Comp
 Nexus 使用 `Router` + `Server` 作为独立类型（没有 `Application` 结构体）。组合它们来创建应用：
 
 ```rust
-use nexus_http::{Server, Body, Response, StatusCode};
-use nexus_router::Router;
-use nexus_runtime::Runtime;
+use hiver_http::{Server, Body, Response, StatusCode};
+use hiver_router::Router;
+use hiver_runtime::Runtime;
 
 fn main() -> std::io::Result<()> {
     let mut runtime = Runtime::new()?;
@@ -103,7 +103,7 @@ impl<S> Router<S> {
 
 ```rust
 use std::sync::Arc;
-use nexus_router::Router;
+use hiver_router::Router;
 
 // Stateless router / 无状态路由器
 let app = Router::new()
@@ -154,7 +154,7 @@ Handlers are created via `impl Into<Handler<S>>` — closures and functions conv
 处理器通过 `impl Into<Handler<S>>` 创建 — 闭包和函数自动转换：
 
 ```rust
-use nexus_http::{Request, Response, Body, StatusCode, Result as HttpResult};
+use hiver_http::{Request, Response, Body, StatusCode, Result as HttpResult};
 use std::sync::Arc;
 
 // Closure handler (boxed async) / 闭包处理器
@@ -489,7 +489,7 @@ impl From<String> for Body {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::prelude::*;
+/// use hiver::prelude::*;
 ///
 /// struct LoggingMiddleware;
 ///
@@ -536,8 +536,8 @@ impl<S> Next<S> {
 
 ### 3.3 Built-in Middleware / 内置中间件
 
-All built-in middleware live in `nexus-middleware`:
-所有内置中间件位于 `nexus-middleware`：
+All built-in middleware live in `hiver-middleware`:
+所有内置中间件位于 `hiver-middleware`：
 
 | Middleware | Description / 描述 |
 |-----------|-------------------|
@@ -549,7 +549,7 @@ All built-in middleware live in `nexus-middleware`:
 | `StaticFiles` | Static file serving / 静态文件服务 |
 
 ```rust
-use nexus_middleware::{
+use hiver_middleware::{
     CorsMiddleware, CorsConfig,
     CompressionMiddleware,
     LoggerMiddleware,
@@ -606,8 +606,8 @@ pub enum CompressionAlgorithm {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::prelude::*;
-/// use nexus::resilience::CircuitBreaker;
+/// use hiver::prelude::*;
+/// use hiver::resilience::CircuitBreaker;
 ///
 /// let breaker = CircuitBreaker::new("api", CircuitBreakerConfig {
 ///     error_threshold: 0.5,      // 50% error rate / 50%错误率
@@ -733,8 +733,8 @@ pub enum CircuitBreakerError {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::prelude::*;
-/// use nexus::resilience::RateLimiter;
+/// use hiver::prelude::*;
+/// use hiver::resilience::RateLimiter;
 ///
 /// // Token bucket: 100 requests per second / 令牌桶：每秒100请求
 /// let limiter = RateLimiter::token_bucket(100, 1.0);
@@ -819,7 +819,7 @@ pub trait RateLimitStorage: Send + Sync {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::resilience::{RetryPolicy, retry};
+/// use hiver::resilience::{RetryPolicy, retry};
 ///
 /// let policy = RetryPolicy::default()
 ///     .max_attempts(3)
@@ -951,7 +951,7 @@ where
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::prelude::*;
+/// use hiver::prelude::*;
 /// use std::time::Duration;
 ///
 /// let app = Router::new()
@@ -1014,7 +1014,7 @@ impl<S> Middleware<S> for TimeoutLayer {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::observability::{TraceContext, Tracer};
+/// use hiver::observability::{TraceContext, Tracer};
 ///
 /// // Create a new span / 创建新span
 /// let tracer = Tracer::global();
@@ -1177,7 +1177,7 @@ impl Span {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::observability::{MetricsRegistry, Counter, Histogram};
+/// use hiver::observability::{MetricsRegistry, Counter, Histogram};
 ///
 /// let registry = MetricsRegistry::global();
 ///
@@ -1334,7 +1334,7 @@ impl Histogram {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::observability::info;
+/// use hiver::observability::info;
 /// use serde::Serialize;
 ///
 /// #[derive(Serialize)]
@@ -1404,7 +1404,7 @@ macro_rules! error {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::web3::{Chain, ChainId, Address};
+/// use hiver::web3::{Chain, ChainId, Address};
 ///
 /// let chain = Chain::ethereum(ChainId::Mainnet);
 ///
@@ -1467,7 +1467,7 @@ pub fn ethereum(chain_id: ChainId) -> Arc<dyn Chain> {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::web3::{Contract, Address};
+/// use hiver::web3::{Contract, Address};
 ///
 /// let contract = Contract::new(address, abi, chain);
 ///
@@ -1570,7 +1570,7 @@ impl<'a, C: Chain> ContractMethod<'a, C> {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::web3::{Wallet, LocalWallet};
+/// use hiver::web3::{Wallet, LocalWallet};
 ///
 /// // Create new wallet / 创建新钱包
 /// let wallet = LocalWallet::new(&mut rand::thread_rng());
@@ -1652,7 +1652,7 @@ impl Wallet for LocalWallet {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::Runtime;
+/// use hiver::Runtime;
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -1740,11 +1740,11 @@ impl Runtime<LegacyDriver> {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus::Runtime;
+/// use hiver::Runtime;
 ///
 /// let runtime = Runtime::new()?;
 /// runtime.block_on(async {
-///     let handle = nexus::spawn(async {
+///     let handle = hiver::spawn(async {
 ///         // Background task / 后台任务
 ///         42
 ///     });
@@ -1808,7 +1808,7 @@ where
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_lombok::Data;
+/// use hiver_lombok::Data;
 ///
 /// #[Data]
 /// #[derive(Debug, Clone)]
@@ -1823,14 +1823,14 @@ where
 /// assert_eq!(user.id(), &1);
 /// let user2 = user.with_username("bob".into());
 /// ```
-pub use nexus_lombok::Data;
+pub use hiver_lombok::Data;
 
 /// @Builder - Generate builder pattern
 /// @Builder - 生成构建器模式
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_lombok::Builder;
+/// use hiver_lombok::Builder;
 ///
 /// #[Builder]
 /// #[derive(Debug, Clone)]
@@ -1844,14 +1844,14 @@ pub use nexus_lombok::Data;
 ///     .username("alice".into())
 ///     .build();
 /// ```
-pub use nexus_lombok::Builder;
+pub use hiver_lombok::Builder;
 
 /// @Getter - Generate getter methods
 /// @Getter - 生成 getter 方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_lombok::Getter;
+/// use hiver_lombok::Getter;
 ///
 /// #[Getter]
 /// pub struct User {
@@ -1862,14 +1862,14 @@ pub use nexus_lombok::Builder;
 /// let user = User { id: 1, username: "alice".into() };
 /// assert_eq!(user.id(), &1);
 /// ```
-pub use nexus_lombok::Getter;
+pub use hiver_lombok::Getter;
 
 /// @Setter - Generate setter methods
 /// @Setter - 生成 setter 方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_lombok::Setter;
+/// use hiver_lombok::Setter;
 ///
 /// #[Setter]
 /// pub struct User {
@@ -1880,14 +1880,14 @@ pub use nexus_lombok::Getter;
 /// let mut user = User { id: 1, username: "alice".into() };
 /// user.set_username("bob".into());
 /// ```
-pub use nexus_lombok::Setter;
+pub use hiver_lombok::Setter;
 
 /// @Wither - Generate with_xxx methods for immutable updates
 /// @Wither - 生成 with_xxx 方法用于不可变更新
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_lombok::Wither;
+/// use hiver_lombok::Wither;
 ///
 /// #[Wither]
 /// pub struct User {
@@ -1900,19 +1900,19 @@ pub use nexus_lombok::Setter;
 /// assert_eq!(user.username, "alice"); // Original unchanged / 原值未变
 /// assert_eq!(user2.username, "bob");
 /// ```
-pub use nexus_lombok::Wither;
+pub use hiver_lombok::Wither;
 
 /// @NoArgsConstructor - Generate no-args constructor
 /// @NoArgsConstructor - 生成无参构造函数
-pub use nexus_lombok::NoArgsConstructor;
+pub use hiver_lombok::NoArgsConstructor;
 
 /// @AllArgsConstructor - Generate constructor with all fields
 /// @AllArgsConstructor - 生成包含所有字段的构造函数
-pub use nexus_lombok::AllArgsConstructor;
+pub use hiver_lombok::AllArgsConstructor;
 
 /// @RequiredArgsConstructor - Generate constructor with required fields
 /// @RequiredArgsConstructor - 生成包含必需字段的构造函数
-pub use nexus_lombok::RequiredArgsConstructor;
+pub use hiver_lombok::RequiredArgsConstructor;
 ```
 
 ### 8.2 Data Annotations / 数据注解
@@ -1923,7 +1923,7 @@ pub use nexus_lombok::RequiredArgsConstructor;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::{Entity, Table, Id, Column};
+/// use hiver_data_annotations::{Entity, Table, Id, Column};
 ///
 /// #[Entity]
 /// #[Table(name = "users")]
@@ -1937,26 +1937,26 @@ pub use nexus_lombok::RequiredArgsConstructor;
 ///     pub username: String,
 /// }
 /// ```
-pub use nexus_data_annotations::entity;
+pub use hiver_data_annotations::entity;
 
 /// @Table - Specify database table mapping
 /// @Table - 指定数据库表映射
-pub use nexus_data_annotations::table;
+pub use hiver_data_annotations::table;
 
 /// @Id - Mark primary key field
 /// @Id - 标记主键字段
-pub use nexus_data_annotations::id;
+pub use hiver_data_annotations::id;
 
 /// @Column - Specify column mapping
 /// @Column - 指定列映射
-pub use nexus_data_annotations::column;
+pub use hiver_data_annotations::column;
 
 /// @Query - Declare SQL query method
 /// @Query - 声明 SQL 查询方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::Query;
+/// use hiver_data_annotations::Query;
 ///
 /// trait UserRepository {
 ///     #[Query("SELECT * FROM users WHERE id = :id")]
@@ -1966,49 +1966,49 @@ pub use nexus_data_annotations::column;
 ///     async fn find_by_username_and_email(&self, username: &str, email: &str) -> Result<Option<User>, Error>;
 /// }
 /// ```
-pub use nexus_data_annotations::query;
+pub use hiver_data_annotations::query;
 
 /// @Insert - Declare SQL insert method
 /// @Insert - 声明 SQL 插入方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::Insert;
+/// use hiver_data_annotations::Insert;
 ///
 /// trait UserRepository {
 ///     #[Insert("INSERT INTO users (id, username, email) VALUES (:id, :username, :email)")]
 ///     async fn insert(&self, user: &User) -> Result<u64, Error>;
 /// }
 /// ```
-pub use nexus_data_annotations::insert;
+pub use hiver_data_annotations::insert;
 
 /// @Update - Declare SQL update method
 /// @Update - 声明 SQL 更新方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::Update;
+/// use hiver_data_annotations::Update;
 ///
 /// trait UserRepository {
 ///     #[Update("UPDATE users SET username = :username WHERE id = :id")]
 ///     async fn update_username(&self, id: i64, username: &str) -> Result<u64, Error>;
 /// }
 /// ```
-pub use nexus_data_annotations::update;
+pub use hiver_data_annotations::update;
 
 /// @Delete - Declare SQL delete method
 /// @Delete - 声明 SQL 删除方法
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::Delete;
+/// use hiver_data_annotations::Delete;
 ///
 /// trait UserRepository {
 ///     #[Delete("DELETE FROM users WHERE id = :id")]
 ///     async fn delete_by_id(&self, id: i64) -> Result<u64, Error>;
 /// }
 /// ```
-pub use nexus_data_annotations::delete;
+pub use hiver_data_annotations::delete;
 ```
 
 ### 8.3 Validation Annotations / 验证注解
@@ -2019,8 +2019,8 @@ pub use nexus_data_annotations::delete;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_validation_annotations::Validatable;
-/// use nexus_http::validation::{Valid, ValidationErrors};
+/// use hiver_validation_annotations::Validatable;
+/// use hiver_http::validation::{Valid, ValidationErrors};
 ///
 /// #[derive(Deserialize)]
 /// struct CreateUserRequest {
@@ -2043,30 +2043,30 @@ pub use nexus_data_annotations::delete;
 ///     Response::ok()
 /// }
 /// ```
-pub use nexus_validation_annotations::Valid;
+pub use hiver_validation_annotations::Valid;
 
 /// @NotNull - Field cannot be null
 /// @NotNull - 字段不能为空
-pub use nexus_validation_annotations::NotNull;
+pub use hiver_validation_annotations::NotNull;
 
 /// @NotBlank - String field cannot be blank
 /// @NotBlank - 字符串字段不能为空白
-pub use nexus_validation_annotations::NotBlank;
+pub use hiver_validation_annotations::NotBlank;
 
 /// @NotEmpty - Collection cannot be empty
 /// @NotEmpty - 集合不能为空
-pub use nexus_validation_annotations::NotEmpty;
+pub use hiver_validation_annotations::NotEmpty;
 
 /// @Email - Validate email format
 /// @Email - 验证邮箱格式
-pub use nexus_validation_annotations::Email;
+pub use hiver_validation_annotations::Email;
 
 /// @Size - Validate size constraints
 /// @Size - 验证大小约束
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_validation_annotations::Size;
+/// use hiver_validation_annotations::Size;
 ///
 /// struct User {
 ///     #[Size(min = 3, max = 20)]
@@ -2076,19 +2076,19 @@ pub use nexus_validation_annotations::Email;
 ///     pub tags: Vec<String>,
 /// }
 /// ```
-pub use nexus_validation_annotations::Size;
+pub use hiver_validation_annotations::Size;
 
 /// @Min - Validate minimum value
 /// @Min - 验证最小值
-pub use nexus_validation_annotations::Min;
+pub use hiver_validation_annotations::Min;
 
 /// @Max - Validate maximum value
 /// @Max - 验证最大值
-pub use nexus_validation_annotations::Max;
+pub use hiver_validation_annotations::Max;
 
 /// @Pattern - Validate regex pattern
 /// @Pattern - 验证正则表达式模式
-pub use nexus_validation_annotations::Pattern;
+pub use hiver_validation_annotations::Pattern;
 ```
 
 ### 8.4 AOP Annotations / AOP 注解
@@ -2099,7 +2099,7 @@ pub use nexus_validation_annotations::Pattern;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_aop::{Aspect, Before, After};
+/// use hiver_aop::{Aspect, Before, After};
 ///
 /// #[Aspect]
 /// struct LoggingAspect;
@@ -2116,22 +2116,22 @@ pub use nexus_validation_annotations::Pattern;
 ///     }
 /// }
 /// ```
-pub use nexus_aop::Aspect;
+pub use hiver_aop::Aspect;
 
 /// @Before - Execute advice before method
 /// @Before - 在方法前执行通知
-pub use nexus_aop::Before;
+pub use hiver_aop::Before;
 
 /// @After - Execute advice after method
 /// @After - 在方法后执行通知
-pub use nexus_aop::After;
+pub use hiver_aop::After;
 
 /// @Around - Execute advice around method
 /// @Around - 在方法周围执行通知
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_aop::{Aspect, Around};
+/// use hiver_aop::{Aspect, Around};
 /// use std::time::Instant;
 ///
 /// #[Aspect]
@@ -2148,19 +2148,19 @@ pub use nexus_aop::After;
 ///     }
 /// }
 /// ```
-pub use nexus_aop::Around;
+pub use hiver_aop::Around;
 
 /// @AfterReturning - Execute advice after successful return
 /// @AfterReturning - 在成功返回后执行通知
-pub use nexus_aop::AfterReturning;
+pub use hiver_aop::AfterReturning;
 
 /// @AfterThrowing - Execute advice after exception thrown
 /// @AfterThrowing - 在抛出异常后执行通知
-pub use nexus_aop::AfterThrowing;
+pub use hiver_aop::AfterThrowing;
 
 /// @Pointcut - Define a reusable pointcut expression
 /// @Pointcut - 定义可重用的切点表达式
-pub use nexus_aop::Pointcut;
+pub use hiver_aop::Pointcut;
 
 /// JoinPoint - Provides information about join point
 /// JoinPoint - 提供连接点信息
@@ -2184,8 +2184,8 @@ pub struct JoinPoint {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_data_annotations::Transactional;
-/// use nexus_data_annotations::transactional::{IsolationLevel, Propagation};
+/// use hiver_data_annotations::Transactional;
+/// use hiver_data_annotations::transactional::{IsolationLevel, Propagation};
 ///
 /// impl UserService {
 ///     // Basic usage / 基本用法
@@ -2217,7 +2217,7 @@ pub struct JoinPoint {
 ///     }
 /// }
 /// ```
-pub use nexus_data_annotations::Transactional;
+pub use hiver_data_annotations::Transactional;
 
 /// Isolation Level / 隔离级别
 pub enum IsolationLevel {
@@ -2281,7 +2281,7 @@ pub enum Propagation {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_config::{Config, ConfigError};
+/// use hiver_config::{Config, ConfigError};
 ///
 /// #[derive(Debug, Deserialize)]
 /// struct AppConfig {
@@ -2404,7 +2404,7 @@ pub struct ConfigChange {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_config::Profile;
+/// use hiver_config::Profile;
 ///
 /// // Set active profile / 设置活动配置文件
 /// Profile::set("dev");
@@ -2465,7 +2465,7 @@ impl Profile {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_cache::{Cache, MemoryCache};
+/// use hiver_cache::{Cache, MemoryCache};
 /// use std::time::Duration;
 ///
 /// #[tokio::main]
@@ -2623,7 +2623,7 @@ where
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_cache::Cacheable;
+/// use hiver_cache::Cacheable;
 ///
 /// impl UserService {
 ///     #[Cacheable("users", key = "#id")]
@@ -2632,14 +2632,14 @@ where
 ///     }
 /// }
 /// ```
-pub use nexus_cache::Cacheable;
+pub use hiver_cache::Cacheable;
 
 /// @CacheEvict - Evict cache entry
 /// @CacheEvict - 删除缓存条目
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_cache::{Cacheable, CacheEvict};
+/// use hiver_cache::{Cacheable, CacheEvict};
 ///
 /// impl UserService {
 ///     #[Cacheable("users", key = "#id")]
@@ -2653,11 +2653,11 @@ pub use nexus_cache::Cacheable;
 ///     }
 /// }
 /// ```
-pub use nexus_cache::CacheEvict;
+pub use hiver_cache::CacheEvict;
 
 /// @CachePut - Update cache entry
 /// @CachePut - 更新缓存条目
-pub use nexus_cache::CachePut;
+pub use hiver_cache::CachePut;
 ```
 
 ---
@@ -2672,7 +2672,7 @@ pub use nexus_cache::CachePut;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_schedule::{Scheduler, Task};
+/// use hiver_schedule::{Scheduler, Task};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -2890,7 +2890,7 @@ impl ScheduledTask {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_schedule::Scheduled;
+/// use hiver_schedule::Scheduled;
 ///
 /// struct CleanupService;
 ///
@@ -2914,7 +2914,7 @@ impl ScheduledTask {
 ///     }
 /// }
 /// ```
-pub use nexus_schedule::Scheduled;
+pub use hiver_schedule::Scheduled;
 ```
 
 ---
@@ -2929,7 +2929,7 @@ pub use nexus_schedule::Scheduled;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::{Auth, User, Role};
+/// use hiver_security::{Auth, User, Role};
 ///
 /// async fn protected_route(auth: Auth) -> Response {
 ///     let user = auth.user();
@@ -3006,7 +3006,7 @@ pub enum Role {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::{RolesAllowed, PermitAll, DenyAll};
+/// use hiver_security::{RolesAllowed, PermitAll, DenyAll};
 ///
 /// #[RolesAllowed("ADMIN")]
 /// async fn admin_only(&self) -> Response {
@@ -3023,16 +3023,16 @@ pub enum Role {
 ///     Response::ok("This should never be reached")
 /// }
 /// ```
-pub use nexus_security::RolesAllowed;
-pub use nexus_security::PermitAll;
-pub use nexus_security::DenyAll;
+pub use hiver_security::RolesAllowed;
+pub use hiver_security::PermitAll;
+pub use hiver_security::DenyAll;
 
 /// @PreAuthorize - Check authorization before method execution
 /// @PreAuthorize - 方法执行前检查授权
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::PreAuthorize;
+/// use hiver_security::PreAuthorize;
 ///
 /// impl UserService {
 ///     #[PreAuthorize("hasRole('ADMIN') or #id == authentication.user.id")]
@@ -3041,14 +3041,14 @@ pub use nexus_security::DenyAll;
 ///     }
 /// }
 /// ```
-pub use nexus_security::PreAuthorize;
+pub use hiver_security::PreAuthorize;
 
 /// @PostAuthorize - Check authorization after method execution
 /// @PostAuthorize - 方法执行后检查授权
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::PostAuthorize;
+/// use hiver_security::PostAuthorize;
 ///
 /// impl DocumentService {
 ///     #[PostAuthorize("returnObject.owner == authentication.user.id")]
@@ -3057,14 +3057,14 @@ pub use nexus_security::PreAuthorize;
 ///     }
 /// }
 /// ```
-pub use nexus_security::PostAuthorize;
+pub use hiver_security::PostAuthorize;
 
 /// @Secured - Method security with roles
 /// @Secured - 带角色的方法安全
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::Secured;
+/// use hiver_security::Secured;
 ///
 /// impl AccountService {
 ///     #[Secured({"ROLE_ADMIN", "ROLE_USER"})]
@@ -3073,7 +3073,7 @@ pub use nexus_security::PostAuthorize;
 ///     }
 /// }
 /// ```
-pub use nexus_security::Secured;
+pub use hiver_security::Secured;
 ```
 
 ### 12.3 Password Encoder / 密码编码器
@@ -3084,7 +3084,7 @@ pub use nexus_security::Secured;
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::{PasswordEncoder, BcryptPasswordEncoder};
+/// use hiver_security::{PasswordEncoder, BcryptPasswordEncoder};
 ///
 /// let encoder = BcryptPasswordEncoder::new();
 ///
@@ -3157,7 +3157,7 @@ impl PasswordEncoder for BcryptPasswordEncoder {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::{JwtUtil, Authority, Role};
+/// use hiver_security::{JwtUtil, Authority, Role};
 ///
 /// let authorities = vec![
 ///     Authority::Role(Role::User),
@@ -3229,7 +3229,7 @@ impl JwtClaims {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::{JwtUtil, Authority, Role};
+/// use hiver_security::{JwtUtil, Authority, Role};
 ///
 /// // Create token / 创建token
 /// let authorities = vec![Authority::Role(Role::User)];
@@ -3305,7 +3305,7 @@ impl JwtUtil {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::JwtTokenProvider;
+/// use hiver_security::JwtTokenProvider;
 ///
 /// let provider = JwtTokenProvider::new();
 ///
@@ -3360,7 +3360,7 @@ impl JwtTokenProvider {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_security::JwtAuthentication;
+/// use hiver_security::JwtAuthentication;
 ///
 /// let auth = JwtAuthentication::from_claims(&claims);
 ///
@@ -3406,7 +3406,7 @@ impl JwtAuthentication {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_tx::{TransactionManager, IsolationLevel};
+/// use hiver_tx::{TransactionManager, IsolationLevel};
 ///
 /// async fn transfer_funds(
 ///     tx_mgr: &TransactionManager,
@@ -3510,7 +3510,7 @@ pub enum TransactionState {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_tx::TransactionTemplate;
+/// use hiver_tx::TransactionTemplate;
 ///
 /// async fn create_user(template: &TransactionTemplate, user: User) -> Result<(), Error> {
 ///     template.execute(async {
@@ -3592,7 +3592,7 @@ impl TransactionTemplate {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_actuator::{HealthIndicator, Health, Status};
+/// use hiver_actuator::{HealthIndicator, Health, Status};
 ///
 /// struct DatabaseHealthIndicator {
 ///     pool: Arc<ConnectionPool>,
@@ -3710,8 +3710,8 @@ impl HealthAggregator {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_actuator::MetricsEndpoint;
-/// use nexus_observability::MetricsRegistry;
+/// use hiver_actuator::MetricsEndpoint;
+/// use hiver_observability::MetricsRegistry;
 ///
 /// let registry = MetricsRegistry::global();
 /// let endpoint = MetricsEndpoint::new(registry);
@@ -3759,7 +3759,7 @@ impl MetricsEndpoint {
 ///
 /// # Example / 示例
 /// ```rust
-/// use nexus_actuator::{InfoEndpoint, InfoBuilder};
+/// use hiver_actuator::{InfoEndpoint, InfoBuilder};
 ///
 /// let info = InfoBuilder::new()
 ///     .app_name("My Application")
@@ -3855,13 +3855,13 @@ impl Default for InfoBuilder {
 // Common type aliases for convenience / 便捷的常用类型别名
 pub type Result<T> = std::result::Result<T, Error>;
 pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
-pub type Json<T> = nexus_response::Json<T>;
-pub type Html<T> = nexus_response::Html<T>;
+pub type Json<T> = hiver_response::Json<T>;
+pub type Html<T> = hiver_response::Html<T>;
 
 // Web3 type aliases / Web3类型别名
-pub type Address = nexus_web3::Address;
-pub type TxHash = nexus_web3::TxHash;
-pub type U256 = nexus_web3::U256;
+pub type Address = hiver_web3::Address;
+pub type TxHash = hiver_web3::TxHash;
+pub type U256 = hiver_web3::U256;
 ```
 
 ---
@@ -3874,7 +3874,7 @@ pub type U256 = nexus_web3::U256;
 //!
 //! # Example / 示例
 //! ```rust
-//! use nexus::prelude::*;
+//! use hiver::prelude::*;
 //! ```
 //!
 //! The prelude re-exports common types and traits for convenience.

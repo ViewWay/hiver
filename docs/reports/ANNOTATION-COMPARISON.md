@@ -661,7 +661,7 @@ async fn delete_user(
 
 ## 🆕 Nexus 独有注解 / Nexus Exclusive Annotations
 
-这些注解在 Spring Boot 中**没有直接对应**，是 Nexus 框架的特色功能：
+这些注解在 Spring Boot 中**没有直接对应**，是 Hiver 框架的特色功能：
 
 | Nexus 注解 | 功能 | 优势 |
 |-----------|------|------|
@@ -866,7 +866,7 @@ public class Cache {
 
 ### 最终评价 / Final Verdict
 
-✅ **Nexus 框架在核心功能上已达到 93% 的 Spring Boot 注解对标度**，特别是在：
+✅ **Hiver 框架在核心功能上已达到 93% 的 Spring Boot 注解对标度**，特别是在：
 - Web 层（100%）
 - 数据库层（100%）
 - AOP（100%）

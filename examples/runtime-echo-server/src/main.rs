@@ -10,8 +10,8 @@
 //! Then connect with: telnet 127.0.0.1:8080
 //! 然后连接: telnet 127.0.0.1:8080
 
-use nexus_runtime::{Runtime, spawn};
-use nexus_runtime::io::TcpListener;
+use hiver_runtime::{Runtime, spawn};
+use hiver_runtime::io::TcpListener;
 use std::io;
 
 fn main() -> io::Result<()> {

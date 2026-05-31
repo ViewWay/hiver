@@ -16,7 +16,7 @@ Configuration features:
 - **Multiple Formats** / **多格式** — Properties, YAML, TOML, JSON
 - **Environment Variables** / **环境变量** — Override any config value
 - **Profiles** / **配置文件** — Environment-specific configurations (dev/prod/test)
-- **Auto-Configuration** / **自动配置** — Convention-over-configuration via `nexus-starter`
+- **Auto-Configuration** / **自动配置** — Convention-over-configuration via `hiver-starter`
 - **Type-Safe Binding** / **类型安全绑定** — `#[derive(PropertiesConfig)]`
 
 ---
@@ -90,7 +90,7 @@ logging.level=INFO
 ## Type-Safe Configuration / 类型安全配置
 
 ```rust
-use nexus_config::{Config, PropertiesConfig};
+use hiver_config::{Config, PropertiesConfig};
 use serde::Deserialize;
 
 #[derive(PropertiesConfig, Deserialize)]
@@ -151,13 +151,13 @@ Environment-specific configurations with file naming convention:
 ```
 config/
 ├── nexus.toml                # Default / 默认
-├── nexus-dev.toml            # Development / 开发
-├── nexus-prod.toml           # Production / 生产
-└── nexus-test.toml           # Testing / 测试
+├── hiver-dev.toml            # Development / 开发
+├── hiver-prod.toml           # Production / 生产
+└── hiver-test.toml           # Testing / 测试
 ```
 
 ```rust
-use nexus_config::{Config, Profile};
+use hiver_config::{Config, Profile};
 
 // Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
@@ -173,7 +173,7 @@ let config = Config::builder()
 **Profile-specific overrides** / **配置文件覆盖**:
 
 ```toml
-# nexus-dev.toml
+# hiver-dev.toml
 [logging]
 level = "DEBUG"
 mode = "verbose"
@@ -183,7 +183,7 @@ url = "postgres://localhost/mydb_dev"
 ```
 
 ```toml
-# nexus-prod.toml
+# hiver-prod.toml
 [logging]
 level = "WARN"
 mode = "simple"
@@ -197,12 +197,12 @@ pool_size = 50
 
 ## Auto-Configuration / 自动配置
 
-`nexus-starter` provides Spring Boot-style auto-configuration:
-`nexus-starter` 提供 Spring Boot 风格的自动配置：
+`hiver-starter` provides Spring Boot-style auto-configuration:
+`hiver-starter` 提供 Spring Boot 风格的自动配置：
 
 ```rust
-use nexus_starter::NexusApp;
-use nexus_router::Router;
+use hiver_starter::NexusApp;
+use hiver_router::Router;
 
 fn main() -> std::io::Result<()> {
     NexusApp::new()

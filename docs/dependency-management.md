@@ -1,7 +1,7 @@
 # Dependency Management / 依赖管理
 
-This document describes the dependency management strategy for the Nexus framework.
-本文档描述了 Nexus 框架的依赖管理策略。
+This document describes the dependency management strategy for the Hiver Framework.
+本文档描述了 Hiver 框架的依赖管理策略。
 
 ## Overview / 概述
 
@@ -43,7 +43,7 @@ All crate `Cargo.toml` files follow the Salvo framework format:
 
 ```toml
 [package]
-name = "nexus-example"
+name = "hiver-example"
 version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }

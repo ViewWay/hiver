@@ -22,7 +22,7 @@
 </p>
 </div>
 
-# Nexus Framework
+# Hiver Framework
 
 Nexus is a production-grade, high-availability web framework written in Rust with a custom async runtime. Unlike other frameworks that use Tokio, Nexus features a custom async runtime built from scratch using io-uring for maximum performance.
 
@@ -49,17 +49,17 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1"
-nexus-http = { version = "0.1", features = ["full"] }
-nexus-router = "0.1"
-nexus-observability = "0.1"
+hiver-runtime = "0.1"
+hiver-http = { version = "0.1", features = ["full"] }
+hiver-router = "0.1"
+hiver-observability = "0.1"
 ```
 
 ### Basic HTTP Server
 
 ```rust
-use nexus_http::{Body, Response, Server, StatusCode};
-use nexus_runtime::Runtime;
+use hiver_http::{Body, Response, Server, StatusCode};
+use hiver_runtime::Runtime;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize logging
@@ -80,7 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
 }
 
-async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http::Error> {
+async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http::Error> {
     Ok(Response::builder()
         .status(StatusCode::OK)
         .header("content-type", "text/plain")
@@ -102,13 +102,13 @@ async fn handle_request(req: nexus_http::Request) -> Result<Response, nexus_http
 //! - Circuit breaker
 //! - Observability (tracing, metrics)
 
-use nexus_http::{
+use hiver_http::{
     Body, Response, Server, StatusCode,
     Request, Result as HttpResult,
 };
-use nexus_router::Router;
-use nexus_runtime::Runtime;
-use nexus_observability::{tracing, metrics};
+use hiver_router::Router;
+use hiver_runtime::Runtime;
+use hiver_observability::{tracing, metrics};
 
 // ============================================================================
 // Data Models
@@ -213,7 +213,7 @@ impl UserStore {
 /// GET /users - List all users
 async fn list_users(
     _req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     tracing::info!("Listing all users");
 
@@ -229,7 +229,7 @@ async fn list_users(
 /// GET /users/:id - Get user by ID
 async fn get_user(
     req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     // Extract path parameter
     let id = req
@@ -254,7 +254,7 @@ async fn get_user(
 /// POST /users - Create new user
 async fn create_user(
     mut req: Request,
-    store: nexus_router::State<UserStore>,
+    store: hiver_router::State<UserStore>,
 ) -> HttpResult<Response> {
     // Parse request body
     let body = std::pin::pin(&mut req)
@@ -287,9 +287,9 @@ async fn create_user(
 // Error Conversion
 // ============================================================================
 
-impl From<ApiError> for nexus_http::Error {
+impl From<ApiError> for hiver_http::Error {
     fn from(err: ApiError) -> Self {
-        nexus_http::Error::new(err.status_code(), err.message())
+        hiver_http::Error::new(err.status_code(), err.message())
     }
 }
 
@@ -309,13 +309,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build router
     let app = Router::new()
         // GET /users - List users
-        .route("/users", nexus_router::Method::GET, list_users)
+        .route("/users", hiver_router::Method::GET, list_users)
 
         // GET /users/:id - Get user
-        .route("/users/:id", nexus_router::Method::GET, get_user)
+        .route("/users/:id", hiver_router::Method::GET, get_user)
 
         // POST /users - Create user
-        .route("/users", nexus_router::Method::POST, create_user)
+        .route("/users", hiver_router::Method::POST, create_user)
 
         // Add state
         .with_state(store);
@@ -359,7 +359,7 @@ curl http://localhost:8080/users
 Nexus provides a unified logging system with two modes: **Verbose** (development) and **Simple** (production).
 
 ```rust
-use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Automatic mode selection based on profile
@@ -399,8 +399,8 @@ export NEXUS_PROFILE=prod  # dev->verbose, prod->simple
 ### Resilience Patterns
 
 ```rust
-use nexus_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
-use nexus_http::Request;
+use hiver_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
+use hiver_http::Request;
 
 // Circuit breaker
 let breaker = CircuitBreaker::new(
@@ -430,7 +430,7 @@ async fn call_external_api(req: Request) -> Result<Response, Error> {
 ### Web3 Support
 
 ```rust
-use nexus_web3::{
+use hiver_web3::{
     Chain, ChainConfig, LocalWallet, RpcClient,
     Transaction, TransactionBuilder, TxType,
 };
@@ -495,25 +495,25 @@ Nexus is designed for high performance from the ground up:
 **62 crates** across 10 functional domains. See [CODEMAP.md](docs/CODEMAP.md) for the full reference.
 
 ```
-nexus-starter (Spring Boot auto-configuration)
+hiver-starter (Spring Boot auto-configuration)
     │
-    ├── Web:      nexus-http, nexus-router, nexus-extractors, nexus-middleware,
-    │             nexus-response, nexus-hateoas, nexus-multipart, nexus-openapi, nexus-graphql
-    ├── Data:     nexus-data-commons, nexus-data-rdbc, nexus-data-orm, nexus-data-redis,
-    │             nexus-data-mongodb, nexus-data-annotations, nexus-data-macros, nexus-flyway
-    ├── Security: nexus-security, nexus-session
-    ├── AOP:      nexus-aop, nexus-tx
-    ├── Messaging:nexus-events, nexus-events-macros, nexus-kafka, nexus-amqp,
-    │             nexus-integration, nexus-websocket-stomp
-    ├── Infra:    nexus-runtime, nexus-core, nexus-macros, nexus-lombok, nexus-config,
-    │             nexus-exceptions, nexus-spel
-    ├── Cloud:    nexus-cloud, nexus-ai, nexus-agent, nexus-web3, nexus-vault, nexus-ldap, nexus-grpc
-    ├── Resilience:nexus-resilience, nexus-observability, nexus-micrometer, nexus-actuator,
-    │             nexus-retry, nexus-retry-macros
-    ├── Enterprise:nexus-batch, nexus-state-machine, nexus-async, nexus-schedule, nexus-ws,
-    │             nexus-i18n, nexus-modulith
-    └── Tooling:  nexus-test, nexus-shell, nexus-shell-macros, nexus-benches, nexus-validation,
-                  nexus-validation-annotations, nexus-cache
+    ├── Web:      hiver-http, hiver-router, hiver-extractors, hiver-middleware,
+    │             hiver-response, hiver-hateoas, hiver-multipart, hiver-openapi, hiver-graphql
+    ├── Data:     hiver-data-commons, hiver-data-rdbc, hiver-data-orm, hiver-data-redis,
+    │             hiver-data-mongodb, hiver-data-annotations, hiver-data-macros, hiver-flyway
+    ├── Security: hiver-security, hiver-session
+    ├── AOP:      hiver-aop, hiver-tx
+    ├── Messaging:hiver-events, hiver-events-macros, hiver-kafka, hiver-amqp,
+    │             hiver-integration, hiver-websocket-stomp
+    ├── Infra:    hiver-runtime, hiver-core, hiver-macros, hiver-lombok, hiver-config,
+    │             hiver-exceptions, hiver-spel
+    ├── Cloud:    hiver-cloud, hiver-ai, hiver-agent, hiver-web3, hiver-vault, hiver-ldap, hiver-grpc
+    ├── Resilience:hiver-resilience, hiver-observability, hiver-micrometer, hiver-actuator,
+    │             hiver-retry, hiver-retry-macros
+    ├── Enterprise:hiver-batch, hiver-state-machine, hiver-async, hiver-schedule, hiver-ws,
+    │             hiver-i18n, hiver-modulith
+    └── Tooling:  hiver-test, hiver-shell, hiver-shell-macros, hiver-benches, hiver-validation,
+                  hiver-validation-annotations, hiver-cache
 ```
 
 ## 🛠️ Development
@@ -530,7 +530,7 @@ cargo build --workspace
 cargo test --workspace
 
 # Run benchmarks
-cargo bench -p nexus-runtime
+cargo bench -p hiver-runtime
 
 # Format
 cargo fmt --all
@@ -581,4 +581,4 @@ Nexus is inspired by excellent frameworks across multiple languages:
 
 ---
 
-**Nexus Framework** — Built for the future of web development.
+**Hiver Framework** — Built for the future of web development.

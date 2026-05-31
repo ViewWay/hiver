@@ -7,7 +7,7 @@
 
 ## Overview / 概述
 
-Nexus Security provides comprehensive authentication, authorization, and security features similar to Spring Security.
+Hiver Security provides comprehensive authentication, authorization, and security features similar to Spring Security.
 
 ---
 

@@ -37,7 +37,7 @@ Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定
 **62 crates** across 10 functional domains:
 
 ```
-nexus-starter (Spring Boot auto-configuration)
+hiver-starter (Spring Boot auto-configuration)
     │
     ├── Web:      HTTP server, router, extractors, middleware, response, HATEOAS, OpenAPI
     ├── Data:     Commons, RDBC, ORM (ActiveRecord), Redis, MongoDB, Flyway

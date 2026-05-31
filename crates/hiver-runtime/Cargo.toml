@@ -1,0 +1,102 @@
+[package]
+name = "hiver-runtime"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+High-performance async runtime for Hiver Framework.
+Nexus框架的高性能异步运行时。
+Equivalent to: Spring WebFlux Reactor, Project Reactor
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Zero-copy bytes / 零拷贝字节
+bytes = { workspace = true }
+
+# Concurrency utilities / 并发工具 (Spring Task Executor)
+rustc-hash = "2.1"
+flume = "0.11"
+num_cpus = "1.16"
+crossbeam = "0.8"
+
+# Core container (IoC equivalent) / 核心容器（IoC等价）
+# Equivalent to: Spring Core Container, ApplicationContext
+arc-swap = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+once_cell = { workspace = true }
+
+# Timer / 定时器 (Spring @Scheduled)
+time = { workspace = true }
+
+# Async utilities / 异步工具
+# Equivalent to: Spring Reactive, Project Reactor
+futures = { workspace = true }
+futures-util = { workspace = true }
+pin-project = { workspace = true }
+pin-project-lite = { workspace = true }
+
+# Error handling / 错误处理 (Spring Exception Handling)
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Logging / 日志 (Spring Logging, Logback)
+tracing = { workspace = true }
+tracing-core = { workspace = true }
+
+# Platform-specific dependencies / 平台特定依赖
+[target.'cfg(target_os = "linux")'.dependencies]
+io-uring = "0.7.11"
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+libc = "0.2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# For kqueue support on macOS
+kqueue = "1.0"
+
+[target.'cfg(target_os = "freebsd")'.dependencies]
+# For kqueue support on FreeBSD
+kqueue = "1.0"
+
+[target.'cfg(target_os = "netbsd")'.dependencies]
+# For kqueue support on NetBSD
+kqueue = "1.0"
+
+[target.'cfg(target_os = "openbsd")'.dependencies]
+# For kqueue support on OpenBSD
+kqueue = "1.0"
+
+[target.'cfg(target_os = "dragonfly")'.dependencies]
+# For kqueue support on DragonFlyBSD
+kqueue = "1.0"
+
+[dev-dependencies]
+# Testing / 测试 (Spring Test)
+criterion = { workspace = true }
+quickcheck = { workspace = true }
+quickcheck_macros = { workspace = true }
+proptest = { workspace = true }
+
+# Async runtime for testing (Spring Test Context)
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+# Benchmark suite
+# 基准测试套件
+[[bench]]
+name = "runtime_bench"
+harness = false

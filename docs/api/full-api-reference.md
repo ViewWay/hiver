@@ -1,5 +1,5 @@
-# Nexus Framework — Full API Reference
-# Nexus 框架 — 完整 API 参考
+# Hiver Framework — Full API Reference
+# Hiver 框架 — 完整 API 参考
 
 **Version**: 0.1.0-alpha
 **Generated**: 2026-05-31
@@ -25,7 +25,7 @@
 
 ## 1. Runtime & Core / 运行时与核心
 
-### nexus-runtime
+### hiver-runtime
 
 **Spring Equivalent**: Core Runtime (Project Reactor + Netty event loop)
 
@@ -55,7 +55,7 @@ architecture for maximum scalability and zero-copy I/O.
 **Usage Example**:
 
 ```rust
-use nexus_runtime::{Runtime, spawn, sleep, Duration, bounded};
+use hiver_runtime::{Runtime, spawn, sleep, Duration, bounded};
 
 fn main() -> std::io::Result<()> {
     let runtime = Runtime::new()?;
@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
 
 ---
 
-### nexus-core
+### hiver-core
 
 **Spring Equivalent**: Spring Core (IoC Container, `ApplicationContext`, `BeanFactory`)
 
@@ -105,7 +105,7 @@ reactive types (`Mono`, `Flux`), and application lifecycle management.
 **Usage Example**:
 
 ```rust
-use nexus_core::{Container, Bean, BeanDefinition, Scope, Mono};
+use hiver_core::{Container, Bean, BeanDefinition, Scope, Mono};
 
 let mut container = Container::new();
 container.register(BeanDefinition::new::<MyService>("my_service", Scope::Singleton));
@@ -117,7 +117,7 @@ let result = value.await.unwrap();
 
 ---
 
-### nexus-macros
+### hiver-macros
 
 **Spring Equivalent**: Stereotype Annotations (`@Component`, `@Service`, `@Autowired`, etc.)
 
@@ -151,8 +151,8 @@ equivalents for Rust.
 **Usage Example**:
 
 ```rust
-use nexus_macros::{rest_controller, get, autowired, service};
-use nexus_macros::transactional;
+use hiver_macros::{rest_controller, get, autowired, service};
+use hiver_macros::transactional;
 
 #[service]
 pub struct UserService {
@@ -182,7 +182,7 @@ impl UserController {
 
 ## 2. Web Layer / Web 层
 
-### nexus-http
+### hiver-http
 
 **Spring Equivalent**: Spring Web / Spring WebFlux / Spring MVC
 
@@ -218,9 +218,9 @@ multipart handling, validation, and structured API responses.
 **Usage Example**:
 
 ```rust
-use nexus_http::{Server, StatusCode, content_type};
-use nexus_http::sse::Sse;
-use nexus_http::body::Body;
+use hiver_http::{Server, StatusCode, content_type};
+use hiver_http::sse::Sse;
+use hiver_http::body::Body;
 
 let server = Server::new()
     .bind("0.0.0.0:8080")
@@ -238,7 +238,7 @@ async fn stream_events() -> Sse {
 
 ---
 
-### nexus-router
+### hiver-router
 
 **Spring Equivalent**: Spring WebMVC Router (`@RequestMapping`, `@GetMapping`)
 
@@ -264,7 +264,7 @@ trie-based route matching, and nested routers.
 **Usage Example**:
 
 ```rust
-use nexus_router::{Router, Stateful};
+use hiver_router::{Router, Stateful};
 
 let app = Router::new()
     .get("/", home)
@@ -281,7 +281,7 @@ async fn get_user(id: u64) -> Response {
 
 ---
 
-### nexus-extractors
+### hiver-extractors
 
 **Spring Equivalent**: `@PathVariable`, `@RequestParam`, `@RequestBody`, `@RequestHeader`, `@CookieValue`
 
@@ -310,7 +310,7 @@ query strings, JSON bodies, form data, headers, cookies, and application state.
 **Usage Example**:
 
 ```rust
-use nexus_extractors::{Path, Query, Json, Header, State};
+use hiver_extractors::{Path, Query, Json, Header, State};
 
 async fn get_user(Path(id): Path<u64>) -> Response { /* ... */ }
 
@@ -323,7 +323,7 @@ async fn with_auth(Header(auth): Header<String>) -> Response { /* ... */ }
 
 ---
 
-### nexus-middleware
+### hiver-middleware
 
 **Spring Equivalent**: Spring `HandlerInterceptor`, `Filter`, `@CrossOrigin`
 
@@ -346,7 +346,7 @@ compression, timeouts, static file serving, and security headers.
 **Usage Example**:
 
 ```rust
-use nexus_middleware::{CorsMiddleware, JwtAuthenticationMiddleware, LoggerMiddleware};
+use hiver_middleware::{CorsMiddleware, JwtAuthenticationMiddleware, LoggerMiddleware};
 
 let cors = CorsMiddleware::new()
     .allow_origin("https://myapp.com")
@@ -363,7 +363,7 @@ Router::new()
 
 ---
 
-### nexus-response
+### hiver-response
 
 **Spring Equivalent**: `ResponseEntity`, `@ResponseBody`
 
@@ -390,7 +390,7 @@ and unified API response formatting with error handling.
 **Usage Example**:
 
 ```rust
-use nexus_response::{Json, Html, PageResult, ApiResponse};
+use hiver_response::{Json, Html, PageResult, ApiResponse};
 
 // JSON response
 let json = Json(User { id: 1, name: "Alice".into() });
@@ -405,7 +405,7 @@ let err = ApiResponse::<()>::error(404, "User not found");
 
 ---
 
-### nexus-openapi
+### hiver-openapi
 
 **Spring Equivalent**: SpringDoc OpenAPI / Swagger UI
 
@@ -432,7 +432,7 @@ OpenAPI 3.0 规范生成和 Swagger UI 集成，提供类型安全的模式定�
 **Usage Example**:
 
 ```rust
-use nexus_openapi::{OpenApiBuilder, SwaggerUi, InfoConfig};
+use hiver_openapi::{OpenApiBuilder, SwaggerUi, InfoConfig};
 
 let openapi = OpenApiBuilder::new()
     .title("My API")
@@ -450,7 +450,7 @@ Router::new()
 
 ## 3. Data Layer / 数据层
 
-### nexus-data-commons
+### hiver-data-commons
 
 **Spring Equivalent**: Spring Data Commons (`CrudRepository`, `PagingAndSortingRepository`)
 
@@ -480,7 +480,7 @@ projections, auditing, and optimistic locking.
 **Usage Example**:
 
 ```rust
-use nexus_data_commons::{CrudRepository, PagingAndSortingRepository, PageRequest, Sort};
+use hiver_data_commons::{CrudRepository, PagingAndSortingRepository, PageRequest, Sort};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -499,7 +499,7 @@ let users = repo.find_all(page).await?;
 
 ---
 
-### nexus-data-rdbc
+### hiver-data-rdbc
 
 **Spring Equivalent**: Spring R2DBC (reactive relational database connectivity)
 
@@ -530,7 +530,7 @@ transaction management, and query execution for PostgreSQL, MySQL, and SQLite.
 **Usage Example**:
 
 ```rust
-use nexus_data_rdbc::{DatabaseClient, RowMapper, DatabaseConfig, DatabaseType};
+use hiver_data_rdbc::{DatabaseClient, RowMapper, DatabaseConfig, DatabaseType};
 
 let client = DatabaseClient::connect(DatabaseConfig::new(DatabaseType::PostgreSQL)
     .host("localhost").port(5432).database("mydb")
@@ -547,7 +547,7 @@ tx.commit().await?;
 
 ---
 
-### nexus-data-orm
+### hiver-data-orm
 
 **Spring Equivalent**: Spring Data JPA / Hibernate
 
@@ -573,7 +573,7 @@ ORM 抽象层，提供 Active Record 模式、查询构建器、关系管理、�
 **Usage Example**:
 
 ```rust
-use nexus_data_orm::{Model, ActiveRecord, QueryBuilder};
+use hiver_data_orm::{Model, ActiveRecord, QueryBuilder};
 
 #[derive(Model, Debug, Clone)]
 #[model(table = "users")]
@@ -601,7 +601,7 @@ let users = User::query()
 
 ---
 
-### nexus-data-redis
+### hiver-data-redis
 
 **Spring Equivalent**: Spring Data Redis (`RedisTemplate`, `RedisCache`)
 
@@ -628,7 +628,7 @@ Redis 集成，提供 RedisTemplate、分布式缓存、带看门狗的可重入
 **Usage Example**:
 
 ```rust
-use nexus_data_redis::{RedisClient, RedisTemplate, RedisLock};
+use hiver_data_redis::{RedisClient, RedisTemplate, RedisLock};
 
 let client = RedisClient::new("redis://localhost:6379").await?;
 let redis = RedisTemplate::new(client);
@@ -645,7 +645,7 @@ drop(guard); // auto-release
 
 ---
 
-### nexus-data-mongodb
+### hiver-data-mongodb
 
 **Spring Equivalent**: Spring Data MongoDB (`MongoTemplate`, `MongoRepository`)
 
@@ -671,7 +671,7 @@ MongoDB 集成，提供 Repository 模式、聚合管道、索引管理、批量
 **Usage Example**:
 
 ```rust
-use nexus_data_mongodb::{MongoTemplate, MongoClient, MongoFilter, Aggregation};
+use hiver_data_mongodb::{MongoTemplate, MongoClient, MongoFilter, Aggregation};
 
 let client = MongoClient::connect("mongodb://localhost:27017").await?;
 let mongo = MongoTemplate::new(client, "mydb");
@@ -691,7 +691,7 @@ let agg = Aggregation::new()
 
 ---
 
-### nexus-flyway
+### hiver-flyway
 
 **Spring Equivalent**: Flyway (database migration)
 
@@ -712,7 +712,7 @@ supporting versioned SQL migrations and migration history tracking.
 **Usage Example**:
 
 ```rust
-use nexus_flyway::{Flyway, ConfigBuilder};
+use hiver_flyway::{Flyway, ConfigBuilder};
 
 let flyway = Flyway::new(ConfigBuilder::new()
     .url("postgres://localhost/mydb")
@@ -727,7 +727,7 @@ let info = flyway.info();       // Check migration status
 
 ## 4. Security / 安全
 
-### nexus-security
+### hiver-security
 
 **Spring Equivalent**: Spring Security
 
@@ -757,7 +757,7 @@ OAuth2 Authorization Server, and SpEL-based access control.
 **Usage Example**:
 
 ```rust
-use nexus_security::{JwtTokenProvider, BcryptPasswordEncoder, PreAuthorize};
+use hiver_security::{JwtTokenProvider, BcryptPasswordEncoder, PreAuthorize};
 
 let encoder = BcryptPasswordEncoder::new(12);
 let hash = encoder.encode("password123")?;
@@ -776,7 +776,7 @@ impl UserService {
 
 ---
 
-### nexus-session
+### hiver-session
 
 **Spring Equivalent**: Spring Session
 
@@ -799,7 +799,7 @@ backends, supporting session attributes, expiration, and HTTP middleware.
 **Usage Example**:
 
 ```rust
-use nexus_session::{Session, MemorySessionStore, SessionConfig};
+use hiver_session::{Session, MemorySessionStore, SessionConfig};
 
 let store = MemorySessionStore::new();
 let session = Session::new(&store);
@@ -813,7 +813,7 @@ let user_id: Option<i32> = session.get("user_id");
 
 ## 5. Transactions & AOP / 事务与切面
 
-### nexus-tx
+### hiver-tx
 
 **Spring Equivalent**: Spring Transaction (`@Transactional`, `TransactionTemplate`)
 
@@ -836,7 +836,7 @@ levels, propagation strategies, and integration with SQLx transaction manager.
 **Usage Example**:
 
 ```rust
-use nexus_tx::{Transactional, TransactionTemplate};
+use hiver_tx::{Transactional, TransactionTemplate};
 
 // Declarative
 impl UserService {
@@ -857,7 +857,7 @@ let result = tx_template.execute(|tx| async {
 
 ---
 
-### nexus-aop
+### hiver-aop
 
 **Spring Equivalent**: Spring AOP (`@Aspect`, `@Around`, `@Before`, `@After`)
 
@@ -880,7 +880,7 @@ information, and before/after/around advice for cross-cutting concerns.
 **Usage Example**:
 
 ```rust
-use nexus_aop::{before, around, JoinPoint};
+use hiver_aop::{before, around, JoinPoint};
 
 struct LoggingAspect;
 
@@ -904,7 +904,7 @@ impl LoggingAspect {
 
 ## 6. Messaging / 消息
 
-### nexus-events
+### hiver-events
 
 **Spring Equivalent**: Spring Events (`ApplicationEventPublisher`, `@EventListener`)
 
@@ -927,7 +927,7 @@ event ordering, filtering, transaction-bound events, and publish strategies.
 **Usage Example**:
 
 ```rust
-use nexus_events::{ApplicationEvent, ApplicationEventPublisher, EventListener};
+use hiver_events::{ApplicationEvent, ApplicationEventPublisher, EventListener};
 
 #[derive(Clone, Debug)]
 struct UserCreatedEvent { user_id: u64, username: String }
@@ -948,7 +948,7 @@ async fn on_user_created(event: UserCreatedEvent) {
 
 ---
 
-### nexus-kafka
+### hiver-kafka
 
 **Spring Equivalent**: Spring Kafka
 
@@ -968,7 +968,7 @@ Apache Kafka 生产者/消费者，支持消费者组、JSON/Avro/Protobuf 序�
 **Usage Example**:
 
 ```rust
-use nexus_kafka::{KafkaProducer, KafkaConsumer, KafkaMessage};
+use hiver_kafka::{KafkaProducer, KafkaConsumer, KafkaMessage};
 
 let producer = KafkaProducer::new("localhost:9092")?;
 producer.send("user-events", KafkaMessage::new("user-created", &user)).await?;
@@ -984,7 +984,7 @@ while let Some(msg) = consumer.next().await {
 
 ---
 
-### nexus-amqp
+### hiver-amqp
 
 **Spring Equivalent**: Spring AMQP (RabbitMQ)
 
@@ -1006,7 +1006,7 @@ RabbitMQ 集成，提供发布器、监听器容器、队列/交换器构建器�
 **Usage Example**:
 
 ```rust
-use nexus_amqp::{RabbitMqClient, Publisher, ListenerContainer};
+use hiver_amqp::{RabbitMqClient, Publisher, ListenerContainer};
 
 let client = RabbitMqClient::new("amqp://localhost:5672").await?;
 let publisher = Publisher::new(&client);
@@ -1020,7 +1020,7 @@ let listener = ListenerContainer::new(&client)
 
 ---
 
-### nexus-integration
+### hiver-integration
 
 **Spring Equivalent**: Spring Integration (Enterprise Integration Patterns)
 
@@ -1043,7 +1043,7 @@ content-based routers, filters, splitters, and aggregators for message orchestra
 **Usage Example**:
 
 ```rust
-use nexus_integration::{IntegrationFlow, Transformer, ContentBasedRouter};
+use hiver_integration::{IntegrationFlow, Transformer, ContentBasedRouter};
 
 let flow = IntegrationFlow::new("order-processing")
     .channel("input")
@@ -1058,7 +1058,7 @@ let flow = IntegrationFlow::new("order-processing")
 
 ## 7. Resilience & Observability / 弹性与可观测性
 
-### nexus-resilience
+### hiver-resilience
 
 **Spring Equivalent**: Resilience4j (Circuit Breaker, Retry, Rate Limiter)
 
@@ -1086,7 +1086,7 @@ retry with backoff, rate limiting (token bucket / sliding window), and service d
 **Usage Example**:
 
 ```rust
-use nexus_resilience::{CircuitBreaker, CircuitBreakerConfig, RateLimiter, RateLimiterConfig};
+use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig, RateLimiter, RateLimiterConfig};
 
 let breaker = CircuitBreaker::new(CircuitBreakerConfig::new()
     .failure_rate_threshold(50.0)
@@ -1102,7 +1102,7 @@ limiter.acquire().await?; // Acquires permit or waits
 
 ---
 
-### nexus-observability
+### hiver-observability
 
 **Spring Equivalent**: Spring Actuator + Micrometer Tracing
 
@@ -1130,7 +1130,7 @@ logging with configurable formats, rotation, and startup banner.
 **Usage Example**:
 
 ```rust
-use nexus_observability::{Tracer, Span, Logger, info, warn, error};
+use hiver_observability::{Tracer, Span, Logger, info, warn, error};
 
 let tracer = Tracer::new("my-service");
 let mut span = tracer.start_span("process_order");
@@ -1145,7 +1145,7 @@ error!(logger, "Payment failed"; "error" => err.to_string());
 
 ---
 
-### nexus-micrometer
+### hiver-micrometer
 
 **Spring Equivalent**: Micrometer (Prometheus, OpenTelemetry export)
 
@@ -1168,7 +1168,7 @@ tag-based organization, global registry, and Prometheus/OpenTelemetry export.
 **Usage Example**:
 
 ```rust
-use nexus_micrometer::{MetricRegistry, counter, timer};
+use hiver_micrometer::{MetricRegistry, counter, timer};
 
 let registry = MetricRegistry::new();
 let req_counter = registry.counter("http.requests.total").unwrap();
@@ -1180,7 +1180,7 @@ req_timer.record(Duration::from_millis(42));
 
 ---
 
-### nexus-actuator
+### hiver-actuator
 
 **Spring Equivalent**: Spring Boot Actuator
 
@@ -1204,7 +1204,7 @@ metrics, environment properties, bean listings, and request mappings.
 **Usage Example**:
 
 ```rust
-use nexus_actuator::Actuator;
+use hiver_actuator::Actuator;
 
 struct DbHealthIndicator { pool: PgPool }
 
@@ -1229,7 +1229,7 @@ Router::new().nest("/actuator", actuator.routes())
 
 ## 8. Cache & Configuration / 缓存与配置
 
-### nexus-cache
+### hiver-cache
 
 **Spring Equivalent**: Spring Cache (`@Cacheable`, `CacheManager`)
 
@@ -1252,7 +1252,7 @@ multi-operation `@Caching`, key generators, condition evaluation, and TTL suppor
 **Usage Example**:
 
 ```rust
-use nexus_cache::{Cacheable, CachePut, CacheEvict};
+use hiver_cache::{Cacheable, CachePut, CacheEvict};
 
 impl UserService {
     #[cacheable("users", key = "#id")]
@@ -1271,7 +1271,7 @@ impl UserService {
 
 ---
 
-### nexus-config
+### hiver-config
 
 **Spring Equivalent**: Spring Config / `@ConfigurationProperties`
 
@@ -1294,7 +1294,7 @@ type-safe binding, and builder-pattern configuration loading.
 **Usage Example**:
 
 ```rust
-use nexus_config::{Config, ConfigBuilder, Environment, Profile};
+use hiver_config::{Config, ConfigBuilder, Environment, Profile};
 
 let config = ConfigBuilder::new()
     .add_property_source("application.yml")
@@ -1308,7 +1308,7 @@ let port = config.get::<u16>("server.port")?;
 
 ---
 
-### nexus-starter
+### hiver-starter
 
 **Spring Equivalent**: Spring Boot Starter (auto-configuration)
 
@@ -1331,9 +1331,9 @@ bean loading, and `NexusApplication` entry point — the Spring Boot experience 
 **Usage Example**:
 
 ```rust
-use nexus_starter::NexusApplication;
+use hiver_starter::NexusApplication;
 
-#[nexus::main]
+#[hiver::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     NexusApplication::new()
         .scan_package("com.example")
@@ -1348,7 +1348,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## 9. Cloud & AI / 云与 AI
 
-### nexus-cloud
+### hiver-cloud
 
 **Spring Equivalent**: Spring Cloud (Service Discovery, Load Balancer, Gateway, Config Server)
 
@@ -1369,7 +1369,7 @@ balancing, API gateway, config server client, and circuit breaker integration.
 **Usage Example**:
 
 ```rust
-use nexus_cloud::{ServiceDiscovery, LoadBalancer, FeignClient};
+use hiver_cloud::{ServiceDiscovery, LoadBalancer, FeignClient};
 
 let discovery = ServiceDiscovery::new("consul://localhost:8500");
 discovery.register("my-service", "192.168.1.10:8080").await?;
@@ -1383,7 +1383,7 @@ let orders: Vec<Order> = client.get("/orders").await?;
 
 ---
 
-### nexus-ai
+### hiver-ai
 
 **Spring Equivalent**: Spring AI
 
@@ -1407,7 +1407,7 @@ embedding models, vector stores, prompt templates, function calling, and tool re
 **Usage Example**:
 
 ```rust
-use nexus_ai::{ChatClient, OpenAiChatModel, PromptTemplate};
+use hiver_ai::{ChatClient, OpenAiChatModel, PromptTemplate};
 
 let model = OpenAiChatModel::new()
     .api_key(env::var("OPENAI_API_KEY")?)
@@ -1424,7 +1424,7 @@ println!("{}", response.content());
 
 ---
 
-### nexus-agent
+### hiver-agent
 
 **Spring Equivalent**: Spring AI Agent
 
@@ -1446,7 +1446,7 @@ AI 代理框架，提供 ReAct 循环、代理链、Map-Reduce 代理和路由�
 **Usage Example**:
 
 ```rust
-use nexus_agent::{ReActAgent, AgentChain, RouterAgent};
+use hiver_agent::{ReActAgent, AgentChain, RouterAgent};
 
 let researcher = ReActAgent::new("Research the topic: {topic}", search_tool, max_steps: 5);
 let writer = ReActAgent::new("Write a summary: {findings}", write_tool, max_steps: 3);
@@ -1457,7 +1457,7 @@ let result = chain.run("Rust async patterns").await?;
 
 ---
 
-### nexus-web3
+### hiver-web3
 
 **Spring Equivalent**: Web3j (unique to Nexus)
 
@@ -1479,7 +1479,7 @@ Web3 和区块链集成，提供多链配置、智能合约交互、钱包管理
 **Usage Example**:
 
 ```rust
-use nexus_web3::{ChainConfig, Contract, Wallet, RpcClient};
+use hiver_web3::{ChainConfig, Contract, Wallet, RpcClient};
 
 let chain = ChainConfig::ethereum_mainnet();
 let wallet = Wallet::from_private_key("0x...")?;
@@ -1498,7 +1498,7 @@ let receipt = wallet.send_transaction(tx, &rpc).await?;
 
 ---
 
-### nexus-vault
+### hiver-vault
 
 **Spring Equivalent**: Spring Vault (HashiCorp Vault)
 
@@ -1519,7 +1519,7 @@ HashiCorp Vault 集成，用于密钥管理，提供 KV 引擎、PKI 证书签�
 **Usage Example**:
 
 ```rust
-use nexus_vault::VaultClient;
+use hiver_vault::VaultClient;
 
 let vault = VaultClient::new("https://vault.internal:8200")
     .token("s.vault-token")
@@ -1537,7 +1537,7 @@ let decrypted = vault.transit().decrypt("my-key", &encrypted).await?;
 
 ## 10. Enterprise / 企业级
 
-### nexus-batch
+### hiver-batch
 
 **Spring Equivalent**: Spring Batch
 
@@ -1561,7 +1561,7 @@ let decrypted = vault.transit().decrypt("my-key", &encrypted).await?;
 **Usage Example**:
 
 ```rust
-use nexus_batch::{Job, Step, JobLauncher, ItemReader, ItemProcessor, ItemWriter};
+use hiver_batch::{Job, Step, JobLauncher, ItemReader, ItemProcessor, ItemWriter};
 
 let job = Job::new("import-users")
     .step(Step::new("read-csv")
@@ -1576,7 +1576,7 @@ let execution = JobLauncher::new(repository).run(job).await?;
 
 ---
 
-### nexus-state-machine
+### hiver-state-machine
 
 **Spring Equivalent**: Spring State Machine
 
@@ -1598,7 +1598,7 @@ and state data for modeling business workflows.
 **Usage Example**:
 
 ```rust
-use nexus_state_machine::{StateMachine, State, Transition};
+use hiver_state_machine::{StateMachine, State, Transition};
 
 #[derive(Clone, PartialEq)]
 enum OrderState { Created, Paid, Shipped, Delivered }
@@ -1614,7 +1614,7 @@ assert_eq!(sm.state(), &OrderState::Paid);
 
 ---
 
-### nexus-modulith
+### hiver-modulith
 
 **Spring Equivalent**: Spring Modulith
 
@@ -1635,7 +1635,7 @@ event publishing between modules, and module verification at compile time.
 **Usage Example**:
 
 ```rust
-use nexus_modulith::{Module, ModuleRegistry, DomainEvent};
+use hiver_modulith::{Module, ModuleRegistry, DomainEvent};
 
 let registry = ModuleRegistry::new()
     .module(Module::new("orders").depends_on("inventory", "billing"))
@@ -1647,7 +1647,7 @@ verify_modules(&registry)?; // Fails at build time if circular deps exist
 
 ---
 
-### nexus-validation
+### hiver-validation
 
 **Spring Equivalent**: Spring Validation (Bean Validation / Jakarta Validation)
 
@@ -1675,8 +1675,8 @@ and group validation.
 **Usage Example**:
 
 ```rust
-use nexus_validation::{Validate, Valid, ValidationError};
-use nexus_validation_annotations::{NotNull, Email, Size, Min};
+use hiver_validation::{Validate, Valid, ValidationError};
+use hiver_validation_annotations::{NotNull, Email, Size, Min};
 
 #[derive(Validate)]
 struct CreateUserDto {
@@ -1701,7 +1701,7 @@ if !result.is_valid() {
 
 ---
 
-### nexus-lombok
+### hiver-lombok
 
 **Spring Equivalent**: Project Lombok (Boilerplate reduction)
 
@@ -1725,7 +1725,7 @@ and data trait implementations to reduce boilerplate code.
 **Usage Example**:
 
 ```rust
-use nexus_lombok::{Getter, Setter, Builder, Data};
+use hiver_lombok::{Getter, Setter, Builder, Data};
 
 #[derive(Data, Builder)]
 pub struct User {
@@ -1749,10 +1749,10 @@ user.set_name("Bob".into()); // Generated setter
 ### Quick Start: REST API / REST API 快速开始
 
 ```rust
-use nexus_macros::{rest_controller, get, post, autowired, service};
-use nexus_extractors::{Path, Json};
-use nexus_http::{Server, StatusCode};
-use nexus_router::Router;
+use hiver_macros::{rest_controller, get, post, autowired, service};
+use hiver_extractors::{Path, Json};
+use hiver_http::{Server, StatusCode};
+use hiver_router::Router;
 
 #[service]
 pub struct UserService;
@@ -1773,7 +1773,7 @@ pub struct UserController {
     }
 }
 
-#[nexus::main]
+#[hiver::main]
 async fn main() {
     Server::bind("0.0.0.0:8080").run(Router::new()).await.unwrap();
 }
@@ -1782,9 +1782,9 @@ async fn main() {
 ### Pattern: Database + Transaction / 数据库 + 事务模式
 
 ```rust
-use nexus_macros::{service, transactional};
-use nexus_data_rdbc::{DatabaseClient, RowMapper};
-use nexus_data_orm::{Model, ActiveRecord};
+use hiver_macros::{service, transactional};
+use hiver_data_rdbc::{DatabaseClient, RowMapper};
+use hiver_data_orm::{Model, ActiveRecord};
 
 #[derive(Model)]
 #[model(table = "orders")]
@@ -1810,7 +1810,7 @@ impl OrderService {
 ### Pattern: Event-Driven Architecture / 事件驱动架构模式
 
 ```rust
-use nexus_events::{ApplicationEvent, ApplicationEventPublisher, EventListener};
+use hiver_events::{ApplicationEvent, ApplicationEventPublisher, EventListener};
 
 #[derive(Clone, Debug)]
 struct OrderPlacedEvent { order_id: i64, total: f64 }
@@ -1844,7 +1844,7 @@ async fn update_inventory(event: OrderPlacedEvent) {
 ### Pattern: Resilient External Calls / 弹性外部调用模式
 
 ```rust
-use nexus_resilience::{CircuitBreaker, CircuitBreakerConfig, RateLimiter, RateLimiterConfig};
+use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig, RateLimiter, RateLimiterConfig};
 
 fn payment_client() -> CircuitBreaker<PaymentService> {
     CircuitBreaker::new(CircuitBreakerConfig::new()
@@ -1869,9 +1869,9 @@ impl OrderService {
 ### Pattern: Observability / 可观测性模式
 
 ```rust
-use nexus_observability::{Tracer, Span, Logger, info};
-use nexus_micrometer::{MetricRegistry, counter, timer};
-use nexus_actuator::Actuator;
+use hiver_observability::{Tracer, Span, Logger, info};
+use hiver_micrometer::{MetricRegistry, counter, timer};
+use hiver_actuator::Actuator;
 
 fn setup_observability() -> (Tracer, Logger, MetricRegistry) {
     let tracer = Tracer::new("order-service");
@@ -1891,8 +1891,8 @@ fn setup_observability() -> (Tracer, Logger, MetricRegistry) {
 ### Pattern: Caching Strategy / 缓存策略模式
 
 ```rust
-use nexus_cache::{Cacheable, CachePut, CacheEvict};
-use nexus_data_redis::{RedisTemplate, RedisCacheManager};
+use hiver_cache::{Cacheable, CachePut, CacheEvict};
+use hiver_data_redis::{RedisTemplate, RedisCacheManager};
 
 impl ProductService {
     #[cacheable("products", key = "#id")]
@@ -1916,11 +1916,11 @@ impl ProductService {
 ### Pattern: Security Setup / 安全配置模式
 
 ```rust
-use nexus_security::{
+use hiver_security::{
     AuthenticationManager, JwtTokenProvider, BcryptPasswordEncoder,
     SecurityContext, PreAuthorize, Secured,
 };
-use nexus_session::{SessionConfig, RedisSessionStore};
+use hiver_session::{SessionConfig, RedisSessionStore};
 
 fn security_config() -> AuthenticationManager {
     let jwt = JwtTokenProvider::new(env::var("JWT_SECRET").unwrap())
@@ -1948,7 +1948,7 @@ impl AdminController {
 ### Pattern: Batch Processing / 批处理模式
 
 ```rust
-use nexus_batch::{Job, Step, JobLauncher};
+use hiver_batch::{Job, Step, JobLauncher};
 
 fn import_job() -> Job {
     Job::new("daily-data-import")
@@ -1964,7 +1964,7 @@ fn import_job() -> Job {
         .build()
 }
 
-#[nexus::scheduled(cron = "0 0 2 * * *")] // Daily at 2 AM
+#[hiver::scheduled(cron = "0 0 2 * * *")] // Daily at 2 AM
 async fn run_import() {
     JobLauncher::new(job_repo).run(import_job()).await;
 }
@@ -1976,50 +1976,50 @@ async fn run_import() {
 
 | Nexus Crate | Spring Module | Key Concept |
 |-------------|---------------|-------------|
-| `nexus-runtime` | Core Runtime | io-uring, thread-per-core |
-| `nexus-core` | Spring Core | IoC Container, BeanFactory |
-| `nexus-macros` | Stereotype Annotations | `@Service`, `@Autowired`, `@Transactional` |
-| `nexus-http` | Spring Web | Request/Response, Server |
-| `nexus-router` | Spring WebMVC | `@GetMapping`, path parameters |
-| `nexus-extractors` | `@PathVariable`, `@RequestBody` | Type-safe extraction |
-| `nexus-middleware` | Filter, Interceptor | CORS, JWT, compression |
-| `nexus-response` | ResponseEntity | JSON, HTML, pagination |
-| `nexus-openapi` | SpringDoc | OpenAPI 3.0, Swagger UI |
-| `nexus-data-commons` | Spring Data Commons | Repository traits, Page, Sort |
-| `nexus-data-rdbc` | Spring R2DBC | Reactive DB access |
-| `nexus-data-orm` | Spring Data JPA | Active Record, QueryBuilder |
-| `nexus-data-redis` | Spring Data Redis | `RedisTemplate`, locks |
-| `nexus-data-mongodb` | Spring Data MongoDB | `MongoTemplate`, aggregation |
-| `nexus-security` | Spring Security | Auth, JWT, RBAC, OAuth2 |
-| `nexus-session` | Spring Session | Distributed sessions |
-| `nexus-tx` | Spring Transaction | `@Transactional`, propagation |
-| `nexus-aop` | Spring AOP | Aspects, pointcuts |
-| `nexus-events` | Spring Events | `@EventListener`, publish/subscribe |
-| `nexus-kafka` | Spring Kafka | Producer/consumer, groups |
-| `nexus-amqp` | Spring AMQP | RabbitMQ, exchanges |
-| `nexus-integration` | Spring Integration | EIP patterns |
-| `nexus-resilience` | Resilience4j | Circuit breaker, rate limiter |
-| `nexus-observability` | Micrometer Tracing | Distributed tracing, logging |
-| `nexus-micrometer` | Micrometer | Counter, Gauge, Timer |
-| `nexus-actuator` | Spring Boot Actuator | Health, info, metrics |
-| `nexus-cache` | Spring Cache | `@Cacheable`, `@CacheEvict` |
-| `nexus-config` | Spring Config | Profiles, property sources |
-| `nexus-starter` | Spring Boot Starter | Auto-configuration |
-| `nexus-cloud` | Spring Cloud | Discovery, gateway, Feign |
-| `nexus-ai` | Spring AI | OpenAI, Anthropic, embeddings |
-| `nexus-agent` | Spring AI Agent | ReAct, agent chains |
-| `nexus-web3` | Web3j | Blockchain, smart contracts |
-| `nexus-vault` | Spring Vault | Secret management |
-| `nexus-batch` | Spring Batch | Jobs, steps, ETL |
-| `nexus-state-machine` | Spring State Machine | FSM, guards, actions |
-| `nexus-modulith` | Spring Modulith | Module boundaries |
-| `nexus-validation` | Spring Validation | Bean Validation |
-| `nexus-lombok` | Project Lombok | Boilerplate reduction |
-| `nexus-flyway` | Flyway | Database migrations |
-| `nexus-test` | Spring Test | Test containers, mocks |
-| `nexus-shell` | Spring Shell | CLI / REPL |
-| `nexus-graphql` | Spring GraphQL | Resolvers, DataLoader |
-| `nexus-grpc` | gRPC | Client/server, interceptors |
+| `hiver-runtime` | Core Runtime | io-uring, thread-per-core |
+| `hiver-core` | Spring Core | IoC Container, BeanFactory |
+| `hiver-macros` | Stereotype Annotations | `@Service`, `@Autowired`, `@Transactional` |
+| `hiver-http` | Spring Web | Request/Response, Server |
+| `hiver-router` | Spring WebMVC | `@GetMapping`, path parameters |
+| `hiver-extractors` | `@PathVariable`, `@RequestBody` | Type-safe extraction |
+| `hiver-middleware` | Filter, Interceptor | CORS, JWT, compression |
+| `hiver-response` | ResponseEntity | JSON, HTML, pagination |
+| `hiver-openapi` | SpringDoc | OpenAPI 3.0, Swagger UI |
+| `hiver-data-commons` | Spring Data Commons | Repository traits, Page, Sort |
+| `hiver-data-rdbc` | Spring R2DBC | Reactive DB access |
+| `hiver-data-orm` | Spring Data JPA | Active Record, QueryBuilder |
+| `hiver-data-redis` | Spring Data Redis | `RedisTemplate`, locks |
+| `hiver-data-mongodb` | Spring Data MongoDB | `MongoTemplate`, aggregation |
+| `hiver-security` | Spring Security | Auth, JWT, RBAC, OAuth2 |
+| `hiver-session` | Spring Session | Distributed sessions |
+| `hiver-tx` | Spring Transaction | `@Transactional`, propagation |
+| `hiver-aop` | Spring AOP | Aspects, pointcuts |
+| `hiver-events` | Spring Events | `@EventListener`, publish/subscribe |
+| `hiver-kafka` | Spring Kafka | Producer/consumer, groups |
+| `hiver-amqp` | Spring AMQP | RabbitMQ, exchanges |
+| `hiver-integration` | Spring Integration | EIP patterns |
+| `hiver-resilience` | Resilience4j | Circuit breaker, rate limiter |
+| `hiver-observability` | Micrometer Tracing | Distributed tracing, logging |
+| `hiver-micrometer` | Micrometer | Counter, Gauge, Timer |
+| `hiver-actuator` | Spring Boot Actuator | Health, info, metrics |
+| `hiver-cache` | Spring Cache | `@Cacheable`, `@CacheEvict` |
+| `hiver-config` | Spring Config | Profiles, property sources |
+| `hiver-starter` | Spring Boot Starter | Auto-configuration |
+| `hiver-cloud` | Spring Cloud | Discovery, gateway, Feign |
+| `hiver-ai` | Spring AI | OpenAI, Anthropic, embeddings |
+| `hiver-agent` | Spring AI Agent | ReAct, agent chains |
+| `hiver-web3` | Web3j | Blockchain, smart contracts |
+| `hiver-vault` | Spring Vault | Secret management |
+| `hiver-batch` | Spring Batch | Jobs, steps, ETL |
+| `hiver-state-machine` | Spring State Machine | FSM, guards, actions |
+| `hiver-modulith` | Spring Modulith | Module boundaries |
+| `hiver-validation` | Spring Validation | Bean Validation |
+| `hiver-lombok` | Project Lombok | Boilerplate reduction |
+| `hiver-flyway` | Flyway | Database migrations |
+| `hiver-test` | Spring Test | Test containers, mocks |
+| `hiver-shell` | Spring Shell | CLI / REPL |
+| `hiver-graphql` | Spring GraphQL | Resolvers, DataLoader |
+| `hiver-grpc` | gRPC | Client/server, interceptors |
 
 ---
 

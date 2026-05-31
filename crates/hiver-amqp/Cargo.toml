@@ -1,0 +1,69 @@
+[package]
+name = "hiver-amqp"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+AMQP/RabbitMQ support for Hiver Framework.
+Nexus框架的AMQP/RabbitMQ支持。
+Equivalent to: Spring AMQP, Spring RabbitMQ
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["lapin"]
+
+# Lapin AMQP client (enabled by default)
+lapin = ["dep:lapin"]
+
+# Dead letter exchange support
+dead-letter = []
+
+# TLS support
+tls = ["lapin?/native-tls"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Async runtime / 异步运行时
+hiver-runtime = { path = "../hiver-runtime" }
+tokio = { workspace = true, features = ["sync", "rt-multi-thread"] }
+
+# Serialization / 序列化
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async traits / 异步trait
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# AMQP client / AMQP客户端
+lapin = { version = "2.5", optional = true }
+
+# UUID for correlation IDs / 关联 ID 用 UUID
+uuid = { version = "1", features = ["v4"] }
+
+# Logging / 日志
+tracing = { workspace = true }
+
+# Utilities / 工具
+once_cell = { workspace = true }
+urlencoding = "2"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -1,0 +1,35 @@
+[package]
+name = "hiver-websocket-stomp"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+hiver-http = { path = "../hiver-http" }
+hiver-router = { path = "../hiver-router" }
+hiver-core = { path = "../hiver-core" }
+
+tokio = { workspace = true, features = ["full"] }
+tokio-tungstenite = { workspace = true }
+futures-util = { workspace = true }
+bytes = { workspace = true }
+uuid = { workspace = true }
+async-trait = { workspace = true }
+
+tracing = { workspace = true }
+thiserror = { workspace = true }
+
+# STOMP protocol
+base64 = { workspace = true }
+md-5 = { workspace = true }
+
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tokio-test = { workspace = true }

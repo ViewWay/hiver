@@ -27,7 +27,7 @@ Security features:
 ### Basic Authentication / 基本认证
 
 ```rust
-use nexus_security::{Authentication, AuthenticationManager};
+use hiver_security::{Authentication, AuthenticationManager};
 
 let auth_manager = AuthenticationManager::new();
 let auth = auth_manager.authenticate(username, password).await?;
@@ -36,7 +36,7 @@ let auth = auth_manager.authenticate(username, password).await?;
 ### JWT Authentication / JWT 认证
 
 ```rust
-use nexus_security::jwt::{JwtProvider, JwtConfig, Claims};
+use hiver_security::jwt::{JwtProvider, JwtConfig, Claims};
 use std::time::Duration;
 
 // Configure JWT / 配置 JWT
@@ -58,8 +58,8 @@ assert_eq!(verified.sub(), "user123");
 ### JWT Middleware / JWT 中间件
 
 ```rust
-use nexus_middleware::Middleware;
-use nexus_security::jwt::JwtProvider;
+use hiver_middleware::Middleware;
+use hiver_security::jwt::JwtProvider;
 
 struct JwtAuth {
     provider: JwtProvider,
@@ -97,7 +97,7 @@ impl Middleware for JwtAuth {
 ### Method-Level Security / 方法级安全
 
 ```rust
-use nexus_macros::pre_authorize;
+use hiver_macros::pre_authorize;
 
 #[pre_authorize("hasRole('ADMIN')")]
 async fn delete_user(id: u64) -> Result<(), Error> {
@@ -108,7 +108,7 @@ async fn delete_user(id: u64) -> Result<(), Error> {
 ### Role-Based Security / 基于角色的安全
 
 ```rust
-use nexus_macros::secured;
+use hiver_macros::secured;
 
 #[secured("ROLE_USER")]
 async fn get_profile() -> Result<Profile, Error> {
@@ -121,7 +121,7 @@ async fn get_profile() -> Result<Profile, Error> {
 ## Password Encoding / 密码编码
 
 ```rust
-use nexus_security::{PasswordEncoder, BcryptPasswordEncoder};
+use hiver_security::{PasswordEncoder, BcryptPasswordEncoder};
 
 // Default bcrypt encoder / 默认 bcrypt 编码器
 let encoder = PasswordEncoder::bcrypt();
@@ -142,7 +142,7 @@ assert!(is_valid);
 ## Input Validation / 输入验证
 
 ```rust
-use nexus_validation_annotations::{NotNull, Size, Email, Pattern};
+use hiver_validation_annotations::{NotNull, Size, Email, Pattern};
 
 struct CreateUserRequest {
     #[not_null]
@@ -163,7 +163,7 @@ struct CreateUserRequest {
 ## Security Headers / 安全头
 
 ```rust
-use nexus_middleware::SecurityHeaders;
+use hiver_middleware::SecurityHeaders;
 
 let app = Router::new()
     .middleware(Arc::new(SecurityHeaders::default()
@@ -179,7 +179,7 @@ let app = Router::new()
 ## CORS Configuration / CORS 配置
 
 ```rust
-use nexus_middleware::Cors;
+use hiver_middleware::Cors;
 
 let cors = Cors::new()
     .allow_origin("https://example.com")

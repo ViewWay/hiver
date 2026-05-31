@@ -1,0 +1,63 @@
+[package]
+name = "hiver-openapi"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+OpenAPI/Swagger documentation support for Hiver Framework.
+Nexus框架的OpenAPI/Swagger文档支持。
+Equivalent to: SpringDoc OpenAPI (Swagger 3), @Operation, @ApiResponse
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["swagger", "json"]
+swagger = ["utoipa-swagger-ui"]
+json = ["utoipa"]
+http = ["hiver-http"]
+actix = ["utoipa-swagger-ui/actix-web", "utoipa/actix_extras"]
+axum = ["utoipa-swagger-ui/axum", "utoipa/axum_extras"]
+rocket = []
+
+[dependencies]
+# HTTP types / HTTP类型
+http = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# OpenAPI/Swagger / OpenAPI/Swagger
+# Equivalent to: SpringDoc OpenAPI (Swagger 3)
+utoipa = { workspace = true, optional = true }
+utoipa-swagger-ui = { workspace = true, optional = true }
+
+# Core types / 核心类型
+hiver-http = { path = "../hiver-http", optional = true }
+hiver-core = { path = "../hiver-core" }
+
+# YAML support / YAML支持
+serde_yaml = { workspace = true }
+
+# Error handling / 错误处理
+thiserror = { workspace = true }
+
+# Time / 时间
+chrono = { workspace = true }
+
+# UUID / UUID
+uuid = { workspace = true, features = ["serde", "v4"] }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

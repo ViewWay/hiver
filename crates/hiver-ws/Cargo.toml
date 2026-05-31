@@ -1,0 +1,43 @@
+[package]
+name = "hiver-ws"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """
+Spring Web Services — SOAP/WSDL contract-first web services.
+Nexus框架的SOAP/WSDL契约优先Web服务。
+Equivalent to: Spring Web Services
+"""
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = "./README.md"
+keywords = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Async
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+async-trait = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# WS-Security
+base64 = "0.22"
+hmac = "0.12"
+sha2 = "0.10"
+chrono = { version = "0.4", features = ["serde"] }

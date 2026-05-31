@@ -7,24 +7,24 @@
 
 | # | Feature / 功能 | Spring Equivalent | Est. Time / 预计时间 | Crate / Crate |
 |---|---------------|-------------------|-------------------|---------------|
-| 1 | **nexus-data-rdbc** | Spring Data R2DBC | 2 months | nexus-data-rdbc |
-| 2 | **nexus-data-commons** | Spring Data Commons | 1.5 months | nexus-data-commons |
-| 3 | **nexus-autoconfigure** | @EnableAutoConfiguration | 1 month | nexus-autoconfigure |
-| 4 | **@Autowired** | @Autowired | 1 month | nexus-core (enhance) |
-| 5 | **nexus-data-orm** | Spring Data JPA | 1.5 months | nexus-data-orm |
-| 6 | **@Valid** | @Valid, @NotNull | 0.5 months | nexus-validation |
-| 7 | **@Aspect** | @Aspect | 1 month | nexus-aop |
-| 8 | **@Query** | @Query | (included in data) | nexus-data-rdbc |
-| 9 | **@EventListener** | @EventListener | 0.5 months | nexus-event |
-| 10 | **@RefreshScope** | @RefreshScope | 0.5 months | nexus-config |
-| 11 | **nexus-starter** | spring-boot-starter-* | 1.5 months | nexus-starter-* |
-| 12 | **nexus-data-migrations** | Flyway/Liquibase | 1 month | nexus-data-migrations |
-| 13 | **@Transactional testing** | @Transactional | 0.5 months | nexus-tx |
-| 14 | **@NexusTest** | @SpringBootTest | 1 month | nexus-test |
-| 15 | **Pagination support** | Page, Pageable | (included in data) | nexus-data-commons |
-| 16 | **Method name derivation** | findByUsernameAndEmail | (included in data) | nexus-data-commons |
-| 17 | **Repository abstraction** | Repository<T, ID> | (included in data) | nexus-data-commons |
-| 18 | **Entity mapping** | @Entity, @Table | (included in orm) | nexus-data-orm |
+| 1 | **hiver-data-rdbc** | Spring Data R2DBC | 2 months | hiver-data-rdbc |
+| 2 | **hiver-data-commons** | Spring Data Commons | 1.5 months | hiver-data-commons |
+| 3 | **hiver-autoconfigure** | @EnableAutoConfiguration | 1 month | hiver-autoconfigure |
+| 4 | **@Autowired** | @Autowired | 1 month | hiver-core (enhance) |
+| 5 | **hiver-data-orm** | Spring Data JPA | 1.5 months | hiver-data-orm |
+| 6 | **@Valid** | @Valid, @NotNull | 0.5 months | hiver-validation |
+| 7 | **@Aspect** | @Aspect | 1 month | hiver-aop |
+| 8 | **@Query** | @Query | (included in data) | hiver-data-rdbc |
+| 9 | **@EventListener** | @EventListener | 0.5 months | hiver-event |
+| 10 | **@RefreshScope** | @RefreshScope | 0.5 months | hiver-config |
+| 11 | **hiver-starter** | spring-boot-starter-* | 1.5 months | hiver-starter-* |
+| 12 | **hiver-data-migrations** | Flyway/Liquibase | 1 month | hiver-data-migrations |
+| 13 | **@Transactional testing** | @Transactional | 0.5 months | hiver-tx |
+| 14 | **@NexusTest** | @SpringBootTest | 1 month | hiver-test |
+| 15 | **Pagination support** | Page, Pageable | (included in data) | hiver-data-commons |
+| 16 | **Method name derivation** | findByUsernameAndEmail | (included in data) | hiver-data-commons |
+| 17 | **Repository abstraction** | Repository<T, ID> | (included in data) | hiver-data-commons |
+| 18 | **Entity mapping** | @Entity, @Table | (included in orm) | hiver-data-orm |
 
 **Subtotal / 小计**: 18 features, 14.5 months / 18 个功能，14.5 个月
 
@@ -32,16 +32,16 @@
 
 | # | Feature / 功能 | Spring Equivalent | Est. Time / 预计时间 | Crate / Crate |
 |---|---------------|-------------------|-------------------|---------------|
-| 19 | **@PreAuthorize** | @PreAuthorize | 1.5 months | nexus-security |
-| 20 | **OAuth2/OIDC** | OAuth2 Client | 2 months | nexus-oauth2 |
-| 21 | **@Async** | @Async | 0.5 months | nexus-async |
-| 22 | **nexus-amqp** | Spring AMQP | 1 month | nexus-amqp |
-| 23 | **nexus-kafka** | Spring Kafka | 1 month | nexus-kafka |
-| 24 | **@Cacheable** | @Cacheable | 0.5 months | nexus-cache-annotations |
-| 25 | **nexus-data-redis** | Spring Data Redis | 1 month | nexus-data-redis |
-| 26 | **nexus-openapi** | Springdoc/OpenAPI | 1 month | nexus-openapi |
-| 27 | **@MockBean** | @MockBean | 0.5 months | nexus-test |
-| 28 | **@TestConfiguration** | @TestConfiguration | 0.5 months | nexus-test |
+| 19 | **@PreAuthorize** | @PreAuthorize | 1.5 months | hiver-security |
+| 20 | **OAuth2/OIDC** | OAuth2 Client | 2 months | hiver-oauth2 |
+| 21 | **@Async** | @Async | 0.5 months | hiver-async |
+| 22 | **hiver-amqp** | Spring AMQP | 1 month | hiver-amqp |
+| 23 | **hiver-kafka** | Spring Kafka | 1 month | hiver-kafka |
+| 24 | **@Cacheable** | @Cacheable | 0.5 months | hiver-cache-annotations |
+| 25 | **hiver-data-redis** | Spring Data Redis | 1 month | hiver-data-redis |
+| 26 | **hiver-openapi** | Springdoc/OpenAPI | 1 month | hiver-openapi |
+| 27 | **@MockBean** | @MockBean | 0.5 months | hiver-test |
+| 28 | **@TestConfiguration** | @TestConfiguration | 0.5 months | hiver-test |
 
 **Subtotal / 小计**: 10 features, 9.5 months / 10 个功能，9.5 个月
 
@@ -49,16 +49,16 @@
 
 | # | Feature / 功能 | Spring Equivalent | Est. Time / 预计时间 | Crate / Crate |
 |---|---------------|-------------------|-------------------|---------------|
-| 29 | **nexus-data-mongodb** | Spring Data MongoDB | 1 month | nexus-data-mongodb |
-| 30 | **nexus-data-rest** | Spring Data REST | 1 month | nexus-data-rest |
-| 31 | **nexus-data-keyvalue** | Spring Data KeyValue | 0.5 months | nexus-data-keyvalue |
-| 32 | **@Transactional (JTA)** | @Transactional (distributed) | 1 month | nexus-tx |
-| 33 | **nexus-batch** | Spring Batch | 2 months | nexus-batch |
-| 34 | **nexus-integration** | Spring Integration | 2 months | nexus-integration |
-| 35 | **SpEL support** | SpEL expressions | 1 month | nexus-spel |
-| 36 | **@Retry** | @Retryable | (exists in resilience) | nexus-resilience |
-| 37 | **@CircuitBreaker** | @CircuitBreaker | (exists in resilience) | nexus-resilience |
-| 38 | **@RateLimiter** | @RateLimiter | (exists in resilience) | nexus-resilience |
+| 29 | **hiver-data-mongodb** | Spring Data MongoDB | 1 month | hiver-data-mongodb |
+| 30 | **hiver-data-rest** | Spring Data REST | 1 month | hiver-data-rest |
+| 31 | **hiver-data-keyvalue** | Spring Data KeyValue | 0.5 months | hiver-data-keyvalue |
+| 32 | **@Transactional (JTA)** | @Transactional (distributed) | 1 month | hiver-tx |
+| 33 | **hiver-batch** | Spring Batch | 2 months | hiver-batch |
+| 34 | **hiver-integration** | Spring Integration | 2 months | hiver-integration |
+| 35 | **SpEL support** | SpEL expressions | 1 month | hiver-spel |
+| 36 | **@Retry** | @Retryable | (exists in resilience) | hiver-resilience |
+| 37 | **@CircuitBreaker** | @CircuitBreaker | (exists in resilience) | hiver-resilience |
+| 38 | **@RateLimiter** | @RateLimiter | (exists in resilience) | hiver-resilience |
 
 **Subtotal / 小计**: 10 features, 10.5 months / 10 个功能，10.5 个月
 
@@ -66,16 +66,16 @@
 
 | # | Feature / 功能 | Spring Equivalent | Est. Time / 预计时间 | Crate / Crate |
 |---|---------------|-------------------|-------------------|---------------|
-| 39 | **nexus-grpc** | Spring gRPC | 1.5 months | nexus-grpc |
-| 40 | **nexus-graphql** | Spring GraphQL | 1.5 months | nexus-graphql |
-| 41 | **nexus-websocket** | WebSocket (STOMP) | 1 month | nexus-websocket |
-| 42 | **SSE support** | SseEmitter | 0.5 months | nexus-sse |
-| 43 | **nexus-ldap** | Spring LDAP | 1 month | nexus-ldap |
-| 44 | **ACL** | Spring Security ACL | 1.5 months | nexus-acl |
-| 45 | **nexus-mail** | Spring Mail | 0.5 months | nexus-mail |
-| 46 | **nexus-state-machine** | Spring State Machine | 1 month | nexus-state-machine |
-| 47 | **GraalVM native** | Spring Native | 2 months | nexus-native |
-| 48 | **nexus-session** | Spring Session | 1 month | nexus-session |
+| 39 | **hiver-grpc** | Spring gRPC | 1.5 months | hiver-grpc |
+| 40 | **hiver-graphql** | Spring GraphQL | 1.5 months | hiver-graphql |
+| 41 | **hiver-websocket** | WebSocket (STOMP) | 1 month | hiver-websocket |
+| 42 | **SSE support** | SseEmitter | 0.5 months | hiver-sse |
+| 43 | **hiver-ldap** | Spring LDAP | 1 month | hiver-ldap |
+| 44 | **ACL** | Spring Security ACL | 1.5 months | hiver-acl |
+| 45 | **hiver-mail** | Spring Mail | 0.5 months | hiver-mail |
+| 46 | **hiver-state-machine** | Spring State Machine | 1 month | hiver-state-machine |
+| 47 | **GraalVM native** | Spring Native | 2 months | hiver-native |
+| 48 | **hiver-session** | Spring Session | 1 month | hiver-session |
 
 **Subtotal / 小计**: 10 features, 12.5 months / 10 个功能，12.5 个月
 
@@ -108,7 +108,7 @@
 
 ### Week 1-2: Foundation / 基础
 
-- [ ] Create `nexus-data-commons` crate
+- [ ] Create `hiver-data-commons` crate
   - [ ] Repository<T, ID> trait
   - [ ] CrudRepository<T, ID> trait
   - [ ] PagingAndSortingRepository<T, ID> trait
@@ -118,14 +118,14 @@
   - [ ] Method name parser
 
 ```bash
-mkdir -p crates/nexus-data-commons/src
-cd crates/nexus-data-commons
+mkdir -p crates/hiver-data-commons/src
+cd crates/hiver-data-commons
 cargo init --lib
 ```
 
 ### Week 3-4: R2DBC Basics / R2DBC 基础
 
-- [ ] Create `nexus-data-rdbc` crate
+- [ ] Create `hiver-data-rdbc` crate
   - [ ] R2dbcTemplate struct
   - [ ] query() method
   - [ ] update() method
@@ -134,8 +134,8 @@ cargo init --lib
   - [ ] Integration tests
 
 ```bash
-mkdir -p crates/nexus-data-rdbc/src
-cd crates/nexus-data-rdbc
+mkdir -p crates/hiver-data-rdbc/src
+cd crates/hiver-data-rdbc
 cargo init --lib
 ```
 
@@ -149,7 +149,7 @@ cargo init --lib
 
 ```rust
 #[derive(RdbcRepository)]
-#[nexus_data(schema = "public")]
+#[hiver_data(schema = "public")]
 pub trait UserRepository: Repository<User, i32> {
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
 }
@@ -157,7 +157,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Week 9-12: ORM Integration / ORM 集成
 
-- [ ] Create `nexus-data-orm` crate
+- [ ] Create `hiver-data-orm` crate
   - [ ] SeaORM integration
   - [ ] Diesel integration
   - [ ] SQLx integration
@@ -165,7 +165,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Week 13-16: Auto-configuration / 自动配置
 
-- [ ] Create `nexus-autoconfigure` crate
+- [ ] Create `hiver-autoconfigure` crate
   - [ ] @EnableAutoConfiguration macro
   - [ ] Configuration property binding
   - [ ] Conditional bean registration
@@ -173,7 +173,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Week 17-20: Dependency Injection / 依赖注入
 
-- [ ] Enhance nexus-core
+- [ ] Enhance hiver-core
   - [ ] @Autowired field injection
   - [ ] @Autowired constructor injection
   - [ ] @Autowired setter injection
@@ -181,14 +181,14 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Week 21-22: Validation / 验证
 
-- [ ] Enhance nexus-validation
+- [ ] Enhance hiver-validation
   - [ ] @Valid parameter extraction
   - [ ] @Validate derive macro
   - [ ] Built-in validators
 
 ### Week 23-24: AOP / 面向切面编程
 
-- [ ] Create `nexus-aop` crate
+- [ ] Create `hiver-aop` crate
   - [ ] @Aspect derive macro
   - [ ] Pointcut expressions
   - [ ] JoinPoint API
@@ -309,15 +309,15 @@ pub trait UserRepository: Repository<User, i32> {
 
 **Ranking / 排名**:
 
-1. **nexus-data-rdbc** (Impact: ⭐⭐⭐⭐⭐, Effort: 2 months)
+1. **hiver-data-rdbc** (Impact: ⭐⭐⭐⭐⭐, Effort: 2 months)
    - Why / 原因: Cannot build apps without database access / 没有数据库访问无法构建应用
    - Unblocker / 解除者: All CRUD development / 所有 CRUD 开发
 
-2. **nexus-data-commons** (Impact: ⭐⭐⭐⭐⭐, Effort: 1.5 months)
+2. **hiver-data-commons** (Impact: ⭐⭐⭐⭐⭐, Effort: 1.5 months)
    - Why / 原因: Foundation for all data access / 所有数据访问的基础
    - Unblocker / 解除者: Repository pattern / Repository 模式
 
-3. **nexus-autoconfigure** (Impact: ⭐⭐⭐⭐⭐, Effort: 1 month)
+3. **hiver-autoconfigure** (Impact: ⭐⭐⭐⭐⭐, Effort: 1 month)
    - Why / 原因: Massive boilerplate reduction / 大幅减少样板代码
    - Unblocker / 解除者: Spring Boot-like DX / Spring Boot 开发体验
 
@@ -337,7 +337,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 - **[MASTER-ROADMAP.md](./MASTER-ROADMAP.md)** - Complete implementation plan / 完整实施计划
 - **[STRATEGY-OVERVIEW.md](./STRATEGY-OVERVIEW.md)** - Visual strategy overview / 可视化战略概览
-- **[nexus-data-full-implementation.md](./nexus-data-full-implementation.md)** - Data layer details / 数据层详细计划
+- **[hiver-data-full-implementation.md](./hiver-data-full-implementation.md)** - Data layer details / 数据层详细计划
 - **[spring-missing-features.md](./spring-missing-features.md)** - All 89 missing features / 所有 89 个缺失功能
 - **[spring-ecosystem-gap-analysis.md](./spring-ecosystem-gap-analysis.md)** - Full ecosystem comparison / 完整生态系统对比
 

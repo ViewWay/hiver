@@ -8,7 +8,7 @@
 //! - `Error` → `ResponseStatusException`, `ErrorResponseEntity`
 //! - `Extensions` → `RequestContext`, `Model`
 
-use nexus_core::{Error, ErrorKind, Extensions};
+use hiver_core::{Error, ErrorKind, Extensions};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Nexus Core Example / Nexus核心示例 ===\n");

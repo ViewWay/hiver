@@ -1,4 +1,4 @@
-# Nexus Framework — API Reference for LLM Context Injection
+# Hiver Framework — API Reference for LLM Context Injection
 
 > Structured reference covering all 62 crates. No prose, no examples — pure API surface.
 > Last updated: 2025-05-31
@@ -7,7 +7,7 @@
 
 ## 1. Runtime & Core
 
-### nexus-runtime
+### hiver-runtime
 
 Spring equivalent: `Spring WebFlux` reactor / `ScheduledExecutorService`
 
@@ -38,7 +38,7 @@ Spring equivalent: `Spring WebFlux` reactor / `ScheduledExecutorService`
 | fn | `select_multiple(futures) -> SelectMultipleOutput` | Select on N futures |
 | struct | `Duration` / `Instant` | Time primitives (re-exported) |
 
-### nexus-core
+### hiver-core
 
 Spring equivalent: `Spring Core` (IoC Container, `BeanFactory`, `ApplicationContext`)
 
@@ -71,7 +71,7 @@ Spring equivalent: `Spring Core` (IoC Container, `BeanFactory`, `ApplicationCont
 | struct | `ProfileCondition` | Active profile condition |
 | struct | `AllConditions` / `AnyCondition` / `NotCondition` | Combinators |
 
-### nexus-macros `[proc-macro]`
+### hiver-macros `[proc-macro]`
 
 | Macro | Spring equivalent | Target |
 |-------|-------------------|--------|
@@ -94,7 +94,7 @@ Spring equivalent: `Spring Core` (IoC Container, `BeanFactory`, `ApplicationCont
 | `#[request_mapping(path, method)]` | `@RequestMapping` | Handler fn |
 | `#[rest_controller]` | `@RestController` | Struct |
 | `#[cross_origin]` | `@CrossOrigin` | Struct/method |
-| `#[nexus_main]` | `@SpringBootApplication` | Struct |
+| `#[hiver_main]` | `@SpringBootApplication` | Struct |
 | `#[handler]` | N/A | Handler fn |
 | `#[from_request_derive]` | N/A | Struct (FromRequest) |
 | `#[into_response_derive]` | N/A | Struct (IntoResponse) |
@@ -105,7 +105,7 @@ Spring equivalent: `Spring Core` (IoC Container, `BeanFactory`, `ApplicationCont
 
 ## 2. Web Layer
 
-### nexus-http
+### hiver-http
 
 Spring equivalent: `Spring Web` / `Spring WebFlux` / `Spring MVC`
 
@@ -222,7 +222,7 @@ Spring equivalent: `Spring Web` / `Spring WebFlux` / `Spring MVC`
 | const | `header::USER_AGENT` | `"user-agent"` |
 | const | `header::LOCATION` | `"location"` |
 
-### nexus-router
+### hiver-router
 
 Spring equivalent: `RequestMappingHandlerMapping`
 
@@ -240,7 +240,7 @@ Spring equivalent: `RequestMappingHandlerMapping`
 | struct | `TrieRouter` | Radix tree router (high performance) |
 | struct | `Handler as RouteHandler` | Re-exported handler |
 
-### nexus-extractors
+### hiver-extractors
 
 Spring equivalent: `@PathVariable`, `@RequestParam`, `@RequestBody`, `@RequestHeader`, `@CookieValue`, `@MatrixVariable`
 
@@ -271,7 +271,7 @@ Spring equivalent: `@PathVariable`, `@RequestParam`, `@RequestBody`, `@RequestHe
 | struct | `UploadConfig` | Upload configuration |
 | enum | `UploadError` | Upload error types |
 
-### nexus-middleware
+### hiver-middleware
 
 Spring equivalent: `Filter`, `HandlerInterceptor`, `CorsConfiguration`
 
@@ -288,10 +288,10 @@ Spring equivalent: `Filter`, `HandlerInterceptor`, `CorsConfiguration`
 | struct | `SecurityHeadersConfig` | Security header config |
 | struct | `StaticFiles` | Static file serving |
 | struct | `MiddlewareStack` | Ordered middleware chain |
-| trait | `Middleware` | (re-export from nexus-router) `fn handle(req, next) -> Response` |
-| struct | `Next` | (re-export from nexus-router) Chain continuation |
+| trait | `Middleware` | (re-export from hiver-router) `fn handle(req, next) -> Response` |
+| struct | `Next` | (re-export from hiver-router) Chain continuation |
 
-### nexus-response
+### hiver-response
 
 Spring equivalent: `ResponseEntity`, `@ResponseBody`, `ResponseAdvice`
 
@@ -305,7 +305,7 @@ Spring equivalent: `ResponseEntity`, `@ResponseBody`, `ResponseAdvice`
 | struct | `ApiResponse<T>` | Standard API response |
 | struct | `ResponseAdvice` | Response post-processing |
 
-### nexus-hateoas
+### hiver-hateoas
 
 Spring equivalent: `Spring HATEOAS` / `RepresentationModel`
 
@@ -317,7 +317,7 @@ Spring equivalent: `Spring HATEOAS` / `RepresentationModel`
 | struct | `CollectionModel<T>` | Collection with links |
 | struct | `RepresentationModel` | Base model with links |
 
-### nexus-multipart
+### hiver-multipart
 
 Spring equivalent: `MultipartFile`, `MultipartResolver`
 
@@ -328,7 +328,7 @@ Spring equivalent: `MultipartFile`, `MultipartResolver`
 | struct | `FileValidator` | File validation rules |
 | struct | `MultipartConfig` | Upload config (size limits, temp dir) |
 
-### nexus-openapi
+### hiver-openapi
 
 Spring equivalent: `springdoc-openapi` / Swagger
 
@@ -345,7 +345,7 @@ Spring equivalent: `springdoc-openapi` / Swagger
 | trait | `GenerateOpenApi` | Auto-generate spec from handlers |
 | struct | `PostmanGenerator` | Postman collection export |
 
-### nexus-graphql
+### hiver-graphql
 
 | Kind | Symbol | Notes |
 |------|--------|-------|
@@ -359,7 +359,7 @@ Spring equivalent: `springdoc-openapi` / Swagger
 
 ## 3. Data Layer
 
-### nexus-data-commons
+### hiver-data-commons
 
 Spring equivalent: `Spring Data Commons` (`Repository`, `CrudRepository`, `Pageable`)
 
@@ -413,7 +413,7 @@ Spring equivalent: `Spring Data Commons` (`Repository`, `CrudRepository`, `Pagea
 | struct | `LambdaQueryWrapper` | Lambda-based query |
 | struct | `Condition` / `QueryOrder` / `Value` / `ToValue` / `Predicate` | Query primitives |
 
-### nexus-data-rdbc
+### hiver-data-rdbc
 
 Spring equivalent: `Spring Data R2DBC` / `JdbcTemplate`
 
@@ -451,7 +451,7 @@ Spring equivalent: `Spring Data R2DBC` / `JdbcTemplate`
 | enum | `SslMode` | SSL mode for connections |
 | struct | `Error` / `R2dbcError` / `Result` / `R2dbcResult` | Error types |
 
-### nexus-data-orm
+### hiver-data-orm
 
 Spring equivalent: `JPA` / `Hibernate` / `Criteria API`
 
@@ -499,7 +499,7 @@ Spring equivalent: `JPA` / `Hibernate` / `Criteria API`
 | struct | `SqlxQuery` / `SqlxOrder` / `FromRow` / `VerifiedQuery` | SQLx bridge |
 | (sea-orm) | — | SeaORM bridge |
 
-### nexus-data-annotations `[proc-macro]`
+### hiver-data-annotations `[proc-macro]`
 
 Spring equivalent: `JPA` annotations (`@Entity`, `@Table`, `@Column`, etc.)
 
@@ -534,7 +534,7 @@ Spring equivalent: `JPA` annotations (`@Entity`, `@Table`, `@Column`, etc.)
 | `#[JoinColumn(name)]` | `@JoinColumn` | Field |
 | `#[JoinTable(name)]` | `@JoinTable` | Field |
 
-### nexus-data-macros `[proc-macro]`
+### hiver-data-macros `[proc-macro]`
 
 | Macro | Target |
 |-------|--------|
@@ -542,7 +542,7 @@ Spring equivalent: `JPA` annotations (`@Entity`, `@Table`, `@Column`, etc.)
 | `#[model(table, primary_key, default)]` | Field attrs within Model derive |
 | `#[repository]` | Struct — generates repository impl |
 
-### nexus-data-redis
+### hiver-data-redis
 
 Spring equivalent: `Spring Data Redis` / `RedisTemplate`
 
@@ -556,7 +556,7 @@ Spring equivalent: `Spring Data Redis` / `RedisTemplate`
 | struct | `LuaScript` | Lua script execution |
 | struct | `RedisPipeline` | Pipelined commands |
 
-### nexus-data-mongodb
+### hiver-data-mongodb
 
 Spring equivalent: `Spring Data MongoDB` / `MongoTemplate`
 
@@ -569,7 +569,7 @@ Spring equivalent: `Spring Data MongoDB` / `MongoTemplate`
 | struct | `IndexOperations` | Index management |
 | struct | `MongoFilter` | Type-safe filter builder |
 
-### nexus-flyway
+### hiver-flyway
 
 Spring equivalent: `Flyway` database migrations
 
@@ -585,7 +585,7 @@ Spring equivalent: `Flyway` database migrations
 
 ## 4. Security
 
-### nexus-security
+### hiver-security
 
 Spring equivalent: `Spring Security`
 
@@ -641,7 +641,7 @@ Spring equivalent: `Spring Security`
 | const | `ANONYMOUS_USER` | `"anonymousUser"` |
 | const | `REMEMBER_ME_KEY` | `"remember_me"` |
 
-### nexus-session
+### hiver-session
 
 Spring equivalent: `Spring Session`
 
@@ -660,7 +660,7 @@ Spring equivalent: `Spring Session`
 
 ## 5. Transactions & AOP
 
-### nexus-tx
+### hiver-tx
 
 Spring equivalent: `Spring TX` (`@Transactional`, `TransactionTemplate`, `PlatformTransactionManager`)
 
@@ -697,7 +697,7 @@ Spring equivalent: `Spring TX` (`@Transactional`, `TransactionTemplate`, `Platfo
 | struct | `MySqlTransactionManager` | MySQL TX |
 | struct | `SqliteTransactionManager` | SQLite TX |
 
-### nexus-aop `[proc-macro]`
+### hiver-aop `[proc-macro]`
 
 Spring equivalent: `Spring AOP` (`@Aspect`, `@Before`, `@After`, `@Around`)
 
@@ -721,7 +721,7 @@ Spring equivalent: `Spring AOP` (`@Aspect`, `@Before`, `@After`, `@Around`)
 
 ## 6. Messaging
 
-### nexus-events
+### hiver-events
 
 Spring equivalent: `ApplicationEventPublisher`, `@EventListener`, `@TransactionalEventListener`
 
@@ -749,14 +749,14 @@ Spring equivalent: `ApplicationEventPublisher`, `@EventListener`, `@Transactiona
 | struct | `TransactionalEventPublisher` / `TransactionalEventBridge` | TX event bridge |
 | const | `DEFAULT_EVENT_MODE` | `"async"` |
 
-### nexus-events-macros `[proc-macro]`
+### hiver-events-macros `[proc-macro]`
 
 | Macro | Spring equivalent |
 |-------|-------------------|
 | `#[EventListener]` | `@EventListener` |
 | `#[TransactionalEventListener(phase)]` | `@TransactionalEventListener` |
 
-### nexus-kafka
+### hiver-kafka
 
 Spring equivalent: `Spring Kafka`
 
@@ -769,7 +769,7 @@ Spring equivalent: `Spring Kafka`
 | struct | `TransactionalProducer` | Transactional Kafka producer |
 | — | JSON/Avro/Protobuf serialization | Via feature flags |
 
-### nexus-amqp
+### hiver-amqp
 
 Spring equivalent: `Spring AMQP` / `Spring RabbitMQ`
 
@@ -783,7 +783,7 @@ Spring equivalent: `Spring AMQP` / `Spring RabbitMQ`
 | struct | `DeadLetterQueue` | Dead letter handling |
 | enum | `AckMode` | Acknowledgment mode |
 
-### nexus-integration
+### hiver-integration
 
 Spring equivalent: `Spring Integration`
 
@@ -797,7 +797,7 @@ Spring equivalent: `Spring Integration`
 | struct | `Splitter` | Message splitter |
 | struct | `Aggregator` | Message aggregator |
 
-### nexus-websocket-stomp
+### hiver-websocket-stomp
 
 Spring equivalent: `Spring WebSocket STOMP`
 
@@ -812,7 +812,7 @@ Spring equivalent: `Spring WebSocket STOMP`
 
 ## 7. Resilience & Observability
 
-### nexus-resilience
+### hiver-resilience
 
 Spring equivalent: `Resilience4j`
 
@@ -839,7 +839,7 @@ Spring equivalent: `Resilience4j`
 | enum | `InstanceStatus` | `Up`, `Down`, `Starting`, `OutOfService` |
 | enum | `LoadBalanceStrategy` | `RoundRobin`, `Random`, `LeastConnections` |
 
-### nexus-observability
+### hiver-observability
 
 Spring equivalent: `Micrometer Tracing` + `Spring Boot Actuator`
 
@@ -854,10 +854,10 @@ Spring equivalent: `Micrometer Tracing` + `Spring Boot Actuator`
 | struct | `Logger` / `LoggerConfig` / `LoggerFactory` / `LoggerHandle` | Structured logging |
 | enum | `LogLevel` | `Trace`, `Debug`, `Info`, `Warn`, `Error` |
 | enum | `LogFormat` / `LogMode` / `LogRotation` | Log configuration |
-| struct | `Banner` / `SimpleFormatter` / `StartupLogger` | Startup output (feature = "nexus-format") |
+| struct | `Banner` / `SimpleFormatter` / `StartupLogger` | Startup output (feature = "hiver-format") |
 | fn | `info!` / `debug!` / `trace!` / `warn!` / `error!` | Logging macros (re-export tracing) |
 
-### nexus-micrometer
+### hiver-micrometer
 
 Spring equivalent: `Micrometer`
 
@@ -871,7 +871,7 @@ Spring equivalent: `Micrometer`
 | fn | `global_registry()` | Access global registry |
 | — | Prometheus export | Via feature flag |
 
-### nexus-actuator
+### hiver-actuator
 
 Spring equivalent: `Spring Boot Actuator`
 
@@ -888,7 +888,7 @@ Spring equivalent: `Spring Boot Actuator`
 
 ## 8. Cache
 
-### nexus-cache
+### hiver-cache
 
 Spring equivalent: `Spring Cache` (`@Cacheable`, `CacheManager`)
 
@@ -920,7 +920,7 @@ Spring equivalent: `Spring Cache` (`@Cacheable`, `CacheManager`)
 
 ## 9. Configuration
 
-### nexus-config
+### hiver-config
 
 Spring equivalent: `@ConfigurationProperties`, `Environment`, `@Profile`, `spring.config`
 
@@ -936,7 +936,7 @@ Spring equivalent: `@ConfigurationProperties`, `Environment`, `@Profile`, `sprin
 | struct | `RefreshScope` | Runtime config refresh |
 | struct | `ConfigEncryptor` | Encrypted property support |
 
-### nexus-starter
+### hiver-starter
 
 Spring equivalent: `@SpringBootApplication`, auto-configuration
 
@@ -962,7 +962,7 @@ Feature-gated modules: `web`, `security`, `data`, `cache`, `schedule`, `actuator
 
 ## 10. Cloud & External
 
-### nexus-cloud
+### hiver-cloud
 
 Spring equivalent: `Spring Cloud` (Netflix/Eureka, Ribbon, Zuul, Spring Cloud Config, Feign)
 
@@ -975,7 +975,7 @@ Spring equivalent: `Spring Cloud` (Netflix/Eureka, Ribbon, Zuul, Spring Cloud Co
 | struct | `FeignClient` | Declarative HTTP client |
 | struct | `ConsulServiceRegistry` | Consul integration |
 
-### nexus-ai
+### hiver-ai
 
 Spring equivalent: `Spring AI`
 
@@ -990,7 +990,7 @@ Spring equivalent: `Spring AI`
 | struct | `ToolRegistry` / `ToolExecutor` | Function calling |
 | struct | `RAG` | Retrieval-augmented generation |
 
-### nexus-agent
+### hiver-agent
 
 Spring equivalent: `Spring AI Agents`
 
@@ -1003,7 +1003,7 @@ Spring equivalent: `Spring AI Agents`
 | struct | `RouterAgent` | Dynamic agent routing |
 | struct | `AgentPromptTemplate` | Agent prompt templates |
 
-### nexus-web3
+### hiver-web3
 
 Spring equivalent: `Web3j` / custom
 
@@ -1018,7 +1018,7 @@ Spring equivalent: `Web3j` / custom
 | struct | `ERC20` / `ERC721` / `ERC1155` | Token standard support |
 | struct | `UniswapV2Router` | DeFi integration |
 
-### nexus-vault
+### hiver-vault
 
 Spring equivalent: `Spring Vault`
 
@@ -1031,7 +1031,7 @@ Spring equivalent: `Spring Vault`
 | struct | `JwtAuth` | JWT auth method |
 | struct | `Lease` | Lease management |
 
-### nexus-ldap
+### hiver-ldap
 
 Spring equivalent: `Spring LDAP`
 
@@ -1044,7 +1044,7 @@ Spring equivalent: `Spring LDAP`
 | struct | `LdapQueryBuilder` | Query builder |
 | — | LDIF support | Import/export |
 
-### nexus-grpc
+### hiver-grpc
 
 Spring equivalent: `gRPC Spring Boot Starter`
 
@@ -1062,7 +1062,7 @@ Spring equivalent: `gRPC Spring Boot Starter`
 
 ## 11. Processing & Scheduling
 
-### nexus-batch
+### hiver-batch
 
 Spring equivalent: `Spring Batch`
 
@@ -1078,7 +1078,7 @@ Spring equivalent: `Spring Batch`
 | struct | `AdvancedJobOperator` | Job control API |
 | struct | `FaultTolerantStep` | Skip/retry support |
 
-### nexus-async
+### hiver-async
 
 | Kind | Symbol | Notes |
 |------|--------|-------|
@@ -1087,7 +1087,7 @@ Spring equivalent: `Spring Batch`
 | enum | `ExecutionMode` | Task execution mode |
 | enum | `RejectionPolicy` | Task rejection policy |
 
-### nexus-schedule
+### hiver-schedule
 
 Spring equivalent: `@Scheduled`, `TaskScheduler`
 
@@ -1096,7 +1096,7 @@ Spring equivalent: `@Scheduled`, `TaskScheduler`
 | macro | `#[Scheduled]` | `fixed_rate`, `cron`, `initial_delay` attributes |
 | — | cron expression parser | Cron scheduling |
 
-### nexus-state-machine
+### hiver-state-machine
 
 Spring equivalent: `Spring Statemachine`
 
@@ -1110,7 +1110,7 @@ Spring equivalent: `Spring Statemachine`
 | struct | `StateMachineVisualizer` | Graphviz visualization |
 | trait | `Event` | Event trait |
 
-### nexus-retry `[proc-macro]`
+### hiver-retry `[proc-macro]`
 
 Spring equivalent: `@Retryable`, `@Recover`
 
@@ -1120,11 +1120,11 @@ Spring equivalent: `@Retryable`, `@Recover`
 | `#[recover]` | Fallback method |
 | struct | `RetryTemplate` | Programmatic retry |
 
-### nexus-retry-macros `[proc-macro]`
+### hiver-retry-macros `[proc-macro]`
 
-Same macros as `nexus-retry` — dedicated proc-macro crate.
+Same macros as `hiver-retry` — dedicated proc-macro crate.
 
-### nexus-modulith
+### hiver-modulith
 
 Spring equivalent: `Spring Modulith`
 
@@ -1140,7 +1140,7 @@ Spring equivalent: `Spring Modulith`
 
 ## 12. Validation & Error
 
-### nexus-validation
+### hiver-validation
 
 Spring equivalent: `Spring Validation` / `javax.validation`
 
@@ -1155,7 +1155,7 @@ Spring equivalent: `Spring Validation` / `javax.validation`
 | — | custom validators | User-defined validators |
 | — | `field_match` | Cross-field validation |
 
-### nexus-validation-annotations `[proc-macro]`
+### hiver-validation-annotations `[proc-macro]`
 
 | Macro | Spring equivalent |
 |-------|-------------------|
@@ -1167,7 +1167,7 @@ Spring equivalent: `Spring Validation` / `javax.validation`
 | `#[derive(Pattern(regex))]` | `@Pattern` |
 | `#[derive(Length(min, max))]` | `@Length` |
 
-### nexus-exceptions
+### hiver-exceptions
 
 Spring equivalent: `@ControllerAdvice`, `@ExceptionHandler`
 
@@ -1182,7 +1182,7 @@ Spring equivalent: `@ControllerAdvice`, `@ExceptionHandler`
 
 ## 13. Tooling & DX
 
-### nexus-test
+### hiver-test
 
 Spring equivalent: `@SpringBootTest`, `MockBean`, `WebTestClient`
 
@@ -1195,7 +1195,7 @@ Spring equivalent: `@SpringBootTest`, `MockBean`, `WebTestClient`
 | trait | `NexusTest` | Test trait marker |
 | struct | `ContainerSet` | Testcontainers (Postgres, Redis, Kafka) |
 
-### nexus-shell
+### hiver-shell
 
 | Kind | Symbol | Notes |
 |------|--------|-------|
@@ -1203,14 +1203,14 @@ Spring equivalent: `@SpringBootTest`, `MockBean`, `WebTestClient`
 | struct | `CommandRegistry` | Register shell commands |
 | struct | `Banner` / `PromptStyle` / `InputValidator` | Shell UI |
 
-### nexus-shell-macros `[proc-macro]`
+### hiver-shell-macros `[proc-macro]`
 
 | Macro | Target |
 |-------|--------|
 | `#[shell_component]` | Struct — register as shell component |
 | `#[shell_method]` | Method — register as shell command |
 
-### nexus-lombok `[proc-macro]`
+### hiver-lombok `[proc-macro]`
 
 Spring equivalent: Lombok
 
@@ -1225,7 +1225,7 @@ Spring equivalent: Lombok
 | `#[derive(AllArgsConstructor)]` | Constructor with all fields |
 | `#[derive(NoArgsConstructor)]` | Constructor with no fields |
 
-### nexus-spel
+### hiver-spel
 
 Spring equivalent: `SpEL` (Spring Expression Language)
 
@@ -1237,7 +1237,7 @@ Spring equivalent: `SpEL` (Spring Expression Language)
 | struct | `SpelError` | Evaluation error |
 | — | `hasRole(x)` / `hasAuthority(x)` | Security expressions |
 
-### nexus-benches
+### hiver-benches
 
 | Kind | Symbol | Notes |
 |------|--------|-------|
@@ -1245,13 +1245,13 @@ Spring equivalent: `SpEL` (Spring Expression Language)
 | — | Router benchmarks | Route matching performance |
 | — | Extractor benchmarks | Request extraction performance |
 
-### nexus-i18n
+### hiver-i18n
 
 | Kind | Symbol | Notes |
 |------|--------|-------|
 | — | Internationalization | Message source, locale resolution |
 
-### nexus-ws
+### hiver-ws
 
 | Kind | Symbol | Notes |
 |------|--------|-------|

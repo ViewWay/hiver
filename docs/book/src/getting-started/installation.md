@@ -50,17 +50,17 @@ Nexus 是模块化的 — 只添加你需要的：
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
-nexus-middleware = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
+hiver-middleware = "0.1.0-alpha"
 ```
 
 Or use cargo-add:
 或使用 cargo-add：
 
 ```bash
-cargo add nexus-runtime nexus-http nexus-router
+cargo add hiver-runtime hiver-http hiver-router
 ```
 
 ### From Git Repository / 从 Git 仓库安装
@@ -70,7 +70,7 @@ To use the latest development version:
 
 ```toml
 [dependencies]
-nexus-runtime = { git = "https://github.com/ViewWay/nexus", package = "nexus-runtime" }
+hiver-runtime = { git = "https://github.com/ViewWay/hiver", package = "hiver-runtime" }
 ```
 
 ## Verifying Installation / 验证安装
@@ -88,14 +88,14 @@ Edit `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 ```
 
 Edit `src/main.rs`:
 编辑 `src/main.rs`：
 
 ```rust
-use nexus_runtime::Runtime;
+use hiver_runtime::Runtime;
 
 fn main() -> std::io::Result<()> {
     let runtime = Runtime::new()?;
@@ -120,7 +120,7 @@ If you see the output, installation is successful!
 
 ```bash
 # Clone the repository / 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
+git clone https://github.com/ViewWay/hiver.git
 cd nexus
 
 # Build all crates / 构建所有 crate

@@ -1,0 +1,69 @@
+[package]
+name = "hiver-data-redis"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Redis integration for Hiver Framework (RedisTemplate, Cache)"
+keywords = ["nexus", "data", "redis", "cache", "database"]
+categories = ["database", "asynchronous"]
+
+[features]
+default = []
+
+# Enable async runtime support
+runtime = ["dep:hiver-runtime"]
+
+# Connection pooling
+pool = ["dep:deadpool", "dep:deadpool-redis"]
+
+# Cluster support
+cluster = ["redis/cluster-async"]
+
+# All features
+all = ["runtime", "pool", "cluster"]
+
+[dependencies]
+# Data commons
+hiver-data-commons = { path = "../hiver-data-commons" }
+
+# Data macros for Model derive
+hiver-data-macros = { path = "../hiver-data-macros" }
+
+# Async runtime (optional)
+hiver-runtime = { path = "../hiver-runtime", optional = true }
+
+# Redis driver
+redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }
+
+# Connection pool (optional)
+deadpool = { version = "0.12", optional = true }
+deadpool-redis = { version = "0.16", optional = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# Async trait support
+async-trait = { workspace = true }
+
+# UUID support
+uuid = { version = "1.12", features = ["v4", "serde"] }
+
+# Chrono for datetime
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = { workspace = true }
+
+# Futures support
+futures-util = "0.3"
+
+# Tokio for async runtime
+tokio = { workspace = true, features = ["sync", "rt", "time", "macros", "rt-multi-thread"] }

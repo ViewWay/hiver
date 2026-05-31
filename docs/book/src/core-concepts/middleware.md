@@ -16,8 +16,8 @@ Response ←  Middleware 1  ←  Middleware 2  ←  Result
 ## Middleware Trait / 中间件 Trait
 
 ```rust
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -39,7 +39,7 @@ pub trait Middleware<S>: Send + Sync + 'static {
 ### Logger Middleware / 日志中间件
 
 ```rust
-use nexus_middleware::LoggerMiddleware;
+use hiver_middleware::LoggerMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -53,7 +53,7 @@ let router = Router::new()
 ### CORS Middleware / CORS 中间件
 
 ```rust
-use nexus_middleware::{CorsMiddleware, CorsConfig};
+use hiver_middleware::{CorsMiddleware, CorsConfig};
 
 // Allow all origins / 允许所有来源
 let cors = CorsMiddleware::any();
@@ -75,7 +75,7 @@ let router = Router::new()
 ### Timeout Middleware / 超时中间件
 
 ```rust
-use nexus_middleware::TimeoutMiddleware;
+use hiver_middleware::TimeoutMiddleware;
 use std::time::Duration;
 use std::sync::Arc;
 
@@ -87,7 +87,7 @@ let router = Router::new()
 ### Compression Middleware / 压缩中间件
 
 ```rust
-use nexus_middleware::CompressionMiddleware;
+use hiver_middleware::CompressionMiddleware;
 use std::sync::Arc;
 
 let router = Router::new()
@@ -102,8 +102,8 @@ let router = Router::new()
 ### Function-based Middleware / 函数式中间件
 
 ```rust
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 use std::sync::Arc;
 
 async fn auth_middleware<S>(req: Request, state: Arc<S>, next: Next<S>) -> Result<Response> {
@@ -131,8 +131,8 @@ use std::time::Instant;
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::Arc;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result};
 
 struct TimingMiddleware;
 
@@ -174,8 +174,8 @@ use std::future::Future;
 use std::sync::Arc;
 use std::collections::HashMap;
 use tokio::sync::RwLock;
-use nexus_router::{Middleware, Next};
-use nexus_http::{Request, Response, Result, Body, StatusCode};
+use hiver_router::{Middleware, Next};
+use hiver_http::{Request, Response, Result, Body, StatusCode};
 
 struct RateLimitMiddleware {
     requests_per_second: u32,
@@ -276,8 +276,8 @@ let router = Router::new()
 ## Complete Example / 完整示例
 
 ```rust
-use nexus_router::Router;
-use nexus_middleware::{
+use hiver_router::Router;
+use hiver_middleware::{
     LoggerMiddleware, 
     CorsMiddleware, 
     TimeoutMiddleware,

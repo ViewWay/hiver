@@ -8,7 +8,7 @@
 //! 此示例为 Nexus 框架实现 `TechEmpower` 基准测试。
 //! 更多信息请参阅：https://tfb-status.techempower.com/
 
-use nexus_http::Response;
+use hiver_http::Response;
 use serde::{Deserialize, Serialize};
 
 /// Test data / 测试数据

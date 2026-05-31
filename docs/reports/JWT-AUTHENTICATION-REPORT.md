@@ -25,7 +25,7 @@
 
 ### 1. JWT Utility Module / JWT 工具模块
 
-**File**: [`crates/nexus-security/src/jwt.rs`](../crates/nexus-security/src/jwt.rs)
+**File**: [`crates/hiver-security/src/jwt.rs`](../crates/hiver-security/src/jwt.rs)
 
 #### Features Implemented / 实现的功能
 
@@ -99,7 +99,7 @@ pub struct JwtAuthentication {
 
 ### 2. JWT Authentication Middleware / JWT 认证中间件
 
-**File**: [`crates/nexus-middleware/src/jwt_auth.rs`](../crates/nexus-middleware/src/jwt_auth.rs)
+**File**: [`crates/hiver-middleware/src/jwt_auth.rs`](../crates/hiver-middleware/src/jwt_auth.rs)
 
 #### Features Implemented / 实现的功能
 
@@ -144,7 +144,7 @@ pub trait JwtRequestExt {
 
 **Usage**:
 ```rust
-use nexus_middleware::JwtRequestExt;
+use hiver_middleware::JwtRequestExt;
 
 // In handler
 let auth = req.get_jwt_auth()
@@ -338,7 +338,7 @@ async fn call(&self, req: Request, next: Next<State>) -> Result<Response> {
 ### Creating Tokens / 创建 Token
 
 ```rust
-use nexus_security::{JwtUtil, Authority, Role};
+use hiver_security::{JwtUtil, Authority, Role};
 
 // Create token with default expiration (24 hours)
 let authorities = vec![
@@ -363,7 +363,7 @@ let new_token = JwtUtil::refresh_token(&token)?;
 ### Verifying Tokens / 验证 Token
 
 ```rust
-use nexus_security::JwtUtil;
+use hiver_security::JwtUtil;
 
 // Verify token
 let claims = JwtUtil::verify_token(&token)?;
@@ -383,7 +383,7 @@ if auth.has_role(&Role::Admin) {
 ### Using Middleware / 使用中间件
 
 ```rust
-use nexus_middleware::{JwtAuthenticationMiddleware, JwtRequestExt};
+use hiver_middleware::{JwtAuthenticationMiddleware, JwtRequestExt};
 use std::sync::Arc;
 
 // Create middleware
@@ -469,7 +469,7 @@ if req.scheme() != "https" {
 
 **JWT Utility Tests** (10+ tests):
 ```bash
-cargo test -p nexus-security jwt
+cargo test -p hiver-security jwt
 ```
 
 Coverage:
@@ -481,7 +481,7 @@ Coverage:
 
 **Middleware Tests** (5+ tests):
 ```bash
-cargo test -p nexus-middleware jwt_auth
+cargo test -p hiver-middleware jwt_auth
 ```
 
 Coverage:
@@ -567,15 +567,15 @@ Example Application / 示例应用:
 
 ### Implementation / 实现
 
-- [JWT Utility](../crates/nexus-security/src/jwt.rs) - Core JWT functions
-- [JWT Middleware](../crates/nexus-middleware/src/jwt_auth.rs) - Authentication middleware
+- [JWT Utility](../crates/hiver-security/src/jwt.rs) - Core JWT functions
+- [JWT Middleware](../crates/hiver-middleware/src/jwt_auth.rs) - Authentication middleware
 - [Auth Example](../examples/jwt_auth_example.rs) - Complete example
 
 ### Related Documentation / 相关文档
 
 - [API Specification](./api-spec.md) - Full API reference
-- [Security Guide](../crates/nexus-security/README.md) - Security module docs
-- [Middleware Guide](../crates/nexus-middleware/README.md) - Middleware docs
+- [Security Guide](../crates/hiver-security/README.md) - Security module docs
+- [Middleware Guide](../crates/hiver-middleware/README.md) - Middleware docs
 
 ---
 

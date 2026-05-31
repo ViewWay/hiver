@@ -22,8 +22,8 @@ Phase 3 中间件实施现已**完成**。核心中间件模式、CORS 支持、
 ### ✅ 1. Core Middleware System (核心中间件系统)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/middleware.rs` - Middleware trait & stack
-- `crates/nexus-router/src/router.rs` - Middleware integration
+- `crates/hiver-middleware/src/middleware.rs` - Middleware trait & stack
+- `crates/hiver-router/src/router.rs` - Middleware integration
 
 **Features / 功能**:
 - `Middleware` trait for request/response processing
@@ -36,8 +36,8 @@ Phase 3 中间件实施现已**完成**。核心中间件模式、CORS 支持、
 
 **API Example / API示例**:
 ```rust
-use nexus_middleware::{Middleware, Next};
-use nexus_http::{Request, Response};
+use hiver_middleware::{Middleware, Next};
+use hiver_http::{Request, Response};
 
 struct LoggingMiddleware;
 
@@ -60,7 +60,7 @@ impl Middleware for LoggingMiddleware {
 ### ✅ 2. Logger Middleware (日志中间件)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/logger.rs` - Request/response logging
+- `crates/hiver-middleware/src/logger.rs` - Request/response logging
 
 **Features / 功能**:
 - Request logging (method, path, headers)
@@ -72,7 +72,7 @@ impl Middleware for LoggingMiddleware {
 
 **API Example / API示例**:
 ```rust
-use nexus_middleware::LoggerMiddleware;
+use hiver_middleware::LoggerMiddleware;
 
 let middleware = LoggerMiddleware::new()
     .log_level(LogLevel::Info)
@@ -87,7 +87,7 @@ router.middleware(Arc::new(middleware));
 ### ✅ 3. CORS Middleware (CORS 中间件)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/cors.rs` - CORS configuration & handling
+- `crates/hiver-middleware/src/cors.rs` - CORS configuration & handling
 
 **Features / 功能**:
 - Pre-flight OPTIONS handling
@@ -101,7 +101,7 @@ router.middleware(Arc::new(middleware));
 
 **API Example / API示例**:
 ```rust
-use nexus_middleware::{CorsMiddleware, CorsConfig};
+use hiver_middleware::{CorsMiddleware, CorsConfig};
 
 let cors = CorsMiddleware::new(
     CorsConfig::new()
@@ -120,7 +120,7 @@ router.middleware(Arc::new(cors));
 ### ✅ 4. Compression Middleware (压缩中间件)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/compression.rs` - Gzip/Deflate compression
+- `crates/hiver-middleware/src/compression.rs` - Gzip/Deflate compression
 
 **Features / 功能**:
 - Gzip compression
@@ -132,7 +132,7 @@ router.middleware(Arc::new(cors));
 
 **API Example / API示例**:
 ```rust
-use nexus_middleware::{CompressionMiddleware, CompressionLevel};
+use hiver_middleware::{CompressionMiddleware, CompressionLevel};
 
 let compression = CompressionMiddleware::new()
     .level(CompressionLevel::Default)
@@ -151,7 +151,7 @@ router.middleware(Arc::new(compression));
 ### ✅ 5. Timeout Middleware (超时中间件)
 
 **Files / 文件**:
-- `crates/nexus-middleware/src/timeout.rs` - Request timeout handling
+- `crates/hiver-middleware/src/timeout.rs` - Request timeout handling
 
 **Features / 功能**:
 - Per-request timeout
@@ -161,7 +161,7 @@ router.middleware(Arc::new(compression));
 
 **API Example / API示例**:
 ```rust
-use nexus_middleware::TimeoutMiddleware;
+use hiver_middleware::TimeoutMiddleware;
 use std::time::Duration;
 
 let timeout = TimeoutMiddleware::new(Duration::from_secs(30));
@@ -173,7 +173,7 @@ router.middleware(Arc::new(timeout));
 ### ✅ 6. Rate Limiting Middleware (限流中间件)
 
 **Files / 文件**:
-- `crates/nexus-resilience/src/rate_limit.rs` - Rate limiting
+- `crates/hiver-resilience/src/rate_limit.rs` - Rate limiting
 
 **Features / 功能**:
 - Token bucket algorithm
@@ -185,7 +185,7 @@ router.middleware(Arc::new(timeout));
 
 **API Example / API示例**:
 ```rust
-use nexus_resilience::rate_limit::{RateLimiter, RateLimitConfig};
+use hiver_resilience::rate_limit::{RateLimiter, RateLimitConfig};
 
 let limiter = RateLimiter::new(
     RateLimitConfig::per_minute(100)  // 100 requests/min
@@ -199,7 +199,7 @@ router.middleware(Arc::new(limiter));
 ### ✅ 7. WebSocket Support (WebSocket 支持)
 
 **Files / 文件**:
-- `crates/nexus-http/src/websocket.rs` - WebSocket implementation
+- `crates/hiver-http/src/websocket.rs` - WebSocket implementation
 
 **Features / 功能**:
 - WebSocket handshake
@@ -211,7 +211,7 @@ router.middleware(Arc::new(limiter));
 
 **API Example / API示例**:
 ```rust
-use nexus_http::websocket::{WebSocket, Message};
+use hiver_http::websocket::{WebSocket, Message};
 
 async fn ws_handler(mut ws: WebSocket) -> Result<(), Error> {
     while let Some(msg) = ws.recv().await? {
@@ -232,7 +232,7 @@ async fn ws_handler(mut ws: WebSocket) -> Result<(), Error> {
 ### ✅ 8. SSE Support (Server-Sent Events)
 
 **Files / 文件**:
-- `crates/nexus-http/src/sse.rs` - SSE implementation
+- `crates/hiver-http/src/sse.rs` - SSE implementation
 
 **Features / 功能**:
 - Event streaming
@@ -243,7 +243,7 @@ async fn ws_handler(mut ws: WebSocket) -> Result<(), Error> {
 
 **API Example / API示例**:
 ```rust
-use nexus_http::sse::{Sse, Event};
+use hiver_http::sse::{Sse, Event};
 
 async fn events_handler() -> Sse {
     Sse::new(|mut sender| async move {
@@ -304,7 +304,7 @@ async fn events_handler() -> Sse {
 │  │  WebSocket  │  │     SSE     │  │  HTTP/1.1   │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘    │
 ├─────────────────────────────────────────────────────────┤
-│                    nexus-runtime                         │
+│                    hiver-runtime                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -313,22 +313,22 @@ async fn events_handler() -> Sse {
 ## Files Created / 创建的文件
 
 ### Core Middleware / 核心中间件
-- `crates/nexus-middleware/src/lib.rs`
-- `crates/nexus-middleware/src/middleware.rs`
-- `crates/nexus-middleware/src/logger.rs`
-- `crates/nexus-middleware/src/cors.rs`
-- `crates/nexus-middleware/src/compression.rs`
-- `crates/nexus-middleware/src/timeout.rs`
+- `crates/hiver-middleware/src/lib.rs`
+- `crates/hiver-middleware/src/middleware.rs`
+- `crates/hiver-middleware/src/logger.rs`
+- `crates/hiver-middleware/src/cors.rs`
+- `crates/hiver-middleware/src/compression.rs`
+- `crates/hiver-middleware/src/timeout.rs`
 
 ### WebSocket & SSE / WebSocket 和 SSE
-- `crates/nexus-http/src/websocket.rs`
-- `crates/nexus-http/src/sse.rs`
+- `crates/hiver-http/src/websocket.rs`
+- `crates/hiver-http/src/sse.rs`
 
 ### Rate Limiting / 限流
-- `crates/nexus-resilience/src/rate_limit.rs`
+- `crates/hiver-resilience/src/rate_limit.rs`
 
 ### Router Integration / 路由器集成
-- `crates/nexus-router/src/router.rs` - Middleware support
+- `crates/hiver-router/src/router.rs` - Middleware support
 
 ---
 

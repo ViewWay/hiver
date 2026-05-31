@@ -45,7 +45,7 @@ Protect against cascading failures:
 防止级联故障：
 
 ```rust
-use nexus_resilience::{CircuitBreaker, CircuitBreakerConfig};
+use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig};
 use std::time::Duration;
 
 // Create circuit breaker / 创建熔断器
@@ -78,7 +78,7 @@ Control request rate:
 控制请求速率：
 
 ```rust
-use nexus_resilience::{RateLimiter, RateLimiterType};
+use hiver_resilience::{RateLimiter, RateLimiterType};
 
 // Token bucket rate limiter / Token bucket限流器
 let limiter = RateLimiter::builder()
@@ -103,7 +103,7 @@ Automatic retry with backoff:
 带退避的自动重试：
 
 ```rust
-use nexus_resilience::{RetryPolicy, retry};
+use hiver_resilience::{RetryPolicy, retry};
 use std::time::Duration;
 
 // Exponential backoff / 指数退避
@@ -129,7 +129,7 @@ Enforce request timeouts:
 强制执行请求超时：
 
 ```rust
-use nexus_resilience::Timeout;
+use hiver_resilience::Timeout;
 use std::time::Duration;
 
 // Create timeout / 创建超时
@@ -152,7 +152,7 @@ Combine multiple resilience patterns:
 组合多个弹性模式：
 
 ```rust
-use nexus_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
+use hiver_resilience::{CircuitBreaker, RateLimiter, RetryPolicy};
 
 struct ResilientClient {
     circuit: CircuitBreaker,
@@ -188,7 +188,7 @@ impl ResilientClient {
 | `@RateLimiter` | `RateLimiter` | Rate limiting |
 | `@Retry` | `RetryPolicy` | Retry with backoff |
 | `@Timeout` | `Timeout` | Request timeout |
-| Resilience4j | `nexus-resilience` | Resilience library |
+| Resilience4j | `hiver-resilience` | Resilience library |
 
 ---
 

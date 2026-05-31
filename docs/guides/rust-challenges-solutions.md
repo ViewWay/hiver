@@ -53,7 +53,7 @@ serde = { version = "1.0", features = ["derive"] }
 #### 实现示例 / Implementation Example
 
 ```rust
-// nexus-core/src/reflect.rs
+// hiver-core/src/reflect.rs
 
 use bevy_reflect::{Reflect, TypeRegistry, TypeInfo, StructInfo};
 use std::any::{Any, TypeId};
@@ -184,7 +184,7 @@ let bean = registry.create_bean_dynamic("UserService")?;
 **typetag** 提供类型擦除的序列化，适合需要序列化的场景。
 
 ```rust
-// nexus-core/src/typetag_bean.rs
+// hiver-core/src/typetag_bean.rs
 
 use typetag::{serde::Serialize, Deserialize};
 
@@ -225,7 +225,7 @@ let deserialized: Box<dyn SerializableBean> = serde_json::from_str(&json)?;
 #### Trait对象 / Trait Objects
 
 ```rust
-// nexus-core/src/trait_bean.rs
+// hiver-core/src/trait_bean.rs
 
 /// Bean trait（所有Bean必须实现）
 /// Bean trait (all beans must implement)
@@ -277,7 +277,7 @@ let factory = ErasedBeanFactory::new(|c| {
 #### 宏生成 / Macro Generation
 
 ```rust
-// nexus-macros/src/bean.rs
+// hiver-macros/src/bean.rs
 
 /// #[bean]宏自动实现Bean trait
 /// #[bean] macro automatically implements Bean trait
@@ -344,7 +344,7 @@ public class LoggingAspect {
 #### 基础实现 / Basic Implementation
 
 ```rust
-// nexus-macros/src/aop.rs
+// hiver-macros/src/aop.rs
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -396,7 +396,7 @@ async fn create_user(user: User) -> Result<User> {
 #### 高级实现：支持切点表达式 / Advanced: Pointcut Expression
 
 ```rust
-// nexus-macros/src/aop_advanced.rs
+// hiver-macros/src/aop_advanced.rs
 
 use syn::{parse_macro_input, ItemFn, LitStr};
 
@@ -505,7 +505,7 @@ impl LoggingAspect {
 ### 2.3 解决方案2: 使用trait和组合模式 / Solution 2: Trait and Composition
 
 ```rust
-// nexus-core/src/aop_trait.rs
+// hiver-core/src/aop_trait.rs
 
 /// 可拦截的trait
 /// Interceptable trait
@@ -623,7 +623,7 @@ impl LoggingAspect {
 ### 3.2 解决方案1: 使用Arc和Weak / Solution 1: Arc and Weak
 
 ```rust
-// nexus-core/src/circular_dependency.rs
+// hiver-core/src/circular_dependency.rs
 
 use std::sync::{Arc, Weak};
 use std::collections::HashMap;
@@ -755,7 +755,7 @@ let service_a: Arc<ServiceA> = container.get_bean()?;
 ### 3.3 解决方案2: 延迟初始化 / Solution 2: Lazy Initialization
 
 ```rust
-// nexus-core/src/lazy_bean.rs
+// hiver-core/src/lazy_bean.rs
 
 use std::sync::OnceLock;
 
@@ -863,7 +863,7 @@ TransactionSynchronizationManager.getCurrentTransactionName();
 ### 4.2 解决方案1: 使用tokio::task_local / Solution 1: Using tokio::task_local
 
 ```rust
-// nexus-security/src/async_context.rs
+// hiver-security/src/async_context.rs
 
 use tokio::task_local;
 
@@ -911,7 +911,7 @@ async fn handler() -> Result<Response> {
 [dependencies]
 async-local = "1.0"
 
-// nexus-security/src/async_local_context.rs
+// hiver-security/src/async_local_context.rs
 
 use async_local::LocalRef;
 use std::sync::Arc;
@@ -953,7 +953,7 @@ pub async fn get_current_authentication() -> Option<Authentication> {
 **推荐方案**: 通过Request传递上下文。
 
 ```rust
-// nexus-http/src/request_context.rs
+// hiver-http/src/request_context.rs
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -1017,7 +1017,7 @@ async fn handler(req: Request) -> Result<Response> {
 ### 4.5 解决方案4: 使用Context变量（类似Python） / Solution 4: Using Context Variables
 
 ```rust
-// nexus-core/src/context_var.rs
+// hiver-core/src/context_var.rs
 
 use std::cell::RefCell;
 use std::sync::Arc;
@@ -1079,7 +1079,7 @@ pub fn set_security_context(auth: Authentication) {
 **Nexus当前实现改进**:
 
 ```rust
-// nexus-security/src/context.rs (改进版)
+// hiver-security/src/context.rs (改进版)
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -1148,7 +1148,7 @@ pub async fn get_authentication_from_request(req: &Request) -> Option<Authentica
 ### 5.1 完整的Bean容器实现（支持反射和循环依赖）/ Complete Bean Container
 
 ```rust
-// nexus-core/src/advanced_container.rs
+// hiver-core/src/advanced_container.rs
 
 use bevy_reflect::{Reflect, TypeRegistry};
 use std::sync::{Arc, Weak};
@@ -1275,7 +1275,7 @@ impl AdvancedContainer {
 ### 5.2 完整的AOP实现 / Complete AOP Implementation
 
 ```rust
-// nexus-macros/src/complete_aop.rs
+// hiver-macros/src/complete_aop.rs
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -1302,7 +1302,7 @@ pub fn transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     
     let expanded = quote! {
         #fn_vis #fn_async fn #fn_name(#fn_inputs) #fn_output {
-            use nexus_tx::{TransactionManager, TransactionDefinition, Propagation, IsolationLevel};
+            use hiver_tx::{TransactionManager, TransactionDefinition, Propagation, IsolationLevel};
             
             // 获取事务管理器
             // Get transaction manager
@@ -1349,7 +1349,7 @@ async fn create_user(user: User) -> Result<User> {
 ### 5.3 完整的异步上下文实现 / Complete Async Context Implementation
 
 ```rust
-// nexus-security/src/complete_async_context.rs
+// hiver-security/src/complete_async_context.rs
 
 use std::sync::Arc;
 use tokio::sync::RwLock;

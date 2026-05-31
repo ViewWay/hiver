@@ -10,17 +10,17 @@
 //! Connect multiple clients with: telnet 127.0.0.1:8080
 //! 使用多个客户端连接: telnet 127.0.0.1:8080
 
-use nexus_runtime::{Runtime, spawn};
-use nexus_runtime::channel::unbounded;
-use nexus_runtime::io::TcpListener;
+use hiver_runtime::{Runtime, spawn};
+use hiver_runtime::channel::unbounded;
+use hiver_runtime::io::TcpListener;
 use std::collections::HashMap;
 use std::io;
 use std::sync::{Arc, Mutex};
 
 type ClientId = usize;
 type Message = (ClientId, String);
-type Sender = nexus_runtime::Sender<Message>;
-type Receiver = nexus_runtime::Receiver<Message>;
+type Sender = hiver_runtime::Sender<Message>;
+type Receiver = hiver_runtime::Receiver<Message>;
 
 struct ChatRoom {
     clients: Arc<Mutex<HashMap<ClientId, Sender>>>,

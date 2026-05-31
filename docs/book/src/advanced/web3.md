@@ -26,7 +26,7 @@ Web3 功能包括：
 ## Quick Start / 快速开始
 
 ```rust,no_run,ignore
-use nexus_web3::{
+use hiver_web3::{
     ChainConfig, ChainId, Eip155Chain,
     LocalWallet, Address, Contract, FunctionSelector, RpcClient
 };
@@ -54,7 +54,7 @@ call_data.extend_from_slice(&selector.0);
 call_data.extend_from_slice(&[0u8; 12]); // Pad to 32 bytes
 call_data.extend_from_slice(&address.0);
 
-let result = rpc.call_contract(&usdc_address, &call_data, nexus_web3::BlockNumber::Latest).await?;
+let result = rpc.call_contract(&usdc_address, &call_data, hiver_web3::BlockNumber::Latest).await?;
 # Ok(())
 # }
 ```
@@ -66,7 +66,7 @@ let result = rpc.call_contract(&usdc_address, &call_data, nexus_web3::BlockNumbe
 ### Chain Configuration / 链配置
 
 ```rust,no_run,ignore
-use nexus_web3::{ChainConfig, ChainId, Eip155Chain};
+use hiver_web3::{ChainConfig, ChainId, Eip155Chain};
 
 // Pre-configured chains / 预配置的链
 let mainnet = ChainConfig::ethereum_mainnet();
@@ -85,11 +85,11 @@ let custom = ChainConfig::new(
 ### Wallet Management / 钱包管理
 
 ```rust,no_run,ignore
-use nexus_web3::{LocalWallet, Wallet, Address};
+use hiver_web3::{LocalWallet, Wallet, Address};
 
 # async fn run() -> Result<(), Box<dyn std::error::Error>> {
 // Create new wallet / 创建新钱包
-let wallet = LocalWallet::new(nexus_web3::Eip155Chain::ETHEREUM);
+let wallet = LocalWallet::new(hiver_web3::Eip155Chain::ETHEREUM);
 let address = wallet.address();
 println!("Address: {}", address.to_checksummed());
 
@@ -107,7 +107,7 @@ let signature = wallet.sign_hash(&hash)?;
 ### Transaction Building / 交易构建
 
 ```rust,no_run,ignore
-use nexus_web3::{
+use hiver_web3::{
     TransactionBuilder, TxType, Address,
     Eip155Chain, LocalWallet
 };
@@ -135,7 +135,7 @@ let signed_tx = wallet.sign_transaction(&tx)?;
 ### RPC Client / RPC客户端
 
 ```rust,no_run,ignore
-use nexus_web3::{RpcClient, Address, BlockNumber};
+use hiver_web3::{RpcClient, Address, BlockNumber};
 
 # async fn run() -> Result<(), Box<dyn std::error::Error>> {
 let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -157,7 +157,7 @@ let nonce = rpc.get_transaction_count(&address, BlockNumber::Latest).await?;
 ### Smart Contracts / 智能合约
 
 ```rust,no_run,ignore
-use nexus_web3::{Contract, FunctionSelector, Address, RpcClient};
+use hiver_web3::{Contract, FunctionSelector, Address, RpcClient};
 
 # async fn run() -> Result<(), Box<dyn std::error::Error>> {
 let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -175,7 +175,7 @@ call_data.extend_from_slice(&user_address.0);
 let result = contract.call_read_only(&selector, &call_data).await?;
 
 // Using ERC20 constants / 使用ERC20常量
-use nexus_web3::ERC20;
+use hiver_web3::ERC20;
 assert_eq!(ERC20::BALANCE_OF.0, [0x70, 0xa0, 0x82, 0x31]);
 assert_eq!(ERC20::TRANSFER.0, [0xa9, 0x05, 0x9c, 0xbb]);
 # Ok(())

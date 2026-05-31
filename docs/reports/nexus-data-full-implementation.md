@@ -9,31 +9,31 @@
 ### 核心模块（必须实现） / 核心模块
 
 ```
-nexus-data/
-├── nexus-data-commons/          # 核心抽象（对应 Spring Data Commons）
-├── nexus-data-rdbc/             # **R2DBC 响应式仓库（对应 Spring Data R2DBC）** ⭐ 主版本
-├── nexus-data-jdbc/             # JDBC 同步仓库（可选，对应 Spring Data JDBC）
-├── nexus-data-reactive/         # 高级响应式特性
-├── nexus-data-orm/              # ORM 集成层（对应 Spring Data JPA）
-├── nexus-data-keyvalue/         # 键值存储抽象（对应 Spring Data KeyValue）
-├── nexus-data-redis/            # Redis 支持（对应 Spring Data Redis）
-├── nexus-data-mongodb/          # MongoDB 支持（对应 Spring Data MongoDB）
-├── nexus-data-rest/             # REST 导出（对应 Spring Data REST）
-├── nexus-data-cassandra/        # Cassandra 支持（对应 Spring Data Cassandra）
-├── nexus-data-elasticsearch/    # Elasticsearch 支持（对应 Spring Data Elasticsearch）
-├── nexus-data-neo4j/            # Neo4j 支持（对应 Spring Data Neo4j）
-└── nexus-data-migrations/       # 数据库迁移工具
+hiver-data/
+├── hiver-data-commons/          # 核心抽象（对应 Spring Data Commons）
+├── hiver-data-rdbc/             # **R2DBC 响应式仓库（对应 Spring Data R2DBC）** ⭐ 主版本
+├── hiver-data-jdbc/             # JDBC 同步仓库（可选，对应 Spring Data JDBC）
+├── hiver-data-reactive/         # 高级响应式特性
+├── hiver-data-orm/              # ORM 集成层（对应 Spring Data JPA）
+├── hiver-data-keyvalue/         # 键值存储抽象（对应 Spring Data KeyValue）
+├── hiver-data-redis/            # Redis 支持（对应 Spring Data Redis）
+├── hiver-data-mongodb/          # MongoDB 支持（对应 Spring Data MongoDB）
+├── hiver-data-rest/             # REST 导出（对应 Spring Data REST）
+├── hiver-data-cassandra/        # Cassandra 支持（对应 Spring Data Cassandra）
+├── hiver-data-elasticsearch/    # Elasticsearch 支持（对应 Spring Data Elasticsearch）
+├── hiver-data-neo4j/            # Neo4j 支持（对应 Spring Data Neo4j）
+└── hiver-data-migrations/       # 数据库迁移工具
 ```
 
 ## 🎯 Phase 8: Nexus-Data 核心（6 个月） / 核心
 
-### 8.1 nexus-data-commons (1.5 个月) / 核心抽象
+### 8.1 hiver-data-commons (1.5 个月) / 核心抽象
 
 **对应：Spring Data Commons**
 
 **核心特性：**
 ```rust
-use nexus_data::{Repository, Crud, PagingAndSortingRepository};
+use hiver_data::{Repository, Crud, PagingAndSortingRepository};
 
 // 1. Repository 核心抽象
 pub trait Repository<T, ID> {
@@ -336,33 +336,33 @@ async fn main() {
 
 ---
 
-### 8.2 nexus-data-rdbc (1.5 个月) / R2DBC 仓库支持
+### 8.2 hiver-data-rdbc (1.5 个月) / R2DBC 仓库支持
 
 **对应：Spring Data R2DBC**
 
 ```rust
-use nexus_data_rdbc::{RdbcRepository, R2dbcTemplate, QueryMapper};
-use nexus_data::{Repository, PageRequest, Sort};
+use hiver_data_rdbc::{RdbcRepository, R2dbcTemplate, QueryMapper};
+use hiver_data::{Repository, PageRequest, Sort};
 
 // Entity 定义（需要标注）
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[nexus_data(table = "users")]
+#[hiver_data(table = "users")]
 pub struct User {
-    #[nexus_data(id)]
+    #[hiver_data(id)]
     pub id: i32,
-    #[nexus_data(column = "username")]
+    #[hiver_data(column = "username")]
     pub username: String,
-    #[nexus_data(column = "email")]
+    #[hiver_data(column = "email")]
     pub email: String,
-    #[nexus_data(column = "created_at")]
+    #[hiver_data(column = "created_at")]
     pub created_at: DateTime<Utc>,
-    #[nexus_data(transient)]
+    #[hiver_data(transient)]
     pub temp_field: String, // 不持久化
 }
 
 // 1. 声明式 Repository（自动实现）
 #[derive(RdbcRepository)]
-#[nexus_data(schema = "public")]
+#[hiver_data(schema = "public")]
 pub trait UserRepository: Repository<User, i32> {
     // 方法命名规则查询（自动派生）
     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
@@ -391,7 +391,7 @@ pub trait UserRepository: Repository<User, i32> {
     async fn delete_by_username(&self, username: &str) -> Result<u64, Error>;
 
     // 更新查询（Modifying）
-    #[nexus_data(modifying = true)]
+    #[hiver_data(modifying = true)]
     async fn update_last_login_by_username(
         &self,
         username: &str,
@@ -399,14 +399,14 @@ pub trait UserRepository: Repository<User, i32> {
     ) -> Result<u64, Error>;
 
     // 自定义查询注解
-    #[nexus_data(query = "SELECT * FROM users WHERE email LIKE :email%")]
+    #[hiver_data(query = "SELECT * FROM users WHERE email LIKE :email%")]
     async fn find_by_email_starts_with(
         &self,
         email: &str
     ) -> Result<Vec<User>, Error>;
 
     // 原生查询
-    #[nexus_data(
+    #[hiver_data(
         query = "SELECT * FROM users u WHERE u.username = :username",
         native_query = true
     )]
@@ -434,7 +434,7 @@ pub struct UserRepositoryImpl {
 
 #[async_trait]
 impl Repository<User, i32> for UserRepositoryImpl {
-    type Error = nexus_data_rdbc::Error;
+    type Error = hiver_data_rdbc::Error;
 
     async fn save(&self, entity: User) -> Result<User, Self::Error> {
         if entity.id == 0 {
@@ -534,19 +534,19 @@ async fn main() {
 
 ---
 
-### 8.3 nexus-data-reactive (1 个月) / 高级响应式特性
+### 8.3 hiver-data-reactive (1 个月) / 高级响应式特性
 
 **对应：Spring Data 的响应式特性增强**
 
 ```rust
-use nexus_data_reactive::{ReactiveRepository, ReactiveStream};
+use hiver_data_reactive::{ReactiveRepository, ReactiveStream};
 use futures::stream::{Stream, StreamExt};
 
 // 高级响应式 Repository
 #[derive(ReactiveRepository)]
 pub trait AdvancedUserRepository: RdbcRepository<User, i32> {
     // 响应式流式返回（R2DBC 内置）
-    // 注意：基础的流式查询已在 nexus-data-rdbc 中实现
+    // 注意：基础的流式查询已在 hiver-data-rdbc 中实现
 
     // 批量流式操作
     async fn save_all_stream(
@@ -612,12 +612,12 @@ async fn main() {
 
 ---
 
-### 8.4 nexus-data-orm (1.5 个月) / ORM 集成层
+### 8.4 hiver-data-orm (1.5 个月) / ORM 集成层
 
 **对应：Spring Data JPA**
 
 ```rust
-use nexus_data_orm::{SeaORMRepository, DieselRepository, SQLxRepository};
+use hiver_data_orm::{SeaORMRepository, DieselRepository, SQLxRepository};
 use sea_orm::{EntityTrait, DatabaseConnection};
 
 // SeaORM 集成
@@ -638,7 +638,7 @@ impl ActiveModelBehavior for ActiveModel {}
 
 // SeaORM Repository
 #[derive(SeaORMRepository)]
-#[nexus_data(orm = "seaorm")]
+#[hiver_data(orm = "seaorm")]
 pub trait UserSeaOrmRepository: Repository<Model, i32> {
     // SeaORM 特定查询
     async fn find_by_username_with_posts(
@@ -655,7 +655,7 @@ pub trait UserSeaOrmRepository: Repository<Model, i32> {
 
 // Diesel 集成
 #[derive(DieselRepository)]
-#[nexus_data(orm = "diesel")]
+#[hiver_data(orm = "diesel")]
 pub trait UserDieselRepository: Repository<User, i32> {
     async fn find_by_username_diesel(
         &self,
@@ -665,17 +665,17 @@ pub trait UserDieselRepository: Repository<User, i32> {
 
 // SQLx 集成（编译时验证）
 #[derive(SQLxRepository)]
-#[nexus_data(orm = "sqlx")]
+#[hiver_data(orm = "sqlx")]
 pub trait UserSQLxRepository: Repository<User, i32> {
     // SQLx 编译时查询验证
-    #[nexus_data(query = "SELECT * FROM users WHERE username = $1")]
+    #[hiver_data(query = "SELECT * FROM users WHERE username = $1")]
     async fn find_by_username(
         &self,
         username: &str
     ) -> Result<Option<User>, Error>;
 
     // 自动生成模型
-    #[nexus_data(query = "SELECT id, username, email FROM users")]
+    #[hiver_data(query = "SELECT id, username, email FROM users")]
     async fn find_all(&self) -> Result<Vec<User>, Error>;
 }
 
@@ -706,12 +706,12 @@ async fn main() {
 
 ---
 
-### 8.5 nexus-data-keyvalue (0.5 个月) / 键值存储
+### 8.5 hiver-data-keyvalue (0.5 个月) / 键值存储
 
 **对应：Spring Data KeyValue**
 
 ```rust
-use nexus_data_keyvalue::{KeyValueRepository, KeyValueAdapter};
+use hiver_data_keyvalue::{KeyValueRepository, KeyValueAdapter};
 
 // KeyValue 适配器
 pub trait KeyValueAdapter<K, V> {
@@ -750,17 +750,17 @@ async fn main() {
 
 ## 🚀 Phase 9: 特定数据存储（4 个月） / 特定数据存储
 
-### 9.1 nexus-data-redis (1 个月) / Redis 支持
+### 9.1 hiver-data-redis (1 个月) / Redis 支持
 
 **对应：Spring Data Redis**
 
 ```rust
-use nexus_data_redis::{RedisRepository, RedisTemplate};
-use nexus_data::{Repository, Sort, PageRequest};
+use hiver_data_redis::{RedisRepository, RedisTemplate};
+use hiver_data::{Repository, Sort, PageRequest};
 
 // Redis Repository
 #[derive(RedisRepository)]
-#[nexus_data(ttl = 3600)] // 默认过期时间
+#[hiver_data(ttl = 3600)] // 默认过期时间
 pub trait CacheRepository: Repository<Cache, String> {
     // Redis 特定操作
     async fn expire(&self, key: &str, seconds: u64) -> Result<bool, Error>;
@@ -838,19 +838,19 @@ async fn main() {
 
 ---
 
-### 9.2 nexus-data-mongodb (1 个月) / MongoDB 支持
+### 9.2 hiver-data-mongodb (1 个月) / MongoDB 支持
 
 **对应：Spring Data MongoDB**
 
 ```rust
-use nexus_data_mongodb::{MongoRepository, MongoTemplate};
+use hiver_data_mongodb::{MongoRepository, MongoTemplate};
 use mongodb::bson::{doc, Bson};
 
 // Document 定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[nexus_data(collection = "users")]
+#[hiver_data(collection = "users")]
 pub struct UserDocument {
-    #[nexus_data(id)]
+    #[hiver_data(id)]
     pub id: ObjectId,
     pub username: String,
     pub email: String,
@@ -921,14 +921,14 @@ async fn main() {
 
 ---
 
-### 9.3 nexus-data-rest (1 个月) / REST 导出
+### 9.3 hiver-data-rest (1 个月) / REST 导出
 
 **对应：Spring Data REST**
 
 ```rust
-use nexus_data_rest::{RepositoryRestResource, RepositoryRestExporter};
-use nexus_http::{Request, Response};
-use nexus_router::Router;
+use hiver_data_rest::{RepositoryRestResource, RepositoryRestExporter};
+use hiver_http::{Request, Response};
+use hiver_router::Router;
 
 // 自动导出 Repository 为 REST 资源
 #[derive(RepositoryRestResource)]
@@ -955,11 +955,11 @@ pub struct UserResource {
 // 自定义导出配置
 #[derive(RepositoryRestResource)]
 pub struct ProductResource {
-    #[nexus_data(path = "products")]
-    #[nexus_data(collection_resource_rel = "products")]
-    #[nexus_data(item_resource_rel = "product")]
-    #[nexus_data(exported = true)]
-    #[nexus_data(sorts = ["name", "price"])] // 允许排序的字段
+    #[hiver_data(path = "products")]
+    #[hiver_data(collection_resource_rel = "products")]
+    #[hiver_data(item_resource_rel = "product")]
+    #[hiver_data(exported = true)]
+    #[hiver_data(sorts = ["name", "price"])] // 允许排序的字段
     pub repository: ProductRepository,
 }
 
@@ -1032,18 +1032,18 @@ async fn main() {
 
 | Spring Data 模块 | Nexus 对等模块 | 完成度 | 优先级 | 时间 |
 |-----------------|---------------|--------|--------|------|
-| Spring Data Commons | nexus-data-commons | 0% | P0 | 1.5个月 |
-| **Spring Data R2DBC** | **nexus-data-rdbc** | **0%** | **P0** | **1.5个月** |
-| Spring Data JDBC | nexus-data-jdbc (同步版本) | 0% | P2 | 1个月 |
-| Spring Data JPA | nexus-data-orm | 0% | P0 | 1.5个月 |
-| Spring Data Reactive | nexus-data-reactive | 0% | P1 | 1个月 |
-| Spring Data KeyValue | nexus-data-keyvalue | 0% | P1 | 0.5个月 |
-| Spring Data Redis | nexus-data-redis | 0% | P1 | 1个月 |
-| Spring Data MongoDB | nexus-data-mongodb | 0% | P1 | 1个月 |
-| Spring Data REST | nexus-data-rest | 0% | P1 | 1个月 |
-| Spring Data Cassandra | nexus-data-cassandra | 0% | P2 | 1个月 |
-| Spring Data Elasticsearch | nexus-data-elasticsearch | 0% | P2 | 1个月 |
-| Spring Data Neo4j | nexus-data-neo4j | 0% | P2 | 1个月 |
+| Spring Data Commons | hiver-data-commons | 0% | P0 | 1.5个月 |
+| **Spring Data R2DBC** | **hiver-data-rdbc** | **0%** | **P0** | **1.5个月** |
+| Spring Data JDBC | hiver-data-jdbc (同步版本) | 0% | P2 | 1个月 |
+| Spring Data JPA | hiver-data-orm | 0% | P0 | 1.5个月 |
+| Spring Data Reactive | hiver-data-reactive | 0% | P1 | 1个月 |
+| Spring Data KeyValue | hiver-data-keyvalue | 0% | P1 | 0.5个月 |
+| Spring Data Redis | hiver-data-redis | 0% | P1 | 1个月 |
+| Spring Data MongoDB | hiver-data-mongodb | 0% | P1 | 1个月 |
+| Spring Data REST | hiver-data-rest | 0% | P1 | 1个月 |
+| Spring Data Cassandra | hiver-data-cassandra | 0% | P2 | 1个月 |
+| Spring Data Elasticsearch | hiver-data-elasticsearch | 0% | P2 | 1个月 |
+| Spring Data Neo4j | hiver-data-neo4j | 0% | P2 | 1个月 |
 
 **总计时间：**
 - P0 核心模块（含 R2DBC）：**5.5 个月**
@@ -1053,15 +1053,15 @@ async fn main() {
 
 ## 🎯 立即行动方案 / 立即行动方案
 
-### 第一周：nexus-data-commons
+### 第一周：hiver-data-commons
 
 **创建项目结构：**
 ```bash
 cd /Users/yimiliya/RustroverProjects/nexus/crates
-mkdir nexus-data-commons
-mkdir nexus-data-rdbc      # 注意：是 rdbc 不是 jdbc！
-mkdir nexus-data-orm
-mkdir nexus-data-reactive
+mkdir hiver-data-commons
+mkdir hiver-data-rdbc      # 注意：是 rdbc 不是 jdbc！
+mkdir hiver-data-orm
+mkdir hiver-data-reactive
 ```
 
 **开始实现核心抽象：**
@@ -1073,4 +1073,4 @@ mkdir nexus-data-reactive
 6. Example 和 Specification
 7. 审计支持
 
-**要不要我立即开始实现 nexus-data-commons？** 这是最关键的第一步！
+**要不要我立即开始实现 hiver-data-commons？** 这是最关键的第一步！

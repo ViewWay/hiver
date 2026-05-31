@@ -2,7 +2,7 @@
 
 ---
 
-[Nexus Framework / Nexus框架](./index.md)
+[Hiver Framework / Nexus框架](./index.md)
 
 ---
 

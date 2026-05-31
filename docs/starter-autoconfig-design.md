@@ -20,7 +20,7 @@ Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖
 
 | 目标 | 描述 |
 |------|------|
-| **一键启动** | `#[nexus_main]` 宏自动配置所有组件 |
+| **一键启动** | `#[hiver_main]` 宏自动配置所有组件 |
 | **自动扫描** | 自动发现和注册 `@Component`、`@Service`、`@Controller` |
 | **智能配置** | 基于条件注解的智能自动装配 |
 | **开箱即用** | 生产就绪的默认配置 |
@@ -33,7 +33,7 @@ Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     #[nexus_main] 宏展开                         │
+│                     #[hiver_main] 宏展开                         │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  1. 加载自动配置元数据                                             │
@@ -68,18 +68,18 @@ Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖
 **META-INF/nexus/autoconfiguration.imports**
 
 ```rust
-// nexus-starter/src/resources/META-INF/nexus/autoconfiguration.imports
+// hiver-starter/src/resources/META-INF/nexus/autoconfiguration.imports
 
-nexus_starter::core::CoreAutoConfiguration
-nexus_starter::web::WebServerAutoConfiguration
-nexus_starter::web::RouterAutoConfiguration
-nexus_starter::security::SecurityAutoConfiguration
-nexus_starter::security::JwtAutoConfiguration
-nexus_starter::data::DataSourceAutoConfiguration
-nexus_starter::data::TransactionAutoConfiguration
-nexus_starter::cache::CacheAutoConfiguration
-nexus_starter::schedule::ScheduleAutoConfiguration
-nexus_starter::actuator::ActuatorAutoConfiguration
+hiver_starter::core::CoreAutoConfiguration
+hiver_starter::web::WebServerAutoConfiguration
+hiver_starter::web::RouterAutoConfiguration
+hiver_starter::security::SecurityAutoConfiguration
+hiver_starter::security::JwtAutoConfiguration
+hiver_starter::data::DataSourceAutoConfiguration
+hiver_starter::data::TransactionAutoConfiguration
+hiver_starter::cache::CacheAutoConfiguration
+hiver_starter::schedule::ScheduleAutoConfiguration
+hiver_starter::actuator::ActuatorAutoConfiguration
 ```
 
 ---
@@ -99,9 +99,9 @@ nexus_starter::actuator::ActuatorAutoConfiguration
 ### 2.2 条件注解使用示例
 
 ```rust
-//! nexus-starter/src/cache/autoconfig.rs
+//! hiver-starter/src/cache/autoconfig.rs
 
-use nexus_starter::{
+use hiver_starter::{
     AutoConfiguration, AutoConfigureOrder, ConditionalOnProperty,
     ConditionalOnMissingBean, EnableConfigurationProperties,
 };
@@ -168,7 +168,7 @@ pub struct ProductionAutoConfiguration;
 
 ```
 crates/
-└── nexus-starter/                      # 统一 Starter
+└── hiver-starter/                      # 统一 Starter
     ├── src/
     │   ├── lib.rs                      # 顶层入口
     │   ├── prelude.rs                  # 预导入模块
@@ -224,7 +224,7 @@ crates/
 
 ```toml
 [package]
-name = "nexus-starter"
+name = "hiver-starter"
 version = "0.1.0"
 edition = "2024"
 
@@ -232,49 +232,49 @@ edition = "2024"
 default = ["core", "web"]
 
 # 核心功能（始终启用）
-core = ["nexus-macros", "nexus-config"]
+core = ["hiver-macros", "hiver-config"]
 
 # Web 服务器
-web = ["nexus-http", "nexus-router", "nexus-middleware"]
+web = ["hiver-http", "hiver-router", "hiver-middleware"]
 
 # 安全
-security = ["nexus-security", "web"]
+security = ["hiver-security", "web"]
 
 # 数据访问
-data = ["nexus-data-rdbc", "nexus-tx"]
+data = ["hiver-data-rdbc", "hiver-tx"]
 
 # 缓存
-cache = ["nexus-cache"]
+cache = ["hiver-cache"]
 
 # 定时任务
-schedule = ["nexus-schedule"]
+schedule = ["hiver-schedule"]
 
 # 监控端点
-actuator = ["nexus-actuator"]
+actuator = ["hiver-actuator"]
 
 # 全功能
 full = ["web", "security", "data", "cache", "schedule", "actuator"]
 
 # 测试
-test = ["full", "nexus-test"]
+test = ["full", "hiver-test"]
 
 [dependencies]
 # 框架核心
 nexus = { path = "../nexus", default-features = false }
-nexus-macros = { path = "../nexus-macros" }
-nexus-config = { path = "../nexus-config", optional = true }
+hiver-macros = { path = "../hiver-macros" }
+hiver-config = { path = "../hiver-config", optional = true }
 
 # Web
-nexus-http = { path = "../nexus-http", optional = true }
-nexus-router = { path = "../nexus-router", optional = true }
-nexus-middleware = { path = "../nexus-middleware", optional = true }
+hiver-http = { path = "../hiver-http", optional = true }
+hiver-router = { path = "../hiver-router", optional = true }
+hiver-middleware = { path = "../hiver-middleware", optional = true }
 
 # 其他模块...
-nexus-security = { path = "../nexus-security", optional = true }
-nexus-data-rdbc = { path = "../nexus-data-rdbc", optional = true }
-nexus-cache = { path = "../nexus-cache", optional = true }
-nexus-schedule = { path = "../nexus-schedule", optional = true }
-nexus-actuator = { path = "../nexus-actuator", optional = true }
+hiver-security = { path = "../hiver-security", optional = true }
+hiver-data-rdbc = { path = "../hiver-data-rdbc", optional = true }
+hiver-cache = { path = "../hiver-cache", optional = true }
+hiver-schedule = { path = "../hiver-schedule", optional = true }
+hiver-actuator = { path = "../hiver-actuator", optional = true }
 
 # 外部依赖
 serde = { workspace = true }
@@ -289,7 +289,7 @@ tokio = { workspace = true }
 ### 4.1 核心 Trait
 
 ```rust
-//! nexus-starter/src/core/autoconfig.rs
+//! hiver-starter/src/core/autoconfig.rs
 
 /// 自动配置 trait
 /// Auto-configuration trait
@@ -342,7 +342,7 @@ pub fn derive_auto_configuration(input: TokenStream) -> TokenStream {
 ### 4.2 应用上下文
 
 ```rust
-//! nexus-starter/src/core/container.rs
+//! hiver-starter/src/core/container.rs
 
 use std::any::{Any, TypeId};
 use std::collections::HashMap;
@@ -428,7 +428,7 @@ impl ApplicationContext {
 ### 5.2 配置属性注解
 
 ```rust
-//! nexus-starter/src/config/properties.rs
+//! hiver-starter/src/config/properties.rs
 
 /// 配置属性 trait
 /// Configuration properties trait
@@ -489,12 +489,12 @@ pub struct DataSourceProperties {
 ```rust
 // Cargo.toml
 [dependencies]
-nexus-starter = { version = "0.1", features = ["web"] }
+hiver-starter = { version = "0.1", features = ["web"] }
 
 // src/main.rs
-use nexus_starter::prelude::*;
+use hiver_starter::prelude::*;
 
-#[nexus_main]
+#[hiver_main]
 struct MyApp;
 
 #[controller]
@@ -516,13 +516,13 @@ fn get_user(id: u64) -> Json<User> {
 ```rust
 // Cargo.toml
 [dependencies]
-nexus-starter = { version = "0.1", features = ["full"] }
+hiver-starter = { version = "0.1", features = ["full"] }
 
 // src/main.rs
-use nexus_starter::prelude::*;
+use hiver_starter::prelude::*;
 use std::sync::Arc;
 
-#[nexus_main]
+#[hiver_main]
 #[component_scan]  // 自动扫描所有组件
 struct Application;
 
@@ -630,7 +630,7 @@ format = "json"
 
 | Spring Boot | Nexus | 说明 |
 |-------------|-------|------|
-| `@SpringBootApplication` | `#[nexus_main]` | 主应用注解 |
+| `@SpringBootApplication` | `#[hiver_main]` | 主应用注解 |
 | `@RestController` | `#[controller]` | REST 控制器 |
 | `@Service` | `#[service]` | 业务服务 |
 | `@Repository` | `#[repository]` | 数据访问层 |
@@ -668,7 +668,7 @@ format = "json"
 ## 8. 实施计划 / Implementation Plan
 
 ### Phase 1: 核心框架 (2周)
-- [ ] 创建 `nexus-starter` crate 结构
+- [ ] 创建 `hiver-starter` crate 结构
 - [ ] 实现 `AutoConfiguration` trait
 - [ ] 实现条件注解系统
 - [ ] 实现 `ApplicationContext` DI 容器
@@ -708,7 +708,7 @@ format = "json"
 
 ```rust
 // 最少配置即可运行
-#[nexus_main]
+#[hiver_main]
 struct MyApp;
 
 // 自动使用默认值
@@ -756,7 +756,7 @@ pub struct CacheAutoConfiguration;
 
 ### 下一步
 
-开始实施 Phase 1，创建 `nexus-starter` crate 的核心框架。
+开始实施 Phase 1，创建 `hiver-starter` crate 的核心框架。
 
 ---
 
@@ -812,7 +812,7 @@ pub struct CacheAutoConfiguration;
 
 #### Phase 5: 主宏 / Main Macro
 
-- [x] `#[nexus_main]` 宏实现
+- [x] `#[hiver_main]` 宏实现
   - [x] ApplicationContext 创建
   - [x] 自动配置加载
   - [x] 优先级排序
@@ -827,7 +827,7 @@ pub struct CacheAutoConfiguration;
 
 ### 进行中 / In Progress 🚧
 
-- [ ] HTTP 服务器集成（等待 nexus-http 模块完善）
+- [ ] HTTP 服务器集成（等待 hiver-http 模块完善）
 
 ### 待实现 / Pending 📋
 
@@ -851,7 +851,7 @@ pub struct CacheAutoConfiguration;
 ### 文件结构 / File Structure
 
 ```
-crates/nexus-starter/
+crates/hiver-starter/
 ├── Cargo.toml
 ├── src/
 │   ├── lib.rs
@@ -883,9 +883,9 @@ examples/
 ### 使用示例 / Usage Example
 
 ```rust,no_run,ignore
-use nexus_macros::nexus_main;
+use hiver_macros::hiver_main;
 
-#[nexus_main]
+#[hiver_main]
 struct Application;
 
 fn main() -> anyhow::Result<()> {

@@ -64,7 +64,7 @@ public class AppConfig {
 #### Nexus - 宏注解
 
 ```rust
-use nexus_macros::{service, controller, config, bean};
+use hiver_macros::{service, controller, config, bean};
 
 // #[service] - 服务层组件
 #[service]
@@ -128,7 +128,7 @@ public class SessionBean {
 #### Nexus - Bean 管理
 
 ```rust
-use nexus_core::container::{Container, Bean, Scope};
+use hiver_core::container::{Container, Bean, Scope};
 
 // Singleton (默认) - 单例
 #[bean]
@@ -191,7 +191,7 @@ public class UserService {
 #### Nexus - 注入方式
 
 ```rust
-use nexus_macros::{service, autowired};
+use hiver_macros::{service, autowired};
 
 // 1. 字段注入 (推荐)
 #[service]
@@ -331,7 +331,7 @@ public class NameComponent implements BeanNameAware {
 #### Nexus - 上下文注入
 
 ```rust
-use nexus_core::context::{ApplicationContext, Environment};
+use hiver_core::context::{ApplicationContext, Environment};
 
 #[service]
 pub struct BeanComponent {
@@ -442,7 +442,7 @@ public class UserService {
 #### Nexus - 数据访问层
 
 ```rust
-use nexus_macros::{service, repository, transactional};
+use hiver_macros::{service, repository, transactional};
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 
@@ -638,7 +638,7 @@ public interface UserMapper {
 
 ```rust
 use sqlx::{PgPool, Row};
-use nexus_macros::repository;
+use hiver_macros::repository;
 
 #[repository]
 pub struct UserMapper {
@@ -729,7 +729,7 @@ spring:
 #### Nexus - 配置结构
 
 ```rust
-#[nexus_macros::config(prefix = "database")]
+#[hiver_macros::config(prefix = "database")]
 pub struct DatabaseConfig {
     url: String,
     username: String,
@@ -790,8 +790,8 @@ public class UserService {
 #### Nexus - #[transactional]
 
 ```rust
-use nexus_macros::transactional;
-use nexus_tx::TransactionManager;
+use hiver_macros::transactional;
+use hiver_tx::TransactionManager;
 
 #[service]
 pub struct UserService {
@@ -932,10 +932,10 @@ public class GlobalExceptionHandler {
 
 ```rust
 // 1. 添加依赖
-// nexus-validation = { path = "../crates/nexus-validation" }
+// hiver-validation = { path = "../crates/hiver-validation" }
 // validator = { version = "0.16", features = ["derive"] }
 
-use nexus_macros::{validate, controller, post};
+use hiver_macros::{validate, controller, post};
 use validator::{Validate, ValidationError};
 
 // 2. 定义校验规则
@@ -996,7 +996,7 @@ impl UniqueUsernameValidator {
 }
 
 // 5. 全局异常处理
-use nexus_core::error::ExceptionHandler;
+use hiver_core::error::ExceptionHandler;
 
 #[error_handler]
 pub struct GlobalExceptionHandler;
@@ -1099,7 +1099,7 @@ public class GlobalExceptionHandler {
 #### Nexus - 全局异常处理
 
 ```rust
-use nexus_core::error::{ErrorHandler, Error, ErrorKind};
+use hiver_core::error::{ErrorHandler, Error, ErrorKind};
 use std::collections::HashMap;
 
 pub struct GlobalExceptionHandler;
@@ -1297,7 +1297,7 @@ management:
 
 ```rust
 // 1. 配置结构体定义
-use nexus_macros::config;
+use hiver_macros::config;
 use serde::Deserialize;
 
 #[config(prefix = "server")]
@@ -1644,7 +1644,7 @@ public class EmailService {
 
 ```rust
 // 1. 配置属性结构
-use nexus_macros::config;
+use hiver_macros::config;
 
 #[config(prefix = "app")]
 #[derive(Clone)]
@@ -1701,7 +1701,7 @@ impl UserService {
 }
 
 // 3. @Value 等价注入
-use nexus_macros::value;
+use hiver_macros::value;
 
 #[value("${app.email.host:localhost}")]
 static EMAIL_HOST: &str = "localhost";

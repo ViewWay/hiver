@@ -79,31 +79,31 @@ ignore:
 flags:
   runtime:
     paths:
-      - crates/nexus-runtime/
+      - crates/hiver-runtime/
     carryforward: true
   core:
     paths:
-      - crates/nexus-core/
+      - crates/hiver-core/
     carryforward: true
   http:
     paths:
-      - crates/nexus-http/
-      - crates/nexus-router/
-      - crates/nexus-extractors/
-      - crates/nexus-response/
-      - crates/nexus-middleware/
+      - crates/hiver-http/
+      - crates/hiver-router/
+      - crates/hiver-extractors/
+      - crates/hiver-response/
+      - crates/hiver-middleware/
     carryforward: true
   resilience:
     paths:
-      - crates/nexus-resilience/
+      - crates/hiver-resilience/
     carryforward: true
   observability:
     paths:
-      - crates/nexus-observability/
+      - crates/hiver-observability/
     carryforward: true
   web3:
     paths:
-      - crates/nexus-web3/
+      - crates/hiver-web3/
     carryforward: true
 
 # ==============================================================================
@@ -192,38 +192,38 @@ component_management:
   individual_components:
     - component_name: runtime
       paths:
-        - crates/nexus-runtime/
+        - crates/hiver-runtime/
     - component_name: core
       paths:
-        - crates/nexus-core/
+        - crates/hiver-core/
     - component_name: http
       paths:
-        - crates/nexus-http/
-        - crates/nexus-router/
-        - crates/nexus-extractors/
-        - crates/nexus-response/
-        - crates/nexus-middleware/
+        - crates/hiver-http/
+        - crates/hiver-router/
+        - crates/hiver-extractors/
+        - crates/hiver-response/
+        - crates/hiver-middleware/
     - component_name: resilience
       paths:
-        - crates/nexus-resilience/
+        - crates/hiver-resilience/
     - component_name: observability
       paths:
-        - crates/nexus-observability/
+        - crates/hiver-observability/
     - component_name: config
       paths:
-        - crates/nexus-config/
+        - crates/hiver-config/
     - component_name: cache
       paths:
-        - crates/nexus-cache/
+        - crates/hiver-cache/
     - component_name: security
       paths:
-        - crates/nexus-security/
+        - crates/hiver-security/
     - component_name: web3
       paths:
-        - crates/nexus-web3/
+        - crates/hiver-web3/
     - component_name: macros
       paths:
-        - crates/nexus-macros/
+        - crates/hiver-macros/
 
 # ==============================================================================
 # Upload Configuration / 上传配置

@@ -29,28 +29,28 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             artifact_name: nexus
-            asset_name: nexus-x86_64-unknown-linux-gnu
+            asset_name: hiver-x86_64-unknown-linux-gnu
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
             artifact_name: nexus
-            asset_name: nexus-aarch64-unknown-linux-gnu
+            asset_name: hiver-aarch64-unknown-linux-gnu
             use_cross: true
 
           # macOS / macOS
           - target: x86_64-apple-darwin
             os: macos-latest
             artifact_name: nexus
-            asset_name: nexus-x86_64-apple-darwin
+            asset_name: hiver-x86_64-apple-darwin
           - target: aarch64-apple-darwin
             os: macos-latest
             artifact_name: nexus
-            asset_name: nexus-aarch64-apple-darwin
+            asset_name: hiver-aarch64-apple-darwin
 
           # Windows / Windows
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             artifact_name: nexus.exe
-            asset_name: nexus-x86_64-pc-windows-msvc
+            asset_name: hiver-x86_64-pc-windows-msvc
 
     steps:
       - name: Checkout repository
@@ -133,11 +133,11 @@ jobs:
 
             | Platform | Binary | Download |
             |----------|--------|----------|
-            | Linux x86_64 | nexus-x86_64-unknown-linux-gnu | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/nexus-x86_64-unknown-linux-gnu) |
-            | Linux ARM64 | nexus-aarch64-unknown-linux-gnu | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/nexus-aarch64-unknown-linux-gnu) |
-            | macOS x86_64 | nexus-x86_64-apple-darwin | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/nexus-x86_64-apple-darwin) |
-            | macOS ARM64 | nexus-aarch64-apple-darwin | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/nexus-aarch64-apple-darwin) |
-            | Windows x86_64 | nexus-x86_64-pc-windows-msvc.exe | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/nexus-x86_64-pc-windows-msvc.exe) |
+            | Linux x86_64 | hiver-x86_64-unknown-linux-gnu | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/hiver-x86_64-unknown-linux-gnu) |
+            | Linux ARM64 | hiver-aarch64-unknown-linux-gnu | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/hiver-aarch64-unknown-linux-gnu) |
+            | macOS x86_64 | hiver-x86_64-apple-darwin | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/hiver-x86_64-apple-darwin) |
+            | macOS ARM64 | hiver-aarch64-apple-darwin | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/hiver-aarch64-apple-darwin) |
+            | Windows x86_64 | hiver-x86_64-pc-windows-msvc.exe | [Download](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/hiver-x86_64-pc-windows-msvc.exe) |
 
             ### 🔐 Verification
 
@@ -145,10 +145,10 @@ jobs:
 
             ```bash
             # Linux/macOS
-            sha256sum -c nexus-*.sha256
+            sha256sum -c hiver-*.sha256
 
             # Windows (PowerShell)
-            Get-FileHash nexus-*.exe -Algorithm SHA256
+            Get-FileHash hiver-*.exe -Algorithm SHA256
             ```
 
             ### 📚 Documentation

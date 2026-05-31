@@ -10,7 +10,7 @@
 //! cargo run --example pre_authorize_example
 //! ```
 
-use nexus_data_annotations::{PreAuthorize, CrudRepository, PagingRepository, Page, PageRequest};
+use hiver_data_annotations::{PreAuthorize, CrudRepository, PagingRepository, Page, PageRequest};
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 

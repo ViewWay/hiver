@@ -13,27 +13,27 @@
 
 | 序号 | Spring 项目 | Nexus 对等 Crate | 完成度 | 优先级 | 状态说明 |
 |------|------------|-----------------|--------|--------|----------|
-| 1 | Spring Boot | nexus-core + nexus-starter | **90%** | P0 | IoC/DI、自动配置、Starter 已实现 |
-| 2 | Spring Framework | nexus-core | **95%** | P0 | Bean 生命周期、条件装配、响应式完整 |
-| 3 | Spring Data | nexus-data-* | **85%** | P0 | RDBC/ORM/MongoDB/Redis 可用，Annotations/Macros 已完善 |
-| 4 | Spring Security | nexus-security | **95%** | P0 | JWT/OAuth2/RBAC/CSRF/ACL/RememberMe 完整 |
-| 5 | Spring Cloud | nexus-cloud | **85%** | P1 | 服务发现/网关/负载均衡/熔断/Feign/Gateway过滤器完整 |
-| 6 | Spring Integration | nexus-integration | **85%** | P2 | EIP 模式/ServiceActivator/拦截器/消息存储完整 |
-| 7 | Spring Batch | nexus-batch | **90%** | P2 | Job/Step/Chunk/分区/流程/SQL 持久化/JobOperator/FaultTolerantStep |
-| 8 | Spring Session | nexus-session | **90%** | P2 | 分布式会话/Redis 存储/SessionEvent/ConcurrentSessionControl |
-| 9 | Spring AMQP | nexus-amqp | **90%** | P1 | 死信队列/消息确认/高级转换器/XmlMessageConverter |
-| 10 | Spring Kafka | nexus-kafka | **90%** | P1 | 消费者组管理/Offset管理/事务生产者 |
-| 11 | Spring REST Docs | nexus-openapi | **90%** | P1 | OpenAPI 3.0 完整规范生成/路由扫描/Swagger UI/ReDoc |
-| 12 | Spring HATEOAS | nexus-hateoas | **90%** | P3 | HAL 完整，Assembler/Traverson 完善 |
-| 13 | Spring Modulith | nexus-modulith | **85%** | P3 | @Module/领域事件/模块边界验证已实现 |
-| 14 | Spring GraphQL | nexus-graphql | **90%** | P2 | async-graphql 集成/Subscription/Persisted Queries 完整 |
-| 15 | Spring Statemachine | nexus-statemachine | **90%** | P3 | 持久化/Timer/Fork-Join/可视化完整 |
-| 16 | Spring Vault | nexus-vault | **90%** | P2 | KV v1/v2/Transit/PKI/AppRole/JwtAuth/Lease 完整 |
-| 17 | Spring LDAP | nexus-ldap | **90%** | P2 | LdapTemplate/ODM/连接池/AdvancedOperations/LDIF |
+| 1 | Spring Boot | hiver-core + hiver-starter | **90%** | P0 | IoC/DI、自动配置、Starter 已实现 |
+| 2 | Spring Framework | hiver-core | **95%** | P0 | Bean 生命周期、条件装配、响应式完整 |
+| 3 | Spring Data | hiver-data-* | **85%** | P0 | RDBC/ORM/MongoDB/Redis 可用，Annotations/Macros 已完善 |
+| 4 | Spring Security | hiver-security | **95%** | P0 | JWT/OAuth2/RBAC/CSRF/ACL/RememberMe 完整 |
+| 5 | Spring Cloud | hiver-cloud | **85%** | P1 | 服务发现/网关/负载均衡/熔断/Feign/Gateway过滤器完整 |
+| 6 | Spring Integration | hiver-integration | **85%** | P2 | EIP 模式/ServiceActivator/拦截器/消息存储完整 |
+| 7 | Spring Batch | hiver-batch | **90%** | P2 | Job/Step/Chunk/分区/流程/SQL 持久化/JobOperator/FaultTolerantStep |
+| 8 | Spring Session | hiver-session | **90%** | P2 | 分布式会话/Redis 存储/SessionEvent/ConcurrentSessionControl |
+| 9 | Spring AMQP | hiver-amqp | **90%** | P1 | 死信队列/消息确认/高级转换器/XmlMessageConverter |
+| 10 | Spring Kafka | hiver-kafka | **90%** | P1 | 消费者组管理/Offset管理/事务生产者 |
+| 11 | Spring REST Docs | hiver-openapi | **90%** | P1 | OpenAPI 3.0 完整规范生成/路由扫描/Swagger UI/ReDoc |
+| 12 | Spring HATEOAS | hiver-hateoas | **90%** | P3 | HAL 完整，Assembler/Traverson 完善 |
+| 13 | Spring Modulith | hiver-modulith | **85%** | P3 | @Module/领域事件/模块边界验证已实现 |
+| 14 | Spring GraphQL | hiver-graphql | **90%** | P2 | async-graphql 集成/Subscription/Persisted Queries 完整 |
+| 15 | Spring Statemachine | hiver-statemachine | **90%** | P3 | 持久化/Timer/Fork-Join/可视化完整 |
+| 16 | Spring Vault | hiver-vault | **90%** | P2 | KV v1/v2/Transit/PKI/AppRole/JwtAuth/Lease 完整 |
+| 17 | Spring LDAP | hiver-ldap | **90%** | P2 | LdapTemplate/ODM/连接池/AdvancedOperations/LDIF |
 | 18 | Spring Web Flow | — | **缺失** | P3 | 未规划 |
-| 19 | Spring Shell | nexus-shell | **90%** | P3 | REPL/命令注册/Tab 补全完整 |
-| 20 | Spring AI | nexus-ai + nexus-agent | **95%** | P3 | Chat/Embedding/Prompt/ToolCalling/RAG/ChatMemory/Agent Framework |
-| 21 | Spring Authorization Server | nexus-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |
+| 19 | Spring Shell | hiver-shell | **90%** | P3 | REPL/命令注册/Tab 补全完整 |
+| 20 | Spring AI | hiver-ai + hiver-agent | **95%** | P3 | Chat/Embedding/Prompt/ToolCalling/RAG/ChatMemory/Agent Framework |
+| 21 | Spring Authorization Server | hiver-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |
 
 ### 整体统计
 
@@ -56,32 +56,32 @@
 
 | 功能 | Spring Boot | Nexus | 状态 |
 |------|------------|-------|------|
-| 自动配置 | @EnableAutoConfiguration | `nexus-starter` + feature flags | **已实现** |
-| Starter 依赖 | spring-boot-starter-web | `nexus-starter` features: core/web | **已实现** |
+| 自动配置 | @EnableAutoConfiguration | `hiver-starter` + feature flags | **已实现** |
+| Starter 依赖 | spring-boot-starter-web | `hiver-starter` features: core/web | **已实现** |
 | 嵌入式服务器 | Tomcat/Jetty/Undertow | 自定义运行时 (io-uring/epoll/kqueue) | **优势** |
-| 外部化配置 | @ConfigurationProperties | `nexus-config` + profiles + TOML/YAML | **已实现** |
-| 生产指标 | Actuator /metrics | `nexus-actuator` | **已实现** |
-| 健康检查 | Actuator /health | `nexus-actuator` | **已实现** |
-| Banner | 自定义 banner | `nexus-observability` StartupLogger | **已实现** |
+| 外部化配置 | @ConfigurationProperties | `hiver-config` + profiles + TOML/YAML | **已实现** |
+| 生产指标 | Actuator /metrics | `hiver-actuator` | **已实现** |
+| 健康检查 | Actuator /health | `hiver-actuator` | **已实现** |
+| Banner | 自定义 banner | `hiver-observability` StartupLogger | **已实现** |
 
 ### 1.2 配置管理
 
 | 功能 | Spring Boot | Nexus | 状态 |
 |------|------------|-------|------|
-| @ConfigurationProperties | ✅ | `nexus-config` Config struct | **85%** |
+| @ConfigurationProperties | ✅ | `hiver-config` Config struct | **85%** |
 | 多环境配置 | application-{profile}.yml | `Environment` + Profile enum | **已实现** |
 | 配置刷新 | @RefreshScope | 文件监听 + 热加载 | **部分实现** |
-| 配置中心集成 | Spring Cloud Config | `nexus-cloud` config client | **80%** |
+| 配置中心集成 | Spring Cloud Config | `hiver-cloud` config client | **80%** |
 | YAML/Properties/TOML | ✅ | ✅ 全部支持 | **已实现** |
-| 加密配置 | jasypt | `nexus-config` ConfigEncryptor AES-256-GCM | **已实现** |
+| 加密配置 | jasypt | `hiver-config` ConfigEncryptor AES-256-GCM | **已实现** |
 
 ### 1.3 测试支持
 
 | 功能 | Spring Boot | Nexus | 状态 |
 |------|------------|-------|------|
-| @SpringBootTest | ✅ | `nexus-test` + TestExecutionListener + TestPropertySource | **90%** |
+| @SpringBootTest | ✅ | `hiver-test` + TestExecutionListener + TestPropertySource | **90%** |
 | @MockBean | Mockito | `MockBean` trait 替换 | **已实现** |
-| TestContainers | ✅ | `nexus-test` testcontainers 集成 | **已实现** |
+| TestContainers | ✅ | `hiver-test` testcontainers 集成 | **已实现** |
 | 集成测试 | ✅ | 5 个容器目标 | **已实现** |
 
 ---
@@ -96,26 +96,26 @@
 | @Autowired | ✅ | `#[autowired]` | **已实现** |
 | @Qualifier | ✅ | `#[qualifier]` | **已实现** |
 | @Primary | ✅ | 条件装配支持 | **已实现** |
-| @Lazy | ✅ | `nexus-core` BeanStore lazy flag | **已实现** |
+| @Lazy | ✅ | `hiver-core` BeanStore lazy flag | **已实现** |
 | @Scope | Request/Session/Prototype | `#[scope]` | **已实现** |
 | @Profile | ✅ | Profile enum + 条件装配 | **已实现** |
 | @Conditional | @ConditionalOnProperty | `#[conditional_on_property]` 等 | **已实现** |
 | Bean 生命周期 | @PostConstruct/@PreDestroy | ✅ | **已实现** |
 | ApplicationContext | ✅ | ✅ 完整实现 | **已实现** |
 | BeanFactory | ✅ | ✅ | **已实现** |
-| 事件机制 | ApplicationEvent | `nexus-events` | **90%** |
-| 国际化 | MessageSource | `nexus-i18n` | **85%** |
+| 事件机制 | ApplicationEvent | `hiver-events` | **90%** |
+| 国际化 | MessageSource | `hiver-i18n` | **85%** |
 
 ### 2.2 AOP
 
 | 功能 | Spring Framework | Nexus | 状态 |
 |------|-----------------|-------|------|
-| @Aspect | ✅ | `nexus-aop` + ProceedingJoinPoint + AdviceChain | **90%** |
+| @Aspect | ✅ | `hiver-aop` + ProceedingJoinPoint + AdviceChain | **90%** |
 | @Before | ✅ | ✅ | **已实现** |
 | @After | ✅ | ✅ | **已实现** |
 | @Around | ✅ | ✅ | **已实现** |
-| @AfterReturning | ✅ | ✅ `nexus-aop` | **已实现** |
-| @AfterThrowing | ✅ | ✅ `nexus-aop` | **已实现** |
+| @AfterReturning | ✅ | ✅ `hiver-aop` | **已实现** |
+| @AfterThrowing | ✅ | ✅ `hiver-aop` | **已实现** |
 | @Pointcut | ✅ | ✅ | **已实现** |
 | JoinPoint | ✅ | ✅ | **已实现** |
 | AspectRegistry | ✅ | ✅ | **已实现** |
@@ -133,7 +133,7 @@
 
 | 功能 | Spring Framework | Nexus | 状态 |
 |------|-----------------|-------|------|
-| @Valid | ✅ | `nexus-validation` | **90%** |
+| @Valid | ✅ | `hiver-validation` | **90%** |
 | @Validated | ✅ | ✅ 分组验证 | **已实现** |
 | @NotNull | ✅ | ✅ | **已实现** |
 | @Size | ✅ | ✅ | **已实现** |
@@ -148,7 +148,7 @@
 
 | 功能 | Spring Framework | Nexus | 状态 |
 |------|-----------------|-------|------|
-| SpEL 表达式 | ✅ | `nexus-spel` 安全表达式求值器 | **已实现** |
+| SpEL 表达式 | ✅ | `hiver-spel` 安全表达式求值器 | **已实现** |
 | 条件表达式 | @ConditionalOnExpression | 简化版条件注解 | **已实现** |
 | @Value 表达式 | ✅ | 占位符 ${...} + SpEL | **已实现** |
 
@@ -174,7 +174,7 @@
 | 功能 | Spring Security | Nexus | 状态 |
 |------|----------------|-------|------|
 | @PreAuthorize | ✅ | ✅ SpEL 表达式 | **已实现** |
-| @PostAuthorize | ✅ | ✅ `nexus-security` PostAuthorize | **已实现** |
+| @PostAuthorize | ✅ | ✅ `hiver-security` PostAuthorize | **已实现** |
 | @Secured | ✅ | ✅ | **已实现** |
 | @RolesAllowed | ✅ | ✅ | **已实现** |
 | RBAC | ✅ | ✅ RbacManager + 审计 | **已实现** |
@@ -195,14 +195,14 @@
 | 功能 | Spring Security | Nexus | 状态 |
 |------|----------------|-------|------|
 | CsrfFilter | ✅ | CsrfTokenRepository | **90%** |
-| CORS | ✅ | `nexus-middleware` CORS | **已实现** |
+| CORS | ✅ | `hiver-middleware` CORS | **已实现** |
 | Security Headers | ✅ | `SecurityHeadersMiddleware` + `SecurityHeadersConfig` | **已实现** |
 
 ### 3.5 会话管理
 
 | 功能 | Spring Session | Nexus | 状态 |
 |------|---------------|-------|------|
-| 分布式会话 | ✅ | `nexus-session` | **85%** |
+| 分布式会话 | ✅ | `hiver-session` | **85%** |
 | Redis 会话存储 | ✅ | ✅ | **已实现** |
 | 内存会话存储 | ✅ | ✅ | **已实现** |
 | 会话过期 | ✅ | ✅ | **已实现** |
@@ -215,7 +215,7 @@
 
 | 功能 | Spring Data | Nexus | 状态 |
 |------|-----------|-------|------|
-| CrudRepository | ✅ | `nexus-data-commons` Repository trait | **已实现** |
+| CrudRepository | ✅ | `hiver-data-commons` Repository trait | **已实现** |
 | PagingAndSortingRepository | ✅ | Page/Sort 结构 | **已实现** |
 | 方法名派生查询 | findByXxxAndYyy | MethodName::parse() | **已实现** |
 | @Query 注解 | ✅ | `#[Query]` 宏 | **已实现** |
@@ -228,22 +228,22 @@
 
 | 功能 | Spring Data | Nexus | 状态 |
 |------|-----------|-------|------|
-| R2DBC (响应式 SQL) | ✅ | `nexus-data-rdbc` 连接池/Repository | **85%** |
-| ORM | JPA/Hibernate | `nexus-data-orm` ActiveRecord/QueryBuilder | **80%** |
+| R2DBC (响应式 SQL) | ✅ | `hiver-data-rdbc` 连接池/Repository | **85%** |
+| ORM | JPA/Hibernate | `hiver-data-orm` ActiveRecord/QueryBuilder | **80%** |
 | SeaORM 集成 | — | ✅ feature-gated | **已实现** |
 | Diesel 集成 | — | ✅ feature-gated | **已实现** |
 | SQLx 集成 | — | ✅ feature-gated | **已实现** |
-| MongoDB | ✅ | `nexus-data-mongodb` MongoTemplate | **85%** |
-| Redis | ✅ | `nexus-data-redis` RedisTemplate/分布式锁 | **85%** |
-| 数据库迁移 | Flyway | `nexus-flyway` 多数据库支持 | **80%** |
-| 事务管理 | @Transactional | `nexus-tx` 隔离级别/传播行为 | **85%** |
+| MongoDB | ✅ | `hiver-data-mongodb` MongoTemplate | **85%** |
+| Redis | ✅ | `hiver-data-redis` RedisTemplate/分布式锁 | **85%** |
+| 数据库迁移 | Flyway | `hiver-flyway` 多数据库支持 | **80%** |
+| 事务管理 | @Transactional | `hiver-tx` 隔离级别/传播行为 | **85%** |
 
 ### 4.3 数据层 Model 宏
 
 | 功能 | Spring Data | Nexus | 状态 |
 |------|-----------|-------|------|
-| @Entity | ✅ | `nexus-data-annotations` + 生命周期回调 + JoinColumn/JoinTable | **90%** |
-| Model derive | — | `nexus-data-macros` | **65%** |
+| @Entity | ✅ | `hiver-data-annotations` + 生命周期回调 + JoinColumn/JoinTable | **90%** |
+| Model derive | — | `hiver-data-macros` | **65%** |
 | 关系映射 | @OneToMany/@ManyToOne | HasMany/HasOne/BelongsTo | **已实现** |
 
 ---
@@ -254,7 +254,7 @@
 
 | 功能 | Spring Cloud | Nexus | 状态 |
 |------|-------------|-------|------|
-| Eureka Client | ✅ | `nexus-cloud` Eureka 支持 | **80%** |
+| Eureka Client | ✅ | `hiver-cloud` Eureka 支持 | **80%** |
 | Consul | ✅ | ✅ HTTP API 集成 | **已实现** |
 | etcd | — | ✅ | **已实现** |
 | 负载均衡 | @LoadBalanced | RoundRobin/WeightedRoundRobin/ConsistentHash | **90%** |
@@ -265,7 +265,7 @@
 
 | 功能 | Spring Cloud Gateway | Nexus | 状态 |
 |------|---------------------|-------|------|
-| Route Locator | ✅ | `nexus-cloud` 路由 | **85%** |
+| Route Locator | ✅ | `hiver-cloud` 路由 | **85%** |
 | Predicate/Filter | ✅ | ✅ AddRequestHeader/StripPrefix/PrefixPath/SetPath/SetStatus/RequestSize | **已实现** |
 | Glob 路径匹配 | ✅ | ✅ | **已实现** |
 | Timeout/Retry 过滤器 | ✅ | ✅ | **已实现** |
@@ -276,7 +276,7 @@
 
 | 功能 | Spring Cloud OpenFeign | Nexus | 状态 |
 |------|----------------------|-------|------|
-| @FeignClient | ✅ | `nexus-cloud` Feign 宏 | **85%** |
+| @FeignClient | ✅ | `hiver-cloud` Feign 宏 | **85%** |
 | 重试/降级 | ✅ | ✅ RetryConfig/Fallback | **已实现** |
 | 拦截器 | ✅ | ✅ RequestInterceptor | **已实现** |
 | 负载均衡集成 | ✅ | ✅ | **已实现** |
@@ -290,7 +290,7 @@
 | 功能 | Spring Kafka | Nexus | 状态 |
 |------|-------------|-------|------|
 | KafkaTemplate | ✅ | Producer/Consumer | **75%** |
-| @KafkaListener | ✅ | ✅ `nexus-kafka` KafkaListener | **已实现** |
+| @KafkaListener | ✅ | ✅ `hiver-kafka` KafkaListener | **已实现** |
 | 消费者组 | ✅ | ✅ 基础支持 | **部分** |
 | 序列化/反序列化 | ✅ | ✅ Bytes/String/JSON | **已实现** |
 | 偏移量管理 | ✅ | ✅ 基础自动/手动提交 | **部分** |
@@ -308,7 +308,7 @@
 
 | 功能 | Spring WebSocket | Nexus | 状态 |
 |------|-----------------|-------|------|
-| STOMP 协议 | ✅ | `nexus-websocket-stomp` 1.2 | **85%** |
+| STOMP 协议 | ✅ | `hiver-websocket-stomp` 1.2 | **85%** |
 | Pub/Sub | ✅ | ✅ Destination 路由 | **已实现** |
 | 事务支持 | ✅ | ✅ | **已实现** |
 | ACK/NACK | ✅ | ✅ | **已实现** |
@@ -322,19 +322,19 @@
 
 | 功能 | Spring Cloud Sleuth | Nexus | 状态 |
 |------|---------------------|-------|------|
-| TraceId 生成 | ✅ | `nexus-observability` OpenTelemetry | **85%** |
+| TraceId 生成 | ✅ | `hiver-observability` OpenTelemetry | **85%** |
 | Span | ✅ | ✅ | **已实现** |
 | 上下文传播 | ✅ | ✅ | **已实现** |
-| Zipkin 导出 | ✅ | ✅ `nexus-observability` zipkin feature | **已实现** |
+| Zipkin 导出 | ✅ | ✅ `hiver-observability` zipkin feature | **已实现** |
 
 ### 7.2 指标
 
 | 功能 | Micrometer | Nexus | 状态 |
 |------|-----------|-------|------|
-| Counter/Gauge | ✅ | `nexus-observability` | **85%** |
+| Counter/Gauge | ✅ | `hiver-observability` | **85%** |
 | Histogram | ✅ | ✅ | **已实现** |
-| Prometheus 导出 | ✅ | `nexus-micrometer` Prometheus/Histogram/OTLP | **85%** |
-| Actuator 端点 | ✅ | `nexus-actuator` health/info/metrics/env/beans/loggers/mappings | **90%** |
+| Prometheus 导出 | ✅ | `hiver-micrometer` Prometheus/Histogram/OTLP | **85%** |
+| Actuator 端点 | ✅ | `hiver-actuator` health/info/metrics/env/beans/loggers/mappings | **90%** |
 
 ---
 
@@ -355,7 +355,7 @@
 
 | 功能 | Resilience4j | Nexus | 状态 |
 |------|-------------|-------|------|
-| Circuit Breaker | ✅ | `nexus-resilience` 状态机 | **85%** |
+| Circuit Breaker | ✅ | `hiver-resilience` 状态机 | **85%** |
 | Rate Limiter | ✅ | ✅ 令牌桶 | **85%** |
 | Retry | ✅ | ✅ 指数退避 | **85%** |
 | Timeout | ✅ | ✅ 指标跟踪 | **85%** |
@@ -369,7 +369,7 @@
 
 | 功能 | Spring gRPC | Nexus | 状态 |
 |------|------------|-------|------|
-| Server/Client | ✅ | `nexus-grpc` (tonic) | **85%** |
+| Server/Client | ✅ | `hiver-grpc` (tonic) | **85%** |
 | Interceptors | ✅ | ✅ | **已实现** |
 | 流式 RPC | ✅ | ✅ Server/Client/Bidi streaming | **已实现** |
 | 健康检查 | ✅ | ✅ grpc.health.v1 | **已实现** |
@@ -387,7 +387,7 @@
 
 | 功能 | Spring Batch | Nexus | 状态 |
 |------|------------|-------|------|
-| Job/Step | ✅ | `nexus-batch` 完整框架 | **80%** |
+| Job/Step | ✅ | `hiver-batch` 完整框架 | **80%** |
 | ItemReader/Writer | ✅ | ✅ 多种实现 | **已实现** |
 | Chunk 处理 | ✅ | ✅ 事务性 Chunk | **已实现** |
 | JobRepository | ✅ | ✅ 内存 + SQL 持久化 | **已实现** |
@@ -396,7 +396,7 @@
 
 | 功能 | Spring Integration | Nexus | 状态 |
 |------|--------------------|-------|------|
-| MessageChannel | ✅ | `nexus-integration` EIP 模式 | **85%** |
+| MessageChannel | ✅ | `hiver-integration` EIP 模式 | **85%** |
 | Transformer/Filter | ✅ | ✅ | **已实现** |
 | Channel Adapter | ✅ | ✅ ServiceActivator | **已实现** |
 
@@ -404,7 +404,7 @@
 
 | 功能 | Spring Vault | Nexus | 状态 |
 |------|------------|-------|------|
-| VaultTemplate | ✅ | `nexus-vault` | **80%** |
+| VaultTemplate | ✅ | `hiver-vault` | **80%** |
 | KV v1/v2 | ✅ | ✅ | **已实现** |
 | Transit 加密 | ✅ | ✅ | **已实现** |
 | PKI | ✅ | ✅ | **已实现** |
@@ -415,7 +415,7 @@
 
 | 功能 | Spring LDAP | Nexus | 状态 |
 |------|------------|-------|------|
-| LdapTemplate | ✅ | `nexus-ldap` | **75%** |
+| LdapTemplate | ✅ | `hiver-ldap` | **75%** |
 | ODM | ✅ | ✅ | **已实现** |
 | 连接池 | ✅ | ✅ | **已实现** |
 | TypedRepository | ✅ | ✅ | **已实现** |
@@ -424,7 +424,7 @@
 
 | 功能 | Spring Shell | Nexus | 状态 |
 |------|-------------|-------|------|
-| @ShellMethod | ✅ | `nexus-shell` 命令注册 | **90%** |
+| @ShellMethod | ✅ | `hiver-shell` 命令注册 | **90%** |
 | Tab 补全 | ✅ | ✅ | **已实现** |
 | 多格式输出 | — | ✅ text/JSON/table | **优势** |
 | 内置命令 | ✅ | ✅ help/clear/exit/history | **已实现** |
@@ -433,20 +433,20 @@
 
 | 功能 | Spring AI | Nexus | 状态 |
 |------|----------|-------|------|
-| Chat Models | ✅ | `nexus-ai` OpenAI/Anthropic/Ollama | **95%** |
+| Chat Models | ✅ | `hiver-ai` OpenAI/Anthropic/Ollama | **95%** |
 | Embeddings | ✅ | ✅ | **已实现** |
 | Prompt 模板 | ✅ | ✅ | **已实现** |
 | Tool Calling | ✅ | ✅ | **已实现** |
 | Vector Store | ✅ | ✅ InMemoryVectorStore + 相似度搜索 | **已实现** |
 | 对话记忆 | ✅ | ✅ Buffer/Summary/Window | **已实现** |
 | RAG Pipeline | ✅ | ✅ DocumentChunker/ContextBuilder | **已实现** |
-| Agent Framework | — | ✅ `nexus-agent` ReAct/Chain/Router | **优势** |
+| Agent Framework | — | ✅ `hiver-agent` ReAct/Chain/Router | **优势** |
 
 ### 9.9 国际化
 
 | 功能 | Spring i18n | Nexus | 状态 |
 |------|------------|-------|------|
-| MessageSource | ✅ | `nexus-i18n` | **85%** |
+| MessageSource | ✅ | `hiver-i18n` | **85%** |
 | ResourceBundle | ✅ | ✅ | **已实现** |
 | Locale 解析 | ✅ | ✅ | **已实现** |
 | 参数格式化 | ✅ | ✅ | **已实现** |
@@ -455,7 +455,7 @@
 
 | 功能 | Lombok | Nexus | 状态 |
 |------|--------|-------|------|
-| @Data | ✅ | `nexus-lombok` | **90%** |
+| @Data | ✅ | `hiver-lombok` | **90%** |
 | @Getter/@Setter | ✅ | ✅ | **已实现** |
 | @Builder | ✅ | ✅ | **已实现** |
 | @Value | ✅ | ✅ | **已实现** |

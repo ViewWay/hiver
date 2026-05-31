@@ -45,7 +45,7 @@
 **Status / 状态**: ✅ ~75% complete, 20,682 lines, 265 tests / ✅ 约 75% 完成，20,682 行代码，265 个测试
 **Remaining / 剩余**: Polish, edge cases, integration testing, performance tuning / 完善、边界情况、集成测试、性能调优
 
-#### 8.1 nexus-data-commons ✅ / 核心抽象
+#### 8.1 hiver-data-commons ✅ / 核心抽象
 
 **Status / 状态**: ✅ 4,216 lines, 49 tests / 4,216 行，49 个测试
 
@@ -57,7 +57,7 @@
 - [x] Method name parsing (findByXxxAndYyy)
 - [x] Query annotation support
 
-#### 8.2 nexus-data-rdbc ✅ / R2DBC 数据访问
+#### 8.2 hiver-data-rdbc ✅ / R2DBC 数据访问
 
 **Status / 状态**: ✅ 3,767 lines, 32 tests / 3,767 行，32 个测试
 
@@ -68,9 +68,9 @@
 - [x] Connection pool management
 - [x] Multi-database support
 - [x] Reactive streams integration
-- [ ] Transaction integration (nexus-tx) — in progress
+- [ ] Transaction integration (hiver-tx) — in progress
 
-#### 8.3 nexus-data-orm ✅ / ORM 集成
+#### 8.3 hiver-data-orm ✅ / ORM 集成
 
 **Status / 状态**: ✅ 4,510 lines, 57 tests / 4,510 行，57 个测试
 
@@ -83,7 +83,7 @@
 - [x] SQLx bridge
 - [ ] Relationship mapping (OneToOne, OneToMany, ManyToMany) — in progress
 
-#### 8.4 nexus-data-mongodb ✅ / MongoDB
+#### 8.4 hiver-data-mongodb ✅ / MongoDB
 
 **Status / 状态**: ✅ 3,139 lines, 66 tests / 3,139 行，66 个测试
 
@@ -94,7 +94,7 @@
 - [x] Query derivation
 - [x] Aggregation pipeline
 
-#### 8.5 nexus-data-annotations ✅ / 数据注解
+#### 8.5 hiver-data-annotations ✅ / 数据注解
 
 **Status / 状态**: ✅ 2,173 lines, 29 tests / 2,173 行，29 个测试
 
@@ -104,7 +104,7 @@
 - [x] @Repository annotation
 - [x] Entity metadata extraction
 
-#### 8.6 nexus-data-redis ✅ / Redis
+#### 8.6 hiver-data-redis ✅ / Redis
 
 **Status / 状态**: ✅ 1,994 lines, 22 tests / 1,994 行，22 个测试
 
@@ -114,7 +114,7 @@
 - [x] Pipeline support
 - [x] Distributed lock
 
-#### 8.7 nexus-data-macros ✅ / 过程宏
+#### 8.7 hiver-data-macros ✅ / 过程宏
 
 **Status / 状态**: ✅ 883 lines, 10 tests / 883 行，10 个测试
 
@@ -123,12 +123,12 @@
 - [x] Repository derive macros
 - [x] Entity derive macros
 
-#### 8.8 nexus-data-migrations / 数据库迁移
+#### 8.8 hiver-data-migrations / 数据库迁移
 
-**Status / 状态**: Covered by nexus-flyway crate / 由 nexus-flyway crate 覆盖
+**Status / 状态**: Covered by hiver-flyway crate / 由 hiver-flyway crate 覆盖
 
 **Deliverables / 交付物**:
-- [x] Migration script management (via nexus-flyway)
+- [x] Migration script management (via hiver-flyway)
 - [x] Version control table
 - [x] Up/down migration
 - [ ] Checksum validation — in progress
@@ -144,7 +144,7 @@
 **Time Investment / 时间投入**: 6 months / 6 个月
 **Impact / 影响**: Enables Spring Boot development model / 启用 Spring Boot 开发模型
 
-#### 9.1 nexus-autoconfigure ✅ / 自动配置
+#### 9.1 hiver-autoconfigure ✅ / 自动配置
 
 **Status / 状态**: ✅ Complete / 完成
 
@@ -285,19 +285,19 @@ context.refresh_scope().await?;
 - [x] Refresh scope context
 - [x] Configuration update events
 
-#### 9.7 nexus-starter (1.5 months) / Starter 机制
+#### 9.7 hiver-starter (1.5 months) / Starter 机制
 
 ```toml
 # Cargo.toml - User just adds one dependency / 用户只需添加一个依赖
 [dependencies]
-nexus-starter-web = "0.1"
+hiver-starter-web = "0.1"
 # Automatically pulls in / 自动引入：
-# - nexus-http
-# - nexus-router
-# - nexus-extractors
-# - nexus-middleware
-# - nexus-validation
-# - nexus-json
+# - hiver-http
+# - hiver-router
+# - hiver-extractors
+# - hiver-middleware
+# - hiver-validation
+# - hiver-json
 ```
 
 **Deliverables / 交付物**:
@@ -305,10 +305,10 @@ nexus-starter-web = "0.1"
 - [x] Dependency aggregation
 - [x] Auto-configuration registration
 - [x] Starter metadata
-- [x] nexus-starter-web
-- [x] nexus-starter-data
-- [x] nexus-starter-security
-- [x] nexus-starter-actuator
+- [x] hiver-starter-web
+- [x] hiver-starter-data
+- [x] hiver-starter-security
+- [x] hiver-starter-actuator
 
 ---
 
@@ -373,7 +373,7 @@ async fn main() {
 #### 10.3 Integration Testing (0.5 months) / 集成测试
 
 ```rust
-#[nexus_test]
+#[hiver_test]
 async fn test_user_crud() {
     let app = TestApplicationContext::bootstrap().await.unwrap();
 
@@ -402,7 +402,7 @@ async fn test_user_crud() {
 
 **Status / 状态**: ✅ AMQP, Kafka, Cache, Redis all implemented / ✅ AMQP、Kafka、缓存、Redis 均已实现
 
-#### 11.1 nexus-amqp (1 month) / RabbitMQ
+#### 11.1 hiver-amqp (1 month) / RabbitMQ
 
 ```rust
 #[RabbitListener(queue = "user.created")]
@@ -424,7 +424,7 @@ struct MessageProducer {
 }
 ```
 
-#### 11.2 nexus-kafka (1 month) / Kafka
+#### 11.2 hiver-kafka (1 month) / Kafka
 
 ```rust
 #[KafkaListener(topics = "user.events", groupId = "user-service")]
@@ -465,10 +465,10 @@ impl UserService {
 }
 ```
 
-#### 11.4 nexus-data-redis (1 month) / Redis
+#### 11.4 hiver-data-redis (1 month) / Redis
 
 ```rust
-use nexus_data_redis::{RedisTemplate, StringRedisTemplate};
+use hiver_data_redis::{RedisTemplate, StringRedisTemplate};
 
 #[Component]
 struct CacheService {
@@ -491,7 +491,7 @@ struct CacheService {
 
 **Status / 状态**: ✅ OpenAPI documentation implemented / ✅ OpenAPI 文档已实现
 
-#### 12.1 nexus-openapi (1 month) / OpenAPI 文档
+#### 12.1 hiver-openapi (1 month) / OpenAPI 文档
 
 ```rust
 #[OpenApi(path = "/users", tags = ["User Management"])]
@@ -562,7 +562,7 @@ Nexus has achieved / Nexus 已实现：
 ### Priority 1: Complete Data Layer / 完善数据层
 
 - Complete relationship mapping (OneToOne, OneToMany, ManyToMany)
-- Finalize transaction integration (nexus-tx)
+- Finalize transaction integration (hiver-tx)
 - Add checksum validation and multi-database support to migrations
 - Edge case handling and error recovery
 
@@ -586,24 +586,24 @@ Nexus has achieved / Nexus 已实现：
 
 | Feature / 功能 | Impact / 影响 | Effort / 工作量 | Priority / 优先级 | Status / 状态 |
 |---------------|-------------|---------------|-----------------|---------------|
-| nexus-data-commons | ⭐⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
-| nexus-data-rdbc | ⭐⭐⭐⭐⭐ | 2 months | P0 | ✅ Done |
-| nexus-data-orm | ⭐⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
-| nexus-data-mongodb | ⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
-| nexus-data-annotations | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
-| nexus-data-redis | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
-| nexus-data-macros | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
-| nexus-autoconfigure | ⭐⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
+| hiver-data-commons | ⭐⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
+| hiver-data-rdbc | ⭐⭐⭐⭐⭐ | 2 months | P0 | ✅ Done |
+| hiver-data-orm | ⭐⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
+| hiver-data-mongodb | ⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
+| hiver-data-annotations | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
+| hiver-data-redis | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
+| hiver-data-macros | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
+| hiver-autoconfigure | ⭐⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
 | @Autowired | ⭐⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
 | @Valid | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
 | @Aspect | ⭐⭐⭐⭐ | 1 month | P0 | ✅ Done |
 | @EventListener | ⭐⭐⭐⭐ | 0.5 months | P0 | ✅ Done |
-| nexus-starter | ⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
+| hiver-starter | ⭐⭐⭐⭐ | 1.5 months | P0 | ✅ Done |
 | @PreAuthorize | ⭐⭐⭐⭐ | 1.5 months | P1 | ✅ Done |
 | OAuth2 | ⭐⭐⭐ | 2 months | P1 | ✅ Done |
-| nexus-amqp | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
-| nexus-kafka | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
-| nexus-openapi | ⭐⭐⭐⭐ | 1 month | P1 | ✅ Done |
+| hiver-amqp | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
+| hiver-kafka | ⭐⭐⭐ | 1 month | P1 | ✅ Done |
+| hiver-openapi | ⭐⭐⭐⭐ | 1 month | P1 | ✅ Done |
 | Cache annotations | ⭐⭐⭐ | 0.5 months | P1 | ✅ Done |
 | Relationship mapping | ⭐⭐⭐⭐⭐ | 1 month | P0 | 🔲 Remaining |
 | Transaction integration | ⭐⭐⭐⭐⭐ | 0.5 months | P0 | 🔲 Remaining |
@@ -622,7 +622,7 @@ Nexus has achieved / Nexus 已实现：
 - [x] @Valid validates all request inputs automatically
 - [x] @Aspect enables cross-cutting concerns (logging, transactions)
 - [x] @EventListener decouples components
-- [x] nexus-starter reduces dependency management to single line
+- [x] hiver-starter reduces dependency management to single line
 - [x] @PreAuthorize secures methods declaratively
 - [x] OAuth2 enables third-party login
 - [x] Integration tests are easy to write
@@ -649,7 +649,7 @@ Nexus has achieved / Nexus 已实现：
 - [R2DBC (Rust implementation)](https://github.com/tokio-rusts/tokio-r2dbc)
 
 ### Internal Documents / 内部文档
-- [nexus-data-full-implementation.md](./nexus-data-full-implementation.md)
+- [hiver-data-full-implementation.md](./hiver-data-full-implementation.md)
 - [spring-ecosystem-gap-analysis.md](./spring-ecosystem-gap-analysis.md)
 - [spring-missing-features.md](./spring-missing-features.md)
 - [implementation-roadmap-data.md](./implementation-roadmap-data.md)

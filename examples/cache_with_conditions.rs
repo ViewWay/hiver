@@ -10,7 +10,7 @@
 //! cargo run --example cache_with_conditions
 //! ```
 
-use nexus_cache::{
+use hiver_cache::{
     Cache, CacheBuilder, evaluate_cache_condition,
     CacheableOptions, CachePutOptions, CacheEvictOptions
 };

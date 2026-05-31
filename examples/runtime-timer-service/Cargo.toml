@@ -10,7 +10,7 @@ name = "runtime-timer-service"
 path = "src/main.rs"
 
 [dependencies]
-nexus-runtime = { path = "../../crates/nexus-runtime" }
+hiver-runtime = { path = "../../crates/hiver-runtime" }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 serde = { workspace = true, features = ["derive"] }

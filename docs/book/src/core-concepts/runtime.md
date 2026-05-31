@@ -7,9 +7,9 @@
 
 ## Overview / 概述
 
-The Nexus runtime (`nexus-runtime`) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.
+The Nexus runtime (`hiver-runtime`) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.
 
-Nexus 运行时（`nexus-runtime`）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。
+Nexus 运行时（`hiver-runtime`）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。
 
 ## Key Design Principles / 核心设计原则
 
@@ -51,13 +51,13 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 ```
 
 ### Hello Runtime / 你好，运行时
 
 ```rust
-use nexus_runtime::Runtime;
+use hiver_runtime::Runtime;
 
 fn main() -> std::io::Result<()> {
     // Create runtime / 创建运行时
@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
 ### With Configuration / 带配置
 
 ```rust
-use nexus_runtime::{Runtime, DriverType};
+use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 fn main() -> std::io::Result<()> {
@@ -112,7 +112,7 @@ Nexus 自动为您的平台选择最佳 I/O 驱动器：
 | **Windows** | IOCP (planned) | - | 📋 Future |
 
 ```rust
-use nexus_runtime::{Runtime, DriverType};
+use hiver_runtime::{Runtime, DriverType};
 
 // Auto-detect (recommended) / 自动检测（推荐）
 let runtime = Runtime::new()?;
@@ -263,7 +263,7 @@ Nexus 使用分层时间轮实现 O(1) 定时器操作：
 ### Timer API / 定时器 API
 
 ```rust
-use nexus_runtime::{sleep, sleep_until, Duration, Instant};
+use hiver_runtime::{sleep, sleep_until, Duration, Instant};
 
 async fn timer_examples() {
     // Sleep for duration / 休眠一段时间
@@ -285,8 +285,8 @@ async fn timer_examples() {
 ### Timeout Pattern / 超时模式
 
 ```rust
-use nexus_runtime::{select_two, sleep, Duration};
-use nexus_runtime::select::SelectTwoOutput;
+use hiver_runtime::{select_two, sleep, Duration};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn with_timeout() {
     let operation = async {
@@ -318,7 +318,7 @@ Multiple-producer, single-consumer channels for task communication:
 多生产者、单消费者通道用于任务通信：
 
 ```rust
-use nexus_runtime::{bounded, unbounded, spawn};
+use hiver_runtime::{bounded, unbounded, spawn};
 
 async fn channel_demo() {
     // Bounded channel (backpressure) / 有界通道（背压）
@@ -376,7 +376,7 @@ async fn channel_demo() {
 **Example** / **示例**:
 
 ```rust
-use nexus_runtime::{bounded, unbounded};
+use hiver_runtime::{bounded, unbounded};
 
 // Producer-consumer with backpressure / 带背压的生产者-消费者
 let (tx, rx) = bounded::<WorkItem>(100);
@@ -392,7 +392,7 @@ let (shutdown_tx, shutdown_rx) = unbounded::<()>();
 ### Basic Task Spawning / 基本任务生成
 
 ```rust
-use nexus_runtime::{spawn, JoinHandle};
+use hiver_runtime::{spawn, JoinHandle};
 
 async fn task_example() {
     // Spawn single task / 生成单个任务
@@ -410,7 +410,7 @@ async fn task_example() {
 ### Concurrent Tasks / 并发任务
 
 ```rust
-use nexus_runtime::spawn;
+use hiver_runtime::spawn;
 
 async fn parallel_processing() {
     let mut handles = Vec::new();
@@ -477,8 +477,8 @@ Wait on multiple futures concurrently:
 ### Select Two / 选择两个
 
 ```rust
-use nexus_runtime::{select_two, bounded};
-use nexus_runtime::select::SelectTwoOutput;
+use hiver_runtime::{select_two, bounded};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn select_demo() {
     let (tx1, rx1) = bounded::<i32>(1);
@@ -501,8 +501,8 @@ async fn select_demo() {
 ### Select Multiple / 选择多个
 
 ```rust
-use nexus_runtime::select_multiple;
-use nexus_runtime::select::SelectMultipleOutput;
+use hiver_runtime::select_multiple;
+use hiver_runtime::select::SelectMultipleOutput;
 
 async fn select_many() {
     let futures = vec![
@@ -527,7 +527,7 @@ async fn select_many() {
 ### TCP Server / TCP 服务器
 
 ```rust
-use nexus_runtime::{Runtime, io::TcpListener, spawn};
+use hiver_runtime::{Runtime, io::TcpListener, spawn};
 
 fn main() -> std::io::Result<()> {
     let mut runtime = Runtime::new()?;
@@ -565,7 +565,7 @@ fn main() -> std::io::Result<()> {
 ### TCP Client / TCP 客户端
 
 ```rust
-use nexus_runtime::{Runtime, io::TcpStream};
+use hiver_runtime::{Runtime, io::TcpStream};
 
 async fn tcp_client() -> std::io::Result<()> {
     // Connect to server / 连接到服务器
@@ -587,7 +587,7 @@ async fn tcp_client() -> std::io::Result<()> {
 ### UDP Socket / UDP 套接字
 
 ```rust
-use nexus_runtime::{Runtime, io::UdpSocket};
+use hiver_runtime::{Runtime, io::UdpSocket};
 
 async fn udp_example() -> std::io::Result<()> {
     // Bind socket / 绑定套接字
@@ -616,7 +616,7 @@ async fn udp_example() -> std::io::Result<()> {
 ### Runtime Configuration / 运行时配置
 
 ```rust
-use nexus_runtime::{Runtime, DriverType};
+use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 let runtime = Runtime::builder()
@@ -643,7 +643,7 @@ The `DriverConfig` builder provides fine-grained control over I/O driver behavio
 `DriverConfig` 构建器提供对 I/O 驱动器行为的精细控制：
 
 ```rust
-use nexus_runtime::driver::DriverConfig;
+use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -659,7 +659,7 @@ Then pass the config when building the runtime:
 然后在构建运行时时传入配置：
 
 ```rust
-use nexus_runtime::{Runtime, RuntimeConfig, DriverType};
+use hiver_runtime::{Runtime, RuntimeConfig, DriverType};
 
 // Build a RuntimeConfig with custom driver settings
 // 使用自定义驱动设置构建 RuntimeConfig
@@ -698,7 +698,7 @@ let runtime = Runtime::builder()
 **For CPU-bound workloads** / **CPU 密集型工作负载**:
 
 ```rust
-use nexus_runtime::driver::DriverConfig;
+use hiver_runtime::driver::DriverConfig;
 
 let driver_config = DriverConfig::builder()
     .entries(512)
@@ -721,7 +721,7 @@ let runtime = Runtime::builder()
 **Linux io-uring** / **Linux io-uring**:
 
 ```rust
-use nexus_runtime::driver::DriverConfig;
+use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -801,7 +801,7 @@ spawn(async {
 ### 4. Resource Cleanup / 资源清理
 
 ```rust
-use nexus_runtime::spawn;
+use hiver_runtime::spawn;
 
 async fn resource_example() {
     let file = open_file().await?;
@@ -942,7 +942,7 @@ let runtime = Runtime::builder()
 ```rust
 #[cfg(test)]
 mod tests {
-    use nexus_runtime::Runtime;
+    use hiver_runtime::Runtime;
 
     #[test]
     fn test_async_function() {
@@ -960,7 +960,7 @@ mod tests {
 
 ```rust
 // tests/integration_test.rs
-use nexus_runtime::{Runtime, spawn, bounded};
+use hiver_runtime::{Runtime, spawn, bounded};
 
 #[test]
 fn test_concurrent_tasks() {
@@ -1004,7 +1004,7 @@ fn test_concurrent_tasks() {
 - ✅ Best I/O performance on Linux (io-uring)
 - ✅ Multi-platform support (Linux/macOS/BSD)
 - ✅ Lower latency for web servers
-- ✅ Integrated with Nexus framework features
+- ✅ Integrated with Hiver Framework features
 - ✅ Better cache locality (thread-per-core)
 
 ---

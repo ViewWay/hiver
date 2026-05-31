@@ -1,0 +1,13 @@
+[package]
+name = "hiver-retry"
+version = "0.1.0-alpha"
+edition = "2024"
+
+[dependencies]
+hiver-resilience = { path = "../hiver-resilience" }
+hiver-retry-macros = { path = "../hiver-retry-macros" }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
