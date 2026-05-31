@@ -35,11 +35,17 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install mdBook
+      - name: Install mdBook and plugins
         run: |
-          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          # Install mdBook
+          tag=$(curl -sL 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')
+          url="https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz"
+          curl -sSL "$url" | tar -xz
           sudo mv mdbook /usr/local/bin
           mdbook --version
+
+          # Install mdBook plugins
+          cargo install mdbook-toc mdbook-mermaid
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -47,44 +53,48 @@ jobs:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Cache cargo index
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Cache cargo build
         uses: actions/cache@v4
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-docs-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Build Rust documentation
-        run: |
-          cargo doc --all-features --no-deps --workspace
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=nexus\">" > target/doc/index.html
-
       - name: Build mdBook guide
-        if: hashFiles('docs/book') != ''
         run: |
-          if [ -d "docs/book" ]; then
-            cd docs/book
-            mdbook build
-            mv book ../../target/book
-          fi
+          # Run from project root — book.toml is at root, src is docs/book/src
+          mdbook build
+          # Output: docs/book/book/
+
+      - name: Build Rust API documentation
+        run: |
+          cargo doc --all-features --no-deps --workspace 2>&1 || true
+          echo '<meta http-equiv="refresh" content="0; url=nexus_runtime">' > target/doc/index.html
 
       - name: Merge documentation
         run: |
-          if [ -d "target/book" ]; then
-            mv target/book/* target/doc/
+          # Create final output directory
+          mkdir -p target/pages
+
+          # mdBook guide as the main site
+          if [ -d "docs/book/book" ]; then
+            cp -r docs/book/book/* target/pages/
           fi
+
+          # Rust API docs under /api/
+          if [ -d "target/doc" ]; then
+            mkdir -p target/pages/api
+            cp -r target/doc/* target/pages/api/
+          fi
+
+          # Add .nojekyll for GitHub Pages
+          touch target/pages/.nojekyll
 
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/doc
+          publish_dir: ./target/pages
 
   test:
     name: Test Documentation
