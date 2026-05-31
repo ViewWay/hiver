@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "../searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2dff6247.js"></script>
+        <script src="../toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -180,11 +180,11 @@
 </blockquote>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
-<p>The Nexus runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
-<p>Nexus 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
+<p>The Hiver runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Hiver uses a custom runtime optimized for maximum throughput and minimal latency.</p>
+<p>Hiver 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Hiver 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
 <h2 id="key-design-principles--核心设计原则"><a class="header" href="#key-design-principles--核心设计原则">Key Design Principles / 核心设计原则</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Runtime                            │
+│                     Hiver Runtime                            │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
 │  │   Task      │  │   Timer     │  │   Channel   │         │
@@ -221,7 +221,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     
     // Execute async code / 执行异步代码
     runtime.block_on(async {
-        println!("Hello from Nexus runtime!");
+        println!("Hello from Hiver runtime!");
     })?;
     
     Ok(())
@@ -247,8 +247,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <hr>
 <h2 id="io-drivers--io-驱动器"><a class="header" href="#io-drivers--io-驱动器">I/O Drivers / I/O 驱动器</a></h2>
 <h3 id="automatic-driver-selection--自动驱动选择"><a class="header" href="#automatic-driver-selection--自动驱动选择">Automatic Driver Selection / 自动驱动选择</a></h3>
-<p>Nexus automatically selects the best I/O driver for your platform:</p>
-<p>Nexus 自动为您的平台选择最佳 I/O 驱动器：</p>
+<p>Hiver automatically selects the best I/O driver for your platform:</p>
+<p>Hiver 自动为您的平台选择最佳 I/O 驱动器：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -349,8 +349,8 @@ epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
 <hr>
 <h2 id="timer-wheel--时间轮"><a class="header" href="#timer-wheel--时间轮">Timer Wheel / 时间轮</a></h2>
 <h3 id="hierarchical-4-wheel-design--分层-4-轮设计"><a class="header" href="#hierarchical-4-wheel-design--分层-4-轮设计">Hierarchical 4-Wheel Design / 分层 4 轮设计</a></h3>
-<p>Nexus uses a hierarchical timer wheel for O(1) timer operations:</p>
-<p>Nexus 使用分层时间轮实现 O(1) 定时器操作：</p>
+<p>Hiver uses a hierarchical timer wheel for O(1) timer operations:</p>
+<p>Hiver 使用分层时间轮实现 O(1) 定时器操作：</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │              Hierarchical Timer Wheel                        │
 │              分层时间轮                                       │
@@ -1042,7 +1042,7 @@ fn test_concurrent_tasks() {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Feature</th><th>Nexus</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
+<tr><th>Feature</th><th>Hiver</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
 </thead>
 <tbody>
 <tr><td><strong>I/O Backend</strong></td><td>io-uring first</td><td>epoll/kqueue</td><td>epoll/kqueue</td><td>io-uring only</td></tr>
@@ -1054,7 +1054,7 @@ fn test_concurrent_tasks() {
 </tbody>
 </table>
 </div>
-<p><strong>Why choose Nexus?</strong> / <strong>为什么选择 Nexus？</strong></p>
+<p><strong>Why choose Hiver?</strong> / <strong>为什么选择 Hiver？</strong></p>
 <ul>
 <li>✅ Best I/O performance on Linux (io-uring)</li>
 <li>✅ Multi-platform support (Linux/macOS/BSD)</li>
@@ -1065,7 +1065,7 @@ fn test_concurrent_tasks() {
 <hr>
 <h2 id="further-reading--延伸阅读"><a class="header" href="#further-reading--延伸阅读">Further Reading / 延伸阅读</a></h2>
 <ul>
-<li><strong><a href="./http.html">HTTP Server</a></strong> - Build web services with Nexus</li>
+<li><strong><a href="./http.html">HTTP Server</a></strong> - Build web services with Hiver</li>
 <li><strong><a href="./router.html">Router</a></strong> - HTTP request routing</li>
 <li><strong><a href="./middleware.html">Middleware</a></strong> - Request/response processing</li>
 <li><strong><a href="./extractors.html">Extractors</a></strong> - Type-safe data extraction</li>

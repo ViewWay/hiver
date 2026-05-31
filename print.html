@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-2dff6247.js"></script>
+        <script src="toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -192,7 +192,7 @@
 </div>
 
 <hr>
-<h2 id="why-nexus--为什么选择-nexus"><a class="header" href="#why-nexus--为什么选择-nexus">Why Nexus? / 为什么选择 Nexus？</a></h2>
+<h2 id="why-hiver--为什么选择-hiver"><a class="header" href="#why-hiver--为什么选择-hiver">Why Hiver? / 为什么选择 Hiver？</a></h2>
 <table>
 <tr>
 <td width="50%">
@@ -247,16 +247,16 @@
 [dependencies]
 hiver-starter = "0.1"
 </code></pre>
-<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 use hiver_router::Router;
 
 #[hiver::handler]
 async fn hello() -&gt; &amp;'static str {
-    "Hello, Nexus! / 你好，Nexus！"
+    "Hello, Hiver! / 你好，Hiver！"
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", hello)
             .get("/users/:id", get_user)
@@ -328,7 +328,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </thead>
 <tbody>
 <tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=hiver-">hiver-framework</a></td></tr>
-<tr><td>📖 API Docs</td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td></tr>
+<tr><td>📖 API Docs</td><td><a href="https://docs.rs/hiver">docs.rs/hiver</a></td></tr>
 <tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/hiver">ViewWay/hiver</a></td></tr>
 <tr><td>📄 Design Spec</td><td><a href="../design/design-spec.html">design-spec.md</a></td></tr>
 <tr><td>🗺️ Implementation Plan</td><td><a href="../design/implementation-plan.html">implementation-plan.md</a></td></tr>
@@ -340,7 +340,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@RestController</code></td><td><code>#[handler]</code></td><td>HTTP handler</td></tr>
@@ -348,7 +348,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><td><code>@Autowired</code></td><td><code>#[inject]</code></td><td>DI injection</td></tr>
 <tr><td><code>@Repository</code></td><td><code>#[derive(Repository)]</code></td><td>Data repository</td></tr>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Config binding</td></tr>
-<tr><td><code>SpringApplication.run()</code></td><td><code>NexusApp::new().run()</code></td><td>App bootstrap</td></tr>
+<tr><td><code>SpringApplication.run()</code></td><td><code>HiverApp::new().run()</code></td><td>App bootstrap</td></tr>
 <tr><td><code>@SpringBootApplication</code></td><td><code>hiver-starter</code></td><td>Auto-config</td></tr>
 <tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Circuit breaker</td></tr>
 <tr><td>Spring Security</td><td><code>hiver-security</code></td><td>Auth &amp; security</td></tr>
@@ -362,9 +362,9 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <h1 id="简介"><a class="header" href="#简介">简介</a></h1>
-<h2 id="what-is-nexus--什么是-nexus"><a class="header" href="#what-is-nexus--什么是-nexus">What is Nexus? / 什么是 Nexus？</a></h2>
-<p>Nexus is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning <strong>62 crates</strong> across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.</p>
-<p>Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 <strong>62 个 crate</strong>、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。</p>
+<h2 id="what-is-hiver--什么是-hiver"><a class="header" href="#what-is-hiver--什么是-hiver">What is Hiver? / 什么是 Hiver？</a></h2>
+<p>Hiver is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning <strong>62 crates</strong> across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.</p>
+<p>Hiver 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 <strong>62 个 crate</strong>、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。</p>
 <h2 id="design-philosophy--设计理念"><a class="header" href="#design-philosophy--设计理念">Design Philosophy / 设计理念</a></h2>
 <h3 id="performance-first--性能优先"><a class="header" href="#performance-first--性能优先">Performance First / 性能优先</a></h3>
 <ul>
@@ -422,7 +422,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Feature / 特性</th><th>Nexus</th><th>Tokio-based (Axum)</th><th>Go (Gin)</th><th>Java (Spring Boot)</th></tr>
+<tr><th>Feature / 特性</th><th>Hiver</th><th>Tokio-based (Axum)</th><th>Go (Gin)</th><th>Java (Spring Boot)</th></tr>
 </thead>
 <tbody>
 <tr><td>Custom Runtime</td><td>✅ io-uring</td><td>❌ Tokio</td><td>N/A</td><td>N/A</td></tr>
@@ -456,8 +456,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h1 id="安装"><a class="header" href="#安装">安装</a></h1>
 <h2 id="requirements--系统要求"><a class="header" href="#requirements--系统要求">Requirements / 系统要求</a></h2>
 <h3 id="rust-toolchain--rust-工具链"><a class="header" href="#rust-toolchain--rust-工具链">Rust Toolchain / Rust 工具链</a></h3>
-<p>Nexus requires Rust <strong>1.93 or later</strong>.
-Nexus 需要 Rust <strong>1.93 或更高版本</strong>。</p>
+<p>Hiver requires Rust <strong>1.93 or later</strong>.
+Hiver 需要 Rust <strong>1.93 或更高版本</strong>。</p>
 <pre><code class="language-bash"># Install Rust / 安装 Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -490,10 +490,10 @@ uname -r
 # 对于 Ubuntu/Debian，安装 liburing-dev（可选）
 sudo apt-get install liburing-dev
 </code></pre>
-<h2 id="adding-nexus-to-your-project--将-nexus-添加到项目"><a class="header" href="#adding-nexus-to-your-project--将-nexus-添加到项目">Adding Nexus to Your Project / 将 Nexus 添加到项目</a></h2>
+<h2 id="adding-hiver-to-your-project--将-hiver-添加到项目"><a class="header" href="#adding-hiver-to-your-project--将-hiver-添加到项目">Adding Hiver to Your Project / 将 Hiver 添加到项目</a></h2>
 <h3 id="using-individual-crates--使用单独的-crate"><a class="header" href="#using-individual-crates--使用单独的-crate">Using Individual Crates / 使用单独的 Crate</a></h3>
-<p>Nexus is modular — add only what you need:
-Nexus 是模块化的 — 只添加你需要的：</p>
+<p>Hiver is modular — add only what you need:
+Hiver 是模块化的 — 只添加你需要的：</p>
 <pre><code class="language-toml">[dependencies]
 hiver-runtime = "0.1.0-alpha"
 hiver-http = "0.1.0-alpha"
@@ -513,8 +513,8 @@ hiver-runtime = { git = "https://github.com/ViewWay/hiver", package = "hiver-run
 <h2 id="verifying-installation--验证安装"><a class="header" href="#verifying-installation--验证安装">Verifying Installation / 验证安装</a></h2>
 <p>Create a simple test project:
 创建一个简单的测试项目：</p>
-<pre><code class="language-bash">cargo new hello-nexus
-cd hello-nexus
+<pre><code class="language-bash">cargo new hello-hiver
+cd hello-hiver
 </code></pre>
 <p>Edit <code>Cargo.toml</code>:
 编辑 <code>Cargo.toml</code>：</p>
@@ -529,8 +529,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     let runtime = Runtime::new()?;
 
     runtime.block_on(async {
-        println!("Nexus is working!");
-        println!("Nexus 运行正常！");
+        println!("Hiver is working!");
+        println!("Hiver 运行正常！");
     });
 
     Ok(())
@@ -542,7 +542,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h2 id="building-from-source--从源码构建"><a class="header" href="#building-from-source--从源码构建">Building from Source / 从源码构建</a></h2>
 <pre><code class="language-bash"># Clone the repository / 克隆仓库
 git clone https://github.com/ViewWay/hiver.git
-cd nexus
+cd hiver
 
 # Build all crates / 构建所有 crate
 cargo build --workspace
@@ -554,8 +554,8 @@ cargo build --workspace --release
 cargo test --workspace
 </code></pre>
 <h2 id="ide-support--ide-支持"><a class="header" href="#ide-support--ide-支持">IDE Support / IDE 支持</a></h2>
-<p>Nexus works with any Rust IDE. Recommended extensions:
-Nexus 可与任何 Rust IDE 配合使用。推荐扩展：</p>
+<p>Hiver works with any Rust IDE. Recommended extensions:
+Hiver 可与任何 Rust IDE 配合使用。推荐扩展：</p>
 <ul>
 <li><strong>rust-analyzer</strong>: Language server for Rust</li>
 <li><strong>Even Better TOML</strong>: TOML file support</li>
@@ -563,8 +563,8 @@ Nexus 可与任何 Rust IDE 配合使用。推荐扩展：</p>
 </ul>
 <h2 id="troubleshooting--故障排除"><a class="header" href="#troubleshooting--故障排除">Troubleshooting / 故障排除</a></h2>
 <h3 id="io-uring-not-available--io-uring-不可用"><a class="header" href="#io-uring-not-available--io-uring-不可用">io-uring Not Available / io-uring 不可用</a></h3>
-<p>On Linux systems without io-uring support (kernel &lt; 5.1), Nexus will automatically fall back to epoll. This is transparent and requires no configuration changes.</p>
-<p>在没有 io-uring 支持的 Linux 系统上（内核 &lt; 5.1），Nexus 会自动回退到 epoll。这是透明的，不需要配置更改。</p>
+<p>On Linux systems without io-uring support (kernel &lt; 5.1), Hiver will automatically fall back to epoll. This is transparent and requires no configuration changes.</p>
+<p>在没有 io-uring 支持的 Linux 系统上（内核 &lt; 5.1），Hiver 会自动回退到 epoll。这是透明的，不需要配置更改。</p>
 <h3 id="compilation-errors--编译错误"><a class="header" href="#compilation-errors--编译错误">Compilation Errors / 编译错误</a></h3>
 <ol>
 <li>
@@ -588,8 +588,8 @@ Windows 支持仍在开发中。目前请使用 WSL2。</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h1>
 <h1 id="快速开始"><a class="header" href="#快速开始">快速开始</a></h1>
-<p>This guide will help you create your first Nexus application in under 5 minutes.
-本指南将帮助您在 5 分钟内创建第一个 Nexus 应用。</p>
+<p>This guide will help you create your first Hiver application in under 5 minutes.
+本指南将帮助您在 5 分钟内创建第一个 Hiver 应用。</p>
 <h2 id="create-a-new-project--创建新项目"><a class="header" href="#create-a-new-project--创建新项目">Create a New Project / 创建新项目</a></h2>
 <pre><code class="language-bash">cargo new my-hiver-app
 cd my-hiver-app
@@ -638,7 +638,7 @@ async fn handle_request(req: hiver_http::Request) -&gt; Result&lt;Response, hive
         "/" =&gt; Ok(Response::builder()
             .status(StatusCode::OK)
             .header("content-type", "text/plain")
-            .body(Body::from("Hello, Nexus!"))
+            .body(Body::from("Hello, Hiver!"))
             .unwrap()),
             
         "/health" =&gt; Ok(Response::builder()
@@ -658,7 +658,7 @@ async fn handle_request(req: hiver_http::Request) -&gt; Result&lt;Response, hive
 <h2 id="test-the-server--测试服务器"><a class="header" href="#test-the-server--测试服务器">Test the Server / 测试服务器</a></h2>
 <pre><code class="language-bash"># Test the root endpoint / 测试根端点
 curl http://localhost:8080/
-# Output: Hello, Nexus!
+# Output: Hello, Hiver!
 
 # Test the health endpoint / 测试健康端点
 curl http://localhost:8080/health
@@ -700,7 +700,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error + Send + Sync&gt;&gt;
 async fn index(_req: hiver_http::Request) -&gt; Response {
     Response::builder()
         .status(StatusCode::OK)
-        .body(Body::from("Welcome to Nexus!"))
+        .body(Body::from("Welcome to Hiver!"))
         .unwrap()
 }
 
@@ -803,9 +803,9 @@ async fn channel_example() {
 <hr>
 <p><em>← <a href="#installation">Previous / 上一页</a> | <a href="#runtime--运行时">Next / 下一页</a> →</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="nexus-tutorial--nexus教程"><a class="header" href="#nexus-tutorial--nexus教程">Nexus Tutorial / Nexus教程</a></h1>
-<p>This tutorial will guide you through building a complete REST API application with Nexus.</p>
-<p>本教程将指导您使用Nexus构建完整的REST API应用程序。</p>
+<h1 id="hiver-tutorial--hiver教程"><a class="header" href="#hiver-tutorial--hiver教程">Hiver Tutorial / Hiver教程</a></h1>
+<p>This tutorial will guide you through building a complete REST API application with Hiver.</p>
+<p>本教程将指导您使用Hiver构建完整的REST API应用程序。</p>
 <hr>
 <h2 id="table-of-contents--目录"><a class="header" href="#table-of-contents--目录">Table of Contents / 目录</a></h2>
 <ol>
@@ -825,7 +825,7 @@ async fn channel_example() {
 cargo new my-api --bin
 cd my-api
 
-# Add Nexus dependencies / 添加Nexus依赖
+# Add Hiver dependencies / 添加Hiver依赖
 cargo add hiver-runtime hiver-http hiver-router hiver-extractors
 cargo add hiver-runtime
 </code></pre>
@@ -849,7 +849,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
 
         Server::bind("127.0.0.1:8080")
             .run(app)
@@ -861,7 +861,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="run-the-server--运行服务器-1"><a class="header" href="#run-the-server--运行服务器-1">Run the Server / 运行服务器</a></h3>
 <pre><code class="language-bash">cargo run
 curl http://localhost:8080/
-# Hello, Nexus!
+# Hello, Hiver!
 </code></pre>
 <hr>
 <h2 id="3-routing--路由"><a class="header" href="#3-routing--路由">3. Routing / 路由</a></h2>
@@ -1211,11 +1211,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </blockquote>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
-<p>The Nexus runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
-<p>Nexus 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
+<p>The Hiver runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Hiver uses a custom runtime optimized for maximum throughput and minimal latency.</p>
+<p>Hiver 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Hiver 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
 <h2 id="key-design-principles--核心设计原则"><a class="header" href="#key-design-principles--核心设计原则">Key Design Principles / 核心设计原则</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Runtime                            │
+│                     Hiver Runtime                            │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
 │  │   Task      │  │   Timer     │  │   Channel   │         │
@@ -1252,7 +1252,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     
     // Execute async code / 执行异步代码
     runtime.block_on(async {
-        println!("Hello from Nexus runtime!");
+        println!("Hello from Hiver runtime!");
     })?;
     
     Ok(())
@@ -1278,8 +1278,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <hr>
 <h2 id="io-drivers--io-驱动器"><a class="header" href="#io-drivers--io-驱动器">I/O Drivers / I/O 驱动器</a></h2>
 <h3 id="automatic-driver-selection--自动驱动选择"><a class="header" href="#automatic-driver-selection--自动驱动选择">Automatic Driver Selection / 自动驱动选择</a></h3>
-<p>Nexus automatically selects the best I/O driver for your platform:</p>
-<p>Nexus 自动为您的平台选择最佳 I/O 驱动器：</p>
+<p>Hiver automatically selects the best I/O driver for your platform:</p>
+<p>Hiver 自动为您的平台选择最佳 I/O 驱动器：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -1380,8 +1380,8 @@ epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
 <hr>
 <h2 id="timer-wheel--时间轮"><a class="header" href="#timer-wheel--时间轮">Timer Wheel / 时间轮</a></h2>
 <h3 id="hierarchical-4-wheel-design--分层-4-轮设计"><a class="header" href="#hierarchical-4-wheel-design--分层-4-轮设计">Hierarchical 4-Wheel Design / 分层 4 轮设计</a></h3>
-<p>Nexus uses a hierarchical timer wheel for O(1) timer operations:</p>
-<p>Nexus 使用分层时间轮实现 O(1) 定时器操作：</p>
+<p>Hiver uses a hierarchical timer wheel for O(1) timer operations:</p>
+<p>Hiver 使用分层时间轮实现 O(1) 定时器操作：</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │              Hierarchical Timer Wheel                        │
 │              分层时间轮                                       │
@@ -2073,7 +2073,7 @@ fn test_concurrent_tasks() {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Feature</th><th>Nexus</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
+<tr><th>Feature</th><th>Hiver</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
 </thead>
 <tbody>
 <tr><td><strong>I/O Backend</strong></td><td>io-uring first</td><td>epoll/kqueue</td><td>epoll/kqueue</td><td>io-uring only</td></tr>
@@ -2085,7 +2085,7 @@ fn test_concurrent_tasks() {
 </tbody>
 </table>
 </div>
-<p><strong>Why choose Nexus?</strong> / <strong>为什么选择 Nexus？</strong></p>
+<p><strong>Why choose Hiver?</strong> / <strong>为什么选择 Hiver？</strong></p>
 <ul>
 <li>✅ Best I/O performance on Linux (io-uring)</li>
 <li>✅ Multi-platform support (Linux/macOS/BSD)</li>
@@ -2096,7 +2096,7 @@ fn test_concurrent_tasks() {
 <hr>
 <h2 id="further-reading--延伸阅读"><a class="header" href="#further-reading--延伸阅读">Further Reading / 延伸阅读</a></h2>
 <ul>
-<li><strong><a href="#http-server">HTTP Server</a></strong> - Build web services with Nexus</li>
+<li><strong><a href="#http-server">HTTP Server</a></strong> - Build web services with Hiver</li>
 <li><strong><a href="#router">Router</a></strong> - HTTP request routing</li>
 <li><strong><a href="#middleware">Middleware</a></strong> - Request/response processing</li>
 <li><strong><a href="#extractors">Extractors</a></strong> - Type-safe data extraction</li>
@@ -2112,8 +2112,8 @@ fn test_concurrent_tasks() {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="http-server"><a class="header" href="#http-server">HTTP Server</a></h1>
 <h1 id="http服务器"><a class="header" href="#http服务器">HTTP服务器</a></h1>
-<p>The <code>hiver-http</code> crate provides HTTP server and client implementations optimized for the Nexus runtime.</p>
-<p><code>hiver-http</code> crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。</p>
+<p>The <code>hiver-http</code> crate provides HTTP server and client implementations optimized for the Hiver runtime.</p>
+<p><code>hiver-http</code> crate 提供针对 Hiver 运行时优化的 HTTP 服务器和客户端实现。</p>
 <h2 id="overview--概述-1"><a class="header" href="#overview--概述-1">Overview / 概述</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    HTTP Request Flow                         │
@@ -2272,7 +2272,7 @@ impl FromRequest for Json&lt;T&gt; { /* JSON body */ }
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@ResponseBody</code></td><td><code>IntoResponse</code></td><td>Response conversion</td></tr>
@@ -2439,7 +2439,7 @@ async fn get_user(req: Request) -&gt; Response {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus Router</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver Router</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@GetMapping("/path")</code></td><td><code>.get("/path", handler)</code></td><td>GET route</td></tr>
@@ -2524,8 +2524,8 @@ fn main() {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="middleware"><a class="header" href="#middleware">Middleware</a></h1>
 <h1 id="中间件"><a class="header" href="#中间件">中间件</a></h1>
-<p>Middleware in Nexus provides a way to process requests and responses in a composable manner, similar to Spring’s Filter/Interceptor pattern.</p>
-<p>Nexus 中的中间件提供了一种以可组合方式处理请求和响应的方法，类似于 Spring 的 Filter/Interceptor 模式。</p>
+<p>Middleware in Hiver provides a way to process requests and responses in a composable manner, similar to Spring’s Filter/Interceptor pattern.</p>
+<p>Hiver 中的中间件提供了一种以可组合方式处理请求和响应的方法，类似于 Spring 的 Filter/Interceptor 模式。</p>
 <h2 id="overview--概述-3"><a class="header" href="#overview--概述-3">Overview / 概述</a></h2>
 <pre><code>Request  →  Middleware 1  →  Middleware 2  →  Handler
                 ↓                 ↓              ↓
@@ -2754,7 +2754,7 @@ let router = Router::new()
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>Filter</code></td><td><code>Middleware</code> trait</td><td>Request/response processing</td></tr>
@@ -2837,8 +2837,8 @@ fn build_router() -&gt; Router {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="extractors"><a class="header" href="#extractors">Extractors</a></h1>
 <h1 id="提取器"><a class="header" href="#提取器">提取器</a></h1>
-<p>Extractors in Nexus provide a type-safe way to extract data from HTTP requests, similar to Spring’s <code>@PathVariable</code>, <code>@RequestParam</code>, <code>@RequestBody</code>, etc.</p>
-<p>Nexus 中的提取器提供了一种类型安全的方式从 HTTP 请求中提取数据，类似于 Spring 的 <code>@PathVariable</code>、<code>@RequestParam</code>、<code>@RequestBody</code> 等。</p>
+<p>Extractors in Hiver provide a type-safe way to extract data from HTTP requests, similar to Spring’s <code>@PathVariable</code>, <code>@RequestParam</code>, <code>@RequestBody</code>, etc.</p>
+<p>Hiver 中的提取器提供了一种类型安全的方式从 HTTP 请求中提取数据，类似于 Spring 的 <code>@PathVariable</code>、<code>@RequestParam</code>、<code>@RequestBody</code> 等。</p>
 <blockquote>
 <p><strong>Important Disclaimers / 重要说明</strong></p>
 <p><strong>1. Two <code>FromRequest</code> traits / 两个 <code>FromRequest</code> trait</strong></p>
@@ -3131,7 +3131,7 @@ pub enum ExtractorError {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@PathVariable</code></td><td><code>Path&lt;T&gt;</code></td><td>URL path parameters</td></tr>
@@ -3237,11 +3237,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-5"><a class="header" href="#overview--概述-5">Overview / 概述</a></h2>
-<p>Nexus provides a comprehensive data access layer similar to Spring Data, with repository abstractions, ORM support, and multi-database connectivity.</p>
+<p>Hiver provides a comprehensive data access layer similar to Spring Data, with repository abstractions, ORM support, and multi-database connectivity.</p>
 <hr>
 <h2 id="status--状态"><a class="header" href="#status--状态">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3255,11 +3255,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-6"><a class="header" href="#overview--概述-6">Overview / 概述</a></h2>
-<p>Nexus RDBC provides a unified database client abstraction with connection pooling, similar to JDBC in the Java ecosystem.</p>
+<p>Hiver RDBC provides a unified database client abstraction with connection pooling, similar to JDBC in the Java ecosystem.</p>
 <hr>
 <h2 id="status--状态-1"><a class="header" href="#status--状态-1">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3273,11 +3273,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-7"><a class="header" href="#overview--概述-7">Overview / 概述</a></h2>
-<p>Nexus ORM provides ActiveRecord pattern, Model derive macros, QueryBuilder, and relationship mapping similar to Spring Data JPA.</p>
+<p>Hiver ORM provides ActiveRecord pattern, Model derive macros, QueryBuilder, and relationship mapping similar to Spring Data JPA.</p>
 <hr>
 <h2 id="status--状态-2"><a class="header" href="#status--状态-2">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3291,11 +3291,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-8"><a class="header" href="#overview--概述-8">Overview / 概述</a></h2>
-<p>Nexus provides native MongoDB integration with async driver support and Spring Data MongoDB-like repositories.</p>
+<p>Hiver provides native MongoDB integration with async driver support and Spring Data MongoDB-like repositories.</p>
 <hr>
 <h2 id="status--状态-3"><a class="header" href="#status--状态-3">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3309,11 +3309,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-9"><a class="header" href="#overview--概述-9">Overview / 概述</a></h2>
-<p>Nexus provides Redis integration for caching, session storage, and message pub/sub, similar to Spring Data Redis.</p>
+<p>Hiver provides Redis integration for caching, session storage, and message pub/sub, similar to Spring Data Redis.</p>
 <hr>
 <h2 id="status--状态-4"><a class="header" href="#status--状态-4">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3327,11 +3327,11 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 </blockquote>
 <hr>
 <h2 id="overview--概述-10"><a class="header" href="#overview--概述-10">Overview / 概述</a></h2>
-<p>Nexus Flyway provides database schema migration management, similar to Flyway in the Spring ecosystem.</p>
+<p>Hiver Flyway provides database schema migration management, similar to Flyway in the Spring ecosystem.</p>
 <hr>
 <h2 id="status--状态-5"><a class="header" href="#status--状态-5">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 8 of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 8 of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3348,8 +3348,8 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p>Hiver Security provides comprehensive authentication, authorization, and security features similar to Spring Security.</p>
 <hr>
 <h2 id="status--状态-6"><a class="header" href="#status--状态-6">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3366,8 +3366,8 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p>JSON Web Token authentication support with token generation, validation, and refresh mechanisms.</p>
 <hr>
 <h2 id="status--状态-7"><a class="header" href="#status--状态-7">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3384,8 +3384,8 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p>OAuth2 client and resource server support for third-party authentication integration.</p>
 <hr>
 <h2 id="status--状态-8"><a class="header" href="#status--状态-8">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3402,8 +3402,8 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p>Role-based access control and method-level authorization annotations.</p>
 <hr>
 <h2 id="status--状态-9"><a class="header" href="#status--状态-9">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -3415,8 +3415,8 @@ fn json_response&lt;T: Serialize&gt;(data: &amp;T) -&gt; Response {
 <p><strong>Status</strong>: Phase 4 Complete ✅
 <strong>状态</strong>: 第4阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive resilience patterns to make your applications fault-tolerant and highly available.</p>
-<p>Nexus 提供全面的弹性模式，使您的应用程序具有容错性和高可用性。</p>
+<p>Hiver provides comprehensive resilience patterns to make your applications fault-tolerant and highly available.</p>
+<p>Hiver 提供全面的弹性模式，使您的应用程序具有容错性和高可用性。</p>
 <hr>
 <h2 id="overview--概述-15"><a class="header" href="#overview--概述-15">Overview / 概述</a></h2>
 <p>Resilience patterns help your application handle failures gracefully:</p>
@@ -3568,7 +3568,7 @@ impl ResilientClient {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@CircuitBreaker</code></td><td><code>CircuitBreaker</code></td><td>Circuit breaker pattern</td></tr>
@@ -3595,8 +3595,8 @@ impl ResilientClient {
 <p><strong>Status</strong>: Phase 5 Complete ✅
 <strong>状态</strong>: 第5阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive observability including distributed tracing, metrics, and structured logging.</p>
-<p>Nexus 提供全面的可观测性，包括分布式追踪、指标和结构化日志。</p>
+<p>Hiver provides comprehensive observability including distributed tracing, metrics, and structured logging.</p>
+<p>Hiver 提供全面的可观测性，包括分布式追踪、指标和结构化日志。</p>
 <hr>
 <h2 id="overview--概述-16"><a class="header" href="#overview--概述-16">Overview / 概述</a></h2>
 <p>Observability helps you understand what’s happening in your application:</p>
@@ -3718,9 +3718,9 @@ log::error!("Error message");
 <li><strong>Text</strong> - Human-readable / 人类可读</li>
 <li><strong>JSON</strong> - Machine-readable / 机器可读</li>
 </ul>
-<h3 id="nexus-logging--nexus-日志"><a class="header" href="#nexus-logging--nexus-日志">Nexus Logging / Nexus 日志</a></h3>
-<p>Nexus provides a unified logging system with two modes optimized for different environments:</p>
-<p>Nexus 提供统一的日志系统，具有针对不同环境优化的两种模式：</p>
+<h3 id="hiver-logging--hiver-日志"><a class="header" href="#hiver-logging--hiver-日志">Hiver Logging / Hiver 日志</a></h3>
+<p>Hiver provides a unified logging system with two modes optimized for different environments:</p>
+<p>Hiver 提供统一的日志系统，具有针对不同环境优化的两种模式：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -3753,11 +3753,11 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 }</code></pre>
 <p><strong>Configuration Options / 配置选项</strong>:</p>
 <pre><code class="language-bash"># Environment variables / 环境变量
-export NEXUS_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
-export NEXUS_LOG_MODE=verbose          # verbose, simple
-export NEXUS_PROFILE=prod              # dev, prod (affects default mode)
+export HIVER_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
+export HIVER_LOG_MODE=verbose          # verbose, simple
+export HIVER_PROFILE=prod              # dev, prod (affects default mode)
 
-# Configuration file (nexus.toml) / 配置文件
+# Configuration file (hiver.toml) / 配置文件
 [logging]
 level = "INFO"
 mode = "verbose"                      # or "simple"
@@ -3862,7 +3862,7 @@ async fn handler(req: Request) -&gt; Response {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td>Spring Cloud Sleuth</td><td><code>Tracer</code></td><td>Distributed tracing</td></tr>
@@ -3880,8 +3880,8 @@ async fn handler(req: Request) -&gt; Response {
 <p><strong>Status</strong>: Phase 6 Complete ✅
 <strong>状态</strong>: 第6阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides native Web3 support for blockchain applications.</p>
-<p>Nexus 为区块链应用程序提供原生 Web3 支持。</p>
+<p>Hiver provides native Web3 support for blockchain applications.</p>
+<p>Hiver 为区块链应用程序提供原生 Web3 支持。</p>
 <hr>
 <h2 id="overview--概述-17"><a class="header" href="#overview--概述-17">Overview / 概述</a></h2>
 <p>Web3 features include:</p>
@@ -4095,8 +4095,8 @@ pub const SAFE_TRANSFER_FROM: FunctionSelector; // 0x4a39dc06
 <p><strong>Status</strong>: Phase 3+ Available ✅
 <strong>状态</strong>: 第3阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive testing support including unit tests, integration tests, and data layer testing.
-Nexus 提供全面的测试支持，包括单元测试、集成测试和数据层测试。</p>
+<p>Hiver provides comprehensive testing support including unit tests, integration tests, and data layer testing.
+Hiver 提供全面的测试支持，包括单元测试、集成测试和数据层测试。</p>
 <hr>
 <h2 id="overview--概述-18"><a class="header" href="#overview--概述-18">Overview / 概述</a></h2>
 <p>Testing strategies:
@@ -4376,8 +4376,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Service registration and discovery with Consul and Nacos support, similar to Spring Cloud Discovery.</p>
 <hr>
 <h2 id="status--状态-10"><a class="header" href="#status--状态-10">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 4+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 4+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 4+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 4+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4394,8 +4394,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>API gateway pattern with routing, rate limiting, and load balancing.</p>
 <hr>
 <h2 id="status--状态-11"><a class="header" href="#status--状态-11">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 4+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 4+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 4+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 4+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4412,8 +4412,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Kafka producer and consumer integration with async support, similar to Spring Kafka.</p>
 <hr>
 <h2 id="status--状态-12"><a class="header" href="#status--状态-12">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4430,8 +4430,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>AMQP protocol support with RabbitMQ integration, similar to Spring AMQP.</p>
 <hr>
 <h2 id="status--状态-13"><a class="header" href="#status--状态-13">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 7+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 7+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4448,8 +4448,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Declarative HTTP client similar to Spring Cloud OpenFeign.</p>
 <hr>
 <h2 id="status--状态-14"><a class="header" href="#status--状态-14">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Phase 4+ of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Phase 4+ 的积极开发中。</p>
+<p>This module is currently under active development as part of Phase 4+ of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Phase 4+ 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4463,11 +4463,11 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 </blockquote>
 <hr>
 <h2 id="overview--概述-24"><a class="header" href="#overview--概述-24">Overview / 概述</a></h2>
-<p>Nexus provides AI/LLM integration support for building intelligent applications.</p>
+<p>Hiver provides AI/LLM integration support for building intelligent applications.</p>
 <hr>
 <h2 id="status--状态-15"><a class="header" href="#status--状态-15">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Planned of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Planned 的积极开发中。</p>
+<p>This module is currently under active development as part of Planned of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Planned 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4484,8 +4484,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Integration with OpenAI GPT models for chat completions, embeddings, and function calling.</p>
 <hr>
 <h2 id="status--状态-16"><a class="header" href="#status--状态-16">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Planned of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Planned 的积极开发中。</p>
+<p>This module is currently under active development as part of Planned of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Planned 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4502,8 +4502,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Integration with Anthropic Claude models for AI-powered features.</p>
 <hr>
 <h2 id="status--状态-17"><a class="header" href="#status--状态-17">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Planned of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Planned 的积极开发中。</p>
+<p>This module is currently under active development as part of Planned of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Planned 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4520,8 +4520,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p>Local LLM support via Ollama for privacy-sensitive AI applications.</p>
 <hr>
 <h2 id="status--状态-18"><a class="header" href="#status--状态-18">Status / 状态</a></h2>
-<p>This module is currently under active development as part of Planned of the Nexus roadmap.</p>
-<p>该模块目前正处于 Nexus 路线图 Planned 的积极开发中。</p>
+<p>This module is currently under active development as part of Planned of the Hiver roadmap.</p>
+<p>该模块目前正处于 Hiver 路线图 Planned 的积极开发中。</p>
 <hr>
 <blockquote>
 <p>📝 Documentation is being written alongside implementation. Check back soon!
@@ -4533,8 +4533,8 @@ fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
 <p><strong>Status</strong>: 62 Crates, 10 Domains / 62 个 Crate，10 个功能域
 <strong>状态</strong>: 全阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive API documentation across multiple channels.
-Nexus 通过多个渠道提供全面的 API 文档。</p>
+<p>Hiver provides comprehensive API documentation across multiple channels.
+Hiver 通过多个渠道提供全面的 API 文档。</p>
 <hr>
 <h2 id="documentation-resources--文档资源"><a class="header" href="#documentation-resources--文档资源">Documentation Resources / 文档资源</a></h2>
 <div class="table-wrapper">
@@ -4548,7 +4548,7 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><td><strong>Full API Reference</strong></td><td><a href="../../api/full-api-reference.html">full-api-reference.md</a></td><td>Human-readable with code examples</td></tr>
 <tr><td><strong>Annotations Reference</strong></td><td><a href="../../api/annotations-reference.html">annotations-reference.md</a></td><td>All 150+ procedural macros</td></tr>
 <tr><td><strong>Codemap</strong></td><td><a href="../../CODEMAP.html">CODEMAP.md</a></td><td>Full crate reference, dependency graph</td></tr>
-<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td><td>Auto-generated rustdoc</td></tr>
+<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/hiver">docs.rs/hiver</a></td><td>Auto-generated rustdoc</td></tr>
 </tbody>
 </table>
 </div>
@@ -4680,15 +4680,15 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
         Server::bind("0.0.0.0:8080").run(app).await
     })
 }</code></pre>
 <h3 id="using-starter--使用启动器"><a class="header" href="#using-starter--使用启动器">Using Starter / 使用启动器</a></h3>
-<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new().get("/", handler))
         .run()
 }</code></pre>
@@ -4724,8 +4724,8 @@ impl UserRepository {
 </blockquote>
 <hr>
 <h2 id="overview--概述-28"><a class="header" href="#overview--概述-28">Overview / 概述</a></h2>
-<p>Nexus provides 40+ Spring-like annotations via procedural macros for declarative programming.</p>
-<p>Nexus 通过过程宏提供 40+ 类 Spring 注解，支持声明式编程。</p>
+<p>Hiver provides 40+ Spring-like annotations via procedural macros for declarative programming.</p>
+<p>Hiver 通过过程宏提供 40+ 类 Spring 注解，支持声明式编程。</p>
 <hr>
 <h2 id="core-annotations--核心注解"><a class="header" href="#core-annotations--核心注解">Core Annotations / 核心注解</a></h2>
 <div class="table-wrapper">
@@ -4767,8 +4767,8 @@ impl UserRepository {
 <p><strong>Status</strong>: Phase 2+ Available ✅
 <strong>状态</strong>: 第2阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
-Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。</p>
+<p>Hiver provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
+Hiver 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。</p>
 <hr>
 <h2 id="overview--概述-29"><a class="header" href="#overview--概述-29">Overview / 概述</a></h2>
 <p>Configuration features:
@@ -4782,10 +4782,10 @@ Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、�
 </ul>
 <hr>
 <h2 id="configuration-files--配置文件"><a class="header" href="#configuration-files--配置文件">Configuration Files / 配置文件</a></h2>
-<p>Nexus looks for configuration files in order of priority:
-Nexus 按优先级顺序查找配置文件：</p>
+<p>Hiver looks for configuration files in order of priority:
+Hiver 按优先级顺序查找配置文件：</p>
 <ol>
-<li><code>nexus.toml</code> (preferred / 推荐)</li>
+<li><code>hiver.toml</code> (preferred / 推荐)</li>
 <li><code>application.yml</code> / <code>application.yaml</code></li>
 <li><code>application.properties</code></li>
 <li><code>application.json</code></li>
@@ -4865,29 +4865,29 @@ let db: DatabaseConfig = config.get()?;
 <span class="boring">}</span></code></pre>
 <hr>
 <h2 id="environment-variables--环境变量"><a class="header" href="#environment-variables--环境变量">Environment Variables / 环境变量</a></h2>
-<p>Override any config value with environment variables using <code>NEXUS_</code> prefix:</p>
-<p>使用 <code>NEXUS_</code> 前缀的环境变量覆盖任何配置值：</p>
+<p>Override any config value with environment variables using <code>HIVER_</code> prefix:</p>
+<p>使用 <code>HIVER_</code> 前缀的环境变量覆盖任何配置值：</p>
 <pre><code class="language-bash"># Server config / 服务器配置
-export NEXUS_SERVER_PORT=9090
-export NEXUS_SERVER_HOST=0.0.0.0
+export HIVER_SERVER_PORT=9090
+export HIVER_SERVER_HOST=0.0.0.0
 
 # Database config / 数据库配置
-export NEXUS_DATABASE_URL=postgres://prod-server/mydb
-export NEXUS_DATABASE_POOL_SIZE=20
+export HIVER_DATABASE_URL=postgres://prod-server/mydb
+export HIVER_DATABASE_POOL_SIZE=20
 
 # Logging config / 日志配置
-export NEXUS_LOG_LEVEL=DEBUG
-export NEXUS_LOG_MODE=simple
+export HIVER_LOG_LEVEL=DEBUG
+export HIVER_LOG_MODE=simple
 
 # Active profile / 激活的配置文件
-export NEXUS_PROFILE=prod
+export HIVER_PROFILE=prod
 </code></pre>
 <hr>
 <h2 id="profiles--配置文件"><a class="header" href="#profiles--配置文件">Profiles / 配置文件</a></h2>
 <p>Environment-specific configurations with file naming convention:</p>
 <p>使用文件命名约定的环境特定配置：</p>
 <pre><code>config/
-├── nexus.toml                # Default / 默认
+├── hiver.toml                # Default / 默认
 ├── hiver-dev.toml            # Development / 开发
 ├── hiver-prod.toml           # Production / 生产
 └── hiver-test.toml           # Testing / 测试
@@ -4896,7 +4896,7 @@ export NEXUS_PROFILE=prod
 </span><span class="boring">fn main() {
 </span>use hiver_config::{Config, Profile};
 
-// Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
+// Auto-detect from HIVER_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
     .with_profile(Profile::from_env())
     .build()?;
@@ -4928,11 +4928,11 @@ pool_size = 50
 <h2 id="auto-configuration--自动配置"><a class="header" href="#auto-configuration--自动配置">Auto-Configuration / 自动配置</a></h2>
 <p><code>hiver-starter</code> provides Spring Boot-style auto-configuration:
 <code>hiver-starter</code> 提供 Spring Boot 风格的自动配置：</p>
-<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", handler)
             .get("/users", list_users)
@@ -4948,11 +4948,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><th>Setting</th><th>Default</th><th>Override</th></tr>
 </thead>
 <tbody>
-<tr><td>Server host</td><td><code>0.0.0.0</code></td><td><code>NEXUS_SERVER_HOST</code></td></tr>
-<tr><td>Server port</td><td><code>8080</code></td><td><code>NEXUS_SERVER_PORT</code></td></tr>
-<tr><td>Workers</td><td>CPU cores</td><td><code>NEXUS_SERVER_WORKERS</code></td></tr>
-<tr><td>Log level</td><td><code>INFO</code></td><td><code>NEXUS_LOG_LEVEL</code></td></tr>
-<tr><td>Log mode</td><td><code>verbose</code> (dev) / <code>simple</code> (prod)</td><td><code>NEXUS_LOG_MODE</code></td></tr>
+<tr><td>Server host</td><td><code>0.0.0.0</code></td><td><code>HIVER_SERVER_HOST</code></td></tr>
+<tr><td>Server port</td><td><code>8080</code></td><td><code>HIVER_SERVER_PORT</code></td></tr>
+<tr><td>Workers</td><td>CPU cores</td><td><code>HIVER_SERVER_WORKERS</code></td></tr>
+<tr><td>Log level</td><td><code>INFO</code></td><td><code>HIVER_LOG_LEVEL</code></td></tr>
+<tr><td>Log mode</td><td><code>verbose</code> (dev) / <code>simple</code> (prod)</td><td><code>HIVER_LOG_MODE</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -4961,15 +4961,15 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Type-safe config binding</td></tr>
 <tr><td><code>@Value</code></td><td><code>config.get::&lt;T&gt;()</code></td><td>Single value extraction</td></tr>
-<tr><td><code>application.yml</code></td><td><code>nexus.toml</code> / <code>application.yml</code></td><td>Config file</td></tr>
+<tr><td><code>application.yml</code></td><td><code>hiver.toml</code> / <code>application.yml</code></td><td>Config file</td></tr>
 <tr><td><code>@Profile</code></td><td><code>Profile</code> enum</td><td>Environment profiles</td></tr>
-<tr><td><code>spring.profiles.active</code></td><td><code>NEXUS_PROFILE</code></td><td>Active profile</td></tr>
-<tr><td><code>@SpringBootApplication</code></td><td><code>NexusApp::new()</code></td><td>Auto-configuration</td></tr>
+<tr><td><code>spring.profiles.active</code></td><td><code>HIVER_PROFILE</code></td><td>Active profile</td></tr>
+<tr><td><code>@SpringBootApplication</code></td><td><code>HiverApp::new()</code></td><td>Auto-configuration</td></tr>
 </tbody>
 </table>
 </div>
@@ -4981,8 +4981,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <p><strong>Status</strong>: Phase 7 Complete ✅ (Performance &amp; Hardening)
 <strong>状态</strong>: 第7阶段完成 ✅（性能与加固）</p>
 </blockquote>
-<p>Nexus is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
-Nexus 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
+<p>Hiver is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
+Hiver 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
 <hr>
 <h2 id="performance-goals--性能目标"><a class="header" href="#performance-goals--性能目标">Performance Goals / 性能目标</a></h2>
 <div class="table-wrapper">
@@ -5026,7 +5026,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </ul>
 <hr>
 <h2 id="runtime-benchmarks--运行时基准"><a class="header" href="#runtime-benchmarks--运行时基准">Runtime Benchmarks / 运行时基准</a></h2>
-<p>Nexus includes a comprehensive benchmark suite using Criterion:</p>
+<p>Hiver includes a comprehensive benchmark suite using Criterion:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -5051,7 +5051,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </code></pre>
 <hr>
 <h2 id="techempower-benchmark--techempower-基准"><a class="header" href="#techempower-benchmark--techempower-基准">TechEmpower Benchmark / TechEmpower 基准</a></h2>
-<p>Nexus includes a TechEmpower-compatible benchmark application:</p>
+<p>Hiver includes a TechEmpower-compatible benchmark application:</p>
 <pre><code class="language-bash"># Build optimized binary / 构建优化二进制
 cargo build --release --bin techempower_benchmark
 
@@ -5115,8 +5115,8 @@ async fn handler(req: Request) -&gt; Response {
 <p><strong>Status</strong>: Phase 3+ Available ✅
 <strong>状态</strong>: 第3阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive security features inspired by Spring Security.
-Nexus 提供受 Spring Security 启发的全面安全功能。</p>
+<p>Hiver provides comprehensive security features inspired by Spring Security.
+Hiver 提供受 Spring Security 启发的全面安全功能。</p>
 <hr>
 <h2 id="overview--概述-30"><a class="header" href="#overview--概述-30">Overview / 概述</a></h2>
 <p>Security features:
@@ -5289,7 +5289,7 @@ let app = Router::new()
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@PreAuthorize</code></td><td><code>#[pre_authorize]</code></td><td>Method authorization</td></tr>

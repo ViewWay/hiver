@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "../searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2dff6247.js"></script>
+        <script src="../toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: 62 Crates, 10 Domains / 62 个 Crate，10 个功能域
 <strong>状态</strong>: 全阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive API documentation across multiple channels.
-Nexus 通过多个渠道提供全面的 API 文档。</p>
+<p>Hiver provides comprehensive API documentation across multiple channels.
+Hiver 通过多个渠道提供全面的 API 文档。</p>
 <hr>
 <h2 id="documentation-resources--文档资源"><a class="header" href="#documentation-resources--文档资源">Documentation Resources / 文档资源</a></h2>
 <div class="table-wrapper">
@@ -194,7 +194,7 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><td><strong>Full API Reference</strong></td><td><a href="../../../api/full-api-reference.html">full-api-reference.md</a></td><td>Human-readable with code examples</td></tr>
 <tr><td><strong>Annotations Reference</strong></td><td><a href="../../../api/annotations-reference.html">annotations-reference.md</a></td><td>All 150+ procedural macros</td></tr>
 <tr><td><strong>Codemap</strong></td><td><a href="../../../CODEMAP.html">CODEMAP.md</a></td><td>Full crate reference, dependency graph</td></tr>
-<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td><td>Auto-generated rustdoc</td></tr>
+<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/hiver">docs.rs/hiver</a></td><td>Auto-generated rustdoc</td></tr>
 </tbody>
 </table>
 </div>
@@ -326,15 +326,15 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
         Server::bind("0.0.0.0:8080").run(app).await
     })
 }</code></pre>
 <h3 id="using-starter--使用启动器"><a class="header" href="#using-starter--使用启动器">Using Starter / 使用启动器</a></h3>
-<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new().get("/", handler))
         .run()
 }</code></pre>

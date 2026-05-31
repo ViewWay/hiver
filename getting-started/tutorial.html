@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "../searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2dff6247.js"></script>
+        <script src="../toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -174,9 +174,9 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="nexus-tutorial--nexus教程"><a class="header" href="#nexus-tutorial--nexus教程">Nexus Tutorial / Nexus教程</a></h1>
-<p>This tutorial will guide you through building a complete REST API application with Nexus.</p>
-<p>本教程将指导您使用Nexus构建完整的REST API应用程序。</p>
+                        <h1 id="hiver-tutorial--hiver教程"><a class="header" href="#hiver-tutorial--hiver教程">Hiver Tutorial / Hiver教程</a></h1>
+<p>This tutorial will guide you through building a complete REST API application with Hiver.</p>
+<p>本教程将指导您使用Hiver构建完整的REST API应用程序。</p>
 <hr>
 <h2 id="table-of-contents--目录"><a class="header" href="#table-of-contents--目录">Table of Contents / 目录</a></h2>
 <ol>
@@ -196,7 +196,7 @@
 cargo new my-api --bin
 cd my-api
 
-# Add Nexus dependencies / 添加Nexus依赖
+# Add Hiver dependencies / 添加Hiver依赖
 cargo add hiver-runtime hiver-http hiver-router hiver-extractors
 cargo add hiver-runtime
 </code></pre>
@@ -220,7 +220,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
 
         Server::bind("127.0.0.1:8080")
             .run(app)
@@ -232,7 +232,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="run-the-server--运行服务器"><a class="header" href="#run-the-server--运行服务器">Run the Server / 运行服务器</a></h3>
 <pre><code class="language-bash">cargo run
 curl http://localhost:8080/
-# Hello, Nexus!
+# Hello, Hiver!
 </code></pre>
 <hr>
 <h2 id="3-routing--路由"><a class="header" href="#3-routing--路由">3. Routing / 路由</a></h2>

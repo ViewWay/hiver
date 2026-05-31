@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "../searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2dff6247.js"></script>
+        <script src="../toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 7 Complete ✅ (Performance &amp; Hardening)
 <strong>状态</strong>: 第7阶段完成 ✅（性能与加固）</p>
 </blockquote>
-<p>Nexus is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
-Nexus 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
+<p>Hiver is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
+Hiver 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
 <hr>
 <h2 id="performance-goals--性能目标"><a class="header" href="#performance-goals--性能目标">Performance Goals / 性能目标</a></h2>
 <div class="table-wrapper">
@@ -224,7 +224,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </ul>
 <hr>
 <h2 id="runtime-benchmarks--运行时基准"><a class="header" href="#runtime-benchmarks--运行时基准">Runtime Benchmarks / 运行时基准</a></h2>
-<p>Nexus includes a comprehensive benchmark suite using Criterion:</p>
+<p>Hiver includes a comprehensive benchmark suite using Criterion:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -249,7 +249,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </code></pre>
 <hr>
 <h2 id="techempower-benchmark--techempower-基准"><a class="header" href="#techempower-benchmark--techempower-基准">TechEmpower Benchmark / TechEmpower 基准</a></h2>
-<p>Nexus includes a TechEmpower-compatible benchmark application:</p>
+<p>Hiver includes a TechEmpower-compatible benchmark application:</p>
 <pre><code class="language-bash"># Build optimized binary / 构建优化二进制
 cargo build --release --bin techempower_benchmark
 

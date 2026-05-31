@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Hiver Framework / Nexus框架 - Hiver Framework Guide / Hiver框架指南</title>
+        <title>Hiver Framework / Hiver框架 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9cc28e6f.js";
+            window.path_to_searchindex_js = "searchindex-9f6eb779.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-2dff6247.js"></script>
+        <script src="toc-5952c57e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -191,7 +191,7 @@
 </div>
 
 <hr>
-<h2 id="why-nexus--为什么选择-nexus"><a class="header" href="#why-nexus--为什么选择-nexus">Why Nexus? / 为什么选择 Nexus？</a></h2>
+<h2 id="why-hiver--为什么选择-hiver"><a class="header" href="#why-hiver--为什么选择-hiver">Why Hiver? / 为什么选择 Hiver？</a></h2>
 <table>
 <tr>
 <td width="50%">
@@ -246,16 +246,16 @@
 [dependencies]
 hiver-starter = "0.1"
 </code></pre>
-<pre class="playground"><code class="language-rust">use hiver_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 use hiver_router::Router;
 
 #[hiver::handler]
 async fn hello() -&gt; &amp;'static str {
-    "Hello, Nexus! / 你好，Nexus！"
+    "Hello, Hiver! / 你好，Hiver！"
 }
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", hello)
             .get("/users/:id", get_user)
@@ -327,7 +327,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </thead>
 <tbody>
 <tr><td>📦 Crates.io</td><td><a href="https://crates.io/search?q=hiver-">hiver-framework</a></td></tr>
-<tr><td>📖 API Docs</td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td></tr>
+<tr><td>📖 API Docs</td><td><a href="https://docs.rs/hiver">docs.rs/hiver</a></td></tr>
 <tr><td>💻 GitHub</td><td><a href="https://github.com/ViewWay/hiver">ViewWay/hiver</a></td></tr>
 <tr><td>📄 Design Spec</td><td><a href="../design/design-spec.html">design-spec.md</a></td></tr>
 <tr><td>🗺️ Implementation Plan</td><td><a href="../design/implementation-plan.html">implementation-plan.md</a></td></tr>
@@ -339,7 +339,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@RestController</code></td><td><code>#[handler]</code></td><td>HTTP handler</td></tr>
@@ -347,7 +347,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><td><code>@Autowired</code></td><td><code>#[inject]</code></td><td>DI injection</td></tr>
 <tr><td><code>@Repository</code></td><td><code>#[derive(Repository)]</code></td><td>Data repository</td></tr>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Config binding</td></tr>
-<tr><td><code>SpringApplication.run()</code></td><td><code>NexusApp::new().run()</code></td><td>App bootstrap</td></tr>
+<tr><td><code>SpringApplication.run()</code></td><td><code>HiverApp::new().run()</code></td><td>App bootstrap</td></tr>
 <tr><td><code>@SpringBootApplication</code></td><td><code>hiver-starter</code></td><td>Auto-config</td></tr>
 <tr><td>Resilience4j</td><td><code>hiver-resilience</code></td><td>Circuit breaker</td></tr>
 <tr><td>Spring Security</td><td><code>hiver-security</code></td><td>Auth &amp; security</td></tr>
