@@ -30,7 +30,7 @@ nexus-data-macros = { path = "../nexus-data-macros" }
 nexus-runtime = { path = "../nexus-runtime", optional = true }
 
 # MongoDB driver
-mongodb = { version = "3.1" }
+mongodb = { version = "3.7" }
 
 # Error handling
 thiserror = { workspace = true }

@@ -40,8 +40,8 @@ anyhow = { workspace = true }
 async-trait = { workspace = true }
 
 # Testcontainers for Docker-based integration tests / 基于 Docker 的集成测试容器
-testcontainers = "0.23"
-testcontainers-modules = { version = "0.11", features = ["postgres", "redis", "kafka", "rabbitmq"] }
+testcontainers = "0.27"
+testcontainers-modules = { version = "0.15", features = ["postgres", "redis", "kafka", "rabbitmq"] }
 
 # Redis client
 redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }

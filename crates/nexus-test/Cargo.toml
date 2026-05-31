@@ -60,8 +60,8 @@ tracing = { workspace = true }
 
 # Testcontainers (Docker-based integration test containers)
 # Testcontainers（基于Docker的集成测试容器）
-testcontainers = "0.23"
-testcontainers-modules = { version = "0.11", features = ["postgres", "redis", "kafka"] }
+testcontainers = "0.27"
+testcontainers-modules = { version = "0.15", features = ["postgres", "redis", "kafka"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
