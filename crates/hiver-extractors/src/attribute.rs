@@ -42,6 +42,7 @@ use std::sync::Arc;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type of the attribute to extract. Must be `Clone + Send + Sync + 'static`.
+///   要提取的属性类型。必须满足 `Clone + Send + Sync + 'static`。
 ///
 /// # Example / 示例
 ///
@@ -127,12 +128,19 @@ where
     }
 }
 
-/// Named request attribute extractor
-/// 命名的请求属性提取器
+/// Named request attribute extractor.
+/// 命名的请求属性提取器。
 ///
 /// Like `RequestAttribute` but with an explicit name/key.
 /// Useful when storing values with string keys rather than type-based lookup.
-/// 类似于`RequestAttribute`，但具有显式名称/键。当使用字符串键而不是基于类型的查找存储值时很有用。
+///
+/// 类似于 `RequestAttribute`，但具有显式名称/键。当使用字符串键
+/// 而不是基于类型的查找存储值时很有用。
+///
+/// # Type Parameters / 类型参数
+///
+/// - `T` - The type of the attribute to extract. Must be `Clone + Send + Sync + 'static`.
+///   要提取的属性类型。必须满足 `Clone + Send + Sync + 'static`。
 ///
 /// # Example / 示例
 ///

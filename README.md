@@ -1,5 +1,5 @@
 <div align="center">
-<p><img alt="Hiver" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Hiver" /></p>
+<p><img alt="Hiver" width="132" style="max-width:40%;min-width:60px;" src="docs/logo.png" width="132" /></p>
 <p>
     <a href="https://github.com/ViewWay/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;
     <a href="https://github.com/ViewWay/hiver/blob/main/README.zh.md">简体中文</a>

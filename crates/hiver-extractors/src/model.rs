@@ -63,6 +63,7 @@ use std::collections::HashMap;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type to deserialize. Must implement `Deserialize`.
+///   要反序列化的类型。必须实现 `Deserialize`。
 ///
 /// # Example / 示例
 ///
@@ -191,12 +192,21 @@ pub fn parse_query_params(uri: &str) -> HashMap<String, String> {
     params
 }
 
-/// Model attribute that binds only from query parameters
-/// 仅从查询参数绑定的模型属性
+/// Model attribute that binds only from query parameters.
+/// 仅从查询参数绑定的模型属性。
 ///
 /// Similar to `ModelAttribute` but only considers query parameters,
 /// not the request body.
-/// 类似于`ModelAttribute`，但仅考虑查询参数，不考虑请求主体。
+/// 类似于 `ModelAttribute`，但仅考虑查询参数，不考虑请求主体。
+///
+/// # Equivalent to Spring Boot / 等价于 Spring Boot
+///
+/// - `@RequestParam` with `required = false` for individual fields
+///
+/// # Type Parameters / 类型参数
+///
+/// - `T` - The type to deserialize from query parameters. Must implement `Deserialize`.
+///   要从查询参数反序列化的类型。必须实现 `Deserialize`。
 ///
 /// # Example / 示例
 ///

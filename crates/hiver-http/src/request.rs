@@ -16,7 +16,8 @@ use super::{
 use http::request::Parts;
 use std::collections::HashMap;
 
-/// Convert our Method to `http::Method`
+/// Convert our [`Method`] to `http::Method`.
+/// 将我们的 [`Method`] 转换为 `http::Method`。
 impl From<&Method> for http::Method {
     fn from(method: &Method) -> Self {
         match method {
@@ -33,7 +34,8 @@ impl From<&Method> for http::Method {
     }
 }
 
-/// Convert `http::Method` to our Method
+/// Convert `http::Method` to our [`Method`].
+/// 将 `http::Method` 转换为我们的 [`Method`]。
 impl From<&http::Method> for Method {
     fn from(method: &http::Method) -> Self {
         match method.as_str() {
@@ -241,18 +243,24 @@ impl Request {
     }
 }
 
+/// Convert an `http::Request<Body>` into our [`Request`].
+/// 将 `http::Request<Body>` 转换为我们的 [`Request`]。
 impl From<http::Request<Body>> for Request {
     fn from(inner: http::Request<Body>) -> Self {
         Self::new(inner)
     }
 }
 
+/// Borrow the inner `http::Request<Body>` as a reference.
+/// 借用内部的 `http::Request<Body>` 引用。
 impl AsRef<http::Request<Body>> for Request {
     fn as_ref(&self) -> &http::Request<Body> {
         &self.inner
     }
 }
 
+/// Mutably borrow the inner `http::Request<Body>`.
+/// 可变借用内部的 `http::Request<Body>`。
 impl AsMut<http::Request<Body>> for Request {
     fn as_mut(&mut self) -> &mut http::Request<Body> {
         &mut self.inner

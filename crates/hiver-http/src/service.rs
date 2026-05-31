@@ -11,22 +11,36 @@
 use super::{error::Result, request::Request, response::Response};
 use std::future::Future;
 
-/// HTTP Service trait
-/// `HTTP服务trait`
+/// HTTP Service trait / HTTP 服务 trait
 ///
 /// This trait is implemented by types that can handle HTTP requests.
-/// Functions that handle requests implement this trait via the framework.
+/// Any async function with the signature `Fn(Request) -> Result<Response>` automatically
+/// implements this trait via a blanket implementation.
 ///
-/// `此trait由可以处理HTTP请求的类型实现`。
-/// 处理请求的函数通过框架实现此trait。
+/// 此 trait 由可以处理 HTTP 请求的类型实现。
+/// 任何签名为 `Fn(Request) -> Result<Response>` 的异步函数都通过通用实现自动实现此 trait。
+///
+/// # Equivalent to Spring Boot / 等价于 Spring Boot
+///
+/// - `@Service` / `@Component` — Service layer that handles business logic
+///   处理业务逻辑的服务层
+/// - `DispatcherServlet` — Routes requests to handler methods
+///   将请求路由到处理器方法
+/// - `HttpHandler` (WebFlux) — Functional request handling
+///   函数式请求处理
 pub trait HttpService: Send + Sync {
     /// Handle the incoming request and return a response
     /// 处理传入的请求并返回响应
     fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send;
 }
 
-/// Blanket implementation for async functions
-/// 为异步函数的通用实现
+/// Blanket implementation for async functions / 异步函数的通用实现
+///
+/// Any `Fn(Request) -> Future<Output = Result<Response>> + Send + Sync`
+/// automatically implements `HttpService`.
+///
+/// 任何 `Fn(Request) -> Future<Output = Result<Response>> + Send + Sync`
+/// 都自动实现 `HttpService`。
 impl<F, Fut> HttpService for F
 where
     F: Fn(Request) -> Fut + Send + Sync,

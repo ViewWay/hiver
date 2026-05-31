@@ -48,6 +48,7 @@ use std::sync::Arc;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type of state to extract. Must be present in the application state.
+///   要提取的状态类型。必须存在于应用状态中。
 ///
 /// # Note / 注意
 ///
@@ -112,12 +113,13 @@ impl<T> Clone for State<T> {
 // 状态通过请求扩展提取目前不支持hiver_http::Request。
 // 请改用Router的`with_state()`和`Stateful`处理程序。
 
-/// Extension trait for adding state to requests
-/// 向请求添加状态的扩展trait
+/// Extension trait for adding state to requests.
+/// 向请求添加状态的扩展trait。
 ///
 /// Note: This is not currently supported with `hiver_http::Request`.
 /// Use Router's `with_state()` method instead.
-/// `注意：目前不支持hiver_http::Request。请改用Router的``with_state()`方法。
+///
+/// 注意：目前不支持 `hiver_http::Request`。请改用 Router 的 `with_state()` 方法。
 pub trait AddState {
     /// Add state to the request
     /// 向请求添加状态

@@ -6,3 +6,12 @@
 {"t":0,"agent":"a48ad9c","agent_type":"Explore","event":"agent_stop","success":true,"duration_ms":50120}
 {"t":0,"agent":"a693f1b","agent_type":"ecc:build-error-resolver","event":"agent_start","parent_mode":"none"}
 {"t":0,"agent":"a693f1b","agent_type":"ecc:build-error-resolver","event":"agent_stop","success":true,"duration_ms":63259}
+{"t":0,"agent":"a0b65eb","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a307463","agent_type":"Explore","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a307463","agent_type":"Explore","event":"agent_stop","success":true,"duration_ms":132329}
+{"t":0,"agent":"ac779b3","agent_type":"ecc:doc-updater","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a3e7c82","agent_type":"ecc:doc-updater","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a34bcb2","agent_type":"ecc:doc-updater","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ac779b3","agent_type":"ecc:doc-updater","event":"agent_stop","success":true,"duration_ms":74656}
+{"t":0,"agent":"a34bcb2","agent_type":"ecc:doc-updater","event":"agent_stop","success":true,"duration_ms":167499}
+{"t":0,"agent":"a3e7c82","agent_type":"ecc:doc-updater","event":"agent_stop","success":true,"duration_ms":279583}

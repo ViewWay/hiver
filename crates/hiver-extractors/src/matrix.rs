@@ -27,9 +27,15 @@ use std::pin::Pin;
 /// Matrix variable extractor - extracts the first matrix variable value
 /// 矩阵变量提取器 - 提取第一个矩阵变量值
 ///
+/// # Description / 描述
+///
 /// Extracts the first matrix variable value from the path.
 /// Matrix variables appear after semicolons in path segments.
 /// 从路径中提取第一个矩阵变量值。矩阵变量出现在路径段的分号之后。
+///
+/// # Type Parameters / 类型参数
+///
+/// - `T` - The type to deserialize the value into. Must implement `serde::Deserialize`.
 ///
 /// # Example / 示例
 ///
@@ -53,8 +59,8 @@ use std::pin::Pin;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MatrixVariable<T>(pub T);
 
-/// Extract all matrix variables from the path as a `HashMap`
-/// `从路径提取所有矩阵变量为HashMap`
+/// Extract all matrix variables from the path as a `HashMap`.
+/// 从路径提取所有矩阵变量为 `HashMap`。
 ///
 /// # Example / 示例
 ///
@@ -70,8 +76,8 @@ pub struct MatrixVariable<T>(pub T);
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MatrixVariables(pub HashMap<String, String>);
 
-/// Extract all matrix variables from a specific path segment as a Vec
-/// 从特定路径段提取所有矩阵变量为Vec
+/// Extract all matrix variables from a specific path segment as a `Vec`.
+/// 从特定路径段提取所有矩阵变量为 `Vec`。
 ///
 /// # Example / 示例
 ///
@@ -182,8 +188,8 @@ fn extract_first_matrix_value(path: &str) -> Option<String> {
     None
 }
 
-/// Parse all matrix variables from a path into a `HashMap`
-/// `将路径中的所有矩阵变量解析为HashMap`
+/// Parse all matrix variables from a path into a `HashMap`.
+/// 将路径中的所有矩阵变量解析为 `HashMap`。
 fn parse_matrix_variables(path: &str) -> HashMap<String, String> {
     let mut result = HashMap::new();
 

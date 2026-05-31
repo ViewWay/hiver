@@ -30,6 +30,7 @@ use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type to convert the header value to.
+///   要将 header 值转换成的类型。
 ///
 /// # Example / 示例
 ///

@@ -38,6 +38,7 @@ use serde::Deserialize;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type to deserialize from JSON. Must implement `Deserialize`.
+///   要从 JSON 反序列化的类型。必须实现 `Deserialize`。
 ///
 /// # Example / 示例
 ///

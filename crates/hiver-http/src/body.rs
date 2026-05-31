@@ -13,8 +13,13 @@ use http_body::Frame;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-/// HTTP Body trait
-/// HTTP Body trait
+/// HTTP Body trait / HTTP Body trait
+///
+/// Extends `http_body::Body` with a convenience method for accessing body data as bytes.
+/// Equivalent to Spring's `HttpInputMessage.getBody()` / `HttpOutputMessage.getBody()`.
+///
+/// 扩展 `http_body::Body`，提供方便的方法将 body 数据作为字节访问。
+/// 等价于 Spring 的 `HttpInputMessage.getBody()` / `HttpOutputMessage.getBody()`。
 pub trait HttpBody: http_body::Body<Data = Bytes, Error = Error> + Send + Sync + Unpin {
     /// Get the body as bytes if available
     /// 如果可用，获取body的字节形式
@@ -156,8 +161,13 @@ impl HttpBody for EmptyBody {
     }
 }
 
-/// Body type alias using `FullBody` by default
-/// `默认使用FullBody的Body类型别名`
+/// Body type alias using `FullBody` by default.
+/// 默认使用 `FullBody` 的 Body 类型别名。
+///
+/// This is the primary body type used throughout the framework for
+/// request and response bodies.
+///
+/// 这是框架中用于请求和响应体的主要 body 类型。
 pub type Body = FullBody;
 
 impl Body {

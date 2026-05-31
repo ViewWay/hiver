@@ -15,8 +15,34 @@ use super::{
 };
 use std::collections::HashMap;
 
-/// HTTP Response
-/// HTTP 响应
+/// HTTP Response / HTTP 响应
+///
+/// A type-safe wrapper for building and manipulating HTTP responses.
+/// Equivalent to Spring's `ResponseEntity` or `HttpServletResponse`.
+///
+/// 用于构建和操作 HTTP 响应的类型安全包装器。
+/// 等价于 Spring 的 `ResponseEntity` 或 `HttpServletResponse`。
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use hiver_http::Response;
+///
+/// // Quick construction
+/// let resp = Response::ok();
+///
+/// // Builder pattern
+/// let resp = Response::builder()
+///     .status(StatusCode::CREATED)
+///     .header("content-type", "application/json")
+///     .body(r#"{"id": 1}"#.into())
+///     .unwrap();
+///
+/// // Body builder for fluent API
+/// let resp = Response::build_ok()
+///     .content_type("application/json")
+///     .json(&data);
+/// ```
 #[derive(Debug, Clone)]
 pub struct Response {
     status: StatusCode,
@@ -159,6 +185,8 @@ impl ResponseBuilder {
     }
 }
 
+/// Returns a default response with 200 OK status and empty body.
+/// 返回带有 200 OK 状态和空 body 的默认响应。
 impl Default for Response {
     fn default() -> Self {
         Self::new(StatusCode::OK)

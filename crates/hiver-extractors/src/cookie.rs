@@ -31,6 +31,7 @@ use std::collections::HashMap;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type to convert the cookie value to.
+///   要将 cookie 值转换成的类型。
 ///
 /// # Example / 示例
 ///

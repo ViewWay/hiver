@@ -84,6 +84,8 @@ impl Method {
 }
 
 
+/// Formats the method as an uppercase string (e.g. `"GET"`, `"POST"`).
+/// 将方法格式化为大写字符串（例如 `"GET"`、`"POST"`）。
 impl fmt::Display for Method {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -100,6 +102,8 @@ impl fmt::Display for Method {
     }
 }
 
+/// Parses a method string (case-insensitive). Unknown methods default to GET.
+/// 解析方法字符串（不区分大小写）。未知方法默认为 GET。
 impl FromStr for Method {
     type Err = MethodError;
 

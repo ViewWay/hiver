@@ -39,6 +39,7 @@ use std::collections::HashMap;
 /// # Type Parameters / 类型参数
 ///
 /// - `T` - The type to deserialize from form data. Must implement `Deserialize`.
+///   要从表单数据反序列化的类型。必须实现 `Deserialize`。
 ///
 /// # Example / 示例
 ///

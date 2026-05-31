@@ -108,6 +108,8 @@ impl Error {
     }
 }
 
+/// Formats the error as a human-readable string.
+/// 将错误格式化为人类可读的字符串。
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -130,6 +132,8 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
+/// Converts a `std::io::Error` into `Error::Io`.
+/// 将 `std::io::Error` 转换为 `Error::Io`。
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
         Error::Io(e.to_string())
@@ -252,7 +256,8 @@ impl fmt::Display for ResponseStatusException {
 
 impl std::error::Error for ResponseStatusException {}
 
-/// Convert `ResponseStatusException` to Error
+/// Converts a `ResponseStatusException` into `Error::Custom`.
+/// 将 `ResponseStatusException` 转换为 `Error::Custom`。
 impl From<ResponseStatusException> for Error {
     fn from(ex: ResponseStatusException) -> Self {
         Error::Custom(ex.status.as_u16(), ex.reason)

@@ -19,25 +19,56 @@ use hiver_runtime::task::spawn;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
-/// HTTP Server
-/// HTTP服务器
+/// HTTP Server / HTTP 服务器
+///
+/// A configurable TCP server that accepts connections, parses HTTP requests,
+/// dispatches them to an [`HttpService`](crate::HttpService), and encodes responses.
+///
+/// 可配置的 TCP 服务器，接受连接、解析 HTTP 请求、
+/// 将它们分派给 [`HttpService`](crate::HttpService)，并编码响应。
+///
+/// # Equivalent to Spring Boot / 等价于 Spring Boot
+///
+/// - Embedded Tomcat / Jetty / Undertow server
+/// - `server.port`, `server.address` properties
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use hiver_http::Server;
+///
+/// let server = Server::bind("0.0.0.0:8080")
+///     .max_connections(10_000)
+///     .request_timeout(30)
+///     .run(service)
+///     .await?;
+/// ```
 #[derive(Clone)]
 pub struct Server {
     addr: SocketAddr,
     config: ServerConfig,
 }
 
-/// Server configuration
-/// 服务器配置
+/// Server configuration / 服务器配置
+///
+/// Controls connection limits, timeouts, and buffer sizes for the HTTP server.
+///
+/// 控制HTTP服务器的连接限制、超时和缓冲区大小。
+///
+/// # Equivalent to Spring Boot / 等价于 Spring Boot
+///
+/// - `server.tomcat.max-connections`
+/// - `server.connection-timeout`
+/// - `server.tomcat.max-swallow-size`
 #[derive(Debug, Clone)]
 pub struct ServerConfig {
-    /// Maximum connections
+    /// Maximum concurrent connections / 最大并发连接数
     max_connections: usize,
-    /// Request timeout in seconds
+    /// Request timeout in seconds / 请求超时时间（秒）
     request_timeout: u64,
-    /// Keep-alive timeout in seconds
+    /// Keep-alive timeout in seconds / 保活超时时间（秒）
     keep_alive_timeout: u64,
-    /// Maximum buffer size for reading
+    /// Maximum buffer size for reading (bytes) / 最大读取缓冲区大小（字节）
     max_buffer_size: usize,
 }
 
@@ -157,6 +188,8 @@ impl Server {
     }
 }
 
+/// Returns a server bound to `127.0.0.1:8080` with default configuration.
+/// 返回绑定到 `127.0.0.1:8080` 且使用默认配置的服务器。
 impl Default for Server {
     fn default() -> Self {
         Self::new()

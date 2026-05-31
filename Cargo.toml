@@ -74,7 +74,7 @@ repository = "https://github.com/ViewWay/hiver"
 homepage = "https://viewway.github.io/hiver"
 license = "MIT OR Apache-2.0"
 edition = "2024"
-rust-version = "1.93"
+rust-version = "1.85"
 keywords = ["http", "async", "web", "framework", "server", "spring", "ioc", "aop"]
 categories = [
     "web-programming::http-server",

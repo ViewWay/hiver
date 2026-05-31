@@ -1,20 +1,67 @@
-//! Hiver HTTP - HTTP server and client
-//! Hiver HTTP - HTTP服务器和客户端
+//! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端
 //!
-//! # Overview / 概述
+//! `hiver-http` provides a production-grade HTTP server and client implementation
+//! for the Hiver framework. It follows Spring Boot's programming model to offer
+//! a familiar, annotation-driven API for Rust developers.
 //!
-//! `hiver-http` provides HTTP server and client implementations for the
-//! Hiver framework.
+//! `hiver-http` 为 Hiver 框架提供生产级的 HTTP 服务器和客户端实现。
+//! 它遵循 Spring Boot 的编程模型，为 Rust 开发者提供熟悉的、注解驱动的 API。
 //!
-//! `hiver-http` `为Hiver框架提供HTTP服务器和客户端实现`。
+//! ## Overview / 概述
 //!
-//! # Equivalent to Spring Boot / 等价于 Spring Boot
+//! This crate is the central HTTP layer of the Hiver framework, responsible for:
 //!
-//! - Spring Web / Spring `WebFlux` / Spring MVC
-//! - `ResponseEntity`, @`RequestBody`, @`ResponseBody`
-//! - `HttpServletRequest`, `HttpServletResponse`
+//! 本 crate 是 Hiver 框架的核心 HTTP 层，负责：
 //!
-//! # Example / 示例
+//! - **Request / Response types** — Type-safe wrappers around `http::Request` and `http::Response`
+//!   with path variables, query parameters, and extensions.
+//!   类型安全的 `http::Request` 和 `http::Response` 包装器，支持路径变量、查询参数和扩展。
+//! - **Server** — Configurable TCP server with keep-alive, timeouts, and connection management.
+//!   可配置的 TCP 服务器，支持保活、超时和连接管理。
+//! - **JSON / SSE / WebSocket** — Built-in support for JSON serialization, Server-Sent Events,
+//!   and WebSocket upgrade handshakes.
+//!   内置 JSON 序列化、服务器发送事件和 WebSocket 升级握手支持。
+//! - **Error handling** — Global `@ControllerAdvice`-style exception handling with
+//!   `ErrorResponse`, `ExceptionHandlerRegistry`, and built-in handlers.
+//!   全局 `@ControllerAdvice` 风格的异常处理，包含 `ErrorResponse`、`ExceptionHandlerRegistry` 和内置处理器。
+//! - **Validation** — `Validatable` trait and `ValidationHelpers` for declarative request validation.
+//!   用于声明式请求验证的 `Validatable` trait 和 `ValidationHelpers`。
+//! - **Multipart** — File upload handling with `MultipartFile`, `MultipartForm`, and size limits.
+//!   带有 `MultipartFile`、`MultipartForm` 和大小限制的文件上传处理。
+//! - **HTTP/2** — Frame types, settings, stream management, and connection state.
+//!   帧类型、设置、流管理和连接状态。
+//!
+//! ## Features / 功能
+//!
+//! | Feature | Description | Spring Equivalent |
+//! |---------|-------------|--------------------|
+//! | Request extraction | `FromRequest` trait with `@RequestParam`, `@PathVariable`, `@RequestBody` | `@RequestParam`, `@PathVariable`, `@RequestBody` |
+//! | Response building | `Response::builder()`, `BodyBuilder`, `Json<T>` | `ResponseEntity`, `@ResponseBody` |
+//! | Exception handling | `ControllerAdvice`, `ExceptionHandlerRegistry` | `@ControllerAdvice`, `@ExceptionHandler` |
+//! | Validation | `Validatable`, `Validated<T>`, `ValidationHelpers` | `@Valid`, `BindingResult` |
+//! | SSE | `Event`, `Sse`, `SseKeepAlive` | `SseEmitter`, `ResponseBodyEmitter` |
+//! | WebSocket | `WebSocket`, `WebSocketUpgrade`, `Message` | `WebSocketHandler`, `WebSocketSession` |
+//! | Multipart | `MultipartFile`, `MultipartForm<T>` | `MultipartFile`, `@RequestPart` |
+//! | API response | `ApiResponse<T>`, `PageResponse<T>`, `ResultCode` | `ResponseEntity<T>`, custom wrappers |
+//! | HTTP/2 | `FrameType`, `Http2Config`, `StreamState` | `server.http2.enabled` |
+//!
+//! ## Equivalent to Spring Boot / 等价于 Spring Boot
+//!
+//! This crate is the Rust equivalent of the following Spring Boot modules:
+//!
+//! 本 crate 等价于以下 Spring Boot 模块：
+//!
+//! - **Spring Web / Spring WebFlux / Spring MVC** — Core request/response handling
+//!   核心请求/响应处理
+//! - **`ResponseEntity<T>`** — `Response::builder()`, `BodyBuilder`, `ApiResponse<T>`
+//! - **`@RequestBody` / `@ResponseBody`** — `FromRequest`, `IntoResponse`, `Json<T>`
+//! - **`HttpServletRequest` / `HttpServletResponse`** — `Request`, `Response`
+//! - **`@ControllerAdvice` / `@ExceptionHandler`** — `ControllerAdvice`, `ExceptionHandler`
+//! - **`@Valid` / `BindingResult`** — `Validatable`, `Validated<T>`, `ValidationError`
+//! - **`SseEmitter`** — `Sse`, `Event`, `SseKeepAlive`
+//! - **`MultipartFile`** — `MultipartFile`, `MultipartForm<T>`
+//!
+//! ## Example / 示例
 //!
 //! ```rust,no_run,ignore
 //! use hiver_http::{Server, Response, StatusCode};
@@ -30,6 +77,32 @@
 //!     Ok(())
 //! }
 //! ```
+//!
+//! ## Module Layout / 模块布局
+//!
+//! - [`request`] — HTTP request type with path/query parameter extraction
+//!   HTTP 请求类型，带路径/查询参数提取
+//! - [`response`] — HTTP response type with builder pattern
+//!   HTTP 响应类型，带构建器模式
+//! - [`server`] — Configurable HTTP server / 可配置的 HTTP 服务器
+//! - [`service`] — `HttpService` trait for request handling / 请求处理的 `HttpService` trait
+//! - [`body`] — HTTP body types (`FullBody`, `EmptyBody`, `Body` alias)
+//!   HTTP body 类型
+//! - [`status`] — HTTP status codes / HTTP 状态码
+//! - [`method`] — HTTP methods / HTTP 方法
+//! - [`error`] — Error types and `Result` / 错误类型和 `Result`
+//! - [`api_response`] — Unified `ApiResponse<T>` and `PageResponse<T>`
+//!   统一的 `ApiResponse<T>` 和 `PageResponse<T>`
+//! - [`exception`] — Application exceptions and `ErrorResponse` / 应用异常和 `ErrorResponse`
+//! - [`controller_advice`] — Global exception handler / 全局异常处理器
+//! - [`validation`] — Request validation / 请求验证
+//! - [`ext`] — Extension traits for request/response / 请求/响应的扩展 trait
+//! - [`sse`] — Server-Sent Events / 服务器发送事件
+//! - [`websocket`] — WebSocket support / WebSocket 支持
+//! - [`multipart`] — Multipart form data / Multipart 表单数据
+//! - [`http2`] — HTTP/2 support / HTTP/2 支持
+//! - [`builder`] — URI builder / URI 构建器
+//! - [`conn`] — Connection tracking / 连接跟踪
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -102,35 +175,64 @@ pub use websocket::{
     CloseFrame, Message, WebSocket, WebSocketConfig, WebSocketError, WebSocketUpgrade,
 };
 
-/// Content-Type constants
-/// Content-Type 常量
+/// Common Content-Type constants / 常用 Content-Type 常量
+///
+/// These constants cover the most frequently used MIME types in web applications.
+/// These are equivalent to Spring's `MediaType` constants.
+///
+/// 这些常量涵盖 Web 应用中最常用的 MIME 类型。
+/// 等价于 Spring 的 `MediaType` 常量。
 pub mod content_type {
-    /// JSON content type
+    /// JSON content type / JSON 内容类型
+    ///
+    /// Used for API responses and request bodies.
+    /// 用于 API 响应和请求体。
     pub const JSON: &str = "application/json";
-    /// HTML content type
+
+    /// HTML content type / HTML 内容类型
+    ///
+    /// Used for rendering web pages.
+    /// 用于渲染网页。
     pub const HTML: &str = "text/html";
-    /// Plain text content type
+
+    /// Plain text content type / 纯文本内容类型
+    ///
+    /// Used for simple text responses.
+    /// 用于简单的文本响应。
     pub const TEXT: &str = "text/plain";
-    /// Form data content type
+
+    /// URL-encoded form data content type / URL 编码表单数据内容类型
+    ///
+    /// Used for standard HTML form submissions.
+    /// 用于标准 HTML 表单提交。
     pub const FORM: &str = "application/x-www-form-urlencoded";
-    /// Multipart form data content type
+
+    /// Multipart form data content type / Multipart 表单数据内容类型
+    ///
+    /// Used for file uploads and complex form submissions.
+    /// 用于文件上传和复杂表单提交。
     pub const MULTIPART_FORM: &str = "multipart/form-data";
 }
 
-/// Header names constants
-/// Header 名称常量
+/// Common HTTP header name constants / 常用 HTTP 头名称常量
+///
+/// These constants provide lowercase header names as required by the HTTP/2 spec.
+/// Equivalent to Spring's `HttpHeaders` constants.
+///
+/// 这些常量提供 HTTP/2 规范要求的 小写头名称。
+/// 等价于 Spring 的 `HttpHeaders` 常量。
 pub mod header {
-    /// Content-Type header name
+    /// Content-Type header name / Content-Type 头名称
     pub const CONTENT_TYPE: &str = "content-type";
-    /// Content-Length header name
+    /// Content-Length header name / Content-Length 头名称
     pub const CONTENT_LENGTH: &str = "content-length";
-    /// Authorization header name
+    /// Authorization header name / Authorization 头名称
     pub const AUTHORIZATION: &str = "authorization";
-    /// Accept header name
+    /// Accept header name / Accept 头名称
     pub const ACCEPT: &str = "accept";
-    /// User-Agent header name
+    /// User-Agent header name / User-Agent 头名称
     pub const USER_AGENT: &str = "user-agent";
-    /// Location header name (for redirects)
+    /// Location header name (for redirects) / Location 头名称（用于重定向）
     pub const LOCATION: &str = "location";
 }
 
@@ -139,13 +241,19 @@ pub mod header {
 // JSON 响应包装器（等价于 Spring @ResponseBody）
 // ============================================================================
 
-/// JSON response wrapper
-/// JSON响应包装器
+/// JSON response wrapper / JSON 响应包装器
 ///
 /// Automatically serializes the inner value to JSON and sets the
-/// Content-Type header to "application/json".
+/// Content-Type header to `"application/json"`.
 ///
-/// 自动将内部值序列化为JSON并设置Content-Type头为"application/json"。
+/// 自动将内部值序列化为 JSON 并设置 Content-Type 头为 `"application/json"`。
+///
+/// # Equivalent to Spring Boot / 等价于 Spring Boot
+///
+/// - `@ResponseBody` — Marks a return value as the HTTP response body, auto-serialized to JSON.
+///   标记返回值为 HTTP 响应体，自动序列化为 JSON。
+/// - `ResponseEntity<T>` — Wraps response data with status and headers.
+///   用状态和头包装响应数据。
 ///
 /// # Example / 示例
 ///

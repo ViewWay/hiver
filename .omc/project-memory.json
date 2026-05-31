@@ -19,7 +19,7 @@
   },
   "build": {
     "buildCommand": "cd /Users/yimiliya/RustroverProjects/hiver-library/frontend && /opt/homebrew/bin/bun run build 2>&1 | tail -5",
-    "testCommand": "cat > .github/workflows/docs.yml << 'YAML'\n# Documentation Publishing\n# 文档发布\n#\n# Builds and publishes documentation to GitHub Pages.\n# 构建文档并发布到 GitHub Pages。\n\nname: Docs\n\npermissions:\n  contents: write\n  pages: write\n  id-token: write\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\nconcurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n\nenv:\n  CARGO_TERM_COLOR: always\n\njobs:\n  build:\n    name: Build Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Install mdBook and plugins\n        run: |\n          # Install mdBook\n          tag=$(curl -sL 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')\n          url=\"https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz\"\n          curl -sSL \"$url\" | tar -xz\n          sudo mv mdbook /usr/local/bin\n          mdbook --version\n\n          # Install mdBook plugins\n          cargo install mdbook-toc mdbook-mermaid\n\n      - name: Cache cargo registry\n        uses: actions/cache@v4\n        with:\n          path: ~/.cargo/registry\n          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Cache cargo build\n        uses: actions/cache@v4\n        with:\n          path: target\n          key: ${{ runner.os }}-cargo-build-docs-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Build mdBook guide\n        run: |\n          # Run from project root — book.toml is at root, src is docs/book/src\n          mdbook build\n          # Output: docs/book/book/\n\n      - name: Build Rust API documentation\n        run: |\n          cargo doc --all-features --no-deps --workspace 2>&1 || true\n          echo '<meta http-equiv=\"refresh\" content=\"0; url=hiver_runtime\">' > target/doc/index.html\n\n      - name: Merge documentation\n        run: |\n          # Create final output directory\n          mkdir -p target/pages\n\n          # mdBook guide as the main site\n          if [ -d \"docs/book/book\" ]; then\n            cp -r docs/book/book/* target/pages/\n          fi\n\n          # Rust API docs under /api/\n          if [ -d \"target/doc\" ]; then\n            mkdir -p target/pages/api\n            cp -r target/doc/* target/pages/api/\n          fi\n\n          # Add .nojekyll for GitHub Pages\n          touch target/pages/.nojekyll\n\n      - name: Deploy to GitHub Pages\n        if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n        uses: peaceiris/actions-gh-pages@v4\n        with:\n          github_token: ${{ secrets.GITHUB_TOKEN }}\n          publish_dir: ./target/pages\n\n  test:\n    name: Test Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Run documentation tests\n        run: cargo test --doc --all-features --workspace\nYAML\necho \"Updated: docs.yml\"",
+    "testCommand": "cargo test -p hiver-http --doc 2>&1 | grep -E \"^(test |running |passed|failed|error)\" | head -20",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -189,8 +189,8 @@
     },
     {
       "path": "crates/hiver-security/src/lib.rs",
-      "accessCount": 18,
-      "lastAccessed": 1780201163360,
+      "accessCount": 19,
+      "lastAccessed": 1780242835850,
       "type": "file"
     },
     {
@@ -248,6 +248,18 @@
       "type": "file"
     },
     {
+      "path": "crates/hiver-router/src/lib.rs",
+      "accessCount": 11,
+      "lastAccessed": 1780242824458,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-runtime/src/lib.rs",
+      "accessCount": 11,
+      "lastAccessed": 1780242995570,
+      "type": "file"
+    },
+    {
       "path": "crates/hiver-security/src/rbac.rs",
       "accessCount": 10,
       "lastAccessed": 1780066005461,
@@ -260,18 +272,6 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-router/src/lib.rs",
-      "accessCount": 10,
-      "lastAccessed": 1780201146617,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/lib.rs",
-      "accessCount": 9,
-      "lastAccessed": 1780201145929,
-      "type": "file"
-    },
-    {
       "path": "crates/hiver-router/src/route.rs",
       "accessCount": 8,
       "lastAccessed": 1780161420215,
@@ -279,8 +279,8 @@
     },
     {
       "path": "crates/hiver-resilience/src/lib.rs",
-      "accessCount": 7,
-      "lastAccessed": 1780201171445,
+      "accessCount": 8,
+      "lastAccessed": 1780242832234,
       "type": "file"
     },
     {
@@ -338,15 +338,15 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-security/src/authorization_server.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780065975706,
+      "path": "crates/hiver-runtime/src/runtime.rs",
+      "accessCount": 6,
+      "lastAccessed": 1780242877215,
       "type": "file"
     },
     {
-      "path": "crates/hiver-runtime/src/runtime.rs",
+      "path": "crates/hiver-security/src/authorization_server.rs",
       "accessCount": 5,
-      "lastAccessed": 1780161398105,
+      "lastAccessed": 1780065975706,
       "type": "file"
     },
     {
@@ -374,15 +374,15 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-runtime/src/scheduler/local.rs",
-      "accessCount": 4,
-      "lastAccessed": 1779620543110,
+      "path": "crates/hiver-core/src/bean.rs",
+      "accessCount": 5,
+      "lastAccessed": 1780242879594,
       "type": "file"
     },
     {
-      "path": "crates/hiver-core/src/bean.rs",
+      "path": "crates/hiver-runtime/src/scheduler/local.rs",
       "accessCount": 4,
-      "lastAccessed": 1779620553045,
+      "lastAccessed": 1779620543110,
       "type": "file"
     },
     {

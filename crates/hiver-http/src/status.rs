@@ -18,115 +18,115 @@ pub struct StatusCode(u16);
 impl StatusCode {
     // 1xx Informational / 1xx 信息响应
 
-    /// 100 Continue
+    /// 100 Continue / 100 继续
     pub const CONTINUE: StatusCode = StatusCode(100);
-    /// 101 Switching Protocols
+    /// 101 Switching Protocols / 101 切换协议
     pub const SWITCHING_PROTOCOLS: StatusCode = StatusCode(101);
-    /// 102 Processing
+    /// 102 Processing / 102 处理中
     pub const PROCESSING: StatusCode = StatusCode(102);
 
     // 2xx Success / 2xx 成功响应
 
-    /// 200 OK
+    /// 200 OK / 200 成功
     pub const OK: StatusCode = StatusCode(200);
-    /// 201 Created
+    /// 201 Created / 201 已创建
     pub const CREATED: StatusCode = StatusCode(201);
-    /// 202 Accepted
+    /// 202 Accepted / 202 已接受
     pub const ACCEPTED: StatusCode = StatusCode(202);
-    /// 203 Non-Authoritative Information
+    /// 203 Non-Authoritative Information / 203 非权威信息
     pub const NON_AUTHORITATIVE_INFORMATION: StatusCode = StatusCode(203);
-    /// 204 No Content
+    /// 204 No Content / 204 无内容
     pub const NO_CONTENT: StatusCode = StatusCode(204);
-    /// 205 Reset Content
+    /// 205 Reset Content / 205 重置内容
     pub const RESET_CONTENT: StatusCode = StatusCode(205);
-    /// 206 Partial Content
+    /// 206 Partial Content / 206 部分内容
     pub const PARTIAL_CONTENT: StatusCode = StatusCode(206);
 
     // 3xx Redirection / 3xx 重定向
 
-    /// 300 Multiple Choices
+    /// 300 Multiple Choices / 300 多种选择
     pub const MULTIPLE_CHOICES: StatusCode = StatusCode(300);
-    /// 301 Moved Permanently
+    /// 301 Moved Permanently / 301 永久移动
     pub const MOVED_PERMANENTLY: StatusCode = StatusCode(301);
-    /// 302 Found
+    /// 302 Found / 302 临时跳转
     pub const FOUND: StatusCode = StatusCode(302);
-    /// 303 See Other
+    /// 303 See Other / 303 请参见其他
     pub const SEE_OTHER: StatusCode = StatusCode(303);
-    /// 304 Not Modified
+    /// 304 Not Modified / 304 未修改
     pub const NOT_MODIFIED: StatusCode = StatusCode(304);
-    /// 305 Use Proxy
+    /// 305 Use Proxy / 305 使用代理
     pub const USE_PROXY: StatusCode = StatusCode(305);
-    /// 307 Temporary Redirect
+    /// 307 Temporary Redirect / 307 临时重定向
     pub const TEMPORARY_REDIRECT: StatusCode = StatusCode(307);
-    /// 308 Permanent Redirect
+    /// 308 Permanent Redirect / 308 永久重定向
     pub const PERMANENT_REDIRECT: StatusCode = StatusCode(308);
 
     // 4xx Client Error / 4xx 客户端错误
 
-    /// 400 Bad Request
+    /// 400 Bad Request / 400 错误请求
     pub const BAD_REQUEST: StatusCode = StatusCode(400);
-    /// 401 Unauthorized
+    /// 401 Unauthorized / 401 未授权
     pub const UNAUTHORIZED: StatusCode = StatusCode(401);
-    /// 402 Payment Required
+    /// 402 Payment Required / 402 需要付款
     pub const PAYMENT_REQUIRED: StatusCode = StatusCode(402);
-    /// 403 Forbidden
+    /// 403 Forbidden / 403 禁止访问
     pub const FORBIDDEN: StatusCode = StatusCode(403);
-    /// 404 Not Found
+    /// 404 Not Found / 404 未找到
     pub const NOT_FOUND: StatusCode = StatusCode(404);
-    /// 405 Method Not Allowed
+    /// 405 Method Not Allowed / 405 方法不允许
     pub const METHOD_NOT_ALLOWED: StatusCode = StatusCode(405);
-    /// 406 Not Acceptable
+    /// 406 Not Acceptable / 406 不可接受
     pub const NOT_ACCEPTABLE: StatusCode = StatusCode(406);
-    /// 407 Proxy Authentication Required
+    /// 407 Proxy Authentication Required / 407 需要代理认证
     pub const PROXY_AUTHENTICATION_REQUIRED: StatusCode = StatusCode(407);
-    /// 408 Request Timeout
+    /// 408 Request Timeout / 408 请求超时
     pub const REQUEST_TIMEOUT: StatusCode = StatusCode(408);
-    /// 409 Conflict
+    /// 409 Conflict / 409 冲突
     pub const CONFLICT: StatusCode = StatusCode(409);
-    /// 410 Gone
+    /// 410 Gone / 410 已消失
     pub const GONE: StatusCode = StatusCode(410);
-    /// 411 Length Required
+    /// 411 Length Required / 411 需要内容长度
     pub const LENGTH_REQUIRED: StatusCode = StatusCode(411);
-    /// 412 Precondition Failed
+    /// 412 Precondition Failed / 412 前置条件失败
     pub const PRECONDITION_FAILED: StatusCode = StatusCode(412);
-    /// 413 Payload Too Large
+    /// 413 Payload Too Large / 413 负载过大
     pub const PAYLOAD_TOO_LARGE: StatusCode = StatusCode(413);
-    /// 414 URI Too Long
+    /// 414 URI Too Long / 414 URI 过长
     pub const URI_TOO_LONG: StatusCode = StatusCode(414);
-    /// 415 Unsupported Media Type
+    /// 415 Unsupported Media Type / 415 不支持的媒体类型
     pub const UNSUPPORTED_MEDIA_TYPE: StatusCode = StatusCode(415);
-    /// 416 Range Not Satisfiable
+    /// 416 Range Not Satisfiable / 416 范围不满足
     pub const RANGE_NOT_SATISFIABLE: StatusCode = StatusCode(416);
-    /// 417 Expectation Failed
+    /// 417 Expectation Failed / 417 期望失败
     pub const EXPECTATION_FAILED: StatusCode = StatusCode(417);
-    /// 418 I'm a teapot
+    /// 418 I'm a teapot / 418 我是一个茶壶
     pub const IM_A_TEAPOT: StatusCode = StatusCode(418);
-    /// 422 Unprocessable Entity
+    /// 422 Unprocessable Entity / 422 无法处理的实体
     pub const UNPROCESSABLE_ENTITY: StatusCode = StatusCode(422);
-    /// 425 Too Early
+    /// 425 Too Early / 425 过早
     pub const TOO_EARLY: StatusCode = StatusCode(425);
-    /// 426 Upgrade Required
+    /// 426 Upgrade Required / 426 需要升级
     pub const UPGRADE_REQUIRED: StatusCode = StatusCode(426);
-    /// 428 Precondition Required
+    /// 428 Precondition Required / 428 需要前置条件
     pub const PRECONDITION_REQUIRED: StatusCode = StatusCode(428);
-    /// 429 Too Many Requests
+    /// 429 Too Many Requests / 429 请求过多
     pub const TOO_MANY_REQUESTS: StatusCode = StatusCode(429);
 
     // 5xx Server Error / 5xx 服务器错误
 
-    /// 500 Internal Server Error
+    /// 500 Internal Server Error / 500 服务器内部错误
     pub const INTERNAL_SERVER_ERROR: StatusCode = StatusCode(500);
-    /// 501 Not Implemented
+    /// 501 Not Implemented / 501 未实现
     pub const NOT_IMPLEMENTED: StatusCode = StatusCode(501);
-    /// 502 Bad Gateway
+    /// 502 Bad Gateway / 502 网关错误
     pub const BAD_GATEWAY: StatusCode = StatusCode(502);
-    /// 503 Service Unavailable
+    /// 503 Service Unavailable / 503 服务不可用
     pub const SERVICE_UNAVAILABLE: StatusCode = StatusCode(503);
-    /// 504 Gateway Timeout
+    /// 504 Gateway Timeout / 504 网关超时
     pub const GATEWAY_TIMEOUT: StatusCode = StatusCode(504);
-    /// 505 HTTP Version Not Supported
+    /// 505 HTTP Version Not Supported / 505 HTTP 版本不支持
     pub const HTTP_VERSION_NOT_SUPPORTED: StatusCode = StatusCode(505);
-    /// 511 Network Authentication Required
+    /// 511 Network Authentication Required / 511 需要网络认证
     pub const NETWORK_AUTHENTICATION_REQUIRED: StatusCode = StatusCode(511);
 
     /// Create a `StatusCode` from a u16
@@ -229,12 +229,16 @@ impl StatusCode {
     }
 }
 
+/// Returns `StatusCode::OK` (200) as the default.
+/// 返回 `StatusCode::OK` (200) 作为默认值。
 impl Default for StatusCode {
     fn default() -> Self {
         StatusCode::OK
     }
 }
 
+/// Formats the status code as `"CODE Reason"`, e.g. `"404 Not Found"`.
+/// 将状态码格式化为 `"CODE 原因短语"`，例如 `"404 Not Found"`。
 impl fmt::Display for StatusCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Some(reason) = self.canonical_reason() {
@@ -245,6 +249,8 @@ impl fmt::Display for StatusCode {
     }
 }
 
+/// Converts a `u16` into a `StatusCode` without validation.
+/// 将 `u16` 转换为 `StatusCode`，不进行验证。
 impl From<u16> for StatusCode {
     fn from(code: u16) -> Self {
         StatusCode(code)

@@ -15276,3 +15276,718 @@ Changed `crates/hiver-validation-annotations/src/lib.rs` from ".filter_map(|f| f
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:53:10
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: New file (untracked)
+- **File**: `rust-toolchain.toml`
+### Change Record
+New file `rust-toolchain.toml`, not yet tracked by version control.
+### Change Summary
+Changed `rust-toolchain.toml`, but no concrete content diff was available; it may be formatting, permission-only, or already rolled back.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
+## 2026-05-31 23:56:55
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-observability/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-observability/src/lib.rs`. Approximately 113 lines changed.
+### Change Summary
+Changed `crates/hiver-observability/src/lib.rs` from "//! Hiver Observability - Tracing, metrics, and logging; //! Hiver可观测性 - 追踪、指标和日志; //! \`hiver-observability\` provides ..." to "//! Hiver Observability - Distributed tracing, metrics, and structured logging; //! Hiver可观测性 - 分布式追踪、指标和结构化日志; //! \`hi...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:11
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/lib.rs`. Approximately 76 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/lib.rs` from "//! - \`Path<T>\` - \`@PathVariable\`; //! - \`Query<T>\` - \`@RequestParam\` / \`@RequestParam\`; //! - \`Json<T>\` - \..." to "//! # Overview / 概述; //!; //! This crate provides type-safe extractors for pulling data from HTTP requests.".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:23
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/lib.rs`. Approximately 144 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/lib.rs` from "//! - \`Path<T>\` - \`@PathVariable\`; //! - \`Query<T>\` - \`@RequestParam\` / \`@RequestParam\`; //! - \`Json<T>\` - \..." to "//! # Overview / 概述; //!; //! This crate provides type-safe extractors for pulling data from HTTP requests.".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:33
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/lib.rs`. Approximately 211 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/lib.rs` from "//! - \`Path<T>\` - \`@PathVariable\`; //! - \`Query<T>\` - \`@RequestParam\` / \`@RequestParam\`; //! - \`Json<T>\` - \..." to "//! # Overview / 概述; //!; //! This crate provides type-safe extractors for pulling data from HTTP requests.".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:38
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/matrix.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/matrix.rs`. Approximately 21 lines changed.
+### Change Summary
+Added "/// # Description / 描述; ///; /// # Type Parameters / 类型参数" in `crates/hiver-extractors/src/matrix.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:39
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-observability/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-observability/src/lib.rs`. Approximately 113 lines changed.
+### Change Summary
+Changed `crates/hiver-observability/src/lib.rs` from "//! Hiver Observability - Tracing, metrics, and logging; //! Hiver可观测性 - 追踪、指标和日志; //! \`hiver-observability\` provides ..." to "//! Hiver Observability - Distributed tracing, metrics, and structured logging; //! Hiver可观测性 - 分布式追踪、指标和结构化日志; //! \`hi...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:41
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/matrix.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/matrix.rs`. Approximately 34 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/matrix.rs` from "/// Extract all matrix variables from the path as a \`HashMap\`; /// \`从路径提取所有矩阵变量为HashMap\`; ///" to "/// # Description / 描述; ///; /// # Type Parameters / 类型参数".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:45
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-http/src/lib.rs`. Approximately 116 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/lib.rs` from "//! Hiver HTTP - HTTP server and client; //! Hiver HTTP - HTTP服务器和客户端; //! # Overview / 概述" to "//! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端; //! \`hiver-http\` provides a production-grade HTTP server and...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:46
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/matrix.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/matrix.rs`. Approximately 32 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/matrix.rs` from "/// Extract all matrix variables from the path as a \`HashMap\`; /// \`从路径提取所有矩阵变量为HashMap\`" to "/// # Description / 描述; ///; /// # Type Parameters / 类型参数".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:49
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/matrix.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/matrix.rs`. Approximately 43 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/matrix.rs` from "/// Extract all matrix variables from the path as a \`HashMap\`; /// \`从路径提取所有矩阵变量为HashMap\`; /// Extract all matrix var..." to "/// # Description / 描述; ///; /// # Type Parameters / 类型参数".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:51
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/matrix.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/matrix.rs`. Approximately 53 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/matrix.rs` from "/// Extract all matrix variables from the path as a \`HashMap\`; /// \`从路径提取所有矩阵变量为HashMap\`; /// Extract all matrix var..." to "/// # Description / 描述; ///; /// # Type Parameters / 类型参数".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:53
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-http/src/lib.rs`. Approximately 165 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/lib.rs` from "//! Hiver HTTP - HTTP server and client; //! Hiver HTTP - HTTP服务器和客户端; //! # Overview / 概述" to "//! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端; //! \`hiver-http\` provides a production-grade HTTP server and...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:54
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/model.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/model.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要反序列化的类型。必须实现 \`Deserialize\`。" in `crates/hiver-extractors/src/model.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:58
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-http/src/lib.rs`. Approximately 195 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/lib.rs` from "//! Hiver HTTP - HTTP server and client; //! Hiver HTTP - HTTP服务器和客户端; //! # Overview / 概述" to "//! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端; //! \`hiver-http\` provides a production-grade HTTP server and...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:57:59
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/model.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/model.rs`. Approximately 37 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/model.rs` from "/// Model attribute that binds only from query parameters; /// 仅从查询参数绑定的模型属性; /// 类似于\`ModelAttribute\`，但仅考虑查询参数，不考虑请求主体..." to "/// 要反序列化的类型。必须实现 \`Deserialize\`。; /// Model attribute that binds only from query parameters.; /// 仅从查询参数绑定的模型属性。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:02
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/state.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/state.rs`. Approximately 21 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/state.rs` from "/// Extension trait for adding state to requests; /// 向请求添加状态的扩展trait; /// \`注意：目前不支持hiver_http::Request。请改用Router的\`\`w..." to "/// Extension trait for adding state to requests.; /// 向请求添加状态的扩展trait。; ///".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:08
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/lib.rs`
+### Change Record
+Modified file `crates/hiver-http/src/lib.rs`. Approximately 220 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/lib.rs` from "//! Hiver HTTP - HTTP server and client; //! Hiver HTTP - HTTP服务器和客户端; //! # Overview / 概述" to "//! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端; //! \`hiver-http\` provides a production-grade HTTP server and...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:08
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/state.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/state.rs`. Approximately 29 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/state.rs` from "/// Extension trait for adding state to requests; /// 向请求添加状态的扩展trait; /// \`注意：目前不支持hiver_http::Request。请改用Router的\`\`w..." to "/// 要提取的状态类型。必须存在于应用状态中。; /// Extension trait for adding state to requests.; /// 向请求添加状态的扩展trait。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:15
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/query.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/query.rs`. Approximately 15 lines changed.
+### Change Summary
+Added "/// 要提取的类型。可以是：; /// - 单个值：\`Query<String>\`、\`Query<u32>\` 等; /// - 实现 \`Deserialize\` 的结构体（最常见）" in `crates/hiver-extractors/src/query.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:20
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/query.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/query.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/query.rs` from "/// Single query parameter extractor; /// 单个查询参数提取器; /// 等价于Spring的\`@RequestParam("name")\`。" to "/// 要提取的类型。可以是：; /// - 单个值：\`Query<String>\`、\`Query<u32>\` 等; /// - 实现 \`Deserialize\` 的结构体（最常见）".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:24
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/query.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/query.rs`. Approximately 55 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/query.rs` from "/// Single query parameter extractor; /// 单个查询参数提取器; /// 等价于Spring的\`@RequestParam("name")\`。" to "/// 要提取的类型。可以是：; /// - 单个值：\`Query<String>\`、\`Query<u32>\` 等; /// - 实现 \`Deserialize\` 的结构体（最常见）".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:27
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/attribute.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/attribute.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要提取的属性类型。必须满足 \`Clone + Send + Sync + 'static\`。" in `crates/hiver-extractors/src/attribute.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:32
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/attribute.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/attribute.rs`. Approximately 35 lines changed.
+### Change Summary
+Changed `crates/hiver-extractors/src/attribute.rs` from "/// Named request attribute extractor; /// 命名的请求属性提取器; /// 类似于\`RequestAttribute\`，但具有显式名称/键。当使用字符串键而不是基于类型的查找存储值时很有用。" to "/// 要提取的属性类型。必须满足 \`Clone + Send + Sync + 'static\`。; /// Named request attribute extractor.; /// 命名的请求属性提取器。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:36
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/form.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/form.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要从表单数据反序列化的类型。必须实现 \`Deserialize\`。" in `crates/hiver-extractors/src/form.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:41
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/json.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/json.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要从 JSON 反序列化的类型。必须实现 \`Deserialize\`。" in `crates/hiver-extractors/src/json.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:42
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/ext.rs`
+### Change Record
+Modified file `crates/hiver-http/src/ext.rs`. Approximately 98 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/ext.rs` from "//! Extension module for HTTP types; //! HTTP类型的扩展模块; /// Extension trait for Request" to "//! Extension traits for HTTP types / HTTP 类型的扩展 trait; //!; //! # Overview / 概述".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:43
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/header.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/header.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要将 header 值转换成的类型。" in `crates/hiver-extractors/src/header.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:46
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/request.rs`
+### Change Record
+Modified file `crates/hiver-http/src/request.rs`. Approximately 14 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/request.rs` from "/// Convert our Method to \`http::Method\`" to "/// Convert our [\`Method\`] to \`http::Method\`.; /// 将我们的 [\`Method\`] 转换为 \`http::Method\`。".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:46
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-extractors/src/cookie.rs`
+### Change Record
+Modified file `crates/hiver-extractors/src/cookie.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// 要将 cookie 值转换成的类型。" in `crates/hiver-extractors/src/cookie.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:50
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/request.rs`
+### Change Record
+Modified file `crates/hiver-http/src/request.rs`. Approximately 24 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/request.rs` from "/// Convert our Method to \`http::Method\`; /// Convert \`http::Method\` to our Method" to "/// Convert our [\`Method\`] to \`http::Method\`.; /// 将我们的 [\`Method\`] 转换为 \`http::Method\`。; /// Convert \`http::Meth...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:54
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/request.rs`
+### Change Record
+Modified file `crates/hiver-http/src/request.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/request.rs` from "/// Convert our Method to \`http::Method\`; /// Convert \`http::Method\` to our Method" to "/// Convert our [\`Method\`] to \`http::Method\`.; /// 将我们的 [\`Method\`] 转换为 \`http::Method\`。; /// Convert \`http::Meth...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:58:57
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/request.rs`
+### Change Record
+Modified file `crates/hiver-http/src/request.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/request.rs` from "/// Convert our Method to \`http::Method\`; /// Convert \`http::Method\` to our Method" to "/// Convert our [\`Method\`] to \`http::Method\`.; /// 将我们的 [\`Method\`] 转换为 \`http::Method\`。; /// Convert \`http::Meth...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:00
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/request.rs`
+### Change Record
+Modified file `crates/hiver-http/src/request.rs`. Approximately 49 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/request.rs` from "/// Convert our Method to \`http::Method\`; /// Convert \`http::Method\` to our Method" to "/// Convert our [\`Method\`] to \`http::Method\`.; /// 将我们的 [\`Method\`] 转换为 \`http::Method\`。; /// Convert \`http::Meth...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:07
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/response.rs`
+### Change Record
+Modified file `crates/hiver-http/src/response.rs`. Approximately 41 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/response.rs` from "/// HTTP Response; /// HTTP 响应" to "/// HTTP Response / HTTP 响应; ///; /// A type-safe wrapper for building and manipulating HTTP responses.".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:10
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/response.rs`
+### Change Record
+Modified file `crates/hiver-http/src/response.rs`. Approximately 50 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/response.rs` from "/// HTTP Response; /// HTTP 响应" to "/// HTTP Response / HTTP 响应; ///; /// A type-safe wrapper for building and manipulating HTTP responses.".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:15
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/server.rs`
+### Change Record
+Modified file `crates/hiver-http/src/server.rs`. Approximately 37 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/server.rs` from "/// HTTP Server; /// HTTP服务器" to "/// HTTP Server / HTTP 服务器; ///; /// A configurable TCP server that accepts connections, parses HTTP requests,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:18
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/server.rs`
+### Change Record
+Modified file `crates/hiver-http/src/server.rs`. Approximately 56 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/server.rs` from "/// HTTP Server; /// HTTP服务器; /// Server configuration" to "/// HTTP Server / HTTP 服务器; ///; /// A configurable TCP server that accepts connections, parses HTTP requests,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:22
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/server.rs`
+### Change Record
+Modified file `crates/hiver-http/src/server.rs`. Approximately 68 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/server.rs` from "/// HTTP Server; /// HTTP服务器; /// Server configuration" to "/// HTTP Server / HTTP 服务器; ///; /// A configurable TCP server that accepts connections, parses HTTP requests,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:25
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/server.rs`
+### Change Record
+Modified file `crates/hiver-http/src/server.rs`. Approximately 78 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/server.rs` from "/// HTTP Server; /// HTTP服务器; /// Server configuration" to "/// HTTP Server / HTTP 服务器; ///; /// A configurable TCP server that accepts connections, parses HTTP requests,".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:30
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/service.rs`
+### Change Record
+Modified file `crates/hiver-http/src/service.rs`. Approximately 33 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/service.rs` from "/// HTTP Service trait; /// \`HTTP服务trait\`; /// Functions that handle requests implement this trait via the framework." to "/// HTTP Service trait / HTTP 服务 trait; /// Any async function with the signature \`Fn(Request) -> Result<Response>\` au...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:34
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/service.rs`
+### Change Record
+Modified file `crates/hiver-http/src/service.rs`. Approximately 48 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/service.rs` from "/// HTTP Service trait; /// \`HTTP服务trait\`; /// Functions that handle requests implement this trait via the framework." to "/// HTTP Service trait / HTTP 服务 trait; /// Any async function with the signature \`Fn(Request) -> Result<Response>\` au...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:53
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/status.rs`
+### Change Record
+Modified file `crates/hiver-http/src/status.rs`. Approximately 169 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/status.rs` from "/// 100 Continue; /// 101 Switching Protocols; /// 102 Processing" to "/// 100 Continue / 100 继续; /// 101 Switching Protocols / 101 切换协议; /// 102 Processing / 102 处理中".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:55
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/status.rs`
+### Change Record
+Modified file `crates/hiver-http/src/status.rs`. Approximately 178 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/status.rs` from "/// 100 Continue; /// 101 Switching Protocols; /// 102 Processing" to "/// 100 Continue / 100 继续; /// 101 Switching Protocols / 101 切换协议; /// 102 Processing / 102 处理中".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-05-31 23:59:58
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/status.rs`
+### Change Record
+Modified file `crates/hiver-http/src/status.rs`. Approximately 186 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/status.rs` from "/// 100 Continue; /// 101 Switching Protocols; /// 102 Processing" to "/// 100 Continue / 100 继续; /// 101 Switching Protocols / 101 切换协议; /// 102 Processing / 102 处理中".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:01
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/status.rs`
+### Change Record
+Modified file `crates/hiver-http/src/status.rs`. Approximately 195 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/status.rs` from "/// 100 Continue; /// 101 Switching Protocols; /// 102 Processing" to "/// 100 Continue / 100 继续; /// 101 Switching Protocols / 101 切换协议; /// 102 Processing / 102 处理中".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:03
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/error.rs`
+### Change Record
+Modified file `crates/hiver-http/src/error.rs`. Approximately 13 lines changed.
+### Change Summary
+Added "/// Formats the error as a human-readable string.; /// 将错误格式化为人类可读的字符串。" in `crates/hiver-http/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:07
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/error.rs`
+### Change Record
+Modified file `crates/hiver-http/src/error.rs`. Approximately 22 lines changed.
+### Change Summary
+Added "/// Formats the error as a human-readable string.; /// 将错误格式化为人类可读的字符串。; /// Converts a \`std::io::Error\` into \`Error:..." in `crates/hiver-http/src/error.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:09
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/error.rs`
+### Change Record
+Modified file `crates/hiver-http/src/error.rs`. Approximately 32 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/error.rs` from "/// Convert \`ResponseStatusException\` to Error" to "/// Formats the error as a human-readable string.; /// 将错误格式化为人类可读的字符串。; /// Converts a \`std::io::Error\` into \`Error:...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:13
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/method.rs`
+### Change Record
+Modified file `crates/hiver-http/src/method.rs`. Approximately 12 lines changed.
+### Change Summary
+Added "/// Parses a method string (case-insensitive). Unknown methods default to GET.; /// 解析方法字符串（不区分大小写）。未知方法默认为 GET。" in `crates/hiver-http/src/method.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:15
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/method.rs`
+### Change Record
+Modified file `crates/hiver-http/src/method.rs`. Approximately 21 lines changed.
+### Change Summary
+Added "/// Formats the method as an uppercase string (e.g. \`"GET"\`, \`"POST"\`).; /// 将方法格式化为大写字符串（例如 \`"GET"\`、\`"POST"\`）。;..." in `crates/hiver-http/src/method.rs`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:18
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/body.rs`
+### Change Record
+Modified file `crates/hiver-http/src/body.rs`. Approximately 20 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/body.rs` from "/// HTTP Body trait; /// HTTP Body trait" to "/// HTTP Body trait / HTTP Body trait; ///; /// Extends \`http_body::Body\` with a convenience method for accessing body...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:00:23
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `crates/hiver-http/src/body.rs`
+### Change Record
+Modified file `crates/hiver-http/src/body.rs`. Approximately 36 lines changed.
+### Change Summary
+Changed `crates/hiver-http/src/body.rs` from "/// HTTP Body trait; /// HTTP Body trait; /// Body type alias using \`FullBody\` by default" to "/// HTTP Body trait / HTTP Body trait; ///; /// Extends \`http_body::Body\` with a convenience method for accessing body...".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:01:50
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `rust-toolchain.toml`
+### Change Record
+Modified file `rust-toolchain.toml`. Approximately 8 lines changed.
+### Change Summary
+Removed "components = ["rustfmt", "clippy"]" from `rust-toolchain.toml`.
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.
+## 2026-06-01 00:02:49
+- **Project**: hiver
+- **Branch**: main
+- **Change Type**: Modified
+- **File**: `rust-toolchain.toml`
+### Change Record
+Modified file `rust-toolchain.toml`. Approximately 9 lines changed.
+### Change Summary
+Changed `rust-toolchain.toml` from "channel = "1.93"; components = ["rustfmt", "clippy"]" to "channel = "1.96"".
+### Risk Alert
+No specific risk detected. Manual review recommended.
+### Suggestion
+Run relevant tests before committing to avoid regressions.

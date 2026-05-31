@@ -40,6 +40,10 @@ use std::collections::HashMap;
 ///   - A single value: `Query<String>`, `Query<u32>`, etc.
 ///   - A struct that implements `Deserialize` (most common)
 ///
+///   要提取的类型。可以是：
+///   - 单个值：`Query<String>`、`Query<u32>` 等
+///   - 实现 `Deserialize` 的结构体（最常见）
+///
 /// # Example / 示例
 ///
 /// ```rust,no_run,ignore
@@ -156,11 +160,16 @@ pub fn url_decode(input: &str) -> String {
     result
 }
 
-/// Single query parameter extractor
-/// 单个查询参数提取器
+/// Single query parameter extractor.
+/// 单个查询参数提取器。
 ///
 /// Equivalent to Spring's `@RequestParam("name")`.
-/// 等价于Spring的`@RequestParam("name")`。
+/// 等价于 Spring 的 `@RequestParam("name")`。
+///
+/// # Type Parameters / 类型参数
+///
+/// - `T` - The type to deserialize the parameter value into.
+///   要将参数值反序列化成的类型。
 ///
 /// # Example / 示例
 ///
@@ -205,11 +214,16 @@ where
     }
 }
 
-/// Optional query parameter
-/// 可选查询参数
+/// Optional query parameter.
+/// 可选查询参数。
 ///
 /// Equivalent to Spring's `@RequestParam(required = false)`.
-/// 等价于Spring的`@RequestParam(required = false)`。
+/// 等价于 Spring 的 `@RequestParam(required = false)`。
+///
+/// # Type Parameters / 类型参数
+///
+/// - `T` - The type to deserialize the parameter value into.
+///   要将参数值反序列化成的类型。
 pub struct ParamOption<T>(pub Option<T>);
 
 impl<T> ParamOption<T> {
