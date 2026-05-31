@@ -953,8 +953,8 @@ Spring equivalent: `@SpringBootApplication`, auto-configuration
 | const | `DEFAULT_SERVER_HOST` | `"127.0.0.1"` |
 | const | `DEFAULT_WORKER_THREADS` | `4` |
 | const | `APP_CONFIG_FILE` | `"application"` |
-| const | `ENV_VAR_PREFIX` | `"NEXUS"` |
-| const | `PROFILE_ENV_VAR` | `"NEXUS_PROFILE"` |
+| const | `ENV_VAR_PREFIX` | `"HIVER"` |
+| const | `PROFILE_ENV_VAR` | `"HIVER_PROFILE"` |
 
 Feature-gated modules: `web`, `security`, `data`, `cache`, `schedule`, `actuator`
 
@@ -1192,7 +1192,7 @@ Spring equivalent: `@SpringBootTest`, `MockBean`, `WebTestClient`
 | struct | `TestApplication` | Test application context |
 | struct | `MockBean` | Mock bean registration |
 | struct | `WebTestClient` | Reactive test client |
-| trait | `NexusTest` | Test trait marker |
+| trait | `HiverTest` | Test trait marker |
 | struct | `ContainerSet` | Testcontainers (Postgres, Redis, Kafka) |
 
 ### hiver-shell

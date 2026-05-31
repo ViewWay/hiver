@@ -11,7 +11,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `TransactionPhase` | `TransactionPhase` (enum) |
 //! | `TransactionalEventListener` | `@TransactionalEventListener` |

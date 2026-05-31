@@ -128,7 +128,7 @@ public class UserService {
 }
 ```
 
-### 1.2 Nexus当前实现 / Nexus Current Implementation
+### 1.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已实现 ✅
 
@@ -165,7 +165,7 @@ pub struct BeanDefinition {
        Object postProcessAfterInitialization(Object bean, String beanName);
    }
    ```
-   **Nexus缺失**: ❌ 无Bean后处理器
+   **Hiver缺失**: ❌ 无Bean后处理器
    **影响**: 无法在Bean初始化前后进行自定义处理
    **实现建议**: 
    ```rust
@@ -182,7 +182,7 @@ pub struct BeanDefinition {
    // Level 2: earlySingletonObjects (提前暴露)
    // Level 3: singletonFactories (工厂对象)
    ```
-   **Nexus缺失**: ❌ 无循环依赖处理
+   **Hiver缺失**: ❌ 无循环依赖处理
    **影响**: 循环依赖会导致panic
    **实现建议**: 实现三级缓存机制
 
@@ -192,7 +192,7 @@ pub struct BeanDefinition {
    @Qualifier("primaryDataSource")
    private DataSource dataSource;
    ```
-   **Nexus缺失**: ❌ 无限定符
+   **Hiver缺失**: ❌ 无限定符
    **影响**: 无法区分同类型的多个Bean
    **实现建议**: 
    ```rust
@@ -213,7 +213,7 @@ pub struct BeanDefinition {
        }
    }
    ```
-   **Nexus缺失**: ❌ 无配置类
+   **Hiver缺失**: ❌ 无配置类
    **影响**: 无法使用Java风格的配置类
    **实现建议**: 
    ```rust
@@ -234,7 +234,7 @@ pub struct BeanDefinition {
        return new RedisCacheManager();
    }
    ```
-   **Nexus缺失**: ❌ 无条件装配
+   **Hiver缺失**: ❌ 无条件装配
    **影响**: 无法根据条件动态装配Bean
    **实现建议**: 
    ```rust
@@ -250,7 +250,7 @@ pub struct BeanDefinition {
    @ComponentScan(basePackages = "com.example")
    public class AppConfig {}
    ```
-   **Nexus缺失**: ❌ 无自动扫描
+   **Hiver缺失**: ❌ 无自动扫描
    **影响**: 需要手动注册所有Bean
    **实现建议**: 实现过程宏扫描`#[component]`标记的类型
 
@@ -389,7 +389,7 @@ public class GlobalExceptionHandler {
 2. 异常发生时，按异常类型匹配处理器
 3. 支持`@ControllerAdvice`全局处理
 
-### 2.2 Nexus当前实现 / Nexus Current Implementation
+### 2.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已实现 ✅
 
@@ -428,7 +428,7 @@ impl<T: DeserializeOwned> FromRequest for Path<T> {
        }
    }
    ```
-   **Nexus缺失**: ❌ 无@ControllerAdvice
+   **Hiver缺失**: ❌ 无@ControllerAdvice
    **影响**: 每个handler需要手动处理异常
    **实现建议**:
    ```rust
@@ -450,7 +450,7 @@ impl<T: DeserializeOwned> FromRequest for Path<T> {
        // Bean Validation自动校验
    }
    ```
-   **Nexus缺失**: ❌ 无@Valid支持
+   **Hiver缺失**: ❌ 无@Valid支持
    **影响**: 无法自动校验参数
    **实现建议**:
    ```rust
@@ -475,7 +475,7 @@ impl<T: DeserializeOwned> FromRequest for Path<T> {
        file.transferTo(new File("/tmp/" + file.getOriginalFilename()));
    }
    ```
-   **Nexus缺失**: ❌ 无MultipartFile
+   **Hiver缺失**: ❌ 无MultipartFile
    **影响**: 无法处理文件上传
    **实现建议**:
    ```rust
@@ -497,7 +497,7 @@ impl<T: DeserializeOwned> FromRequest for Path<T> {
        return user.getName();
    }
    ```
-   **Nexus缺失**: ❌ 无Session管理
+   **Hiver缺失**: ❌ 无Session管理
    **影响**: 无法维护用户会话
    **实现建议**:
    ```rust
@@ -518,7 +518,7 @@ impl<T: DeserializeOwned> FromRequest for Path<T> {
        model.addAttribute("msg", "Welcome");
    }
    ```
-   **Nexus缺失**: ❌ 无模型绑定
+   **Hiver缺失**: ❌ 无模型绑定
    **影响**: 无法绑定表单数据到对象
    **实现建议**:
    ```rust
@@ -638,7 +638,7 @@ public class UserDao {
 }
 ```
 
-### 3.2 Nexus当前实现 / Nexus Current Implementation
+### 3.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已存在但未集成
 
@@ -762,7 +762,7 @@ public class SecurityConfig {
 }
 ```
 
-### 4.2 Nexus当前实现 / Nexus Current Implementation
+### 4.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已实现 ✅
 
@@ -795,7 +795,7 @@ pub trait AuthenticationManager: Send + Sync {
    SecurityContext context = SecurityContextHolder.getContext();
    Authentication auth = context.getAuthentication();
    ```
-   **Nexus缺失**: ❌ 无线程本地SecurityContext
+   **Hiver缺失**: ❌ 无线程本地SecurityContext
    **影响**: 无法在异步上下文中获取认证信息
    **实现建议**:
    ```rust
@@ -823,7 +823,7 @@ pub trait AuthenticationManager: Send + Sync {
        }
    }
    ```
-   **Nexus缺失**: ❌ 无安全过滤器链
+   **Hiver缺失**: ❌ 无安全过滤器链
    **影响**: 无法配置URL级别的安全规则
    **实现建议**: 实现SecurityMiddleware和规则配置
 
@@ -834,7 +834,7 @@ pub trait AuthenticationManager: Send + Sync {
        // JWT token验证
    }
    ```
-   **Nexus缺失**: ❌ 无JWT中间件
+   **Hiver缺失**: ❌ 无JWT中间件
    **影响**: 无法使用JWT认证
    **实现建议**: 实现JwtMiddleware（已有jsonwebtoken依赖）
 
@@ -845,7 +845,7 @@ pub trait AuthenticationManager: Send + Sync {
        // OAuth2客户端配置
    }
    ```
-   **Nexus缺失**: ❌ 无OAuth2支持
+   **Hiver缺失**: ❌ 无OAuth2支持
    **影响**: 无法使用OAuth2认证
    **实现建议**: Phase 9实现
 
@@ -853,7 +853,7 @@ pub trait AuthenticationManager: Send + Sync {
    ```java
    http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
    ```
-   **Nexus缺失**: ❌ 无CSRF防护
+   **Hiver缺失**: ❌ 无CSRF防护
    **影响**: 无法防护CSRF攻击
    **实现建议**: 实现CsrfMiddleware
 
@@ -948,7 +948,7 @@ public class DynamicConfig {
 2. 配置变更时重新创建Bean
 3. Spring Cloud Config支持
 
-### 5.2 Nexus当前实现 / Nexus Current Implementation
+### 5.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已实现 ✅
 
@@ -983,7 +983,7 @@ struct DataSourceConfig {
    ```java
    // Spring Boot自动加载application.properties
    ```
-   **Nexus缺失**: ❌ 无自动加载机制
+   **Hiver缺失**: ❌ 无自动加载机制
    **影响**: 需要手动加载配置文件
    **实现建议**: 实现自动发现和加载
 
@@ -992,7 +992,7 @@ struct DataSourceConfig {
    @Value("${app.name}")
    private String appName;
    ```
-   **Nexus缺失**: ❌ 无@Value宏
+   **Hiver缺失**: ❌ 无@Value宏
    **影响**: 无法注入配置值
    **实现建议**:
    ```rust
@@ -1006,7 +1006,7 @@ struct DataSourceConfig {
    ```java
    @Value("#{systemProperties['user.home']}")
    ```
-   **Nexus缺失**: ❌ 无表达式语言
+   **Hiver缺失**: ❌ 无表达式语言
    **影响**: 无法使用复杂表达式
    **实现建议**: 实现简单的表达式解析器
 
@@ -1014,7 +1014,7 @@ struct DataSourceConfig {
    ```java
    @RefreshScope
    ```
-   **Nexus缺失**: ❌ 无动态刷新
+   **Hiver缺失**: ❌ 无动态刷新
    **影响**: 无法动态更新配置
    **实现建议**: 实现配置监听和刷新机制
 
@@ -1027,7 +1027,7 @@ struct DataSourceConfig {
        private String url;
    }
    ```
-   **Nexus缺失**: ❌ 无配置验证
+   **Hiver缺失**: ❌ 无配置验证
    **影响**: 无法验证配置有效性
    **实现建议**: 集成validator进行配置验证
 
@@ -1110,7 +1110,7 @@ enhancer.setCallback(new MethodInterceptor() {
 });
 ```
 
-### 6.2 Nexus当前实现 / Nexus Current Implementation
+### 6.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 缺失功能 ❌
 
@@ -1224,7 +1224,7 @@ class UserServiceTest {
 2. 替换Spring容器中的Bean
 3. 测试结束后恢复
 
-### 7.2 Nexus当前实现 / Nexus Current Implementation
+### 7.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 缺失功能 ❌
 
@@ -1426,7 +1426,7 @@ public class DataSourceAutoConfiguration {
 - `@ConditionalOnWebApplication` - Web应用时生效
 - `@ConditionalOnExpression` - SpEL表达式
 
-### 9.2 Nexus当前实现 / Nexus Current Implementation
+### 9.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 缺失功能 ❌
 
@@ -1560,7 +1560,7 @@ public class GatewayApplication {
 }
 ```
 
-### 10.2 Nexus当前实现 / Nexus Current Implementation
+### 10.2 Hiver当前实现 / Hiver Current Implementation
 
 #### 已存在但未完全实现
 
@@ -1611,7 +1611,7 @@ public class GatewayApplication {
 
 ### 11.1 IoC容器详细对比 / IoC Container Detailed Comparison
 
-| Spring功能 | Spring实现方式 | Nexus实现方式 | 差异分析 |
+| Spring功能 | Spring实现方式 | Hiver实现方式 | 差异分析 |
 |-----------|--------------|--------------|---------|
 | **BeanFactory** | 接口层次结构 | `Container`结构体 | ✅ 功能等价 |
 | **ApplicationContext** | 扩展BeanFactory | `ApplicationContext`包装Container | ✅ 功能等价 |
@@ -1627,7 +1627,7 @@ public class GatewayApplication {
 
 ### 11.2 Web MVC详细对比 / Web MVC Detailed Comparison
 
-| Spring功能 | Spring实现方式 | Nexus实现方式 | 差异分析 |
+| Spring功能 | Spring实现方式 | Hiver实现方式 | 差异分析 |
 |-----------|--------------|--------------|---------|
 | **DispatcherServlet** | Servlet实现 | `Server`结构体 | ✅ 功能等价 |
 | **HandlerMapping** | 接口+实现 | `Router`+Trie | ✅ 功能等价 |
@@ -1645,7 +1645,7 @@ public class GatewayApplication {
 
 ### 11.3 数据访问详细对比 / Data Access Detailed Comparison
 
-| Spring功能 | Spring实现方式 | Nexus实现方式 | 差异分析 |
+| Spring功能 | Spring实现方式 | Hiver实现方式 | 差异分析 |
 |-----------|--------------|--------------|---------|
 | **JPA/Hibernate** | EntityManager | ❌ 未实现 | ❌ 建议集成SeaORM |
 | **@Entity** | JPA注解 | ❌ 未实现 | ❌ 需要实现 |
@@ -1657,7 +1657,7 @@ public class GatewayApplication {
 
 ### 11.4 安全详细对比 / Security Detailed Comparison
 
-| Spring功能 | Spring实现方式 | Nexus实现方式 | 差异分析 |
+| Spring功能 | Spring实现方式 | Hiver实现方式 | 差异分析 |
 |-----------|--------------|--------------|---------|
 | **Authentication** | 接口 | ✅ 结构体 | ✅ 功能等价 |
 | **AuthenticationManager** | 接口 | ✅ trait | ✅ 功能等价 |
@@ -1688,7 +1688,7 @@ Constructor<?> constructor = clazz.getConstructor();
 Object bean = constructor.newInstance();
 ```
 
-**Nexus解决方案**:
+**Hiver解决方案**:
 ```rust
 // 方案1: 使用bevy_reflect（推荐）
 use bevy_reflect::{Reflect, TypeRegistry};
@@ -1722,7 +1722,7 @@ pub trait Bean: Send + Sync + 'static {
 Proxy.newProxyInstance(...);
 ```
 
-**Nexus解决方案**:
+**Hiver解决方案**:
 ```rust
 // 方案1: 过程宏（推荐，零运行时开销）
 #[transactional]
@@ -1756,7 +1756,7 @@ use aspect_rs::{Aspect, Pointcut, Advice};
 // Level 3: singletonFactories
 ```
 
-**Nexus解决方案**:
+**Hiver解决方案**:
 ```rust
 // 方案1: Arc + Weak引用（推荐）
 struct ServiceA {
@@ -1793,7 +1793,7 @@ struct ServiceA {
 SecurityContextHolder.getContext().setAuthentication(auth);
 ```
 
-**Nexus解决方案**:
+**Hiver解决方案**:
 ```rust
 // 方案1: Request扩展（推荐，最简单）
 pub struct SecurityContextExtension {
@@ -1830,7 +1830,7 @@ use async_local::LocalRef;
 TransactionSynchronizationManager.getCurrentTransactionName();
 ```
 
-**Nexus解决方案**:
+**Hiver解决方案**:
 ```rust
 // 方案1: Request扩展（推荐）
 pub struct TransactionContextExtension {

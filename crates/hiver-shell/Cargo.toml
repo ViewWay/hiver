@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Shell — Interactive CLI REPL framework.
-Nexus框架的交互式CLI REPL框架。
+Hiver框架的交互式CLI REPL框架。
 Equivalent to: Spring Shell
 """
 homepage = { workspace = true }

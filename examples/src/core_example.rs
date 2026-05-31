@@ -1,4 +1,4 @@
-//! Nexus Core Example / Nexus核心示例
+//! Hiver Core Example / Hiver核心示例
 //!
 //! Demonstrates core types, error handling, and extensions.
 //! 演示核心类型、错误处理和扩展。
@@ -11,7 +11,7 @@
 use hiver_core::{Error, ErrorKind, Extensions};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus Core Example / Nexus核心示例 ===\n");
+    println!("=== Hiver Core Example / Hiver核心示例 ===\n");
 
     // 1. Error Handling / 错误处理
     println!("1. Error Handling / 错误处理");

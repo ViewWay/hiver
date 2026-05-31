@@ -1,5 +1,5 @@
 # Hiver Framework - Benchmarking Guide
-# Nexus框架 - 性能基准测试指南
+# Hiver框架 - 性能基准测试指南
 
 **Version**: 0.1.0-alpha
 **Date**: 2026-01-24
@@ -27,9 +27,9 @@
 
 This document provides comprehensive guidelines for benchmarking the Hiver Framework to:
 
-本文档提供了对Nexus框架进行基准测试的全面指南，以便：
+本文档提供了对Hiver框架进行基准测试的全面指南，以便：
 
-- **Validate performance goals** / **验证性能目标** - Ensure Nexus meets target QPS, latency, and memory usage
+- **Validate performance goals** / **验证性能目标** - Ensure Hiver meets target QPS, latency, and memory usage
 - **Compare with existing solutions** / **与现有解决方案比较** - Benchmark against Tokio, Actix Web, Axum
 - **Detect regressions** / **检测性能回归** - Identify performance degradation across commits
 - **Guide optimizations** / **指导优化** - Profile and identify bottlenecks
@@ -51,7 +51,7 @@ This document provides comprehensive guidelines for benchmarking the Hiver Frame
 
 | Framework | Runtime | I/O Backend | Scheduler | Our Goal |
 |-----------|---------|-------------|-----------|----------|
-| **Nexus** | Custom | io-uring (Linux) | Thread-per-core | **Baseline** |
+| **Hiver** | Custom | io-uring (Linux) | Thread-per-core | **Baseline** |
 | **Actix Web** | Tokio | epoll/kqueue | Work-stealing | +20% QPS |
 | **Axum** | Tokio | epoll/kqueue | Work-stealing | +20% QPS |
 | **Rocket** | Tokio | epoll/kqueue | Work-stealing | +30% QPS |
@@ -137,7 +137,7 @@ This document provides comprehensive guidelines for benchmarking the Hiver Frame
 
 ```bash
 # Project structure / 项目结构
-nexus/
+hiver/
 ├── benches/                    # Benchmark suite / 基准测试套件
 │   ├── runtime_bench.rs        # Runtime core benchmarks
 │   ├── scheduler_bench.rs      # Scheduler benchmarks
@@ -380,7 +380,7 @@ fn bench_spawn_latency_tokio(c: &mut Criterion) {
 
 criterion_group!(
     benches,
-    bench_spawn_latency,        // Nexus
+    bench_spawn_latency,        // Hiver
     bench_spawn_latency_tokio   // Tokio
 );
 criterion_main!(benches);
@@ -430,7 +430,7 @@ criterion_main!(benches);
 
 #### 4.1.1 Test Types / 测试类型
 
-| Test / 测试 | Description / 描述 | Nexus Target | Actix (Current) |
+| Test / 测试 | Description / 描述 | Hiver Target | Actix (Current) |
 |------------|-------------------|--------------|-----------------|
 | **JSON Serialization** | Return JSON response / 返回JSON响应 | Top 20 | #8 |
 | **Single Query** | Database SELECT / 数据库查询 | Top 30 | #15 |
@@ -446,16 +446,16 @@ criterion_main!(benches);
 git clone https://github.com/TechEmpower/FrameworkBenchmarks.git
 cd FrameworkBenchmarks
 
-# Create Nexus benchmark / 创建Nexus基准测试
-mkdir -p frameworks/Rust/nexus
-cp -r frameworks/Rust/actix-web/* frameworks/Rust/nexus/
+# Create Hiver benchmark / 创建Hiver基准测试
+mkdir -p frameworks/Rust/hiver
+cp -r frameworks/Rust/actix-web/* frameworks/Rust/hiver/
 
-# Edit config.toml to add nexus / 编辑config.toml添加nexus
+# Edit config.toml to add hiver / 编辑config.toml添加hiver
 # ...
 
 # Run benchmark / 运行基准测试
-./tfb --mode verify --test nexus
-./tfb --mode benchmark --test nexus
+./tfb --mode verify --test hiver
+./tfb --mode benchmark --test hiver
 ```
 
 ### 4.2 HTTP Parser Benchmarks / HTTP解析器基准测试
@@ -690,23 +690,23 @@ oha -n 10000 -c 100 --json http://127.0.0.1:3000/ > results.json
 ```bash
 # Create test servers for comparison / 创建用于比较的测试服务器
 
-# 1. Nexus server / Nexus服务器
+# 1. Hiver server / Hiver服务器
 cargo run --release --bin hiver-echo-server &
-NEXUS_PID=$!
+HIVER_PID=$!
 
 # 2. Actix server / Actix服务器
 cargo run --release --bin actix-echo-server &
 ACTIX_PID=$!
 
 # Run benchmarks / 运行基准测试
-echo "Benchmarking Nexus..."
+echo "Benchmarking Hiver..."
 wrk -t4 -c100 -d30s http://127.0.0.1:3000/ > hiver_results.txt
 
 echo "Benchmarking Actix..."
 wrk -t4 -c100 -d30s http://127.0.0.1:3001/ > actix_results.txt
 
 # Cleanup / 清理
-kill $NEXUS_PID $ACTIX_PID
+kill $HIVER_PID $ACTIX_PID
 
 # Compare results / 比较结果
 python scripts/compare_bench.py hiver_results.txt actix_results.txt

@@ -162,7 +162,7 @@ mod tests {
     /// 测试FileNotFound变体的ConfigError显示
     #[test]
     fn test_error_file_not_found() {
-        let err = ConfigError::FileNotFound(PathBuf::from("/etc/nexus/app.yaml"));
+        let err = ConfigError::FileNotFound(PathBuf::from("/etc/hiver/app.yaml"));
         assert!(err.to_string().contains("not found"));
     }
 

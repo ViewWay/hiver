@@ -3,8 +3,8 @@
 > **Status**: Phase 3+ Available ✅
 > **状态**: 第3阶段+可用 ✅
 
-Nexus provides comprehensive security features inspired by Spring Security.
-Nexus 提供受 Spring Security 启发的全面安全功能。
+Hiver provides comprehensive security features inspired by Spring Security.
+Hiver 提供受 Spring Security 启发的全面安全功能。
 
 ---
 
@@ -196,7 +196,7 @@ let app = Router::new()
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@PreAuthorize` | `#[pre_authorize]` | Method authorization |
 | `@Secured` | `#[secured]` | Role-based security |

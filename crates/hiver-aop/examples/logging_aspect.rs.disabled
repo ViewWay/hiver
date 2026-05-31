@@ -1,14 +1,14 @@
-//! Nexus AOP Macro Examples / Nexus AOP 宏示例
+//! hiver AOP Macro Examples / hiver AOP 宏示例
 //!
-//! This example demonstrates AOP (Aspect-Oriented Programming) macro usage in Nexus.
-//! Note: nexus-aop is a proc-macro crate; runtime types are available at compile time
+//! This example demonstrates AOP (Aspect-Oriented Programming) macro usage in hiver.
+//! Note: hiver-aop is a proc-macro crate; runtime types are available at compile time
 //! via the generated code. The macros below compile successfully and generate
 //! aspect-related boilerplate.
 //!
-//! 此示例演示了 Nexus 中 AOP 宏的使用。
-//! 注意：nexus-aop 是过程宏 crate；运行时类型通过生成的代码在编译期可用。
+//! 此示例演示了 hiver 中 AOP 宏的使用。
+//! 注意：hiver-aop 是过程宏 crate；运行时类型通过生成的代码在编译期可用。
 
-use nexus_aop::{After, Around, Aspect, Before, Pointcut};
+use hiver_aop::{After, Around, Aspect, Before, Pointcut};
 
 // ============================================================================
 // Example: Aspect Definitions / 切面定义
@@ -72,7 +72,7 @@ impl SecurityAspect {
 }
 
 fn main() {
-    println!("=== Nexus AOP Macro Demo ===\n");
+    println!("=== hiver AOP Macro Demo ===\n");
 
     // The aspect structs compile and are usable
     // 切面结构体编译通过且可使用

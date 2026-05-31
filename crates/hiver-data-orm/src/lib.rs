@@ -1,9 +1,9 @@
-//! Nexus Data ORM - ORM Integration
-//! Nexus Data ORM - ORM 集成
+//! Hiver Data ORM - ORM Integration
+//! Hiver Data ORM - ORM 集成
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `ActiveRecord` | `JPA` / `Hibernate` |
 //! | `QueryBuilder` | `JpaSpecificationExecutor` / `Criteria API` |

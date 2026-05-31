@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Installation / 安装 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Installation / 安装 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -178,8 +178,8 @@
 <h1 id="安装"><a class="header" href="#安装">安装</a></h1>
 <h2 id="requirements--系统要求"><a class="header" href="#requirements--系统要求">Requirements / 系统要求</a></h2>
 <h3 id="rust-toolchain--rust-工具链"><a class="header" href="#rust-toolchain--rust-工具链">Rust Toolchain / Rust 工具链</a></h3>
-<p>Nexus requires Rust <strong>1.93 or later</strong>.
-Nexus 需要 Rust <strong>1.93 或更高版本</strong>。</p>
+<p>Hiver requires Rust <strong>1.93 or later</strong>.
+Hiver 需要 Rust <strong>1.93 或更高版本</strong>。</p>
 <pre><code class="language-bash"># Install Rust / 安装 Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -212,47 +212,47 @@ uname -r
 # 对于 Ubuntu/Debian，安装 liburing-dev（可选）
 sudo apt-get install liburing-dev
 </code></pre>
-<h2 id="adding-nexus-to-your-project--将-nexus-添加到项目"><a class="header" href="#adding-nexus-to-your-project--将-nexus-添加到项目">Adding Nexus to Your Project / 将 Nexus 添加到项目</a></h2>
+<h2 id="adding-hiver-to-your-project--将-hiver-添加到项目"><a class="header" href="#adding-hiver-to-your-project--将-hiver-添加到项目">Adding Hiver to Your Project / 将 Hiver 添加到项目</a></h2>
 <h3 id="using-individual-crates--使用单独的-crate"><a class="header" href="#using-individual-crates--使用单独的-crate">Using Individual Crates / 使用单独的 Crate</a></h3>
-<p>Nexus is modular — add only what you need:
-Nexus 是模块化的 — 只添加你需要的：</p>
+<p>Hiver is modular — add only what you need:
+Hiver 是模块化的 — 只添加你需要的：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
-nexus-http = "0.1.0-alpha"
-nexus-router = "0.1.0-alpha"
-nexus-middleware = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
+hiver-http = "0.1.0-alpha"
+hiver-router = "0.1.0-alpha"
+hiver-middleware = "0.1.0-alpha"
 </code></pre>
 <p>Or use cargo-add:
 或使用 cargo-add：</p>
-<pre><code class="language-bash">cargo add nexus-runtime nexus-http nexus-router
+<pre><code class="language-bash">cargo add hiver-runtime hiver-http hiver-router
 </code></pre>
 <h3 id="from-git-repository--从-git-仓库安装"><a class="header" href="#from-git-repository--从-git-仓库安装">From Git Repository / 从 Git 仓库安装</a></h3>
 <p>To use the latest development version:
 使用最新的开发版本：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = { git = "https://github.com/ViewWay/nexus", package = "nexus-runtime" }
+hiver-runtime = { git = "https://github.com/ViewWay/hiver", package = "hiver-runtime" }
 </code></pre>
 <h2 id="verifying-installation--验证安装"><a class="header" href="#verifying-installation--验证安装">Verifying Installation / 验证安装</a></h2>
 <p>Create a simple test project:
 创建一个简单的测试项目：</p>
-<pre><code class="language-bash">cargo new hello-nexus
-cd hello-nexus
+<pre><code class="language-bash">cargo new hello-hiver
+cd hello-hiver
 </code></pre>
 <p>Edit <code>Cargo.toml</code>:
 编辑 <code>Cargo.toml</code>：</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 </code></pre>
 <p>Edit <code>src/main.rs</code>:
 编辑 <code>src/main.rs</code>：</p>
-<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+<pre class="playground"><code class="language-rust">use hiver_runtime::Runtime;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     let runtime = Runtime::new()?;
 
     runtime.block_on(async {
-        println!("Nexus is working!");
-        println!("Nexus 运行正常！");
+        println!("Hiver is working!");
+        println!("Hiver 运行正常！");
     });
 
     Ok(())
@@ -263,8 +263,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 如果你看到输出，说明安装成功！</p>
 <h2 id="building-from-source--从源码构建"><a class="header" href="#building-from-source--从源码构建">Building from Source / 从源码构建</a></h2>
 <pre><code class="language-bash"># Clone the repository / 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
-cd nexus
+git clone https://github.com/ViewWay/hiver.git
+cd hiver
 
 # Build all crates / 构建所有 crate
 cargo build --workspace
@@ -276,8 +276,8 @@ cargo build --workspace --release
 cargo test --workspace
 </code></pre>
 <h2 id="ide-support--ide-支持"><a class="header" href="#ide-support--ide-支持">IDE Support / IDE 支持</a></h2>
-<p>Nexus works with any Rust IDE. Recommended extensions:
-Nexus 可与任何 Rust IDE 配合使用。推荐扩展：</p>
+<p>Hiver works with any Rust IDE. Recommended extensions:
+Hiver 可与任何 Rust IDE 配合使用。推荐扩展：</p>
 <ul>
 <li><strong>rust-analyzer</strong>: Language server for Rust</li>
 <li><strong>Even Better TOML</strong>: TOML file support</li>
@@ -285,8 +285,8 @@ Nexus 可与任何 Rust IDE 配合使用。推荐扩展：</p>
 </ul>
 <h2 id="troubleshooting--故障排除"><a class="header" href="#troubleshooting--故障排除">Troubleshooting / 故障排除</a></h2>
 <h3 id="io-uring-not-available--io-uring-不可用"><a class="header" href="#io-uring-not-available--io-uring-不可用">io-uring Not Available / io-uring 不可用</a></h3>
-<p>On Linux systems without io-uring support (kernel &lt; 5.1), Nexus will automatically fall back to epoll. This is transparent and requires no configuration changes.</p>
-<p>在没有 io-uring 支持的 Linux 系统上（内核 &lt; 5.1），Nexus 会自动回退到 epoll。这是透明的，不需要配置更改。</p>
+<p>On Linux systems without io-uring support (kernel &lt; 5.1), Hiver will automatically fall back to epoll. This is transparent and requires no configuration changes.</p>
+<p>在没有 io-uring 支持的 Linux 系统上（内核 &lt; 5.1），Hiver 会自动回退到 epoll。这是透明的，不需要配置更改。</p>
 <h3 id="compilation-errors--编译错误"><a class="header" href="#compilation-errors--编译错误">Compilation Errors / 编译错误</a></h3>
 <ol>
 <li>

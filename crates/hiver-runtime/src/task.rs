@@ -663,8 +663,8 @@ mod tests {
 
     #[test]
     fn test_block_on_free_function_string() {
-        let result = block_on(async { String::from("nexus") });
-        assert_eq!(result, "nexus");
+        let result = block_on(async { String::from("hiver") });
+        assert_eq!(result, "hiver");
     }
 
     #[test]

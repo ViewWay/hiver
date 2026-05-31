@@ -97,7 +97,7 @@ async fn send_requests(port: u16, num_requests: u64, concurrency: usize) -> Resu
 /// 主压力测试入口点
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus HTTP Server Stress Test / Nexus HTTP 服务器压力测试 ===\n");
+    println!("=== Hiver HTTP Server Stress Test / Hiver HTTP 服务器压力测试 ===\n");
 
     // Configuration / 配置
     let port = 8081;

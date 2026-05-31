@@ -1,5 +1,5 @@
-//! Nexus GraphQL — GraphQL support for the Nexus framework
-//! Nexus GraphQL — `Nexus框架的GraphQL支持`
+//! Hiver GraphQL — GraphQL support for the Hiver framework
+//! Hiver GraphQL — `Hiver框架的GraphQL支持`
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

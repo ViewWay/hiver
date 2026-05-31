@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 HTTP server and client for Hiver Framework.
-Nexus框架的HTTP服务器和客户端。
+Hiver框架的HTTP服务器和客户端。
 Equivalent to: Spring Web, Spring WebFlux, Spring MVC
 """
 homepage = { workspace = true }

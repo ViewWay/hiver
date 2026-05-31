@@ -7,15 +7,15 @@
 
 ## Overview / 概述
 
-The Nexus runtime (`hiver-runtime`) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.
+The Hiver runtime (`hiver-runtime`) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Hiver uses a custom runtime optimized for maximum throughput and minimal latency.
 
-Nexus 运行时（`hiver-runtime`）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。
+Hiver 运行时（`hiver-runtime`）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Hiver 使用自定义运行时以实现最大吞吐量和最低延迟。
 
 ## Key Design Principles / 核心设计原则
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Runtime                            │
+│                     Hiver Runtime                            │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
 │  │   Task      │  │   Timer     │  │   Channel   │         │
@@ -65,7 +65,7 @@ fn main() -> std::io::Result<()> {
     
     // Execute async code / 执行异步代码
     runtime.block_on(async {
-        println!("Hello from Nexus runtime!");
+        println!("Hello from Hiver runtime!");
     })?;
     
     Ok(())
@@ -100,9 +100,9 @@ fn main() -> std::io::Result<()> {
 
 ### Automatic Driver Selection / 自动驱动选择
 
-Nexus automatically selects the best I/O driver for your platform:
+Hiver automatically selects the best I/O driver for your platform:
 
-Nexus 自动为您的平台选择最佳 I/O 驱动器：
+Hiver 自动为您的平台选择最佳 I/O 驱动器：
 
 | Platform | Primary Driver | Fallback | Performance |
 |----------|---------------|----------|-------------|
@@ -217,9 +217,9 @@ Each CPU core runs an independent task queue with no synchronization:
 
 ### Hierarchical 4-Wheel Design / 分层 4 轮设计
 
-Nexus uses a hierarchical timer wheel for O(1) timer operations:
+Hiver uses a hierarchical timer wheel for O(1) timer operations:
 
-Nexus 使用分层时间轮实现 O(1) 定时器操作：
+Hiver 使用分层时间轮实现 O(1) 定时器操作：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -990,7 +990,7 @@ fn test_concurrent_tasks() {
 
 ## Comparison with Other Runtimes / 与其他运行时对比
 
-| Feature | Nexus | Tokio | async-std | Monoio |
+| Feature | Hiver | Tokio | async-std | Monoio |
 |---------|-------|-------|-----------|--------|
 | **I/O Backend** | io-uring first | epoll/kqueue | epoll/kqueue | io-uring only |
 | **Scheduler** | Thread-per-core | Work-stealing | Work-stealing | Thread-per-core |
@@ -999,7 +999,7 @@ fn test_concurrent_tasks() {
 | **P99 Latency** | < 1ms | ~1.5ms | ~2ms | ~1ms |
 | **Memory (idle)** | < 10MB | ~16MB | ~12MB | ~8MB |
 
-**Why choose Nexus?** / **为什么选择 Nexus？**
+**Why choose Hiver?** / **为什么选择 Hiver？**
 
 - ✅ Best I/O performance on Linux (io-uring)
 - ✅ Multi-platform support (Linux/macOS/BSD)
@@ -1011,7 +1011,7 @@ fn test_concurrent_tasks() {
 
 ## Further Reading / 延伸阅读
 
-- **[HTTP Server](./http.md)** - Build web services with Nexus
+- **[HTTP Server](./http.md)** - Build web services with Hiver
 - **[Router](./router.md)** - HTTP request routing
 - **[Middleware](./middleware.md)** - Request/response processing
 - **[Extractors](./extractors.md)** - Type-safe data extraction

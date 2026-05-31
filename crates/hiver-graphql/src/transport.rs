@@ -80,7 +80,7 @@ impl GraphQLHandler {
 pub fn graphiql_html(endpoint: &str) -> String {
     format!(
         concat!(
-            "<!DOCTYPE html><html><head><title>GraphiQL - Nexus</title>",
+            "<!DOCTYPE html><html><head><title>GraphiQL - Hiver</title>",
             "<meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>",
             "<script src=\"https://unpkg.com/react@17/umd/react.development.js\" crossorigin></script>",
             "<script src=\"https://unpkg.com/react-dom@17/umd/react-dom.development.js\" crossorigin></script>",

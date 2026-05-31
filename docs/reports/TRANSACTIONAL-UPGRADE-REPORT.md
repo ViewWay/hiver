@@ -145,7 +145,7 @@ Annotations Completed:
 
 ## 🆚 与 Spring Boot 对比 / Comparison with Spring Boot
 
-| Feature | Spring Boot | Nexus | Status |
+| Feature | Spring Boot | Hiver | Status |
 |---------|-------------|-------|--------|
 | @Transactional | ✅ | ✅ | ✅ |
 | Isolation levels | 5 | 5 | ✅ |

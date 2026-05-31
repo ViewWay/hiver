@@ -1,7 +1,7 @@
 # Codecov Configuration / Codecov 配置文件
 #
-# This configuration customizes Codecov coverage reporting for the Nexus project.
-# 此配置为 Nexus 项目定制 Codecov 覆盖率报告.
+# This configuration customizes Codecov coverage reporting for the Hiver project.
+# 此配置为 Hiver 项目定制 Codecov 覆盖率报告.
 
 # ==============================================================================
 # Coverage Configuration / 覆盖率配置

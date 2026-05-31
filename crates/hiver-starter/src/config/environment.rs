@@ -96,7 +96,7 @@ impl Environment {
 
     /// 从环境变量检测 Profile
     fn detect_profile() -> Profile {
-        std::env::var("NEXUS_PROFILE")
+        std::env::var("HIVER_PROFILE")
             .or_else(|_| std::env::var("APP_PROFILE"))
             .or_else(|_| std::env::var("SPRING_PROFILES_ACTIVE"))
             .map_or(Profile::Dev, |s| Profile::from_str(s.as_str()))

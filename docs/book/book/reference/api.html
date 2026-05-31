@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>API Documentation / API文档 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>API Documentation / API文档 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: 62 Crates, 10 Domains / 62 个 Crate，10 个功能域
 <strong>状态</strong>: 全阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive API documentation across multiple channels.
-Nexus 通过多个渠道提供全面的 API 文档。</p>
+<p>Hiver provides comprehensive API documentation across multiple channels.
+Hiver 通过多个渠道提供全面的 API 文档。</p>
 <hr>
 <h2 id="documentation-resources--文档资源"><a class="header" href="#documentation-resources--文档资源">Documentation Resources / 文档资源</a></h2>
 <div class="table-wrapper">
@@ -194,7 +194,7 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><td><strong>Full API Reference</strong></td><td><a href="../../../api/full-api-reference.html">full-api-reference.md</a></td><td>Human-readable with code examples</td></tr>
 <tr><td><strong>Annotations Reference</strong></td><td><a href="../../../api/annotations-reference.html">annotations-reference.md</a></td><td>All 150+ procedural macros</td></tr>
 <tr><td><strong>Codemap</strong></td><td><a href="../../../CODEMAP.html">CODEMAP.md</a></td><td>Full crate reference, dependency graph</td></tr>
-<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/nexus">docs.rs/nexus</a></td><td>Auto-generated rustdoc</td></tr>
+<tr><td><strong>docs.rs</strong></td><td><a href="https://docs.rs/hiver">docs.rs/hiver</a></td><td>Auto-generated rustdoc</td></tr>
 </tbody>
 </table>
 </div>
@@ -207,13 +207,13 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-runtime</code></td><td>Custom async runtime (io-uring/epoll/kqueue)</td></tr>
-<tr><td><code>nexus-core</code></td><td>Core types, error handling</td></tr>
-<tr><td><code>nexus-http</code></td><td>HTTP/1.1 server, Request, Response</td></tr>
-<tr><td><code>nexus-router</code></td><td>Router with path params, state, middleware</td></tr>
-<tr><td><code>nexus-middleware</code></td><td>Middleware trait (CORS, compression, timeout)</td></tr>
-<tr><td><code>nexus-extractors</code></td><td>Request parameter extraction</td></tr>
-<tr><td><code>nexus-response</code></td><td>Response builders</td></tr>
+<tr><td><code>hiver-runtime</code></td><td>Custom async runtime (io-uring/epoll/kqueue)</td></tr>
+<tr><td><code>hiver-core</code></td><td>Core types, error handling</td></tr>
+<tr><td><code>hiver-http</code></td><td>HTTP/1.1 server, Request, Response</td></tr>
+<tr><td><code>hiver-router</code></td><td>Router with path params, state, middleware</td></tr>
+<tr><td><code>hiver-middleware</code></td><td>Middleware trait (CORS, compression, timeout)</td></tr>
+<tr><td><code>hiver-extractors</code></td><td>Request parameter extraction</td></tr>
+<tr><td><code>hiver-response</code></td><td>Response builders</td></tr>
 </tbody>
 </table>
 </div>
@@ -224,14 +224,14 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-data-commons</code></td><td>Repository traits, Page/Sort, entity metadata</td></tr>
-<tr><td><code>nexus-data-rdbc</code></td><td>Reactive database client, connection pool, RowMapper</td></tr>
-<tr><td><code>nexus-data-orm</code></td><td>ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations</td></tr>
-<tr><td><code>nexus-data-redis</code></td><td>Redis template, distributed locks, caching</td></tr>
-<tr><td><code>nexus-data-mongodb</code></td><td>MongoDB template and repository</td></tr>
-<tr><td><code>nexus-flyway</code></td><td>Database migration framework</td></tr>
-<tr><td><code>nexus-data-annotations</code></td><td><code>@Entity</code>, <code>@Table</code>, <code>@Column</code>, <code>@Id</code></td></tr>
-<tr><td><code>nexus-data-macros</code></td><td><code>#[derive(Model)]</code>, <code>#[derive(Repository)]</code></td></tr>
+<tr><td><code>hiver-data-commons</code></td><td>Repository traits, Page/Sort, entity metadata</td></tr>
+<tr><td><code>hiver-data-rdbc</code></td><td>Reactive database client, connection pool, RowMapper</td></tr>
+<tr><td><code>hiver-data-orm</code></td><td>ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations</td></tr>
+<tr><td><code>hiver-data-redis</code></td><td>Redis template, distributed locks, caching</td></tr>
+<tr><td><code>hiver-data-mongodb</code></td><td>MongoDB template and repository</td></tr>
+<tr><td><code>hiver-flyway</code></td><td>Database migration framework</td></tr>
+<tr><td><code>hiver-data-annotations</code></td><td><code>@Entity</code>, <code>@Table</code>, <code>@Column</code>, <code>@Id</code></td></tr>
+<tr><td><code>hiver-data-macros</code></td><td><code>#[derive(Model)]</code>, <code>#[derive(Repository)]</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -242,8 +242,8 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-resilience</code></td><td>Circuit breaker, rate limiter, retry, timeout</td></tr>
-<tr><td><code>nexus-observability</code></td><td>Distributed tracing, metrics, structured logging</td></tr>
+<tr><td><code>hiver-resilience</code></td><td>Circuit breaker, rate limiter, retry, timeout</td></tr>
+<tr><td><code>hiver-observability</code></td><td>Distributed tracing, metrics, structured logging</td></tr>
 </tbody>
 </table>
 </div>
@@ -254,7 +254,7 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-web3</code></td><td>Chain abstraction, wallet, transactions, RPC, smart contracts</td></tr>
+<tr><td><code>hiver-web3</code></td><td>Chain abstraction, wallet, transactions, RPC, smart contracts</td></tr>
 </tbody>
 </table>
 </div>
@@ -265,8 +265,8 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-ioc</code></td><td>Dependency injection container, <code>@Component</code>, <code>@Autowired</code></td></tr>
-<tr><td><code>nexus-aop</code></td><td>Aspect-oriented programming, <code>@Aspect</code></td></tr>
+<tr><td><code>hiver-ioc</code></td><td>Dependency injection container, <code>@Component</code>, <code>@Autowired</code></td></tr>
+<tr><td><code>hiver-aop</code></td><td>Aspect-oriented programming, <code>@Aspect</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -277,11 +277,11 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-security</code></td><td>Authentication, authorization, password encoding</td></tr>
-<tr><td><code>nexus-validation</code></td><td>Bean Validation (JSR 380)</td></tr>
-<tr><td><code>nexus-validation-annotations</code></td><td><code>@NotNull</code>, <code>@Size</code>, <code>@Email</code>, <code>@Pattern</code></td></tr>
-<tr><td><code>nexus-scheduling</code></td><td><code>@Scheduled</code> cron/fixed-rate/delay tasks</td></tr>
-<tr><td><code>nexus-i18n</code></td><td>Internationalization, MessageSource</td></tr>
+<tr><td><code>hiver-security</code></td><td>Authentication, authorization, password encoding</td></tr>
+<tr><td><code>hiver-validation</code></td><td>Bean Validation (JSR 380)</td></tr>
+<tr><td><code>hiver-validation-annotations</code></td><td><code>@NotNull</code>, <code>@Size</code>, <code>@Email</code>, <code>@Pattern</code></td></tr>
+<tr><td><code>hiver-scheduling</code></td><td><code>@Scheduled</code> cron/fixed-rate/delay tasks</td></tr>
+<tr><td><code>hiver-i18n</code></td><td>Internationalization, MessageSource</td></tr>
 </tbody>
 </table>
 </div>
@@ -292,10 +292,10 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-ai</code></td><td>AI/LLM integration, chat models, embeddings</td></tr>
-<tr><td><code>nexus-agent</code></td><td>AI agent framework (Spring AI Agent)</td></tr>
-<tr><td><code>nexus-cloud</code></td><td>Cloud-native support, service discovery</td></tr>
-<tr><td><code>nexus-ws</code></td><td>WebSocket server/client</td></tr>
+<tr><td><code>hiver-ai</code></td><td>AI/LLM integration, chat models, embeddings</td></tr>
+<tr><td><code>hiver-agent</code></td><td>AI agent framework (Spring AI Agent)</td></tr>
+<tr><td><code>hiver-cloud</code></td><td>Cloud-native support, service discovery</td></tr>
+<tr><td><code>hiver-ws</code></td><td>WebSocket server/client</td></tr>
 </tbody>
 </table>
 </div>
@@ -306,43 +306,43 @@ Nexus 通过多个渠道提供全面的 API 文档。</p>
 <tr><th>Crate</th><th>Description / 描述</th></tr>
 </thead>
 <tbody>
-<tr><td><code>nexus-macros</code></td><td>150+ procedural macros</td></tr>
-<tr><td><code>nexus-lombok</code></td><td><code>@Data</code>, <code>@Getter</code>, <code>@Setter</code>, <code>@Builder</code></td></tr>
-<tr><td><code>nexus-retry-macros</code></td><td><code>@Retryable</code>, <code>@Recover</code></td></tr>
-<tr><td><code>nexus-spel</code></td><td>Spring Expression Language engine</td></tr>
-<tr><td><code>nexus-modulith</code></td><td>Modular monolith support</td></tr>
-<tr><td><code>nexus-starter</code></td><td>Auto-configuration, one-line startup</td></tr>
-<tr><td><code>nexus-test</code></td><td>Test utilities, TestClient</td></tr>
+<tr><td><code>hiver-macros</code></td><td>150+ procedural macros</td></tr>
+<tr><td><code>hiver-lombok</code></td><td><code>@Data</code>, <code>@Getter</code>, <code>@Setter</code>, <code>@Builder</code></td></tr>
+<tr><td><code>hiver-retry-macros</code></td><td><code>@Retryable</code>, <code>@Recover</code></td></tr>
+<tr><td><code>hiver-spel</code></td><td>Spring Expression Language engine</td></tr>
+<tr><td><code>hiver-modulith</code></td><td>Modular monolith support</td></tr>
+<tr><td><code>hiver-starter</code></td><td>Auto-configuration, one-line startup</td></tr>
+<tr><td><code>hiver-test</code></td><td>Test utilities, TestClient</td></tr>
 </tbody>
 </table>
 </div>
 <hr>
 <h2 id="quick-api-patterns--常用-api-模式"><a class="header" href="#quick-api-patterns--常用-api-模式">Quick API Patterns / 常用 API 模式</a></h2>
 <h3 id="server-startup--启动服务器"><a class="header" href="#server-startup--启动服务器">Server Startup / 启动服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_http::Server;
-use nexus_router::Router;
+<pre class="playground"><code class="language-rust">use hiver_http::Server;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    let mut rt = nexus_runtime::Runtime::new()?;
+    let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
         Server::bind("0.0.0.0:8080").run(app).await
     })
 }</code></pre>
 <h3 id="using-starter--使用启动器"><a class="header" href="#using-starter--使用启动器">Using Starter / 使用启动器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new().get("/", handler))
         .run()
 }</code></pre>
 <h3 id="data-repository--数据仓库"><a class="header" href="#data-repository--数据仓库">Data Repository / 数据仓库</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_data_orm::prelude::*;
-use nexus_data_annotations::{Entity, Table, Id, Column};
+</span>use hiver_data_orm::prelude::*;
+use hiver_data_annotations::{Entity, Table, Id, Column};
 
 #[derive(Entity, Table, Model)]
 #[table_name = "users"]

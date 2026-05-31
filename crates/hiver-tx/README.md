@@ -6,15 +6,15 @@
 
 > Transaction management for Hiver Framework
 > 
-> Nexus框架的事务管理
+> Hiver框架的事务管理
 
 ---
 
 ## 📋 Overview / 概述
 
-`hiver-tx` provides declarative transaction management for Nexus applications, similar to Spring's `@Transactional` annotation.
+`hiver-tx` provides declarative transaction management for Hiver applications, similar to Spring's `@Transactional` annotation.
 
-`hiver-tx` 为Nexus应用程序提供声明式事务管理，类似于Spring的`@Transactional`注解。
+`hiver-tx` 为Hiver应用程序提供声明式事务管理，类似于Spring的`@Transactional`注解。
 
 **Key Features** / **核心特性**:
 - ✅ **@Transactional** - Declarative transactions

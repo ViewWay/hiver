@@ -3,9 +3,9 @@
 > **Status**: Phase 6 Complete ✅
 > **状态**: 第6阶段完成 ✅
 
-Nexus provides native Web3 support for blockchain applications.
+Hiver provides native Web3 support for blockchain applications.
 
-Nexus 为区块链应用程序提供原生 Web3 支持。
+Hiver 为区块链应用程序提供原生 Web3 支持。
 
 ---
 

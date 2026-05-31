@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Runtime / 运行时 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Runtime / 运行时 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -180,11 +180,11 @@
 </blockquote>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
-<p>The Nexus runtime (<code>nexus-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Nexus uses a custom runtime optimized for maximum throughput and minimal latency.</p>
-<p>Nexus 运行时（<code>nexus-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Nexus 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
+<p>The Hiver runtime (<code>hiver-runtime</code>) is a high-performance async runtime built from scratch, designed specifically for web server workloads. Unlike Tokio-based frameworks, Hiver uses a custom runtime optimized for maximum throughput and minimal latency.</p>
+<p>Hiver 运行时（<code>hiver-runtime</code>）是一个从零构建的高性能异步运行时，专为 Web 服务器工作负载设计。与基于 Tokio 的框架不同，Hiver 使用自定义运行时以实现最大吞吐量和最低延迟。</p>
 <h2 id="key-design-principles--核心设计原则"><a class="header" href="#key-design-principles--核心设计原则">Key Design Principles / 核心设计原则</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
-│                     Nexus Runtime                            │
+│                     Hiver Runtime                            │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
 │  │   Task      │  │   Timer     │  │   Channel   │         │
@@ -210,10 +210,10 @@
 <h3 id="installation--安装"><a class="header" href="#installation--安装">Installation / 安装</a></h3>
 <p>Add to your <code>Cargo.toml</code>:</p>
 <pre><code class="language-toml">[dependencies]
-nexus-runtime = "0.1.0-alpha"
+hiver-runtime = "0.1.0-alpha"
 </code></pre>
 <h3 id="hello-runtime--你好运行时"><a class="header" href="#hello-runtime--你好运行时">Hello Runtime / 你好，运行时</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::Runtime;
+<pre class="playground"><code class="language-rust">use hiver_runtime::Runtime;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     // Create runtime / 创建运行时
@@ -221,13 +221,13 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
     
     // Execute async code / 执行异步代码
     runtime.block_on(async {
-        println!("Hello from Nexus runtime!");
+        println!("Hello from Hiver runtime!");
     })?;
     
     Ok(())
 }</code></pre>
 <h3 id="with-configuration--带配置"><a class="header" href="#with-configuration--带配置">With Configuration / 带配置</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, DriverType};
+<pre class="playground"><code class="language-rust">use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
@@ -247,8 +247,8 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <hr>
 <h2 id="io-drivers--io-驱动器"><a class="header" href="#io-drivers--io-驱动器">I/O Drivers / I/O 驱动器</a></h2>
 <h3 id="automatic-driver-selection--自动驱动选择"><a class="header" href="#automatic-driver-selection--自动驱动选择">Automatic Driver Selection / 自动驱动选择</a></h3>
-<p>Nexus automatically selects the best I/O driver for your platform:</p>
-<p>Nexus 自动为您的平台选择最佳 I/O 驱动器：</p>
+<p>Hiver automatically selects the best I/O driver for your platform:</p>
+<p>Hiver 自动为您的平台选择最佳 I/O 驱动器：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -264,7 +264,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 </div>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, DriverType};
+</span>use hiver_runtime::{Runtime, DriverType};
 
 // Auto-detect (recommended) / 自动检测（推荐）
 let runtime = Runtime::new()?;
@@ -349,8 +349,8 @@ epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
 <hr>
 <h2 id="timer-wheel--时间轮"><a class="header" href="#timer-wheel--时间轮">Timer Wheel / 时间轮</a></h2>
 <h3 id="hierarchical-4-wheel-design--分层-4-轮设计"><a class="header" href="#hierarchical-4-wheel-design--分层-4-轮设计">Hierarchical 4-Wheel Design / 分层 4 轮设计</a></h3>
-<p>Nexus uses a hierarchical timer wheel for O(1) timer operations:</p>
-<p>Nexus 使用分层时间轮实现 O(1) 定时器操作：</p>
+<p>Hiver uses a hierarchical timer wheel for O(1) timer operations:</p>
+<p>Hiver 使用分层时间轮实现 O(1) 定时器操作：</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │              Hierarchical Timer Wheel                        │
 │              分层时间轮                                       │
@@ -391,7 +391,7 @@ epoll_wait() ► [syscall]         [CQE] ◄─── (no syscall)
 <h3 id="timer-api--定时器-api"><a class="header" href="#timer-api--定时器-api">Timer API / 定时器 API</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{sleep, sleep_until, Duration, Instant};
+</span>use hiver_runtime::{sleep, sleep_until, Duration, Instant};
 
 async fn timer_examples() {
     // Sleep for duration / 休眠一段时间
@@ -412,8 +412,8 @@ async fn timer_examples() {
 <h3 id="timeout-pattern--超时模式"><a class="header" href="#timeout-pattern--超时模式">Timeout Pattern / 超时模式</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{select_two, sleep, Duration};
-use nexus_runtime::select::SelectTwoOutput;
+</span>use hiver_runtime::{select_two, sleep, Duration};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn with_timeout() {
     let operation = async {
@@ -440,7 +440,7 @@ async fn with_timeout() {
 <p>多生产者、单消费者通道用于任务通信：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{bounded, unbounded, spawn};
+</span>use hiver_runtime::{bounded, unbounded, spawn};
 
 async fn channel_demo() {
     // Bounded channel (backpressure) / 有界通道（背压）
@@ -494,7 +494,7 @@ async fn channel_demo() {
 <p><strong>Example</strong> / <strong>示例</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{bounded, unbounded};
+</span>use hiver_runtime::{bounded, unbounded};
 
 // Producer-consumer with backpressure / 带背压的生产者-消费者
 let (tx, rx) = bounded::&lt;WorkItem&gt;(100);
@@ -507,7 +507,7 @@ let (shutdown_tx, shutdown_rx) = unbounded::&lt;()&gt;();
 <h3 id="basic-task-spawning--基本任务生成"><a class="header" href="#basic-task-spawning--基本任务生成">Basic Task Spawning / 基本任务生成</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{spawn, JoinHandle};
+</span>use hiver_runtime::{spawn, JoinHandle};
 
 async fn task_example() {
     // Spawn single task / 生成单个任务
@@ -524,7 +524,7 @@ async fn task_example() {
 <h3 id="concurrent-tasks--并发任务"><a class="header" href="#concurrent-tasks--并发任务">Concurrent Tasks / 并发任务</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::spawn;
+</span>use hiver_runtime::spawn;
 
 async fn parallel_processing() {
     let mut handles = Vec::new();
@@ -583,8 +583,8 @@ async fn parallel_processing() {
 <h3 id="select-two--选择两个"><a class="header" href="#select-two--选择两个">Select Two / 选择两个</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{select_two, bounded};
-use nexus_runtime::select::SelectTwoOutput;
+</span>use hiver_runtime::{select_two, bounded};
+use hiver_runtime::select::SelectTwoOutput;
 
 async fn select_demo() {
     let (tx1, rx1) = bounded::&lt;i32&gt;(1);
@@ -606,8 +606,8 @@ async fn select_demo() {
 <h3 id="select-multiple--选择多个"><a class="header" href="#select-multiple--选择多个">Select Multiple / 选择多个</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::select_multiple;
-use nexus_runtime::select::SelectMultipleOutput;
+</span>use hiver_runtime::select_multiple;
+use hiver_runtime::select::SelectMultipleOutput;
 
 async fn select_many() {
     let futures = vec![
@@ -627,7 +627,7 @@ async fn select_many() {
 <hr>
 <h2 id="network-io--网络-io"><a class="header" href="#network-io--网络-io">Network I/O / 网络 I/O</a></h2>
 <h3 id="tcp-server--tcp-服务器"><a class="header" href="#tcp-server--tcp-服务器">TCP Server / TCP 服务器</a></h3>
-<pre class="playground"><code class="language-rust">use nexus_runtime::{Runtime, io::TcpListener, spawn};
+<pre class="playground"><code class="language-rust">use hiver_runtime::{Runtime, io::TcpListener, spawn};
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
     let mut runtime = Runtime::new()?;
@@ -663,7 +663,7 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="tcp-client--tcp-客户端"><a class="header" href="#tcp-client--tcp-客户端">TCP Client / TCP 客户端</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, io::TcpStream};
+</span>use hiver_runtime::{Runtime, io::TcpStream};
 
 async fn tcp_client() -&gt; std::io::Result&lt;()&gt; {
     // Connect to server / 连接到服务器
@@ -684,7 +684,7 @@ async fn tcp_client() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="udp-socket--udp-套接字"><a class="header" href="#udp-socket--udp-套接字">UDP Socket / UDP 套接字</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, io::UdpSocket};
+</span>use hiver_runtime::{Runtime, io::UdpSocket};
 
 async fn udp_example() -&gt; std::io::Result&lt;()&gt; {
     // Bind socket / 绑定套接字
@@ -710,7 +710,7 @@ async fn udp_example() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="runtime-configuration--运行时配置"><a class="header" href="#runtime-configuration--运行时配置">Runtime Configuration / 运行时配置</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, DriverType};
+</span>use hiver_runtime::{Runtime, DriverType};
 use std::time::Duration;
 
 let runtime = Runtime::builder()
@@ -734,7 +734,7 @@ let runtime = Runtime::builder()
 <p><code>DriverConfig</code> 构建器提供对 I/O 驱动器行为的精细控制：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -748,7 +748,7 @@ let config = DriverConfig::builder()
 <p>然后在构建运行时时传入配置：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::{Runtime, RuntimeConfig, DriverType};
+</span>use hiver_runtime::{Runtime, RuntimeConfig, DriverType};
 
 // Build a RuntimeConfig with custom driver settings
 // 使用自定义驱动设置构建 RuntimeConfig
@@ -783,7 +783,7 @@ let mut runtime = Runtime::builder()
 <p><strong>For CPU-bound workloads</strong> / <strong>CPU 密集型工作负载</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let driver_config = DriverConfig::builder()
     .entries(512)
@@ -804,7 +804,7 @@ let runtime = Runtime::builder()
 <p><strong>Linux io-uring</strong> / <strong>Linux io-uring</strong>:</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::driver::DriverConfig;
+</span>use hiver_runtime::driver::DriverConfig;
 
 let config = DriverConfig::builder()
     .entries(2048)              // SQ/CQ size (rounded to next power of 2)
@@ -877,7 +877,7 @@ spawn(async {
 <h3 id="4-resource-cleanup--资源清理"><a class="header" href="#4-resource-cleanup--资源清理">4. Resource Cleanup / 资源清理</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_runtime::spawn;
+</span>use hiver_runtime::spawn;
 
 async fn resource_example() {
     let file = open_file().await?;
@@ -995,7 +995,7 @@ let runtime = Runtime::builder()
 </span><span class="boring">fn main() {
 </span>#[cfg(test)]
 mod tests {
-    use nexus_runtime::Runtime;
+    use hiver_runtime::Runtime;
 
     #[test]
     fn test_async_function() {
@@ -1012,7 +1012,7 @@ mod tests {
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// tests/integration_test.rs
-use nexus_runtime::{Runtime, spawn, bounded};
+use hiver_runtime::{Runtime, spawn, bounded};
 
 #[test]
 fn test_concurrent_tasks() {
@@ -1042,7 +1042,7 @@ fn test_concurrent_tasks() {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Feature</th><th>Nexus</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
+<tr><th>Feature</th><th>Hiver</th><th>Tokio</th><th>async-std</th><th>Monoio</th></tr>
 </thead>
 <tbody>
 <tr><td><strong>I/O Backend</strong></td><td>io-uring first</td><td>epoll/kqueue</td><td>epoll/kqueue</td><td>io-uring only</td></tr>
@@ -1054,18 +1054,18 @@ fn test_concurrent_tasks() {
 </tbody>
 </table>
 </div>
-<p><strong>Why choose Nexus?</strong> / <strong>为什么选择 Nexus？</strong></p>
+<p><strong>Why choose Hiver?</strong> / <strong>为什么选择 Hiver？</strong></p>
 <ul>
 <li>✅ Best I/O performance on Linux (io-uring)</li>
 <li>✅ Multi-platform support (Linux/macOS/BSD)</li>
 <li>✅ Lower latency for web servers</li>
-<li>✅ Integrated with Nexus framework features</li>
+<li>✅ Integrated with Hiver framework features</li>
 <li>✅ Better cache locality (thread-per-core)</li>
 </ul>
 <hr>
 <h2 id="further-reading--延伸阅读"><a class="header" href="#further-reading--延伸阅读">Further Reading / 延伸阅读</a></h2>
 <ul>
-<li><strong><a href="./http.html">HTTP Server</a></strong> - Build web services with Nexus</li>
+<li><strong><a href="./http.html">HTTP Server</a></strong> - Build web services with Hiver</li>
 <li><strong><a href="./router.html">Router</a></strong> - HTTP request routing</li>
 <li><strong><a href="./middleware.html">Middleware</a></strong> - Request/response processing</li>
 <li><strong><a href="./extractors.html">Extractors</a></strong> - Type-safe data extraction</li>

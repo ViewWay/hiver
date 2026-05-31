@@ -1,5 +1,5 @@
-//! Nexus AMQP - AMQP/RabbitMQ module
-//! Nexus AMQP - AMQP/RabbitMQ模块
+//! Hiver AMQP - AMQP/RabbitMQ module
+//! Hiver AMQP - AMQP/RabbitMQ模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

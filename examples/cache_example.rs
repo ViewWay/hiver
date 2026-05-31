@@ -1,8 +1,8 @@
 //! Cache Example
 //! 缓存示例
 //!
-//! Demonstrates the use of Nexus cache annotations equivalent to Spring's @Cacheable, @CachePut, and @CacheEvict.
-//! 演示Nexus缓存注解的使用，等同于Spring的@Cacheable、@CachePut和@CacheEvict。
+//! Demonstrates the use of Hiver cache annotations equivalent to Spring's @Cacheable, @CachePut, and @CacheEvict.
+//! 演示Hiver缓存注解的使用，等同于Spring的@Cacheable、@CachePut和@CacheEvict。
 
 use hiver_cache::{
     Cache, CacheConfig, CacheEvictExec, CachePutExec, Cached, MemoryCache,
@@ -141,7 +141,7 @@ impl UserService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus Cache Example / Nexus缓存示例 ===\n");
+    println!("=== Hiver Cache Example / Hiver缓存示例 ===\n");
 
     let service = UserService::new();
 

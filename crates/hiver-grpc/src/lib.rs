@@ -1,5 +1,5 @@
-//! Nexus gRPC — gRPC server and client support for the Nexus framework.
-//! Nexus gRPC — Nexus框架的gRPC服务端和客户端支持。
+//! Hiver gRPC — gRPC server and client support for the Hiver framework.
+//! Hiver gRPC — Hiver框架的gRPC服务端和客户端支持。
 //!
 //! # Description / 描述
 //!

@@ -20,22 +20,22 @@
 
 ### Installation / 安装
 
-Create a new Rust project with Nexus:
-使用 Nexus 创建新的 Rust 项目：
+Create a new Rust project with Hiver:
+使用 Hiver 创建新的 Rust 项目：
 
 ```bash
 # Create new project
 cargo new my-hiver-app
 cd my-hiver-app
 
-# Add Nexus dependency
-cargo add nexus hiver-macros
+# Add Hiver dependency
+cargo add hiver hiver-macros
 ```
 
 **Cargo.toml / 货物清单**:
 ```toml
 [dependencies]
-nexus = "0.1"
+hiver = "0.1"
 hiver-macros = "0.1"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
@@ -56,7 +56,7 @@ struct HelloController;
 
 #[get("/")]
 async fn hello() -> &'static str {
-    "Hello, Nexus!"
+    "Hello, Hiver!"
 }
 
 #[get("/hello/:name")]
@@ -123,7 +123,7 @@ members = ["app", "domain", "infrastructure"]
 resolver = "3"
 
 [workspace.dependencies]
-nexus = "0.1"
+hiver = "0.1"
 hiver-macros = "0.1"
 ```
 

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Cloud equivalent features for Hiver Framework.
-Nexus框架的Spring Cloud等价功能。
+Hiver框架的Spring Cloud等价功能。
 Equivalent to: Spring Cloud (Discovery, Config, Gateway, Circuit Breaker)
 """
 homepage = { workspace = true }

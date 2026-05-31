@@ -217,7 +217,7 @@ struct UserController {
 
 ### Authentication Flow / 认证流程
 
-| Step / 步骤 | Spring Boot | Nexus | Status / 状态 |
+| Step / 步骤 | Spring Boot | Hiver | Status / 状态 |
 |------------|------------|-------|-------------|
 | **User Login** | UsernamePasswordAuthenticationToken | UsernamePasswordAuthenticationToken | ✅ Equivalent |
 | **Authentication** | AuthenticationManager.authenticate() | AuthenticationManager.authenticate() | ✅ Equivalent |
@@ -249,7 +249,7 @@ public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
 }
 ```
 
-**Nexus**:
+**Hiver**:
 ```rust
 async fn login(&self, req: LoginRequest) -> Response {
     let auth_token = Authentication::new(&req.username, &req.password);
@@ -281,7 +281,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 }
 ```
 
-**Nexus**:
+**Hiver**:
 ```rust
 async fn call(&self, req: Request, next: Next<State>) -> Result<Response> {
     if self.should_skip_auth(req.uri().path()) {

@@ -9,7 +9,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring/JPA |
+//! | Hiver | Spring/JPA |
 //! |-------|------------|
 //! | `HasMany` | `@OneToMany` |
 //! | `HasOne` | `@OneToOne` |

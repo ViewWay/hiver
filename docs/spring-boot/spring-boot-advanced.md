@@ -51,11 +51,11 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
-#### Nexus - Nexus Security 架构
+#### Hiver - Hiver Security 架构
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Nexus Security                       │
+│                    Hiver Security                       │
 ├─────────────────────────────────────────────────────────┤
 │  Middleware Chain                                      │
 │  ┌───────────────────────────────────────────────────┐ │
@@ -174,7 +174,7 @@ public class SecurityConfig {
 }
 ```
 
-#### Nexus - Security Config
+#### Hiver - Security Config
 
 ```rust
 use hiver_security::{
@@ -362,7 +362,7 @@ public class AuthController {
 }
 ```
 
-#### Nexus - Login Flow
+#### Hiver - Login Flow
 
 ```rust
 use hiver_security::{AuthenticationManager, JwtTokenProvider, PasswordEncoder};
@@ -600,7 +600,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 }
 ```
 
-#### Nexus - JwtTokenProvider
+#### Hiver - JwtTokenProvider
 
 ```rust
 use jsonwebtoken::{encode, decode, Validation, EncodingKey, DecodingKey};
@@ -851,7 +851,7 @@ public class UserController {
 }
 ```
 
-#### Nexus - RBAC 权限模型
+#### Hiver - RBAC 权限模型
 
 ```rust
 use hiver_security::{HasRole, HasPermission, AuthContext};
@@ -1059,7 +1059,7 @@ public class LoginAttemptService {
 }
 ```
 
-#### Nexus - 登录拦截与限制
+#### Hiver - 登录拦截与限制
 
 ```rust
 use hiver_resilience::rate_limit::RateLimiter;
@@ -1364,7 +1364,7 @@ public class CreateUserRequest {
 }
 ```
 
-#### Nexus - OpenAPI 实现
+#### Hiver - OpenAPI 实现
 
 ```rust
 use utoipa::{OpenApi, OpenApiSpec, ToSchema};
@@ -1618,7 +1618,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 </configuration>
 ```
 
-#### Nexus - 日志配置
+#### Hiver - 日志配置
 
 ```rust
 use hiver_observability::log::{Logger, LoggerFactory, Level, LogConfig};
@@ -1800,7 +1800,7 @@ public class CustomMetrics {
 }
 ```
 
-#### Nexus - Observability 模块
+#### Hiver - Observability 模块
 
 ```rust
 use hiver_observability::{
@@ -1950,7 +1950,7 @@ impl UserService {
 
 ### 进阶功能对比 / Advanced Features Comparison
 
-| 功能 / Feature | Spring Boot | Nexus | 完成度 |
+| 功能 / Feature | Spring Boot | Hiver | 完成度 |
 |----------------|-------------|-------|--------|
 | **JWT 认证 / JWT Auth** | Spring Security | hiver-security | ✅ 90% |
 | **权限控制 / RBAC** | @PreAuthorize | #[require_permission] | ⚠️ 75% |

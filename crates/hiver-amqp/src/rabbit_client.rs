@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring AMQP |
+//! | Hiver | Spring AMQP |
 //! |-------|-------------|
 //! | `RabbitMqClient::new()` | `CachingConnectionFactory` + `RabbitTemplate` |
 //! | `client.publish()` | `rabbitTemplate.convertAndSend()` |

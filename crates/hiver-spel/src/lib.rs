@@ -1,7 +1,7 @@
-//! # Nexus SpEL — Simplified Spring Expression Language Engine
+//! # Hiver SpEL — Simplified Spring Expression Language Engine
 //!
 //! A lightweight expression parser and evaluator for security annotations
-//! in the Nexus framework, inspired by Spring's SpEL.
+//! in the Hiver framework, inspired by Spring's SpEL.
 //!
 //! # Supported Expressions / 支持的表达式
 //!

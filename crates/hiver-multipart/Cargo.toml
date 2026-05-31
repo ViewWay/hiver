@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Multipart file upload support for Hiver Framework.
-Nexus框架的多部分文件上传支持。
+Hiver框架的多部分文件上传支持。
 Equivalent to: Spring MultipartFile, @RequestPart
 """
 homepage = { workspace = true }

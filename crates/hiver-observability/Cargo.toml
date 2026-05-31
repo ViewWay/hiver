@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Observability (tracing, metrics, logging) for Hiver Framework.
-Nexus框架的可观测性（追踪、指标、日志）。
+Hiver框架的可观测性（追踪、指标、日志）。
 Equivalent to: Spring Cloud Sleuth, Micrometer, Spring Boot Actuator
 """
 homepage = { workspace = true }

@@ -7,7 +7,7 @@
 //! Configuration loading order (priority from low to high):
 //! 1. application.toml / application.yml
 //! 2. application-{profile}.toml
-//! 3. 环境变量 (NEXUS_*, APP_*)
+//! 3. 环境变量 (HIVER_*, APP_*)
 //! 4. 命令行参数
 
 use std::collections::HashMap;
@@ -367,9 +367,9 @@ impl ConfigurationLoader {
 
     /// 加载环境变量
     fn load_environment_variables(&mut self) {
-        // 加载 NEXUS_* 前缀的环境变量
+        // 加载 HIVER_* 前缀的环境变量
         for (key, value) in std::env::vars() {
-            if let Some(rest) = key.strip_prefix("NEXUS_") {
+            if let Some(rest) = key.strip_prefix("HIVER_") {
                 let config_key = rest.to_lowercase().replace('_', ".");
                 self.properties.insert(config_key, value);
             } else if let Some(rest) = key.strip_prefix("APP_") {

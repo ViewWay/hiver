@@ -1,8 +1,8 @@
-# Nexus Tutorial / Nexus教程
+# Hiver Tutorial / Hiver教程
 
-This tutorial will guide you through building a complete REST API application with Nexus.
+This tutorial will guide you through building a complete REST API application with Hiver.
 
-本教程将指导您使用Nexus构建完整的REST API应用程序。
+本教程将指导您使用Hiver构建完整的REST API应用程序。
 
 ---
 
@@ -28,7 +28,7 @@ This tutorial will guide you through building a complete REST API application wi
 cargo new my-api --bin
 cd my-api
 
-# Add Nexus dependencies / 添加Nexus依赖
+# Add Hiver dependencies / 添加Hiver依赖
 cargo add hiver-runtime hiver-http hiver-router hiver-extractors
 cargo add hiver-runtime
 ```
@@ -60,7 +60,7 @@ fn main() -> std::io::Result<()> {
     let mut runtime = hiver_runtime::Runtime::new()?;
     runtime.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
 
         Server::bind("127.0.0.1:8080")
             .run(app)
@@ -76,7 +76,7 @@ fn main() -> std::io::Result<()> {
 ```bash
 cargo run
 curl http://localhost:8080/
-# Hello, Nexus!
+# Hello, Hiver!
 ```
 
 ---

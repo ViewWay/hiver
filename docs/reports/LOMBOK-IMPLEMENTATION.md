@@ -1,5 +1,5 @@
-# Nexus Lombok 注解完整实施计划
-# Nexus Lombok Annotations Implementation Plan
+# Hiver Lombok 注解完整实施计划
+# Hiver Lombok Annotations Implementation Plan
 # 生成日期：2026-01-25
 
 ## 📋 Overview / 概述
@@ -33,7 +33,7 @@ Lombok 注解支持统计 Statistics:
 
 ## ✅ 已实现 / Implemented
 
-| # | Lombok 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | Lombok 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
 | 1 | `@Slf4j` | `#[slf4j]` | ✅ 完整 | `hiver-macros/src/lib.rs:634` |
 
@@ -80,7 +80,7 @@ public class User {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[Data]  // 生成 getter, setter, constructor, clone, debug
 #[TableName("users")]
@@ -262,7 +262,7 @@ public class User {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[Getter]  // 为每个字段生成 getter
 pub struct User {
@@ -341,7 +341,7 @@ public class User {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[Setter]  // 为每个字段生成 setter
 pub struct User {
@@ -397,7 +397,7 @@ public class User {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[AllArgsConstructor]
 pub struct User {
@@ -445,7 +445,7 @@ public class User {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[NoArgsConstructor]
 pub struct User {
@@ -500,7 +500,7 @@ User user = User.builder()
     .build();
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[Builder]
 pub struct User {
@@ -626,7 +626,7 @@ public class User {
 // 字段自动变成 private final
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[Value]  // 所有字段自动不可变 + 生成 getter
 pub struct User {
@@ -684,7 +684,7 @@ public class User {
 User user2 = user1.withId(2L).withUsername("bob");
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 #[With]  // 为每个字段生成 with_xxx 方法
 pub struct User {
@@ -732,7 +732,7 @@ public void readFile() throws IOException {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 use hiver_lombok::Cleanup;
 
@@ -771,7 +771,7 @@ public void readFile() {
 }
 ```
 
-**Rust Nexus - 目标 API**:
+**Rust Hiver - 目标 API**:
 ```rust
 use hiver_lombok::SneakyThrows;
 
@@ -1085,21 +1085,21 @@ fn main() {
 
 ## 🎯 与 Java Lombok 对比 / Comparison with Java Lombok
 
-| Feature / 功能 | Java Lombok | Rust Nexus | 优势 Advantage |
+| Feature / 功能 | Java Lombok | Rust Hiver | 优势 Advantage |
 |--------------|------------|-----------|-------------|
-| **类型安全** | Runtime / 运行时 | Compile-time / 编译时 | ✅ Nexus |
-| **性能** | 反射开销 | 零成本抽象 | ✅ Nexus |
-| **可读性** | 隐藏代码 | 可展开查看 | ✅ Nexus |
+| **类型安全** | Runtime / 运行时 | Compile-time / 编译时 | ✅ Hiver |
+| **性能** | 反射开销 | 零成本抽象 | ✅ Hiver |
+| **可读性** | 隐藏代码 | 可展开查看 | ✅ Hiver |
 | **Getter/Setter** | ✅ | ✅ | 平手 Tie |
 | **Builder** | ✅ | ✅ | 平手 Tie |
 | **With methods** | ✅ | ✅ | 平手 Tie |
 | **@Value** | ✅ | ✅ | 平手 Tie |
 | **@Data** | ✅ | ✅ | 平手 Tie |
-| **@Cleanup** | ✅ | ⚠️ RAII (天然支持) | ✅ Nexus |
-| **错误处理** | ⚠️ @SneakyThrows | ✅ Result 类型 | ✅ Nexus |
+| **@Cleanup** | ✅ | ⚠️ RAII (天然支持) | ✅ Hiver |
+| **错误处理** | ⚠️ @SneakyThrows | ✅ Result 类型 | ✅ Hiver |
 
 **总结 / Summary**:
-- Nexus Lombok 提供与 Java Lombok 相同的开发体验
+- Hiver Lombok 提供与 Java Lombok 相同的开发体验
 - 同时保留 Rust 的类型安全和性能优势
 - 编译时展开，无运行时开销
 

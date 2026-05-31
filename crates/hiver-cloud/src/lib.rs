@@ -1,5 +1,5 @@
-//! Nexus Cloud - Spring Cloud equivalent features
-//! Nexus云 - Spring Cloud等价功能
+//! Hiver Cloud - Spring Cloud equivalent features
+//! Hiver云 - Spring Cloud等价功能
 //!
 //! # Equivalent to Spring Cloud / 等价于 Spring Cloud
 //!

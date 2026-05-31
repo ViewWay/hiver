@@ -1,4 +1,4 @@
-# Nexus Codemap / 代码地图
+# Hiver Codemap / 代码地图
 
 **Generated**: 2026-05-13
 **Version**: 0.1.0-alpha
@@ -140,7 +140,7 @@
 | Crate | Lines | Spring Equivalent | Key Public API |
 |-------|------:|-------------------|----------------|
 | **hiver-config** | 3,058 | Spring Config | `Config`, `ConfigBuilder`, `Environment`, `Profile`, `ActiveProfiles`, `PropertySource`, `ConfigLoader` |
-| **hiver-starter** | 11,528 | Spring Boot Starter | `NexusApplication`, `ComponentScanner`, `BeanFactory`, `AutoConfiguration`, `Conditional` (`@ConditionalOnProperty` etc.) |
+| **hiver-starter** | 11,528 | Spring Boot Starter | `HiverApplication`, `ComponentScanner`, `BeanFactory`, `AutoConfiguration`, `Conditional` (`@ConditionalOnProperty` etc.) |
 
 ### Cloud & External / 云与外部集成
 

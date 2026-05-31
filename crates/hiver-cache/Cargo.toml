@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Caching abstraction for Hiver Framework.
-Nexus框架的缓存抽象。
+Hiver框架的缓存抽象。
 Equivalent to: Spring Cache Abstraction (@Cacheable, @CacheEvict, @CachePut)
 """
 homepage = { workspace = true }

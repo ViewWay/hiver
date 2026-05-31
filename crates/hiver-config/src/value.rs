@@ -629,7 +629,7 @@ mod tests {
     #[test]
     fn test_value_object() {
         let mut map = indexmap::IndexMap::new();
-        map.insert("name".to_string(), Value::string("nexus"));
+        map.insert("name".to_string(), Value::string("hiver"));
         map.insert("port".to_string(), Value::integer(8080));
         let v = Value::object(map);
         assert!(v.is_object());
@@ -927,11 +927,11 @@ mod tests {
         use crate::{Environment, PropertySource};
         let env = Environment::new();
         let mut source = PropertySource::new("test");
-        source.put("app.name", Value::string("nexus"));
+        source.put("app.name", Value::string("hiver"));
         env.add_property_source(source);
 
         let result = ValueExtractor::resolve_placeholder("${app.name}", &env);
-        assert_eq!(result, "nexus");
+        assert_eq!(result, "hiver");
     }
 
     /// Test resolve_placeholder falls back to default

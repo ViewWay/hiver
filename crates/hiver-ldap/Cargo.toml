@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring LDAP — Directory service integration.
-Nexus框架的LDAP目录服务集成。
+Hiver框架的LDAP目录服务集成。
 Equivalent to: Spring LDAP
 """
 homepage = { workspace = true }

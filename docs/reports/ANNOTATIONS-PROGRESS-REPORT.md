@@ -1,12 +1,12 @@
-# 🎉 Nexus Annotations Implementation Progress Report
-# Nexus 注解实施进度报告
+# 🎉 Hiver Annotations Implementation Progress Report
+# Hiver 注解实施进度报告
 # Generated: 2026-01-25
 
 ## 📊 Executive Summary / 执行摘要
 
 ```
 ═══════════════════════════════════════════════════════════════
-  Nexus 注解实施进度 Nexus Annotations Implementation Progress
+  Hiver 注解实施进度 Hiver Annotations Implementation Progress
 ═══════════════════════════════════════════════════════════════
 
   ✅ Lombok 注解 (10/10 - 100%)

@@ -355,7 +355,7 @@ impl MarketplaceService {
                 token_id: token_id.to_string(),
                 owner: "0x0000000000000000000000000000000000000000".to_string(),
                 token_uri: format!("ipfs://Qm...{}", token_id),
-                collection: "NexusCollection".to_string(),
+                collection: "HiverCollection".to_string(),
             })
         })
         .await
@@ -590,7 +590,7 @@ fn json_error(status: StatusCode, error: &str, message: &str) -> Response {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("================================================================");
-    println!("  Nexus Web3 DApp Backend Example / Nexus Web3 DApp 后端示例");
+    println!("  Hiver Web3 DApp Backend Example / Hiver Web3 DApp 后端示例");
     println!("  Equivalent to Spring Boot + Web3j");
     println!("================================================================\n");
 

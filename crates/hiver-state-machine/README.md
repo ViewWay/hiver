@@ -1,6 +1,6 @@
 # hiver-state-machine
 
-State Machine Framework for Nexus / Nexus 状态机框架
+State Machine Framework for Hiver / Hiver 状态机框架
 
 ## 功能特性
 
@@ -15,7 +15,7 @@ State Machine Framework for Nexus / Nexus 状态机框架
 
 ## Spring State Machine 对应
 
-| Nexus | Spring State Machine |
+| Hiver | Spring State Machine |
 |-------|---------------------|
 | `State` trait | `State` interface |
 | `Event` trait | `Event` interface |

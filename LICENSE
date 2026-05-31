@@ -1,13 +1,13 @@
-# Nexus Framework License
-# Nexus 框架许可证
+# hiver Framework License
+# hiver 框架许可证
 
-Copyright 2025-2026 Nexus Framework Contributors
-版权所有 2025-2026 Nexus 框架贡献者
+Copyright 2025-2026 hiver Framework Contributors
+版权所有 2025-2026 hiver 框架贡献者
 
 ## Dual License / 双重许可
 
-Nexus Framework is dual-licensed under:
-Nexus 框架采用以下双重许可证：
+hiver Framework is dual-licensed under:
+hiver 框架采用以下双重许可证：
 
 - **Apache License, Version 2.0** (http://www.apache.org/licenses/LICENSE-2.0)
 - **MIT License** (https://opensource.org/licenses/MIT)
@@ -241,9 +241,9 @@ SOFTWARE.
 # Third-Party Acknowledgments
 # 第三方致谢
 
-Nexus Framework has been inspired by and references concepts from several excellent open-source projects.
+hiver Framework has been inspired by and references concepts from several excellent open-source projects.
 The framework is independently implemented and does not contain code from these projects.
-Nexus 框架受到几个优秀开源项目的启发并参考了其概念。
+hiver 框架受到几个优秀开源项目的启发并参考了其概念。
 本框架为独立实现，不包含这些项目的代码。
 
 For licenses of referenced projects, see [LICENSE-THIRD-PARTY](LICENSE-THIRD-PARTY).

@@ -1,9 +1,9 @@
-# Nexus Master Implementation Roadmap
-# Nexus 主实施路线图
+# Hiver Master Implementation Roadmap
+# Hiver 主实施路线图
 
 ## 📊 Executive Summary / 执行摘要
 
-**Current Status / 当前状态**: Nexus is at ~65% completion / Nexus 完成度约 65%
+**Current Status / 当前状态**: Hiver is at ~65% completion / Hiver 完成度约 65%
 **Codebase / 代码库**: 57 crates, 140,845 lines of code, 1,373 tests / 57 个 crate，140,845 行代码，1,373 个测试
 **Build Status / 构建状态**: ✅ Clean (0 clippy errors, all tests pass) / ✅ 干净（0 个 clippy 错误，所有测试通过）
 **Primary Focus / 当前重点**: Polish Data Layer to completion + advanced features / 完善数据层 + 高级功能
@@ -14,8 +14,8 @@
 
 ### The Core Achievement / 核心成就
 
-**Nexus now has a comprehensive Spring Boot-equivalent framework with a substantially complete Data Layer.**
-**Nexus 现在拥有一个全面的 Spring Boot 对等框架，数据层已基本完成。**
+**Hiver now has a comprehensive Spring Boot-equivalent framework with a substantially complete Data Layer.**
+**Hiver 现在拥有一个全面的 Spring Boot 对等框架，数据层已基本完成。**
 
 || Layer / 层 | Completion / 完成度 | Status / 状态 |
 |------------|-------------------|---------------|
@@ -348,7 +348,7 @@ impl UserService {
 #[EnableOAuth2]
 #[tokio::main]
 async fn main() {
-    let app = NexusApp::builder()
+    let app = HiverApp::builder()
         .oauth2_client(OAuth2ClientConfig {
             client_id: "my-client",
             client_secret: "secret",
@@ -389,7 +389,7 @@ async fn test_user_crud() {
 ```
 
 **Deliverables / 交付物**:
-- [x] @NexusTest macro
+- [x] @HiverTest macro
 - [x] TestApplicationContext
 - [x] @TestConfiguration
 - [x] Mock beans (@MockBean)
@@ -522,7 +522,7 @@ async fn get_user(path: Path<i32>) -> Result<Json<User>, Error> {
 
 ### Current Status (Completed) / 当前状态（已完成）
 
-Nexus has achieved / Nexus 已实现：
+Hiver has achieved / Hiver 已实现：
 - ✅ Runtime core with io-uring/epoll/kqueue
 - ✅ HTTP server, router, extractors, middleware
 - ✅ Resilience (circuit breaker, retry, rate limiter)
@@ -659,8 +659,8 @@ Nexus has achieved / Nexus 已实现：
 
 ## 🏁 Conclusion / 结论
 
-**Nexus has made remarkable progress toward becoming a comprehensive Spring Boot alternative:**
-**Nexus 在成为全面的 Spring Boot 替代品方面取得了显著进展：**
+**Hiver has made remarkable progress toward becoming a comprehensive Spring Boot alternative:**
+**Hiver 在成为全面的 Spring Boot 替代品方面取得了显著进展：**
 
 1. **Phase 0-7 (Complete)**: Runtime, HTTP, Resilience, Observability, Web3 / 运行时、HTTP、弹性、可观测性、Web3
    - 95% complete / 95% 完成

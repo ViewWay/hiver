@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "lastScanned": 1780160604630,
-  "projectRoot": "/Users/yimiliya/RustroverProjects/nexus",
+  "projectRoot": "/Users/yimiliya/RustroverProjects/hiver",
   "techStack": {
     "languages": [
       {
@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cd /Users/yimiliya/RustroverProjects/nexus-library/frontend && /opt/homebrew/bin/bun run build 2>&1 | tail -5",
-    "testCommand": "cat > .github/workflows/docs.yml << 'YAML'\n# Documentation Publishing\n# 文档发布\n#\n# Builds and publishes documentation to GitHub Pages.\n# 构建文档并发布到 GitHub Pages。\n\nname: Docs\n\npermissions:\n  contents: write\n  pages: write\n  id-token: write\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\nconcurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n\nenv:\n  CARGO_TERM_COLOR: always\n\njobs:\n  build:\n    name: Build Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Install mdBook and plugins\n        run: |\n          # Install mdBook\n          tag=$(curl -sL 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')\n          url=\"https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz\"\n          curl -sSL \"$url\" | tar -xz\n          sudo mv mdbook /usr/local/bin\n          mdbook --version\n\n          # Install mdBook plugins\n          cargo install mdbook-toc mdbook-mermaid\n\n      - name: Cache cargo registry\n        uses: actions/cache@v4\n        with:\n          path: ~/.cargo/registry\n          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Cache cargo build\n        uses: actions/cache@v4\n        with:\n          path: target\n          key: ${{ runner.os }}-cargo-build-docs-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Build mdBook guide\n        run: |\n          # Run from project root — book.toml is at root, src is docs/book/src\n          mdbook build\n          # Output: docs/book/book/\n\n      - name: Build Rust API documentation\n        run: |\n          cargo doc --all-features --no-deps --workspace 2>&1 || true\n          echo '<meta http-equiv=\"refresh\" content=\"0; url=nexus_runtime\">' > target/doc/index.html\n\n      - name: Merge documentation\n        run: |\n          # Create final output directory\n          mkdir -p target/pages\n\n          # mdBook guide as the main site\n          if [ -d \"docs/book/book\" ]; then\n            cp -r docs/book/book/* target/pages/\n          fi\n\n          # Rust API docs under /api/\n          if [ -d \"target/doc\" ]; then\n            mkdir -p target/pages/api\n            cp -r target/doc/* target/pages/api/\n          fi\n\n          # Add .nojekyll for GitHub Pages\n          touch target/pages/.nojekyll\n\n      - name: Deploy to GitHub Pages\n        if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n        uses: peaceiris/actions-gh-pages@v4\n        with:\n          github_token: ${{ secrets.GITHUB_TOKEN }}\n          publish_dir: ./target/pages\n\n  test:\n    name: Test Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Run documentation tests\n        run: cargo test --doc --all-features --workspace\nYAML\necho \"Updated: docs.yml\"",
+    "buildCommand": "cd /Users/yimiliya/RustroverProjects/hiver-library/frontend && /opt/homebrew/bin/bun run build 2>&1 | tail -5",
+    "testCommand": "cat > .github/workflows/docs.yml << 'YAML'\n# Documentation Publishing\n# 文档发布\n#\n# Builds and publishes documentation to GitHub Pages.\n# 构建文档并发布到 GitHub Pages。\n\nname: Docs\n\npermissions:\n  contents: write\n  pages: write\n  id-token: write\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\nconcurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n\nenv:\n  CARGO_TERM_COLOR: always\n\njobs:\n  build:\n    name: Build Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Install mdBook and plugins\n        run: |\n          # Install mdBook\n          tag=$(curl -sL 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')\n          url=\"https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz\"\n          curl -sSL \"$url\" | tar -xz\n          sudo mv mdbook /usr/local/bin\n          mdbook --version\n\n          # Install mdBook plugins\n          cargo install mdbook-toc mdbook-mermaid\n\n      - name: Cache cargo registry\n        uses: actions/cache@v4\n        with:\n          path: ~/.cargo/registry\n          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Cache cargo build\n        uses: actions/cache@v4\n        with:\n          path: target\n          key: ${{ runner.os }}-cargo-build-docs-${{ hashFiles('**/Cargo.lock') }}\n\n      - name: Build mdBook guide\n        run: |\n          # Run from project root — book.toml is at root, src is docs/book/src\n          mdbook build\n          # Output: docs/book/book/\n\n      - name: Build Rust API documentation\n        run: |\n          cargo doc --all-features --no-deps --workspace 2>&1 || true\n          echo '<meta http-equiv=\"refresh\" content=\"0; url=hiver_runtime\">' > target/doc/index.html\n\n      - name: Merge documentation\n        run: |\n          # Create final output directory\n          mkdir -p target/pages\n\n          # mdBook guide as the main site\n          if [ -d \"docs/book/book\" ]; then\n            cp -r docs/book/book/* target/pages/\n          fi\n\n          # Rust API docs under /api/\n          if [ -d \"target/doc\" ]; then\n            mkdir -p target/pages/api\n            cp -r target/doc/* target/pages/api/\n          fi\n\n          # Add .nojekyll for GitHub Pages\n          touch target/pages/.nojekyll\n\n      - name: Deploy to GitHub Pages\n        if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n        uses: peaceiris/actions-gh-pages@v4\n        with:\n          github_token: ${{ secrets.GITHUB_TOKEN }}\n          publish_dir: ./target/pages\n\n  test:\n    name: Test Documentation\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v6\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@stable\n\n      - name: Run documentation tests\n        run: cargo test --doc --all-features --workspace\nYAML\necho \"Updated: docs.yml\"",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -134,301 +134,301 @@
   },
   "hotPaths": [
     {
-      "path": "crates/nexus-data-orm/src/active_record.rs",
+      "path": "crates/hiver-data-orm/src/active_record.rs",
       "accessCount": 47,
       "lastAccessed": 1780234645428,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-orm/src/relationships.rs",
+      "path": "crates/hiver-data-orm/src/relationships.rs",
       "accessCount": 42,
       "lastAccessed": 1780234774237,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-orm/src/query.rs",
+      "path": "crates/hiver-data-orm/src/query.rs",
       "accessCount": 41,
       "lastAccessed": 1780234954144,
       "type": "file"
     },
     {
-      "path": "crates/nexus-core/src/container.rs",
+      "path": "crates/hiver-core/src/container.rs",
       "accessCount": 38,
       "lastAccessed": 1779631048508,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/client.rs",
+      "path": "crates/hiver-data-rdbc/src/client.rs",
       "accessCount": 32,
       "lastAccessed": 1780228452276,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/task.rs",
+      "path": "crates/hiver-runtime/src/task.rs",
       "accessCount": 31,
       "lastAccessed": 1780200578035,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-orm/src/lib.rs",
+      "path": "crates/hiver-data-orm/src/lib.rs",
       "accessCount": 31,
       "lastAccessed": 1780214039558,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/lib.rs",
+      "path": "crates/hiver-data-rdbc/src/lib.rs",
       "accessCount": 24,
       "lastAccessed": 1780204085476,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-orm/src/repository.rs",
+      "path": "crates/hiver-data-orm/src/repository.rs",
       "accessCount": 22,
       "lastAccessed": 1780216477727,
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/lib.rs",
+      "path": "crates/hiver-security/src/lib.rs",
       "accessCount": 18,
       "lastAccessed": 1780201163360,
       "type": "file"
     },
     {
-      "path": "crates/nexus-tx/src/lib.rs",
+      "path": "crates/hiver-tx/src/lib.rs",
       "accessCount": 18,
       "lastAccessed": 1780237070787,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/connection.rs",
+      "path": "crates/hiver-data-rdbc/src/connection.rs",
       "accessCount": 17,
       "lastAccessed": 1780203889267,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-macros/src/lib.rs",
+      "path": "crates/hiver-data-macros/src/lib.rs",
       "accessCount": 17,
       "lastAccessed": 1780212904229,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-commons/src/method_name.rs",
+      "path": "crates/hiver-data-commons/src/method_name.rs",
       "accessCount": 16,
       "lastAccessed": 1780233872499,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-annotations/src/lib.rs",
+      "path": "crates/hiver-data-annotations/src/lib.rs",
       "accessCount": 15,
       "lastAccessed": 1780239272976,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/pool.rs",
+      "path": "crates/hiver-data-rdbc/src/pool.rs",
       "accessCount": 13,
       "lastAccessed": 1780202695732,
       "type": "file"
     },
     {
-      "path": "crates/nexus-core/src/reactive.rs",
+      "path": "crates/hiver-core/src/reactive.rs",
       "accessCount": 12,
       "lastAccessed": 1779631070344,
       "type": "file"
     },
     {
-      "path": "crates/nexus-ldap/src/repository.rs",
+      "path": "crates/hiver-ldap/src/repository.rs",
       "accessCount": 12,
       "lastAccessed": 1780067672827,
       "type": "file"
     },
     {
-      "path": "crates/nexus-websocket-stomp/src/handler.rs",
+      "path": "crates/hiver-websocket-stomp/src/handler.rs",
       "accessCount": 11,
       "lastAccessed": 1779619714734,
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/rbac.rs",
+      "path": "crates/hiver-security/src/rbac.rs",
       "accessCount": 10,
       "lastAccessed": 1780066005461,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/task/raw_task.rs",
+      "path": "crates/hiver-runtime/src/task/raw_task.rs",
       "accessCount": 10,
       "lastAccessed": 1780066937813,
       "type": "file"
     },
     {
-      "path": "crates/nexus-router/src/lib.rs",
+      "path": "crates/hiver-router/src/lib.rs",
       "accessCount": 10,
       "lastAccessed": 1780201146617,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/lib.rs",
+      "path": "crates/hiver-runtime/src/lib.rs",
       "accessCount": 9,
       "lastAccessed": 1780201145929,
       "type": "file"
     },
     {
-      "path": "crates/nexus-router/src/route.rs",
+      "path": "crates/hiver-router/src/route.rs",
       "accessCount": 8,
       "lastAccessed": 1780161420215,
       "type": "file"
     },
     {
-      "path": "crates/nexus-resilience/src/lib.rs",
+      "path": "crates/hiver-resilience/src/lib.rs",
       "accessCount": 7,
       "lastAccessed": 1780201171445,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-orm/src/sqlx.rs",
+      "path": "crates/hiver-data-orm/src/sqlx.rs",
       "accessCount": 7,
       "lastAccessed": 1780235128353,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-annotations/src/transactional_macro.rs",
+      "path": "crates/hiver-data-annotations/src/transactional_macro.rs",
       "accessCount": 7,
       "lastAccessed": 1780238970561,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/scheduler/handle.rs",
+      "path": "crates/hiver-runtime/src/scheduler/handle.rs",
       "accessCount": 6,
       "lastAccessed": 1779622112681,
       "type": "file"
     },
     {
-      "path": "crates/nexus-core/src/extension.rs",
+      "path": "crates/hiver-core/src/extension.rs",
       "accessCount": 6,
       "lastAccessed": 1779631053042,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/scheduler/work_stealing.rs",
+      "path": "crates/hiver-runtime/src/scheduler/work_stealing.rs",
       "accessCount": 6,
       "lastAccessed": 1780067395804,
       "type": "file"
     },
     {
-      "path": "crates/nexus-tx/src/template.rs",
+      "path": "crates/hiver-tx/src/template.rs",
       "accessCount": 6,
       "lastAccessed": 1780160944441,
       "type": "file"
     },
     {
-      "path": "crates/nexus-tx/src/manager.rs",
+      "path": "crates/hiver-tx/src/manager.rs",
       "accessCount": 6,
       "lastAccessed": 1780160944687,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/row.rs",
+      "path": "crates/hiver-data-rdbc/src/row.rs",
       "accessCount": 6,
       "lastAccessed": 1780202537177,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-rdbc/src/error.rs",
+      "path": "crates/hiver-data-rdbc/src/error.rs",
       "accessCount": 6,
       "lastAccessed": 1780202659710,
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/authorization_server.rs",
+      "path": "crates/hiver-security/src/authorization_server.rs",
       "accessCount": 5,
       "lastAccessed": 1780065975706,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/runtime.rs",
+      "path": "crates/hiver-runtime/src/runtime.rs",
       "accessCount": 5,
       "lastAccessed": 1780161398105,
       "type": "file"
     },
     {
-      "path": "crates/nexus-websocket-stomp/src/lib.rs",
+      "path": "crates/hiver-websocket-stomp/src/lib.rs",
       "accessCount": 5,
       "lastAccessed": 1780201171205,
       "type": "file"
     },
     {
-      "path": "crates/nexus-ldap/src/lib.rs",
+      "path": "crates/hiver-ldap/src/lib.rs",
       "accessCount": 5,
       "lastAccessed": 1780201182306,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-commons/src/part_tree.rs",
+      "path": "crates/hiver-data-commons/src/part_tree.rs",
       "accessCount": 5,
       "lastAccessed": 1780202508789,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-annotations/src/transactional.rs",
+      "path": "crates/hiver-data-annotations/src/transactional.rs",
       "accessCount": 5,
       "lastAccessed": 1780202514156,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/scheduler/local.rs",
+      "path": "crates/hiver-runtime/src/scheduler/local.rs",
       "accessCount": 4,
       "lastAccessed": 1779620543110,
       "type": "file"
     },
     {
-      "path": "crates/nexus-core/src/bean.rs",
+      "path": "crates/hiver-core/src/bean.rs",
       "accessCount": 4,
       "lastAccessed": 1779620553045,
       "type": "file"
     },
     {
-      "path": "crates/nexus-resilience/src/timeout.rs",
+      "path": "crates/hiver-resilience/src/timeout.rs",
       "accessCount": 4,
       "lastAccessed": 1779631235179,
       "type": "file"
     },
     {
-      "path": "crates/nexus-router/src/params.rs",
+      "path": "crates/hiver-router/src/params.rs",
       "accessCount": 4,
       "lastAccessed": 1780160941043,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/driver/mod.rs",
+      "path": "crates/hiver-runtime/src/driver/mod.rs",
       "accessCount": 4,
       "lastAccessed": 1780161398193,
       "type": "file"
     },
     {
-      "path": "crates/nexus-data-annotations/src/pre_authorize_macro.rs",
+      "path": "crates/hiver-data-annotations/src/pre_authorize_macro.rs",
       "accessCount": 4,
       "lastAccessed": 1780202514421,
       "type": "file"
     },
     {
-      "path": "crates/nexus-ldap/Cargo.toml",
+      "path": "crates/hiver-ldap/Cargo.toml",
       "accessCount": 3,
       "lastAccessed": 1779619813512,
       "type": "file"
     },
     {
-      "path": "crates/nexus-runtime/src/scheduler/mod.rs",
+      "path": "crates/hiver-runtime/src/scheduler/mod.rs",
       "accessCount": 3,
       "lastAccessed": 1779620626086,
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/context.rs",
+      "path": "crates/hiver-security/src/context.rs",
       "accessCount": 3,
       "lastAccessed": 1780055941253,
       "type": "file"
     },
     {
-      "path": "crates/nexus-security/src/pre_authorize.rs",
+      "path": "crates/hiver-security/src/pre_authorize.rs",
       "accessCount": 3,
       "lastAccessed": 1780064350629,
       "type": "file"

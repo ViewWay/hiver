@@ -3,8 +3,8 @@
 > **Status**: Phase 3+ Available ✅
 > **状态**: 第3阶段+可用 ✅
 
-Nexus provides comprehensive testing support including unit tests, integration tests, and data layer testing.
-Nexus 提供全面的测试支持，包括单元测试、集成测试和数据层测试。
+Hiver provides comprehensive testing support including unit tests, integration tests, and data layer testing.
+Hiver 提供全面的测试支持，包括单元测试、集成测试和数据层测试。
 
 ---
 

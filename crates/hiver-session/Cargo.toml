@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Distributed session management for Hiver Framework.
-Nexus框架的分布式会话管理。
+Hiver框架的分布式会话管理。
 Equivalent to: Spring Session, @EnableRedisHttpSession
 """
 homepage = { workspace = true }

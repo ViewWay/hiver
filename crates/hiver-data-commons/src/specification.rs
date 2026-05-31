@@ -9,7 +9,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data JPA |
+//! | Hiver | Spring Data JPA |
 //! |-------|-----------------|
 //! | `Specification` trait | `Specification<T>` |
 //! | `Specifications` builder | `Specifications` |

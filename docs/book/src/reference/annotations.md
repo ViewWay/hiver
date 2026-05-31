@@ -7,9 +7,9 @@
 
 ## Overview / 概述
 
-Nexus provides 40+ Spring-like annotations via procedural macros for declarative programming.
+Hiver provides 40+ Spring-like annotations via procedural macros for declarative programming.
 
-Nexus 通过过程宏提供 40+ 类 Spring 注解，支持声明式编程。
+Hiver 通过过程宏提供 40+ 类 Spring 注解，支持声明式编程。
 
 ---
 

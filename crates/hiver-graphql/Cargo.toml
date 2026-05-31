@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 GraphQL support for Hiver Framework.
-Nexus框架的GraphQL支持。
+Hiver框架的GraphQL支持。
 Equivalent to: Spring for GraphQL
 """
 homepage = { workspace = true }

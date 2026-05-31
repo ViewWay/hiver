@@ -1,9 +1,9 @@
-//! Nexus `OpenAPI` - OpenAPI/Swagger documentation support
-//! Nexus `OpenAPI` - OpenAPI/Swagger 文档支持
+//! Hiver `OpenAPI` - OpenAPI/Swagger documentation support
+//! Hiver `OpenAPI` - OpenAPI/Swagger 文档支持
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `OpenApi` | `@OpenAPIDefinition` |
 //! | `SwaggerUi` | `springdoc-openapi-ui` |
@@ -63,8 +63,8 @@
 //!
 //! # Examples / 示例
 //!
-//! More examples are available in the [OpenAPI documentation](https://nexus.viewway.io/openapi).
-//! 更多示例请参考 [OpenAPI 文档](https://nexus.viewway.io/openapi)。
+//! More examples are available in the [OpenAPI documentation](https://hiver.viewway.io/openapi).
+//! 更多示例请参考 [OpenAPI 文档](https://hiver.viewway.io/openapi)。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

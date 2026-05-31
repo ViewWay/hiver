@@ -33,7 +33,7 @@ smart-punctuation = true
 site-url = "/hiver/"
 git-repository-url = "https://github.com/ViewWay/hiver"
 edit-url-template = "https://github.com/ViewWay/hiver/edit/main/{path}"
-additional-css = ["theme/nexus.css"]
+additional-css = ["theme/hiver.css"]
 
 [output.html.search]
 enable = true

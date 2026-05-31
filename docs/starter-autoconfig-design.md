@@ -1,5 +1,5 @@
-# Nexus Starter 自动装配系统设计
-# Nexus Starter Auto-Configuration System Design
+# Hiver Starter 自动装配系统设计
+# Hiver Starter Auto-Configuration System Design
 
 > 参考 Spring Boot 源码自动配置机制实现
 > Based on Spring Boot source code auto-configuration mechanism
@@ -14,7 +14,7 @@
 
 > "你在依赖管理上花费的时间越多，投入到实际开发中的时间就越少。"
 
-Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖项集合，一站式获取所有需要的组件。
+Hiver Starter 正是为了解决这个问题——提供一组预定义的依赖项集合，一站式获取所有需要的组件。
 
 ### 目标
 
@@ -37,7 +37,7 @@ Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  1. 加载自动配置元数据                                             │
-│     └── META-INF/nexus/autoconfiguration.imports                 │
+│     └── META-INF/hiver/autoconfiguration.imports                 │
 │                                                                 │
 │  2. 条件评估 / Conditional Evaluation                            │
 │     ├── @ConditionalOnFeature    - feature 是否启用               │
@@ -65,10 +65,10 @@ Nexus Starter 正是为了解决这个问题——提供一组预定义的依赖
 
 ### 1.2 自动配置元数据文件
 
-**META-INF/nexus/autoconfiguration.imports**
+**META-INF/hiver/autoconfiguration.imports**
 
 ```rust
-// hiver-starter/src/resources/META-INF/nexus/autoconfiguration.imports
+// hiver-starter/src/resources/META-INF/hiver/autoconfiguration.imports
 
 hiver_starter::core::CoreAutoConfiguration
 hiver_starter::web::WebServerAutoConfiguration
@@ -214,7 +214,7 @@ crates/
     │
     ├── resources/
     │   └── META-INF/
-    │       └── nexus/
+    │       └── hiver/
     │           └── autoconfiguration.imports
     │
     └── Cargo.toml
@@ -260,7 +260,7 @@ test = ["full", "hiver-test"]
 
 [dependencies]
 # 框架核心
-nexus = { path = "../nexus", default-features = false }
+hiver = { path = "../hiver", default-features = false }
 hiver-macros = { path = "../hiver-macros" }
 hiver-config = { path = "../hiver-config", optional = true }
 
@@ -421,7 +421,7 @@ impl ApplicationContext {
 ```
 1. application.toml / application.yml        # 默认配置
 2. application-{profile}.toml                 # 环境配置
-3. 环境变量 (NEXUS_*, APP_*)                   # 环境变量覆盖
+3. 环境变量 (HIVER_*, APP_*)                   # 环境变量覆盖
 4. 命令行参数 (--server.port=9090)            # 命令行覆盖
 ```
 
@@ -502,7 +502,7 @@ struct HelloController;
 
 #[get("/")]
 fn hello() -> &'static str {
-    "Hello, Nexus!"
+    "Hello, Hiver!"
 }
 
 #[get("/users/:id")]
@@ -602,7 +602,7 @@ host = "0.0.0.0"
 worker_threads = 10
 
 [app]
-name = "My Nexus App"
+name = "My Hiver App"
 cache.enabled = true
 
 [app.datasource]
@@ -628,7 +628,7 @@ format = "json"
 
 ## 7. 与 Spring Boot 对照 / Comparison
 
-| Spring Boot | Nexus | 说明 |
+| Spring Boot | Hiver | 说明 |
 |-------------|-------|------|
 | `@SpringBootApplication` | `#[hiver_main]` | 主应用注解 |
 | `@RestController` | `#[controller]` | REST 控制器 |
@@ -654,7 +654,7 @@ format = "json"
 
 ### Starter 对照
 
-| Spring Boot Starter | Nexus Starter Feature |
+| Spring Boot Starter | Hiver Starter Feature |
 |--------------------|----------------------|
 | `spring-boot-starter-web` | `web` |
 | `spring-boot-starter-security` | `security` |
@@ -746,7 +746,7 @@ pub struct CacheAutoConfiguration;
 
 ## 10. 总结 / Summary
 
-### 使用 Nexus Starter 的好处
+### 使用 Hiver Starter 的好处
 
 1. **减少依赖管理** - 一个依赖包含所有需要的模块
 2. **生产就绪** - 经过测试的默认配置
@@ -777,7 +777,7 @@ pub struct CacheAutoConfiguration;
 
 #### Phase 2: 自动配置加载器 / Auto-Configuration Loader
 
-- [x] `AutoConfigurationLoader` - 从 META-INF/nexus/autoconfiguration.imports 加载
+- [x] `AutoConfigurationLoader` - 从 META-INF/hiver/autoconfiguration.imports 加载
 - [x] `AutoConfigurationRegistry` - 配置注册表管理
 - [x] 优先级排序 (`order()` 方法)
 - [x] 元数据文件格式定义
@@ -822,7 +822,7 @@ pub struct CacheAutoConfiguration;
 #### Phase 6: 示例应用 / Example Application
 
 - [x] `starter_example.rs` 示例
-- [x] META-INF/nexus/autoconfiguration.imports 元数据文件
+- [x] META-INF/hiver/autoconfiguration.imports 元数据文件
 - [x] 测试用例
 
 ### 进行中 / In Progress 🚧
@@ -874,7 +874,7 @@ crates/hiver-starter/
 │   ├── schedule/
 │   └── actuator/
 examples/
-├── META-INF/nexus/
+├── META-INF/hiver/
 │   └── autoconfiguration.imports
 └── src/
     └── starter_example.rs
@@ -905,7 +905,7 @@ cargo run --bin starter_example
 
 预期输出：
 ```
-=== Starting Nexus Application ===
+=== Starting Hiver Application ===
 Debug mode: false
 Worker threads: 14
 Core configuration completed

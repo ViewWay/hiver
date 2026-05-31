@@ -1,4 +1,4 @@
-# 🎉 Nexus 完整注解实施完成报告
+# 🎉 Hiver 完整注解实施完成报告
 # Completion Report: Full Annotation Implementation
 # 生成日期：2026-01-25
 
@@ -6,7 +6,7 @@
 
 ```
 ═══════════════════════════════════════════════════════════════
-  Nexus 注解实施进度 Nexus Annotations Implementation Progress
+  Hiver 注解实施进度 Hiver Annotations Implementation Progress
 ═══════════════════════════════════════════════════════════════
 
   ✅ Lombok 注解 (10/10 - 100%)
@@ -418,7 +418,7 @@ trait UserRepository {
 ### 1. 查看 Lombok 示例
 
 ```bash
-cd /Users/yimiliya/RustroverProjects/nexus/crates/hiver-lombok
+cd /Users/yimiliya/RustroverProjects/hiver/crates/hiver-lombok
 cat examples/user_entity.rs
 ```
 

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Vault — Secrets management with HashiCorp Vault.
-Nexus框架的HashiCorp Vault密钥管理。
+Hiver框架的HashiCorp Vault密钥管理。
 Equivalent to: Spring Vault
 """
 homepage = { workspace = true }

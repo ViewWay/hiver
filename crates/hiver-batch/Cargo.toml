@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Batch processing framework for Nexus (equivalent to Spring Batch)"
+description = "Batch processing framework for Hiver (equivalent to Spring Batch)"
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }

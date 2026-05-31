@@ -1,5 +1,5 @@
-# Nexus Annotations Reference
-# Nexus 注解参考手册
+# Hiver Annotations Reference
+# Hiver 注解参考手册
 
 Complete reference for all Spring Boot-style procedural macros in Hiver Framework.
 Hiver 框架中所有 Spring Boot 风格过程宏的完整参考。
@@ -422,7 +422,7 @@ Inject a value from environment or config.
 use hiver_macros::value;
 
 #[value("${app.name}")]
-static APP_NAME: &str = "Nexus Application";
+static APP_NAME: &str = "Hiver Application";
 
 #[value("${server.port:8080}")]
 static SERVER_PORT: u16 = 8080;
@@ -1300,9 +1300,9 @@ struct User {
 
 ## Migration Guide / 迁移指南
 
-### Spring Boot → Nexus / Spring Boot 到 Nexus
+### Spring Boot → Hiver / Spring Boot 到 Hiver
 
-| Spring Boot | Nexus | Notes / 说明 |
+| Spring Boot | Hiver | Notes / 说明 |
 |-------------|-------|-------------|
 | `@SpringBootApplication` | `#[main]` | Entry point / 入口点 |
 | `@RestController` | `#[controller]` or `#[rest_controller]` | REST API / REST API |
@@ -1333,7 +1333,7 @@ Spring Boot functionality.
 Rust 按照约定对函数和宏名称使用 `snake_case`，而 Java/C# 使用 `camelCase`。
 Hiver 框架遵循 Rust 约定以编写惯用代码，同时提供 Spring Boot 功能。
 
-| Spring (Java) | Nexus (Rust) |
+| Spring (Java) | Hiver (Rust) |
 |---------------|--------------|
 | `@GetMapping` | `#[get]` or `#[get_mapping]` |
 | `@PostMapping` | `#[post]` or `#[post_mapping]` |

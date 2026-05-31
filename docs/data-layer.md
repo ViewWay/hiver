@@ -1,9 +1,9 @@
-# Nexus Data Layer Documentation
-# Nexus 数据层文档
+# Hiver Data Layer Documentation
+# Hiver 数据层文档
 
 ## Overview / 概述
 
-The Nexus Data Layer provides a comprehensive data access abstraction similar to Spring Data. It includes:
+The Hiver Data Layer provides a comprehensive data access abstraction similar to Spring Data. It includes:
 - Repository pattern with CRUD operations
 - Pagination and sorting support
 - Reactive database access (R2DBC-style)
@@ -12,7 +12,7 @@ The Nexus Data Layer provides a comprehensive data access abstraction similar to
 - Relationship management
 - Database migrations
 
-Nexus 数据层提供类似 Spring Data 的完整数据访问抽象，包括：
+Hiver 数据层提供类似 Spring Data 的完整数据访问抽象，包括：
 - Repository 模式与 CRUD 操作
 - 分页和排序支持
 - 响应式数据库访问 (R2DBC 风格)
@@ -245,7 +245,7 @@ let users = User::query()
 
 ## Spring Data Equivalents / Spring Data 等价对照
 
-| Nexus | Spring Data | Description |
+| Hiver | Spring Data | Description |
 |-------|-------------|-------------|
 | `Repository<T, ID>` | `Repository<T, ID>` | Base repository |
 | `CrudRepository` | `CrudRepository` | CRUD operations |

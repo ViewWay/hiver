@@ -8,7 +8,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring/JPA |
+//! | Hiver | Spring/JPA |
 //! |-------|------------|
 //! | `QueryBuilder::where_()` | `Specification` / `CriteriaBuilder.where()` |
 //! | `QueryBuilder::order_by()` | `Sort` / `OrderBy` |

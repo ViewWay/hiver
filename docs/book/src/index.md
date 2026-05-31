@@ -17,7 +17,7 @@
 
 ---
 
-## Why Nexus? / 为什么选择 Nexus？
+## Why Hiver? / 为什么选择 Hiver？
 
 <table>
 <tr>
@@ -93,16 +93,16 @@ hiver-starter = "0.1"
 ```
 
 ```rust
-use hiver_starter::NexusApp;
+use hiver_starter::HiverApp;
 use hiver_router::Router;
 
 #[hiver::handler]
 async fn hello() -> &'static str {
-    "Hello, Nexus! / 你好，Nexus！"
+    "Hello, Hiver! / 你好，Hiver！"
 }
 
 fn main() -> std::io::Result<()> {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", hello)
             .get("/users/:id", get_user)
@@ -172,7 +172,7 @@ fn main() -> std::io::Result<()> {
 | Resource | Link |
 |----------|------|
 | 📦 Crates.io | [hiver-framework](https://crates.io/search?q=hiver-) |
-| 📖 API Docs | [docs.rs/nexus](https://docs.rs/nexus) |
+| 📖 API Docs | [docs.rs/hiver](https://docs.rs/hiver) |
 | 💻 GitHub | [ViewWay/hiver](https://github.com/ViewWay/hiver) |
 | 📄 Design Spec | [design-spec.md](../design/design-spec.md) |
 | 🗺️ Implementation Plan | [implementation-plan.md](../design/implementation-plan.md) |
@@ -181,14 +181,14 @@ fn main() -> std::io::Result<()> {
 
 ## Spring Boot Equivalents / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@RestController` | `#[handler]` | HTTP handler |
 | `@GetMapping` | `#[get("/path")]` | GET endpoint |
 | `@Autowired` | `#[inject]` | DI injection |
 | `@Repository` | `#[derive(Repository)]` | Data repository |
 | `@ConfigurationProperties` | `#[derive(PropertiesConfig)]` | Config binding |
-| `SpringApplication.run()` | `NexusApp::new().run()` | App bootstrap |
+| `SpringApplication.run()` | `HiverApp::new().run()` | App bootstrap |
 | `@SpringBootApplication` | `hiver-starter` | Auto-config |
 | Resilience4j | `hiver-resilience` | Circuit breaker |
 | Spring Security | `hiver-security` | Auth & security |

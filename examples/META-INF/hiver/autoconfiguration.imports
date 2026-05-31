@@ -1,5 +1,5 @@
-# Nexus Auto-Configuration Imports
-# Nexus 自动配置导入清单
+# hiver Auto-Configuration Imports
+# hiver 自动配置导入清单
 #
 # This file lists all auto-configuration classes that will be automatically loaded.
 # 此文件列出了所有将被自动加载的自动配置类。
@@ -17,26 +17,26 @@
 
 # Core auto-configurations (highest priority: -100)
 # 核心自动配置（最高优先级：-100）
-nexus_starter::core::CoreAutoConfiguration
+hiver_starter::core::CoreAutoConfiguration
 
 # Web auto-configurations (priority: 0-20)
 # Web 自动配置（优先级：0-20）
-nexus_starter::web::WebServerAutoConfiguration
-nexus_starter::web::RouterAutoConfiguration
-nexus_starter::web::MiddlewareAutoConfiguration
+hiver_starter::web::WebServerAutoConfiguration
+hiver_starter::web::RouterAutoConfiguration
+hiver_starter::web::MiddlewareAutoConfiguration
 
 # Security auto-configurations (priority: 50)
 # Security 自动配置（优先级：50）
-# nexus_starter::security::SecurityAutoConfiguration
+# hiver_starter::security::SecurityAutoConfiguration
 
 # Data access auto-configurations (priority: 100)
 # 数据访问自动配置（优先级：100）
-# nexus_starter::data::DataSourceAutoConfiguration
+# hiver_starter::data::DataSourceAutoConfiguration
 
 # Cache auto-configurations (priority: 150)
 # 缓存自动配置（优先级：150）
-# nexus_starter::cache::CacheAutoConfiguration
+# hiver_starter::cache::CacheAutoConfiguration
 
 # Actuator auto-configurations (priority: 200)
 # 监控端点自动配置（优先级：200）
-# nexus_starter::actuator::ActuatorAutoConfiguration
+# hiver_starter::actuator::ActuatorAutoConfiguration

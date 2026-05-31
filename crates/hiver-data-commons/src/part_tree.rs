@@ -13,7 +13,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data |
+//! | Hiver | Spring Data |
 //! |-------|-------------|
 //! | `PartTree` | `PartTree` |
 //! | `Subject` | `Subject` (Find, Read, Get, Query, Count, Exists, Delete) |

@@ -1,30 +1,30 @@
 <div align="center">
-<p><img alt="Nexus" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Nexus" /></p>
+<p><img alt="Hiver" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Hiver" /></p>
 <p>
-    <a href="https://github.com/ViewWay/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;
-    <a href="https://github.com/ViewWay/nexus/blob/main/README.zh.md">简体中文</a>
+    <a href="https://github.com/ViewWay/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;
+    <a href="https://github.com/ViewWay/hiver/blob/main/README.zh.md">简体中文</a>
 </p>
 <p>
-<a href="https://github.com/ViewWay/nexus/actions">
-    <img alt="build status" src="https://github.com/ViewWay/nexus/workflows/CI/badge.svg" />
+<a href="https://github.com/ViewWay/hiver/actions">
+    <img alt="build status" src="https://github.com/ViewWay/hiver/workflows/CI/badge.svg" />
 </a>
-<a href="https://codecov.io/gh/ViewWay/nexus">
-    <img alt="codecov" src="https://img.gov/ViewWay/nexus/branch/main/graph/badge.svg" />
+<a href="https://codecov.io/gh/ViewWay/hiver">
+    <img alt="codecov" src="https://img.gov/ViewWay/hiver/branch/main/graph/badge.svg" />
 </a>
 <br>
-<a href="https://crates.io/crates/nexus"><img alt="crates.io" src="https://img.shields.io/crates/v/nexus" /></a>
-<a href="https://docs.rs/nexus"><img alt="Documentation" src="https://docs.rs/nexus/badge.svg" /></a>
-<a href="https://crates.io/crates/nexus"><img alt="Download" src="https://img.shields.io/crates/d/nexus.svg" /></a>
+<a href="https://crates.io/crates/hiver"><img alt="crates.io" src="https://img.shields.io/crates/v/hiver" /></a>
+<a href="https://docs.rs/hiver"><img alt="Documentation" src="https://docs.rs/hiver/badge.svg" /></a>
+<a href="https://crates.io/crates/hiver"><img alt="Download" src="https://img.shields.io/crates/d/hiver.svg" /></a>
 <br>
-<a href="https://nexusframework.com">
-    <img alt="Website" src="https://img.shields.io/badge/https-nexusframework.com-%23f00" />
+<a href="https://hiverframework.com">
+    <img alt="Website" src="https://img.shields.io/badge/https-hiverframework.com-%23f00" />
 </a>
 </p>
 </div>
 
 # Hiver 框架
 
-Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。与使用 Tokio 的其他框架不同，Nexus 具有使用 io-uring 从头构建的自定义异步运行时，以实现最大性能。
+Hiver 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。与使用 Tokio 的其他框架不同，Hiver 具有使用 io-uring 从头构建的自定义异步运行时，以实现最大性能。
 
 ## 🎯 功能特性
 
@@ -84,7 +84,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
     Ok(Response::builder()
         .status(StatusCode::OK)
         .header("content-type", "text/plain")
-        .body(Body::from("Hello, Nexus!"))
+        .body(Body::from("Hello, Hiver!"))
         .unwrap())
 }
 ```
@@ -92,7 +92,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
 ### 完整 REST API 示例
 
 ```rust
-//! Nexus REST API 示例
+//! Hiver REST API 示例
 //!
 //! 此示例演示了完整的 REST API，包括：
 //! - 带路径参数的路由
@@ -354,9 +354,9 @@ curl http://localhost:8080/users/1
 curl http://localhost:8080/users
 ```
 
-### Nexus 日志
+### Hiver 日志
 
-Nexus 提供统一的日志系统，具有两种模式：**Verbose**（开发）和 **Simple**（生产）。
+Hiver 提供统一的日志系统，具有两种模式：**Verbose**（开发）和 **Simple**（生产）。
 
 ```rust
 use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
@@ -380,13 +380,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```bash
 # 设置日志级别
-export NEXUS_LOG_LEVEL=DEBUG
+export HIVER_LOG_LEVEL=DEBUG
 
 # 显式设置日志模式
-export NEXUS_LOG_MODE=simple  # 或 "verbose"
+export HIVER_LOG_MODE=simple  # 或 "verbose"
 
 # 设置配置文件（影响默认模式）
-export NEXUS_PROFILE=prod  # dev->verbose, prod->simple
+export HIVER_PROFILE=prod  # dev->verbose, prod->simple
 ```
 
 **输出对比：**
@@ -463,7 +463,7 @@ async fn web3_example() -> Result<(), Box<dyn std::error::Error>> {
 
 ## 🚀 性能
 
-Nexus 从根本上设计为高性能：
+Hiver 从根本上设计为高性能：
 
 - 与 epoll 相比减少 **70% 系统调用**（使用 io-uring）
 - thread-per-core 架构降低 **40% 延迟**
@@ -483,8 +483,8 @@ Nexus 从根本上设计为高性能：
 | 资源 | 链接 |
 |------|------|
 | **代码地图** | [CODEMAP.md](docs/CODEMAP.md) — 完整 crate 参考、宏索引、依赖图 |
-| **书籍** | [docs.nexusframework.com](https://docs.nexusframework.com) |
-| **API 文档** | [docs.rs/nexus](https://docs.rs/nexus) |
+| **书籍** | [docs.hiverframework.com](https://docs.hiverframework.com) |
+| **API 文档** | [docs.rs/hiver](https://docs.rs/hiver) |
 | **设计规范** | [design-spec.md](docs/design-spec.md) |
 | **实施计划** | [implementation-plan.md](docs/design/implementation-plan.md) |
 | **文档索引** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
@@ -520,8 +520,8 @@ hiver-starter (Spring Boot 自动配置)
 
 ```bash
 # 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
-cd nexus
+git clone https://github.com/ViewWay/hiver.git
+cd hiver
 
 # 构建
 cargo build --workspace
@@ -543,7 +543,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha 版本**
 >
-> Nexus 目前处于 **第 8 阶段：数据层**（进行中）。第 0–7 阶段已完成。框架现有 **62 个 crate**，覆盖完整的 Spring Boot 功能集——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。
+> Hiver 目前处于 **第 8 阶段：数据层**（进行中）。第 0–7 阶段已完成。框架现有 **62 个 crate**，覆盖完整的 Spring Boot 功能集——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。
 
 | 阶段 | 状态 | 描述 |
 |------|------|------|
@@ -565,14 +565,14 @@ cargo clippy --workspace -- -D warnings
 
 ## 📄 许可证
 
-Nexus 采用以下任一许可证
+Hiver 采用以下任一许可证
 
 - Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) 或 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 - MIT license ([LICENSE-MIT](LICENSE-MIT) 或 [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 
 ## 🙏 致谢
 
-Nexus 汲取了多种语言优秀框架的灵感：
+Hiver 汲取了多种语言优秀框架的灵感：
 
 - **Rust**: Axum, Actix Web, Monoio, Salvo
 - **Go**: Gin, Echo

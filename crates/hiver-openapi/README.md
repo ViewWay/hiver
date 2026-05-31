@@ -2,7 +2,7 @@
 
 **OpenAPI/Swagger documentation support for the Hiver Framework.**
 
-**Nexus框架的OpenAPI/Swagger文档支持。**
+**Hiver框架的OpenAPI/Swagger文档支持。**
 
 ## Overview / 概述
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `@OpenAPIDefinition` | `OpenApiConfig` |
 | `@Operation` | `#[openapi]` |
@@ -330,7 +330,7 @@ let swagger_ui = SwaggerUi::new("/api-docs/openapi.json")
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

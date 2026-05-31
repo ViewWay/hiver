@@ -1,5 +1,5 @@
-//! Nexus Resilience - High availability patterns
-//! Nexus弹性 - 高可用模式
+//! Hiver Resilience - High availability patterns
+//! Hiver弹性 - 高可用模式
 //!
 //! # Overview / 概述
 //!

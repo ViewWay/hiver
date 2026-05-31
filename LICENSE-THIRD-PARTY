@@ -1,8 +1,8 @@
 # Third-Party Licenses and Acknowledgments
 # 第三方许可证和致谢
 
-Nexus Framework is an original implementation that has been inspired by and references concepts from the following open-source projects.
-Nexus 框架是一个原创实现，受到以下开源项目的启发并参考了其概念。
+hiver Framework is an original implementation that has been inspired by and references concepts from the following open-source projects.
+hiver 框架是一个原创实现，受到以下开源项目的启发并参考了其概念。
 
 **Note**: This framework does not contain code copied from these projects. The implementations are original.
 **注意**：本框架不包含从这些项目复制的代码。实现均为原创。
@@ -262,7 +262,7 @@ The following table summarizes the referenced frameworks and their licenses:
 ---
 
 **Disclaimer / 免责声明**:
-- Nexus Framework is an original implementation / Nexus 框架为原创实现
+- hiver Framework is an original implementation / hiver 框架为原创实现
 - No code is copied from referenced projects / 未复制参考项目的代码
 - All referenced projects are acknowledged with respect / 对所有参考项目表示尊重
 - Users must comply with licenses of any third-party dependencies / 用户必须遵守所有第三方依赖项的许可证

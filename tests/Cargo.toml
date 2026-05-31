@@ -14,13 +14,13 @@ default = []
 integration-tests = []
 
 [dev-dependencies]
-# Nexus data crates
+# Hiver data crates
 hiver-data-commons = { path = "../crates/hiver-data-commons" }
 hiver-data-rdbc = { path = "../crates/hiver-data-rdbc", features = ["postgres", "mysql"] }
 hiver-data-orm = { path = "../crates/hiver-data-orm" }
 hiver-data-macros = { path = "../crates/hiver-data-macros" }
 
-# Nexus core and cross-crate test targets
+# Hiver core and cross-crate test targets
 hiver-core = { path = "../crates/hiver-core" }
 hiver-config = { path = "../crates/hiver-config" }
 hiver-modulith = { path = "../crates/hiver-modulith" }

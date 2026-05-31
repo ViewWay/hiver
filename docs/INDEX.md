@@ -1,5 +1,5 @@
-# Nexus Documentation Index
-# Nexus 文档索引
+# Hiver Documentation Index
+# Hiver 文档索引
 
 **Last Updated**: 2026-05-13
 **最后更新**: 2026-05-13
@@ -115,7 +115,7 @@ docs/
 | Report / 报告 | Description / 描述 |
 |--------------|-------------------|
 | [DATA-LAYER-ADDENDUM.md](reports/DATA-LAYER-ADDENDUM.md) | Data layer addendum / 数据层附录 |
-| [hiver-data-full-implementation.md](reports/hiver-data-full-implementation.md) | Nexus data full implementation / Nexus 数据完整实现 |
+| [hiver-data-full-implementation.md](reports/hiver-data-full-implementation.md) | Hiver data full implementation / Hiver 数据完整实现 |
 | [hiver-mybatis-plus-style.md](reports/hiver-mybatis-plus-style.md) | MyBatis-Plus style implementation / MyBatis-Plus 风格实现 |
 | [LOMBOK-QUICK-REF.md](reports/LOMBOK-QUICK-REF.md) | Lombok quick reference / Lombok 快速参考 |
 
@@ -159,7 +159,7 @@ docs/
 
 | Document / 文档 | Description / 描述 |
 |----------------|-------------------|
-| [spring-comparison.md](spring-boot/spring-comparison.md) | Spring Boot vs Nexus comparison / Spring Boot vs Nexus 对比 |
+| [spring-comparison.md](spring-boot/spring-comparison.md) | Spring Boot vs Hiver comparison / Spring Boot vs Hiver 对比 |
 | [spring-boot-gap-analysis.md](spring-boot/spring-boot-gap-analysis.md) | Spring Boot gap analysis / Spring Boot 差距分析 |
 | [spring-ecosystem-gap-analysis.md](spring-boot/spring-ecosystem-gap-analysis.md) | Spring ecosystem gap analysis / Spring 生态系统差距分析 |
 | [spring-features-gap-analysis.md](spring-boot/spring-features-gap-analysis.md) | Spring features gap analysis / Spring 功能差距分析 |
@@ -177,7 +177,7 @@ docs/
 
 | Chapter / 章节 | Description / 描述 |
 |---------------|-------------------|
-| [introduction.md](book/src/getting-started/introduction.md) | Introduction to Nexus / Nexus 介绍 |
+| [introduction.md](book/src/getting-started/introduction.md) | Introduction to Hiver / Hiver 介绍 |
 | [installation.md](book/src/getting-started/installation.md) | Installation guide / 安装指南 |
 | [quick-start.md](book/src/getting-started/quick-start.md) | Quick start tutorial / 快速开始教程 |
 | [tutorial.md](book/src/getting-started/tutorial.md) | Tutorial / 教程 |
@@ -276,7 +276,7 @@ All documentation maintains both English and Chinese versions:
 
 ## 🚀 Getting Started / 快速开始
 
-1. **New to Nexus?** / Nexus 新手？
+1. **New to Hiver?** / Hiver 新手？
    - Start with [Introduction](book/src/getting-started/introduction.md)
    - Follow [Quick Start](book/src/getting-started/quick-start.md)
 
@@ -294,6 +294,6 @@ All documentation maintains both English and Chinese versions:
 
 ---
 
-**Maintained with ❤️ for the Nexus community**
+**Maintained with ❤️ for the Hiver community**
 
-**为 Nexus 社区维护 ❤️**
+**为 Hiver 社区维护 ❤️**

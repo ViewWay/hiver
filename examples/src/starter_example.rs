@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-//! Nexus Starter 自动配置示例
-//! Nexus Starter Auto-Configuration Example
+//! Hiver Starter 自动配置示例
+//! Hiver Starter Auto-Configuration Example
 //!
 //! 这个示例展示了如何使用 hiver-starter 的 Spring Boot 风格自动配置。
 //! This example demonstrates how to use hiver-starter's Spring Boot-style auto-configuration.
@@ -134,7 +134,7 @@ struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            name: "Nexus Starter Example".to_string(),
+            name: "Hiver Starter Example".to_string(),
             version: env!("CARGO_PKG_VERSION").to_string(),
             debug: cfg!(debug_assertions),
         }
@@ -192,7 +192,7 @@ mod tests {
     #[test]
     fn test_app_config_default() {
         let config = AppConfig::default();
-        assert_eq!(config.name, "Nexus Starter Example");
+        assert_eq!(config.name, "Hiver Starter Example");
         assert!(!config.version.is_empty());
     }
 }

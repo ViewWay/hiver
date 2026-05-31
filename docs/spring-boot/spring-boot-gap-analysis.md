@@ -1,10 +1,10 @@
-# Spring Boot vs Nexus - 功能对比分析 / 功能差距分析
+# Spring Boot vs Hiver - 功能对比分析 / 功能差距分析
 
 ## 📊 完整功能栈对比 / 完整功能栈对比
 
 ### 1. Web Layer / Web 层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | HTTP 路由 | @RequestMapping, @GetMapping | Router::get() | ✅ 90% | - |
 | REST Controller | @RestController | - | ⚠️ 70% | - |
@@ -17,7 +17,7 @@
 
 ### 2. Data Layer / 数据层 ⚠️ **最关键缺失**
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Data JPA** | **✅** | **❌** | **❌ 0%** | **P0** |
 | Repository 接口 | JpaRepository | ❌ | ❌ 0% | P0 |
@@ -39,7 +39,7 @@
 
 ### 3. Security Layer / 安全层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Security** | **✅** | **⚠️** | **⚠️ 40%** | **P1** |
 | 认证 | AuthenticationManager | ⚠️ 部分 | ⚠️ 60% | P1 |
@@ -55,7 +55,7 @@
 
 ### 4. Cache Layer / 缓存层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Cache** | **@Cacheable** | **⚠️** | **⚠️ 30%** | **P1** |
 | 抽象层 | CacheManager | ✅ | ✅ 70% | - |
@@ -72,7 +72,7 @@
 
 ### 5. Messaging Layer / 消息层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Messaging** | **✅** | **❌** | **❌ 0%** | **P1** |
 | **RabbitMQ** | **Spring AMQP** | **❌** | **❌ 0%** | **P1** |
@@ -87,7 +87,7 @@
 
 ### 6. Scheduling Layer / 调度层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Scheduling** | **@Scheduled** | **⚠️** | **⚠️ 60%** | **P1** |
 | 定时任务 | @Scheduled(cron) | ⚠️ | ⚠️ 70% | P1 |
@@ -98,7 +98,7 @@
 
 ### 7. Mail Layer / 邮件层
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Mail** | **✅** | **❌** | **❌ 0%** | **P2** |
 | JavaMailSender | JavaMailSender | ❌ | ❌ 0% | P2 |
@@ -108,7 +108,7 @@
 
 ### 8. API Documentation / API 文档
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Springdoc/Swagger** | **@OpenAPIDefinition** | **❌** | **❌ 0%** | **P1** |
 | OpenAPI 3.0 | OpenAPI | ❌ | ❌ 0% | P1 |
@@ -118,7 +118,7 @@
 
 ### 9. Testing / 测试
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Test** | **@SpringBootTest** | **❌** | **❌ 0%** | **P1** |
 | 集成测试 | @SpringBootTest | ❌ | ❌ 0% | P1 |
@@ -128,7 +128,7 @@
 
 ### 10. Observability / 可观测性
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Actuator** | **@Endpoint** | **⚠️** | **⚠️ 70%** | - |
 | 健康检查 | HealthIndicator | ✅ | ✅ 80% | - |
@@ -138,7 +138,7 @@
 
 ### 11. Configuration / 配置
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Spring Config** | **@ConfigurationProperties** | **⚠️** | **⚠️ 60%** | **P1** |
 | 配置绑定 | @ConfigurationProperties | ⚠️ | ⚠️ 60% | P1 |
@@ -149,7 +149,7 @@
 
 ### 12. Utilities / 工具
 
-| 功能 | Spring Boot | Nexus | 完成度 | 优先级 |
+| 功能 | Spring Boot | Hiver | 完成度 | 优先级 |
 |------|-------------|-------|--------|--------|
 | **Validation** | **@Valid** | **⚠️** | **⚠️ 60%** | **P1** |
 | @Valid 注解 | @Valid | ❌ | ❌ 0% | P1 |

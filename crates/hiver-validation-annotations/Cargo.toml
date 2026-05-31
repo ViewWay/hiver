@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Validation annotations for Hiver Framework (similar to Bean Validation).
-Nexus框架的验证注解（类似于Bean Validation）。
+Hiver框架的验证注解（类似于Bean Validation）。
 Equivalent to: Bean Validation (JSR 303/380), Hibernate Validator Annotations
 """
 homepage = { workspace = true }

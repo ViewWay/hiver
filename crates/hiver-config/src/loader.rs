@@ -58,7 +58,7 @@ impl ConfigLoader {
             search_paths: vec![
                 PathBuf::from("./config"),
                 PathBuf::from("."),
-                PathBuf::from("/etc/nexus"),
+                PathBuf::from("/etc/hiver"),
             ],
             file_names: vec!["application".to_string()],
             profiles: vec!["default".to_string()],

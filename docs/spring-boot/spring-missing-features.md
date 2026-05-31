@@ -1,4 +1,4 @@
-# Spring 隐藏的宝藏 - Nexus 缺失的关键功能分析
+# Spring 隐藏的宝藏 - Hiver 缺失的关键功能分析
 
 基于 Spring 生态系统的深度分析，挖掘出那些**不显眼但至关重要**的功能。
 
@@ -6,7 +6,7 @@
 
 ### 1.1 Spring Boot DevTools
 
-| 功能 | Spring Boot DevTools | Nexus | 差距 | 重要性 |
+| 功能 | Spring Boot DevTools | Hiver | 差距 | 重要性 |
 |------|-------------------|-------|------|---------|
 | **自动重启** | 代码变更自动重启 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **LiveReload** | 静态资源热更新 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -37,7 +37,7 @@ version = "0.1.0"
 
 ### 1.2 Spring Initializr & 项目脚手架
 
-| 功能 | Spring Initializr | Nexus | 差距 | 重要性 |
+| 功能 | Spring Initializr | Hiver | 差距 | 重要性 |
 |------|-----------------|-------|------|---------|
 | **项目生成器** | start.spring.io | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **交互式 Web UI** | 选择依赖、配置 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -55,18 +55,18 @@ version = "0.1.0"
 
 ```bash
 # 目标 CLI
-nexus init my-app --web,data-jpa,security
-nexus init --template web-fullstack
-nexus init --quickstart
-nexus generate crud user
-nexus generate controller UserController
+hiver init my-app --web,data-jpa,security
+hiver init --template web-fullstack
+hiver init --quickstart
+hiver generate crud user
+hiver generate controller UserController
 ```
 
 ---
 
 ### 1.3 Spring Boot Actuator - 高级功能
 
-| 功能 | Spring Boot Actuator | Nexus | 差距 | 重要性 |
+| 功能 | Spring Boot Actuator | Hiver | 差距 | 重要性 |
 |------|---------------------|-------|------|---------|
 | **健康检查组** | health.groups | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **健康检查指示器** | HealthIndicator | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -113,7 +113,7 @@ pub async fn environment_info() -> Response {
 
 ### 2.1 条件注入的高级功能
 
-| 功能 | Spring Framework | Nexus | 差距 | 重要性 |
+| 功能 | Spring Framework | Hiver | 差距 | 重要性 |
 |------|-----------------|-------|------|---------|
 | **@Lazy** | 延迟初始化 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@Primary** | 主 Bean 标记 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -153,7 +153,7 @@ pub struct ConditionalBean {
 
 ### 2.2 表达式语言 (SpEL)
 
-| 功能 | Spring SpEL | Nexus | 差距 | 重要性 |
+| 功能 | Spring SpEL | Hiver | 差距 | 重要性 |
 |------|-----------|-------|------|---------|
 | **属性访问** | #{systemProperties['app.name']} | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **方法调用** | #{userService.findById(#id)} | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -196,7 +196,7 @@ async fn find_active_users(&self) -> Result<Vec<User>, Error>;
 
 ### 2.3 类型转换 & 格式化
 
-| 功能 | Spring Framework | Nexus | 差距 | 重要性 |
+| 功能 | Spring Framework | Hiver | 差距 | 重要性 |
 |------|-----------------|-------|------|---------|
 | **Formatter** | @NumberFormat, @DateTimeFormat | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **Converter** | @Converter | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -210,7 +210,7 @@ async fn find_active_users(&self) -> Result<Vec<User>, Error>;
 
 ### 2.4 国际化 (i18n)
 
-| 功能 | Spring Framework | Nexus | 差距 | 重要性 |
+| 功能 | Spring Framework | Hiver | 差距 | 重要性 |
 |------|-----------------|-------|------|---------|
 | **MessageSource** | ResourceBundle, MessageSource | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **LocaleResolver** | Cookie, Header, Fixed | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -249,7 +249,7 @@ pub struct User {
 
 ### 2.5 任务调度增强
 
-| 功能 | Spring | Nexus | 差距 | 重要性 |
+| 功能 | Spring | Hiver | 差距 | 重要性 |
 |------|--------|-------|------|---------|
 | **@EnableScheduling** | 启用调度 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@Scheduled** | 定时任务 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -284,7 +284,7 @@ pub struct SchedulerConfig {
 
 ### 3.1 ACL (Access Control List)
 
-| 功能 | Spring Security | Nexus | 差距 | 重要性 |
+| 功能 | Spring Security | Hiver | 差距 | 重要性 |
 |------|----------------|-------|------|---------|
 | **@Acl** | @Acl | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **AfterInvocation** | AfterInvocationProvider | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐ |
@@ -324,7 +324,7 @@ pub struct AclConfig {
 
 ### 3.2 安全注解增强
 
-| 功能 | Spring Security | Nexus | 差距 | 重要性 |
+| 功能 | Spring Security | Hiver | 差距 | 重要性 |
 |------|----------------|-------|------|---------|
 | **@RolesAllowed** | @RolesAllowed | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @Secured | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -342,7 +342,7 @@ pub struct AclConfig {
 
 ### 3.3 密码策略
 
-| 功能 | Spring Security | Nexus | 差距 | 重要性 |
+| 功能 | Spring Security | Hiver | 差距 | 重要性 |
 |------|----------------|-------|------|---------|
 | **PasswordEncoder** | BCrypt, Pbkdf2, SCrypt | ⚠️ 仅 BCrypt | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **Password Validator** | PasswordValidator | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -354,7 +354,7 @@ pub struct AclConfig {
 
 ### 3.4 Remember Me
 
-| 功能 | Spring Security | Nexus | 差距 | 重要性 |
+| 功能 | Spring Security | Hiver | 差距 | 重要性 |
 |------|----------------|-------|------|---------|
 | **Remember Me Services** | RememberMeServices | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **Token-Based Remember Me** | TokenBasedRememberMeServices | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -370,7 +370,7 @@ pub struct AclConfig {
 
 ### 4.1 服务注册与发现
 
-| 功能 | Spring Cloud | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud | Hiver | 差距 | 重要性 |
 |------|------------|-------|------|---------|
 | **@EnableDiscoveryClient** | 启用服务发现 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **DiscoveryClient** | DiscoveryClient | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -386,7 +386,7 @@ pub struct AclConfig {
 
 ### 4.2 负载均衡
 
-| 功能 | Spring Cloud LoadBalancer | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud LoadBalancer | Hiver | 差距 | 重要性 |
 |------|--------------------------|-------|------|---------|
 | **@LoadBalanced** | @LoadBalanced | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **负载均衡策略** | RoundRobin, Random, Weighted | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -401,7 +401,7 @@ pub struct AclConfig {
 
 ### 4.3 配置中心
 
-| 功能 | Spring Cloud Config | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Config | Hiver | 差距 | 重要性 |
 |------|--------------------|-------|------|---------|
 | **Config Server** | 配置服务器 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **Config Client** | 配置客户端 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -419,7 +419,7 @@ pub struct AclConfig {
 
 ### 4.4 API 网关增强
 
-| 功能 | Spring Cloud Gateway | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Gateway | Hiver | 差距 | 重要性 |
 |------|---------------------|-------|------|---------|
 | **RouteLocator** | 路由定位器 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **Predicate** | 断言 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -436,7 +436,7 @@ pub struct AclConfig {
 
 ### 5.1 消息通道模式
 
-| 功能 | Spring Integration | Nexus | 差距 | 重要性 |
+| 功能 | Spring Integration | Hiver | 差距 | 重要性 |
 |------|--------------------|-------|------|---------|
 | **Message Channel** | MessageChannel | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **Direct Channel** | DirectChannel | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -454,7 +454,7 @@ pub struct AclConfig {
 
 ### 5.2 企业集成模式 (EIP)
 
-| 模式 | Spring Integration | Nexus | 差距 | 重要性 |
+| 模式 | Spring Integration | Hiver | 差距 | 重要性 |
 |------|--------------------|-------|------|---------|
 | **EIP: Splitter** | 分裂器 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **EIP: Aggregator** | 聚合器 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -471,7 +471,7 @@ pub struct AclConfig {
 
 ### 6.1 批处理增强
 
-| 功能 | Spring Batch | Nexus | 差距 | 重要性 |
+| 功能 | Spring Batch | Hiver | 差距 | 重要性 |
 |------|------------|-------|------|---------|
 | **Job Operator** | JobOperator | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | **Job Parameters** | JobParameters | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -498,7 +498,7 @@ pub struct AclConfig {
 
 ### 6.2 读取器和写入器增强
 
-| 功能 | Spring Batch | Nexus | 差距 |  | 重要性 |
+| 功能 | Spring Batch | Hiver | 差距 |  | 重要性 |
 |------|------------|-------|------|---------|
 | **FlatFileItemReader** | 平面文件读取 | ❌ 缺失 | | ⭐⭐⭐⭐⭐ |
 | **JsonItemReader** | JSON 文件读取 | ❌ 缺失 | | ⭐⭐⭐⭐⭐ |
@@ -523,7 +523,7 @@ pub struct AclConfig {
 
 ### 7.1 Spring Test 深度功能
 
-| 功能 | Spring Test | Nexus | 差距 | 重要性 |
+| 功能 | Spring Test | Hiver | 差距 | 重要性 |
 |------|-----------|-------|------|---------|
 | **@SpringBootTest** | 完整应用上下文 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @WebMvcTest | MVC 测试 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -543,7 +543,7 @@ pub struct AclConfig {
 
 ### 7.2 Mock 框架增强
 
-| 功能 | MockMvc/Mockito | Nexus | 差距 | 重要性 |
+| 功能 | MockMvc/Mockito | Hiver | 差距 | 重要性 |
 |------|----------------|-------|------|---------|
 | **@MockBean** | Mock Bean | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @SpyBean | Spy Bean | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
@@ -560,7 +560,7 @@ pub struct AclConfig {
 
 ### 8.1 WebSocket 增强
 
-| 功能 | Spring WebSocket | Nexus | 差距 | 重要性 |
+| 功能 | Spring WebSocket | Hiver | 差距 | 重要性 |
 |------|---------------|-------|------|---------|
 | **@EnableWebSocket** | 启用 WebSocket | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **@ServerEndpoint** | 服务端点 | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -579,7 +579,7 @@ pub struct AclConfig {
 
 ### 8.2 RSocket
 
-| 功能 | Spring RSocket | Nexus | 差距 | 重要性 |
+| 功能 | Spring RSocket | Hiver | 差距 | 重要性 |
 |------|--------------|-------|------|---------|
 | **@ConnectMapping** | 连接映射 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐ |
 | | @ConnectMapping | 连接映射 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐ |
@@ -595,7 +595,7 @@ pub struct AclConfig {
 
 ### 8.3 Server-Sent Events (SSE)
 
-| 功能 | Spring SSE | Nexus | 差距 | 重要性 |
+| 功能 | Spring SSE | Hiver | 差距 | 重要性 |
 |------|-----------|-------|------|---------|
 | **SseEmitter** | Sse 发射器 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | SseEmitter | 事件发送器 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -610,7 +610,7 @@ pub struct AclConfig {
 
 ### 9.1 应用监控
 
-| 功能 | Spring Boot Actuator | Nexus | 差距 | 重要性 |
+| 功能 | Spring Boot Actuator | Hiver | 差距 | 重要性 |
 |------|---------------------|-------|------|---------|
 | **健康检查组** | health.groups | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | Liveness & Readiness | 存活/就绪探针 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
@@ -629,7 +629,7 @@ pub struct AclConfig {
 
 ### 9.2 性能监控
 
-| 功能 | Spring Boot | Nexus | 差距 | 重要性 |
+| 功能 | Spring Boot | Hiver | 差距 | 重要性 |
 |------|-----------|-------|------|---------|
 | **Micrometer** | 指标收集 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | Micrometer Core | 核心指标 | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
@@ -644,7 +644,7 @@ pub struct AclConfig {
 
 ### 9.3 链路追踪增强
 
-| 功能 | Spring Cloud Sleuth | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Sleuth | Hiver | 差距 | 重要性 |
 |------|---------------------|-------|------|---------|
 | **TraceId** | 链路 ID | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
 | | SpanId | 跨度 ID | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
@@ -662,7 +662,7 @@ pub struct AclConfig {
 
 ### 9.4 日志管理增强
 
-| 功能 | Spring Boot | Nexus | 差距 | 重要性 |
+| 功能 | Spring Boot | Hiver | 差距 | 重要性 |
 |------|-----------|-------|------|---------|
 | **Logback 配置** | logback.xml | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | 日志级别动态调整 | /actuator/loggers | ❌ 缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |
@@ -679,7 +679,7 @@ pub struct AclConfig {
 
 ### 10.1 Spring Cloud Function
 
-| 功能 | Spring Cloud Function | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Function | Hiver | 差距 | 重要性 |
 |------|----------------------|-------|------|---------|
 | **@Function** | 函数式处理 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | @CloudEvent | 云事件 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -695,7 +695,7 @@ pub struct AclConfig {
 
 ### 11.1 Spring WebFlux 高级功能
 
-| 功能 | Spring WebFlux | Nexus | 差距 | 重要性 |
+| 功能 | Spring WebFlux | Hiver | 差距 | 重要性 |
 |------|---------------|-------|------|---------|
 | **异常处理** | onErrorReturn | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | | 过滤器 | WebFilter | ⚠️ 部分 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -715,7 +715,7 @@ pub struct AclConfig {
 
 ### 12.1 Spring Native
 
-| 功能 | Spring Native | Nexus | 差距 | 重要性 |
+| 功能 | Spring Native | Hiver | 差距 | 重要性 |
 |------|-------------|-------|------|---------|
 | **@NativeHint** | Native Hints | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
 | **AOT 编译** | Ahead-of-Time | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐ |
@@ -731,7 +731,7 @@ pub struct AclConfig {
 
 ### 13.1 Service Mesh 集成
 
-| 功能 | Spring Cloud Kubernetes | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Kubernetes | Hiver | 差距 | 重要性 |
 |------|-------------------------|-------|------|---------|
 | **Service Mesh** | Istio, Linkerd | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | 服务网格代理 | Proxy | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -748,7 +748,7 @@ pub struct AclConfig {
 
 ### 13.2 Configuration Management
 
-| 功能 | Spring Cloud Config | Nexus | 差距 | 重要性 |
+| 功能 | Spring Cloud Config | Hiver | 差距 | 重要性 |
 |------|---------------------|-------|------|---------|
 | **配置加密** | 加密配置文件 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | 配置版本控制 | Git 后端 | ❌ 缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
@@ -762,7 +762,7 @@ pub struct AclConfig {
 
 ### 14.1 Spring CLI
 
-| 功能 | Spring CLI | Nexus | 差距 | 重要性 |
+| 功能 | Spring CLI | Hiver | 差距 | 重要性 |
 |------|------------|-------|------|---------|
 | **spring init** | 创建项目 | ❌ 完全缺失 | ❌ 严重 | ⭐⭐⭐⭐⭐ |
 | | spring integration test | 集成测试 | ❌ 完全缺失 | ⚠️ 中等 | ⭐⭐⭐⭐⭐ |

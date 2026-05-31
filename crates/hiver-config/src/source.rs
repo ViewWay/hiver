@@ -430,9 +430,9 @@ mod tests {
         let mut source = PropertySource::new("test");
         assert!(!source.contains_key("name"));
 
-        source.put("name", "nexus");
+        source.put("name", "hiver");
         assert!(source.contains_key("name"));
-        assert_eq!(source.get("name").unwrap().as_str(), Some("nexus"));
+        assert_eq!(source.get("name").unwrap().as_str(), Some("hiver"));
 
         // Overwrite existing key
         source.put("name", "updated");
@@ -470,8 +470,8 @@ mod tests {
         source.set_order(50);
         assert_eq!(source.order(), 50);
 
-        source.set_file_path(PathBuf::from("/etc/nexus/app.yaml"));
-        assert_eq!(source.file_path(), Some(&PathBuf::from("/etc/nexus/app.yaml")));
+        source.set_file_path(PathBuf::from("/etc/hiver/app.yaml"));
+        assert_eq!(source.file_path(), Some(&PathBuf::from("/etc/hiver/app.yaml")));
     }
 
     /// Test merge of two property sources

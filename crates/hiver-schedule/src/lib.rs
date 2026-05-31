@@ -1,5 +1,5 @@
-//! Nexus Schedule - Spring Scheduling equivalent features
-//! Nexus调度 - Spring Scheduling等价功能
+//! Hiver Schedule - Spring Scheduling equivalent features
+//! Hiver调度 - Spring Scheduling等价功能
 //!
 //! # Equivalent to Spring Scheduling / 等价于 Spring Scheduling
 //!

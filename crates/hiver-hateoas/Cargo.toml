@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 HATEOAS (Hypermedia as the Engine of Application State) support for Hiver Framework.
-Nexus框架的HATEOAS（超媒体作为应用状态引擎）支持。
+Hiver框架的HATEOAS（超媒体作为应用状态引擎）支持。
 Equivalent to: Spring HATEOAS
 """
 homepage = { workspace = true }

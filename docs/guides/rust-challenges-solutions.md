@@ -1076,7 +1076,7 @@ pub fn set_security_context(auth: Authentication) {
 2. **任务级别**: 使用`tokio::task_local`（需要任务隔离时）
 3. **全局访问**: 使用async-local（需要全局访问时）
 
-**Nexus当前实现改进**:
+**Hiver当前实现改进**:
 
 ```rust
 // hiver-security/src/context.rs (改进版)
@@ -1438,7 +1438,7 @@ async fn handler() -> Result<Response> {
 
 ### 6.3 代码迁移建议 / Code Migration Recommendations
 
-**从Spring迁移到Nexus**:
+**从Spring迁移到Hiver**:
 
 1. **Bean定义**: 使用`#[bean]`宏替代`@Component`
 2. **依赖注入**: 使用构造函数注入（Rust推荐方式）

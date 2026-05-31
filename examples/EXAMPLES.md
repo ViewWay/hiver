@@ -1,4 +1,4 @@
-# Nexus Examples / Nexus 示例
+# Hiver Examples / Hiver 示例
 
 This directory contains comprehensive examples demonstrating all features of the Hiver Framework.
 本目录包含演示 Hiver 框架所有功能的综合示例。
@@ -36,8 +36,8 @@ cargo test --bins
 ### 1. Runtime Examples / 运行时示例
 
 #### [runtime-echo-server/](runtime-echo-server/)
-Simple echo server demonstrating the Nexus async runtime.
-演示 Nexus 异步运行时的简单回显服务器。
+Simple echo server demonstrating the Hiver async runtime.
+演示 Hiver 异步运行时的简单回显服务器。
 
 ```bash
 cargo run --bin runtime-echo-server
@@ -532,11 +532,11 @@ When adding new examples:
 ## Resources / 资源
 
 - [Main Documentation](../docs/)
-- [API Documentation](https://docs.rs/nexus)
-- [GitHub Repository](https://github.com/ViewWay/nexus)
-- [Issues](https://github.com/ViewWay/nexus/issues)
+- [API Documentation](https://docs.rs/hiver)
+- [GitHub Repository](https://github.com/ViewWay/hiver)
+- [Issues](https://github.com/ViewWay/hiver/issues)
 
 ## License / 许可证
 
-These examples are part of the Nexus project and follow the same license (MIT OR Apache-2.0).
-这些示例是 Nexus 项目的一部分，遵循相同的许可证（MIT OR Apache-2.0）。
+These examples are part of the Hiver project and follow the same license (MIT OR Apache-2.0).
+这些示例是 Hiver 项目的一部分，遵循相同的许可证（MIT OR Apache-2.0）。

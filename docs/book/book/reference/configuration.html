@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Configuration / 配置 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Configuration / 配置 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 2+ Available ✅
 <strong>状态</strong>: 第2阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
-Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。</p>
+<p>Hiver provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
+Hiver 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。</p>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>Configuration features:
@@ -189,15 +189,15 @@ Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、�
 <li><strong>Multiple Formats</strong> / <strong>多格式</strong> — Properties, YAML, TOML, JSON</li>
 <li><strong>Environment Variables</strong> / <strong>环境变量</strong> — Override any config value</li>
 <li><strong>Profiles</strong> / <strong>配置文件</strong> — Environment-specific configurations (dev/prod/test)</li>
-<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>nexus-starter</code></li>
+<li><strong>Auto-Configuration</strong> / <strong>自动配置</strong> — Convention-over-configuration via <code>hiver-starter</code></li>
 <li><strong>Type-Safe Binding</strong> / <strong>类型安全绑定</strong> — <code>#[derive(PropertiesConfig)]</code></li>
 </ul>
 <hr>
 <h2 id="configuration-files--配置文件"><a class="header" href="#configuration-files--配置文件">Configuration Files / 配置文件</a></h2>
-<p>Nexus looks for configuration files in order of priority:
-Nexus 按优先级顺序查找配置文件：</p>
+<p>Hiver looks for configuration files in order of priority:
+Hiver 按优先级顺序查找配置文件：</p>
 <ol>
-<li><code>nexus.toml</code> (preferred / 推荐)</li>
+<li><code>hiver.toml</code> (preferred / 推荐)</li>
 <li><code>application.yml</code> / <code>application.yaml</code></li>
 <li><code>application.properties</code></li>
 <li><code>application.json</code></li>
@@ -251,7 +251,7 @@ logging.level=INFO
 <h2 id="type-safe-configuration--类型安全配置"><a class="header" href="#type-safe-configuration--类型安全配置">Type-Safe Configuration / 类型安全配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, PropertiesConfig};
+</span>use hiver_config::{Config, PropertiesConfig};
 use serde::Deserialize;
 
 #[derive(PropertiesConfig, Deserialize)]
@@ -277,38 +277,38 @@ let db: DatabaseConfig = config.get()?;
 <span class="boring">}</span></code></pre>
 <hr>
 <h2 id="environment-variables--环境变量"><a class="header" href="#environment-variables--环境变量">Environment Variables / 环境变量</a></h2>
-<p>Override any config value with environment variables using <code>NEXUS_</code> prefix:</p>
-<p>使用 <code>NEXUS_</code> 前缀的环境变量覆盖任何配置值：</p>
+<p>Override any config value with environment variables using <code>HIVER_</code> prefix:</p>
+<p>使用 <code>HIVER_</code> 前缀的环境变量覆盖任何配置值：</p>
 <pre><code class="language-bash"># Server config / 服务器配置
-export NEXUS_SERVER_PORT=9090
-export NEXUS_SERVER_HOST=0.0.0.0
+export HIVER_SERVER_PORT=9090
+export HIVER_SERVER_HOST=0.0.0.0
 
 # Database config / 数据库配置
-export NEXUS_DATABASE_URL=postgres://prod-server/mydb
-export NEXUS_DATABASE_POOL_SIZE=20
+export HIVER_DATABASE_URL=postgres://prod-server/mydb
+export HIVER_DATABASE_POOL_SIZE=20
 
 # Logging config / 日志配置
-export NEXUS_LOG_LEVEL=DEBUG
-export NEXUS_LOG_MODE=simple
+export HIVER_LOG_LEVEL=DEBUG
+export HIVER_LOG_MODE=simple
 
 # Active profile / 激活的配置文件
-export NEXUS_PROFILE=prod
+export HIVER_PROFILE=prod
 </code></pre>
 <hr>
 <h2 id="profiles--配置文件"><a class="header" href="#profiles--配置文件">Profiles / 配置文件</a></h2>
 <p>Environment-specific configurations with file naming convention:</p>
 <p>使用文件命名约定的环境特定配置：</p>
 <pre><code>config/
-├── nexus.toml                # Default / 默认
-├── nexus-dev.toml            # Development / 开发
-├── nexus-prod.toml           # Production / 生产
-└── nexus-test.toml           # Testing / 测试
+├── hiver.toml                # Default / 默认
+├── hiver-dev.toml            # Development / 开发
+├── hiver-prod.toml           # Production / 生产
+└── hiver-test.toml           # Testing / 测试
 </code></pre>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_config::{Config, Profile};
+</span>use hiver_config::{Config, Profile};
 
-// Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
+// Auto-detect from HIVER_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
     .with_profile(Profile::from_env())
     .build()?;
@@ -319,7 +319,7 @@ let config = Config::builder()
     .build()?;
 <span class="boring">}</span></code></pre>
 <p><strong>Profile-specific overrides</strong> / <strong>配置文件覆盖</strong>:</p>
-<pre><code class="language-toml"># nexus-dev.toml
+<pre><code class="language-toml"># hiver-dev.toml
 [logging]
 level = "DEBUG"
 mode = "verbose"
@@ -327,7 +327,7 @@ mode = "verbose"
 [database]
 url = "postgres://localhost/mydb_dev"
 </code></pre>
-<pre><code class="language-toml"># nexus-prod.toml
+<pre><code class="language-toml"># hiver-prod.toml
 [logging]
 level = "WARN"
 mode = "simple"
@@ -338,13 +338,13 @@ pool_size = 50
 </code></pre>
 <hr>
 <h2 id="auto-configuration--自动配置"><a class="header" href="#auto-configuration--自动配置">Auto-Configuration / 自动配置</a></h2>
-<p><code>nexus-starter</code> provides Spring Boot-style auto-configuration:
-<code>nexus-starter</code> 提供 Spring Boot 风格的自动配置：</p>
-<pre class="playground"><code class="language-rust">use nexus_starter::NexusApp;
-use nexus_router::Router;
+<p><code>hiver-starter</code> provides Spring Boot-style auto-configuration:
+<code>hiver-starter</code> 提供 Spring Boot 风格的自动配置：</p>
+<pre class="playground"><code class="language-rust">use hiver_starter::HiverApp;
+use hiver_router::Router;
 
 fn main() -&gt; std::io::Result&lt;()&gt; {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", handler)
             .get("/users", list_users)
@@ -360,11 +360,11 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <tr><th>Setting</th><th>Default</th><th>Override</th></tr>
 </thead>
 <tbody>
-<tr><td>Server host</td><td><code>0.0.0.0</code></td><td><code>NEXUS_SERVER_HOST</code></td></tr>
-<tr><td>Server port</td><td><code>8080</code></td><td><code>NEXUS_SERVER_PORT</code></td></tr>
-<tr><td>Workers</td><td>CPU cores</td><td><code>NEXUS_SERVER_WORKERS</code></td></tr>
-<tr><td>Log level</td><td><code>INFO</code></td><td><code>NEXUS_LOG_LEVEL</code></td></tr>
-<tr><td>Log mode</td><td><code>verbose</code> (dev) / <code>simple</code> (prod)</td><td><code>NEXUS_LOG_MODE</code></td></tr>
+<tr><td>Server host</td><td><code>0.0.0.0</code></td><td><code>HIVER_SERVER_HOST</code></td></tr>
+<tr><td>Server port</td><td><code>8080</code></td><td><code>HIVER_SERVER_PORT</code></td></tr>
+<tr><td>Workers</td><td>CPU cores</td><td><code>HIVER_SERVER_WORKERS</code></td></tr>
+<tr><td>Log level</td><td><code>INFO</code></td><td><code>HIVER_LOG_LEVEL</code></td></tr>
+<tr><td>Log mode</td><td><code>verbose</code> (dev) / <code>simple</code> (prod)</td><td><code>HIVER_LOG_MODE</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -373,15 +373,15 @@ fn main() -&gt; std::io::Result&lt;()&gt; {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@ConfigurationProperties</code></td><td><code>#[derive(PropertiesConfig)]</code></td><td>Type-safe config binding</td></tr>
 <tr><td><code>@Value</code></td><td><code>config.get::&lt;T&gt;()</code></td><td>Single value extraction</td></tr>
-<tr><td><code>application.yml</code></td><td><code>nexus.toml</code> / <code>application.yml</code></td><td>Config file</td></tr>
+<tr><td><code>application.yml</code></td><td><code>hiver.toml</code> / <code>application.yml</code></td><td>Config file</td></tr>
 <tr><td><code>@Profile</code></td><td><code>Profile</code> enum</td><td>Environment profiles</td></tr>
-<tr><td><code>spring.profiles.active</code></td><td><code>NEXUS_PROFILE</code></td><td>Active profile</td></tr>
-<tr><td><code>@SpringBootApplication</code></td><td><code>NexusApp::new()</code></td><td>Auto-configuration</td></tr>
+<tr><td><code>spring.profiles.active</code></td><td><code>HIVER_PROFILE</code></td><td>Active profile</td></tr>
+<tr><td><code>@SpringBootApplication</code></td><td><code>HiverApp::new()</code></td><td>Auto-configuration</td></tr>
 </tbody>
 </table>
 </div>

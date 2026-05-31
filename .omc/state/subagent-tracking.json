@@ -53,10 +53,19 @@
       "status": "completed",
       "completed_at": "2026-05-31T14:39:39.049Z",
       "duration_ms": 122877
+    },
+    {
+      "agent_id": "a484e8d7b2f043a6d",
+      "agent_type": "ecc:code-reviewer",
+      "started_at": "2026-05-31T15:14:29.488Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-31T15:15:10.953Z",
+      "duration_ms": 41465
     }
   ],
-  "total_spawned": 6,
-  "total_completed": 6,
+  "total_spawned": 7,
+  "total_completed": 7,
   "total_failed": 0,
-  "last_updated": "2026-05-31T14:57:53.417Z"
+  "last_updated": "2026-05-31T15:15:11.056Z"
 }

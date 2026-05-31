@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data |
+//! | Hiver | Spring Data |
 //! |-------|-------------|
 //! | `Projection` | Spring Data Projections |
 //! | `InterfaceProjection` | Interface-based Projections |

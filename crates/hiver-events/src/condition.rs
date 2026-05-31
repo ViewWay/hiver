@@ -10,7 +10,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `EventCondition` | `@EventListener(condition = "...")` |
 //! | `PropertyCondition` | SpEL `#event.property` |

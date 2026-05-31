@@ -194,7 +194,7 @@ impl Conditional for ConditionalOnFeature {
     fn matches(&self, _ctx: &ApplicationContext) -> bool {
         // 检查 feature 是否启用（通过环境变量）
         std::env::var("CARGO_FEATURE_")
-            .or_else(|_| std::env::var(format!("NEXUS_FEATURE_{}", self.feature.to_uppercase())))
+            .or_else(|_| std::env::var(format!("HIVER_FEATURE_{}", self.feature.to_uppercase())))
             .is_ok()
     }
 }

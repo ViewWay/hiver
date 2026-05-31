@@ -1,7 +1,7 @@
 # CodeQL Configuration / CodeQL 配置
 #
-# This configuration file customizes CodeQL analysis for the Nexus project.
-# 此配置文件为 Nexus 项目定制 CodeQL 分析。
+# This configuration file customizes CodeQL analysis for the Hiver project.
+# 此配置文件为 Hiver 项目定制 CodeQL 分析。
 
 # ==============================================================================
 # Query Suites / 查询套件

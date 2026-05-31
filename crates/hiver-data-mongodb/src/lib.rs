@@ -1,14 +1,14 @@
-//! Nexus Data MongoDB
+//! Hiver Data MongoDB
 //!
-//! MongoDB integration for the Nexus framework, providing Repository pattern
+//! MongoDB integration for the Hiver framework, providing Repository pattern
 //! implementation, aggregation pipeline, index management, bulk operations,
 //! and reactive MongoDB template.
-//! MongoDB 的 Nexus 框架集成，提供 Repository 模式实现、
+//! MongoDB 的 Hiver 框架集成，提供 Repository 模式实现、
 //! 聚合管道、索引管理、批量操作和响应式 MongoDB 模板。
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `MongoTemplate` | `MongoTemplate` |
 //! | `MongoRepository` | `MongoRepository` |

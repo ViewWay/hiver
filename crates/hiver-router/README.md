@@ -2,7 +2,7 @@
 
 **Fast and flexible HTTP router for the Hiver Framework.**
 
-**Nexus框架的快速灵活的HTTP路由器。**
+**Hiver框架的快速灵活的HTTP路由器。**
 
 ## Overview / 概述
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `@GetMapping("/users")` | `router.get("/users", handler)` |
 | `@PathVariable` | Extracted from path |
@@ -210,7 +210,7 @@ let app = Router::new()
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

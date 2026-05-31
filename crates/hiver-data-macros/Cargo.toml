@@ -6,8 +6,8 @@ rust-version.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Procedural macros for Nexus data layer"
-keywords = ["nexus", "data", "orm", "macros", "derive"]
+description = "Procedural macros for Hiver data layer"
+keywords = ["hiver", "data", "orm", "macros", "derive"]
 categories = ["development-tools::procedural-macro-helpers"]
 
 [lib]

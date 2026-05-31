@@ -7,7 +7,7 @@
 //!
 //! # Spring Equivalent / Spring等价物
 //!
-//! | Nexus | Spring LDAP |
+//! | Hiver | Spring LDAP |
 //! |-------|-------------|
 //! | `modify_dn()` | `LdapTemplate.rename()` |
 //! | `compare()` | `LdapTemplate.compare()` |

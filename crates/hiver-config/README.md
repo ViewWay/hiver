@@ -6,15 +6,15 @@
 
 > Configuration management for Hiver Framework
 > 
-> Nexus框架的配置管理
+> Hiver框架的配置管理
 
 ---
 
 ## 📋 Overview / 概述
 
-`hiver-config` provides flexible configuration management for Nexus applications, similar to Spring Boot's `@ConfigurationProperties` and `@Value`.
+`hiver-config` provides flexible configuration management for Hiver applications, similar to Spring Boot's `@ConfigurationProperties` and `@Value`.
 
-`hiver-config` 为Nexus应用程序提供灵活的配置管理，类似于Spring Boot的`@ConfigurationProperties`和`@Value`。
+`hiver-config` 为Hiver应用程序提供灵活的配置管理，类似于Spring Boot的`@ConfigurationProperties`和`@Value`。
 
 **Key Features** / **核心特性**:
 - ✅ **Multiple Formats** - Properties, YAML, TOML, JSON
@@ -352,7 +352,7 @@ app:
 **Active Profile** / **活动配置文件**:
 ```bash
 # Set active profile / 设置活动配置文件
-export NEXUS_PROFILE=prod
+export HIVER_PROFILE=prod
 
 # Or in code / 或在代码中
 let config = Config::builder()
@@ -522,7 +522,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -534,7 +534,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Config is inspired by:
+Hiver Config is inspired by:
 
 - **[Spring Boot](https://spring.io/projects/spring-boot)** - `@ConfigurationProperties`, `@Value`
 - **[Spring Cloud Config](https://spring.io/projects/spring-cloud-config)** - Remote configuration

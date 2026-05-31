@@ -6,15 +6,15 @@
 
 > Spring Boot style procedural macros for Hiver Framework
 > 
-> Nexus框架的Spring Boot风格过程宏
+> Hiver框架的Spring Boot风格过程宏
 
 ---
 
 ## 📋 Overview / 概述
 
-`hiver-macros` provides Spring Boot-style procedural macros that make Nexus applications feel familiar to Spring developers.
+`hiver-macros` provides Spring Boot-style procedural macros that make Hiver applications feel familiar to Spring developers.
 
-`hiver-macros` 提供Spring Boot风格的过程宏，使Nexus应用程序对Spring开发者来说感觉熟悉。
+`hiver-macros` 提供Spring Boot风格的过程宏，使Hiver应用程序对Spring开发者来说感觉熟悉。
 
 **Key Features** / **核心特性**:
 - ✅ **@main** - Application entry point

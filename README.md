@@ -1,30 +1,30 @@
 <div align="center">
-<p><img alt="Nexus" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Nexus" /></p>
+<p><img alt="Hiver" width="132" style="max-width:40%;min-width:60px;" src="https://via.placeholder.com/132x40/0066CC/FFFFFF?text=Hiver" /></p>
 <p>
-    <a href="https://github.com/ViewWay/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;
-    <a href="https://github.com/ViewWay/nexus/blob/main/README.zh.md">简体中文</a>
+    <a href="https://github.com/ViewWay/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;
+    <a href="https://github.com/ViewWay/hiver/blob/main/README.zh.md">简体中文</a>
 </p>
 <p>
-<a href="https://github.com/ViewWay/nexus/actions">
-    <img alt="build status" src="https://github.com/ViewWay/nexus/workflows/CI/badge.svg" />
+<a href="https://github.com/ViewWay/hiver/actions">
+    <img alt="build status" src="https://github.com/ViewWay/hiver/workflows/CI/badge.svg" />
 </a>
-<a href="https://codecov.io/gh/ViewWay/nexus">
-    <img alt="codecov" src="https://img.gov/ViewWay/nexus/branch/main/graph/badge.svg" />
+<a href="https://codecov.io/gh/ViewWay/hiver">
+    <img alt="codecov" src="https://img.gov/ViewWay/hiver/branch/main/graph/badge.svg" />
 </a>
 <br>
-<a href="https://crates.io/crates/nexus"><img alt="crates.io" src="https://img.shields.io/crates/v/nexus" /></a>
-<a href="https://docs.rs/nexus"><img alt="Documentation" src="https://docs.rs/nexus/badge.svg" /></a>
-<a href="https://crates.io/crates/nexus"><img alt="Download" src="https://img.shields.io/crates/d/nexus.svg" /></a>
+<a href="https://crates.io/crates/hiver"><img alt="crates.io" src="https://img.shields.io/crates/v/hiver" /></a>
+<a href="https://docs.rs/hiver"><img alt="Documentation" src="https://docs.rs/hiver/badge.svg" /></a>
+<a href="https://crates.io/crates/hiver"><img alt="Download" src="https://img.shields.io/crates/d/hiver.svg" /></a>
 <br>
-<a href="https://nexusframework.com">
-    <img alt="Website" src="https://img.shields.io/badge/https-nexusframework.com-%23f00" />
+<a href="https://hiverframework.com">
+    <img alt="Website" src="https://img.shields.io/badge/https-hiverframework.com-%23f00" />
 </a>
 </p>
 </div>
 
 # Hiver Framework
 
-Nexus is a production-grade, high-availability web framework written in Rust with a custom async runtime. Unlike other frameworks that use Tokio, Nexus features a custom async runtime built from scratch using io-uring for maximum performance.
+Hiver is a production-grade, high-availability web framework written in Rust with a custom async runtime. Unlike other frameworks that use Tokio, Hiver features a custom async runtime built from scratch using io-uring for maximum performance.
 
 ## 🎯 Features
 
@@ -84,7 +84,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
     Ok(Response::builder()
         .status(StatusCode::OK)
         .header("content-type", "text/plain")
-        .body(Body::from("Hello, Nexus!"))
+        .body(Body::from("Hello, Hiver!"))
         .unwrap())
 }
 ```
@@ -92,7 +92,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
 ### Complete REST API Example
 
 ```rust
-//! Nexus REST API Example
+//! Hiver REST API Example
 //!
 //! This example demonstrates a complete REST API with:
 //! - Routing with path parameters
@@ -354,9 +354,9 @@ curl http://localhost:8080/users/1
 curl http://localhost:8080/users
 ```
 
-### Nexus Logging
+### Hiver Logging
 
-Nexus provides a unified logging system with two modes: **Verbose** (development) and **Simple** (production).
+Hiver provides a unified logging system with two modes: **Verbose** (development) and **Simple** (production).
 
 ```rust
 use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
@@ -380,13 +380,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```bash
 # Set log level
-export NEXUS_LOG_LEVEL=DEBUG
+export HIVER_LOG_LEVEL=DEBUG
 
 # Set log mode explicitly
-export NEXUS_LOG_MODE=simple  # or "verbose"
+export HIVER_LOG_MODE=simple  # or "verbose"
 
 # Set profile (affects default mode)
-export NEXUS_PROFILE=prod  # dev->verbose, prod->simple
+export HIVER_PROFILE=prod  # dev->verbose, prod->simple
 ```
 
 **Output Comparison:**
@@ -463,7 +463,7 @@ async fn web3_example() -> Result<(), Box<dyn std::error::Error>> {
 
 ## 🚀 Performance
 
-Nexus is designed for high performance from the ground up:
+Hiver is designed for high performance from the ground up:
 
 - **70% fewer syscalls** vs epoll with io-uring
 - **40% lower latency** with thread-per-core architecture
@@ -483,8 +483,8 @@ Nexus is designed for high performance from the ground up:
 | Resource | Link |
 |----------|------|
 | **Codemap** | [CODEMAP.md](docs/CODEMAP.md) — Full crate reference, macro index, dependency graph |
-| **Book** | [docs.nexusframework.com](https://docs.nexusframework.com) |
-| **API Docs** | [docs.rs/nexus](https://docs.rs/nexus) |
+| **Book** | [docs.hiverframework.com](https://docs.hiverframework.com) |
+| **API Docs** | [docs.rs/hiver](https://docs.rs/hiver) |
 | **Design Spec** | [design-spec.md](docs/design-spec.md) |
 | **Implementation Plan** | [implementation-plan.md](docs/design/implementation-plan.md) |
 | **Docs Index** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
@@ -520,8 +520,8 @@ hiver-starter (Spring Boot auto-configuration)
 
 ```bash
 # Clone repository
-git clone https://github.com/ViewWay/nexus.git
-cd nexus
+git clone https://github.com/ViewWay/hiver.git
+cd hiver
 
 # Build
 cargo build --workspace
@@ -543,7 +543,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha Version**
 >
-> Nexus is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **62 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
+> Hiver is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **62 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
 
 | Phase | Status | Description |
 |-------|--------|-------------|
@@ -565,14 +565,14 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 📄 License
 
-Nexus is licensed under either of
+Hiver is licensed under either of
 
 - Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 
 ## 🙏 Acknowledgments
 
-Nexus is inspired by excellent frameworks across multiple languages:
+Hiver is inspired by excellent frameworks across multiple languages:
 
 - **Rust**: Axum, Actix Web, Monoio, Salvo
 - **Go**: Gin, Echo

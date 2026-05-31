@@ -1,5 +1,5 @@
-# Spring Boot to Nexus Migration Guide
-# Spring Boot 到 Nexus 迁移指南
+# Spring Boot to Hiver Migration Guide
+# Spring Boot 到 Hiver 迁移指南
 
 ## Table of Contents / 目录
 
@@ -18,7 +18,7 @@
 
 ### Why Migrate? / 为什么迁移？
 
-| Feature | Spring Boot | Nexus |
+| Feature | Spring Boot | Hiver |
 |---------|-------------|-------|
 | **Performance** | ~50K QPS | ~1M+ QPS |
 | **Memory** | ~200MB base | ~10MB base |
@@ -42,7 +42,7 @@
 
 ### Core Concepts / 核心概念
 
-| Spring Boot | Nexus | Notes / 说明 |
+| Spring Boot | Hiver | Notes / 说明 |
 |-------------|-------|-------------|
 | `@SpringBootApplication` | `#[main]` | Application entry |
 | `@RestController` | `#[controller]` | REST controller |
@@ -69,7 +69,7 @@ public class Application {
     }
 }
 
-// Nexus
+// Hiver
 use hiver_macros::main;
 
 #[main]
@@ -89,7 +89,7 @@ public class UserController {
     }
 }
 
-// Nexus
+// Hiver
 use hiver_macros::{controller, get};
 
 #[controller]
@@ -107,7 +107,7 @@ async fn get_user(id: String) -> Json<User> {
 
 ### Annotation Quick Reference / 注解快速参考
 
-| Java/Spring | Rust/Nexus |
+| Java/Spring | Rust/Hiver |
 |-------------|------------|
 | `@SpringBootApplication` | `#[main]` |
 | `@RestController` | `#[controller]` |

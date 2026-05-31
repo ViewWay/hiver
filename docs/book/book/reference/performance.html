@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Performance / 性能 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Performance / 性能 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 7 Complete ✅ (Performance &amp; Hardening)
 <strong>状态</strong>: 第7阶段完成 ✅（性能与加固）</p>
 </blockquote>
-<p>Nexus is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
-Nexus 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
+<p>Hiver is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
+Hiver 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。</p>
 <hr>
 <h2 id="performance-goals--性能目标"><a class="header" href="#performance-goals--性能目标">Performance Goals / 性能目标</a></h2>
 <div class="table-wrapper">
@@ -224,7 +224,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </ul>
 <hr>
 <h2 id="runtime-benchmarks--运行时基准"><a class="header" href="#runtime-benchmarks--运行时基准">Runtime Benchmarks / 运行时基准</a></h2>
-<p>Nexus includes a comprehensive benchmark suite using Criterion:</p>
+<p>Hiver includes a comprehensive benchmark suite using Criterion:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -249,7 +249,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 </code></pre>
 <hr>
 <h2 id="techempower-benchmark--techempower-基准"><a class="header" href="#techempower-benchmark--techempower-基准">TechEmpower Benchmark / TechEmpower 基准</a></h2>
-<p>Nexus includes a TechEmpower-compatible benchmark application:</p>
+<p>Hiver includes a TechEmpower-compatible benchmark application:</p>
 <pre><code class="language-bash"># Build optimized binary / 构建优化二进制
 cargo build --release --bin techempower_benchmark
 
@@ -269,7 +269,7 @@ cargo fuzz run compression
 <h2 id="optimization-tips--优化技巧"><a class="header" href="#optimization-tips--优化技巧">Optimization Tips / 优化技巧</a></h2>
 <h3 id="linux-production--linux生产环境"><a class="header" href="#linux-production--linux生产环境">Linux (Production) / Linux（生产环境）</a></h3>
 <ol>
-<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>nexus-runtime</code></li>
+<li><strong>Enable io-uring</strong> — requires Linux kernel 5.1+, automatic on <code>hiver-runtime</code></li>
 <li><strong>Tune io-uring SQ/CQ sizes</strong> — <code>IoUringDriver::with_sq_entries(256)</code></li>
 <li><strong>CPU affinity</strong> — bind each runtime thread to a specific core</li>
 <li><strong>Disable unnecessary middleware</strong> — each middleware adds latency</li>
@@ -284,13 +284,13 @@ cargo fuzz run compression
 <li><strong>Reuse <code>Bytes</code> buffers</strong> — avoid unnecessary cloning</li>
 <li><strong>Use <code>&amp;str</code> over <code>String</code></strong> in handlers when possible</li>
 <li><strong>Keep middleware chains short</strong> — minimize per-request overhead</li>
-<li><strong>Monitor with <code>nexus-observability</code></strong> — identify bottlenecks via tracing</li>
+<li><strong>Monitor with <code>hiver-observability</code></strong> — identify bottlenecks via tracing</li>
 </ol>
 <hr>
 <h2 id="performance-monitoring--性能监控"><a class="header" href="#performance-monitoring--性能监控">Performance Monitoring / 性能监控</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Histogram};
 use std::time::Instant;
 
 let metrics = MetricsRegistry::default();

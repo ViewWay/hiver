@@ -1,12 +1,12 @@
-//! Nexus HTTP - HTTP server and client
-//! Nexus HTTP - HTTP服务器和客户端
+//! Hiver HTTP - HTTP server and client
+//! Hiver HTTP - HTTP服务器和客户端
 //!
 //! # Overview / 概述
 //!
 //! `hiver-http` provides HTTP server and client implementations for the
-//! Nexus framework.
+//! Hiver framework.
 //!
-//! `hiver-http` `为Nexus框架提供HTTP服务器和客户端实现`。
+//! `hiver-http` `为Hiver框架提供HTTP服务器和客户端实现`。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

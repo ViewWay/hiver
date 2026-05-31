@@ -71,7 +71,7 @@ let (body, status, headers) = swagger.handle("/api-docs");
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Nexus | Spring Boot | Description |
+| Hiver | Spring Boot | Description |
 |-------|-------------|-------------|
 | `#[derive(ToSchema)]` | `@Schema` | Define schema for struct / 为结构体定义模式 |
 | `#[openapi(...)]` | `@OpenAPIDefinition` | Define OpenAPI spec / 定义 OpenAPI 规范 |

@@ -6,7 +6,7 @@
 
 > Blockchain and Web3 support for Hiver Framework
 > 
-> Nexus框架的区块链和Web3支持
+> Hiver框架的区块链和Web3支持
 
 ---
 

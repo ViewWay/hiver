@@ -172,7 +172,7 @@ public class FileController {
 }
 ```
 
-#### Nexus - 文件上传
+#### Hiver - 文件上传
 
 ```rust
 use hiver::prelude::*;
@@ -529,7 +529,7 @@ public class NotificationController {
 }
 ```
 
-#### Nexus - 定时任务与异步
+#### Hiver - 定时任务与异步
 
 ```rust
 use hiver_runtime::scheduler::{Scheduler, TaskSchedule};
@@ -843,7 +843,7 @@ public class EmailService {
 }
 ```
 
-#### Nexus - 邮件服务
+#### Hiver - 邮件服务
 
 ```rust
 use lettre::{
@@ -1081,7 +1081,7 @@ public User getUser(@PathVariable Long id) {
 }
 ```
 
-#### Nexus - CORS 中间件
+#### Hiver - CORS 中间件
 
 ```rust
 use hiver_middleware::{CorsMiddleware, CorsConfig};
@@ -1324,7 +1324,7 @@ public class UserController {
 }
 ```
 
-#### Nexus - 统一响应结构
+#### Hiver - 统一响应结构
 
 ```rust
 use serde::{Serialize, Deserialize};
@@ -1610,7 +1610,7 @@ public class UserQuery {
 }
 ```
 
-#### Nexus - 分页实现
+#### Hiver - 分页实现
 
 ```rust
 use hiver::prelude::*;
@@ -2040,7 +2040,7 @@ public class ExportController {
 }
 ```
 
-#### Nexus - 文件导出
+#### Hiver - 文件导出
 
 ```rust
 use hiver::prelude::*;
@@ -2265,7 +2265,7 @@ async fn export_users(
 
 ### 实战功能对比 / Practice Features Comparison
 
-| 功能 / Feature | Spring Boot | Nexus | 完成度 |
+| 功能 / Feature | Spring Boot | Hiver | 完成度 |
 |----------------|-------------|-------|--------|
 | **文件上传 / File Upload** | MultipartFile | multer | ⚠️ 70% |
 | **文件下载 / File Download** | ResponseEntity | Response::builder | ✅ 90% |

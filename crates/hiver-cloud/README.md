@@ -6,7 +6,7 @@
 
 > Spring Cloud equivalent features for Hiver Framework
 > 
-> Nexus框架的Spring Cloud等价功能
+> Hiver框架的Spring Cloud等价功能
 
 ---
 
@@ -72,7 +72,7 @@ use hiver_cloud::gateway::{Gateway, GatewayRoute};
 let gateway = Gateway::builder()
     .route(GatewayRoute::new("/api/users/**")
         .uri("http://user-service")
-        .filter(AddRequestHeader::new("X-Gateway", "nexus")))
+        .filter(AddRequestHeader::new("X-Gateway", "hiver")))
     .route(GatewayRoute::new("/api/orders/**")
         .uri("http://order-service"))
     .build();

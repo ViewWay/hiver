@@ -1,10 +1,10 @@
 #![allow(clippy::expect_used, clippy::indexing_slicing, clippy::doc_overindented_list_items, clippy::missing_fields_in_debug)]
-//! Nexus Test - Testing framework module
-//! Nexus测试 - 测试框架模块
+//! Hiver Test - Testing framework module
+//! Hiver测试 - 测试框架模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
-//! - `@SpringBootTest` - `NexusTest`
+//! - `@SpringBootTest` - `HiverTest`
 //! - `@WebMvcTest` - `WebTest`
 //! - `@MockBean` - `MockBean`
 //! - `TestRestTemplate` - `TestClient`
@@ -15,7 +15,7 @@
 //! # Example / 示例
 //!
 //! ```rust,no_run,ignore
-//! use hiver_test::{NexusTest, TestClient};
+//! use hiver_test::{HiverTest, TestClient};
 //! use hiver_http::{Request, Response};
 //!
 //! #[tokio::test]
@@ -79,8 +79,8 @@ pub const DEFAULT_TEST_TIMEOUT_SECS: u64 = 30;
 /// 默认测试服务器端口（0表示随机可用端口）
 pub const DEFAULT_TEST_PORT: u16 = 0;
 
-/// `NexusTest` marker trait
-/// `NexusTest` 标记 trait
+/// `HiverTest` marker trait
+/// `HiverTest` 标记 trait
 ///
 /// # Spring Equivalent / Spring等价物
 ///
@@ -92,4 +92,4 @@ pub const DEFAULT_TEST_PORT: u16 = 0;
 ///     private MockMvc mockMvc;
 /// }
 /// ```
-pub trait NexusTest {}
+pub trait HiverTest {}

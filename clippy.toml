@@ -14,7 +14,7 @@ disallowed-types = []
 
 # Documentation style / 文档风格
 doc-valid-idents = [
-    "Nexus",
+    "Hiver",
     "Web3",
     "GitHub",
     "GitHubActions",

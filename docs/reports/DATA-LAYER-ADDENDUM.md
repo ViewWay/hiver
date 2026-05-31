@@ -1,11 +1,11 @@
-# Nexus Data Layer - MyBatis-Plus Style Support (ADDENDUM)
-# Nexus 数据层 - MyBatis-Plus 风格支持（附录）
+# Hiver Data Layer - MyBatis-Plus Style Support (ADDENDUM)
+# Hiver 数据层 - MyBatis-Plus 风格支持（附录）
 
 ## 🎯 IMPORTANT: Dual Data Layer Strategy / 双数据层策略
 
 **Critical Addition / 重要补充**:
-In addition to **Spring Data style** (Repository pattern), Nexus must also support **MyBatis-Plus style** (Mapper pattern) for Chinese enterprise developers.
-除了 **Spring Data 风格**（Repository 模式），Nexus 还必须支持 **MyBatis-Plus 风格**（Mapper 模式），面向中国企业开发者。
+In addition to **Spring Data style** (Repository pattern), Hiver must also support **MyBatis-Plus style** (Mapper pattern) for Chinese enterprise developers.
+除了 **Spring Data 风格**（Repository 模式），Hiver 还必须支持 **MyBatis-Plus 风格**（Mapper 模式），面向中国企业开发者。
 
 ---
 
@@ -297,7 +297,7 @@ struct MyApp;
 
 #[tokio::main]
 async fn main() {
-    NexusApplication::run::<MyApp>().await.unwrap();
+    HiverApplication::run::<MyApp>().await.unwrap();
 }
 ```
 
@@ -388,7 +388,7 @@ pub trait UserMapper: BaseMapper<User> { }
 
 ## 📚 Migration Examples / 迁移示例
 
-### From MyBatis-Plus (Java) to Nexus (Rust) / 从 MyBatis-Plus（Java）到 Nexus（Rust）
+### From MyBatis-Plus (Java) to Hiver (Rust) / 从 MyBatis-Plus（Java）到 Hiver（Rust）
 
 **Java / MyBatis-Plus**:
 ```java
@@ -421,7 +421,7 @@ public class UserService {
 }
 ```
 
-**Rust / Nexus**:
+**Rust / Hiver**:
 ```rust
 #[Data]
 #[TableName("user")]

@@ -3,8 +3,8 @@
 > **Status**: Phase 7 Complete ✅ (Performance & Hardening)
 > **状态**: 第7阶段完成 ✅（性能与加固）
 
-Nexus is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
-Nexus 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。
+Hiver is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O model.
+Hiver 从设计之初就追求高性能，采用 thread-per-core 架构和 io-uring-first I/O 模型。
 
 ---
 
@@ -51,7 +51,7 @@ Core 2 ──► Task Queue ──► io-uring/epoll ──► Handlers
 
 ## Runtime Benchmarks / 运行时基准
 
-Nexus includes a comprehensive benchmark suite using Criterion:
+Hiver includes a comprehensive benchmark suite using Criterion:
 
 | Benchmark | Description |
 |-----------|-------------|
@@ -76,7 +76,7 @@ cargo bench
 
 ## TechEmpower Benchmark / TechEmpower 基准
 
-Nexus includes a TechEmpower-compatible benchmark application:
+Hiver includes a TechEmpower-compatible benchmark application:
 
 ```bash
 # Build optimized binary / 构建优化二进制

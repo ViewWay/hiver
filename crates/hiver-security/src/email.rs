@@ -497,7 +497,7 @@ impl EmailSender for SmtpEmailSender {
         }
 
         // EHLO.
-        let hostname = "nexus.local";
+        let hostname = "hiver.local";
         let ehlo_code =
             Self::send_command(&mut writer, &mut reader, &format!("EHLO {hostname}\r\n"))
                 .await?;
@@ -701,9 +701,9 @@ mod tests {
     #[test]
     fn test_config_builder() {
         let cfg = EmailConfig::new("smtp.host", 25, "u", "p", "f@h")
-            .from_name("Nexus")
+            .from_name("Hiver")
             .tls(false);
-        assert_eq!(cfg.from_name, "Nexus");
+        assert_eq!(cfg.from_name, "Hiver");
         assert!(!cfg.tls);
     }
 
@@ -801,9 +801,9 @@ mod tests {
     fn test_template_render() {
         let tmpl = EmailTemplate::new("Hello {{name}}, welcome to {{app}}!")
             .variable("name", "Alice")
-            .variable("app", "Nexus");
+            .variable("app", "Hiver");
         let rendered = tmpl.render().unwrap();
-        assert_eq!(rendered, "Hello Alice, welcome to Nexus!");
+        assert_eq!(rendered, "Hello Alice, welcome to Hiver!");
     }
 
     #[test]

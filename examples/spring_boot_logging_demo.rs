@@ -1,9 +1,9 @@
 //! Spring Boot style logging example
 //! Spring Boot 风格日志示例
 //!
-//! This example demonstrates how to use Nexus's Spring Boot-style logging
+//! This example demonstrates how to use Hiver's Spring Boot-style logging
 //! with banner, structured log format, and startup information.
-//! 此示例演示如何使用 Nexus 的 Spring Boot 风格日志，包括横幅、结构化日志格式和启动信息。
+//! 此示例演示如何使用 Hiver 的 Spring Boot 风格日志，包括横幅、结构化日志格式和启动信息。
 //!
 //! Run with: cargo run --bin spring_boot_logging_demo
 //! 运行: cargo run --bin spring_boot_logging_demo
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     {
         // Print banner (equivalent to Spring Boot banner)
         // 打印横幅（等价于 Spring Boot 横幅）
-        Banner::print("Nexus", env!("CARGO_PKG_VERSION"), 8080);
+        Banner::print("Hiver", env!("CARGO_PKG_VERSION"), 8080);
 
         // Initialize logger with Spring Boot format
         // 使用 Spring Boot 格式初始化日志
@@ -39,7 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
         // Log startup information (similar to Spring Boot startup logs)
         // 记录启动信息（类似 Spring Boot 启动日志）
-        startup.log_starting("NexusApplication");
+        startup.log_starting("HiverApplication");
         startup.log_profile(None);
         startup.log_initialization_completed(532);
     }
@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     // Log server startup
     // 记录服务器启动
-    tracing::info!(target: "nexus.startup", "Starting Nexus HTTP server on http://127.0.0.1:8080");
+    tracing::info!(target: "hiver.startup", "Starting Hiver HTTP server on http://127.0.0.1:8080");
 
     // Run the async server using the runtime
     // 使用运行时运行异步服务器
@@ -90,7 +90,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
     // Log request (Spring Boot style)
     // 记录请求（Spring Boot 风格）
     tracing::info!(
-        target: "nexus.http",
+        target: "hiver.http",
         "Received {} {}",
         method,
         path
@@ -100,25 +100,25 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
     // 简单路由
     match path {
         "/" | "/health" => {
-            tracing::debug!(target: "nexus.http", "Handling health check");
+            tracing::debug!(target: "hiver.http", "Handling health check");
             Ok(Response::builder()
                 .status(StatusCode::OK)
                 .header("content-type", "text/plain")
-                .body(Body::from("Hello, Nexus!"))
+                .body(Body::from("Hello, Hiver!"))
                 .unwrap())
         },
 
         "/api/hello" => {
-            tracing::debug!(target: "nexus.http", "Handling API hello");
+            tracing::debug!(target: "hiver.http", "Handling API hello");
             Ok(Response::builder()
                 .status(StatusCode::OK)
                 .header("content-type", "application/json")
-                .body(Body::from(r#"{"message": "Hello from Nexus!"}"#))
+                .body(Body::from(r#"{"message": "Hello from Hiver!"}"#))
                 .unwrap())
         },
 
         _ => {
-            tracing::warn!(target: "nexus.http", "Path not found: {}", path);
+            tracing::warn!(target: "hiver.http", "Path not found: {}", path);
             Ok(Response::builder()
                 .status(StatusCode::NOT_FOUND)
                 .body(Body::from("Not Found"))

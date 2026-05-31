@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Web Services — SOAP/WSDL contract-first web services.
-Nexus框架的SOAP/WSDL契约优先Web服务。
+Hiver框架的SOAP/WSDL契约优先Web服务。
 Equivalent to: Spring Web Services
 """
 homepage = { workspace = true }

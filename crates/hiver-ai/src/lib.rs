@@ -1,11 +1,11 @@
 #![allow(clippy::expect_used, clippy::cast_precision_loss)]
-//! # Nexus AI
+//! # Hiver AI
 //!
-//! Spring AI equivalent for the Nexus framework.
+//! Spring AI equivalent for the Hiver framework.
 //! Provides chat models, embeddings, vector stores, tool calling,
 //! prompt templates, and conversation memory for AI integration.
 //!
-//! Spring AI 等价物，为 Nexus 框架提供 AI 集成能力。
+//! Spring AI 等价物，为 Hiver 框架提供 AI 集成能力。
 //! 提供聊天模型、嵌入、向量存储、工具调用、提示模板和对话记忆等功能。
 //!
 //! # Overview / 概述

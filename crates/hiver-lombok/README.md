@@ -1,4 +1,4 @@
-# Nexus Lombok
+# Hiver Lombok
 
 [![Crates.io](https://img.shields.io/crates/v/hiver-lombok)](https://crates.io/hiver-lombok)
 [![Documentation](https://docs.rs/hiver-lombok/badge.svg)](https://docs.rs/hiver-lombok)
@@ -348,7 +348,7 @@ fn main() {
 }
 ```
 
-#### ✅ With Annotations (Nexus Lombok) / 使用注解（Nexus Lombok）
+#### ✅ With Annotations (Hiver Lombok) / 使用注解（Hiver Lombok）
 
 ```rust
 use hiver_lombok::Data;
@@ -444,7 +444,7 @@ let config = RequestConfig::builder()
     .build()?;
 ```
 
-#### ✅ With Annotations (Nexus Lombok) / 使用注解
+#### ✅ With Annotations (Hiver Lombok) / 使用注解
 
 ```rust
 use hiver_lombok::Builder;
@@ -546,7 +546,7 @@ public class User {
 }
 ```
 
-### Rust / Nexus Lombok
+### Rust / Hiver Lombok
 
 ```rust
 #[Data]

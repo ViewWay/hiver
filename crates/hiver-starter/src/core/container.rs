@@ -94,12 +94,12 @@ pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>) {
 /// 应用上下文（类似 Spring `ApplicationContext`）
 /// Application context (similar to Spring `ApplicationContext`)
 ///
-/// 这是 Nexus Starter 的核心 IoC 容器，负责：
+/// 这是 Hiver Starter 的核心 IoC 容器，负责：
 /// - Bean 的注册和获取
 /// - 依赖注入
 /// - 自动配置的管理
 ///
-/// This is the core IoC container of Nexus Starter, responsible for:
+/// This is the core IoC container of Hiver Starter, responsible for:
 /// - Bean registration and retrieval
 /// - Dependency injection
 /// - Auto-configuration management
@@ -483,7 +483,7 @@ impl ApplicationContext {
             }
         }
 
-        tracing::info!("Starting Nexus ApplicationContext...");
+        tracing::info!("Starting Hiver ApplicationContext...");
         let start = std::time::Instant::now();
 
         // Instantiate inventory-registered beans (#[service], #[component], etc.)
@@ -511,7 +511,7 @@ impl ApplicationContext {
         let elapsed = start.elapsed();
 
         tracing::info!(
-            "Nexus ApplicationContext started in {}ms",
+            "Hiver ApplicationContext started in {}ms",
             elapsed.as_millis()
         );
 
@@ -627,7 +627,7 @@ impl ApplicationContext {
     /// 关闭应用上下文
     /// Shutdown application context
     pub async fn shutdown(&self) -> AnyhowResult<()> {
-        tracing::info!("Shutting down Nexus ApplicationContext...");
+        tracing::info!("Shutting down Hiver ApplicationContext...");
         self.call_pre_destroy();
         *self.started.write().expect("lock poisoned") = false;
         Ok(())

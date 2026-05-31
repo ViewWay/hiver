@@ -1,6 +1,6 @@
 #![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
 
-//! Nexus Router Example / Nexus路由器示例
+//! Hiver Router Example / Hiver路由器示例
 //!
 //! Demonstrates HTTP request routing for backend applications.
 //! 演示后端应用的HTTP请求路由。
@@ -21,7 +21,7 @@ use hiver_http::content_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus Router Example / Nexus路由器示例 ===\n");
+    println!("=== Hiver Router Example / Hiver路由器示例 ===\n");
 
     // 1. Basic Router / 基本路由器
     println!("1. Basic Router / 基本路由器");

@@ -329,7 +329,7 @@ fn demo_client() {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("================================================================");
-    println!("  Nexus gRPC Service Example / Nexus gRPC服务示例");
+    println!("  Hiver gRPC Service Example / Hiver gRPC服务示例");
     println!("  Equivalent to Spring Cloud gRPC");
     println!("================================================================\n");
 
@@ -354,7 +354,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Unary call: SayHello / 一元调用：SayHello
     println!("Call 1: Greeter.SayHello (unary RPC)");
     let reply = greeter.say_hello(HelloRequest {
-        name: "Nexus Developer".to_string(),
+        name: "Hiver Developer".to_string(),
     }).await?;
     println!("  Response: {}\n", reply.message);
 
@@ -366,7 +366,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Server streaming: StreamGreetings / 服务端流式：StreamGreetings
     println!("Call 2: Greeter.StreamGreetings (server streaming RPC)");
     let replies = greeter.stream_greetings(HelloRequest {
-        name: "Nexus".to_string(),
+        name: "Hiver".to_string(),
     }).await?;
 
     println!("  Received {} greetings:", replies.len());

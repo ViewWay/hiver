@@ -5,8 +5,8 @@ This directory contains the complete CI/CD pipeline configuration for the Hiver 
 
 ## Overview / 概述
 
-Nexus uses a comprehensive set of GitHub Actions workflows to ensure code quality, security, and stability across all platforms.
-Nexus 使用一套全面的 GitHub Actions 工作流来确保所有平台上的代码质量、安全性和稳定性。
+Hiver uses a comprehensive set of GitHub Actions workflows to ensure code quality, security, and stability across all platforms.
+Hiver 使用一套全面的 GitHub Actions 工作流来确保所有平台上的代码质量、安全性和稳定性。
 
 ```
 Workflows (工作流)├── ci.yml                 # Main CI pipeline / 主 CI 流水线
@@ -430,7 +430,7 @@ cargo criterion --workspace --all-features
 
 **Documentation URLs**:
 - GitHub Pages: `https://{owner}.github.io/{repo}/`
-- Rust Docs: `https://{owner}.github.io/{repo}/nexus/`
+- Rust Docs: `https://{owner}.github.io/{repo}/hiver/`
 
 **Estimated Runtime**: 10-15 minutes
 
@@ -486,11 +486,11 @@ Codecov configuration for coverage reporting and PR comments.
 Add these badges to your README.md:
 
 ```markdown
-[![CI](https://github.com/ViewWay/nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/ViewWay/nexus/actions/workflows/ci.yml)
-[![Quality](https://github.com/ViewWay/nexus/actions/workflows/quality.yml/badge.svg)](https://github.com/ViewWay/nexus/actions/workflows/quality.yml)
-[![codecov](https://codecov.io/gh/ViewWay/nexus/branch/main/graph/badge.svg)](https://codecov.io/gh/ViewWay)
-[![Security](https://github.com/ViewWay/nexus/actions/workflows/codeql.yml/badge.svg)](https://github.com/ViewWay/nexus/actions/workflows/codeql.yml)
-[![Benchmark](https://github.com/ViewWay/nexus/actions/workflows/benchmark.yml/badge.svg)](https://github.com/ViewWay/nexus/actions/workflows/benchmark.yml)
+[![CI](https://github.com/ViewWay/hiver/actions/workflows/ci.yml/badge.svg)](https://github.com/ViewWay/hiver/actions/workflows/ci.yml)
+[![Quality](https://github.com/ViewWay/hiver/actions/workflows/quality.yml/badge.svg)](https://github.com/ViewWay/hiver/actions/workflows/quality.yml)
+[![codecov](https://codecov.io/gh/ViewWay/hiver/branch/main/graph/badge.svg)](https://codecov.io/gh/ViewWay)
+[![Security](https://github.com/ViewWay/hiver/actions/workflows/codeql.yml/badge.svg)](https://github.com/ViewWay/hiver/actions/workflows/codeql.yml)
+[![Benchmark](https://github.com/ViewWay/hiver/actions/workflows/benchmark.yml/badge.svg)](https://github.com/ViewWay/hiver/actions/workflows/benchmark.yml)
 ```
 
 ---
@@ -872,7 +872,7 @@ jobs:
       - name: Build docs
         run: |
           cargo doc --all-features --no-deps
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=nexus\">" > target/doc/index.html
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=hiver\">" > target/doc/index.html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -920,8 +920,8 @@ jobs:
 
 ### Complete CI/CD Pipeline / 完整的 CI/CD 流水线
 
-Nexus now has a comprehensive CI/CD pipeline with **15 active workflows**:
-Nexus 现在拥有完整的 CI/CD 流水线，包含 **15 个活跃的工作流**：
+Hiver now has a comprehensive CI/CD pipeline with **15 active workflows**:
+Hiver 现在拥有完整的 CI/CD 流水线，包含 **15 个活跃的工作流**：
 
 #### Core Workflows / 核心工作流 (8)
 
@@ -1039,8 +1039,8 @@ Nexus 现在拥有完整的 CI/CD 流水线，包含 **15 个活跃的工作流*
 
 ## License / 许可证
 
-These workflows are part of the Nexus project and follow the same license (MIT OR Apache-2.0).
-这些工作流是 Nexus 项目的一部分，遵循相同的许可证（MIT OR Apache-2.0）。
+These workflows are part of the Hiver project and follow the same license (MIT OR Apache-2.0).
+这些工作流是 Hiver 项目的一部分，遵循相同的许可证（MIT OR Apache-2.0）。
 
 ---
 
@@ -1048,6 +1048,6 @@ These workflows are part of the Nexus project and follow the same license (MIT O
 
 For questions or issues with the workflows:
 关于工作流的问题或疑问：
-- Open an issue on [GitHub](https://github.com/ViewWay/nexus/issues)
+- Open an issue on [GitHub](https://github.com/ViewWay/hiver/issues)
 - Check [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - Review [Rust CI/CD Guide](https://doc.rust-lang.org/cargo/guide/continuous-integration.html)

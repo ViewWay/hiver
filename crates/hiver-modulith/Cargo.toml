@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Modular monolith support for Hiver Framework.
-Nexus框架的模块化单体支持。
+Hiver框架的模块化单体支持。
 Equivalent to: Spring Modulith
 """
 homepage = { workspace = true }

@@ -1,10 +1,10 @@
-# Nexus-Data 完整实施计划 / 完整实施计划
+# Hiver-Data 完整实施计划 / 完整实施计划
 
 ## 🎯 目标：完整对等 Spring Data / 完整对等 Spring Data
 
 参考：https://springframework.org.cn/projects/spring-data/
 
-## 📦 Nexus-Data 模块结构 / 模块结构
+## 📦 Hiver-Data 模块结构 / 模块结构
 
 ### 核心模块（必须实现） / 核心模块
 
@@ -25,7 +25,7 @@ hiver-data/
 └── hiver-data-migrations/       # 数据库迁移工具
 ```
 
-## 🎯 Phase 8: Nexus-Data 核心（6 个月） / 核心
+## 🎯 Phase 8: Hiver-Data 核心（6 个月） / 核心
 
 ### 8.1 hiver-data-commons (1.5 个月) / 核心抽象
 
@@ -1030,7 +1030,7 @@ async fn main() {
 
 ## 📊 完整功能对比 / 完整功能对比
 
-| Spring Data 模块 | Nexus 对等模块 | 完成度 | 优先级 | 时间 |
+| Spring Data 模块 | Hiver 对等模块 | 完成度 | 优先级 | 时间 |
 |-----------------|---------------|--------|--------|------|
 | Spring Data Commons | hiver-data-commons | 0% | P0 | 1.5个月 |
 | **Spring Data R2DBC** | **hiver-data-rdbc** | **0%** | **P0** | **1.5个月** |
@@ -1057,7 +1057,7 @@ async fn main() {
 
 **创建项目结构：**
 ```bash
-cd /Users/yimiliya/RustroverProjects/nexus/crates
+cd /Users/yimiliya/RustroverProjects/hiver/crates
 mkdir hiver-data-commons
 mkdir hiver-data-rdbc      # 注意：是 rdbc 不是 jdbc！
 mkdir hiver-data-orm

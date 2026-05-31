@@ -1,4 +1,4 @@
-# Nexus 注解使用指南 / Nexus Annotation Guide
+# Hiver 注解使用指南 / Hiver Annotation Guide
 # Complete Guide: Annotations vs Plain Rust / 完整指南：注解版本 vs 原生 Rust
 
 ---
@@ -124,7 +124,7 @@ impl UserRepository {
 
 **Total: ~200 lines for one entity!** / **总计：一个实体需要 ~200 行！**
 
-#### ✅ Nexus Annotations / Nexus 注解
+#### ✅ Hiver Annotations / Hiver 注解
 
 ```rust
 use hiver_lombok::Data;
@@ -533,7 +533,7 @@ impl ProductService {
 }
 ```
 
-#### ✅ Nexus Annotations
+#### ✅ Hiver Annotations
 
 ```rust
 use hiver_lombok::Data;
@@ -617,7 +617,7 @@ hiver-aop = "0.1"
 
 ### Step 2: Replace Boilerplate / 替换样板代码
 
-| Plain Rust / 原生 Rust | Nexus Annotation / Nexus 注解 |
+| Plain Rust / 原生 Rust | Hiver Annotation / Hiver 注解 |
 |---------------------|----------------------------|
 | Manual getters/setters | `#[Data]` |
 | Manual SQL queries | `#[Query("SELECT...")]` |
@@ -654,9 +654,9 @@ cargo clippy
 
 **Conclusion / 结论**:
 
-Nexus annotations help you write **cleaner, safer, and more maintainable** code by eliminating 70-90% of boilerplate code while maintaining Rust's performance and type safety.
+Hiver annotations help you write **cleaner, safer, and more maintainable** code by eliminating 70-90% of boilerplate code while maintaining Rust's performance and type safety.
 
-Nexus 注解通过消除 70-90% 的样板代码，帮助您编写**更清晰、更安全、更易维护**的代码，同时保持 Rust 的性能和类型安全。
+Hiver 注解通过消除 70-90% 的样板代码，帮助您编写**更清晰、更安全、更易维护**的代码，同时保持 Rust 的性能和类型安全。
 
 ---
 

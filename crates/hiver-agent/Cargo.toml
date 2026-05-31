@@ -2,8 +2,8 @@
 name = "hiver-agent"
 version.workspace = true
 edition.workspace = true
-description = "AI Agent framework for Nexus - ReAct, chaining, routing, and tool-using agents"
-# 中文描述: Nexus 的 AI 代理框架 - ReAct、链式、路由和工具使用代理
+description = "AI Agent framework for Hiver - ReAct, chaining, routing, and tool-using agents"
+# 中文描述: Hiver 的 AI 代理框架 - ReAct、链式、路由和工具使用代理
 
 [dependencies]
 hiver-ai = { path = "../hiver-ai" }

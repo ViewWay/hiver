@@ -7,7 +7,7 @@ rust-version = { workspace = true }
 
 description = """
 Example applications for Hiver Framework.
-Nexus框架的示例应用。
+Hiver框架的示例应用。
 Equivalent to: Spring Boot Samples, Spring PetClinic
 """
 
@@ -61,7 +61,7 @@ hiver-router = { path = "../crates/hiver-router" }
 hiver-resilience = { path = "../crates/hiver-resilience" }
 hiver-validation = { path = "../crates/hiver-validation" }
 
-# Nexus Starter / 自动配置启动器
+# Hiver Starter / 自动配置启动器
 hiver-starter = { path = "../crates/hiver-starter", features = ["core", "web"] }
 hiver-macros = { path = "../crates/hiver-macros" }
 

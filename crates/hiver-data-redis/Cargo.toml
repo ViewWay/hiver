@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Redis integration for Hiver Framework (RedisTemplate, Cache)"
-keywords = ["nexus", "data", "redis", "cache", "database"]
+keywords = ["hiver", "data", "redis", "cache", "database"]
 categories = ["database", "asynchronous"]
 
 [features]

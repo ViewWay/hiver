@@ -125,7 +125,7 @@ impl DatabaseClient for SqlxPoolClient {
     }
 }
 
-// Row conversion: sqlx AnyRow to Nexus Row
+// Row conversion: sqlx AnyRow to Hiver Row
 
 fn any_row_to_hiver_row(row: &AnyRow) -> Result<Row> {
     let columns = row.columns();

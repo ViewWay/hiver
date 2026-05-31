@@ -2,7 +2,7 @@
 
 **Request parameter validation for the Hiver Framework.**
 
-**Nexus框架的请求参数验证。**
+**Hiver框架的请求参数验证。**
 
 ## Overview / 概述
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `@Valid` | `#[valid]` |
 | `@Validated` | `Valid<T>` extractor |
@@ -287,7 +287,7 @@ let phone_validator = validators::phone_validator();
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

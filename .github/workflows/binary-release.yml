@@ -28,28 +28,28 @@ jobs:
           # Linux / Linux
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact_name: nexus
+            artifact_name: hiver
             asset_name: hiver-x86_64-unknown-linux-gnu
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact_name: nexus
+            artifact_name: hiver
             asset_name: hiver-aarch64-unknown-linux-gnu
             use_cross: true
 
           # macOS / macOS
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact_name: nexus
+            artifact_name: hiver
             asset_name: hiver-x86_64-apple-darwin
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact_name: nexus
+            artifact_name: hiver
             asset_name: hiver-aarch64-apple-darwin
 
           # Windows / Windows
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            artifact_name: nexus.exe
+            artifact_name: hiver.exe
             asset_name: hiver-x86_64-pc-windows-msvc
 
     steps:
@@ -68,9 +68,9 @@ jobs:
       - name: Build release binary
         run: |
           if [ "${{ matrix.use_cross }}" = "true" ]; then
-            cross build --release --target ${{ matrix.target }} --bin nexus
+            cross build --release --target ${{ matrix.target }} --bin hiver
           else
-            cargo build --release --target ${{ matrix.target }} --bin nexus
+            cargo build --release --target ${{ matrix.target }} --bin hiver
           fi
         shell: bash
 
@@ -125,7 +125,7 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
-            ## 🚀 Nexus ${{ github.ref_name }}
+            ## 🚀 Hiver ${{ github.ref_name }}
 
             ### 📦 Downloads
 
@@ -153,13 +153,13 @@ jobs:
 
             ### 📚 Documentation
 
-            - [Documentation](https://nexus.viewway.io)
+            - [Documentation](https://hiver.viewway.io)
             - [GitHub Repository](https://github.com/${{ github.repository }})
             - [Release Notes](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
 
             ### 🙏 Thanks
 
-            Thank you for using Nexus! If you encounter any issues, please [report them](https://github.com/${{ github.repository }}/issues).
+            Thank you for using Hiver! If you encounter any issues, please [report them](https://github.com/${{ github.repository }}/issues).
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -178,10 +178,10 @@ jobs:
 
       - name: Generate Homebrew formula
         run: |
-          cat > nexus.rb << 'EOF'
-          class Nexus < Formula
+          cat > hiver.rb << 'EOF'
+          class Hiver < Formula
             desc "Production-grade, high-availability web framework written in Rust"
-            homepage "https://nexus.viewway.io"
+            homepage "https://hiver.viewway.io"
             url "${{ github.server_url }}/${{ github.repository }}/archive/refs/tags/${{ github.ref_name }}.tar.gz"
             sha256 "$(curl -L -s ${{ github.server_url }}/${{ github.repository }}/archive/refs/tags/${{ github.ref_name }}.tar.gz | sha256sum | cut -d' ' -f1)"
             license any_of: ["MIT", "Apache-2.0"]
@@ -193,14 +193,14 @@ jobs:
             end
 
             test do
-              system "#{bin}/nexus", "--version"
+              system "#{bin}/hiver", "--version"
             end
           end
           EOF
-          cat nexus.rb
+          cat hiver.rb
 
       - name: Upload Homebrew formula
         uses: actions/upload-artifact@v4
         with:
           name: homebrew-formula
-          path: nexus.rb
+          path: hiver.rb

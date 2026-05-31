@@ -1,13 +1,13 @@
 # Claude Code Change Log
 
 Session: 927ea45b-f0e9-4c5a-a166-0e25bb63a9f9
-Project: nexus
+Project: hiver
 Created: 2026-05-21 07:06:14
 
 ---
 
 ## 2026-05-21 07:06:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -20,7 +20,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-21 07:06:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -33,7 +33,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:06:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/local.rs`
@@ -46,7 +46,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:07:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/work_stealing.rs`
@@ -59,7 +59,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:07:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -72,7 +72,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:07:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -85,7 +85,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:07:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -98,7 +98,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:08:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -111,7 +111,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:08:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -124,7 +124,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:08:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -137,7 +137,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:09:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -150,7 +150,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-21 07:11:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -163,7 +163,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-21 07:11:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -176,7 +176,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:11:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -189,7 +189,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:12:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -202,7 +202,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:12:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/local.rs`
@@ -215,7 +215,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:12:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/work_stealing.rs`
@@ -228,7 +228,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-21 07:12:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -241,7 +241,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-21 07:12:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -254,7 +254,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-21 07:13:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -267,7 +267,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-22 23:16:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/handle.rs`
@@ -280,7 +280,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:17:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/local.rs`
@@ -293,7 +293,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:19:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -306,7 +306,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:19:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/handle.rs`
@@ -319,7 +319,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:20:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/local.rs`
@@ -332,7 +332,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:27:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -345,7 +345,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:27:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -358,7 +358,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:27:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -371,7 +371,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:28:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -384,7 +384,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:28:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -397,7 +397,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:29:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -410,7 +410,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:29:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -423,7 +423,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:30:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -436,7 +436,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:31:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -449,7 +449,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:34:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -462,7 +462,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:35:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -475,7 +475,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:36:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -488,7 +488,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:36:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sqlx.rs`
@@ -501,7 +501,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:37:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -514,7 +514,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:37:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sqlx.rs`
@@ -527,7 +527,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:37:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sqlx.rs`
@@ -540,7 +540,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:37:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sqlx.rs`
@@ -553,7 +553,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-22 23:38:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -566,7 +566,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 10:39:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -579,7 +579,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 10:40:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-macros/src/lib.rs`
@@ -592,7 +592,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 10:59:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/transactional_macro.rs`
@@ -605,7 +605,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 11:00:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/pre_authorize_macro.rs`
@@ -618,7 +618,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:55:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -631,7 +631,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:55:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -644,7 +644,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:55:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -657,7 +657,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:55:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -670,7 +670,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:56:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -683,7 +683,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 17:56:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -696,7 +696,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:42:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/bean.rs`
@@ -709,7 +709,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:43:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/extension.rs`
@@ -722,7 +722,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:44:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/Cargo.toml`
@@ -735,7 +735,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:44:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -748,7 +748,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:44:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/session.rs`
@@ -761,7 +761,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:44:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/session.rs`
@@ -774,7 +774,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:44:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/session.rs`
@@ -787,7 +787,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/session.rs`
@@ -800,7 +800,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/reactive.rs`
@@ -813,7 +813,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -826,7 +826,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/lib.rs`
@@ -839,7 +839,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/context.rs`
@@ -852,7 +852,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/context.rs`
@@ -865,7 +865,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/timeout.rs`
@@ -878,7 +878,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/lib.rs`
@@ -891,7 +891,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -904,7 +904,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/params.rs`
@@ -917,7 +917,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -930,7 +930,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:45:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -943,7 +943,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -956,7 +956,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/reactive.rs`
@@ -969,7 +969,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/template.rs`
@@ -982,7 +982,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rbac.rs`
@@ -995,7 +995,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -1008,7 +1008,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -1021,7 +1021,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -1034,7 +1034,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:46:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -1047,7 +1047,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:47:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -1060,7 +1060,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:47:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/odm.rs`
@@ -1073,7 +1073,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:47:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -1086,7 +1086,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:48:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/handler.rs`
@@ -1099,7 +1099,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:48:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/lib.rs`
@@ -1112,7 +1112,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:48:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -1125,7 +1125,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:48:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/authorization_server.rs`
@@ -1138,7 +1138,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:48:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/lib.rs`
@@ -1151,7 +1151,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:50:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/tests.rs`
@@ -1164,7 +1164,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:50:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -1177,7 +1177,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:50:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -1190,7 +1190,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:50:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -1203,7 +1203,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:51:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/template.rs`
@@ -1216,7 +1216,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:53:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/src/lock.rs`
@@ -1229,7 +1229,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1242,7 +1242,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1255,7 +1255,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/Cargo.toml`
@@ -1268,7 +1268,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1281,7 +1281,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1294,7 +1294,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/src/lock.rs`
@@ -1307,7 +1307,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/sqlx_manager.rs`
@@ -1320,7 +1320,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-flyway/src/dialect.rs`
@@ -1333,7 +1333,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:54:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/src/lock.rs`
@@ -1346,7 +1346,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/lib.rs`
@@ -1359,7 +1359,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1372,7 +1372,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/config.rs`
@@ -1385,7 +1385,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:54:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/src/lock.rs`
@@ -1398,7 +1398,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/config.rs`
@@ -1411,7 +1411,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/config.rs`
@@ -1424,7 +1424,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/Cargo.toml`
@@ -1437,7 +1437,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/config.rs`
@@ -1450,7 +1450,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/config.rs`
@@ -1463,7 +1463,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-tx/src/registry.rs`
@@ -1476,7 +1476,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:55:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1489,7 +1489,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -1502,7 +1502,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -1515,7 +1515,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:55:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -1528,7 +1528,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -1541,7 +1541,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/src/lock.rs`
@@ -1554,7 +1554,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/tests.rs`
@@ -1567,7 +1567,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-redis/Cargo.toml`
@@ -1580,7 +1580,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/schedule/mod.rs`
@@ -1593,7 +1593,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cache/src/redis_cache.rs`
@@ -1606,7 +1606,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:56:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/tests.rs`
@@ -1619,7 +1619,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/flyway.rs`
@@ -1632,7 +1632,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:56:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/migration.rs`
@@ -1645,7 +1645,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:57:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/Cargo.toml`
@@ -1658,7 +1658,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:57:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/lib.rs`
@@ -1671,7 +1671,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:57:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/tests.rs`
@@ -1684,7 +1684,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:57:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cache/src/redis_cache_manager.rs`
@@ -1697,7 +1697,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:57:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/tests.rs`
@@ -1710,7 +1710,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:57:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cache/src/redis_cache.rs`
@@ -1723,7 +1723,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:58:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cache/src/redis_cache.rs`
@@ -1736,7 +1736,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 18:58:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation-annotations/src/lib.rs`
@@ -1749,7 +1749,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:58:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/lib.rs`
@@ -1762,7 +1762,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 18:58:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cache/src/redis_cache_manager.rs`
@@ -1775,7 +1775,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:02:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/config.rs`
@@ -1788,7 +1788,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:02:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/config.rs`
@@ -1801,7 +1801,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:02:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/producer.rs`
@@ -1814,7 +1814,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:02:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `tests/Cargo.toml`
@@ -1827,7 +1827,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:02:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/lib.rs`
@@ -1840,7 +1840,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/consumer.rs`
@@ -1853,7 +1853,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/exchange.rs`
@@ -1866,7 +1866,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -1879,7 +1879,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -1892,7 +1892,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:03:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -1905,7 +1905,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/message.rs`
@@ -1918,7 +1918,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/value.rs`
@@ -1931,7 +1931,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-aop/src/runtime.rs`
@@ -1944,7 +1944,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:03:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -1957,7 +1957,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -1970,7 +1970,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/serialization.rs`
@@ -1983,7 +1983,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-benches/Cargo.toml`
@@ -1996,7 +1996,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/Cargo.toml`
@@ -2009,7 +2009,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/topic.rs`
@@ -2022,7 +2022,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-aop/src/tests.rs`
@@ -2035,7 +2035,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -2048,7 +2048,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:04:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-benches/runtime_driver.rs`
@@ -2061,7 +2061,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:04:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/source.rs`
@@ -2074,7 +2074,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/queue.rs`
@@ -2087,7 +2087,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/message.rs`
@@ -2100,7 +2100,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/binding.rs`
@@ -2113,7 +2113,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/connection.rs`
@@ -2126,7 +2126,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/publisher.rs`
@@ -2139,7 +2139,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/listener.rs`
@@ -2152,7 +2152,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -2165,7 +2165,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -2178,7 +2178,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:05:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/environment.rs`
@@ -2191,7 +2191,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/tests.rs`
@@ -2204,7 +2204,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:05:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-benches/http_techpower.rs`
@@ -2217,7 +2217,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:06:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -2230,7 +2230,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:06:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cloud/src/discovery/consul.rs`
@@ -2243,7 +2243,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:06:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2256,7 +2256,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:06:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-benches/data_orm.rs`
@@ -2269,7 +2269,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:06:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/loader.rs`
@@ -2282,7 +2282,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2294,7 +2294,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2307,7 +2307,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/microservice.rs`
@@ -2320,7 +2320,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2332,7 +2332,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/error.rs`
@@ -2345,7 +2345,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -2358,7 +2358,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cloud/src/discovery/mod.rs`
@@ -2371,7 +2371,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/lib.rs`
@@ -2384,7 +2384,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/lib.rs`
@@ -2397,7 +2397,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/properties.rs`
@@ -2410,7 +2410,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/postgres_tests.rs`
@@ -2423,7 +2423,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/mysql_tests.rs`
@@ -2436,7 +2436,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/redis_tests.rs`
@@ -2449,7 +2449,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/kafka_tests.rs`
@@ -2462,7 +2462,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2475,7 +2475,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:07:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/rabbitmq_tests.rs`
@@ -2488,7 +2488,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-benches/security.rs`
@@ -2501,7 +2501,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `tests/integration/mysql_tests.rs`
@@ -2514,7 +2514,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:07:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/role.rs`
@@ -2527,7 +2527,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-cloud/src/discovery/mod.rs`
@@ -2540,7 +2540,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:08:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/Cargo.toml`
@@ -2553,7 +2553,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/locale.rs`
@@ -2566,7 +2566,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/lib.rs`
@@ -2579,7 +2579,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-websocket-stomp/src/frame.rs`
@@ -2592,7 +2592,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/Cargo.toml`
@@ -2605,7 +2605,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/lib.rs`
@@ -2618,7 +2618,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -2631,7 +2631,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -2644,7 +2644,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/properties.rs`
@@ -2657,7 +2657,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/prompt.rs`
@@ -2670,7 +2670,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/sse.rs`
@@ -2683,7 +2683,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -2696,7 +2696,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/builder.rs`
@@ -2709,7 +2709,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/odm.rs`
@@ -2722,7 +2722,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:08:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-observability/src/metrics.rs`
@@ -2735,7 +2735,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-observability/src/trace.rs`
@@ -2748,7 +2748,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-shell/src/command.rs`
@@ -2761,7 +2761,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-shell/src/result.rs`
@@ -2774,7 +2774,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-shell/src/result.rs`
@@ -2787,7 +2787,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -2800,7 +2800,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:09:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-shell/src/result.rs`
@@ -2813,7 +2813,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/config/environment.rs`
@@ -2826,7 +2826,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/environment.rs`
@@ -2839,7 +2839,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/value.rs`
@@ -2852,7 +2852,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/tx.rs`
@@ -2865,7 +2865,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/subscribe.rs`
@@ -2878,7 +2878,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/subscribe.rs`
@@ -2891,7 +2891,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/chain.rs`
@@ -2904,7 +2904,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/wallet.rs`
@@ -2917,7 +2917,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:09:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/error.rs`
@@ -2930,7 +2930,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-micrometer/src/metric.rs`
@@ -2943,7 +2943,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/session.rs`
@@ -2956,7 +2956,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/status.rs`
@@ -2969,7 +2969,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/pool.rs`
@@ -2982,7 +2982,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-observability/src/hiver_format.rs`
@@ -2995,7 +2995,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/builder.rs`
@@ -3008,7 +3008,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:10:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/grpc_service.rs`
@@ -3021,7 +3021,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:10:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `examples/Cargo.toml`
@@ -3034,7 +3034,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/part_tree.rs`
@@ -3047,7 +3047,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `examples/Cargo.toml`
@@ -3060,7 +3060,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/optimistic_lock.rs`
@@ -3073,7 +3073,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/transactional_listener.rs`
@@ -3086,7 +3086,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/condition.rs`
@@ -3099,7 +3099,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/chat_model.rs`
@@ -3112,7 +3112,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:11:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-flyway/src/dialect.rs`
@@ -3125,7 +3125,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:11:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/tests.rs`
@@ -3138,7 +3138,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:12:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -3151,7 +3151,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:12:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -3164,7 +3164,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:12:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -3177,7 +3177,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:12:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -3190,7 +3190,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:12:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -3203,7 +3203,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:13:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -3216,7 +3216,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:13:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure_processor.rs`
@@ -3229,7 +3229,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:13:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure_processor.rs`
@@ -3242,7 +3242,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:13:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/condition_evaluator.rs`
@@ -3255,7 +3255,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:13:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-observability/src/metrics.rs`
@@ -3268,7 +3268,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:13:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sea_orm.rs`
@@ -3281,7 +3281,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:13:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/rest_api.rs`
@@ -3294,7 +3294,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:13:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/value.rs`
@@ -3307,7 +3307,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:14:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/microservice.rs`
@@ -3320,7 +3320,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:16:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/grpc_service.rs`
@@ -3333,7 +3333,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:16:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3346,7 +3346,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:16:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3359,7 +3359,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:17:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3372,7 +3372,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:17:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3385,7 +3385,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:17:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3398,7 +3398,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:17:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3411,7 +3411,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:18:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3424,7 +3424,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:18:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `examples/web3_dapp.rs`
@@ -3437,7 +3437,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-24 19:20:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -3450,7 +3450,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:22:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/tests.rs`
@@ -3463,7 +3463,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:22:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/pki.rs`
@@ -3476,7 +3476,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:28:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/handle.rs`
@@ -3489,7 +3489,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 19:29:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -3502,7 +3502,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:52:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/tests.rs`
@@ -3515,7 +3515,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -3528,7 +3528,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-aop/src/runtime.rs`
@@ -3541,7 +3541,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/loader.rs`
@@ -3554,7 +3554,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/value.rs`
@@ -3567,7 +3567,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/value.rs`
@@ -3580,7 +3580,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/properties.rs`
@@ -3593,7 +3593,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:53:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/properties.rs`
@@ -3606,7 +3606,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -3619,7 +3619,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -3632,7 +3632,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3645,7 +3645,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3658,7 +3658,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3671,7 +3671,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:54:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3684,7 +3684,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3697,7 +3697,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3710,7 +3710,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3723,7 +3723,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3736,7 +3736,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3749,7 +3749,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3762,7 +3762,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3775,7 +3775,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3788,7 +3788,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3801,7 +3801,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:55:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3814,7 +3814,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3827,7 +3827,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3840,7 +3840,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3853,7 +3853,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3866,7 +3866,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3879,7 +3879,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3892,7 +3892,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3905,7 +3905,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:56:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3918,7 +3918,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3931,7 +3931,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -3944,7 +3944,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/extension.rs`
@@ -3957,7 +3957,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/reactive.rs`
@@ -3970,7 +3970,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/reactive.rs`
@@ -3983,7 +3983,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:57:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -3996,7 +3996,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:58:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -4009,7 +4009,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:58:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -4022,7 +4022,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:58:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -4035,7 +4035,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:58:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/tests.rs`
@@ -4048,7 +4048,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:59:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/tests.rs`
@@ -4061,7 +4061,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:59:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4074,7 +4074,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 21:59:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4087,7 +4087,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:00:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4100,7 +4100,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:00:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4113,7 +4113,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:00:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/timeout.rs`
@@ -4126,7 +4126,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:01:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -4139,7 +4139,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:02:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -4152,7 +4152,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:02:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/tests.rs`
@@ -4165,7 +4165,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:02:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/message.rs`
@@ -4178,7 +4178,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:03:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/serialization.rs`
@@ -4191,7 +4191,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:03:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/serialization.rs`
@@ -4204,7 +4204,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:04:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/serialization.rs`
@@ -4217,7 +4217,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:05:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/serialization.rs`
@@ -4230,7 +4230,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:08:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/config.rs`
@@ -4243,7 +4243,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:09:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/config.rs`
@@ -4256,7 +4256,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:11:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/environment.rs`
@@ -4269,7 +4269,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-24 22:11:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -4282,7 +4282,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:52:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/data.rs`
@@ -4295,7 +4295,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:52:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/value.rs`
@@ -4308,7 +4308,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:52:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/with_method.rs`
@@ -4321,7 +4321,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:53:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4334,7 +4334,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:53:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4347,7 +4347,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:53:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4360,7 +4360,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:53:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4373,7 +4373,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:53:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4386,7 +4386,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:54:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/tests/data_test.rs`
@@ -4399,7 +4399,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:54:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/lib.rs`
@@ -4412,7 +4412,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:54:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/lib.rs`
@@ -4425,7 +4425,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:54:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/constructor.rs`
@@ -4438,7 +4438,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 07:54:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/examples/user_entity.rs`
@@ -4451,7 +4451,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 18:58:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/message.rs`
@@ -4464,7 +4464,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 18:58:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/sea_orm.rs`
@@ -4477,7 +4477,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 18:59:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -4490,7 +4490,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 18:59:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/config.rs`
@@ -4503,7 +4503,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:00:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/message.rs`
@@ -4516,7 +4516,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:52:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -4529,7 +4529,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:52:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -4542,7 +4542,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:52:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -4555,7 +4555,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:53:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -4568,7 +4568,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:53:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -4581,7 +4581,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:59:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4594,7 +4594,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 19:59:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/lib.rs`
@@ -4607,7 +4607,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 19:59:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4620,7 +4620,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 19:59:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4633,7 +4633,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 19:59:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4646,7 +4646,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 19:59:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4659,7 +4659,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:00:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4672,7 +4672,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:00:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4685,7 +4685,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:00:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/unified.rs`
@@ -4698,7 +4698,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:00:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -4711,7 +4711,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:00:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -4724,7 +4724,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:00:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -4737,7 +4737,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:00:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -4750,7 +4750,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:00:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4763,7 +4763,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:01:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/lib.rs`
@@ -4776,7 +4776,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:01:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -4789,7 +4789,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:01:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -4802,7 +4802,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:01:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4815,7 +4815,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:01:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4828,7 +4828,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:02:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4841,7 +4841,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:02:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4854,7 +4854,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:03:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4867,7 +4867,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:03:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-extractors/src/multipart.rs`
@@ -4880,7 +4880,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 20:04:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -4893,7 +4893,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:04:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -4906,7 +4906,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:04:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -4919,7 +4919,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 20:05:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -4932,7 +4932,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:00:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `Cargo.toml`
@@ -4945,7 +4945,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:00:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/Cargo.toml`
@@ -4958,7 +4958,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:02:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -4971,7 +4971,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:03:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/error.rs`
@@ -4984,7 +4984,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:03:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -4997,7 +4997,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:03:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/error.rs`
@@ -5010,7 +5010,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:03:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/error.rs`
@@ -5023,7 +5023,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:03:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5036,7 +5036,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:03:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/error.rs`
@@ -5049,7 +5049,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:03:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/nested.rs`
@@ -5062,7 +5062,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:03:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5075,7 +5075,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:03:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/nested.rs`
@@ -5088,7 +5088,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:04:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/lib.rs`
@@ -5101,7 +5101,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:04:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5114,7 +5114,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/lib.rs`
@@ -5127,7 +5127,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:04:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5140,7 +5140,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5153,7 +5153,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5166,7 +5166,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5179,7 +5179,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5192,7 +5192,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5205,7 +5205,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5218,7 +5218,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:04:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/lib.rs`
@@ -5231,7 +5231,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:04:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5244,7 +5244,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -5257,7 +5257,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5270,7 +5270,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5283,7 +5283,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5296,7 +5296,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5309,7 +5309,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:05:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5322,7 +5322,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:06:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -5335,7 +5335,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:06:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -5348,7 +5348,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/lib.rs`
@@ -5361,7 +5361,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:07:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/lib.rs`
@@ -5374,7 +5374,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:07:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5387,7 +5387,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -5400,7 +5400,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -5413,7 +5413,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -5426,7 +5426,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5439,7 +5439,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5452,7 +5452,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:07:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5465,7 +5465,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5478,7 +5478,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5491,7 +5491,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5504,7 +5504,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5517,7 +5517,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -5530,7 +5530,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -5543,7 +5543,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:08:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/lib.rs`
@@ -5556,7 +5556,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:09:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -5569,7 +5569,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:09:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -5582,7 +5582,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:09:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -5595,7 +5595,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:10:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -5608,7 +5608,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:20:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-http/src/controller_advice.rs`
@@ -5621,7 +5621,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:21:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-http/src/controller_advice.rs`
@@ -5634,7 +5634,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:21:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5647,7 +5647,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:21:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/lib.rs`
@@ -5660,7 +5660,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:21:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/lib.rs`
@@ -5673,7 +5673,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:21:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5686,7 +5686,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:21:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5699,7 +5699,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:21:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5712,7 +5712,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:22:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5725,7 +5725,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:22:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5738,7 +5738,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:22:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5751,7 +5751,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/email.rs`
@@ -5764,7 +5764,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:23:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -5777,7 +5777,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -5790,7 +5790,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -5803,7 +5803,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5816,7 +5816,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/lib.rs`
@@ -5829,7 +5829,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:23:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5842,7 +5842,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:23:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5855,7 +5855,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:24:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5868,7 +5868,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:24:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5881,7 +5881,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:24:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5894,7 +5894,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:24:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-http/src/controller_advice.rs`
@@ -5907,7 +5907,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:24:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5920,7 +5920,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:24:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -5933,7 +5933,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:24:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5946,7 +5946,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:24:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5959,7 +5959,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:25:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5972,7 +5972,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:25:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5985,7 +5985,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:25:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -5998,7 +5998,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:25:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-http/src/controller_advice.rs`
@@ -6011,7 +6011,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-29 22:25:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/config.rs`
@@ -6024,7 +6024,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:26:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/config.rs`
@@ -6037,7 +6037,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:27:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -6050,7 +6050,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:27:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -6063,7 +6063,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:27:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -6076,7 +6076,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:27:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-boot-feature-matrix.md`
@@ -6089,33 +6089,33 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:42:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-ecosystem-gap-analysis.md`
 ### Change Record
 Modified file `docs/spring-boot/spring-ecosystem-gap-analysis.md`. Approximately 17 lines changed.
 ### Change Summary
-Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "**Nexus 整体完成度：90-95%**; - **已实现且可用（90%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshSco..." to "**Nexus 整体完成度：95-100%**; - **已实现且可用（90%+）**：全部 Spring Boot 50 项功能均已实现，包括 IoC/DI、HTTP、路由、安全（含权限注册表/审计）、缓存、事务、验证（含自定义校验器）、...".
+Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "**Hiver 整体完成度：90-95%**; - **已实现且可用（90%+）**：IoC/DI、HTTP、路由、安全、缓存、事务、验证、中间件、STOMP WebSocket、响应式（含背压）、宏系统、配置（含加密/RefreshSco..." to "**Hiver 整体完成度：95-100%**; - **已实现且可用（90%+）**：全部 Spring Boot 50 项功能均已实现，包括 IoC/DI、HTTP、路由、安全（含权限注册表/审计）、缓存、事务、验证（含自定义校验器）、...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:42:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/spring-boot/spring-ecosystem-gap-analysis.md`
 ### Change Record
 Modified file `docs/spring-boot/spring-ecosystem-gap-analysis.md`. Approximately 26 lines changed.
 ### Change Summary
-Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "| 21 | Spring Authorization Server | hiver-security (内含) | **80%** | P1 | 多种 Grant Type、授权服务器 |; **Nexus 整体完成度：90-95%**;..." to "| 21 | Spring Authorization Server | hiver-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |; **Nexus 整体完成...".
+Changed `docs/spring-boot/spring-ecosystem-gap-analysis.md` from "| 21 | Spring Authorization Server | hiver-security (内含) | **80%** | P1 | 多种 Grant Type、授权服务器 |; **Hiver 整体完成度：90-95%**;..." to "| 21 | Spring Authorization Server | hiver-security (内含) | **90%** | P1 | 多种 Grant Type/授权服务器/权限注册表/审计日志 |; **Hiver 整体完成...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6128,7 +6128,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/authorization_server.rs`
@@ -6141,7 +6141,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rbac.rs`
@@ -6154,7 +6154,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6167,7 +6167,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6180,7 +6180,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rbac.rs`
@@ -6193,7 +6193,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6206,7 +6206,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6219,7 +6219,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6232,7 +6232,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6245,7 +6245,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6258,7 +6258,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rbac.rs`
@@ -6271,7 +6271,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6284,7 +6284,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6297,7 +6297,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6310,7 +6310,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6323,7 +6323,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rbac.rs`
@@ -6336,7 +6336,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6349,7 +6349,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6362,7 +6362,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6375,7 +6375,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv_v2.rs`
@@ -6388,7 +6388,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/oauth2.rs`
@@ -6401,7 +6401,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:46:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/Cargo.toml`
@@ -6414,7 +6414,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/kv.rs`
@@ -6427,7 +6427,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6440,7 +6440,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6453,7 +6453,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6466,7 +6466,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-macros/src/pre_authorize.rs`
@@ -6479,7 +6479,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6492,7 +6492,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-macros/src/bean_register.rs`
@@ -6505,7 +6505,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6518,7 +6518,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/resource_bundle.rs`
@@ -6531,7 +6531,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6544,7 +6544,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6557,7 +6557,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6570,7 +6570,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6583,7 +6583,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6596,7 +6596,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6609,7 +6609,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6622,7 +6622,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6635,7 +6635,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6648,7 +6648,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/lib.rs`
@@ -6661,7 +6661,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6674,7 +6674,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/filter.rs`
@@ -6687,7 +6687,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6700,7 +6700,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/filter.rs`
@@ -6713,7 +6713,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6726,7 +6726,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/endpoint.rs`
@@ -6739,7 +6739,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-vault/src/auth_jwt.rs`
@@ -6752,7 +6752,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/endpoint.rs`
@@ -6765,7 +6765,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/endpoint.rs`
@@ -6778,7 +6778,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -6791,7 +6791,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -6804,7 +6804,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -6817,7 +6817,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -6830,7 +6830,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:47:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -6843,7 +6843,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -6856,7 +6856,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6869,7 +6869,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -6882,7 +6882,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6895,7 +6895,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6908,7 +6908,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-i18n/src/message_source.rs`
@@ -6921,7 +6921,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/lib.rs`
@@ -6933,7 +6933,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/endpoint.rs`
@@ -6946,7 +6946,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/endpoint.rs`
@@ -6959,7 +6959,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -6972,7 +6972,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -6985,7 +6985,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:48:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -6998,7 +6998,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:49:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -7011,7 +7011,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:49:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -7024,7 +7024,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:57:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/consumer_group_manager.rs`
@@ -7037,7 +7037,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:57:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/consumer_group_manager.rs`
@@ -7050,7 +7050,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:57:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/consumer_group_manager.rs`
@@ -7063,7 +7063,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:57:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/consumer_group_manager.rs`
@@ -7076,7 +7076,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7089,7 +7089,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7102,7 +7102,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7115,7 +7115,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7128,7 +7128,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7141,7 +7141,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/offset_manager.rs`
@@ -7154,7 +7154,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/transactional_producer.rs`
@@ -7167,7 +7167,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/transactional_producer.rs`
@@ -7180,7 +7180,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/transactional_producer.rs`
@@ -7193,7 +7193,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/transactional_producer.rs`
@@ -7206,7 +7206,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-kafka/src/transactional_producer.rs`
@@ -7219,7 +7219,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/time.rs`
@@ -7232,7 +7232,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -7245,7 +7245,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -7258,7 +7258,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/ack.rs`
@@ -7271,7 +7271,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/ack.rs`
@@ -7284,7 +7284,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/ack.rs`
@@ -7297,7 +7297,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/ack.rs`
@@ -7310,7 +7310,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -7323,7 +7323,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -7336,7 +7336,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -7349,7 +7349,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/interest.rs`
@@ -7362,7 +7362,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/converter.rs`
@@ -7375,7 +7375,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/dead_letter.rs`
@@ -7388,7 +7388,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/dead_letter.rs`
@@ -7401,7 +7401,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-amqp/src/dead_letter.rs`
@@ -7414,7 +7414,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/interest.rs`
@@ -7427,7 +7427,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/kqueue.rs`
@@ -7440,7 +7440,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:58:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/kqueue.rs`
@@ -7453,7 +7453,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7466,7 +7466,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/lib.rs`
@@ -7479,7 +7479,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/chain.rs`
@@ -7492,7 +7492,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7505,7 +7505,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/chain.rs`
@@ -7518,7 +7518,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/chain.rs`
@@ -7531,7 +7531,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/chain.rs`
@@ -7544,7 +7544,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/react.rs`
@@ -7557,7 +7557,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/react.rs`
@@ -7570,7 +7570,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/react.rs`
@@ -7583,7 +7583,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7596,7 +7596,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/middleware.rs`
@@ -7609,7 +7609,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/react.rs`
@@ -7622,7 +7622,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7635,7 +7635,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7648,7 +7648,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/ollama.rs`
@@ -7661,7 +7661,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7674,7 +7674,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/openai.rs`
@@ -7687,7 +7687,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/rag.rs`
@@ -7700,7 +7700,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/lib.rs`
@@ -7713,7 +7713,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/swagger.rs`
@@ -7726,7 +7726,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/swagger.rs`
@@ -7739,7 +7739,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7752,7 +7752,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7765,7 +7765,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7778,7 +7778,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -7791,7 +7791,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7804,7 +7804,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7817,7 +7817,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7830,7 +7830,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7843,7 +7843,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7856,7 +7856,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 22:59:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -7869,7 +7869,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -7882,7 +7882,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/store.rs`
@@ -7895,7 +7895,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/store.rs`
@@ -7908,7 +7908,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/work_stealing.rs`
@@ -7921,7 +7921,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-batch/src/operator.rs`
@@ -7934,7 +7934,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -7947,7 +7947,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-batch/src/operator.rs`
@@ -7960,7 +7960,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/ollama.rs`
@@ -7973,7 +7973,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/anthropic.rs`
@@ -7986,7 +7986,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:00:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/store.rs`
@@ -7999,7 +7999,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -8012,7 +8012,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -8025,7 +8025,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -8038,7 +8038,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -8051,7 +8051,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -8064,7 +8064,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:01:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -8077,7 +8077,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:02:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task/raw_task.rs`
@@ -8090,7 +8090,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:02:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/time.rs`
@@ -8103,7 +8103,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:02:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/work_stealing.rs`
@@ -8116,7 +8116,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-retry/src/template.rs`
@@ -8129,7 +8129,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/lib.rs`
@@ -8142,7 +8142,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-mongodb/src/bulk.rs`
@@ -8155,7 +8155,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-mongodb/src/repository.rs`
@@ -8168,7 +8168,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/context.rs`
@@ -8181,7 +8181,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/context.rs`
@@ -8194,7 +8194,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/flyway.rs`
@@ -8207,7 +8207,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:10:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8220,7 +8220,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure.rs`
@@ -8233,7 +8233,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure.rs`
@@ -8246,7 +8246,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure.rs`
@@ -8259,7 +8259,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure.rs`
@@ -8272,7 +8272,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/autoconfigure.rs`
@@ -8285,7 +8285,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/bean_factory_post_processor.rs`
@@ -8298,7 +8298,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:11:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/core/bean_factory_post_processor.rs`
@@ -8311,7 +8311,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/context.rs`
@@ -8324,7 +8324,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/context.rs`
@@ -8337,7 +8337,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8350,7 +8350,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-integration/src/lib.rs`
@@ -8363,7 +8363,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-flyway/src/flyway.rs`
@@ -8376,7 +8376,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -8389,7 +8389,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -8402,7 +8402,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -8415,7 +8415,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -8428,7 +8428,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/pool.rs`
@@ -8441,7 +8441,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/pool.rs`
@@ -8454,7 +8454,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/pool.rs`
@@ -8467,7 +8467,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/ldif.rs`
@@ -8480,7 +8480,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/context.rs`
@@ -8493,7 +8493,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -8506,7 +8506,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:12:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -8519,7 +8519,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:13:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/transactional_listener.rs`
@@ -8532,7 +8532,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:13:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/transactional_listener.rs`
@@ -8545,7 +8545,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:13:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -8558,7 +8558,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:13:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -8571,7 +8571,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:14:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/context.rs`
@@ -8584,7 +8584,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:14:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/context.rs`
@@ -8597,7 +8597,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:14:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -8610,7 +8610,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:14:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/repository.rs`
@@ -8623,7 +8623,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:18:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/openai.rs`
@@ -8636,7 +8636,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:18:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/transactional_listener.rs`
@@ -8649,7 +8649,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:18:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-events/src/transactional_listener.rs`
@@ -8662,7 +8662,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:22:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -8675,7 +8675,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-29 23:32:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-lombok/src/builder.rs`
@@ -8688,7 +8688,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:08:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8701,7 +8701,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:08:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/Cargo.toml`
@@ -8714,7 +8714,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:09:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-grpc/src/retry.rs`
@@ -8727,7 +8727,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 00:10:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/metadata.rs`
@@ -8740,7 +8740,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:10:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/lib.rs`
@@ -8753,7 +8753,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:11:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8766,7 +8766,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:11:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-grpc/src/retry.rs`
@@ -8779,7 +8779,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 00:14:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-tx/src/events.rs`
@@ -8792,7 +8792,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 00:14:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -8805,7 +8805,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:14:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-tx/src/lib.rs`
@@ -8818,7 +8818,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:15:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-tx/src/events.rs`
@@ -8831,7 +8831,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 00:33:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-config/src/refresh.rs`
@@ -8844,7 +8844,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/retry.rs`
@@ -8857,7 +8857,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/ldif.rs`
@@ -8870,7 +8870,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ai/src/openai.rs`
@@ -8883,7 +8883,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8896,7 +8896,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/retry.rs`
@@ -8909,7 +8909,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/interceptor.rs`
@@ -8922,7 +8922,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 00:33:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-ldap/src/operations.rs`
@@ -8935,7 +8935,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:05:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/lib.rs`
@@ -8948,7 +8948,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:05:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -8961,7 +8961,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:06:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -8974,7 +8974,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:06:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -8987,7 +8987,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:06:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -9000,7 +9000,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:08:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -9013,7 +9013,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:10:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -9026,7 +9026,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -9039,7 +9039,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -9052,7 +9052,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -9065,7 +9065,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9078,7 +9078,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9091,7 +9091,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:11:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9104,7 +9104,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:12:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9117,7 +9117,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:12:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9130,7 +9130,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:12:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/query_runtime.rs`
@@ -9143,7 +9143,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/service.rs`
@@ -9156,7 +9156,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/queue.rs`
@@ -9169,7 +9169,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/queue.rs`
@@ -9182,7 +9182,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -9195,7 +9195,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -9208,7 +9208,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -9221,7 +9221,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -9234,7 +9234,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:26:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -9247,7 +9247,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/part_tree.rs`
@@ -9260,7 +9260,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/specification.rs`
@@ -9273,7 +9273,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -9286,7 +9286,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -9299,7 +9299,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -9312,7 +9312,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -9325,7 +9325,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/projection.rs`
@@ -9338,7 +9338,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/sse.rs`
@@ -9351,7 +9351,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -9364,7 +9364,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/part_tree.rs`
@@ -9377,7 +9377,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -9390,7 +9390,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/websocket.rs`
@@ -9403,7 +9403,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -9416,7 +9416,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -9429,7 +9429,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -9442,7 +9442,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/route.rs`
@@ -9455,7 +9455,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/router.rs`
@@ -9468,7 +9468,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/router.rs`
@@ -9481,7 +9481,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/specification.rs`
@@ -9494,7 +9494,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/router.rs`
@@ -9507,7 +9507,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9520,7 +9520,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9533,7 +9533,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/runtime.rs`
@@ -9546,7 +9546,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/scheduler/queue.rs`
@@ -9559,7 +9559,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9572,7 +9572,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9585,7 +9585,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9598,7 +9598,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/router.rs`
@@ -9611,7 +9611,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9624,7 +9624,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -9637,7 +9637,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:27:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/validation.rs`
@@ -9650,7 +9650,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:28:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `Cargo.toml`
@@ -9663,7 +9663,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:28:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-router/src/trie.rs`
@@ -9676,7 +9676,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 09:28:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-core/src/container.rs`
@@ -9689,7 +9689,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/health.rs`
@@ -9702,7 +9702,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/metadata.rs`
@@ -9715,7 +9715,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/retry.rs`
@@ -9728,7 +9728,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/server.rs`
@@ -9741,7 +9741,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/client.rs`
@@ -9754,7 +9754,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/tls.rs`
@@ -9767,7 +9767,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/engine.rs`
@@ -9780,7 +9780,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/engine.rs`
@@ -9793,7 +9793,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/engine.rs`
@@ -9806,7 +9806,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/resolver.rs`
@@ -9819,7 +9819,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9832,7 +9832,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/error.rs`
@@ -9845,7 +9845,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:57:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9858,7 +9858,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9871,7 +9871,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9884,7 +9884,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/dataloader.rs`
@@ -9897,7 +9897,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9910,7 +9910,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9923,7 +9923,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9936,7 +9936,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9949,7 +9949,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-spel/src/parser.rs`
@@ -9962,7 +9962,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9975,7 +9975,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -9988,7 +9988,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10001,7 +10001,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10014,7 +10014,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-spel/src/evaluator.rs`
@@ -10027,7 +10027,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10040,7 +10040,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10053,7 +10053,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10066,7 +10066,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10079,7 +10079,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/multichain.rs`
@@ -10092,7 +10092,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10105,7 +10105,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10118,7 +10118,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/multichain.rs`
@@ -10131,7 +10131,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/multichain.rs`
@@ -10144,7 +10144,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10157,7 +10157,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10170,7 +10170,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/multichain.rs`
@@ -10183,7 +10183,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/multichain.rs`
@@ -10196,7 +10196,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10209,7 +10209,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -10222,7 +10222,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/defi.rs`
@@ -10235,7 +10235,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:58:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/response.rs`
@@ -10248,7 +10248,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/events.rs`
@@ -10261,7 +10261,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/defi.rs`
@@ -10274,7 +10274,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/events.rs`
@@ -10287,7 +10287,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/events.rs`
@@ -10300,7 +10300,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/events.rs`
@@ -10313,7 +10313,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10326,7 +10326,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10339,7 +10339,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-session/src/events.rs`
@@ -10352,7 +10352,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/path.rs`
@@ -10365,7 +10365,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10378,7 +10378,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/path.rs`
@@ -10391,7 +10391,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10404,7 +10404,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/auth.rs`
@@ -10417,7 +10417,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10430,7 +10430,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-web3/src/hd_wallet.rs`
@@ -10443,7 +10443,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/acl.rs`
@@ -10456,7 +10456,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/acl.rs`
@@ -10469,7 +10469,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/acl.rs`
@@ -10482,7 +10482,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/acl.rs`
@@ -10495,7 +10495,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config.rs`
@@ -10508,7 +10508,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/acl.rs`
@@ -10521,7 +10521,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config.rs`
@@ -10534,7 +10534,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config.rs`
@@ -10547,7 +10547,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/authorization_server.rs`
@@ -10560,7 +10560,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10573,7 +10573,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10586,7 +10586,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10599,7 +10599,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -10612,7 +10612,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10625,7 +10625,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10638,7 +10638,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10651,7 +10651,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10664,7 +10664,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 10:59:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10677,7 +10677,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -10690,7 +10690,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10703,7 +10703,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10716,7 +10716,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10729,7 +10729,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10742,7 +10742,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/data_scope.rs`
@@ -10755,7 +10755,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -10768,7 +10768,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -10781,7 +10781,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -10794,7 +10794,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/doc_pdf.rs`
@@ -10807,7 +10807,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/circuit_breaker.rs`
@@ -10820,7 +10820,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/circuit_breaker.rs`
@@ -10833,7 +10833,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/circuit_breaker.rs`
@@ -10846,7 +10846,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -10859,7 +10859,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/feign.rs`
@@ -10872,7 +10872,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/email.rs`
@@ -10885,7 +10885,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -10898,7 +10898,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/encoder.rs`
@@ -10911,7 +10911,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -10924,7 +10924,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -10937,7 +10937,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -10950,7 +10950,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -10963,7 +10963,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:00:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -10976,7 +10976,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -10989,7 +10989,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -11002,7 +11002,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -11015,7 +11015,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -11028,7 +11028,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -11041,7 +11041,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/rememberme.rs`
@@ -11054,7 +11054,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/permission.rs`
@@ -11067,7 +11067,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -11080,7 +11080,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/circuit.rs`
@@ -11093,7 +11093,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/circuit.rs`
@@ -11106,7 +11106,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -11119,7 +11119,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -11132,7 +11132,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -11145,7 +11145,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -11158,7 +11158,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -11171,7 +11171,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -11184,7 +11184,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/circuit.rs`
@@ -11197,7 +11197,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/discovery.rs`
@@ -11210,7 +11210,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -11223,7 +11223,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/discovery.rs`
@@ -11236,7 +11236,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/config.rs`
@@ -11249,7 +11249,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/operation.rs`
@@ -11262,7 +11262,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:01:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/discovery.rs`
@@ -11275,7 +11275,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/generator.rs`
@@ -11288,7 +11288,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/load_balancer.rs`
@@ -11301,7 +11301,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/rate_limit.rs`
@@ -11314,7 +11314,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/rate_limit.rs`
@@ -11327,7 +11327,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/validators.rs`
@@ -11340,7 +11340,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/validators.rs`
@@ -11353,7 +11353,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/validators.rs`
@@ -11366,7 +11366,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/rate_limit.rs`
@@ -11379,7 +11379,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/retry.rs`
@@ -11392,7 +11392,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-openapi/src/postman.rs`
@@ -11405,7 +11405,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/retry.rs`
@@ -11418,7 +11418,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/lib.rs`
@@ -11431,7 +11431,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/retry.rs`
@@ -11444,7 +11444,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/retry.rs`
@@ -11457,7 +11457,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/timeout.rs`
@@ -11470,7 +11470,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/annotations.rs`
@@ -11483,7 +11483,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/timeout.rs`
@@ -11496,7 +11496,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:02:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -11509,7 +11509,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/compression.rs`
@@ -11522,7 +11522,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/compression.rs`
@@ -11535,7 +11535,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/custom.rs`
@@ -11548,7 +11548,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11561,7 +11561,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/compression.rs`
@@ -11574,7 +11574,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/compression.rs`
@@ -11587,7 +11587,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/cors.rs`
@@ -11600,7 +11600,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11613,7 +11613,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/cors.rs`
@@ -11626,7 +11626,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11639,7 +11639,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/cors.rs`
@@ -11652,7 +11652,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/cors.rs`
@@ -11665,7 +11665,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/jwt_auth.rs`
@@ -11678,7 +11678,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/jwt_auth.rs`
@@ -11691,7 +11691,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:03:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11703,7 +11703,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11716,7 +11716,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11729,7 +11729,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11742,7 +11742,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11755,7 +11755,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11768,7 +11768,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11781,7 +11781,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11794,7 +11794,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -11807,7 +11807,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:04:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11820,7 +11820,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11833,7 +11833,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-validation/src/groups.rs`
@@ -11846,7 +11846,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/engine.rs`
@@ -11859,7 +11859,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -11872,7 +11872,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -11885,7 +11885,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -11898,7 +11898,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:05:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/lib.rs`
@@ -11911,7 +11911,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/lib.rs`
@@ -11924,7 +11924,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/path.rs`
@@ -11937,7 +11937,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-grpc/src/client.rs`
@@ -11950,7 +11950,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/path.rs`
@@ -11963,7 +11963,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/src/engine.rs`
@@ -11976,7 +11976,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/excel.rs`
@@ -11989,7 +11989,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:06:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/response.rs`
@@ -12002,7 +12002,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12015,7 +12015,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/lib.rs`
@@ -12028,7 +12028,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12041,7 +12041,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-resilience/src/lib.rs`
@@ -12054,7 +12054,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12067,7 +12067,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:07:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -12080,7 +12080,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:08:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -12093,7 +12093,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:08:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/response.rs`
@@ -12106,7 +12106,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:08:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/lib.rs`
@@ -12119,7 +12119,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:08:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-response/src/response.rs`
@@ -12132,7 +12132,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:08:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/lib.rs`
@@ -12145,7 +12145,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:09:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/static_files.rs`
@@ -12158,7 +12158,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:09:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-middleware/src/lib.rs`
@@ -12171,7 +12171,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:09:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-extractors/src/lib.rs`
@@ -12184,7 +12184,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:09:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -12197,7 +12197,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:10:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/gateway.rs`
@@ -12210,7 +12210,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:10:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12223,7 +12223,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:10:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12236,7 +12236,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:10:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cloud/src/config_client.rs`
@@ -12249,7 +12249,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:15:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-test/src/lib.rs`
@@ -12262,7 +12262,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:15:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/lib.rs`
@@ -12275,7 +12275,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:15:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/lib.rs`
@@ -12288,7 +12288,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:21:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-actuator/src/lib.rs`
@@ -12301,7 +12301,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:21:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-agent/src/lib.rs`
@@ -12314,7 +12314,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:21:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/lib.rs`
@@ -12327,7 +12327,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 11:22:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-actuator/src/metrics.rs`
@@ -12340,7 +12340,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:44:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/kqueue.rs`
@@ -12353,7 +12353,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:49:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/kqueue.rs`
@@ -12366,7 +12366,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:50:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/kqueue.rs`
@@ -12379,59 +12379,59 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `CONTRIBUTING.md`
 ### Change Record
 Modified file `CONTRIBUTING.md`. Approximately 54 lines changed.
 ### Change Summary
-Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/nexus.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/nexus.git; # Add required components / 添加必需...".
+Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/hiver.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/hiver.git; # Add required components / 添加必需...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `CONTRIBUTING.md`
 ### Change Record
 Modified file `CONTRIBUTING.md`. Approximately 64 lines changed.
 ### Change Summary
-Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/nexus.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/nexus.git; # Add required components / 添加必需...".
+Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/hiver.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/hiver.git; # Add required components / 添加必需...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `CONTRIBUTING.md`
 ### Change Record
 Modified file `CONTRIBUTING.md`. Approximately 89 lines changed.
 ### Change Summary
-Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/nexus.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/nexus.git; # Add required components / 添加必需...".
+Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/hiver.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/hiver.git; # Add required components / 添加必需...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `CONTRIBUTING.md`
 ### Change Record
 Modified file `CONTRIBUTING.md`. Approximately 100 lines changed.
 ### Change Summary
-Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/nexus.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/nexus.git; # Add required components / 添加必需...".
+Changed `CONTRIBUTING.md` from "- Rust 1.75 or later / Rust 1.75 或更高版本; git clone https://github.com/hiver-framework/hiver.git; # Install development to..." to "- Rust 1.93 or later / Rust 1.93 或更高版本; git clone https://github.com/ViewWay/hiver.git; # Add required components / 添加必需...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -12444,7 +12444,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -12457,7 +12457,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:58:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -12470,7 +12470,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:59:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/SECURITY_AUDIT.md`
@@ -12483,7 +12483,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:59:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/SECURITY_AUDIT.md`
@@ -12496,7 +12496,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 14:59:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/SECURITY_AUDIT.md`
@@ -12509,20 +12509,20 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 15:03:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `.github/workflows/ci.yml`
 ### Change Record
 Modified file `.github/workflows/ci.yml`. Approximately 317 lines changed.
 ### Change Summary
-Changed `.github/workflows/ci.yml` from "# Hiver Framework CI/CD Pipeline; # Nexus框架 CI/CD流水线; #" to "# Hiver Framework CI Pipeline; # Nexus框架CI流水线; branches: [main]".
+Changed `.github/workflows/ci.yml` from "# Hiver Framework CI/CD Pipeline; # Hiver框架 CI/CD流水线; #" to "# Hiver Framework CI Pipeline; # Hiver框架CI流水线; branches: [main]".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 15:06:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `CLAUDE.md`
@@ -12535,7 +12535,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:55:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12548,7 +12548,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:55:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12561,7 +12561,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12574,7 +12574,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12587,7 +12587,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12600,7 +12600,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:28
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12613,7 +12613,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12626,7 +12626,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12639,7 +12639,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12652,7 +12652,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:56:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12665,7 +12665,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:59:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/relation.rs`
@@ -12678,7 +12678,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:59:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/entity.rs`
@@ -12691,7 +12691,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:59:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/entity.rs`
@@ -12704,7 +12704,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 20:59:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-annotations/src/lib.rs`
@@ -12717,7 +12717,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:00:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12730,7 +12730,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:01:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12743,7 +12743,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:01:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12756,7 +12756,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:01:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12769,7 +12769,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:02:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -12782,7 +12782,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:02:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -12795,7 +12795,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:02:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -12808,7 +12808,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:02:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/model.rs`
@@ -12821,7 +12821,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:03:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -12834,7 +12834,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:03:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -12847,7 +12847,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:03:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -12860,7 +12860,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:03:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/Cargo.toml`
@@ -12873,7 +12873,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:03:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12886,7 +12886,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:03:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -12899,7 +12899,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-30 21:05:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12912,7 +12912,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:05:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12925,7 +12925,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:07:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12938,7 +12938,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:16:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12951,7 +12951,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:17:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12964,7 +12964,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:17:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12977,7 +12977,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:17:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -12990,7 +12990,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:18:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -13003,7 +13003,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:20:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -13016,7 +13016,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:20:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -13029,7 +13029,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:20:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -13042,7 +13042,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:21:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/tx_bridge.rs`
@@ -13055,7 +13055,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-30 21:21:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -13068,7 +13068,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:09:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.md`
@@ -13081,7 +13081,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:09:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.md`
@@ -13094,7 +13094,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:09:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.md`
@@ -13107,7 +13107,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:11:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/CODEMAP.md`
@@ -13120,7 +13120,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:11:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/CODEMAP.md`
@@ -13133,7 +13133,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:12:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -13146,7 +13146,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:12:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -13159,7 +13159,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 01:12:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/DOCS-INDEX.md`
@@ -13172,7 +13172,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:02:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13185,7 +13185,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:03:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13198,7 +13198,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:03:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13211,7 +13211,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:03:22
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13224,7 +13224,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:03:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13237,7 +13237,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:03:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13250,7 +13250,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:04:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13263,7 +13263,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:04:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13276,7 +13276,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:04:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13289,7 +13289,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:04:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/iouring.rs`
@@ -13302,7 +13302,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:07:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.zh.md`
@@ -13315,7 +13315,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:07:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.zh.md`
@@ -13328,7 +13328,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:07:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.zh.md`
@@ -13341,7 +13341,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:07:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.zh.md`
@@ -13354,7 +13354,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:08:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/time.rs`
@@ -13367,7 +13367,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:08:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/time.rs`
@@ -13380,7 +13380,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:09:38
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/task.rs`
@@ -13393,33 +13393,33 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:11:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.zh.md`
 ### Change Record
 Modified file `README.zh.md`. Approximately 35 lines changed.
 ### Change Summary
-Changed `README.zh.md` from "<a href="https://github.com/hiver-rs/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/nex..." to "<a href="https://github.com/ViewWay/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/View...".
+Changed `README.zh.md` from "<a href="https://github.com/hiver-rs/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/nex..." to "<a href="https://github.com/ViewWay/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/View...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:11:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `README.md`
 ### Change Record
 Modified file `README.md`. Approximately 35 lines changed.
 ### Change Summary
-Changed `README.md` from "<a href="https://github.com/hiver-rs/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/nex..." to "<a href="https://github.com/ViewWay/nexus/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/View...".
+Changed `README.md` from "<a href="https://github.com/hiver-rs/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/nex..." to "<a href="https://github.com/ViewWay/hiver/blob/main/README.md">English</a>&nbsp;&nbsp;; <a href="https://github.com/View...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:11:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -13432,7 +13432,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:11:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -13445,7 +13445,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:12:33
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/io.rs`
@@ -13458,7 +13458,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:13:08
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-runtime/src/driver/config.rs`
@@ -13471,7 +13471,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:13:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/CODEMAP.md`
@@ -13484,7 +13484,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:13:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/CODEMAP.md`
@@ -13497,7 +13497,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:13:29
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/CODEMAP.md`
@@ -13510,7 +13510,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:14:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/encoder.rs`
@@ -13523,7 +13523,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:14:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/encoder.rs`
@@ -13536,7 +13536,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:15:03
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/INDEX.md`
@@ -13549,7 +13549,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:15:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/encoder.rs`
@@ -13562,7 +13562,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:15:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-security/src/encoder.rs`
@@ -13575,7 +13575,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:21:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `docs/api/AGENTS.md`
@@ -13588,7 +13588,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 12:22:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `docs/api/full-api-reference.md`
@@ -13601,7 +13601,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 12:24:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `docs/api/api-schema.json`
@@ -13614,7 +13614,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 12:25:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `docs/api/api-schema.json`
@@ -13627,7 +13627,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 12:58:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -13640,7 +13640,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:58:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -13653,7 +13653,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:58:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -13666,7 +13666,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:59:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13679,7 +13679,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:59:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13692,7 +13692,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 12:59:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13705,7 +13705,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:01:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/query_runtime.rs`
@@ -13718,7 +13718,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 13:01:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13731,7 +13731,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:01:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13744,7 +13744,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:03:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/config.rs`
@@ -13757,7 +13757,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:04:07
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -13770,7 +13770,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:04:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -13783,7 +13783,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:04:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -13796,7 +13796,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:04:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -13809,7 +13809,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:04:49
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/connection.rs`
@@ -13822,7 +13822,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:06:58
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-rdbc/src/sql_builder.rs`
@@ -13835,7 +13835,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 13:07:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/executor.rs`
@@ -13848,7 +13848,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:08:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/lib.rs`
@@ -13861,7 +13861,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:09:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/error.rs`
@@ -13874,7 +13874,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:09:36
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/error.rs`
@@ -13887,7 +13887,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:10:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13900,7 +13900,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:10:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13913,7 +13913,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:10:32
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -13926,7 +13926,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:11:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/tests.rs`
@@ -13939,7 +13939,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:14:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/INDEX.md`
@@ -13952,7 +13952,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:14:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/INDEX.md`
@@ -13965,7 +13965,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:14:18
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/advanced/resilience.md`
@@ -13978,7 +13978,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:18:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/reference/api.md`
@@ -13991,59 +13991,59 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:19:09
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/reference/performance.md`
 ### Change Record
 Modified file `docs/book/src/reference/performance.md`. Approximately 176 lines changed.
 ### Change Summary
-Changed `docs/book/src/reference/performance.md` from "Nexus is designed for high performance from the ground up.; Nexus 从设计之初就追求高性能。; | Metric | Target | Status |" to "Nexus is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O mod...".
+Changed `docs/book/src/reference/performance.md` from "Hiver is designed for high performance from the ground up.; Hiver 从设计之初就追求高性能。; | Metric | Target | Status |" to "Hiver is designed for high performance from the ground up with a thread-per-core architecture and io-uring-first I/O mod...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:19:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/reference/security.md`
 ### Change Record
 Modified file `docs/book/src/reference/security.md`. Approximately 241 lines changed.
 ### Change Summary
-Changed `docs/book/src/reference/security.md` from "> **Status**: Phase 3+ Available ✅; Nexus provides comprehensive security features for your applications.; Nexus 为您的应用程序..." to "> **Status**: Phase 3+ Available ✅; Nexus provides comprehensive security features inspired by Spring Security.; Nexus 提...".
+Changed `docs/book/src/reference/security.md` from "> **Status**: Phase 3+ Available ✅; Hiver provides comprehensive security features for your applications.; Hiver 为您的应用程序..." to "> **Status**: Phase 3+ Available ✅; Hiver provides comprehensive security features inspired by Spring Security.; Hiver 提...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:21:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/advanced/testing.md`
 ### Change Record
 Modified file `docs/book/src/advanced/testing.md`. Approximately 307 lines changed.
 ### Change Summary
-Changed `docs/book/src/advanced/testing.md` from "> **Status**: Phase 3+ Available ✅; Nexus provides comprehensive testing support for your applications.; Nexus 为您的应用程序提供..." to "> **Status**: Phase 3+ Available ✅; Nexus provides comprehensive testing support including unit tests, integration tests...".
+Changed `docs/book/src/advanced/testing.md` from "> **Status**: Phase 3+ Available ✅; Hiver provides comprehensive testing support for your applications.; Hiver 为您的应用程序提供..." to "> **Status**: Phase 3+ Available ✅; Hiver provides comprehensive testing support including unit tests, integration tests...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:21:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/book/src/reference/configuration.md`
 ### Change Record
 Modified file `docs/book/src/reference/configuration.md`. Approximately 293 lines changed.
 ### Change Summary
-Changed `docs/book/src/reference/configuration.md` from "> **Status**: Phase 2 Available ✅; > **状态**: 第2阶段可用 ✅; Nexus provides flexible configuration management similar to Sprin..." to "> **Status**: Phase 2+ Available ✅; > **状态**: 第2阶段+可用 ✅; Nexus provides flexible configuration management similar to Spr...".
+Changed `docs/book/src/reference/configuration.md` from "> **Status**: Phase 2 Available ✅; > **状态**: 第2阶段可用 ✅; Hiver provides flexible configuration management similar to Sprin..." to "> **Status**: Phase 2+ Available ✅; > **状态**: 第2阶段+可用 ✅; Hiver provides flexible configuration management similar to Spr...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:23:16
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/guides/benchmarking.md`
@@ -14056,7 +14056,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:23:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/guides/benchmarking.md`
@@ -14069,7 +14069,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:24:21
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/design/STRATEGY-OVERVIEW.md`
@@ -14082,7 +14082,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 13:25:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `docs/design/design-spec.md`
@@ -14095,7 +14095,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:35:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-macros/src/lib.rs`
@@ -14108,7 +14108,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14121,7 +14121,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14134,7 +14134,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14147,7 +14147,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:23
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14160,7 +14160,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14173,7 +14173,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:26
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14186,7 +14186,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14199,7 +14199,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:35
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14212,7 +14212,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14225,7 +14225,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14238,7 +14238,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14251,7 +14251,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14264,7 +14264,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14277,7 +14277,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:36:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14290,7 +14290,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:37:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/data/mod.rs`
@@ -14303,7 +14303,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:38:01
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-starter/src/data/mod.rs`
@@ -14316,7 +14316,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:43:19
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/Cargo.toml`
@@ -14329,7 +14329,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:45:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/Cargo.toml`
@@ -14342,7 +14342,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:49:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/Cargo.toml`
@@ -14354,7 +14354,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:49:48
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14367,7 +14367,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:50:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/lib.rs`
@@ -14380,7 +14380,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:50:04
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14393,7 +14393,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:50:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14406,7 +14406,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:53:43
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14419,7 +14419,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 15:53:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/lib.rs`
@@ -14432,7 +14432,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:54:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14445,7 +14445,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 15:55:56
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14458,7 +14458,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 15:55:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14471,7 +14471,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 15:57:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-graphql/Cargo.toml`
@@ -14484,7 +14484,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 15:57:30
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14497,7 +14497,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 15:57:39
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/Cargo.toml`
@@ -14510,7 +14510,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 16:13:06
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14523,7 +14523,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:13:46
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14536,7 +14536,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:13:52
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14549,7 +14549,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:14:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14562,7 +14562,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:15:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14575,7 +14575,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:15:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14588,7 +14588,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 16:15:50
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: New file (untracked)
 - **File**: `crates/hiver-data-orm/src/repository.rs`
@@ -14601,7 +14601,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions. File is untracked; remember to `git add` if adding to version control.
 ## 2026-05-31 19:47:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/query.rs`
@@ -14614,7 +14614,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:47:53
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/query.rs`
@@ -14627,7 +14627,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:48:11
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/query.rs`
@@ -14640,7 +14640,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:48:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/query.rs`
@@ -14653,7 +14653,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:48:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14666,7 +14666,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:48:54
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14679,7 +14679,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:49:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14692,7 +14692,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:49:17
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/active_record.rs`
@@ -14705,7 +14705,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:49:47
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -14718,7 +14718,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:50:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -14731,7 +14731,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:50:55
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -14744,7 +14744,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:51:05
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -14757,7 +14757,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:53:44
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -14770,7 +14770,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 19:54:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-rdbc/src/client.rs`
@@ -14783,7 +14783,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:22:31
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/method_name.rs`
@@ -14796,7 +14796,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:22:40
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/method_name.rs`
@@ -14809,7 +14809,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:23:00
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14822,7 +14822,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:23:13
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14835,7 +14835,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:24:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/method_name.rs`
@@ -14848,7 +14848,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:24:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/method_name.rs`
@@ -14861,7 +14861,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:24:12
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-commons/src/method_name.rs`
@@ -14874,7 +14874,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:39:20
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -14887,7 +14887,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:39:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/relationships.rs`
@@ -14900,7 +14900,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:39:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14913,7 +14913,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:39:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14926,7 +14926,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:42:34
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-orm/src/query.rs`
@@ -14939,7 +14939,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:56:10
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-test/Cargo.toml`
@@ -14952,7 +14952,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:56:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `tests/Cargo.toml`
@@ -14965,7 +14965,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 21:59:24
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-data-mongodb/Cargo.toml`
@@ -14978,7 +14978,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:06:02
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `Cargo.toml`
@@ -14991,7 +14991,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:06:42
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `Cargo.toml`
@@ -15004,7 +15004,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:23:51
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `book.toml`
@@ -15017,33 +15017,33 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:23:59
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `book.toml`
 ### Change Record
 Modified file `book.toml`. Approximately 25 lines changed.
 ### Change Summary
-Changed `book.toml` from "git-repository-url = "https://github.com/hiver-framework/nexus"; edit-url-template = "https://github.com/hiver-framework..." to "description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-lik...".
+Changed `book.toml` from "git-repository-url = "https://github.com/hiver-framework/hiver"; edit-url-template = "https://github.com/hiver-framework..." to "description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-lik...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:28:14
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `book.toml`
 ### Change Record
 Modified file `book.toml`. Approximately 27 lines changed.
 ### Change Summary
-Changed `book.toml` from "multilingual = true; git-repository-url = "https://github.com/hiver-framework/nexus"; edit-url-template = "https://githu..." to "description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-lik...".
+Changed `book.toml` from "multilingual = true; git-repository-url = "https://github.com/hiver-framework/hiver"; edit-url-template = "https://githu..." to "description = "A production-grade, high-availability web framework written in Rust with custom async runtime, Spring-lik...".
 ### Risk Alert
 No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:50:25
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/cacheable.rs`
@@ -15056,7 +15056,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:50:41
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/cacheable.rs`
@@ -15069,7 +15069,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:50:57
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/cacheable.rs`
@@ -15082,7 +15082,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:51:45
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/cache_put.rs`
@@ -15095,7 +15095,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:52:27
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-cache/src/cache_evict.rs`
@@ -15108,7 +15108,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:53:15
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/body.rs`
@@ -15121,7 +15121,7 @@ No specific risk detected. Manual review recommended.
 ### Suggestion
 Run relevant tests before committing to avoid regressions.
 ## 2026-05-31 22:53:37
-- **Project**: nexus
+- **Project**: hiver
 - **Branch**: main
 - **Change Type**: Modified
 - **File**: `crates/hiver-http/src/response.rs`

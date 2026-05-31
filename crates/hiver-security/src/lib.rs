@@ -1,5 +1,5 @@
-//! Nexus Security - Security framework module
-//! Nexus安全 - 安全框架模块
+//! Hiver Security - Security framework module
+//! Hiver安全 - 安全框架模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

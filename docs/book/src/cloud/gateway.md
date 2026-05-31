@@ -13,9 +13,9 @@ API gateway pattern with routing, rate limiting, and load balancing.
 
 ## Status / 状态
 
-This module is currently under active development as part of Phase 4+ of the Nexus roadmap.
+This module is currently under active development as part of Phase 4+ of the Hiver roadmap.
 
-该模块目前正处于 Nexus 路线图 Phase 4+ 的积极开发中。
+该模块目前正处于 Hiver 路线图 Phase 4+ 的积极开发中。
 
 ---
 

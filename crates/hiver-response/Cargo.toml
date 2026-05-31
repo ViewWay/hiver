@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Response builders and types for Hiver Framework.
-Nexus框架的响应构建器和类型。
+Hiver框架的响应构建器和类型。
 Equivalent to: Spring ResponseEntity, @ResponseBody
 """
 homepage = { workspace = true }

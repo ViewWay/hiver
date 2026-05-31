@@ -7,7 +7,7 @@
 |-------------|-----------|
 | **Date / 日期** | 2026-01-25 |
 | **Version / 版本** | 0.1.0-alpha |
-| **Auditor / 审计员** | Nexus Security Team |
+| **Auditor / 审计员** | Hiver Security Team |
 | **Scope / 范围** | All hiver-* crates |
 | **Methodology / 方法** | Static analysis, code review |
 

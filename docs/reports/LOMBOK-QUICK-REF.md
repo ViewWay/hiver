@@ -225,7 +225,7 @@ String name = user.getUsername();
 ```
 
 ```rust
-// Rust / Nexus Lombok
+// Rust / Hiver Lombok
 #[Data]  // 一行搞定！
 #[TableName("users")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -268,7 +268,7 @@ User user = User.builder()
 ```
 
 ```rust
-// Rust / Nexus Lombok
+// Rust / Hiver Lombok
 #[Builder]
 pub struct User {
     pub id: i64,

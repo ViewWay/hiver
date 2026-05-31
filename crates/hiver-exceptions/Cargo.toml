@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Global exception handling for Hiver Framework.
-Nexus框架的全局异常处理。
+Hiver框架的全局异常处理。
 Equivalent to: Spring @ControllerAdvice, @ExceptionHandler
 """
 homepage = { workspace = true }

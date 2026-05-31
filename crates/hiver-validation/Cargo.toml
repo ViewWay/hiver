@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Validation module for Hiver Framework.
-Nexus框架的验证模块。
+Hiver框架的验证模块。
 Equivalent to: Spring Validation, Hibernate Validator
 """
 homepage = { workspace = true }

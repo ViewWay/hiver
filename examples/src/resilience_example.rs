@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-//! Nexus Resilience Example / Nexus弹性示例
+//! Hiver Resilience Example / Hiver弹性示例
 //!
 //! Demonstrates high availability patterns for backend applications.
 //! 演示后端应用的高可用模式。
@@ -21,7 +21,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus Resilience Example / Nexus弹性示例 ===\n");
+    println!("=== Hiver Resilience Example / Hiver弹性示例 ===\n");
 
     // 1. Circuit Breaker / 熔断器
     println!("1. Circuit Breaker / 熔断器 (类似 Resilience4j)");

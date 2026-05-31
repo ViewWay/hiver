@@ -158,7 +158,7 @@ where
             // 使用结构化字段记录请求
             if log_headers {
                 tracing::info!(
-                    target: "nexus.middleware.http",
+                    target: "hiver.middleware.http",
                     method = %method,
                     uri = %path,
                     client = ?client_ip,
@@ -167,7 +167,7 @@ where
                 );
             } else {
                 tracing::info!(
-                    target: "nexus.middleware.http",
+                    target: "hiver.middleware.http",
                     method = %method,
                     uri = %path,
                     client = ?client_ip,
@@ -194,7 +194,7 @@ where
                     // 根据状态码进行颜色编码的日志记录
                     if status >= 500 {
                         tracing::error!(
-                            target: "nexus.middleware.http",
+                            target: "hiver.middleware.http",
                             method = %method,
                             uri = %path,
                             status = status,
@@ -204,7 +204,7 @@ where
                         );
                     } else if status >= 400 {
                         tracing::warn!(
-                            target: "nexus.middleware.http",
+                            target: "hiver.middleware.http",
                             method = %method,
                             uri = %path,
                             status = status,
@@ -216,7 +216,7 @@ where
                         match level {
                             tracing::Level::DEBUG => {
                                 tracing::debug!(
-                                    target: "nexus.middleware.http",
+                                    target: "hiver.middleware.http",
                                     method = %method,
                                     uri = %path,
                                     status = status,
@@ -226,7 +226,7 @@ where
                             },
                             tracing::Level::INFO => {
                                 tracing::info!(
-                                    target: "nexus.middleware.http",
+                                    target: "hiver.middleware.http",
                                     method = %method,
                                     uri = %path,
                                     status = status,
@@ -236,7 +236,7 @@ where
                             },
                             tracing::Level::WARN => {
                                 tracing::warn!(
-                                    target: "nexus.middleware.http",
+                                    target: "hiver.middleware.http",
                                     method = %method,
                                     uri = %path,
                                     status = status,
@@ -258,7 +258,7 @@ where
                     match level {
                         tracing::Level::DEBUG => {
                             tracing::debug!(
-                                target: "nexus.middleware.http",
+                                target: "hiver.middleware.http",
                                 method = %method,
                                 uri = %path,
                                 duration_ms = duration_ms,
@@ -269,7 +269,7 @@ where
                         },
                         tracing::Level::INFO => {
                             tracing::info!(
-                                target: "nexus.middleware.http",
+                                target: "hiver.middleware.http",
                                 method = %method,
                                 uri = %path,
                                 duration_ms = duration_ms,
@@ -280,7 +280,7 @@ where
                         },
                         tracing::Level::WARN => {
                             tracing::warn!(
-                                target: "nexus.middleware.http",
+                                target: "hiver.middleware.http",
                                 method = %method,
                                 uri = %path,
                                 duration_ms = duration_ms,

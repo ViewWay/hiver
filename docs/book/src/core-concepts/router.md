@@ -124,7 +124,7 @@ async fn get_user(req: Request) -> Response {
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus Router | Description |
+| Spring Boot | Hiver Router | Description |
 |-------------|--------------|-------------|
 | `@GetMapping("/path")` | `.get("/path", handler)` | GET route |
 | `@PostMapping("/path")` | `.post("/path", handler)` | POST route |

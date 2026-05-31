@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Web3 Integration / Web3集成 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Web3 Integration / Web3集成 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 6 Complete ✅
 <strong>状态</strong>: 第6阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides native Web3 support for blockchain applications.</p>
-<p>Nexus 为区块链应用程序提供原生 Web3 支持。</p>
+<p>Hiver provides native Web3 support for blockchain applications.</p>
+<p>Hiver 为区块链应用程序提供原生 Web3 支持。</p>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>Web3 features include:</p>
@@ -194,7 +194,7 @@
 </ul>
 <hr>
 <h2 id="quick-start--快速开始"><a class="header" href="#quick-start--快速开始">Quick Start / 快速开始</a></h2>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{
+<pre><code class="language-rust no_run ignore">use hiver_web3::{
     ChainConfig, ChainId, Eip155Chain,
     LocalWallet, Address, Contract, FunctionSelector, RpcClient
 };
@@ -222,13 +222,13 @@ call_data.extend_from_slice(&amp;selector.0);
 call_data.extend_from_slice(&amp;[0u8; 12]); // Pad to 32 bytes
 call_data.extend_from_slice(&amp;address.0);
 
-let result = rpc.call_contract(&amp;usdc_address, &amp;call_data, nexus_web3::BlockNumber::Latest).await?;
+let result = rpc.call_contract(&amp;usdc_address, &amp;call_data, hiver_web3::BlockNumber::Latest).await?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <hr>
 <h2 id="features--功能"><a class="header" href="#features--功能">Features / 功能</a></h2>
 <h3 id="chain-configuration--链配置"><a class="header" href="#chain-configuration--链配置">Chain Configuration / 链配置</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{ChainConfig, ChainId, Eip155Chain};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{ChainConfig, ChainId, Eip155Chain};
 
 // Pre-configured chains / 预配置的链
 let mainnet = ChainConfig::ethereum_mainnet();
@@ -243,11 +243,11 @@ let custom = ChainConfig::new(
     vec!["https://rpc.example.com".to_string()],
 );</code></pre>
 <h3 id="wallet-management--钱包管理"><a class="header" href="#wallet-management--钱包管理">Wallet Management / 钱包管理</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{LocalWallet, Wallet, Address};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{LocalWallet, Wallet, Address};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>// Create new wallet / 创建新钱包
-let wallet = LocalWallet::new(nexus_web3::Eip155Chain::ETHEREUM);
+let wallet = LocalWallet::new(hiver_web3::Eip155Chain::ETHEREUM);
 let address = wallet.address();
 println!("Address: {}", address.to_checksummed());
 
@@ -261,7 +261,7 @@ let signature = wallet.sign_hash(&amp;hash)?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="transaction-building--交易构建"><a class="header" href="#transaction-building--交易构建">Transaction Building / 交易构建</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{
+<pre><code class="language-rust no_run ignore">use hiver_web3::{
     TransactionBuilder, TxType, Address,
     Eip155Chain, LocalWallet
 };
@@ -285,7 +285,7 @@ let signed_tx = wallet.sign_transaction(&amp;tx)?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="rpc-client--rpc客户端"><a class="header" href="#rpc-client--rpc客户端">RPC Client / RPC客户端</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{RpcClient, Address, BlockNumber};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{RpcClient, Address, BlockNumber};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -303,7 +303,7 @@ let nonce = rpc.get_transaction_count(&amp;address, BlockNumber::Latest).await?;
 <span class="boring">Ok(())
 </span><span class="boring">}</span></code></pre>
 <h3 id="smart-contracts--智能合约"><a class="header" href="#smart-contracts--智能合约">Smart Contracts / 智能合约</a></h3>
-<pre><code class="language-rust no_run ignore">use nexus_web3::{Contract, FunctionSelector, Address, RpcClient};
+<pre><code class="language-rust no_run ignore">use hiver_web3::{Contract, FunctionSelector, Address, RpcClient};
 
 <span class="boring">async fn run() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 </span>let rpc = RpcClient::new("https://eth.llamarpc.com")?;
@@ -321,7 +321,7 @@ call_data.extend_from_slice(&amp;user_address.0);
 let result = contract.call_read_only(&amp;selector, &amp;call_data).await?;
 
 // Using ERC20 constants / 使用ERC20常量
-use nexus_web3::ERC20;
+use hiver_web3::ERC20;
 assert_eq!(ERC20::BALANCE_OF.0, [0x70, 0xa0, 0x82, 0x31]);
 assert_eq!(ERC20::TRANSFER.0, [0xa9, 0x05, 0x9c, 0xbb]);
 <span class="boring">Ok(())

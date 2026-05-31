@@ -1,5 +1,5 @@
-# Nexus Code Coverage
-# Nexus 代码覆盖率
+# Hiver Code Coverage
+# Hiver 代码覆盖率
 #
 # Generates coverage report using tarpaulin and uploads to Codecov.
 # 使用 tarpaulin 生成覆盖率报告并上传到 Codecov。

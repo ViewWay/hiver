@@ -13,7 +13,7 @@
 //!
 //! # Spring Equivalent / Spring等价物
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `#[derive(ToSchema)]` | `@Schema` |
 //! | `#[into_params(...)]` | `@Parameter` |

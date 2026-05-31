@@ -127,7 +127,7 @@ pub struct ShellConfig {
 impl Default for ShellConfig {
     fn default() -> Self {
         Self {
-            app_name: "nexus".to_string(),
+            app_name: "hiver".to_string(),
             prompt: PromptStyle::new(),
             output_format: OutputFormat::Plain,
             history_file: None,

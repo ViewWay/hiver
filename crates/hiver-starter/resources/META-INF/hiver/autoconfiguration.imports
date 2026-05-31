@@ -1,4 +1,4 @@
-# Nexus Starter Auto-Configuration Imports
+# hiver Starter Auto-Configuration Imports
 # 自动配置导入列表
 #
 # 参考 Spring Boot 的 META-INF/spring.factories 和
@@ -9,34 +9,34 @@
 # Configuration classes are sorted by priority (lower number = higher priority)
 
 # 核心配置 / Core Configuration (priority: -100)
-nexus_starter::core::CoreAutoConfiguration
+hiver_starter::core::CoreAutoConfiguration
 
 # 数据源配置 / Data Source Configuration (priority: -50)
-nexus_starter::data::DataSourceAutoConfiguration
+hiver_starter::data::DataSourceAutoConfiguration
 
 # Web 服务器配置 / Web Server Configuration (priority: 0)
-nexus_starter::web::WebServerAutoConfiguration
+hiver_starter::web::WebServerAutoConfiguration
 
 # 路由配置 / Router Configuration (priority: 10)
-nexus_starter::web::RouterAutoConfiguration
+hiver_starter::web::RouterAutoConfiguration
 
 # 中间件配置 / Middleware Configuration (priority: 20)
-nexus_starter::web::MiddlewareAutoConfiguration
+hiver_starter::web::MiddlewareAutoConfiguration
 
 # 安全配置 / Security Configuration (priority: 50)
-nexus_starter::security::SecurityAutoConfiguration
+hiver_starter::security::SecurityAutoConfiguration
 
 # JWT 配置 / JWT Configuration (priority: 60)
-nexus_starter::security::JwtAutoConfiguration
+hiver_starter::security::JwtAutoConfiguration
 
 # 缓存配置 / Cache Configuration (priority: 100)
-nexus_starter::cache::CacheAutoConfiguration
+hiver_starter::cache::CacheAutoConfiguration
 
 # 定时任务配置 / Schedule Configuration (priority: 100)
-nexus_starter::schedule::ScheduleAutoConfiguration
+hiver_starter::schedule::ScheduleAutoConfiguration
 
 # 事务配置 / Transaction Configuration (priority: 50)
-nexus_starter::data::TransactionAutoConfiguration
+hiver_starter::data::TransactionAutoConfiguration
 
 # Actuator 配置 / Actuator Configuration (priority: 200)
-nexus_starter::actuator::ActuatorAutoConfiguration
+hiver_starter::actuator::ActuatorAutoConfiguration

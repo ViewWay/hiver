@@ -1313,14 +1313,14 @@ let port = config.get::<u16>("server.port")?;
 **Spring Equivalent**: Spring Boot Starter (auto-configuration)
 
 **Purpose**: Auto-configuration framework with component scanning, conditional
-bean loading, and `NexusApplication` entry point — the Spring Boot experience for Rust.
-自动配置框架，提供组件扫描、条件化 Bean 加载和 NexusApplication 入口点——Rust 的 Spring Boot 体验。
+bean loading, and `HiverApplication` entry point — the Spring Boot experience for Rust.
+自动配置框架，提供组件扫描、条件化 Bean 加载和 HiverApplication 入口点——Rust 的 Spring Boot 体验。
 
 **Key Types**:
 
 | Type | Kind | Description |
 |------|------|-------------|
-| `NexusApplication` | struct | Application entry point / 应用入口点 |
+| `HiverApplication` | struct | Application entry point / 应用入口点 |
 | `ComponentScanner` | struct | Auto-discover beans / 自动发现 Bean |
 | `BeanFactory` | struct | Bean creation & wiring / Bean 创建与装配 |
 | `AutoConfiguration` | trait | Auto-configuration trait / 自动配置 trait |
@@ -1331,11 +1331,11 @@ bean loading, and `NexusApplication` entry point — the Spring Boot experience 
 **Usage Example**:
 
 ```rust
-use hiver_starter::NexusApplication;
+use hiver_starter::HiverApplication;
 
 #[hiver::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    NexusApplication::new()
+    HiverApplication::new()
         .scan_package("com.example")
         .property("server.port", "8080")
         .run()
@@ -1459,7 +1459,7 @@ let result = chain.run("Rust async patterns").await?;
 
 ### hiver-web3
 
-**Spring Equivalent**: Web3j (unique to Nexus)
+**Spring Equivalent**: Web3j (unique to Hiver)
 
 **Purpose**: Web3 and blockchain integration with multi-chain configuration,
 smart contract interaction (ERC20/ERC721), wallet management, RPC client,
@@ -1974,7 +1974,7 @@ async fn run_import() {
 
 ## Appendix: Spring Equivalence Quick Reference / 附录：Spring 等价快速参考
 
-| Nexus Crate | Spring Module | Key Concept |
+| Hiver Crate | Spring Module | Key Concept |
 |-------------|---------------|-------------|
 | `hiver-runtime` | Core Runtime | io-uring, thread-per-core |
 | `hiver-core` | Spring Core | IoC Container, BeanFactory |
@@ -2023,9 +2023,9 @@ async fn run_import() {
 
 ---
 
-*This reference covers the public API surface of all 62 Nexus crates. For detailed
+*This reference covers the public API surface of all 62 Hiver crates. For detailed
 module-level documentation, refer to the individual crate docs at
 `crates/<crate-name>/src/lib.rs`.*
 
-*本参考涵盖所有 62 个 Nexus crate 的公共 API。详细的模块级文档请参阅
+*本参考涵盖所有 62 个 Hiver crate 的公共 API。详细的模块级文档请参阅
 `crates/<crate-name>/src/lib.rs` 中的各个 crate 文档。*

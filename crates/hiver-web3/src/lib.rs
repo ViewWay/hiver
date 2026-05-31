@@ -1,5 +1,5 @@
-//! Nexus Web3 - Blockchain and Web3 support
-//! Nexus Web3 - 区块链和Web3支持
+//! Hiver Web3 - Blockchain and Web3 support
+//! Hiver Web3 - 区块链和Web3支持
 //!
 //! # Overview / 概述
 //!

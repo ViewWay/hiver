@@ -13,7 +13,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring/JPA |
+//! | Hiver | Spring/JPA |
 //! |-------|------------|
 //! | `ActiveRecord` | `repository.save()` |
 //! | `Model::find_by_id()` | `repository.findById()` |

@@ -1,7 +1,7 @@
 //! 自动配置加载器 / Auto-Configuration Loader
 //!
-//! 从 META-INF/nexus/autoconfiguration.imports 加载自动配置类。
-//! Loads auto-configuration classes from META-INF/nexus/autoconfiguration.imports.
+//! 从 META-INF/hiver/autoconfiguration.imports 加载自动配置类。
+//! Loads auto-configuration classes from META-INF/hiver/autoconfiguration.imports.
 //!
 //! # 功能 / Features
 //!
@@ -29,9 +29,9 @@ use anyhow::{Context, Result};
 /// 自动配置加载器
 /// Auto-configuration loader
 ///
-/// 负责从 `META-INF/nexus/autoconfiguration.imports` 文件加载自动配置类列表。
+/// 负责从 `META-INF/hiver/autoconfiguration.imports` 文件加载自动配置类列表。
 /// Responsible for loading auto-configuration class list from
-/// `META-INF/nexus/autoconfiguration.imports` file.
+/// `META-INF/hiver/autoconfiguration.imports` file.
 ///
 /// # 示例 / Example
 ///
@@ -103,8 +103,8 @@ impl AutoConfigurationLoader {
     /// 从默认位置加载自动配置列表
     /// Load auto-configuration list from default location
     ///
-    /// 默认从 `META-INF/nexus/autoconfiguration.imports` 读取。
-    /// Reads from `META-INF/nexus/autoconfiguration.imports` by default.
+    /// 默认从 `META-INF/hiver/autoconfiguration.imports` 读取。
+    /// Reads from `META-INF/hiver/autoconfiguration.imports` by default.
     ///
     /// # 返回 / Returns
     ///
@@ -118,7 +118,7 @@ impl AutoConfigurationLoader {
     /// let configs = loader.load_configurations()?;
     /// ```
     pub fn load_configurations(&self) -> Result<Vec<String>> {
-        let meta_inf_path = "META-INF/nexus/autoconfiguration.imports";
+        let meta_inf_path = "META-INF/hiver/autoconfiguration.imports";
         self.load_from_file(meta_inf_path)
     }
 

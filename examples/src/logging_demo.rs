@@ -1,22 +1,22 @@
 #![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::ref_option, clippy::items_after_statements, clippy::format_push_string, clippy::manual_clamp, clippy::used_underscore_binding)]
 
-//! Nexus 统一日志系统演示
-//! Nexus Unified Logging System Demo
+//! Hiver 统一日志系统演示
+//! Hiver Unified Logging System Demo
 //!
 //! 运行方式 / Run modes:
 //!
 //! ```bash
 //! # Verbose 模式（开发环境）
-//! NEXUS_PROFILE=dev cargo run --bin logging_demo
+//! HIVER_PROFILE=dev cargo run --bin logging_demo
 //!
 //! # Simple 模式（生产环境）
-//! NEXUS_PROFILE=prod cargo run --bin logging_demo
+//! HIVER_PROFILE=prod cargo run --bin logging_demo
 //!
 //! # 自定义日志级别
-//! NEXUS_LOG_LEVEL=DEBUG cargo run --bin logging_demo
+//! HIVER_LOG_LEVEL=DEBUG cargo run --bin logging_demo
 //!
 //! # 强制 Simple 模式
-//! NEXUS_LOG_MODE=simple cargo run --bin logging_demo
+//! HIVER_LOG_MODE=simple cargo run --bin logging_demo
 //! ```
 
 use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
@@ -26,7 +26,7 @@ use tracing::{info, warn, error, debug, trace};
 async fn main() -> anyhow::Result<()> {
     // 获取 profile
     // Get profile
-    let profile = std::env::var("NEXUS_PROFILE").ok();
+    let profile = std::env::var("HIVER_PROFILE").ok();
 
     // 打印启动 Banner
     // Print startup banner
@@ -71,7 +71,7 @@ fn print_banner(profile: &Option<String>) {
 ";
 
     println!("{}", banner);
-    println!(" :: Nexus Logging Demo ::           (v0.1.0)");
+    println!(" :: Hiver Logging Demo ::           (v0.1.0)");
     println!(" :: Profile: {:<20} ::", profile.as_deref().unwrap_or("default"));
     println!();
 }
@@ -85,10 +85,10 @@ struct StartupInfo {
 
 impl StartupInfo {
     fn new(profile: Option<String>) -> Self {
-        println!("\x1b[32mINFO\x1b[0m {} --- [           main] nexus.Application : Starting Nexus Logging Demo",
+        println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Starting Hiver Logging Demo",
         format_timestamp());
         if let Some(ref profile) = profile {
-            println!("\x1b[32mINFO\x1b[0m {} --- [           main] nexus.Application : Active profile: {}",
+            println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Active profile: {}",
                 format_timestamp(),
                 profile);
         }
@@ -102,7 +102,7 @@ impl StartupInfo {
     fn print_started(&self) {
         let elapsed = self.start_time.elapsed().as_millis();
         println!();
-        println!("\x1b[32mINFO\x1b[0m {} --- [           main] nexus.Application : Started Demo in {}.{:03} seconds",
+        println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Started Demo in {}.{:03} seconds",
             format_timestamp(),
             elapsed / 1000,
             elapsed % 1000);
@@ -115,12 +115,12 @@ impl StartupInfo {
 fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
     // 从环境变量获取配置
     // Get configuration from environment
-    let level = std::env::var("NEXUS_LOG_LEVEL")
+    let level = std::env::var("HIVER_LOG_LEVEL")
         .ok()
         .and_then(|s| LogLevel::from_str(&s))
         .unwrap_or(LogLevel::Info);
 
-    let mode = if let Ok(mode_str) = std::env::var("NEXUS_LOG_MODE") {
+    let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
         LogMode::from_str(&mode_str).unwrap_or(LogMode::from_profile(profile.as_deref()))
     } else {
         LogMode::from_profile(profile.as_deref())
@@ -128,9 +128,9 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
 
     // 打印日志配置信息
     // Print logging configuration
-    println!("\x1b[32mINFO\x1b[0m {} --- [           main] nexus.Logging : Log level: {}",
+    println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log level: {}",
         format_timestamp(), level);
-    println!("\x1b[32mINFO\x1b[0m {} --- [           main] nexus.Logging : Log mode: {}",
+    println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log mode: {}",
         format_timestamp(), mode);
     println!();
 
@@ -149,42 +149,42 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
 /// 演示不同日志级别
 /// Demonstrate different log levels
 fn demo_log_levels() {
-    info!(target: "nexus.demo", "=== Log Level Demo ===");
+    info!(target: "hiver.demo", "=== Log Level Demo ===");
 
-    trace!(target: "nexus.demo", "This is a TRACE message - most detailed");
-    debug!(target: "nexus.demo", "This is a DEBUG message - for debugging");
-    info!(target: "nexus.demo", "This is an INFO message - general information");
-    warn!(target: "nexus.demo", "This is a WARN message - warning condition");
-    error!(target: "nexus.demo", "This is an ERROR message - error occurred");
+    trace!(target: "hiver.demo", "This is a TRACE message - most detailed");
+    debug!(target: "hiver.demo", "This is a DEBUG message - for debugging");
+    info!(target: "hiver.demo", "This is an INFO message - general information");
+    warn!(target: "hiver.demo", "This is a WARN message - warning condition");
+    error!(target: "hiver.demo", "This is an ERROR message - error occurred");
 
-    info!(target: "nexus.demo", "=== End Log Level Demo ===\n");
+    info!(target: "hiver.demo", "=== End Log Level Demo ===\n");
 }
 
 /// 演示运行时日志
 /// Demonstrate runtime logging
 async fn demo_runtime_logging() {
-    info!(target: "nexus.runtime", "=== Runtime Logging Demo ===");
+    info!(target: "hiver.runtime", "=== Runtime Logging Demo ===");
 
     // 模拟业务逻辑
     // Simulate business logic
     let users = fetch_users().await;
-    info!(target: "nexus.runtime", "Fetched {} users", users.len());
+    info!(target: "hiver.runtime", "Fetched {} users", users.len());
 
     let orders = process_orders(&users).await;
-    info!(target: "nexus.runtime", "Processed {} orders", orders);
+    info!(target: "hiver.runtime", "Processed {} orders", orders);
 
     // 模拟警告和错误
     // Simulate warnings and errors
-    warn!(target: "nexus.runtime", "Cache miss for key: user_preferences_123");
-    error!(target: "nexus.runtime", "Failed to connect to database: Connection timeout");
+    warn!(target: "hiver.runtime", "Cache miss for key: user_preferences_123");
+    error!(target: "hiver.runtime", "Failed to connect to database: Connection timeout");
 
-    info!(target: "nexus.runtime", "=== End Runtime Logging Demo ===\n");
+    info!(target: "hiver.runtime", "=== End Runtime Logging Demo ===\n");
 }
 
 /// 模拟获取用户
 /// Simulate fetching users
 async fn fetch_users() -> Vec<String> {
-    debug!(target: "nexus.database", "Querying users from database...");
+    debug!(target: "hiver.database", "Querying users from database...");
     tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
     vec![
         "alice@example.com".to_string(),
@@ -196,7 +196,7 @@ async fn fetch_users() -> Vec<String> {
 /// 模拟处理订单
 /// Simulate processing orders
 async fn process_orders(users: &[String]) -> usize {
-    debug!(target: "nexus.service", "Processing orders for {} users", users.len());
+    debug!(target: "hiver.service", "Processing orders for {} users", users.len());
     tokio::time::sleep(tokio::time::Duration::from_millis(20)).await;
     users.len() * 2
 }
@@ -204,21 +204,21 @@ async fn process_orders(users: &[String]) -> usize {
 /// 演示 HTTP 请求日志
 /// Demonstrate HTTP request logging
 fn demo_http_logging() {
-    info!(target: "nexus.http", "=== HTTP Request Logging Demo ===");
+    info!(target: "hiver.http", "=== HTTP Request Logging Demo ===");
 
     // 模拟 HTTP 请求日志
     // Simulate HTTP request logs
-    info!(target: "nexus.http", "GET /api/users 200 15ms");
-    info!(target: "nexus.http", "POST /api/users 201 45ms");
-    info!(target: "nexus.http", "GET /api/users/123 404 8ms");
-    info!(target: "nexus.http", "PUT /api/users/456 200 32ms");
+    info!(target: "hiver.http", "GET /api/users 200 15ms");
+    info!(target: "hiver.http", "POST /api/users 201 45ms");
+    info!(target: "hiver.http", "GET /api/users/123 404 8ms");
+    info!(target: "hiver.http", "PUT /api/users/456 200 32ms");
 
     // 模拟错误请求
     // Simulate error requests
-    warn!(target: "nexus.http", "GET /api/unknown 404 5ms - Resource not found");
-    error!(target: "nexus.http", "POST /api/orders 500 100ms - Internal server error");
+    warn!(target: "hiver.http", "GET /api/unknown 404 5ms - Resource not found");
+    error!(target: "hiver.http", "POST /api/orders 500 100ms - Internal server error");
 
-    info!(target: "nexus.http", "=== End HTTP Request Logging Demo ===\n");
+    info!(target: "hiver.http", "=== End HTTP Request Logging Demo ===\n");
 }
 
 /// 格式化时间戳

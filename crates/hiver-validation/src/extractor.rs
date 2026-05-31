@@ -4,7 +4,7 @@
 use crate::ValidationError;
 // Use the Validate trait from the crate root (re-exported from traits module)
 // 使用从 crate 根目录导出的 Validate trait（从 traits 模块重新导出）
-use crate::Validate as NexusValidate;
+use crate::Validate as HiverValidate;
 use serde::de::DeserializeOwned;
 use std::fmt;
 
@@ -85,7 +85,7 @@ where
 /// 此提取器使用 validator crate 验证输入数据。
 impl<T> Valid<T>
 where
-    T: DeserializeOwned + NexusValidate,
+    T: DeserializeOwned + HiverValidate,
 {
     /// Validate the given data
     /// 验证给定数据
@@ -109,7 +109,7 @@ mod tests {
 
     // Implement our Validate trait for tests
     // 为测试实现我们的 Validate trait
-    impl NexusValidate for TestUser {
+    impl HiverValidate for TestUser {
         fn validate(&self) -> Result<(), ValidationErrors> {
             if self.username.len() < 3 {
                 let mut errors = ValidationErrors::new();

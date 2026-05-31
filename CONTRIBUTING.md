@@ -54,8 +54,8 @@ Examples of behavior that contributes to a positive environment:
 
 ```bash
 # Clone the repository / 克隆仓库
-git clone https://github.com/ViewWay/nexus.git
-cd nexus
+git clone https://github.com/ViewWay/hiver.git
+cd hiver
 
 # Install Rust toolchain / 安装 Rust 工具链
 rustup install stable
@@ -84,8 +84,8 @@ cargo build --release
 
 ### 1. Find an Issue / 查找问题
 
-Look for issues labeled `good first issue` or `help wanted` in our [issue tracker](https://github.com/ViewWay/nexus/issues).
-在我们的[问题跟踪器](https://github.com/ViewWay/nexus/issues)中查找标记为 `good first issue` 或 `help wanted` 的问题。
+Look for issues labeled `good first issue` or `help wanted` in our [issue tracker](https://github.com/ViewWay/hiver/issues).
+在我们的[问题跟踪器](https://github.com/ViewWay/hiver/issues)中查找标记为 `good first issue` 或 `help wanted` 的问题。
 
 ### 2. Create a Branch / 创建分支
 
@@ -312,8 +312,8 @@ Before submitting your PR, ensure:
 
 ## Getting Help / 获取帮助
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/ViewWay/nexus/issues) / [报告错误或请求功能]
-- **Discussions**: [Ask questions or discuss ideas](https://github.com/ViewWay/nexus/discussions) / [提问或讨论想法]
+- **GitHub Issues**: [Report bugs or request features](https://github.com/ViewWay/hiver/issues) / [报告错误或请求功能]
+- **Discussions**: [Ask questions or discuss ideas](https://github.com/ViewWay/hiver/discussions) / [提问或讨论想法]
 - **Discord**: Join our community server / 加入我们的社区服务器
 
 ---

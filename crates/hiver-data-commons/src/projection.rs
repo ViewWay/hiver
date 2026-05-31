@@ -11,7 +11,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data |
+//! | Hiver | Spring Data |
 //! |-------|-------------|
 //! | `Projection` trait | `Projection` interface |
 //! | `ProjectionField` | `@Value` SpEL expression |

@@ -1,5 +1,5 @@
-//! Nexus Data R2DBC - Reactive database access
-//! Nexus Data R2DBC - 响应式数据库访问
+//! Hiver Data R2DBC - Reactive database access
+//! Hiver Data R2DBC - 响应式数据库访问
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

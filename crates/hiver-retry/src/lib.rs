@@ -1,5 +1,5 @@
-//! Nexus Retry - Enhanced retry framework with annotations and template pattern
-//! Nexus 重试 - 带注解和模板模式的增强重试框架
+//! Hiver Retry - Enhanced retry framework with annotations and template pattern
+//! Hiver 重试 - 带注解和模板模式的增强重试框架
 //!
 //! # Spring Equivalent / Spring等价物
 //!

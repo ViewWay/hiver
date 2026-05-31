@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Session |
+//! | Hiver | Spring Session |
 //! |-------|---------------|
 //! | `SessionEvent` | `SessionEvent` |
 //! | `SessionEventListener` | `ApplicationListener<SessionEvent>` |

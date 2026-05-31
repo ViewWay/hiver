@@ -1,12 +1,12 @@
-# 🎉 Nexus README 更新完成报告
-# Nexus README Update Completion Report
+# 🎉 Hiver README 更新完成报告
+# Hiver README Update Completion Report
 # Generated: 2026-01-25
 
 ## 📊 Executive Summary / 执行摘要
 
 ```
 ═══════════════════════════════════════════════════════════════
-  Nexus 文档更新进度 Nexus Documentation Update Progress
+  Hiver 文档更新进度 Hiver Documentation Update Progress
 ═══════════════════════════════════════════════════════════════
 
   ✅ hiver-lombok README.md           100% Complete / 完成

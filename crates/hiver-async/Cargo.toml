@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Async task execution framework for Nexus (equivalent to Spring @Async and TaskExecutor)"
+description = "Async task execution framework for Hiver (equivalent to Spring @Async and TaskExecutor)"
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }

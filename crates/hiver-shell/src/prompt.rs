@@ -26,11 +26,11 @@ pub struct PromptStyle {
 impl Default for PromptStyle {
     fn default() -> Self {
         Self {
-            prefix: "nexus".to_string(),
+            prefix: "hiver".to_string(),
             suffix: "> ".to_string(),
             color: PromptColor::Cyan,
             show_timestamp: false,
-            app_name: "nexus".to_string(),
+            app_name: "hiver".to_string(),
         }
     }
 }
@@ -204,7 +204,7 @@ impl Banner {
         let _ = writeln!(
             output,
             "  {} {}",
-            "Nexus Shell".cyan().bold(),
+            "Hiver Shell".cyan().bold(),
             "v0.1.0-alpha".dimmed()
         );
         let _ = writeln!(

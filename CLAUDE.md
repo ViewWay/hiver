@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Nexus** is a production-grade, high-availability web framework written in Rust.
+**Hiver** is a production-grade, high-availability web framework written in Rust.
 
 ### Key Features
 
@@ -59,7 +59,7 @@ All design and API documentation is located in `docs/`:
 ## Project Structure (Planned)
 
 ```
-nexus/
+hiver/
 ├── Cargo.toml                    # Workspace root
 ├── CLAUDE.md                     # This file
 ├── docs/                         # Documentation

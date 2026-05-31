@@ -13,9 +13,9 @@ AMQP protocol support with RabbitMQ integration, similar to Spring AMQP.
 
 ## Status / 状态
 
-This module is currently under active development as part of Phase 7+ of the Nexus roadmap.
+This module is currently under active development as part of Phase 7+ of the Hiver roadmap.
 
-该模块目前正处于 Nexus 路线图 Phase 7+ 的积极开发中。
+该模块目前正处于 Hiver 路线图 Phase 7+ 的积极开发中。
 
 ---
 

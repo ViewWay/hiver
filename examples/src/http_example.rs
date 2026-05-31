@@ -1,6 +1,6 @@
 #![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
 
-//! Nexus HTTP Example / Nexus HTTP示例
+//! Hiver HTTP Example / Hiver HTTP示例
 //!
 //! Demonstrates HTTP request/response handling for backend applications.
 //! 演示后端应用的HTTP请求/响应处理。
@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus HTTP Example / Nexus HTTP示例 ===\n");
+    println!("=== Hiver HTTP Example / Hiver HTTP示例 ===\n");
 
     // 1. Response Building / 响应构建
     println!("1. Response Building / 响应构建");

@@ -1,5 +1,5 @@
-//! Core agent trait and types for the Nexus AI Agent framework.
-//! Nexus AI 代理框架的核心代理 trait 和类型。
+//! Core agent trait and types for the Hiver AI Agent framework.
+//! Hiver AI 代理框架的核心代理 trait 和类型。
 //!
 //! This module defines the fundamental building blocks for building AI agents:
 //!
@@ -290,8 +290,8 @@ pub enum AgentError {
     Custom(String),
 }
 
-/// The core trait for all AI agents in the Nexus framework.
-/// Nexus 框架中所有 AI 代理的核心 trait。
+/// The core trait for all AI agents in the Hiver framework.
+/// Hiver 框架中所有 AI 代理的核心 trait。
 ///
 /// Agents receive input, process it (potentially using tools and multiple
 /// LLM calls), and produce structured output. Implementations can vary

@@ -1,5 +1,5 @@
-//! Nexus Benchmarks Library
-//! Nexus 基准测试库
+//! Hiver Benchmarks Library
+//! Hiver 基准测试库
 //!
 //! Internal library for benchmark infrastructure.
 //! 基准测试基础设施的内部库。

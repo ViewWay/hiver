@@ -147,7 +147,7 @@ runtime_gc_duration_seconds
 
 **Files / 文件**:
 - `crates/hiver-observability/src/log.rs` - Logging implementation
-- `crates/hiver-observability/src/hiver_format.rs` - Nexus log format
+- `crates/hiver-observability/src/hiver_format.rs` - Hiver log format
 
 **Features / 功能**:
 - Structured JSON logging
@@ -291,7 +291,7 @@ let exporter = JaegerExporter::new()
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot / Micrometer / Sleuth |
+| Hiver | Spring Boot / Micrometer / Sleuth |
 |-------|----------------------------------|
 | `Tracer`, `Span` | `Tracer`, `Span` (Spring Cloud Sleuth) |
 | `TraceContext` | `TraceContext`, `Sleuth` |

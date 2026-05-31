@@ -1,5 +1,5 @@
-//! Nexus WebSocket STOMP - STOMP over WebSocket protocol support
-//! Nexus WebSocket STOMP - STOMP over WebSocket 协议支持
+//! Hiver WebSocket STOMP - STOMP over WebSocket protocol support
+//! Hiver WebSocket STOMP - STOMP over WebSocket 协议支持
 //!
 //! # Spring Equivalent / Spring等价物
 //!

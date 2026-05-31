@@ -1,5 +1,5 @@
-//! Nexus Middleware - Request/response middleware
-//! Nexus中间件 - 请求/响应中间件
+//! Hiver Middleware - Request/response middleware
+//! Hiver中间件 - 请求/响应中间件
 //!
 //! # Overview / 概述
 //!

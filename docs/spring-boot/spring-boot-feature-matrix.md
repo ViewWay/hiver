@@ -1,4 +1,4 @@
-# Spring Boot vs Nexus 功能对比矩阵
+# Spring Boot vs Hiver 功能对比矩阵
 # Feature Comparison Matrix
 
 > 基于 24 章学习内容的功能对比与实现优先级
@@ -24,7 +24,7 @@
 
 ### 1. 基础篇 / Basics (第1-4章)
 
-| # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
+| # | 功能 / Feature | Spring Boot | Hiver | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 1 | REST API | `@RestController` | `#[controller]` | ✅ 完成 | - |
 | 2 | 路径参数 | `@PathVariable` | 直接参数 | ✅ 完成 | - |
@@ -38,7 +38,7 @@
 
 ### 2. 核心篇 / Core (第5-8章)
 
-| # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
+| # | 功能 / Feature | Spring Boot | Hiver | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 10 | 依赖注入 | `@Autowired` | `#[autowired]` | ✅ 完成 | - |
 | 11 | 组件扫描 | `@ComponentScan` | 自动扫描 | ✅ 完成 | - |
@@ -53,7 +53,7 @@
 
 ### 3. 进阶篇 / Advanced (第9-12章)
 
-| # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
+| # | 功能 / Feature | Spring Boot | Hiver | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 20 | JWT 认证 | Spring Security | hiver-security | ✅ 90% | - |
 | 21 | 权限控制 | `@PreAuthorize` | PermissionRegistry + Evaluator | ✅ 95% | - |
@@ -66,7 +66,7 @@
 
 ### 4. 实战篇 / Practice (第13-19章)
 
-| # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
+| # | 功能 / Feature | Spring Boot | Hiver | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 28 | **文件上传** | `MultipartFile` | Multipart + UploadConfig | ✅ 90% | - |
 | 29 | 文件下载 | `ResponseEntity` | Response builder | ✅ 90% | - |
@@ -82,7 +82,7 @@
 
 ### 5. 企业篇 / Enterprise (第20-24章)
 
-| # | 功能 / Feature | Spring Boot | Nexus | 状态 | 优先级 |
+| # | 功能 / Feature | Spring Boot | Hiver | 状态 | 优先级 |
 |---|----------------|-------------|-------|------|--------|
 | 39 | 模块化架构 | Multi-module | Workspace | ✅ 100% | - |
 | 40 | **统一异常体系** | `BaseException` | `AppError` trait | ✅ 90% | - |

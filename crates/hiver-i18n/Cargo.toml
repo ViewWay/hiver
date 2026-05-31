@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Internationalization (i18n) support for Nexus (equivalent to Spring MessageSource and ResourceBundle)"
+description = "Internationalization (i18n) support for Hiver (equivalent to Spring MessageSource and ResourceBundle)"
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }

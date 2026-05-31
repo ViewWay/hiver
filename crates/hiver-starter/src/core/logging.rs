@@ -1,5 +1,5 @@
-//! Nexus 启动日志格式化器（类似 Spring Boot）
-//! Nexus Startup Log Formatter (Spring Boot-style)
+//! Hiver 启动日志格式化器（类似 Spring Boot）
+//! Hiver Startup Log Formatter (Spring Boot-style)
 //!
 //! 提供类似 Spring Boot 的启动日志格式。
 //! Provides Spring Boot-like startup log format.
@@ -14,8 +14,8 @@
 
 use std::time::Instant;
 
-/// 打印 Nexus Banner（类似 Spring Boot）
-/// Print Nexus banner (Spring Boot-style)
+/// 打印 Hiver Banner（类似 Spring Boot）
+/// Print Hiver banner (Spring Boot-style)
 pub fn print_banner(version: &str) {
     let banner = r"
   _   _                      ___  ____
@@ -26,7 +26,7 @@ pub fn print_banner(version: &str) {
 ";
 
     println!("{}", banner);
-    println!(" :: Nexus Starter ::                (v{})", version);
+    println!(" :: Hiver Starter ::                (v{})", version);
     println!();
 }
 
@@ -229,8 +229,8 @@ pub fn print_startup_info(_debug: bool, _worker_threads: usize, _profile: Option
     // Use StartupInfo instead
 }
 
-/// 初始化 Nexus 运行时日志
-/// Initialize Nexus runtime logging
+/// 初始化 Hiver 运行时日志
+/// Initialize Hiver runtime logging
 ///
 /// 使用 hiver-observability 统一日志系统。
 /// Uses hiver-observability unified logging system.
@@ -238,9 +238,9 @@ pub fn print_startup_info(_debug: bool, _worker_threads: usize, _profile: Option
 /// # 配置 / Configuration
 ///
 /// 通过环境变量或配置文件控制：
-/// - `NEXUS_LOG_LEVEL`: 日志级别 (TRACE, DEBUG, INFO, WARN, ERROR)
-/// - `NEXUS_LOG_MODE`: 日志模式 (verbose, simple)
-/// - `NEXUS_PROFILE`: Profile (dev→verbose, prod→simple)
+/// - `HIVER_LOG_LEVEL`: 日志级别 (TRACE, DEBUG, INFO, WARN, ERROR)
+/// - `HIVER_LOG_MODE`: 日志模式 (verbose, simple)
+/// - `HIVER_PROFILE`: Profile (dev→verbose, prod→simple)
 ///
 /// # Example / 示例
 ///
@@ -261,12 +261,12 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()> {
         use hiver_observability::log::{Logger, LoggerConfig, LogMode, LogLevel};
 
         // 从环境变量或 profile 获取配置
-        let level = std::env::var("NEXUS_LOG_LEVEL")
+        let level = std::env::var("HIVER_LOG_LEVEL")
             .ok()
             .and_then(|s| LogLevel::from_str(&s))
             .unwrap_or(LogLevel::INFO);
 
-        let mode = if let Ok(mode_str) = std::env::var("NEXUS_LOG_MODE") {
+        let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
             LogMode::from_str(&mode_str).unwrap_or(LogMode::from_profile(profile))
         } else {
             LogMode::from_profile(profile)
@@ -286,7 +286,7 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()> {
     #[cfg(not(feature = "observability"))]
     {
         // 回退到简单日志
-        let level = std::env::var("NEXUS_LOG_LEVEL")
+        let level = std::env::var("HIVER_LOG_LEVEL")
             .or_else(|_| std::env::var("RUST_LOG"))
             .ok()
             .and_then(|s| s.parse().ok())

@@ -2,7 +2,7 @@
 
 **Global exception handling for the Hiver Framework.**
 
-**Nexus框架的全局异常处理。**
+**Hiver框架的全局异常处理。**
 
 ## Overview / 概述
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `@ControllerAdvice` | `#[exception_advice]` |
 | `@ExceptionHandler` | `#[exception_handler]` |
@@ -116,7 +116,7 @@ async fn get_user(id: u64) -> Result<Json<User>> {
 |-------------|---------------------|
 | `Error` | Base error trait |
 | `ErrorKind` | Error category |
-| `Result<T>` | Result with nexus Error |
+| `Result<T>` | Result with hiver Error |
 | `ErrorAdvice` | Exception advice attribute |
 | `ExceptionHandler` | Exception handler attribute |
 | `ErrorResponseBody` | Error response body |
@@ -282,7 +282,7 @@ Exception handlers are checked in order:
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

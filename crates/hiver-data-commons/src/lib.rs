@@ -1,9 +1,9 @@
-//! Nexus Data Commons - Common data access abstractions
-//! Nexus Data Commons - 通用数据访问抽象
+//! Hiver Data Commons - Common data access abstractions
+//! Hiver Data Commons - 通用数据访问抽象
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data |
+//! | Hiver | Spring Data |
 //! |-------|-------------|
 //! | `Repository` | `Repository` |
 //! | `CrudRepository` | `CrudRepository` |

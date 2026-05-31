@@ -1,8 +1,8 @@
-# Nexus Data Layer 实施计划 / 数据层实施计划
+# Hiver Data Layer 实施计划 / 数据层实施计划
 
 ## 🎯 Phase 8: Data Layer (P0 - 最高优先级) / 数据层（最高优先级）
 
-**目标：** 实现完整的 Spring Data JPA 对等功能，使 Nexus 能够进行真正的 CRUD 开发
+**目标：** 实现完整的 Spring Data JPA 对等功能，使 Hiver 能够进行真正的 CRUD 开发
 
 **预计时间：** 4-6 个月
 
@@ -352,7 +352,7 @@ CREATE TABLE users (
 
 ## 📊 当前后退评估 / 当前后退评估
 
-**当前 Nexus vs Spring Boot:**
+**当前 Hiver vs Spring Boot:**
 - **完成度：** 35% (核心 Web 功能完成，Data 层严重缺失)
 - **可用性：** ⚠️ 可以构建 API，但无法完成完整应用
 - **生产就绪：** ❌ 缺少关键功能，不建议生产使用

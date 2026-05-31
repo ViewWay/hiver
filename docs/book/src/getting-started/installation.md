@@ -5,8 +5,8 @@
 
 ### Rust Toolchain / Rust 工具链
 
-Nexus requires Rust **1.93 or later**.
-Nexus 需要 Rust **1.93 或更高版本**。
+Hiver requires Rust **1.93 or later**.
+Hiver 需要 Rust **1.93 或更高版本**。
 
 ```bash
 # Install Rust / 安装 Rust
@@ -41,12 +41,12 @@ uname -r
 sudo apt-get install liburing-dev
 ```
 
-## Adding Nexus to Your Project / 将 Nexus 添加到项目
+## Adding Hiver to Your Project / 将 Hiver 添加到项目
 
 ### Using Individual Crates / 使用单独的 Crate
 
-Nexus is modular — add only what you need:
-Nexus 是模块化的 — 只添加你需要的：
+Hiver is modular — add only what you need:
+Hiver 是模块化的 — 只添加你需要的：
 
 ```toml
 [dependencies]
@@ -79,8 +79,8 @@ Create a simple test project:
 创建一个简单的测试项目：
 
 ```bash
-cargo new hello-nexus
-cd hello-nexus
+cargo new hello-hiver
+cd hello-hiver
 ```
 
 Edit `Cargo.toml`:
@@ -101,8 +101,8 @@ fn main() -> std::io::Result<()> {
     let runtime = Runtime::new()?;
 
     runtime.block_on(async {
-        println!("Nexus is working!");
-        println!("Nexus 运行正常！");
+        println!("Hiver is working!");
+        println!("Hiver 运行正常！");
     });
 
     Ok(())
@@ -121,7 +121,7 @@ If you see the output, installation is successful!
 ```bash
 # Clone the repository / 克隆仓库
 git clone https://github.com/ViewWay/hiver.git
-cd nexus
+cd hiver
 
 # Build all crates / 构建所有 crate
 cargo build --workspace
@@ -135,8 +135,8 @@ cargo test --workspace
 
 ## IDE Support / IDE 支持
 
-Nexus works with any Rust IDE. Recommended extensions:
-Nexus 可与任何 Rust IDE 配合使用。推荐扩展：
+Hiver works with any Rust IDE. Recommended extensions:
+Hiver 可与任何 Rust IDE 配合使用。推荐扩展：
 
 - **rust-analyzer**: Language server for Rust
 - **Even Better TOML**: TOML file support
@@ -146,9 +146,9 @@ Nexus 可与任何 Rust IDE 配合使用。推荐扩展：
 
 ### io-uring Not Available / io-uring 不可用
 
-On Linux systems without io-uring support (kernel < 5.1), Nexus will automatically fall back to epoll. This is transparent and requires no configuration changes.
+On Linux systems without io-uring support (kernel < 5.1), Hiver will automatically fall back to epoll. This is transparent and requires no configuration changes.
 
-在没有 io-uring 支持的 Linux 系统上（内核 < 5.1），Nexus 会自动回退到 epoll。这是透明的，不需要配置更改。
+在没有 io-uring 支持的 Linux 系统上（内核 < 5.1），Hiver 会自动回退到 epoll。这是透明的，不需要配置更改。
 
 ### Compilation Errors / 编译错误
 

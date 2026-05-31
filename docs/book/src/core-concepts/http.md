@@ -1,9 +1,9 @@
 # HTTP Server
 # HTTP服务器
 
-The `hiver-http` crate provides HTTP server and client implementations optimized for the Nexus runtime.
+The `hiver-http` crate provides HTTP server and client implementations optimized for the Hiver runtime.
 
-`hiver-http` crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。
+`hiver-http` crate 提供针对 Hiver 运行时优化的 HTTP 服务器和客户端实现。
 
 ## Overview / 概述
 
@@ -175,7 +175,7 @@ impl FromRequest for Json<T> { /* JSON body */ }
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@ResponseBody` | `IntoResponse` | Response conversion |
 | `@RequestBody` | `FromRequest` | Request extraction |

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 gRPC server/client support for Hiver Framework (tonic + prost).
-Nexus框架的gRPC服务端/客户端支持（基于 tonic + prost）。
+Hiver框架的gRPC服务端/客户端支持（基于 tonic + prost）。
 Equivalent to: Spring Cloud gRPC
 """
 homepage = { workspace = true }

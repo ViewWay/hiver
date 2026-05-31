@@ -6,7 +6,7 @@
 
 > Caching abstraction for Hiver Framework
 > 
-> Nexus框架的缓存抽象
+> Hiver框架的缓存抽象
 
 ---
 
@@ -432,7 +432,7 @@ public User getUser(Long id) {
     return userRepository.findById(id);
 }
 
-// Nexus (with evaluate_cache_condition)
+// Hiver (with evaluate_cache_condition)
 let should_cache = evaluate_cache_condition("#id > 0", &args, None);
 if should_cache {
     // Cache the result
@@ -551,7 +551,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -563,7 +563,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Cache is inspired by:
+Hiver Cache is inspired by:
 
 - **[Spring Boot](https://spring.io/projects/spring-boot)** - `@Cacheable`, `@CacheEvict`, `@CachePut`
 - **[Caffeine](https://github.com/ben-manes/caffeine)** - High-performance caching

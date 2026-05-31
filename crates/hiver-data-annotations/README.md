@@ -1,4 +1,4 @@
-# Nexus Data Annotations
+# Hiver Data Annotations
 
 [![Crates.io](https://img.shields.io/crates/v/hiver-data-annotations)](https://crates.io/hiver-data-annotations)
 [![Documentation](https://docs.rs/hiver-data-annotations/badge.svg)](https://docs.rs/hiver-data-annotations)
@@ -366,7 +366,7 @@ let found = find_user_by_id(&db, 1).await?;
 - ❌ No type safety for queries / 查询没有类型安全
 - ❌ Hard to maintain / 难以维护
 
-#### ✅ With Annotations (Nexus Data Annotations) / 使用注解
+#### ✅ With Annotations (Hiver Data Annotations) / 使用注解
 
 ```rust
 use hiver_data_annotations::{Entity, Table, Id, Column, Query, Insert};
@@ -566,7 +566,7 @@ public class User {
 }
 ```
 
-### Rust / Nexus Data Annotations
+### Rust / Hiver Data Annotations
 
 ```rust
 #[Entity]
@@ -750,7 +750,7 @@ impl UserService {
 @PreAuthorize("hasRole('ADMIN') or #id == authentication.userId")
 public void updateProfile(Long id, UpdateData data) { }
 
-// Nexus
+// Hiver
 #[PreAuthorize("has_role('ADMIN') or #id == auth.user_id()")]
 async fn update_profile(&self, id: i64, data: UpdateData) -> Result<(), Error> { }
 ```

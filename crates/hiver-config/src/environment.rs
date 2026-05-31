@@ -621,7 +621,7 @@ mod tests {
         // PATH should exist on any system
         assert!(env.get_env("PATH").is_some());
         // A made-up variable should not exist
-        assert!(env.get_env("NEXUS_TEST_NONEXISTENT_VAR_12345").is_none());
+        assert!(env.get_env("HIVER_TEST_NONEXISTENT_VAR_12345").is_none());
     }
 
     /// Test get_required_property_as with typed value

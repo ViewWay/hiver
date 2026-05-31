@@ -166,9 +166,9 @@ pub struct ZipkinSpan {
 }
 
 impl ZipkinSpan {
-    /// Convert a Nexus Span to a Zipkin Span
-    /// 将 Nexus Span 转换为 Zipkin Span
-    pub fn from_nexus(span: &Span, service_name: &str) -> Self {
+    /// Convert a Hiver Span to a Zipkin Span
+    /// 将 Hiver Span 转换为 Zipkin Span
+    pub fn from_hiver(span: &Span, service_name: &str) -> Self {
         let ctx = span.context();
         let kind = match span.kind() {
             SpanKind::Server => Some("SERVER".to_string()),
@@ -314,12 +314,12 @@ impl ZipkinExporter {
         &self.config
     }
 
-    /// Convert and export a batch of Nexus spans
-    /// 转换并导出一批 Nexus span
+    /// Convert and export a batch of Hiver spans
+    /// 转换并导出一批 Hiver span
     pub fn export(&self, spans: &[Span]) -> Result<()> {
         let zipkin_spans: Vec<ZipkinSpan> = spans
             .iter()
-            .map(|s| ZipkinSpan::from_nexus(s, &self.config.service_name))
+            .map(|s| ZipkinSpan::from_hiver(s, &self.config.service_name))
             .collect();
 
         for span in zipkin_spans {
@@ -385,7 +385,7 @@ mod tests {
             .start();
         span.end();
 
-        let zipkin = ZipkinSpan::from_nexus(&span, "test-service");
+        let zipkin = ZipkinSpan::from_hiver(&span, "test-service");
         assert_eq!(zipkin.name, "handle_request");
         assert_eq!(zipkin.kind.as_deref(), Some("SERVER"));
         assert!(zipkin.timestamp.is_some());
@@ -400,7 +400,7 @@ mod tests {
         span.add_attribute("key", "value");
         span.end();
 
-        let zipkin = ZipkinSpan::from_nexus(&span, "svc");
+        let zipkin = ZipkinSpan::from_hiver(&span, "svc");
         assert_eq!(zipkin.kind, None);
         assert!(zipkin.tags.unwrap().contains_key("key"));
     }
@@ -410,7 +410,7 @@ mod tests {
         let parent_ctx = TraceContext::new();
         let child = Span::with_context("child", parent_ctx.child());
 
-        let zipkin = ZipkinSpan::from_nexus(&child, "svc");
+        let zipkin = ZipkinSpan::from_hiver(&child, "svc");
         assert!(zipkin.parent_id.is_some());
     }
 
@@ -420,7 +420,7 @@ mod tests {
         span.add_event("cache_miss");
         span.end();
 
-        let zipkin = ZipkinSpan::from_nexus(&span, "svc");
+        let zipkin = ZipkinSpan::from_hiver(&span, "svc");
         let annotations = zipkin.annotations.unwrap();
         assert_eq!(annotations.len(), 1);
         assert_eq!(annotations[0].value, "cache_miss");
@@ -443,7 +443,7 @@ mod tests {
     fn test_serialize_spans() {
         let mut span = Span::new("test");
         span.end();
-        let zipkin = ZipkinSpan::from_nexus(&span, "svc");
+        let zipkin = ZipkinSpan::from_hiver(&span, "svc");
 
         let json = ZipkinExporter::serialize_spans(&[zipkin]).unwrap();
         assert!(json.contains("\"name\":\"test\""));
@@ -458,7 +458,7 @@ mod tests {
         let reporter = InMemoryReporter::new();
         let mut span = Span::new("test");
         span.end();
-        let zipkin = ZipkinSpan::from_nexus(&span, "svc");
+        let zipkin = ZipkinSpan::from_hiver(&span, "svc");
 
         reporter.report(zipkin);
         assert_eq!(reporter.spans().len(), 1);

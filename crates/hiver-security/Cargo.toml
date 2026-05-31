@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Security framework for Hiver Framework.
-Nexus框架的安全框架。
+Hiver框架的安全框架。
 Equivalent to: Spring Security (@PreAuthorize, @Secured, @RolesAllowed)
 """
 homepage = { workspace = true }

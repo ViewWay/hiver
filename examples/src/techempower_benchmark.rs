@@ -2,10 +2,10 @@
 //! `TechEmpower` Benchmark Example
 //! `TechEmpower` 基准测试示例
 //!
-//! This example implements the `TechEmpower` benchmark tests for Nexus framework.
+//! This example implements the `TechEmpower` benchmark tests for Hiver framework.
 //! For more information, see: <https://tfb-status.techempower.com>/
 //!
-//! 此示例为 Nexus 框架实现 `TechEmpower` 基准测试。
+//! 此示例为 Hiver 框架实现 `TechEmpower` 基准测试。
 //! 更多信息请参阅：https://tfb-status.techempower.com/
 
 use hiver_http::Response;

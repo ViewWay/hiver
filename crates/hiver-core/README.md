@@ -2,13 +2,13 @@
 
 **Core types and traits for the Hiver Framework.**
 
-**Nexus框架的核心类型和trait。**
+**Hiver框架的核心类型和trait。**
 
 ## Overview / 概述
 
 `hiver-core` provides the foundational types and traits used throughout the Hiver Framework, including IoC container, error handling, and extension systems.
 
-`hiver-core` 提供Nexus框架中使用的基础类型和trait，包括IoC容器、错误处理和扩展系统。
+`hiver-core` 提供Hiver框架中使用的基础类型和trait，包括IoC容器、错误处理和扩展系统。
 
 ## Features / 功能
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `ApplicationContext` | `ApplicationContext` |
 | `BeanFactory` | `BeanFactory` |
@@ -170,7 +170,7 @@ struct PrototypeService;
 
 ## Examples / 示例
 
-See the [examples directory](https://github.com/hiver-rs/nexus/tree/main/examples) for more examples:
+See the [examples directory](https://github.com/hiver-rs/hiver/tree/main/examples) for more examples:
 
 - `container_example.rs` - IoC container usage
 - `bean_example.rs` - Bean registration and injection
@@ -178,7 +178,7 @@ See the [examples directory](https://github.com/hiver-rs/nexus/tree/main/example
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

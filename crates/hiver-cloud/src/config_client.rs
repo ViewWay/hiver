@@ -830,15 +830,15 @@ mod tests {
 
     #[tokio::test]
     async fn test_config_source_environment() {
-        unsafe { std::env::set_var("NEXUS_TEST_KEY", "test_value") };
+        unsafe { std::env::set_var("HIVER_TEST_KEY", "test_value") };
         let source = ConfigSource::Environment {
-            prefix: Some("NEXUS_TEST_".to_string()),
+            prefix: Some("HIVER_TEST_".to_string()),
         };
 
         let map = source.load().await.unwrap();
         assert_eq!(map.get("key"), Some(&"test_value".to_string()));
 
-        unsafe { std::env::remove_var("NEXUS_TEST_KEY") };
+        unsafe { std::env::remove_var("HIVER_TEST_KEY") };
     }
 
     #[tokio::test]
@@ -864,18 +864,18 @@ mod tests {
     async fn test_composite_config_source_priority() {
         let source = CompositeConfigSource::new()
             .with_config_source(ConfigSource::Environment {
-                prefix: Some("NEXUS_UNLIKELY_PREFIX_XYZ_".to_string()),
+                prefix: Some("HIVER_UNLIKELY_PREFIX_XYZ_".to_string()),
             })
             .with_config_source(ConfigSource::Environment {
-                prefix: Some("NEXUS_COMPOSITE_TEST_".to_string()),
+                prefix: Some("HIVER_COMPOSITE_TEST_".to_string()),
             });
 
-        unsafe { std::env::set_var("NEXUS_COMPOSITE_TEST_KEY", "low_priority") };
+        unsafe { std::env::set_var("HIVER_COMPOSITE_TEST_KEY", "low_priority") };
         let merged = source.load_merged().await.unwrap();
 
         assert_eq!(merged.get("key"), Some(&"low_priority".to_string()));
 
-        unsafe { std::env::remove_var("NEXUS_COMPOSITE_TEST_KEY") };
+        unsafe { std::env::remove_var("HIVER_COMPOSITE_TEST_KEY") };
     }
 
     #[test]
@@ -888,11 +888,11 @@ mod tests {
     async fn test_polling_config_refresher_manual_refresh() {
         let composite = Arc::new(
             CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
-                prefix: Some("NEXUS_POLL_TEST_".to_string()),
+                prefix: Some("HIVER_POLL_TEST_".to_string()),
             }),
         );
 
-        unsafe { std::env::set_var("NEXUS_POLL_TEST_DB", "postgres") };
+        unsafe { std::env::set_var("HIVER_POLL_TEST_DB", "postgres") };
         let refresher = PollingConfigRefresher::new(composite, Duration::from_secs(60));
         refresher.refresh().await;
 
@@ -905,18 +905,18 @@ mod tests {
         assert!(last.is_some());
 
         refresher.stop();
-        unsafe { std::env::remove_var("NEXUS_POLL_TEST_DB") };
+        unsafe { std::env::remove_var("HIVER_POLL_TEST_DB") };
     }
 
     #[tokio::test]
     async fn test_polling_config_refresher_current_snapshot() {
         let composite = Arc::new(
             CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
-                prefix: Some("NEXUS_SNAP_TEST_".to_string()),
+                prefix: Some("HIVER_SNAP_TEST_".to_string()),
             }),
         );
 
-        unsafe { std::env::set_var("NEXUS_SNAP_TEST_KEY", "snapshot_val") };
+        unsafe { std::env::set_var("HIVER_SNAP_TEST_KEY", "snapshot_val") };
         let refresher = PollingConfigRefresher::new(composite, Duration::from_secs(60));
         refresher.refresh().await;
 
@@ -924,7 +924,7 @@ mod tests {
         assert_eq!(snapshot.get("key"), Some(&"snapshot_val".to_string()));
 
         refresher.stop();
-        unsafe { std::env::remove_var("NEXUS_SNAP_TEST_KEY") };
+        unsafe { std::env::remove_var("HIVER_SNAP_TEST_KEY") };
     }
 
     #[test]

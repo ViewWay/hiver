@@ -68,7 +68,7 @@ pub trait PagingRepository<T>: Send + Sync {
 public interface UserRepository extends CrudRepository<User, Long> {
 }
 
-// Nexus (equivalent)
+// Hiver (equivalent)
 trait UserRepository: CrudRepository<User, i64> { }
 ```
 
@@ -126,7 +126,7 @@ println!("Showing {}-{} of {}",
 Pageable pageable = PageRequest.of(0, 20, Sort.by("username"));
 Page<User> page = repository.findAll(pageable);
 
-// Nexus (equivalent)
+// Hiver (equivalent)
 let pageable = PageRequest::new(0, 20, Sort::asc("username"));
 let page = repository.find_all_pageable(&pageable).await?;
 ```
@@ -193,7 +193,7 @@ public void deleteUser(Long id) { }
 @PreAuthorize("hasRole('ADMIN') or #id == authentication.userId")
 public void updateProfile(Long id, UpdateData data) { }
 
-// Nexus (equivalent)
+// Hiver (equivalent)
 #[PreAuthorize("has_role('ADMIN')")]
 async fn delete_user(&self, id: i64) -> Result<(), Error> { }
 
@@ -310,7 +310,7 @@ public User updateUser(User user) { }
 @CacheEvict(value = "users", key = "#id", condition = "#id > 0")
 public void deleteUser(Long id) { }
 
-// Nexus (equivalent - uses function-based API instead of annotations)
+// Hiver (equivalent - uses function-based API instead of annotations)
 async fn get_user(cache: &Cache, id: i64) -> Option<User> {
     let mut args = HashMap::new();
     args.insert("id".to_string(), JsonValue::Number(id.into()));
@@ -410,7 +410,7 @@ Total:                  300 lines → 21 lines (93% reduction)
 
 ## 🎯 Comparison with Spring Boot / 与 Spring Boot 对比
 
-| Feature / 功能 | Spring Boot | Nexus | Parity / 对等 |
+| Feature / 功能 | Spring Boot | Hiver | Parity / 对等 |
 |---------------|------------|-------|-------------|
 | **CrudRepository** | ✅ | ✅ | 100% |
 | **PagingAndSortingRepository** | ✅ | ✅ | 100% |

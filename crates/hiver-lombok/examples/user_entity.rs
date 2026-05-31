@@ -1,7 +1,7 @@
-//! Nexus Lombok Examples / Nexus Lombok 示例
+//! Hiver Lombok Examples / Hiver Lombok 示例
 //!
-//! This example demonstrates all Lombok-style annotations available in Nexus.
-//! 此示例演示了 Nexus 中所有可用的 Lombok 风格注解。
+//! This example demonstrates all Lombok-style annotations available in Hiver.
+//! 此示例演示了 Hiver 中所有可用的 Lombok 风格注解。
 
 use hiver_lombok::{
     AllArgsConstructor, Builder, Data, Getter, NoArgsConstructor, Setter, Value, With,

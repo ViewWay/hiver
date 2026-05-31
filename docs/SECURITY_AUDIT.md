@@ -1,5 +1,5 @@
-# Nexus Security Audit Report
-# Nexus 安全审计报告
+# Hiver Security Audit Report
+# Hiver 安全审计报告
 
 **Date / 日期**: 2026-05-30
 **Status / 状态**: In Progress / 进行中
@@ -54,7 +54,7 @@ hickory-proto 0.24.4
 **Impact**: O(n²) name compression in DNS message encoding can cause CPU exhaustion.
 This is a transitive dependency.
 
-**Mitigation**: Update hickory-proto when upstream releases fix. No direct Nexus code affected.
+**Mitigation**: Update hickory-proto when upstream releases fix. No direct Hiver code affected.
 
 ### 2. rustls-webpki Certificate Validation Issues (NEW 2026-05-30)
 **Status**: Awaiting Upstream Fix / 等待上游修复
@@ -101,7 +101,7 @@ rsa 0.9.10
 ```
 
 **Impact**: The RSA Marvin Attack vulnerability affects MySQL database connections via the `sqlx` crate.
-This is a transitive dependency and cannot be fixed directly in Nexus.
+This is a transitive dependency and cannot be fixed directly in Hiver.
 
 **Mitigation**:
 - Use PostgreSQL instead of MySQL where possible

@@ -6,7 +6,7 @@
 
 > Task scheduling for Hiver Framework
 >
-> Nexus框架的任务调度
+> Hiver框架的任务调度
 
 ---
 
@@ -246,7 +246,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -258,7 +258,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Schedule is inspired by:
+Hiver Schedule is inspired by:
 
 - **[Spring Framework](https://spring.io/projects/spring-framework)** - `@Scheduled`, `TaskScheduler`
 - **[Tokio](https://tokio.rs/)** - Async runtime

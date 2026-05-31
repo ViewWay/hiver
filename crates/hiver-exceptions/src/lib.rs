@@ -1,5 +1,5 @@
-//! Nexus Exceptions - Spring @`ControllerAdvice` equivalent features
-//! Nexus Exceptions - Spring @`ControllerAdvice` 等价功能
+//! Hiver Exceptions - Spring @`ControllerAdvice` equivalent features
+//! Hiver Exceptions - Spring @`ControllerAdvice` 等价功能
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!

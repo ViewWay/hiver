@@ -1,4 +1,4 @@
-# Nexus Web Framework - API Specification / API接口规范
+# Hiver Web Framework - API Specification / API接口规范
 
 ## Version / 版本
 
@@ -31,8 +31,8 @@
 
 ### 1.1 Application Entry Point / 应用入口
 
-Nexus uses `Router` + `Server` as separate types (no `Application` struct). Compose them to create your application:
-Nexus 使用 `Router` + `Server` 作为独立类型（没有 `Application` 结构体）。组合它们来创建应用：
+Hiver uses `Router` + `Server` as separate types (no `Application` struct). Compose them to create your application:
+Hiver 使用 `Router` + `Server` 作为独立类型（没有 `Application` 结构体）。组合它们来创建应用：
 
 ```rust
 use hiver_http::{Server, Body, Response, StatusCode};
@@ -47,7 +47,7 @@ fn main() -> std::io::Result<()> {
             Box::pin(async move {
                 Ok(Response::builder()
                     .status(StatusCode::OK)
-                    .body(Body::from("Hello, Nexus!"))
+                    .body(Body::from("Hello, Hiver!"))
                     .unwrap())
             })
         });
@@ -124,8 +124,8 @@ let app = Router::with_state(AppState { db: Database::new() })
 
 ### 1.3 Handler Enum / Handler 枚举
 
-`Handler` is an enum (not a trait) in Nexus. It supports multiple handler variants:
-`Handler` 在 Nexus 中是枚举（不是 trait）。支持多种处理器变体：
+`Handler` is an enum (not a trait) in Hiver. It supports multiple handler variants:
+`Handler` 在 Hiver 中是枚举（不是 trait）。支持多种处理器变体：
 
 ```rust
 /// Route handler variants / 路由处理器变体
@@ -1647,8 +1647,8 @@ impl Wallet for LocalWallet {
 ### 7.1 Runtime / 运行时
 
 ```rust
-/// Nexus async runtime
-/// Nexus异步运行时
+/// Hiver async runtime
+/// Hiver异步运行时
 ///
 /// # Example / 示例
 /// ```rust
@@ -2423,12 +2423,12 @@ pub struct Profile;
 impl Profile {
     /// Set active profile / 设置活动配置文件
     pub fn set(profile: &str) {
-        std::env::set_var("NEXUS_PROFILE", profile);
+        std::env::set_var("HIVER_PROFILE", profile);
     }
 
     /// Get active profile / 获取活动配置文件
     pub fn get() -> String {
-        std::env::var("NEXUS_PROFILE")
+        std::env::var("HIVER_PROFILE")
             .or_else(|_| std::env::var("PROFILE"))
             .unwrap_or_else(|_| "default".to_string())
     }
@@ -2440,7 +2440,7 @@ impl Profile {
 
     /// Get all active profiles / 获取所有活动配置文件
     pub fn get_all() -> Vec<String> {
-        std::env::var("NEXUS_PROFILES")
+        std::env::var("HIVER_PROFILES")
             .ok()
             .and_then(|s| {
                 s.split(',')
@@ -3764,7 +3764,7 @@ impl MetricsEndpoint {
 /// let info = InfoBuilder::new()
 ///     .app_name("My Application")
 ///     .app_version("1.0.0")
-///     .add("description", "Nexus Web Application")
+///     .add("description", "Hiver Web Application")
 ///     .build();
 ///
 /// let endpoint = InfoEndpoint::new(info);
@@ -3869,8 +3869,8 @@ pub type U256 = hiver_web3::U256;
 ## Appendix B: Prelude / 预导入
 
 ```rust
-//! The nexus prelude
-//! nexus预导入
+//! The hiver prelude
+//! hiver预导入
 //!
 //! # Example / 示例
 //! ```rust

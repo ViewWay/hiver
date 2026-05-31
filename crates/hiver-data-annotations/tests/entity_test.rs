@@ -1,5 +1,5 @@
-//! Tests for Nexus Data Annotations
-//! Nexus Data 注解测试
+//! Tests for Hiver Data Annotations
+//! Hiver Data 注解测试
 
 use hiver_data_annotations::{Entity, Table};
 

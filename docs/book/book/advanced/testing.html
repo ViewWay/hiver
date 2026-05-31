@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Testing / 测试 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Testing / 测试 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 3+ Available ✅
 <strong>状态</strong>: 第3阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive testing support including unit tests, integration tests, and data layer testing.
-Nexus 提供全面的测试支持，包括单元测试、集成测试和数据层测试。</p>
+<p>Hiver provides comprehensive testing support including unit tests, integration tests, and data layer testing.
+Hiver 提供全面的测试支持，包括单元测试、集成测试和数据层测试。</p>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>Testing strategies:
@@ -202,7 +202,7 @@ mod tests {
 
     #[test]
     fn test_handler() -&gt; std::io::Result&lt;()&gt; {
-        let rt = nexus_runtime::Runtime::new()?;
+        let rt = hiver_runtime::Runtime::new()?;
         rt.block_on(async {
             let response = handler(Request::default()).await;
             assert_eq!(response.status(), StatusCode::OK);
@@ -216,7 +216,7 @@ mod tests {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_path_extractor() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let req = Request::builder()
             .uri("/users/123")
@@ -251,11 +251,11 @@ fn test_json_response() {
 <h3 id="testclient--测试客户端"><a class="header" href="#testclient--测试客户端">TestClient / 测试客户端</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_test::TestClient;
+</span>use hiver_test::TestClient;
 
 #[test]
 fn test_api() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = create_app();
         let client = TestClient::new(app);
@@ -287,7 +287,7 @@ fn test_api() -&gt; std::io::Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_cors_middleware() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let cors = Cors::new()
             .allow_origin("*")
@@ -313,12 +313,12 @@ fn test_cors_middleware() -&gt; std::io::Result&lt;()&gt; {
 <h3 id="testing-repository--测试仓库"><a class="header" href="#testing-repository--测试仓库">Testing Repository / 测试仓库</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_data_rdbc::DatabaseClient;
-use nexus_data_orm::prelude::*;
+</span>use hiver_data_rdbc::DatabaseClient;
+use hiver_data_orm::prelude::*;
 
 #[test]
 fn test_repository_crud() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         // Use test database / 使用测试数据库
         let client = DatabaseClient::connect("sqlite::memory:").await?;
@@ -357,7 +357,7 @@ fn test_repository_crud() -&gt; Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_derived_queries() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let repo = setup_test_repo().await?;
 
@@ -380,11 +380,11 @@ fn test_derived_queries() -&gt; Result&lt;()&gt; {
 <h3 id="testing-migrations--测试迁移"><a class="header" href="#testing-migrations--测试迁移">Testing Migrations / 测试迁移</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_flyway::{Flyway, MigrationConfig};
+</span>use hiver_flyway::{Flyway, MigrationConfig};
 
 #[test]
 fn test_migrations() -&gt; Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let mut flyway = Flyway::new(MigrationConfig {
             locations: vec!["migrations".to_string()],
@@ -403,7 +403,7 @@ fn test_migrations() -&gt; Result&lt;()&gt; {
 </span><span class="boring">fn main() {
 </span>#[test]
 fn test_full_flow() -&gt; std::io::Result&lt;()&gt; {
-    let rt = nexus_runtime::Runtime::new()?;
+    let rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let server = start_test_server().await;
         let client = reqwest::Client::new();

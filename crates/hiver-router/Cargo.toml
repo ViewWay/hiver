@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Router and route matching for Hiver Framework.
-Nexus框架的路由器和路由匹配。
+Hiver框架的路由器和路由匹配。
 Equivalent to: Spring MVC @RequestMapping, RouterFunction
 """
 homepage = { workspace = true }

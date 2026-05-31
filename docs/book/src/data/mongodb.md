@@ -7,15 +7,15 @@
 
 ## Overview / 概述
 
-Nexus provides native MongoDB integration with async driver support and Spring Data MongoDB-like repositories.
+Hiver provides native MongoDB integration with async driver support and Spring Data MongoDB-like repositories.
 
 ---
 
 ## Status / 状态
 
-This module is currently under active development as part of Phase 8 of the Nexus roadmap.
+This module is currently under active development as part of Phase 8 of the Hiver roadmap.
 
-该模块目前正处于 Nexus 路线图 Phase 8 的积极开发中。
+该模块目前正处于 Hiver 路线图 Phase 8 的积极开发中。
 
 ---
 

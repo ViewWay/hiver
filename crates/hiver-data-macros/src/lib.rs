@@ -1,5 +1,5 @@
-//! Procedural macros for Nexus data layer
-//! Nexus 数据层的过程宏
+//! Procedural macros for Hiver data layer
+//! Hiver 数据层的过程宏
 //!
 //! # Overview / 概述
 //!

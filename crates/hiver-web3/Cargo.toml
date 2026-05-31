@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Blockchain and Web3 support for Hiver Framework.
-Nexus框架的区块链和Web3支持。
+Hiver框架的区块链和Web3支持。
 Equivalent to: Spring Web3 (community), Web3j
 """
 homepage = { workspace = true }

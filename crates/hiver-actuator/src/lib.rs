@@ -1,5 +1,5 @@
-//! Nexus Actuator - Spring Boot Actuator equivalent features
-//! Nexus Actuator - Spring Boot Actuator 等价功能
+//! Hiver Actuator - Spring Boot Actuator equivalent features
+//! Hiver Actuator - Spring Boot Actuator 等价功能
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

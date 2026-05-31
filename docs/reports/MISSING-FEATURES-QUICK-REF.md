@@ -1,5 +1,5 @@
-# Nexus Missing Features - Quick Reference
-# Nexus 缺失功能 - 快速参考
+# Hiver Missing Features - Quick Reference
+# Hiver 缺失功能 - 快速参考
 
 ## 🎯 Top 20 Most Critical Missing Features / 20 个最关键的缺失功能
 
@@ -20,7 +20,7 @@
 | 11 | **hiver-starter** | spring-boot-starter-* | 1.5 months | hiver-starter-* |
 | 12 | **hiver-data-migrations** | Flyway/Liquibase | 1 month | hiver-data-migrations |
 | 13 | **@Transactional testing** | @Transactional | 0.5 months | hiver-tx |
-| 14 | **@NexusTest** | @SpringBootTest | 1 month | hiver-test |
+| 14 | **@HiverTest** | @SpringBootTest | 1 month | hiver-test |
 | 15 | **Pagination support** | Page, Pageable | (included in data) | hiver-data-commons |
 | 16 | **Method name derivation** | findByUsernameAndEmail | (included in data) | hiver-data-commons |
 | 17 | **Repository abstraction** | Repository<T, ID> | (included in data) | hiver-data-commons |
@@ -199,7 +199,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Data Access / 数据访问
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | Spring Data JPA | ✅ | ❌ | 🔴 Critical |
 | Spring Data R2DBC | ✅ | ❌ | 🔴 Critical |
@@ -215,7 +215,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Core Framework / 核心框架
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | @Component | ✅ | ✅ | ✅ None |
 | @Autowired | ✅ | ⚠️ Partial | 🔴 Critical |
@@ -232,7 +232,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Security / 安全
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | JWT | ✅ | ✅ | ✅ None |
 | @PreAuthorize | ✅ | ❌ | 🟡 Important |
@@ -246,7 +246,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Messaging / 消息
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | RabbitMQ | ✅ | ❌ | 🟡 Important |
 | Kafka | ✅ | ❌ | 🟡 Important |
@@ -256,7 +256,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Cache / 缓存
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | Cache abstraction | ✅ | ✅ | ✅ None |
 | @Cacheable | ✅ | ❌ | 🟡 Important |
@@ -267,7 +267,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Testing / 测试
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | @SpringBootTest | ✅ | ❌ | 🟡 Important |
 | @MockBean | ✅ | ❌ | 🟡 Important |
@@ -276,7 +276,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Documentation / 文档
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | OpenAPI/Swagger | ✅ | ❌ | 🟡 Important |
 | @OpenApi | ✅ | ❌ | 🟡 Important |
@@ -285,7 +285,7 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Other / 其他
 
-| Feature / 功能 | Spring Boot | Nexus | Gap / 差距 |
+| Feature / 功能 | Spring Boot | Hiver | Gap / 差距 |
 |---------------|-------------|-------|-----------|
 | @Scheduled | ✅ | ✅ | ✅ None |
 | @Transactional | ✅ | ✅ | ✅ None |
@@ -350,8 +350,8 @@ pub trait UserRepository: Repository<User, i32> {
 
 ### Contact / 联系
 
-- **GitHub Issues**: [github.com/ViewWay/nexus/issues](https://github.com/ViewWay/nexus/issues)
-- **Discussions**: [github.com/ViewWay/nexus/discussions](https://github.com/ViewWay/nexus/discussions)
+- **GitHub Issues**: [github.com/ViewWay/hiver/issues](https://github.com/ViewWay/hiver/issues)
+- **Discussions**: [github.com/ViewWay/hiver/discussions](https://github.com/ViewWay/hiver/discussions)
 
 ---
 

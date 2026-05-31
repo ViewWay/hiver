@@ -1,5 +1,5 @@
-//! Nexus Annotations Runtime Integration Test
-//! Nexus 注解运行时集成测试
+//! Hiver Annotations Runtime Integration Test
+//! Hiver 注解运行时集成测试
 //!
 //! This example demonstrates the runtime integration of all annotation features:
 //! - Query execution with @Query, @Insert, @Update, @Delete
@@ -351,8 +351,8 @@ fn demo_integrated_example() {
 
 fn main() {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║   Nexus Annotations Runtime Integration Test             ║");
-    println!("║   Nexus 注解运行时集成测试                                 ║");
+    println!("║   Hiver Annotations Runtime Integration Test             ║");
+    println!("║   Hiver 注解运行时集成测试                                 ║");
     println!("╚════════════════════════════════════════════════════════════╝\n");
 
     // Part 1: Query runtime

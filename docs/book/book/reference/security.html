@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Security / 安全 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Security / 安全 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 3+ Available ✅
 <strong>状态</strong>: 第3阶段+可用 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive security features inspired by Spring Security.
-Nexus 提供受 Spring Security 启发的全面安全功能。</p>
+<p>Hiver provides comprehensive security features inspired by Spring Security.
+Hiver 提供受 Spring Security 启发的全面安全功能。</p>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>Security features:
@@ -198,7 +198,7 @@ Nexus 提供受 Spring Security 启发的全面安全功能。</p>
 <h3 id="basic-authentication--基本认证"><a class="header" href="#basic-authentication--基本认证">Basic Authentication / 基本认证</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::{Authentication, AuthenticationManager};
+</span>use hiver_security::{Authentication, AuthenticationManager};
 
 let auth_manager = AuthenticationManager::new();
 let auth = auth_manager.authenticate(username, password).await?;
@@ -206,7 +206,7 @@ let auth = auth_manager.authenticate(username, password).await?;
 <h3 id="jwt-authentication--jwt-认证"><a class="header" href="#jwt-authentication--jwt-认证">JWT Authentication / JWT 认证</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::jwt::{JwtProvider, JwtConfig, Claims};
+</span>use hiver_security::jwt::{JwtProvider, JwtConfig, Claims};
 use std::time::Duration;
 
 // Configure JWT / 配置 JWT
@@ -227,8 +227,8 @@ assert_eq!(verified.sub(), "user123");
 <h3 id="jwt-middleware--jwt-中间件"><a class="header" href="#jwt-middleware--jwt-中间件">JWT Middleware / JWT 中间件</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Middleware;
-use nexus_security::jwt::JwtProvider;
+</span>use hiver_middleware::Middleware;
+use hiver_security::jwt::JwtProvider;
 
 struct JwtAuth {
     provider: JwtProvider,
@@ -263,7 +263,7 @@ impl Middleware for JwtAuth {
 <h3 id="method-level-security--方法级安全"><a class="header" href="#method-level-security--方法级安全">Method-Level Security / 方法级安全</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_macros::pre_authorize;
+</span>use hiver_macros::pre_authorize;
 
 #[pre_authorize("hasRole('ADMIN')")]
 async fn delete_user(id: u64) -&gt; Result&lt;(), Error&gt; {
@@ -273,7 +273,7 @@ async fn delete_user(id: u64) -&gt; Result&lt;(), Error&gt; {
 <h3 id="role-based-security--基于角色的安全"><a class="header" href="#role-based-security--基于角色的安全">Role-Based Security / 基于角色的安全</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_macros::secured;
+</span>use hiver_macros::secured;
 
 #[secured("ROLE_USER")]
 async fn get_profile() -&gt; Result&lt;Profile, Error&gt; {
@@ -284,7 +284,7 @@ async fn get_profile() -&gt; Result&lt;Profile, Error&gt; {
 <h2 id="password-encoding--密码编码"><a class="header" href="#password-encoding--密码编码">Password Encoding / 密码编码</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_security::{PasswordEncoder, BcryptPasswordEncoder};
+</span>use hiver_security::{PasswordEncoder, BcryptPasswordEncoder};
 
 // Default bcrypt encoder / 默认 bcrypt 编码器
 let encoder = PasswordEncoder::bcrypt();
@@ -303,7 +303,7 @@ assert!(is_valid);
 <h2 id="input-validation--输入验证"><a class="header" href="#input-validation--输入验证">Input Validation / 输入验证</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_validation_annotations::{NotNull, Size, Email, Pattern};
+</span>use hiver_validation_annotations::{NotNull, Size, Email, Pattern};
 
 struct CreateUserRequest {
     #[not_null]
@@ -322,7 +322,7 @@ struct CreateUserRequest {
 <h2 id="security-headers--安全头"><a class="header" href="#security-headers--安全头">Security Headers / 安全头</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::SecurityHeaders;
+</span>use hiver_middleware::SecurityHeaders;
 
 let app = Router::new()
     .middleware(Arc::new(SecurityHeaders::default()
@@ -336,7 +336,7 @@ let app = Router::new()
 <h2 id="cors-configuration--cors-配置"><a class="header" href="#cors-configuration--cors-配置">CORS Configuration / CORS 配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_middleware::Cors;
+</span>use hiver_middleware::Cors;
 
 let cors = Cors::new()
     .allow_origin("https://example.com")
@@ -353,7 +353,7 @@ let app = Router::new()
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@PreAuthorize</code></td><td><code>#[pre_authorize]</code></td><td>Method authorization</td></tr>

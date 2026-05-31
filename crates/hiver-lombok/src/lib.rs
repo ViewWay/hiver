@@ -1,8 +1,8 @@
 #![allow(clippy::needless_pass_by_value)]
-//! # Nexus Lombok
+//! # Hiver Lombok
 //!
-//! Lombok-style procedural macros for Nexus framework.
-//! 为 Nexus 框架提供 Lombok 风格的过程宏。
+//! Lombok-style procedural macros for Hiver framework.
+//! 为 Hiver 框架提供 Lombok 风格的过程宏。
 //!
 //! ## Features / 功能
 //!

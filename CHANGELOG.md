@@ -86,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0-alpha.4] - 2026-02-01
 
-### Nexus Starter Enhancements / Nexus Starter 增强
+### Hiver Starter Enhancements / Hiver Starter 增强
 
 ### Added / 新增
 
@@ -216,7 +216,7 @@ This release marks the completion of Phase 7: Production Ready. All development 
 - **README Complete Overhaul / README全面更新**
   - Added comprehensive annotated REST API example
   - Bilingual support (English/中文) for all sections
-  - Added Nexus logging configuration examples
+  - Added Hiver logging configuration examples
   - Added resilience patterns examples (Circuit Breaker, Rate Limiter, Retry)
   - Added Web3 support examples
   - Added performance benchmark results table
@@ -550,10 +550,10 @@ This release marks the completion of Phase 1, delivering a fully functional asyn
 
 ---
 
-[Unreleased]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.5...HEAD
-[0.1.0-alpha.5]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.4...v0.1.0-alpha.5
-[0.1.0-alpha.4]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
-[0.1.0-alpha.3]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
-[0.1.0-alpha.2]: https://github.com/hiver-framework/nexus/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
-[0.1.0-alpha.1]: https://github.com/hiver-framework/nexus/compare/v0.0.1...v0.1.0-alpha.1
-[0.0.1]: https://github.com/hiver-framework/nexus/releases/tag/v0.0.1
+[Unreleased]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.5...HEAD
+[0.1.0-alpha.5]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.4...v0.1.0-alpha.5
+[0.1.0-alpha.4]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
+[0.1.0-alpha.3]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
+[0.1.0-alpha.2]: https://github.com/hiver-framework/hiver/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
+[0.1.0-alpha.1]: https://github.com/hiver-framework/hiver/compare/v0.0.1...v0.1.0-alpha.1
+[0.0.1]: https://github.com/hiver-framework/hiver/releases/tag/v0.0.1

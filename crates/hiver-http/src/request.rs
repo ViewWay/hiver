@@ -53,10 +53,10 @@ impl From<&http::Method> for Method {
 /// HTTP Request
 /// HTTP 请求
 ///
-/// This is a wrapper around `http::Request<Body>` that adds Nexus-specific
+/// This is a wrapper around `http::Request<Body>` that adds Hiver-specific
 /// functionality like path variables and query parameters.
 ///
-/// 这是 `http::Request<Body>` 的包装器，添加了 Nexus 特定的功能，如路径变量和查询参数。
+/// 这是 `http::Request<Body>` 的包装器，添加了 Hiver 特定的功能，如路径变量和查询参数。
 #[derive(Clone, Debug)]
 pub struct Request {
     /// The underlying HTTP request

@@ -1,9 +1,9 @@
 # Middleware
 # 中间件
 
-Middleware in Nexus provides a way to process requests and responses in a composable manner, similar to Spring's Filter/Interceptor pattern.
+Middleware in Hiver provides a way to process requests and responses in a composable manner, similar to Spring's Filter/Interceptor pattern.
 
-Nexus 中的中间件提供了一种以可组合方式处理请求和响应的方法，类似于 Spring 的 Filter/Interceptor 模式。
+Hiver 中的中间件提供了一种以可组合方式处理请求和响应的方法，类似于 Spring 的 Filter/Interceptor 模式。
 
 ## Overview / 概述
 
@@ -247,7 +247,7 @@ let router = Router::new()
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `Filter` | `Middleware` trait | Request/response processing |
 | `HandlerInterceptor` | `Middleware` trait | Handler interception |

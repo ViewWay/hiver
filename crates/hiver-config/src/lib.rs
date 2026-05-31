@@ -1,6 +1,6 @@
 #![allow(clippy::expect_used)]
-//! Nexus Config - Configuration management module
-//! Nexus配置 - 配置管理模块
+//! Hiver Config - Configuration management module
+//! Hiver配置 - 配置管理模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

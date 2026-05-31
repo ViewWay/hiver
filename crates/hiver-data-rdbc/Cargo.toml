@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Reactive database access for Hiver Framework (R2DBC equivalent)"
-keywords = ["nexus", "data", "r2dbc", "database", "reactive"]
+keywords = ["hiver", "data", "r2dbc", "database", "reactive"]
 categories = ["database", "asynchronous"]
 
 [features]

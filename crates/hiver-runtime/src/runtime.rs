@@ -16,7 +16,7 @@
 //! fn main() -> std::io::Result<()> {
 //!     let runtime = Runtime::new()?;
 //!     runtime.block_on(async {
-//!         println!("Hello from Nexus!");
+//!         println!("Hello from Hiver!");
 //!     });
 //!     Ok(())
 //! }

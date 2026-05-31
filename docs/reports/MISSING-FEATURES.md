@@ -1,4 +1,4 @@
-# Hiver 框架缺失功能清单 / Missing Features in Nexus
+# Hiver 框架缺失功能清单 / Missing Features in Hiver
 # 生成时间 / Generated: 2026-01-25
 
 ## 📋 目录 / Table of Contents
@@ -15,20 +15,20 @@
 
 ### 1.1 应用入口注解 / Application Entry
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@SpringBootApplication` | ❌ 无对应注解 | **不同设计** |
 | `@EnableAutoConfiguration` | ❌ 无对应注解 | **不需要** |
 | `@ComponentScan` | ❌ 无对应注解 | **不需要** |
 
 **原因 / Reason**:
-- Nexus 采用**函数式启动**而非注解驱动
+- Hiver 采用**函数式启动**而非注解驱动
 - Rust 编译时确定所有类型，无需运行时扫描
 - **不视为缺失，而是设计选择**
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式（更符合 Rust 习惯）
+// Hiver 方式（更符合 Rust 习惯）
 #[tokio::main]
 async fn main() {
     let app = Router::new()
@@ -46,7 +46,7 @@ async fn main() {
 
 ### 1.2 组件注册注解 / Component Registration
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@Component` | ❌ 无 | **不同设计** |
 | `@Service` | ❌ 无 | **不同设计** |
@@ -60,7 +60,7 @@ async fn main() {
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式
+// Hiver 方式
 pub struct UserService {
     repository: Arc<UserRepository>,
 }
@@ -83,7 +83,7 @@ let service = UserService::new(Arc::new(repository));
 
 ### 1.3 依赖注入注解 / Dependency Injection
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@Autowired` | ❌ 无 | **不同设计** |
 | `@Qualifier` | ❌ 无 | **不需要** |
@@ -97,7 +97,7 @@ let service = UserService::new(Arc::new(repository));
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式 - 构造函数注入
+// Hiver 方式 - 构造函数注入
 pub struct UserService {
     repository: Arc<UserRepository>,
     email_service: Arc<dyn EmailService>,  // trait 对象
@@ -127,19 +127,19 @@ impl UserService {
 
 ### 1.4 配置注解 / Configuration Annotations
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@Configuration` | ❌ 无 | **不同设计** |
 | `@Bean` | ❌ 无 | **不同设计** |
 | `@Value` | ❌ 无 | **不同设计** |
 
 **原因 / Reason**:
-- Nexus 使用**函数式配置**而非注解
+- Hiver 使用**函数式配置**而非注解
 - 配置通过 **Config::get()** 获取
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式
+// Hiver 方式
 #[derive(Debug, Deserialize)]
 struct AppConfig {
     server: ServerConfig,
@@ -161,7 +161,7 @@ let timeout: u64 = config.get("app.timeout")?;
 
 ### 1.5 条件注解 / Conditional Annotations
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@Conditional` | ❌ 无 | **不同设计** |
 | `@ConditionalOnClass` | ❌ 无 | **不需要** |
@@ -175,7 +175,7 @@ let timeout: u64 = config.get("app.timeout")?;
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式 - 编译时条件
+// Hiver 方式 - 编译时条件
 #[cfg(feature = "database")]
 pub struct DatabaseConnection {
     pool: PgPool,
@@ -202,7 +202,7 @@ impl Config {
 
 ### 1.6 测试注解 / Testing Annotations
 
-| Spring Boot | Nexus | 状态 |
+| Spring Boot | Hiver | 状态 |
 |------------|-------|------|
 | `@SpringBootTest` | ❌ 无 | **不同设计** |
 | `@WebMvcTest` | ❌ 无 | **不同设计** |
@@ -216,7 +216,7 @@ impl Config {
 
 **替代方案 / Alternative**:
 ```rust
-// Nexus 方式 - 使用标准测试框架
+// Hiver 方式 - 使用标准测试框架
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -260,7 +260,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 trait UserRepository {
     #[Query("SELECT * FROM users WHERE id = :id")]
@@ -317,7 +317,7 @@ public class AdminController {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 async fn delete_user(
     auth: Auth,  // 需要手动提取 / Need manual extraction
@@ -371,7 +371,7 @@ public class UserService {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 // 需要手动调用缓存接口 / Need manual cache interface calls
 impl UserService {
@@ -413,7 +413,7 @@ public class EmailService {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 // 直接使用 tokio::spawn / Direct use of tokio::spawn
 async fn send_email(to: String, subject: String) {
@@ -454,7 +454,7 @@ public class TransactionService {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 impl TransactionService {
     #[Transactional(
@@ -499,7 +499,7 @@ public class DatabaseConnection {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 pub struct DatabaseConnection {
     pool: PgPool,
@@ -520,7 +520,7 @@ impl Drop for DatabaseConnection {
 ```
 
 **说明**:
-- Nexus 使用 **RAII 模式**，更安全
+- Hiver 使用 **RAII 模式**，更安全
 - `Drop` trait 保证资源释放
 - **不视为缺失，而是 Rust 惯用方式**
 
@@ -549,7 +549,7 @@ public class ProdConfig {
 }
 ```
 
-**Nexus (当前实现)**:
+**Hiver (当前实现)**:
 ```rust
 impl Config {
     pub fn database(&self) -> DataSource {

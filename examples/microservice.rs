@@ -456,7 +456,7 @@ impl ApiGateway {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("================================================================");
-    println!("  Nexus Microservice Example / Nexus 微服务示例");
+    println!("  Hiver Microservice Example / Hiver 微服务示例");
     println!("  Equivalent to Spring Cloud + Resilience4j");
     println!("================================================================\n");
 

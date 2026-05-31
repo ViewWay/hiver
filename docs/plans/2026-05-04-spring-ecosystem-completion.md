@@ -1,8 +1,8 @@
-# Spring Ecosystem Completion — Nexus 全面对标 Spring
+# Spring Ecosystem Completion — Hiver 全面对标 Spring
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** 将 Nexus 打造成 Rust 生态中对标整个 Spring 生态系统的生产级框架。
+**Goal:** 将 Hiver 打造成 Rust 生态中对标整个 Spring 生态系统的生产级框架。
 
 **Architecture:** 基于现有 47-crate / 120K 行代码基础，补充缺失的 11 个 Spring 对标模块，同时强化已有模块的完整度到生产级。每个模块独立为 workspace crate，遵循 hiver-* 命名规范。
 
@@ -14,7 +14,7 @@
 
 ### 已有模块 (47 crates, 120,326 行, cargo check ✅)
 
-| 对标 Spring | Nexus Crate | 代码量 | 状态 |
+| 对标 Spring | Hiver Crate | 代码量 | 状态 |
 |-------------|------------|--------|------|
 | Spring Framework (Core) | hiver-core | 1,627 | 基础完成 |
 | Spring Boot | hiver-starter | 6,883 | 已完成 |

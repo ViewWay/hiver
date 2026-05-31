@@ -3,8 +3,8 @@
 > **Status**: Phase 2+ Available ✅
 > **状态**: 第2阶段+可用 ✅
 
-Nexus provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
-Nexus 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。
+Hiver provides flexible configuration management similar to Spring Boot, with multi-format support, profiles, and auto-configuration.
+Hiver 提供灵活的配置管理，类似于 Spring Boot，支持多格式、配置文件和自动配置。
 
 ---
 
@@ -23,10 +23,10 @@ Configuration features:
 
 ## Configuration Files / 配置文件
 
-Nexus looks for configuration files in order of priority:
-Nexus 按优先级顺序查找配置文件：
+Hiver looks for configuration files in order of priority:
+Hiver 按优先级顺序查找配置文件：
 
-1. `nexus.toml` (preferred / 推荐)
+1. `hiver.toml` (preferred / 推荐)
 2. `application.yml` / `application.yaml`
 3. `application.properties`
 4. `application.json`
@@ -119,25 +119,25 @@ let db: DatabaseConfig = config.get()?;
 
 ## Environment Variables / 环境变量
 
-Override any config value with environment variables using `NEXUS_` prefix:
+Override any config value with environment variables using `HIVER_` prefix:
 
-使用 `NEXUS_` 前缀的环境变量覆盖任何配置值：
+使用 `HIVER_` 前缀的环境变量覆盖任何配置值：
 
 ```bash
 # Server config / 服务器配置
-export NEXUS_SERVER_PORT=9090
-export NEXUS_SERVER_HOST=0.0.0.0
+export HIVER_SERVER_PORT=9090
+export HIVER_SERVER_HOST=0.0.0.0
 
 # Database config / 数据库配置
-export NEXUS_DATABASE_URL=postgres://prod-server/mydb
-export NEXUS_DATABASE_POOL_SIZE=20
+export HIVER_DATABASE_URL=postgres://prod-server/mydb
+export HIVER_DATABASE_POOL_SIZE=20
 
 # Logging config / 日志配置
-export NEXUS_LOG_LEVEL=DEBUG
-export NEXUS_LOG_MODE=simple
+export HIVER_LOG_LEVEL=DEBUG
+export HIVER_LOG_MODE=simple
 
 # Active profile / 激活的配置文件
-export NEXUS_PROFILE=prod
+export HIVER_PROFILE=prod
 ```
 
 ---
@@ -150,7 +150,7 @@ Environment-specific configurations with file naming convention:
 
 ```
 config/
-├── nexus.toml                # Default / 默认
+├── hiver.toml                # Default / 默认
 ├── hiver-dev.toml            # Development / 开发
 ├── hiver-prod.toml           # Production / 生产
 └── hiver-test.toml           # Testing / 测试
@@ -159,7 +159,7 @@ config/
 ```rust
 use hiver_config::{Config, Profile};
 
-// Auto-detect from NEXUS_PROFILE env / 从环境变量自动检测
+// Auto-detect from HIVER_PROFILE env / 从环境变量自动检测
 let config = Config::builder()
     .with_profile(Profile::from_env())
     .build()?;
@@ -201,11 +201,11 @@ pool_size = 50
 `hiver-starter` 提供 Spring Boot 风格的自动配置：
 
 ```rust
-use hiver_starter::NexusApp;
+use hiver_starter::HiverApp;
 use hiver_router::Router;
 
 fn main() -> std::io::Result<()> {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new()
             .get("/", handler)
             .get("/users", list_users)
@@ -220,24 +220,24 @@ fn main() -> std::io::Result<()> {
 
 | Setting | Default | Override |
 |---------|---------|----------|
-| Server host | `0.0.0.0` | `NEXUS_SERVER_HOST` |
-| Server port | `8080` | `NEXUS_SERVER_PORT` |
-| Workers | CPU cores | `NEXUS_SERVER_WORKERS` |
-| Log level | `INFO` | `NEXUS_LOG_LEVEL` |
-| Log mode | `verbose` (dev) / `simple` (prod) | `NEXUS_LOG_MODE` |
+| Server host | `0.0.0.0` | `HIVER_SERVER_HOST` |
+| Server port | `8080` | `HIVER_SERVER_PORT` |
+| Workers | CPU cores | `HIVER_SERVER_WORKERS` |
+| Log level | `INFO` | `HIVER_LOG_LEVEL` |
+| Log mode | `verbose` (dev) / `simple` (prod) | `HIVER_LOG_MODE` |
 
 ---
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@ConfigurationProperties` | `#[derive(PropertiesConfig)]` | Type-safe config binding |
 | `@Value` | `config.get::<T>()` | Single value extraction |
-| `application.yml` | `nexus.toml` / `application.yml` | Config file |
+| `application.yml` | `hiver.toml` / `application.yml` | Config file |
 | `@Profile` | `Profile` enum | Environment profiles |
-| `spring.profiles.active` | `NEXUS_PROFILE` | Active profile |
-| `@SpringBootApplication` | `NexusApp::new()` | Auto-configuration |
+| `spring.profiles.active` | `HIVER_PROFILE` | Active profile |
+| `@SpringBootApplication` | `HiverApp::new()` | Auto-configuration |
 
 ---
 

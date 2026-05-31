@@ -1,5 +1,5 @@
-//! Test application support for booting a test instance of the Nexus application.
-//! 测试应用支持，用于启动Nexus应用的测试实例。
+//! Test application support for booting a test instance of the Hiver application.
+//! 测试应用支持，用于启动Hiver应用的测试实例。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
@@ -80,9 +80,9 @@ pub enum TestApplicationError {
 /// 测试应用操作的结果类型。
 pub type TestAppResult<T> = Result<T, TestApplicationError>;
 
-/// A test application instance that boots a lightweight Nexus context.
+/// A test application instance that boots a lightweight Hiver context.
 ///
-/// 测试应用实例，启动轻量级的Nexus上下文。
+/// 测试应用实例，启动轻量级的Hiver上下文。
 ///
 /// Automatically shuts down when dropped (equivalent to Spring's
 /// `@DirtiesContext` cleanup).

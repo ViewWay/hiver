@@ -3,11 +3,11 @@
 //!
 //! # Overview / 概述
 //!
-//! Provides a bridge between Nexus Data ORM and Diesel ORM.
+//! Provides a bridge between Hiver Data ORM and Diesel ORM.
 //! Follows Diesel's schema definition and query building conventions
-//! while delegating actual execution to the Nexus `DatabaseClient`.
+//! while delegating actual execution to the Hiver `DatabaseClient`.
 //! 遵循 Diesel 的 schema 定义和查询构建约定，
-//! 同时将实际执行委托给 Nexus `DatabaseClient`。
+//! 同时将实际执行委托给 Hiver `DatabaseClient`。
 //!
 //! Requires the `diesel` feature flag.
 //! 需要 `diesel` 特性标志。
@@ -263,8 +263,8 @@ impl OrderDirection {
 /// Diesel 风格的查询构建器。
 ///
 /// Equivalent to Diesel's `QueryDsl` — builds a type-safe query
-/// that is executed via the Nexus `DatabaseClient`.
-/// 等价于 Diesel 的 `QueryDsl` — 构建通过 Nexus`DatabaseClient` 执行的类型安全查询。
+/// that is executed via the Hiver `DatabaseClient`.
+/// 等价于 Diesel 的 `QueryDsl` — 构建通过 Hiver`DatabaseClient` 执行的类型安全查询。
 #[derive(Debug, Clone)]
 pub struct DieselQuery<M> {
     _phantom: PhantomData<M>,

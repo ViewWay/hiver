@@ -4,17 +4,17 @@
 [![Documentation](https://docs.rs/hiver-security/badge.svg)](https://docs.rs/hiver-security)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](../../LICENSE)
 
-> Security framework for Nexus applications
+> Security framework for Hiver applications
 > 
-> Nexus应用程序的安全框架
+> Hiver应用程序的安全框架
 
 ---
 
 ## 📋 Overview / 概述
 
-`hiver-security` provides comprehensive security features for Nexus applications, including authentication, authorization, and method-level security, similar to Spring Security.
+`hiver-security` provides comprehensive security features for Hiver applications, including authentication, authorization, and method-level security, similar to Spring Security.
 
-`hiver-security` 为Nexus应用程序提供全面的安全功能，包括身份验证、授权和方法级安全，类似于Spring Security。
+`hiver-security` 为Hiver应用程序提供全面的安全功能，包括身份验证、授权和方法级安全，类似于Spring Security。
 
 **Key Features** / **核心特性**:
 - ✅ **Authentication** / **身份验证** - User authentication with JWT

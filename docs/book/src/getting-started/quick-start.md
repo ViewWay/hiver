@@ -1,8 +1,8 @@
 # Quick Start
 # 快速开始
 
-This guide will help you create your first Nexus application in under 5 minutes.
-本指南将帮助您在 5 分钟内创建第一个 Nexus 应用。
+This guide will help you create your first Hiver application in under 5 minutes.
+本指南将帮助您在 5 分钟内创建第一个 Hiver 应用。
 
 ## Create a New Project / 创建新项目
 
@@ -62,7 +62,7 @@ async fn handle_request(req: hiver_http::Request) -> Result<Response, hiver_http
         "/" => Ok(Response::builder()
             .status(StatusCode::OK)
             .header("content-type", "text/plain")
-            .body(Body::from("Hello, Nexus!"))
+            .body(Body::from("Hello, Hiver!"))
             .unwrap()),
             
         "/health" => Ok(Response::builder()
@@ -89,7 +89,7 @@ cargo run
 ```bash
 # Test the root endpoint / 测试根端点
 curl http://localhost:8080/
-# Output: Hello, Nexus!
+# Output: Hello, Hiver!
 
 # Test the health endpoint / 测试健康端点
 curl http://localhost:8080/health
@@ -135,7 +135,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 async fn index(_req: hiver_http::Request) -> Response {
     Response::builder()
         .status(StatusCode::OK)
-        .body(Body::from("Welcome to Nexus!"))
+        .body(Body::from("Welcome to Hiver!"))
         .unwrap()
 }
 

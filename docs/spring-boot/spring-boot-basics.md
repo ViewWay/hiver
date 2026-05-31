@@ -21,11 +21,11 @@
 
 **Spring Boot** 是基于 Spring 框架的快速开发框架，旨在简化 Spring 应用的初始搭建和开发过程。
 
-**Nexus** 是用 Rust 编写的生产级 Web 框架，对标 Spring Boot 的功能特性。
+**Hiver** 是用 Rust 编写的生产级 Web 框架，对标 Spring Boot 的功能特性。
 
 ### 核心特性对比 / Core Features Comparison
 
-| 特性 / Feature | Spring Boot | Nexus | 状态 / Status |
+| 特性 / Feature | Spring Boot | Hiver | 状态 / Status |
 |----------------|-------------|-------|---------------|
 | **快速启动 / Quick Start** | 自动配置 | 零配置宏 | ✅ 已实现 |
 | **内嵌服务器 / Embedded Server** | Tomcat/Jetty | 内置 HTTP 服务器 | ✅ 已实现 |
@@ -51,10 +51,10 @@ public class QuickStartApplication {
 }
 ```
 
-### Nexus 等价实现 / Nexus Equivalent
+### Hiver 等价实现 / Hiver Equivalent
 
 ```rust
-// Nexus - 最简单的 Hello World
+// Hiver - 最简单的 Hello World
 use hiver::prelude::*;
 use hiver_macros::{main, controller, get};
 
@@ -66,13 +66,13 @@ struct RootController;
 
 #[get("/")]
 async fn hello() -> &'static str {
-    "Hello, Nexus!"
+    "Hello, Hiver!"
 }
 ```
 
 ### 对比总结 / Comparison Summary
 
-| 维度 / Dimension | Spring Boot | Nexus |
+| 维度 / Dimension | Spring Boot | Hiver |
 |------------------|-------------|-------|
 | **启动方式** | `SpringApplication.run()` | `Server::bind().serve().await` |
 | **路由定义** | `@GetMapping` 注解 | `#[get]` 宏 |
@@ -86,7 +86,7 @@ async fn hello() -> &'static str {
 
 ### Spring Boot 环境要求 / Spring Boot Requirements
 
-| 组件 / Component | Spring Boot 要求 | Nexus 要求 |
+| 组件 / Component | Spring Boot 要求 | Hiver 要求 |
 |------------------|------------------|------------|
 | **JDK** | JDK 17+ | Rust 1.75+ |
 | **构建工具** | Maven/Gradle | Cargo |
@@ -110,16 +110,16 @@ curl https://start.spring.io/starter.zip \
   -o myapp.zip
 ```
 
-#### Nexus - Cargo New
+#### Hiver - Cargo New
 
 ```bash
-# 创建新的 Nexus 项目
+# 创建新的 Hiver 项目
 cargo new myapp --bin
 cd myapp
 
 # 编辑 Cargo.toml 添加依赖
 [dependencies]
-nexus = "0.1"
+hiver = "0.1"
 hiver-macros = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
@@ -142,12 +142,12 @@ tokio = { version = "1", features = ["full"] }
 </dependencies>
 ```
 
-#### Nexus - Cargo.toml
+#### Hiver - Cargo.toml
 
 ```toml
 [dependencies]
 # 核心框架
-nexus = { path = "../crates/hiver-core" }
+hiver = { path = "../crates/hiver-core" }
 # HTTP 服务器
 hiver-http = { path = "../crates/hiver-http" }
 # 路由器
@@ -171,7 +171,7 @@ serde = { version = "1.0", features = ["derive"] }
 
 ### 开发工具对比 / IDE Tools Comparison
 
-| IDE / 工具 | Spring Boot 支持 | Nexus 支持 |
+| IDE / 工具 | Spring Boot 支持 | Hiver 支持 |
 |------------|------------------|------------|
 | **IntelliJ IDEA** | ✅ 完整支持 | ⚠️ 插件支持 |
 | **VS Code** | ✅ Spring Boot 插件 | ✅ rust-analyzer |
@@ -195,7 +195,7 @@ spring:
     active: dev
 ```
 
-#### Nexus - 环境变量
+#### Hiver - 环境变量
 
 ```rust
 // 通过环境变量配置
@@ -243,7 +243,7 @@ my-spring-boot-app/
 └── README.md
 ```
 
-### Nexus 标准项目结构 / Standard Nexus Structure
+### Hiver 标准项目结构 / Standard Hiver Structure
 
 ```
 my-hiver-app/
@@ -268,7 +268,7 @@ my-hiver-app/
 
 ### 核心目录对比 / Core Directory Comparison
 
-| Spring Boot 目录 | Nexus 目录 | 用途 / Purpose |
+| Spring Boot 目录 | Hiver 目录 | 用途 / Purpose |
 |------------------|------------|----------------|
 | `src/main/java/` | `src/` | 源代码 |
 | `controller/` | `controllers/` | 控制器层 |
@@ -302,7 +302,7 @@ public class MyApplication {
 - `@EnableAutoConfiguration` - 启用自动配置
 - `@ComponentScan` - 组件扫描
 
-#### Nexus - main.rs
+#### Hiver - main.rs
 
 ```rust
 use hiver::prelude::*;
@@ -366,7 +366,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 }
 ```
 
-#### Nexus 三层架构
+#### Hiver 三层架构
 
 ```rust
 // Controller 层
@@ -469,7 +469,7 @@ public class UserController {
 }
 ```
 
-#### Nexus - CRUD Controller
+#### Hiver - CRUD Controller
 
 ```rust
 use hiver::prelude::*;
@@ -576,7 +576,7 @@ public User getUser(
 }
 ```
 
-#### Nexus - 参数提取
+#### Hiver - 参数提取
 
 ```rust
 #[get("/users/:id")]
@@ -611,7 +611,7 @@ public ResponseEntity<User> getUser() {
 }
 ```
 
-#### Nexus
+#### Hiver
 
 ```rust
 #[get("/user")]
@@ -662,7 +662,7 @@ public Result<User> getUser(@PathVariable Long id) {
 }
 ```
 
-#### Nexus - Result<T>
+#### Hiver - Result<T>
 
 ```rust
 use serde::{Deserialize, Serialize};
@@ -705,7 +705,7 @@ async fn get_user(id: u64) -> Json<Result<User>> {
 
 ### 已实现功能 / Implemented Features
 
-| 功能 / Feature | Spring Boot | Nexus | 完成度 |
+| 功能 / Feature | Spring Boot | Hiver | 完成度 |
 |----------------|-------------|-------|--------|
 | REST API | `@RestController` | `#[controller]` | ✅ 100% |
 | 路径参数 | `@PathVariable` | 直接参数 | ✅ 100% |
@@ -719,7 +719,7 @@ async fn get_user(id: u64) -> Json<Result<User>> {
 
 ### 待补充功能 / Features to Add
 
-| 功能 / Feature | Spring Boot | Nexus | 状态 |
+| 功能 / Feature | Spring Boot | Hiver | 状态 |
 |----------------|-------------|-------|------|
 | 统一响应封装 | `Result<T>` | 需要封装 | ⚠️ 待实现 |
 | 参数校验 | `@Valid`, `@NotNull` | 需要集成 validator | ⚠️ 待实现 |

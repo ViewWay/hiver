@@ -1,10 +1,10 @@
-# Nexus Documentation Index
-# Nexus 文档索引
+# Hiver Documentation Index
+# Hiver 文档索引
 
 ## 📚 Complete Documentation Map / 完整文档地图
 
-This index provides a structured overview of all Nexus documentation.
-此索引提供了所有 Nexus 文档的结构化概览。
+This index provides a structured overview of all Hiver documentation.
+此索引提供了所有 Hiver 文档的结构化概览。
 
 ---
 
@@ -15,7 +15,7 @@ This index provides a structured overview of all Nexus documentation.
 1. **[CLAUDE.md](../CLAUDE.md)** - Project instructions for contributors / 贡献者项目说明
 2. **[CODEMAP.md](./CODEMAP.md)** - Full crate reference, macro index, dependency graph / 完整 crate 参考、宏索引、依赖图
 3. **[STRATEGY-OVERVIEW.md](./STRATEGY-OVERVIEW.md)** - Visual strategy and roadmap / 可视化战略和路线图
-4. **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** - Migrating from Spring Boot to Nexus / 从 Spring Boot 迁移到 Nexus
+4. **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** - Migrating from Spring Boot to Hiver / 从 Spring Boot 迁移到 Hiver
 
 ### For Chinese Developers / 中国开发者
 
@@ -52,7 +52,7 @@ This index provides a structured overview of all Nexus documentation.
 
 ### Gap Analysis / 差距分析
 
-1. **[spring-boot-gap-analysis.md](./spring-boot-gap-analysis.md)** - Spring Boot vs Nexus comparison
+1. **[spring-boot-gap-analysis.md](./spring-boot-gap-analysis.md)** - Spring Boot vs Hiver comparison
    - 12 major feature areas / 12 个主要功能领域
    - Completion percentage by layer / 按层完成度百分比
    - Data layer at 0% (critical) / 数据层 0%（关键）
@@ -124,7 +124,7 @@ This index provides a structured overview of all Nexus documentation.
 
 ### Performance Comparison / 性能对比
 
-| Metric / 指标 | Spring Boot | Nexus | Improvement / 提升 |
+| Metric / 指标 | Spring Boot | Hiver | Improvement / 提升 |
 |--------------|-------------|-------|-------------------|
 | Startup time / 启动时间 | 2-5s | ~100ms | **20-50x faster** |
 | Memory (idle) / 内存（空闲） | ~200MB | ~10MB | **20x less** |
@@ -227,7 +227,7 @@ docs/
 ├── STRATEGY-*.md                    # Strategy documents / 战略文档
 ├── MISSING-FEATURES-*.md            # Feature gap analysis / 功能差距分析
 ├── spring-*.md                      # Spring comparison / Spring 对比
-├── hiver-*-*.md                     # Nexus-specific docs / Nexus 特定文档
+├── hiver-*-*.md                     # Hiver-specific docs / Hiver 特定文档
 ├── implementation-*.md              # Implementation plans / 实施计划
 ├── MIGRATION-*.md                   # Migration guides / 迁移指南
 └── *-addendum.md                    # Addendums / 附录
@@ -293,9 +293,9 @@ Content in English / 英文内容
 
 ### External / 外部
 
-- **GitHub**: https://github.com/ViewWay/nexus
-- **Issues**: https://github.com/ViewWay/nexus/issues
-- **Discussions**: https://github.com/ViewWay/nexus/discussions
+- **GitHub**: https://github.com/ViewWay/hiver
+- **Issues**: https://github.com/ViewWay/hiver/issues
+- **Discussions**: https://github.com/ViewWay/hiver/discussions
 - **Rust Docs**: https://doc.rust-lang.org/
 
 ---

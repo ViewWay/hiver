@@ -53,12 +53,12 @@ mod tests {
     #[ignore]
     fn test_migration_with_attributes() {
         let migration = Migration::new("001_test")
-            .attribute("author", "Nexus")
+            .attribute("author", "Hiver")
             .attribute("category", "schema")
             .up("CREATE TABLE test (id INTEGER);")
             .down("DROP TABLE test;");
 
-        assert_eq!(migration.attributes.get("author"), Some(&"Nexus".to_string()));
+        assert_eq!(migration.attributes.get("author"), Some(&"Hiver".to_string()));
         assert_eq!(migration.attributes.get("category"), Some(&"schema".to_string()));
     }
 

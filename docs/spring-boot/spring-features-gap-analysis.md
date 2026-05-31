@@ -15,7 +15,7 @@ This report compares Spring Framework's core features with Hiver Framework's cur
 
 ### 总体状态 / Overall Status
 
-| 类别 / Category | Spring功能数 | Nexus已实现 | Nexus计划中 | Nexus缺失 | 完成度 |
+| 类别 / Category | Spring功能数 | Hiver已实现 | Hiver计划中 | Hiver缺失 | 完成度 |
 |----------------|-------------|------------|------------|----------|--------|
 | **Web Layer** | 27 | 8 | 0 | 19 | 30% |
 | **IoC/DI** | 15 | 10 | 0 | 5 | 67% |

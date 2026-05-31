@@ -3,11 +3,11 @@
 //!
 //! # Overview / 概述
 //!
-//! Provides a bridge between Nexus Data ORM and SQLx.
+//! Provides a bridge between Hiver Data ORM and SQLx.
 //! Supports compile-time query verification (via SQLx's `query!`) and
-//! runtime async execution via the Nexus `DatabaseClient`.
-//! 提供 Nexus Data ORM 与 SQLx 之间的桥接。
-//! 支持编译时查询验证和通过 Nexus `DatabaseClient` 进行运行时异步执行。
+//! runtime async execution via the Hiver `DatabaseClient`.
+//! 提供 Hiver Data ORM 与 SQLx 之间的桥接。
+//! 支持编译时查询验证和通过 Hiver `DatabaseClient` 进行运行时异步执行。
 //!
 //! Requires the `sqlx` feature flag.
 //! 需要 `sqlx` 特性标志。
@@ -308,23 +308,23 @@ impl<M: Model + serde::de::DeserializeOwned> Default for SqlxQuery<M> {
 
 // ── FromRow Adapter ──
 
-/// Trait for types that can be constructed from a Nexus RDBC row.
-/// 可从 Nexus RDBC 行构造的类型的 trait。
+/// Trait for types that can be constructed from a Hiver RDBC row.
+/// 可从 Hiver RDBC 行构造的类型的 trait。
 ///
 /// Equivalent to SQLx's `FromRow` trait — bridges row-based
-/// deserialization to the Nexus `Model` ecosystem.
-/// 等价于 SQLx 的 `FromRow` trait — 将基于行的反序列化桥接到 Nexus `Model` 生态系统。
+/// deserialization to the Hiver `Model` ecosystem.
+/// 等价于 SQLx 的 `FromRow` trait — 将基于行的反序列化桥接到 Hiver `Model` 生态系统。
 pub trait FromRow: Sized {
-    /// Construct this type from a Nexus RDBC row.
-    /// 从 Nexus RDBC 行构造此类型。
+    /// Construct this type from a Hiver RDBC row.
+    /// 从 Hiver RDBC 行构造此类型。
     fn from_rdbc_row(row: &hiver_data_rdbc::Row) -> Result<Self>;
 }
 
 // ── SQLx Pool Adapter ──
 
 /// Adapter that wraps a SQLx connection pool and exposes it as a
-/// Nexus `DatabaseClient`.
-/// 包装 SQLx 连接池并将其暴露为 Nexus `DatabaseClient` 的适配器。
+/// Hiver `DatabaseClient`.
+/// 包装 SQLx 连接池并将其暴露为 Hiver `DatabaseClient` 的适配器。
 ///
 /// Only available when the `sqlx` feature is enabled and a real
 /// SQLx pool is provided.

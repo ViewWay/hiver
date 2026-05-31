@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Batch |
+//! | Hiver | Spring Batch |
 //! |-------|-------------|
 //! | `JobOperator` | `JobOperator` |
 //! | `JobExplorer` | `JobExplorer` |

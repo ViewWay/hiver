@@ -1,11 +1,11 @@
-# Nexus Logging Configuration Guide
-# Nexus 日志配置指南
+# Hiver Logging Configuration Guide
+# Hiver 日志配置指南
 
 ## Overview / 概述
 
-Nexus provides a unified logging system with two modes optimized for different environments:
+Hiver provides a unified logging system with two modes optimized for different environments:
 
-Nexus 提供统一的日志系统，具有针对不同环境优化的两种模式：
+Hiver 提供统一的日志系统，具有针对不同环境优化的两种模式：
 
 - **Verbose Mode** (verbose): Detailed logging for development / 详细日志用于开发环境
 - **Simple Mode** (simple): Minimal overhead logging for production / 最小开销日志用于生产环境
@@ -57,13 +57,13 @@ INFO n.http.server: Request received
 
 | Variable | Description | Example | Default |
 |----------|-------------|---------|---------|
-| `NEXUS_LOG_LEVEL` | Global log level | `DEBUG` | `INFO` |
-| `NEXUS_LOG_MODE` | Log mode override | `simple` | (from profile) |
-| `NEXUS_PROFILE` | Active profile | `prod` | - |
-| `NEXUS_LOG_FORMAT` | Output format | `json` | `pretty` |
-| `NEXUS_LOG_FILE` | Log file path | `logs/app.log` | (console only) |
-| `NEXUS_LOG_ROTATION` | Log rotation | `hourly` | `daily` |
-| `NEXUS_LOG_MAX_FILES` | Max log files | `30` | `7` |
+| `HIVER_LOG_LEVEL` | Global log level | `DEBUG` | `INFO` |
+| `HIVER_LOG_MODE` | Log mode override | `simple` | (from profile) |
+| `HIVER_PROFILE` | Active profile | `prod` | - |
+| `HIVER_LOG_FORMAT` | Output format | `json` | `pretty` |
+| `HIVER_LOG_FILE` | Log file path | `logs/app.log` | (console only) |
+| `HIVER_LOG_ROTATION` | Log rotation | `hourly` | `daily` |
+| `HIVER_LOG_MAX_FILES` | Max log files | `30` | `7` |
 
 ### Profile-based Defaults / 基于 Profile 的默认值
 
@@ -75,12 +75,12 @@ INFO n.http.server: Request received
 
 ### Configuration File / 配置文件
 
-Create `nexus.toml` in your project root or config directory:
+Create `hiver.toml` in your project root or config directory:
 
-在项目根目录或配置目录中创建 `nexus.toml`：
+在项目根目录或配置目录中创建 `hiver.toml`：
 
 ```toml
-# nexus.toml
+# hiver.toml
 
 [logging]
 level = "INFO"              # Global log level
@@ -150,7 +150,7 @@ use hiver_observability::log::Logger;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::builder()
-        .add_file("config/nexus.toml")
+        .add_file("config/hiver.toml")
         .add_profile("dev")
         .build()?;
 
@@ -169,7 +169,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 use tracing::{info, warn, error, debug};
 
 fn main() {
-    // Standard tracing macros work with Nexus logging
+    // Standard tracing macros work with Hiver logging
     info!("Application started");
     debug!("Debug information: value = {}", 42);
     warn!("This is a warning");
@@ -225,10 +225,10 @@ async fn handle_request(req: Request) -> Response {
 
 ```bash
 # Set profile to dev
-export NEXUS_PROFILE=dev
+export HIVER_PROFILE=dev
 
 # Or set mode explicitly
-export NEXUS_LOG_MODE=verbose
+export HIVER_LOG_MODE=verbose
 
 # Run application
 cargo run
@@ -253,10 +253,10 @@ cargo run
 
 ```bash
 # Set profile to prod
-export NEXUS_PROFILE=prod
+export HIVER_PROFILE=prod
 
 # Or set mode explicitly
-export NEXUS_LOG_MODE=simple
+export HIVER_LOG_MODE=simple
 
 # Run application
 cargo run
@@ -273,7 +273,7 @@ INFO n.http.server: Request received
 
 ```bash
 # Set debug level
-export NEXUS_LOG_LEVEL=DEBUG
+export HIVER_LOG_LEVEL=DEBUG
 
 # Or use RUST_LOG for compatibility
 export RUST_LOG=debug
@@ -285,9 +285,9 @@ cargo run
 
 ```bash
 # Enable file logging
-export NEXUS_LOG_FILE=logs/application.log
-export NEXUS_LOG_ROTATION=daily
-export NEXUS_LOG_MAX_FILES=30
+export HIVER_LOG_FILE=logs/application.log
+export HIVER_LOG_ROTATION=daily
+export HIVER_LOG_MAX_FILES=30
 
 cargo run
 ```
@@ -298,13 +298,13 @@ cargo run
 
 ### Equivalent Configuration / 等价配置
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
-| `logging.level.root=INFO` | `NEXUS_LOG_LEVEL=INFO` | Global log level |
-| `logging.pattern.console=%d{...}` | `NEXUS_LOG_FORMAT=pretty` | Console format |
-| `logging.file.name=logs/app.log` | `NEXUS_LOG_FILE=logs/app.log` | Log file |
-| `logging.logback.rollingpolicy.max-history=7` | `NEXUS_LOG_MAX_FILES=7` | Max files |
-| `spring.profiles.active=dev` | `NEXUS_PROFILE=dev` | Active profile |
+| `logging.level.root=INFO` | `HIVER_LOG_LEVEL=INFO` | Global log level |
+| `logging.pattern.console=%d{...}` | `HIVER_LOG_FORMAT=pretty` | Console format |
+| `logging.file.name=logs/app.log` | `HIVER_LOG_FILE=logs/app.log` | Log file |
+| `logging.logback.rollingpolicy.max-history=7` | `HIVER_LOG_MAX_FILES=7` | Max files |
+| `spring.profiles.active=dev` | `HIVER_PROFILE=dev` | Active profile |
 
 ### Programmatic Equivalent / 编程等价
 
@@ -319,7 +319,7 @@ public class Application {
 ```
 
 ```rust
-// Nexus
+// Hiver
 use hiver_starter::prelude::*;
 
 #[hiver_main]

@@ -1828,7 +1828,7 @@ mod tests {
         let config = GatewayConfig::with_defaults()
             .global_filter(Filter::AddHeader(
                 "X-Gateway".to_string(),
-                "nexus".to_string(),
+                "hiver".to_string(),
             ));
 
         let router = GatewayRouter::with_config(locator, config);

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Transaction management for Hiver Framework.
-Nexus框架的事务管理。
+Hiver框架的事务管理。
 Equivalent to: Spring Transaction Management (@Transactional, TransactionTemplate)
 """
 homepage = { workspace = true }

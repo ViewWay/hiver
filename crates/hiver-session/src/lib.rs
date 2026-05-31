@@ -1,9 +1,9 @@
-//! Nexus Session - Distributed session management
-//! Nexus 会话 - 分布式会话管理
+//! Hiver Session - Distributed session management
+//! Hiver 会话 - 分布式会话管理
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `SessionStore` | `SessionRepository` |
 //! | `Session` | `Session` |
@@ -50,8 +50,8 @@
 //!
 //! # Examples / 示例
 //!
-//! More examples are available in the [Session documentation](https://nexus.viewway.io/session).
-//! 更多示例请参考 [会话文档](https://nexus.viewway.io/session)。
+//! More examples are available in the [Session documentation](https://hiver.viewway.io/session).
+//! 更多示例请参考 [会话文档](https://hiver.viewway.io/session)。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

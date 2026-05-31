@@ -6,7 +6,7 @@
 
 > High availability patterns for Hiver Framework
 > 
-> Nexus框架的高可用模式
+> Hiver框架的高可用模式
 
 ---
 
@@ -485,7 +485,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -497,7 +497,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Resilience is inspired by:
+Hiver Resilience is inspired by:
 
 - **[Resilience4j](https://github.com/resilience4j/resilience4j)** - Java resilience patterns
 - **[Spring Cloud Circuit Breaker](https://spring.io/projects/spring-cloud-circuitbreaker)** - Spring resilience

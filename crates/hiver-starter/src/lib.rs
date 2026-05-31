@@ -1,5 +1,5 @@
-//! Nexus Starter - Spring Boot风格的自动配置
-//! Nexus Starter - Spring Boot-style Auto-Configuration
+//! Hiver Starter - Spring Boot风格的自动配置
+//! Hiver Starter - Spring Boot-style Auto-Configuration
 //!
 //! 这个 crate 提供了类似 Spring Boot Starter 的自动配置能力。
 //! This crate provides Spring Boot Starter-like auto-configuration capabilities.
@@ -41,7 +41,7 @@
 //!
 //! #[get("/")]
 //! fn hello() -> &'static str {
-//!     "Hello, Nexus!"
+//!     "Hello, Hiver!"
 //! }
 //! ```
 
@@ -121,7 +121,7 @@ pub use config::{
 // ============================================================================
 
 pub use std::sync::Arc;
-pub use anyhow::Result as NexusResult;
+pub use anyhow::Result as HiverResult;
 
 /// 应用启动结果类型
 pub type ApplicationResult = Result<(), Box<dyn std::error::Error + Send + Sync + 'static>>;
@@ -130,7 +130,7 @@ pub type ApplicationResult = Result<(), Box<dyn std::error::Error + Send + Sync 
 // 常量 / Constants
 // ============================================================================
 
-/// Nexus Starter 版本
+/// Hiver Starter 版本
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// 默认服务器端口
@@ -152,7 +152,7 @@ pub const DEFAULT_WORKER_THREADS: usize = 4;
 pub const APP_CONFIG_FILE: &str = "application";
 
 /// 环境变量前缀
-pub const ENV_VAR_PREFIX: &str = "NEXUS";
+pub const ENV_VAR_PREFIX: &str = "HIVER";
 
 /// Profile 环境变量名
-pub const PROFILE_ENV_VAR: &str = "NEXUS_PROFILE";
+pub const PROFILE_ENV_VAR: &str = "HIVER_PROFILE";

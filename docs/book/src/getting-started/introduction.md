@@ -1,11 +1,11 @@
 # Introduction
 # 简介
 
-## What is Nexus? / 什么是 Nexus？
+## What is Hiver? / 什么是 Hiver？
 
-Nexus is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning **62 crates** across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
+Hiver is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning **62 crates** across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
 
-Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 **62 个 crate**、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。
+Hiver 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 **62 个 crate**、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。
 
 ## Design Philosophy / 设计理念
 
@@ -62,7 +62,7 @@ hiver-starter (Spring Boot auto-configuration)
 
 ## Comparison with Other Frameworks / 与其他框架的比较
 
-| Feature / 特性 | Nexus | Tokio-based (Axum) | Go (Gin) | Java (Spring Boot) |
+| Feature / 特性 | Hiver | Tokio-based (Axum) | Go (Gin) | Java (Spring Boot) |
 |----------------|-------|---------------------|-----------|---------------------|
 | Custom Runtime | ✅ io-uring | ❌ Tokio | N/A | N/A |
 | Thread-per-Core | ✅ Yes | Optional | No | No |

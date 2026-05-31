@@ -1,7 +1,7 @@
-//! # Nexus AOP
+//! # Hiver AOP
 //!
-//! Spring AOP style annotations for Nexus framework
-//! Nexus 框架的 Spring AOP 风格注解
+//! Spring AOP style annotations for Hiver framework
+//! Hiver 框架的 Spring AOP 风格注解
 //!
 //! ## Features / 功能
 //!

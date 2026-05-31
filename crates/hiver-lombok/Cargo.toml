@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Lombok-style annotations for Hiver Framework.
-Nexus框架的Lombok风格注解。
+Hiver框架的Lombok风格注解。
 Equivalent to: Project Lombok
 """
 homepage = { workspace = true }

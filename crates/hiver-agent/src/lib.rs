@@ -1,10 +1,10 @@
-//! # Nexus Agent Framework
+//! # Hiver Agent Framework
 //!
-//! AI Agent framework for the Nexus ecosystem, providing composable
+//! AI Agent framework for the Hiver ecosystem, providing composable
 //! agent patterns including ReAct reasoning, agent chaining, map-reduce,
 //! and intelligent routing.
 //!
-//! Nexus AI 代理框架，为 Nexus 生态系统提供可组合的代理模式，
+//! Hiver AI 代理框架，为 Hiver 生态系统提供可组合的代理模式，
 //! 包括 ReAct 推理、代理链式、MapReduce 和智能路由。
 //!
 //! # Overview / 概述

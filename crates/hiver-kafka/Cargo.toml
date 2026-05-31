@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Apache Kafka support for Hiver Framework.
-Nexus框架的Apache Kafka支持。
+Hiver框架的Apache Kafka支持。
 Equivalent to: Spring Kafka, Spring Cloud Stream
 """
 homepage = { workspace = true }

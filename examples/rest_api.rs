@@ -639,7 +639,7 @@ async fn seed_products(repo: &ProductRepository) {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("================================================================");
-    println!("  Nexus REST API Example / Nexus REST API 示例");
+    println!("  Hiver REST API Example / Hiver REST API 示例");
     println!("  Equivalent to Spring Boot + Spring Data + Spring Security");
     println!("================================================================\n");
 

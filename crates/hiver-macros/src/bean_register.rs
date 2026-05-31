@@ -127,7 +127,7 @@ pub fn generate_bean_registration(
 ) -> TokenStream2 {
     let struct_name = &input.ident;
     let factory_fn = format_ident!("__hiver_factory_{}", struct_name);
-    let deps_static = format_ident!("__NEXUS_DEPS_{}", struct_name.to_string().to_uppercase());
+    let deps_static = format_ident!("__HIVER_DEPS_{}", struct_name.to_string().to_uppercase());
     let bean_name_lit = struct_name.to_string();
     let bean_name_camel = to_camel_case(&bean_name_lit);
     let (condition_def, condition_fn) = extract_condition_fn(input);

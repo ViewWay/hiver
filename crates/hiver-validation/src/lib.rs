@@ -1,4 +1,4 @@
-//! Nexus Validation - 验证模块 / Validation Module
+//! Hiver Validation - 验证模块 / Validation Module
 //!
 //! 提供请求参数校验功能，等价于 Spring Validation / Provides request parameter validation, equivalent to Spring Validation
 

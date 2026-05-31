@@ -1,5 +1,5 @@
-//! Nexus Micrometer - Metrics collection framework
-//! Nexus 指标收集框架
+//! Hiver Micrometer - Metrics collection framework
+//! Hiver 指标收集框架
 //!
 //! # Spring Equivalent / Spring等价物
 //!

@@ -1,5 +1,5 @@
 #![allow(clippy::type_complexity, clippy::should_implement_trait)]
-//! Nexus Integration - Enterprise Integration Patterns
+//! Hiver Integration - Enterprise Integration Patterns
 //! 企业集成模式
 //!
 //! This module provides Spring Integration equivalent functionality for

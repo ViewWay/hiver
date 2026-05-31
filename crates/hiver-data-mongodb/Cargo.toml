@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "MongoDB integration for Hiver Framework (Repository, ReactiveMongoTemplate)"
-keywords = ["nexus", "data", "mongodb", "nosql", "database"]
+keywords = ["hiver", "data", "mongodb", "nosql", "database"]
 categories = ["database", "asynchronous"]
 
 [features]

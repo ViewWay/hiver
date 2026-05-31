@@ -6,7 +6,7 @@
 
 > Type-safe request data extractors for Hiver Framework
 > 
-> Nexus框架的类型安全请求数据提取器
+> Hiver框架的类型安全请求数据提取器
 
 ---
 
@@ -646,7 +646,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -658,7 +658,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Extractors is inspired by:
+Hiver Extractors is inspired by:
 
 - **[Spring Boot](https://spring.io/projects/spring-boot)** - Method parameter resolution
 - **[Axum](https://github.com/tokio-rs/axum)** - Extractor patterns

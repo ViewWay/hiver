@@ -6,15 +6,15 @@
 
 > Distributed tracing, metrics, and logging for Hiver Framework
 > 
-> Nexus框架的分布式追踪、指标和日志
+> Hiver框架的分布式追踪、指标和日志
 
 ---
 
 ## 📋 Overview / 概述
 
-`hiver-observability` provides comprehensive observability for Nexus applications, including distributed tracing, metrics collection, and structured logging.
+`hiver-observability` provides comprehensive observability for Hiver applications, including distributed tracing, metrics collection, and structured logging.
 
-`hiver-observability` 为Nexus应用程序提供全面的可观测性，包括分布式追踪、指标收集和结构化日志。
+`hiver-observability` 为Hiver应用程序提供全面的可观测性，包括分布式追踪、指标收集和结构化日志。
 
 **Key Features** / **核心特性**:
 - ✅ **Distributed Tracing** - OpenTelemetry compatible
@@ -463,7 +463,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -475,7 +475,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Observability is inspired by:
+Hiver Observability is inspired by:
 
 - **[OpenTelemetry](https://opentelemetry.io/)** - Distributed tracing standard
 - **[Prometheus](https://prometheus.io/)** - Metrics collection

@@ -3,10 +3,10 @@
 //!
 //! # Equivalent to Tokio Benchmarks / 等价于 Tokio 基准测试
 //!
-//! This benchmark suite measures the performance of Nexus runtime
+//! This benchmark suite measures the performance of Hiver runtime
 //! compared to the baseline (tokio/async-std).
 //!
-//! 此基准测试套件测量 Nexus 运行时与基线（tokio/async-std）相比的性能。
+//! 此基准测试套件测量 Hiver 运行时与基线（tokio/async-std）相比的性能。
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use hiver_runtime::{
@@ -23,7 +23,7 @@ use hiver_runtime::{
 fn bench_spawn_single(c: &mut Criterion) {
     let mut group = c.benchmark_group("spawn_single");
 
-    group.bench_function("nexus", |b| {
+    group.bench_function("hiver", |b| {
         let mut runtime = Runtime::new().unwrap();
         b.iter(|| {
             let _ = runtime.block_on(async {

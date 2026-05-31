@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Request extractors for Hiver Framework.
-Nexus框架的请求提取器。
+Hiver框架的请求提取器。
 Equivalent to: Spring @RequestParam, @PathVariable, @RequestBody, @RequestHeader
 """
 homepage = { workspace = true }

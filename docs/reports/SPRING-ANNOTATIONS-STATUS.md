@@ -1,10 +1,10 @@
-# Nexus Spring 注解支持状态报告 / Spring Annotations Support Status
+# Hiver Spring 注解支持状态报告 / Spring Annotations Support Status
 # 生成日期：2026-01-25 (Updated)
 
 ## 📊 总体完成度 / Overall Completion
 
 ```
-Nexus 注解支持统计 Statistics (Updated: 2026-01-25):
+Hiver 注解支持统计 Statistics (Updated: 2026-01-25):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ✅ Spring 注解 Implemented:     37/46  (80%) 🚀
@@ -30,7 +30,7 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 
 ### 🎯 核心注解 / Core Annotations (24/24)
 
-| # | Spring 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | Spring 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
 | **应用启动 / Application** |
 | 1 | `@SpringBootApplication` | `#[main]` | ✅ 完整 | `hiver-macros/src/lib.rs:63` |
@@ -69,7 +69,7 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 
 ### 🎯 特殊注解 / Special Annotations
 
-| # | Spring/Lombok 注解 | Nexus 注解 | 状态 Status | 说明 Description |
+| # | Spring/Lombok 注解 | Hiver 注解 | 状态 Status | 说明 Description |
 |---|------------------|-----------|-----------|---------------|
 | 25 | - | `#[logger]` | ✅ 完整 | 简化的日志器 |
 | 26 | - | `#[derive(FromRequest)]` | ✅ 完整 | 请求自动派生 |
@@ -79,7 +79,7 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 
 ## ⚠️ 部分实现的注解 / Partially Implemented
 
-| # | Spring 注解 | Nexus 注解 | 当前状态 Current | 需要增强 Needed |
+| # | Spring 注解 | Hiver 注解 | 当前状态 Current | 需要增强 Needed |
 |---|------------|-----------|---------------|---------------|
 | 1 | `@ConditionalOnClass` | `#[conditional_on_class]` | ✅ 声明存在 | ❌ 运行时检查 |
 | 2 | `@ConditionalOnProperty` | `#[conditional_on_property]` | ✅ 声明存在 | ❌ 运行时检查 |
@@ -95,7 +95,7 @@ AOP 完成日期 AOP Completion: 2026-01-25 ✅
 
 ### 📋 已实现的 Lombok 注解 / Implemented Lombok Annotations
 
-| # | Lombok 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | Lombok 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|------------|-----------|-----------|-------------|
 | **核心注解 / Core** |
 | 1 | `@Data` | `#[Data]` | ✅ 完整 | `hiver-lombok/src/data.rs` |
@@ -163,7 +163,7 @@ fn main() {
 
 ### 📋 已实现的 Spring Data 注解 / Implemented Spring Data Annotations
 
-| # | Spring Data 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | Spring Data 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|------------------|-----------|-----------|-------------|
 | **实体映射 / Entity Mapping** |
 | 1 | `@Entity` | `#[Entity]` | ✅ 完整 | `hiver-data-annotations/src/entity.rs` |
@@ -223,7 +223,7 @@ trait UserRepository {
 
 ### 📋 已实现的 Validation 注解 / Implemented Validation Annotations
 
-| # | Validation 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | Validation 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|-----------------|-----------|-----------|-------------|
 | **触发器 / Trigger** |
 | 1 | `@Valid` | `#[Valid]` | ✅ 完整 | `hiver-validation-annotations/src/lib.rs` |
@@ -276,7 +276,7 @@ async fn create_user(
 
 ### 📋 已实现的 AOP 注解 / Implemented AOP Annotations
 
-| # | AOP 注解 | Nexus 注解 | 状态 Status | 位置 Location |
+| # | AOP 注解 | Hiver 注解 | 状态 Status | 位置 Location |
 |---|---------|-----------|-----------|-------------|
 | **切面 / Aspect** |
 | 1 | `@Aspect` | `#[Aspect]` | ✅ 完整 | `hiver-aop/src/aspect.rs` |
@@ -609,7 +609,7 @@ struct AppConfig {
 }
 
 #[value("${app.name}")]
-static APP_NAME: &str = "Nexus";
+static APP_NAME: &str = "Hiver";
 
 // ✅ 依赖注入 Dependency Injection
 #[component]

@@ -259,7 +259,7 @@ async fn events_handler() -> Sse {
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot |
+| Hiver | Spring Boot |
 |-------|-------------|
 | `Middleware` trait | `Filter`, `HandlerInterceptor` |
 | `LoggerMiddleware` | `CommonsRequestLoggingFilter`, `Slf4j` |

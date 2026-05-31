@@ -1,4 +1,4 @@
-# Nexus Web Framework - Implementation Plan / 实施计划
+# Hiver Web Framework - Implementation Plan / 实施计划
 
 ## Version / 版本
 
@@ -27,7 +27,7 @@
 
 ### 1.1 Project Vision / 项目愿景
 
-Nexus是一个生产级、高可用的Rust Web框架，整合了现代Web框架的最佳实践，并提供：
+Hiver是一个生产级、高可用的Rust Web框架，整合了现代Web框架的最佳实践，并提供：
 - **自研高性能异步运行时**（基于io-uring）
 - **内置高可用模式**（熔断器、限流器、重试、服务发现）
 - **原生可观测性**（分布式追踪、指标、日志）
@@ -706,7 +706,7 @@ All Phase 7 development tasks completed successfully. The framework is productio
                 │        │                 │
                 ▼        ▼                 ▼
          ┌─────────────┬─────────┬─────────────────┐
-         │ hiver-router│  nexus  │ hiver-response  │
+         │ hiver-router│  hiver  │ hiver-response  │
          │  (P2: M4)   │extractors│   (P2: M5)      │
          └──────┬──────┴────┬─────┴────────┬────────┘
                 │           │              │
@@ -1238,7 +1238,7 @@ impl AiClient {
 
 ### Module Overview / 模块概览
 
-| Nexus 模块 | Spring Boot 对应 | 状态 | 描述 |
+| Hiver 模块 | Spring Boot 对应 | 状态 | 描述 |
 |-----------|-----------------|------|------|
 | hiver-events | ApplicationEventPublisher, @EventListener | ✅ | 事件发布/订阅机制 |
 | hiver-async | @Async, TaskExecutor | ✅ | 异步任务执行 |

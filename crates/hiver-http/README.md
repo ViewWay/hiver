@@ -2,13 +2,13 @@
 
 **HTTP server and client types for the Hiver Framework.**
 
-**Nexus框架的HTTP服务器和客户端类型。**
+**Hiver框架的HTTP服务器和客户端类型。**
 
 ## Overview / 概述
 
 `hiver-http` provides HTTP types, server implementation, and body handling for building web applications with the Hiver Framework.
 
-`hiver-http` 为使用Nexus框架构建Web应用程序提供HTTP类型、服务器实现和请求体处理。
+`hiver-http` 为使用Hiver框架构建Web应用程序提供HTTP类型、服务器实现和请求体处理。
 
 ## Features / 功能
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus |
+| Spring Boot | Hiver |
 |-------------|-------|
 | `HttpServletRequest` | `Request` |
 | `HttpServletResponse` | `Response` |
@@ -207,7 +207,7 @@ Server::bind("127.0.0.1:8080")
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

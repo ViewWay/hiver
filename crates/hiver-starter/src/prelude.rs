@@ -1,7 +1,7 @@
 //! 预导入模块 / Prelude Module
 //!
-//! 包含 Nexus Starter 最常用的类型和宏，方便一行导入。
-//! Contains the most commonly used Nexus Starter types and macros for one-line imports.
+//! 包含 Hiver Starter 最常用的类型和宏，方便一行导入。
+//! Contains the most commonly used Hiver Starter types and macros for one-line imports.
 //!
 //! # 使用方式 / Usage
 //!

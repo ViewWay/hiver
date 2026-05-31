@@ -11,8 +11,8 @@ use std::net::SocketAddr;
 use tonic::transport::{server::Router, Server};
 use tracing::{info, warn};
 
-/// Builder for a Nexus gRPC server.
-/// Nexus gRPC 服务器构建器。
+/// Builder for a Hiver gRPC server.
+/// Hiver gRPC 服务器构建器。
 ///
 /// # Example / 示例
 /// ```rust,ignore

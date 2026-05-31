@@ -1,5 +1,5 @@
-//! Nexus Kafka - Apache Kafka module
-//! Nexus Kafka - Apache Kafka模块
+//! Hiver Kafka - Apache Kafka module
+//! Hiver Kafka - Apache Kafka模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

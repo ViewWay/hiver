@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>HTTP Server / HTTP服务器 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>HTTP Server / HTTP服务器 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -176,8 +176,8 @@
                     <main>
                         <h1 id="http-server"><a class="header" href="#http-server">HTTP Server</a></h1>
 <h1 id="http服务器"><a class="header" href="#http服务器">HTTP服务器</a></h1>
-<p>The <code>nexus-http</code> crate provides HTTP server and client implementations optimized for the Nexus runtime.</p>
-<p><code>nexus-http</code> crate 提供针对 Nexus 运行时优化的 HTTP 服务器和客户端实现。</p>
+<p>The <code>hiver-http</code> crate provides HTTP server and client implementations optimized for the Hiver runtime.</p>
+<p><code>hiver-http</code> crate 提供针对 Hiver 运行时优化的 HTTP 服务器和客户端实现。</p>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    HTTP Request Flow                         │
@@ -199,7 +199,7 @@
 <h3 id="request--请求"><a class="header" href="#request--请求">Request / 请求</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Request;
+</span>use hiver_http::Request;
 
 async fn handle(req: Request) -&gt; Response {
     // Access request properties / 访问请求属性
@@ -228,7 +228,7 @@ async fn handle(req: Request) -&gt; Response {
 <h3 id="response--响应"><a class="header" href="#response--响应">Response / 响应</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_http::{Response, StatusCode, Body};
 
 // Builder pattern / 构建器模式
 let response = Response::builder()
@@ -250,7 +250,7 @@ let json_resp = Response::json(&amp;value);
 <h3 id="body--请求体响应体"><a class="header" href="#body--请求体响应体">Body / 请求体/响应体</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Body;
+</span>use hiver_http::Body;
 
 // From string / 从字符串
 let body = Body::from("Hello, World!");
@@ -267,7 +267,7 @@ let body = Body::empty();
 <h3 id="status-codes--状态码"><a class="header" href="#status-codes--状态码">Status Codes / 状态码</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::StatusCode;
+</span>use hiver_http::StatusCode;
 
 // Common status codes / 常用状态码
 StatusCode::OK              // 200
@@ -282,7 +282,7 @@ StatusCode::INTERNAL_SERVER_ERROR  // 500
 <h2 id="server-configuration--服务器配置"><a class="header" href="#server-configuration--服务器配置">Server Configuration / 服务器配置</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::Server;
+</span>use hiver_http::Server;
 
 // Basic server / 基础服务器
 Server::bind("127.0.0.1:8080")
@@ -302,7 +302,7 @@ Server::bind("0.0.0.0:8080")
 <p><code>IntoResponse</code> trait 允许任何类型转换为 HTTP 响应：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{IntoResponse, Response};
+</span>use hiver_http::{IntoResponse, Response};
 
 // Built-in implementations / 内置实现
 
@@ -324,7 +324,7 @@ vec![1, 2, 3].into_response()
 从请求中提取数据：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::FromRequest;
+</span>use hiver_http::FromRequest;
 
 // Built-in extractors / 内置提取器
 impl FromRequest for String { /* body as string */ }
@@ -336,7 +336,7 @@ impl FromRequest for Json&lt;T&gt; { /* JSON body */ }
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@ResponseBody</code></td><td><code>IntoResponse</code></td><td>Response conversion</td></tr>
@@ -350,7 +350,7 @@ impl FromRequest for Json&lt;T&gt; { /* JSON body */ }
 <h2 id="example-json-api--示例json-api"><a class="header" href="#example-json-api--示例json-api">Example: JSON API / 示例：JSON API</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_http::{Body, Json, Request, Response, StatusCode};
+</span>use hiver_http::{Body, Json, Request, Response, StatusCode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]

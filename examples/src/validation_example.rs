@@ -1,6 +1,6 @@
 #![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
 
-//! Nexus Validation Example / Nexus验证示例
+//! Hiver Validation Example / Hiver验证示例
 //!
 //! Demonstrates input validation for backend applications.
 //! 演示后端应用的输入验证。
@@ -15,7 +15,7 @@ use hiver_validation::{Validate, ValidationErrors};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Nexus Validation Example / Nexus验证示例 ===\n");
+    println!("=== Hiver Validation Example / Hiver验证示例 ===\n");
 
     // 1. Basic Validation / 基本验证
     println!("1. Basic Validation / 基本验证");

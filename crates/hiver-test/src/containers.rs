@@ -4,11 +4,11 @@
 //! # Description / 描述
 //!
 //! Provides type-safe wrappers around `testcontainers` and `testcontainers-modules`
-//! so Nexus integration tests can start real Postgres, Redis, and Kafka containers
+//! so Hiver integration tests can start real Postgres, Redis, and Kafka containers
 //! with a Spring Boot-like fluent API.
 //!
 //! 围绕 testcontainers 和 testcontainers-modules 提供类型安全的包装器，
-//! 使 Nexus 集成测试可以使用类似 Spring Boot 的流畅 API 启动真实的
+//! 使 Hiver 集成测试可以使用类似 Spring Boot 的流畅 API 启动真实的
 //! Postgres、Redis 和 Kafka 容器。
 //!
 //! # Example / 示例

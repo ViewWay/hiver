@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 OpenAPI/Swagger documentation support for Hiver Framework.
-Nexus框架的OpenAPI/Swagger文档支持。
+Hiver框架的OpenAPI/Swagger文档支持。
 Equivalent to: SpringDoc OpenAPI (Swagger 3), @Operation, @ApiResponse
 """
 homepage = { workspace = true }

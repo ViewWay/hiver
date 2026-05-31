@@ -1,10 +1,10 @@
-# Nexus Strategy Overview / Nexus 战略概览
+# Hiver Strategy Overview / Hiver 战略概览
 
 ## Current State Assessment / 当前状态评估
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    NEXUS FRAMEWORK STATUS                       │
+│                    HIVER FRAMEWORK STATUS                       │
 │                      框架状态                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │  Overall Completion: ~90%                                       │
@@ -273,7 +273,7 @@ In Progress / 进行中:
 
 ### vs Spring Boot / 与 Spring Boot 对比
 
-| Feature Category / 功能类别 | Spring Boot | Nexus (Current) / 当前 | Status / 状态 |
+| Feature Category / 功能类别 | Spring Boot | Hiver (Current) / 当前 | Status / 状态 |
 |----------------------------|-------------|---------------------|---------------|
 | **HTTP Routing** | ✅ | ✅ 100% | ✅ Complete |
 | **Data Access (Repository)** | ✅ | ✅ 55% | 🚧 In Progress |
@@ -292,7 +292,7 @@ In Progress / 进行中:
 
 ### vs Rust Ecosystem / 与 Rust 生态系统对比
 
-| Feature / 功能 | Axum | Actix | Rocket | Nexus |
+| Feature / 功能 | Axum | Actix | Rocket | Hiver |
 |---------------|------|-------|--------|-------|
 | **HTTP Routing** | ✅ | ✅ | ✅ | ✅ |
 | **Data Layer** | ❌ | ❌ | ❌ | ✅ **Unique** |
@@ -365,7 +365,7 @@ In Progress / 进行中:
 
 ### For Users / 用户
 
-1. **Try the examples / 尝试示例**: See what Nexus can do today (core, http, router, resilience, starter, logging, benchmarks)
+1. **Try the examples / 尝试示例**: See what Hiver can do today (core, http, router, resilience, starter, logging, benchmarks)
 2. **Review the docs / 查看文档**: Comprehensive README with annotated examples, API docs, tutorial
 3. **Provide feedback / 提供反馈**: Open issues, suggest features
 4. **Benchmark / 基准测试**: Verify performance claims on your hardware
@@ -379,7 +379,7 @@ In Progress / 进行中:
 
 ---
 
-**Nexus is ~90% complete. The foundation is solid, performance targets are met, and the path to v1.0 is clear.**
-**Nexus 已完成约 90%。基础扎实，性能目标已达成，通往 v1.0 的路径清晰。**
+**Hiver is ~90% complete. The foundation is solid, performance targets are met, and the path to v1.0 is clear.**
+**Hiver 已完成约 90%。基础扎实，性能目标已达成，通往 v1.0 的路径清晰。**
 
-Nexus: The Spring Boot of Rust
+Hiver: The Spring Boot of Rust

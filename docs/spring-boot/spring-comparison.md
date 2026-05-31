@@ -1,8 +1,8 @@
-# Spring Boot vs Nexus 功能对比
+# Spring Boot vs Hiver 功能对比
 
 ## 1. Web Layer / Web层
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @RestController, @Controller | `#[controller]` | ✅ | 路由注解已实现 |
 | @RequestMapping, @GetMapping | `#[get]`, `#[post]`, etc. | ✅ | HTTP方法路由 |
@@ -27,7 +27,7 @@
 
 ## 2. Dependency Injection / IoC容器
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @Component | `#[component]` | ✅ | 组件注解已实现 |
 | @Service | `#[service]` | ✅ | 服务层注解已实现 |
@@ -48,7 +48,7 @@
 
 ## 3. Data Access / 数据访问
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | Spring Data JPA | ❌ | ❌ | **ORM缺失** |
 | Spring Data JDBC | ❌ | ❌ | **JDBC抽象缺失** |
@@ -66,7 +66,7 @@
 
 ## 4. Security / 安全
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | Spring Security | ✅ | ✅ | `hiver-security` crate |
 | @EnableWebSecurity | ✅ | ✅ | Security auto-config |
@@ -85,7 +85,7 @@
 
 ## 5. Observability / 可观测性
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | Actuator endpoints | ✅ | ✅ | `Actuator` struct |
 | /health | ✅ | ✅ | `HealthIndicator` trait |
@@ -102,7 +102,7 @@
 
 ## 6. Resilience / 弹性
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | Circuit Breaker | ✅ | ✅ | `CircuitBreaker` trait |
 | Retry | ✅ | ✅ | `RetryExecutor` |
@@ -114,7 +114,7 @@
 
 ## 7. Configuration / 配置
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | application.properties | ✅ | ✅ | .properties文件支持 |
 | application.yml | ✅ | ✅ | YAML配置支持 |
@@ -130,7 +130,7 @@
 
 ## 8. Cloud / Spring Cloud
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @EnableDiscoveryClient | ✅ | ✅ | `ServiceDiscovery` trait |
 | DiscoveryClient | ✅ | ✅ | `SimpleDiscoveryClient` |
@@ -155,7 +155,7 @@
 
 ## 9. Messaging / 消息
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @JmsListener | ❌ | ❌ | **JMS缺失** |
 | @KafkaListener | ❌ | ❌ | **Kafka缺失** |
@@ -166,7 +166,7 @@
 
 ## 10. Caching / 缓存
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @Cacheable | ✅ | ✅ | `Cached::get_or_fetch()` |
 | @CacheEvict | ✅ | ✅ | `CacheEvictExec::execute_and_evict()` |
@@ -178,7 +178,7 @@
 
 ## 11. Scheduling / 调度
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @Scheduled | ✅ | ✅ | `ScheduledTask`, `schedule_fixed_rate()` |
 | @EnableScheduling | ✅ | ✅ | `TaskScheduler` |
@@ -193,7 +193,7 @@
 
 ## 12. Testing / 测试
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @SpringBootTest | ❌ | ❌ | **测试框架缺失** |
 | @WebMvcTest | ❌ | ❌ | MVC测试缺失 |
@@ -204,7 +204,7 @@
 
 ## 13. AOP / 切面编程
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @Aspect | ❌ | ❌ | **AOP缺失** |
 | @Before | ❌ | ❌ | 前置通知缺失 |
@@ -214,7 +214,7 @@
 
 ## 14. WebSocket / 实时通信
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @EnableWebSocket | ❌ | ❌ | **WebSocket缺失** |
 | @Controller + @MessageMapping | ❌ | ❌ | WS控制器缺失 |
@@ -224,7 +224,7 @@
 
 ## 15. File Upload / 文件上传
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | MultipartFile | ✅ | ✅ | `MultipartFile`, `Multipart` |
 | @RequestPart | ✅ | ✅ | `Part<T>` extractor |
@@ -233,7 +233,7 @@
 
 ## 16. Utilities / 工具
 
-| Spring Boot | Nexus | 状态 | 说明 |
+| Spring Boot | Hiver | 状态 | 说明 |
 |------------|-------|------|------|
 | @RestControllerAdvice | ✅ | ✅ | `ControllerAdvice` trait |
 | @Valid, @Validated | ✅ | ✅ | `Validated<T>` extractor |

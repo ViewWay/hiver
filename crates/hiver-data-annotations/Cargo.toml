@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Data JPA style annotations for Hiver Framework.
-Nexus框架的Spring Data JPA风格注解。
+Hiver框架的Spring Data JPA风格注解。
 Equivalent to: Spring Data JPA, JPA Annotations
 """
 homepage = { workspace = true }

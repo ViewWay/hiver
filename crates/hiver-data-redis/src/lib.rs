@@ -1,6 +1,6 @@
-//! Nexus Data Redis
+//! Hiver Data Redis
 //!
-//! Redis integration for the Nexus framework, providing RedisTemplate
+//! Redis integration for the Hiver framework, providing RedisTemplate
 //! and cache abstraction similar to Spring Data Redis.
 //!
 //! ## Features / 功能特性

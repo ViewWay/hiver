@@ -1,7 +1,7 @@
-//! # Nexus Validation Annotations
+//! # Hiver Validation Annotations
 //!
-//! Bean Validation style annotations for Nexus framework
-//! Nexus 框架的 Bean Validation 风格注解
+//! Bean Validation style annotations for Hiver framework
+//! Hiver 框架的 Bean Validation 风格注解
 //!
 //! ## Features / 功能
 //!

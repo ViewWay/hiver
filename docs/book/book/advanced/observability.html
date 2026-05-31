@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Observability / 可观测性 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Observability / 可观测性 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -179,8 +179,8 @@
 <p><strong>Status</strong>: Phase 5 Complete ✅
 <strong>状态</strong>: 第5阶段完成 ✅</p>
 </blockquote>
-<p>Nexus provides comprehensive observability including distributed tracing, metrics, and structured logging.</p>
-<p>Nexus 提供全面的可观测性，包括分布式追踪、指标和结构化日志。</p>
+<p>Hiver provides comprehensive observability including distributed tracing, metrics, and structured logging.</p>
+<p>Hiver 提供全面的可观测性，包括分布式追踪、指标和结构化日志。</p>
 <hr>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>Observability helps you understand what’s happening in your application:</p>
@@ -207,7 +207,7 @@
 <p>跨服务追踪请求：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{Tracer, Span};
+</span>use hiver_observability::{Tracer, Span};
 
 // Create tracer / 创建追踪器
 let tracer = Tracer::new("my-service");
@@ -238,7 +238,7 @@ span.end();
 <p>收集应用程序指标：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{MetricsRegistry, Counter, Gauge, Histogram};
+</span>use hiver_observability::{MetricsRegistry, Counter, Gauge, Histogram};
 
 // Get metrics registry / 获取指标注册表
 let metrics = MetricsRegistry::default();
@@ -275,7 +275,7 @@ request_duration.observe(start.elapsed().as_secs_f64());
 <p>带上下文的结构化日志：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::log;
+</span>use hiver_observability::log;
 use tracing::{info, error, warn};
 
 // Basic logging / 基本日志
@@ -302,9 +302,9 @@ log::error!("Error message");
 <li><strong>Text</strong> - Human-readable / 人类可读</li>
 <li><strong>JSON</strong> - Machine-readable / 机器可读</li>
 </ul>
-<h3 id="nexus-logging--nexus-日志"><a class="header" href="#nexus-logging--nexus-日志">Nexus Logging / Nexus 日志</a></h3>
-<p>Nexus provides a unified logging system with two modes optimized for different environments:</p>
-<p>Nexus 提供统一的日志系统，具有针对不同环境优化的两种模式：</p>
+<h3 id="hiver-logging--hiver-日志"><a class="header" href="#hiver-logging--hiver-日志">Hiver Logging / Hiver 日志</a></h3>
+<p>Hiver provides a unified logging system with two modes optimized for different environments:</p>
+<p>Hiver 提供统一的日志系统，具有针对不同环境优化的两种模式：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -316,7 +316,7 @@ log::error!("Error message");
 </tbody>
 </table>
 </div>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     // Configure logging based on environment
@@ -337,11 +337,11 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 }</code></pre>
 <p><strong>Configuration Options / 配置选项</strong>:</p>
 <pre><code class="language-bash"># Environment variables / 环境变量
-export NEXUS_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
-export NEXUS_LOG_MODE=verbose          # verbose, simple
-export NEXUS_PROFILE=prod              # dev, prod (affects default mode)
+export HIVER_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
+export HIVER_LOG_MODE=verbose          # verbose, simple
+export HIVER_PROFILE=prod              # dev, prod (affects default mode)
 
-# Configuration file (nexus.toml) / 配置文件
+# Configuration file (hiver.toml) / 配置文件
 [logging]
 level = "INFO"
 mode = "verbose"                      # or "simple"
@@ -360,12 +360,12 @@ max_files = 7
 INFO n.http.server: Request received
 </code></pre>
 <p><strong>Spring Boot Style Startup / Spring Boot 风格启动</strong>:</p>
-<pre class="playground"><code class="language-rust">use nexus_observability::log::Logger;
-#[cfg(feature = "nexus-format")]
-use nexus_observability::{Banner, StartupLogger};
+<pre class="playground"><code class="language-rust">use hiver_observability::log::Logger;
+#[cfg(feature = "hiver-format")]
+use hiver_observability::{Banner, StartupLogger};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    #[cfg(feature = "nexus-format")]
+    #[cfg(feature = "hiver-format")]
     {
         // Print banner / 打印横幅
         Banner::print("MyApp", "0.1.0", 8080);
@@ -412,7 +412,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h3 id="with-http-server--与http服务器集成"><a class="header" href="#with-http-server--与http服务器集成">With HTTP Server / 与HTTP服务器集成</a></h3>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_observability::{tracer, metrics, log};
+</span>use hiver_observability::{tracer, metrics, log};
 
 async fn handler(req: Request) -&gt; Response {
     // Start span / 开始span
@@ -446,7 +446,7 @@ async fn handler(req: Request) -&gt; Response {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td>Spring Cloud Sleuth</td><td><code>Tracer</code></td><td>Distributed tracing</td></tr>

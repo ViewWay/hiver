@@ -3762,7 +3762,7 @@
               "kind": "struct",
               "description": "Application environment"
             },
-            "NexusResult": {
+            "HiverResult": {
               "kind": "fn",
               "description": "Application result alias"
             },
@@ -3777,8 +3777,8 @@
             "DEFAULT_SERVER_HOST": "127.0.0.1",
             "DEFAULT_WORKER_THREADS": "4",
             "APP_CONFIG_FILE": "application",
-            "ENV_VAR_PREFIX": "NEXUS",
-            "PROFILE_ENV_VAR": "NEXUS_PROFILE"
+            "ENV_VAR_PREFIX": "HIVER",
+            "PROFILE_ENV_VAR": "HIVER_PROFILE"
           }
         }
       }

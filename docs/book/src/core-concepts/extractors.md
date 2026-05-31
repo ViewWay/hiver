@@ -1,9 +1,9 @@
 # Extractors
 # 提取器
 
-Extractors in Nexus provide a type-safe way to extract data from HTTP requests, similar to Spring's `@PathVariable`, `@RequestParam`, `@RequestBody`, etc.
+Extractors in Hiver provide a type-safe way to extract data from HTTP requests, similar to Spring's `@PathVariable`, `@RequestParam`, `@RequestBody`, etc.
 
-Nexus 中的提取器提供了一种类型安全的方式从 HTTP 请求中提取数据，类似于 Spring 的 `@PathVariable`、`@RequestParam`、`@RequestBody` 等。
+Hiver 中的提取器提供了一种类型安全的方式从 HTTP 请求中提取数据，类似于 Spring 的 `@PathVariable`、`@RequestParam`、`@RequestBody` 等。
 
 > **Important Disclaimers / 重要说明**
 >
@@ -334,7 +334,7 @@ pub enum ExtractorError {
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@PathVariable` | `Path<T>` | URL path parameters |
 | `@RequestParam` | `Query<T>` | Query string parameters |

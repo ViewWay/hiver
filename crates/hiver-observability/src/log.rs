@@ -31,11 +31,11 @@
 //! # Configuration / 配置
 //!
 //! Environment variables:
-//! - `NEXUS_LOG_LEVEL`: Global log level (TRACE, DEBUG, INFO, WARN, ERROR)
-//! - `NEXUS_LOG_FORMAT`: log format (pretty, json, compact)
-//! - `NEXUS_LOG_FILE`: Log file path (e.g., logs/application.log)
-//! - `NEXUS_LOG_MAX_FILES`: Maximum number of log files to keep
-//! - `NEXUS_LOG_MAX_SIZE`: Maximum size of each log file (in MB)
+//! - `HIVER_LOG_LEVEL`: Global log level (TRACE, DEBUG, INFO, WARN, ERROR)
+//! - `HIVER_LOG_FORMAT`: log format (pretty, json, compact)
+//! - `HIVER_LOG_FILE`: Log file path (e.g., logs/application.log)
+//! - `HIVER_LOG_MAX_FILES`: Maximum number of log files to keep
+//! - `HIVER_LOG_MAX_SIZE`: Maximum size of each log file (in MB)
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
@@ -52,7 +52,7 @@ use tracing_subscriber::{
 };
 
 #[cfg(feature = "hiver-format")]
-use crate::hiver_format::{Banner, NexusFormatter, SimpleFormatter};
+use crate::hiver_format::{Banner, HiverFormatter, SimpleFormatter};
 
 /// Spring Boot log levels
 /// Spring Boot 日志级别
@@ -372,28 +372,28 @@ pub enum LogRotation {
 impl Default for LoggerConfig {
     fn default() -> Self {
         // Get profile from environment
-        let profile = std::env::var("NEXUS_PROFILE").ok();
+        let profile = std::env::var("HIVER_PROFILE").ok();
 
         // Get mode from environment or derive from profile
-        let mode = if let Ok(mode_str) = std::env::var("NEXUS_LOG_MODE") {
+        let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
             LogMode::from_str(&mode_str).unwrap_or_else(|| LogMode::from_profile(profile.as_deref()))
         } else {
             LogMode::from_profile(profile.as_deref())
         };
 
-        let level = std::env::var("NEXUS_LOG_LEVEL")
+        let level = std::env::var("HIVER_LOG_LEVEL")
             .ok()
             .and_then(|s| LogLevel::from_str(&s))
             .unwrap_or(LogLevel::Info);
 
-        let format = std::env::var("NEXUS_LOG_FORMAT")
+        let format = std::env::var("HIVER_LOG_FORMAT")
             .ok()
             .and_then(|s| LogFormat::from_str(&s))
             .unwrap_or(LogFormat::Pretty);
 
-        let file_path = std::env::var("NEXUS_LOG_FILE").ok();
+        let file_path = std::env::var("HIVER_LOG_FILE").ok();
 
-        let rotation = match std::env::var("NEXUS_LOG_ROTATION")
+        let rotation = match std::env::var("HIVER_LOG_ROTATION")
             .unwrap_or_default()
             .to_lowercase()
             .as_str()
@@ -403,7 +403,7 @@ impl Default for LoggerConfig {
             _ => LogRotation::Daily,
         };
 
-        let max_files = std::env::var("NEXUS_LOG_MAX_FILES")
+        let max_files = std::env::var("HIVER_LOG_MAX_FILES")
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(7);
@@ -530,7 +530,7 @@ impl Logger {
                                 .with_file(config.with_file)
                                 .with_line_number(config.with_file)
                                 .with_target(config.with_target)
-                                .event_format(NexusFormatter::new());
+                                .event_format(HiverFormatter::new());
                             fmt_layer.set_span_events(FmtSpan::CLOSE);
 
                             if let Some(ref path) = config.file_path {
@@ -677,7 +677,7 @@ impl Logger {
         #[cfg(feature = "hiver-format")]
         {
             // Print banner (uses default values)
-            Banner::print("nexus", env!("CARGO_PKG_VERSION"), 8080);
+            Banner::print("hiver", env!("CARGO_PKG_VERSION"), 8080);
         }
 
         let mut config = LoggerConfig::default();
@@ -698,9 +698,9 @@ impl Logger {
             config.custom_pattern = Some(pattern);
         }
 
-        // Also support NEXUS_LOG_PATTERN
-        if std::env::var("NEXUS_LOG_PATTERN").is_ok()
-            && let Ok(pattern) = std::env::var("NEXUS_LOG_PATTERN") {
+        // Also support HIVER_LOG_PATTERN
+        if std::env::var("HIVER_LOG_PATTERN").is_ok()
+            && let Ok(pattern) = std::env::var("HIVER_LOG_PATTERN") {
                 config.custom_pattern = Some(pattern);
             }
 
@@ -744,7 +744,7 @@ impl Logger {
     #[cfg(feature = "config")]
     pub fn init_from_config(config: &hiver_config::Config) -> Result<(), Box<dyn std::error::Error>> {
         // Get profile first (affects defaults)
-        let profile = config.get("nexus.profile")
+        let profile = config.get("hiver.profile")
             .or_else(|| config.get("profile"))
             .and_then(|v| v.as_str().map(String::from));
 
@@ -962,7 +962,7 @@ impl LoggerHandle {
     pub fn error_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         // Note: We include the logger name in the message since tracing macros require constant target
         // 注意：我们在消息中包含日志记录器名称，因为tracing宏需要常量target
-        tracing::error!(target: "nexus", "[{}] {}", self.name, message);
+        tracing::error!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log a WARN message
@@ -974,7 +974,7 @@ impl LoggerHandle {
     /// Log a WARN message with fields
     /// 记录带字段的 WARN 消息
     pub fn warn_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
-        tracing::warn!(target: "nexus", "[{}] {}", self.name, message);
+        tracing::warn!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log an INFO message
@@ -986,7 +986,7 @@ impl LoggerHandle {
     /// Log an INFO message with fields
     /// 记录带字段的 INFO 消息
     pub fn info_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
-        tracing::info!(target: "nexus", "[{}] {}", self.name, message);
+        tracing::info!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log a DEBUG message
@@ -998,7 +998,7 @@ impl LoggerHandle {
     /// Log a DEBUG message with fields
     /// 记录带字段的 DEBUG 消息
     pub fn debug_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
-        tracing::debug!(target: "nexus", "[{}] {}", self.name, message);
+        tracing::debug!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log a TRACE message
@@ -1010,7 +1010,7 @@ impl LoggerHandle {
     /// Log a TRACE message with fields
     /// 记录带字段的 TRACE 消息
     pub fn trace_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
-        tracing::trace!(target: "nexus", "[{}] {}", self.name, message);
+        tracing::trace!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Get the logger name

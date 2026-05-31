@@ -1,12 +1,12 @@
-//! Nexus Core - Core types and traits
-//! Nexus核心 - 核心类型和trait
+//! Hiver Core - Core types and traits
+//! Hiver核心 - 核心类型和trait
 //!
 //! # Overview / 概述
 //!
 //! `hiver-core` provides the foundational types and traits used throughout
-//! the Nexus framework.
+//! the Hiver framework.
 //!
-//! `hiver-core` 提供Nexus框架中使用的基础类型和trait。
+//! `hiver-core` 提供Hiver框架中使用的基础类型和trait。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

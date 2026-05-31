@@ -8,8 +8,8 @@
 
 ## 📊 Executive Summary / 执行摘要
 
-The Nexus project documentation has been completely reorganized for better navigation and maintainability.
-Nexus 项目文档已完全重组，以提供更好的导航性和可维护性。
+The Hiver project documentation has been completely reorganized for better navigation and maintainability.
+Hiver 项目文档已完全重组，以提供更好的导航性和可维护性。
 
 ```
 ═══════════════════════════════════════════════════════════════

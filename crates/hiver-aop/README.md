@@ -1,4 +1,4 @@
-# Nexus AOP
+# Hiver AOP
 
 [![Crates.io](https://img.shields.io/crates/v/hiver-aop)](https://crates.io/hiver-aop)
 [![Documentation](https://docs.rs/hiver-aop/badge.svg)](https://docs.rs/hiver-aop)
@@ -426,7 +426,7 @@ impl UserService {
 // - Mixes business logic with cross-cutting concerns / 混合业务逻辑和横切关注点
 ```
 
-#### ✅ With Annotations (Nexus AOP) / 使用注解
+#### ✅ With Annotations (Hiver AOP) / 使用注解
 
 ```rust
 use hiver_aop::{Aspect, Before, After};
@@ -621,7 +621,7 @@ public class LoggingAspect {
 }
 ```
 
-### Rust / Nexus AOP
+### Rust / Hiver AOP
 
 ```rust
 use hiver_aop::{Aspect, Before, After};

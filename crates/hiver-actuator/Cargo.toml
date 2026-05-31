@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Actuator endpoints for Hiver Framework.
-Nexus框架的Actuator端点。
+Hiver框架的Actuator端点。
 Equivalent to: Spring Boot Actuator
 """
 homepage = { workspace = true }

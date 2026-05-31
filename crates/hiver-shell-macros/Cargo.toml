@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Procedural macros for hiver-shell: @shell_component, @shell_method.
-Nexus Shell 的过程宏：@shell_component, @shell_method。
+Hiver Shell 的过程宏：@shell_component, @shell_method。
 Equivalent to: Spring Shell Annotations
 """
 homepage = { workspace = true }

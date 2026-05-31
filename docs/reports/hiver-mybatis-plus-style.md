@@ -1,10 +1,10 @@
-# Nexus MyBatis-Plus Style Development
-# Nexus MyBatis-Plus 风格开发
+# Hiver MyBatis-Plus Style Development
+# Hiver MyBatis-Plus 风格开发
 
 ## 🎯 Goal / 目标
 
-Support **MyBatis-Plus style development** in Nexus for Chinese enterprise developers.
-在 Nexus 中支持 **MyBatis-Plus 风格开发**，面向中国企业开发者。
+Support **MyBatis-Plus style development** in Hiver for Chinese enterprise developers.
+在 Hiver 中支持 **MyBatis-Plus 风格开发**，面向中国企业开发者。
 
 **Why / 原因**:
 - MyBatis-Plus is the most popular ORM in China / MyBatis-Plus 是中国最流行的 ORM
@@ -14,7 +14,7 @@ Support **MyBatis-Plus style development** in Nexus for Chinese enterprise devel
 
 ---
 
-## 📊 Comparison: MyBatis-Plus vs Nexus Target / 对比
+## 📊 Comparison: MyBatis-Plus vs Hiver Target / 对比
 
 ### MyBatis-Plus (Java) / MyBatis-Plus（Java）
 
@@ -59,7 +59,7 @@ public class SampleTest {
 }
 ```
 
-### Nexus (Rust) - Target API / Nexus（Rust）- 目标 API
+### Hiver (Rust) - Target API / Hiver（Rust）- 目标 API
 
 ```rust
 // Entity / 实体
@@ -96,7 +96,7 @@ pub trait UserMapper: BaseMapper<User> {
 // Application / 应用
 #[tokio::main]
 async fn main() {
-    NexusApplication::run::<Application>().await.unwrap();
+    HiverApplication::run::<Application>().await.unwrap();
 }
 
 #[Application]
@@ -124,7 +124,7 @@ async fn test_select() {
 ### New Crates / 新 Crates
 
 ```
-nexus/
+hiver/
 ├── crates/
 │   ├── hiver-data-mybatisplus/        # MyBatis-Plus style (NEW)
 │   │   ├── src/
@@ -480,7 +480,7 @@ struct Application;
 
 #[tokio::main]
 async fn main() {
-    NexusApplication::run::<Application>().await.unwrap();
+    HiverApplication::run::<Application>().await.unwrap();
 }
 ```
 
@@ -518,7 +518,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nexus = "0.1"  # 或具体版本
+hiver = "0.1"  # 或具体版本
 hiver-data-mybatisplus = "0.1"
 hiver-lombok = "0.1"
 hiver-scan = "0.1"
@@ -580,7 +580,7 @@ pub trait UserMapper: BaseMapper<User> {
 ### src/main.rs
 
 ```rust
-use hiver::NexusApplication;
+use hiver::HiverApplication;
 use hiver_scan::{Application, MapperScan};
 use hiver_lombok::Data;
 
@@ -596,7 +596,7 @@ struct MyApp;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run application / 运行应用
-    NexusApplication::run::<MyApp>().await?;
+    HiverApplication::run::<MyApp>().await?;
 
     Ok(())
 }
@@ -737,9 +737,9 @@ async fn test_select() {
 
 ---
 
-## 📊 MyBatis-Plus vs Spring Data vs Nexus
+## 📊 MyBatis-Plus vs Spring Data vs Hiver
 
-| Feature / 功能 | MyBatis-Plus | Spring Data JPA | Nexus (Target) |
+| Feature / 功能 | MyBatis-Plus | Spring Data JPA | Hiver (Target) |
 |---------------|-------------|-----------------|----------------|
 | **Entity Mapping / 实体映射** |
 | @TableName / @Table | ✅ | ✅ | ✅ |
@@ -779,7 +779,7 @@ async fn test_select() {
 
 ### vs Spring Boot + MyBatis-Plus
 
-| Aspect / 方面 | Spring Boot | Nexus |
+| Aspect / 方面 | Spring Boot | Hiver |
 |-------------|-------------|-------|
 | **Startup time / 启动时间** | 2-5s | ~100ms (20x faster) / 20倍更快 |
 | **Memory / 内存** | ~200MB | ~10MB (20x less) / 20倍更少 |
@@ -792,7 +792,7 @@ async fn test_select() {
 
 ## 📚 Migration Guide / 迁移指南
 
-### From Spring Boot + MyBatis-Plus to Nexus / 从 Spring Boot + MyBatis-Plus 到 Nexus
+### From Spring Boot + MyBatis-Plus to Hiver / 从 Spring Boot + MyBatis-Plus 到 Hiver
 
 **Java / Spring Boot**:
 ```java
@@ -825,7 +825,7 @@ class UserTest {
 }
 ```
 
-**Rust / Nexus**:
+**Rust / Hiver**:
 ```rust
 #[Data]
 #[TableName("user")]

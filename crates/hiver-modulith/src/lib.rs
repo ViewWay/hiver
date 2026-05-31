@@ -1,6 +1,6 @@
 #![allow(clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing)]
-//! Nexus Modulith - Modular Monolith Support
-//! Nexus 模块化单体支持
+//! Hiver Modulith - Modular Monolith Support
+//! Hiver 模块化单体支持
 //!
 //! Equivalent to Spring Modulith. Provides module boundary definitions,
 //! domain event publication, and module verification.

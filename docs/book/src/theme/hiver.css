@@ -1,0 +1,66 @@
+/* ===== hiver Framework Brand Theme ===== */
+
+:root {
+    --hiver-primary: #0066CC;
+    --hiver-primary-dark: #004C99;
+    --hiver-primary-light: #E8F0FE;
+    --hiver-accent: #FF6B35;
+    --hiver-bg-light: #FAFBFC;
+    --hiver-bg-sidebar: #F0F4F8;
+    --hiver-text: #2C3E50;
+    --hiver-text-muted: #6B7280;
+    --hiver-code-bg: #F5F7FA;
+    --hiver-border: #E1E8ED;
+}
+
+/* Sidebar */
+.sidebar { border-right: 2px solid var(--hiver-border) !important; background: var(--hiver-bg-sidebar) !important; }
+.menu-title { color: var(--hiver-primary) !important; font-weight: 800 !important; font-size: 1.3em !important; letter-spacing: -0.02em; }
+
+/* Content */
+.content { max-width: 960px; line-height: 1.7; color: var(--hiver-text); }
+.content h1 { border-bottom: 3px solid var(--hiver-primary); padding-bottom: 0.5rem; color: var(--hiver-primary-dark); }
+.content h2 { border-bottom: 1px solid var(--hiver-border); padding-bottom: 0.3rem; }
+.content h3 { color: var(--hiver-primary-dark); }
+
+/* Code */
+code { background: var(--hiver-code-bg) !important; border-radius: 4px; padding: 0.15em 0.4em; font-size: 0.9em; }
+pre { border: 1px solid var(--hiver-border) !important; border-radius: 8px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 1rem !important; }
+pre code { background: transparent !important; padding: 0; }
+
+/* Tables */
+.content table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.95em; }
+.content th { background: var(--hiver-primary); color: white; padding: 0.6rem 1rem; text-align: left; font-weight: 600; }
+.content td { padding: 0.5rem 1rem; border-bottom: 1px solid var(--hiver-border); }
+.content tr:hover { background: var(--hiver-primary-light); }
+
+/* Links */
+.content a { color: var(--hiver-primary); text-decoration: none; border-bottom: 1px solid transparent; transition: border-bottom 0.2s; }
+.content a:hover { border-bottom-color: var(--hiver-primary); }
+
+/* Blockquotes */
+blockquote { border-left: 4px solid var(--hiver-primary) !important; background: var(--hiver-bg-light); padding: 0.8rem 1.2rem !important; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+
+/* Navigation */
+.nav-chapters { color: var(--hiver-primary) !important; }
+.nav-chapters:hover { color: var(--hiver-accent) !important; }
+
+/* Search */
+#searchbar { border: 1px solid var(--hiver-border); border-radius: 6px; padding: 0.5rem 0.8rem; }
+#searchbar:focus { border-color: var(--hiver-primary); box-shadow: 0 0 0 3px var(--hiver-primary-light); outline: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--hiver-bg-light); }
+::-webkit-scrollbar-thumb { background: var(--hiver-border); border-radius: 4px; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .content { padding: 1rem; }
+    .content table { display: block; overflow-x: auto; }
+}
+
+/* Print */
+@media print {
+    .sidebar, .nav-chapters, #theme-list, #searchbar { display: none !important; }
+}

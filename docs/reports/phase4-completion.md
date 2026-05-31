@@ -250,7 +250,7 @@ let result = fallback
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot / Resilience4j |
+| Hiver | Spring Boot / Resilience4j |
 |-------|---------------------------|
 | `CircuitBreaker` | `@CircuitBreaker`, `CircuitBreakerFactory` |
 | `Retry` | `@Retryable`, `RetryTemplate` |

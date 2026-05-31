@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring Scheduling equivalent for Hiver Framework.
-Nexus框架的Spring Scheduling等价功能。
+Hiver框架的Spring Scheduling等价功能。
 Equivalent to: Spring @Scheduled, @Async, @EnableScheduling
 """
 homepage = { workspace = true }

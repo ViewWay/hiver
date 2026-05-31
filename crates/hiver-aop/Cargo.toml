@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Spring AOP style annotations for Hiver Framework.
-Nexus框架的Spring AOP风格注解。
+Hiver框架的Spring AOP风格注解。
 Equivalent to: Spring AOP, AspectJ
 """
 homepage = { workspace = true }

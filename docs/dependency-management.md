@@ -5,9 +5,9 @@ This document describes the dependency management strategy for the Hiver Framewo
 
 ## Overview / 概述
 
-Nexus uses a **workspace-based dependency management** approach, where all dependency versions are centrally defined in the root `Cargo.toml` file. This ensures consistency, reduces duplication, and simplifies maintenance.
+Hiver uses a **workspace-based dependency management** approach, where all dependency versions are centrally defined in the root `Cargo.toml` file. This ensures consistency, reduces duplication, and simplifies maintenance.
 
-Nexus 使用**基于 workspace 的依赖管理**方法，所有依赖版本都在根 `Cargo.toml` 文件中集中定义。这确保了 consistency，减少了重复，并简化了维护。
+Hiver 使用**基于 workspace 的依赖管理**方法，所有依赖版本都在根 `Cargo.toml` 文件中集中定义。这确保了 consistency，减少了重复，并简化了维护。
 
 ## Principles / 原则
 

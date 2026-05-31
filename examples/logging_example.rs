@@ -11,9 +11,9 @@ use tracing::{Level, debug, error, info, span, warn};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Print startup banner
-    Banner::print("Nexus", "0.1.0-alpha", 8080);
+    Banner::print("Hiver", "0.1.0-alpha", 8080);
 
-    // Initialize logger with Pretty format (uses NexusFormatter internally)
+    // Initialize logger with Pretty format (uses HiverFormatter internally)
     let config = LoggerConfig {
         level: LogLevel::Debug,
         format: LogFormat::Pretty,
@@ -29,9 +29,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let startup = StartupLogger::new();
 
     // Startup logs
-    info!(target: "nexus.startup", "Starting Nexus application");
-    info!(target: "nexus.startup", "Active profile: dev");
-    info!(target: "nexus.startup", "PID: {}", std::process::id());
+    info!(target: "hiver.startup", "Starting Hiver application");
+    info!(target: "hiver.startup", "Active profile: dev");
+    info!(target: "hiver.startup", "PID: {}", std::process::id());
 
     println!("\n  --- HTTP Request Example ---\n");
 
@@ -58,32 +58,32 @@ async fn simulate_http_request() {
     let _span = span!(Level::INFO, "http_request", method = "GET", uri = "/api/users/123");
     let _enter = _span.enter();
 
-    info!(target: "nexus.middleware.http", method = "GET", uri = "/api/users/123", client = "127.0.0.1", "Request started");
+    info!(target: "hiver.middleware.http", method = "GET", uri = "/api/users/123", client = "127.0.0.1", "Request started");
 
     // Simulate processing
     tokio::time::sleep(tokio::time::Duration::from_millis(45)).await;
 
-    debug!(target: "nexus.router", route = "get_user_by_id", user_id = 123, "Route matched");
+    debug!(target: "hiver.router", route = "get_user_by_id", user_id = 123, "Route matched");
 
-    info!(target: "nexus.middleware.http", method = "GET", uri = "/api/users/123", status = 200u16, duration_ms = 45u64, "Completed");
+    info!(target: "hiver.middleware.http", method = "GET", uri = "/api/users/123", status = 200u16, duration_ms = 45u64, "Completed");
 }
 
 async fn simulate_service_layer() {
-    info!(target: "nexus.service.user", "Fetching user from database");
-    debug!(target: "nexus.database", query = "SELECT * FROM users WHERE id = $1", params = 1, "Executing query");
+    info!(target: "hiver.service.user", "Fetching user from database");
+    debug!(target: "hiver.database", query = "SELECT * FROM users WHERE id = $1", params = 1, "Executing query");
 
     // Simulate database query
     tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
 
-    debug!(target: "nexus.database", rows = 1u32, duration_ms = 10u64, "Query completed");
-    info!(target: "nexus.service.user", user_id = 123u64, username = "alice", "User fetched");
+    debug!(target: "hiver.database", rows = 1u32, duration_ms = 10u64, "Query completed");
+    info!(target: "hiver.service.user", user_id = 123u64, username = "alice", "User fetched");
 }
 
 async fn simulate_error() {
-    warn!(target: "nexus.middleware.http", method = "POST", uri = "/api/users", client = "192.168.1.100", status = 400u16, reason = "validation_failed", "Client error");
+    warn!(target: "hiver.middleware.http", method = "POST", uri = "/api/users", client = "192.168.1.100", status = 400u16, reason = "validation_failed", "Client error");
 
-    error!(target: "nexus.service.user", error = "User not found", user_id = 999u64, "Database query failed (user_service.rs:142)");
+    error!(target: "hiver.service.user", error = "User not found", user_id = 999u64, "Database query failed (user_service.rs:142)");
 
     // Simulate cache miss
-    debug!(target: "nexus.cache", key = "user:999", status = "miss", "Cache lookup failed");
+    debug!(target: "hiver.cache", key = "user:999", status = "miss", "Cache lookup failed");
 }

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Core types and traits for Hiver Framework.
-Nexus框架的核心类型和trait。
+Hiver框架的核心类型和trait。
 Equivalent to: Spring Core, Spring Context, Spring Beans
 """
 homepage = { workspace = true }

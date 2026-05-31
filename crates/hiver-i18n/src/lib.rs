@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `MessageSource` | `MessageSource` |
 //! | `ResourceBundleMessageSource` | `ResourceBundleMessageSource` |

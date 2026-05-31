@@ -28,7 +28,7 @@ use tracing_subscriber::registry::LookupSpan;
 /// 2025-01-24 19:15:30.456 DEBUG 4838 [nio-8080-exec-1] n.router.match : Route matched: GET /api/users
 /// 2025-01-24 19:15:30.789 ERROR 4838 [nio-8080-exec-1] n.service.user : Failed to fetch user (user.rs:42)
 /// ```
-pub struct NexusFormatter {
+pub struct HiverFormatter {
     /// Whether to use colors
     /// 是否使用颜色
     with_colors: bool,
@@ -42,13 +42,13 @@ pub struct NexusFormatter {
     app_version: String,
 }
 
-impl NexusFormatter {
+impl HiverFormatter {
     /// Create a new formatter
     /// 创建新的格式化器
     pub fn new() -> Self {
         Self {
             with_colors: true,
-            app_name: "nexus".to_string(),
+            app_name: "hiver".to_string(),
             app_version: env!("CARGO_PKG_VERSION").to_string(),
         }
     }
@@ -84,13 +84,13 @@ impl NexusFormatter {
     }
 }
 
-impl Default for NexusFormatter {
+impl Default for HiverFormatter {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<S, N> FormatEvent<S, N> for NexusFormatter
+impl<S, N> FormatEvent<S, N> for HiverFormatter
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
     N: for<'a> FormatFields<'a> + 'static,
@@ -398,7 +398,7 @@ impl Banner {
 
 /// Legacy type alias for compatibility
 /// 兼容性别名
-pub type SpringBootFormatter = NexusFormatter;
+pub type SpringBootFormatter = HiverFormatter;
 
 /// Startup information logger
 /// 启动信息记录器
@@ -419,7 +419,7 @@ impl StartupLogger {
     /// 记录应用启动
     pub fn log_starting(&self, app_name: &str) {
         tracing::info!(
-            target: "nexus.startup",
+            target: "hiver.startup",
             "Starting {} on {} with PID {}",
             app_name,
             std::env::var("PWD").unwrap_or_else(|_| ".".to_string()),
@@ -432,13 +432,13 @@ impl StartupLogger {
     pub fn log_profile(&self, profile: Option<&str>) {
         if let Some(profile) = profile {
             tracing::info!(
-                target: "nexus.startup",
+                target: "hiver.startup",
                 "Active profile: {}",
                 profile
             );
         } else {
             tracing::info!(
-                target: "nexus.startup",
+                target: "hiver.startup",
                 "No active profile (using default)"
             );
         }
@@ -448,12 +448,12 @@ impl StartupLogger {
     /// 记录服务器已启动
     pub fn log_server_started(&self, port: u16, duration_ms: u64) {
         tracing::info!(
-            target: "nexus.startup",
+            target: "hiver.startup",
             "Started on port(s): {} (http) | context: ''",
             port
         );
         tracing::info!(
-            target: "nexus.startup",
+            target: "hiver.startup",
             "Startup completed in {}ms",
             duration_ms
         );
@@ -463,7 +463,7 @@ impl StartupLogger {
     /// 记录初始化完成
     pub fn log_initialization_completed(&self, duration_ms: u64) {
         tracing::info!(
-            target: "nexus.startup",
+            target: "hiver.startup",
             "Initialization completed in {} ms",
             duration_ms
         );

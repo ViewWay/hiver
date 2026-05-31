@@ -1,4 +1,4 @@
-# Nexus Web Framework - Design Specification / 框架设计规范
+# Hiver Web Framework - Design Specification / 框架设计规范
 
 ## Version / 版本
 
@@ -27,7 +27,7 @@
 ### 1.1 Project Structure / 项目结构
 
 ```
-nexus/
+hiver/
 ├── Cargo.toml                    # Workspace root / 工作空间根
 ├── CLAUDE.md                     # AI assistant guide / AI助手指南
 ├── CONTRIBUTING.md               # Contributing guidelines / 贡献指南
@@ -89,7 +89,7 @@ hiver-web3
 # Bad / 避免
 hiver_async_runtime_for_web_servers
 runtime
-nexusAsyncRuntime
+hiverAsyncRuntime
 ```
 
 ### 2.2 Module Names / 模块命名
@@ -662,11 +662,11 @@ pub trait Handler<T>: Clone + Send + Sync + 'static {
 ### 6.3 Module Documentation / 模块文档
 
 ```rust
-//! # Nexus HTTP Server Module
-//! # Nexus HTTP服务器模块
+//! # Hiver HTTP Server Module
+//! # Hiver HTTP服务器模块
 //!
 //! This module provides the HTTP server implementation for the Hiver Framework.
-//! 此模块为Nexus框架提供HTTP服务器实现。
+//! 此模块为Hiver框架提供HTTP服务器实现。
 //!
 //! ## Features / 功能
 //!

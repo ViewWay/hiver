@@ -807,11 +807,11 @@ mod tests {
     fn test_config_add_source_and_get() {
         let config = Config::new();
         let mut source = PropertySource::new("test");
-        source.put("app.name", Value::string("nexus"));
+        source.put("app.name", Value::string("hiver"));
         source.put("app.port", Value::integer(8080));
         config.add_property_source(source);
 
-        assert_eq!(config.get("app.name").unwrap().as_str(), Some("nexus"));
+        assert_eq!(config.get("app.name").unwrap().as_str(), Some("hiver"));
         assert_eq!(config.get("app.port").unwrap().as_i64(), Some(8080));
         assert!(config.contains_key("app.name"));
         assert!(!config.contains_key("missing"));
@@ -927,12 +927,12 @@ mod tests {
         writeln!(f, "server.host=localhost").unwrap();
         writeln!(f, "server.port=8080").unwrap();
         writeln!(f, "").unwrap();
-        writeln!(f, "app.name=nexus").unwrap();
+        writeln!(f, "app.name=hiver").unwrap();
 
         let config = Config::from_file(&file_path).unwrap();
         assert_eq!(config.get("server.host").unwrap().as_str(), Some("localhost"));
         assert_eq!(config.get("server.port").unwrap().as_str(), Some("8080"));
-        assert_eq!(config.get("app.name").unwrap().as_str(), Some("nexus"));
+        assert_eq!(config.get("app.name").unwrap().as_str(), Some("hiver"));
     }
 
     /// Test parsing a JSON config file

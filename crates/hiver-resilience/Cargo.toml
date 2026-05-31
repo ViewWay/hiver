@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 High availability patterns for Hiver Framework.
-Nexus框架的高可用模式。
+Hiver框架的高可用模式。
 Equivalent to: Spring Cloud Circuit Breaker, Spring Retry, Resilience4j
 """
 homepage = { workspace = true }

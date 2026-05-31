@@ -8,7 +8,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring / Flyway |
+//! | Hiver | Spring / Flyway |
 //! |-------|-----------------|
 //! | `Migration` | `FlywayMigration` / `Liquibase` |
 //! | `Migrator` | `Flyway` / `Liquibase` |

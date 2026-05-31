@@ -338,7 +338,7 @@ fn test_completion_no_match() {
 fn test_prompt_style_default() {
     let style = PromptStyle::new();
     let rendered = style.render();
-    assert!(rendered.contains("nexus"));
+    assert!(rendered.contains("hiver"));
     assert!(rendered.contains(">"));
 }
 
@@ -359,7 +359,7 @@ fn test_banner_render() {
     let banner = Banner::new();
     let rendered = banner.render();
     assert!(!rendered.is_empty());
-    assert!(rendered.contains("Nexus Shell"));
+    assert!(rendered.contains("Hiver Shell"));
 }
 
 #[test]

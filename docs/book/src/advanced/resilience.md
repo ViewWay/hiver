@@ -3,9 +3,9 @@
 > **Status**: Phase 4 Complete ✅
 > **状态**: 第4阶段完成 ✅
 
-Nexus provides comprehensive resilience patterns to make your applications fault-tolerant and highly available.
+Hiver provides comprehensive resilience patterns to make your applications fault-tolerant and highly available.
 
-Nexus 提供全面的弹性模式，使您的应用程序具有容错性和高可用性。
+Hiver 提供全面的弹性模式，使您的应用程序具有容错性和高可用性。
 
 ---
 
@@ -182,7 +182,7 @@ impl ResilientClient {
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | `@CircuitBreaker` | `CircuitBreaker` | Circuit breaker pattern |
 | `@RateLimiter` | `RateLimiter` | Rate limiting |

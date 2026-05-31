@@ -1,5 +1,5 @@
-# Nexus API Quick Reference
-# Nexus API 快速参考
+# Hiver API Quick Reference
+# Hiver API 快速参考
 
 ## Core Types / 核心类型
 

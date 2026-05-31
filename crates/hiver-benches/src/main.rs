@@ -1,5 +1,5 @@
-//! Nexus benchmarks — performance benchmarks for the Nexus framework
-//! Nexus 基准测试 — Nexus框架的性能基准测试
+//! Hiver benchmarks — performance benchmarks for the Hiver framework
+//! Hiver 基准测试 — Hiver框架的性能基准测试
 
 #![allow(dead_code)]
 

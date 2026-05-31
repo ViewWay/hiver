@@ -3,8 +3,8 @@
 > **Status**: 62 Crates, 10 Domains / 62 个 Crate，10 个功能域
 > **状态**: 全阶段完成 ✅
 
-Nexus provides comprehensive API documentation across multiple channels.
-Nexus 通过多个渠道提供全面的 API 文档。
+Hiver provides comprehensive API documentation across multiple channels.
+Hiver 通过多个渠道提供全面的 API 文档。
 
 ---
 
@@ -17,7 +17,7 @@ Nexus 通过多个渠道提供全面的 API 文档。
 | **Full API Reference** | [full-api-reference.md](../../../api/full-api-reference.md) | Human-readable with code examples |
 | **Annotations Reference** | [annotations-reference.md](../../../api/annotations-reference.md) | All 150+ procedural macros |
 | **Codemap** | [CODEMAP.md](../../../CODEMAP.md) | Full crate reference, dependency graph |
-| **docs.rs** | [docs.rs/nexus](https://docs.rs/nexus) | Auto-generated rustdoc |
+| **docs.rs** | [docs.rs/hiver](https://docs.rs/hiver) | Auto-generated rustdoc |
 
 ---
 
@@ -113,7 +113,7 @@ fn main() -> std::io::Result<()> {
     let mut rt = hiver_runtime::Runtime::new()?;
     rt.block_on(async {
         let app = Router::new()
-            .get("/", || async { "Hello, Nexus!" });
+            .get("/", || async { "Hello, Hiver!" });
         Server::bind("0.0.0.0:8080").run(app).await
     })
 }
@@ -122,10 +122,10 @@ fn main() -> std::io::Result<()> {
 ### Using Starter / 使用启动器
 
 ```rust
-use hiver_starter::NexusApp;
+use hiver_starter::HiverApp;
 
 fn main() -> std::io::Result<()> {
-    NexusApp::new()
+    HiverApp::new()
         .with_router(Router::new().get("/", handler))
         .run()
 }

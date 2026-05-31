@@ -6,7 +6,7 @@
 
 > HTTP response builders for Hiver Framework
 > 
-> Nexus框架的HTTP响应构建器
+> Hiver框架的HTTP响应构建器
 
 ---
 
@@ -525,7 +525,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -537,7 +537,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Response is inspired by:
+Hiver Response is inspired by:
 
 - **[Axum](https://github.com/tokio-rs/axum)** - Response patterns
 - **[Actix Web](https://github.com/actix/actix-web)** - Response builders

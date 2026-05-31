@@ -1,10 +1,10 @@
 #![allow(clippy::expect_used, clippy::indexing_slicing, clippy::unwrap_used, clippy::missing_fields_in_debug)]
-//! Nexus Events - Event mechanism for Nexus framework
-//! Nexus事件 - Nexus框架的事件机制
+//! Hiver Events - Event mechanism for Hiver framework
+//! Hiver事件 - Hiver框架的事件机制
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring |
+//! | Hiver | Spring |
 //! |-------|--------|
 //! | `ApplicationEvent` | `ApplicationEvent` |
 //! | `ApplicationEventPublisher` | `ApplicationEventPublisher` |

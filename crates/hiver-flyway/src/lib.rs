@@ -1,5 +1,5 @@
-//! Nexus Flyway - Database migration framework
-//! Nexus 数据库迁移框架
+//! Hiver Flyway - Database migration framework
+//! Hiver 数据库迁移框架
 //!
 //! # Spring Equivalent / Spring等价物
 //!

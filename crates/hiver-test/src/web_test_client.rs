@@ -2,11 +2,11 @@
 //! 用于在集成测试中执行真实HTTP请求的Web测试客户端。
 //!
 //! This module provides [`WebTestClient`], a full-featured HTTP testing
-//! utility built on top of `reqwest`.  It is the Nexus equivalent of
+//! utility built on top of `reqwest`.  It is the Hiver equivalent of
 //! Spring's `WebTestClient` / `MockMvc`.
 //!
 //! 本模块提供 [`WebTestClient`]，这是一个基于 `reqwest` 构建的全面HTTP测试工具。
-//! 它是Spring的 `WebTestClient` / `MockMvc` 的Nexus等价物。
+//! 它是Spring的 `WebTestClient` / `MockMvc` 的Hiver等价物。
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 AMQP/RabbitMQ support for Hiver Framework.
-Nexus框架的AMQP/RabbitMQ支持。
+Hiver框架的AMQP/RabbitMQ支持。
 Equivalent to: Spring AMQP, Spring RabbitMQ
 """
 homepage = { workspace = true }

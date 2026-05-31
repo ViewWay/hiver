@@ -528,7 +528,7 @@ Run examples to compare with Tokio/Actix:
 运行示例与 Tokio/Actix 对比：
 
 ```bash
-# Nexus runtime echo server / Nexus 运行时回显服务器
+# Hiver runtime echo server / Hiver 运行时回显服务器
 cd runtime-echo-server
 cargo build --release
 ./target/release/runtime-echo-server &

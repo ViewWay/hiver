@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Middleware for Hiver Framework.
-Nexus框架的中间件。
+Hiver框架的中间件。
 Equivalent to: Spring Interceptor, Filter, @ControllerAdvice
 """
 homepage = { workspace = true }

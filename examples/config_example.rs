@@ -1,9 +1,9 @@
 //! Configuration Example / 配置示例
 //!
-//! This example demonstrates the Nexus configuration management features
+//! This example demonstrates the Hiver configuration management features
 //! equivalent to Spring Boot's:
 //!
-//! 此示例演示Nexus配置管理功能，等价于Spring Boot的：
+//! 此示例演示Hiver配置管理功能，等价于Spring Boot的：
 //!
 //! - `@ConfigurationProperties` → PropertiesConfig
 //! - `@Value` → ValueExtractor
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a simple config with manual properties
     // 使用手动属性创建简单配置
     let config = Config::builder()
-        .add_property("app.name", "Nexus App")
+        .add_property("app.name", "Hiver App")
         .add_property("app.version", "1.0.0")
         .add_property("app.debug", true)
         .build()?;

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction / 简介 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Introduction / 简介 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -176,9 +176,9 @@
                     <main>
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <h1 id="简介"><a class="header" href="#简介">简介</a></h1>
-<h2 id="what-is-nexus--什么是-nexus"><a class="header" href="#what-is-nexus--什么是-nexus">What is Nexus? / 什么是 Nexus？</a></h2>
-<p>Nexus is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning <strong>62 crates</strong> across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.</p>
-<p>Nexus 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 <strong>62 个 crate</strong>、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。</p>
+<h2 id="what-is-hiver--什么是-hiver"><a class="header" href="#what-is-hiver--什么是-hiver">What is Hiver? / 什么是 Hiver？</a></h2>
+<p>Hiver is a production-grade, high-availability web framework written in Rust with a custom async runtime. It provides a full Spring Boot-equivalent feature set spanning <strong>62 crates</strong> across 10 functional domains — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.</p>
+<p>Hiver 是一个用 Rust 编写的生产级、高可用 Web 框架，具有自定义异步运行时。它提供了完整的 Spring Boot 等价功能集，横跨 <strong>62 个 crate</strong>、10 个功能领域——从运行时和 Web 层到数据、安全、消息、云、AI 和企业级模式。</p>
 <h2 id="design-philosophy--设计理念"><a class="header" href="#design-philosophy--设计理念">Design Philosophy / 设计理念</a></h2>
 <h3 id="performance-first--性能优先"><a class="header" href="#performance-first--性能优先">Performance First / 性能优先</a></h3>
 <ul>
@@ -205,7 +205,7 @@
 </ul>
 <h2 id="architecture-overview--架构概览"><a class="header" href="#architecture-overview--架构概览">Architecture Overview / 架构概览</a></h2>
 <p><strong>62 crates</strong> across 10 functional domains:</p>
-<pre><code>nexus-starter (Spring Boot auto-configuration)
+<pre><code>hiver-starter (Spring Boot auto-configuration)
     │
     ├── Web:      HTTP server, router, extractors, middleware, response, HATEOAS, OpenAPI
     ├── Data:     Commons, RDBC, ORM (ActiveRecord), Redis, MongoDB, Flyway
@@ -236,7 +236,7 @@
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Feature / 特性</th><th>Nexus</th><th>Tokio-based (Axum)</th><th>Go (Gin)</th><th>Java (Spring Boot)</th></tr>
+<tr><th>Feature / 特性</th><th>Hiver</th><th>Tokio-based (Axum)</th><th>Go (Gin)</th><th>Java (Spring Boot)</th></tr>
 </thead>
 <tbody>
 <tr><td>Custom Runtime</td><td>✅ io-uring</td><td>❌ Tokio</td><td>N/A</td><td>N/A</td></tr>

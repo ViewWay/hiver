@@ -6,7 +6,7 @@
 
 > Multipart file upload support for Hiver Framework
 >
-> Nexus框架的Multipart文件上传支持
+> Hiver框架的Multipart文件上传支持
 
 ---
 
@@ -218,7 +218,7 @@ We welcome contributions! Please see:
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md)
 - [Design Spec](../../docs/design-spec.md)
-- [GitHub Issues](https://github.com/hiver-framework/nexus/issues)
+- [GitHub Issues](https://github.com/hiver-framework/hiver/issues)
 
 ---
 
@@ -230,7 +230,7 @@ Licensed under Apache License 2.0. See [LICENSE](../../LICENSE) for details.
 
 ## 🙏 Acknowledgments / 致谢
 
-Nexus Multipart is inspired by:
+Hiver Multipart is inspired by:
 
 - **[Spring Framework](https://spring.io/projects/spring-framework)** - `MultipartFile`, `@RequestPart`
 - **[Multer](https://github.com/rousan/multer-rs)** - Multipart implementation

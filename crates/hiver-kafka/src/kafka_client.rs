@@ -3,7 +3,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Kafka |
+//! | Hiver | Spring Kafka |
 //! |-------|--------------|
 //! | `KafkaProducer::new()` | `KafkaTemplate` |
 //! | `producer.send()` | `kafkaTemplate.send()` |

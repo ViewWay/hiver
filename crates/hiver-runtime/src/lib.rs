@@ -1,5 +1,5 @@
-//! Nexus Runtime - High-performance async runtime
-//! Nexus运行时 - 高性能异步运行时
+//! Hiver Runtime - High-performance async runtime
+//! Hiver运行时 - 高性能异步运行时
 //!
 //! # Overview / 概述
 //!
@@ -25,7 +25,7 @@
 //! fn main() -> std::io::Result<()> {
 //!     let runtime = Runtime::new()?;
 //!     runtime.block_on(async {
-//!         println!("Hello, Nexus!");
+//!         println!("Hello, Hiver!");
 //!     });
 //!     Ok(())
 //! }

@@ -3,9 +3,9 @@
 > **Status**: Phase 5 Complete ✅
 > **状态**: 第5阶段完成 ✅
 
-Nexus provides comprehensive observability including distributed tracing, metrics, and structured logging.
+Hiver provides comprehensive observability including distributed tracing, metrics, and structured logging.
 
-Nexus 提供全面的可观测性，包括分布式追踪、指标和结构化日志。
+Hiver 提供全面的可观测性，包括分布式追踪、指标和结构化日志。
 
 ---
 
@@ -143,11 +143,11 @@ log::error!("Error message");
 - **Text** - Human-readable / 人类可读
 - **JSON** - Machine-readable / 机器可读
 
-### Nexus Logging / Nexus 日志
+### Hiver Logging / Hiver 日志
 
-Nexus provides a unified logging system with two modes optimized for different environments:
+Hiver provides a unified logging system with two modes optimized for different environments:
 
-Nexus 提供统一的日志系统，具有针对不同环境优化的两种模式：
+Hiver 提供统一的日志系统，具有针对不同环境优化的两种模式：
 
 | Mode | Use Case | Features |
 |------|----------|----------|
@@ -180,11 +180,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```bash
 # Environment variables / 环境变量
-export NEXUS_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
-export NEXUS_LOG_MODE=verbose          # verbose, simple
-export NEXUS_PROFILE=prod              # dev, prod (affects default mode)
+export HIVER_LOG_LEVEL=DEBUG          # TRACE, DEBUG, INFO, WARN, ERROR
+export HIVER_LOG_MODE=verbose          # verbose, simple
+export HIVER_PROFILE=prod              # dev, prod (affects default mode)
 
-# Configuration file (nexus.toml) / 配置文件
+# Configuration file (hiver.toml) / 配置文件
 [logging]
 level = "INFO"
 mode = "verbose"                      # or "simple"
@@ -302,7 +302,7 @@ async fn handler(req: Request) -> Response {
 
 ## Spring Boot Comparison / Spring Boot 对比
 
-| Spring Boot | Nexus | Description |
+| Spring Boot | Hiver | Description |
 |-------------|-------|-------------|
 | Spring Cloud Sleuth | `Tracer` | Distributed tracing |
 | Micrometer | `MetricsRegistry` | Metrics collection |

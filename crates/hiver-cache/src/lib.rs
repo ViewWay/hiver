@@ -1,5 +1,5 @@
-//! Nexus Cache - Caching abstraction module
-//! Nexus缓存 - 缓存抽象模块
+//! Hiver Cache - Caching abstraction module
+//! Hiver缓存 - 缓存抽象模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!

@@ -66,8 +66,8 @@ impl CoreAutoConfiguration {
     /// ```
     pub fn new() -> Self {
         Self {
-            app_name: "Nexus Application".to_string(),
-            debug: std::env::var("NEXUS_DEBUG")
+            app_name: "Hiver Application".to_string(),
+            debug: std::env::var("HIVER_DEBUG")
                 .or_else(|_| std::env::var("DEBUG"))
                 .ok()
                 .and_then(|s| s.parse().ok())
@@ -135,7 +135,7 @@ impl CoreAutoConfiguration {
         let level = if self.debug {
             tracing::Level::DEBUG
         } else {
-            std::env::var("NEXUS_LOG_LEVEL")
+            std::env::var("HIVER_LOG_LEVEL")
                 .or_else(|_| std::env::var("RUST_LOG"))
                 .ok()
                 .and_then(|s| s.parse().ok())
@@ -203,12 +203,12 @@ impl AutoConfiguration for CoreAutoConfiguration {
 
         // 创建启动信息收集器
         // Create startup info collector
-        let profile = std::env::var("NEXUS_PROFILE").ok();
+        let profile = std::env::var("HIVER_PROFILE").ok();
         let startup_info = StartupInfo::new(self.debug, self.worker_threads, profile);
 
         // 打印启动日志（Spring Boot 风格）
         // Print startup log (Spring Boot style)
-        let class_name = "nexus.Application";
+        let class_name = "hiver.Application";
         startup_info.print_starting(class_name);
         startup_info.print_profile(class_name);
         startup_info.print_config(class_name);
@@ -232,7 +232,7 @@ mod tests {
     #[test]
     fn test_core_auto_config_new() {
         let config = CoreAutoConfiguration::new();
-        assert_eq!(config.app_name, "Nexus Application");
+        assert_eq!(config.app_name, "Hiver Application");
         assert_eq!(config.worker_threads, num_cpus::get());
     }
 

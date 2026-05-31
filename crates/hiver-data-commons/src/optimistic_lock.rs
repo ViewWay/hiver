@@ -13,7 +13,7 @@
 //!
 //! # Equivalent to Spring / 等价于 Spring
 //!
-//! | Nexus | Spring Data |
+//! | Hiver | Spring Data |
 //! |-------|-------------|
 //! | `Version` trait | `@Version` annotation |
 //! | `OptimisticLockError` | `OptimisticLockingFailureException` |

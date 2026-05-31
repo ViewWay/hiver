@@ -70,7 +70,7 @@ my-enterprise-app/
 │       └── CacheAspect.java
 ```
 
-#### Nexus - 模块分层
+#### Hiver - 模块分层
 
 ```
 my-enterprise-app/
@@ -241,7 +241,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-#### Nexus - 异常体系
+#### Hiver - 异常体系
 
 ```rust
 // 1. 基础错误 trait
@@ -520,7 +520,7 @@ public class PostmanConfig {
 }
 ```
 
-#### Nexus - OpenAPI + Postman
+#### Hiver - OpenAPI + Postman
 
 ```rust
 use utoipa::{OpenApi, OpenApiSpec, openapi::OpenApiBuilder};
@@ -951,7 +951,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - RBAC 实现
+#### Hiver - RBAC 实现
 
 ```rust
 use hiver_security::{Role, Permission, DataScope};
@@ -1233,7 +1233,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - 日志聚合
+#### Hiver - 日志聚合
 
 ```rust
 use hiver_observability::log::{Logger, LoggerFactory, LogConfig};
@@ -1378,7 +1378,7 @@ networks:
     driver: bridge
 ```
 
-#### Nexus - Dockerfile
+#### Hiver - Dockerfile
 
 ```dockerfile
 # Dockerfile
@@ -1530,11 +1530,11 @@ networks:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Nexus - 微服务架构
+#### Hiver - 微服务架构
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      API Gateway (Nexus)                       │
+│                      API Gateway (Hiver)                       │
 │                    + Load Balancer                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                         服务层 / Services                       │
@@ -1601,7 +1601,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - HTTP 客户端
+#### Hiver - HTTP 客户端
 
 ```rust
 use reqwest::Client;
@@ -1680,7 +1680,7 @@ impl UserService {
 
 ### 企业级功能对比 / Enterprise Features Comparison
 
-| 功能 / Feature | Spring Boot | Nexus | 完成度 |
+| 功能 / Feature | Spring Boot | Hiver | 完成度 |
 |----------------|-------------|-------|--------|
 | **模块化架构 / Modular** | Multi-module Maven | Workspace | ✅ 100% |
 | **统一异常 / Exception** | @ControllerAdvice | ErrorHandler trait | ✅ 90% |

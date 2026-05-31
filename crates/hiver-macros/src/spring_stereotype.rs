@@ -74,7 +74,7 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream {
                 })?;
 
                 let elapsed = start_time.elapsed().as_millis();
-                let class_name = "nexus.Application";
+                let class_name = "hiver.Application";
                 let timestamp = format_timestamp();
                 println!();
                 println!(

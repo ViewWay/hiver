@@ -1,7 +1,7 @@
-//! # Nexus Data Annotations
+//! # Hiver Data Annotations
 //!
-//! Spring Data JPA style annotations for Nexus framework
-//! Nexus 框架的 Spring Data JPA 风格注解
+//! Spring Data JPA style annotations for Hiver framework
+//! Hiver 框架的 Spring Data JPA 风格注解
 //!
 //! ## Features / 功能
 //!

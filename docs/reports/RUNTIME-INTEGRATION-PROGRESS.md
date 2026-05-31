@@ -1,12 +1,12 @@
-# 🎉 Nexus Runtime Integration Progress Report
-# Nexus 运行时集成进度报告
+# 🎉 Hiver Runtime Integration Progress Report
+# Hiver 运行时集成进度报告
 # Generated: 2026-01-25
 
 ## 📊 Executive Summary / 执行摘要
 
 ```
 ═══════════════════════════════════════════════════════════════
-  Nexus 运行时集成进度 Nexus Runtime Integration Progress
+  Hiver 运行时集成进度 Hiver Runtime Integration Progress
 ═══════════════════════════════════════════════════════════════
 
   ✅ Query Runtime (100%) - Complete / 完成
@@ -237,7 +237,7 @@ let result = executor.execute(config, || async {
 **Example / 示例**:
 ```rust
 fn main() {
-    println!("🚀 Nexus Runtime Integration Test");
+    println!("🚀 Hiver Runtime Integration Test");
 
     // Query runtime
     demo_query_runtime();

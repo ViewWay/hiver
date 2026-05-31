@@ -1,8 +1,8 @@
-//! Nexus Framework - Spring Boot Style Example
-//! Nexus框架 - Spring Boot风格示例
+//! Hiver Framework - Spring Boot Style Example
+//! Hiver框架 - Spring Boot风格示例
 //!
-//! This example shows how to use Nexus framework with Spring Boot-like annotations.
-//! 此示例展示如何使用Nexus框架和类似Spring Boot的注解。
+//! This example shows how to use Hiver framework with Spring Boot-like annotations.
+//! 此示例展示如何使用Hiver框架和类似Spring Boot的注解。
 //!
 //! # Equivalent Spring Boot Code / 等价的Spring Boot代码
 //!
@@ -13,7 +13,7 @@
 //!
 //!     private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);
 //!
-//!     @Value("${app.name:Nexus Application}")
+//!     @Value("${app.name:Hiver Application}")
 //!     private String appName;
 //!
 //!     @GetMapping("/helloworld")
@@ -118,7 +118,7 @@ fn main() -> std::io::Result<()> {
     Logger::init_spring_style().expect("Failed to initialize logger");
 
     let log = LoggerFactory::get("main");
-    log.info(format_args!("Starting Nexus Application..."));
+    log.info(format_args!("Starting Hiver Application..."));
 
     Application::run()
 }

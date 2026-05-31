@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 Event mechanism for Hiver Framework.
-Nexus框架的事件机制。
+Hiver框架的事件机制。
 Equivalent to: Spring Events, ApplicationEventPublisher, @EventListener
 """
 homepage = { workspace = true }

@@ -39,7 +39,7 @@ pub struct Product {
 // ============================================================================
 
 fn main() {
-    println!("=== Nexus Data Annotations Demo ===\n");
+    println!("=== Hiver Data Annotations Demo ===\n");
 
     // Table annotation generates table_name()
     // Table 注解生成 table_name() 方法

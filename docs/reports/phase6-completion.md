@@ -69,7 +69,7 @@ let address = wallet.address();
 
 println!("Address: {}", address.to_checksummed());
 
-let message = b"Hello, Nexus!";
+let message = b"Hello, Hiver!";
 let signature = wallet.sign(message)?;
 ```
 
@@ -195,7 +195,7 @@ let mut logs = client.subscribe_logs(filter).await?;
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot / Web3j |
+| Hiver | Spring Boot / Web3j |
 |-------|---------------------|
 | `ChainId`, `ChainConfig` | `ChainId`, `BlockchainService` |
 | `Wallet`, `LocalWallet` | `Credentials`, `WalletUtils` |

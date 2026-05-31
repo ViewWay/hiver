@@ -271,7 +271,7 @@ This can be fixed by:
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot |
+| Hiver | Spring Boot |
 |-------|-------------|
 | `Router::new().get("/", handler)` | `@GetMapping("/")` |
 | `Path<T>` extractor | `@PathVariable` |

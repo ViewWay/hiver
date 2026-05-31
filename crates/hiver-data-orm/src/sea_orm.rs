@@ -3,13 +3,13 @@
 //!
 //! # Overview / 概述
 //!
-//! Provides a bridge between Nexus Data ORM and SeaORM,
-//! allowing Nexus models to be used as SeaORM entities.
-//! 提供 Nexus Data ORM 与 SeaORM 之间的桥接。
+//! Provides a bridge between Hiver Data ORM and SeaORM,
+//! allowing Hiver models to be used as SeaORM entities.
+//! 提供 Hiver Data ORM 与 SeaORM 之间的桥接。
 //!
 //! # Features / 功能
 //!
-//! - Execute queries via Nexus QueryBuilder with real DatabaseClient
+//! - Execute queries via Hiver QueryBuilder with real DatabaseClient
 //! - Minimal zero-dependency operations when sea-orm feature is disabled
 //!
 //! # Example / 示例
@@ -24,8 +24,8 @@ use crate::{Model, Result};
 use hiver_data_rdbc::DatabaseClient;
 use std::marker::PhantomData;
 
-/// SeaORM Bridge for Nexus models.
-/// Nexus 模型的 SeaORM 桥接。
+/// SeaORM Bridge for Hiver models.
+/// Hiver 模型的 SeaORM 桥接。
 ///
 /// Delegates to QueryBuilder and DatabaseClient for actual operations.
 pub struct SeaOrmBridge<M: Model + serde::de::DeserializeOwned> {
@@ -114,14 +114,14 @@ impl<M: Model + serde::de::DeserializeOwned> Default for SeaOrmBridge<M> {
     }
 }
 
-/// Convert a Nexus Model to a SeaORM ActiveModel (requires sea-orm feature)
+/// Convert a Hiver Model to a SeaORM ActiveModel (requires sea-orm feature)
 #[cfg(feature = "sea-orm")]
 pub trait IntoSeaOrmEntity {
     type Entity: sea_orm::EntityTrait;
     fn into_active_model(self) -> sea_orm::ActiveModel<Self::Entity>;
 }
 
-/// Convert a SeaORM Model to a Nexus Model (requires sea-orm feature)
+/// Convert a SeaORM Model to a Hiver Model (requires sea-orm feature)
 #[cfg(feature = "sea-orm")]
 pub trait FromSeaOrmEntity: Sized {
     type Entity: sea_orm::EntityTrait;

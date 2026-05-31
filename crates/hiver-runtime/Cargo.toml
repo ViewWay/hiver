@@ -6,7 +6,7 @@ edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
 High-performance async runtime for Hiver Framework.
-Nexus框架的高性能异步运行时。
+Hiver框架的高性能异步运行时。
 Equivalent to: Spring WebFlux Reactor, Project Reactor
 """
 homepage = { workspace = true }

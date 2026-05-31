@@ -20,7 +20,7 @@
 ### 依赖注入 (DI) 概念对比 / Dependency Injection Concepts
 
 **Spring Boot** 使用 IoC (Inversion of Control) 容器管理 Bean
-**Nexus** 使用 Container 管理 Bean 组件
+**Hiver** 使用 Container 管理 Bean 组件
 
 #### Spring Boot - DI 注解
 
@@ -61,7 +61,7 @@ public class AppConfig {
 }
 ```
 
-#### Nexus - 宏注解
+#### Hiver - 宏注解
 
 ```rust
 use hiver_macros::{service, controller, config, bean};
@@ -125,7 +125,7 @@ public class SessionBean {
 }
 ```
 
-#### Nexus - Bean 管理
+#### Hiver - Bean 管理
 
 ```rust
 use hiver_core::container::{Container, Bean, Scope};
@@ -188,7 +188,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - 注入方式
+#### Hiver - 注入方式
 
 ```rust
 use hiver_macros::{service, autowired};
@@ -259,7 +259,7 @@ public class FeatureConfig {
 }
 ```
 
-#### Nexus - 条件编译
+#### Hiver - 条件编译
 
 ```rust
 // 特性开关 (feature flags)
@@ -328,7 +328,7 @@ public class NameComponent implements BeanNameAware {
 }
 ```
 
-#### Nexus - 上下文注入
+#### Hiver - 上下文注入
 
 ```rust
 use hiver_core::context::{ApplicationContext, Environment};
@@ -439,7 +439,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - 数据访问层
+#### Hiver - 数据访问层
 
 ```rust
 use hiver_macros::{service, repository, transactional};
@@ -634,7 +634,7 @@ public interface UserMapper {
 </mapper>
 ```
 
-#### Nexus - SQLx (类似 MyBatis)
+#### Hiver - SQLx (类似 MyBatis)
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -726,7 +726,7 @@ spring:
         format_sql: true
 ```
 
-#### Nexus - 配置结构
+#### Hiver - 配置结构
 
 ```rust
 #[hiver_macros::config(prefix = "database")]
@@ -787,7 +787,7 @@ public class UserService {
 }
 ```
 
-#### Nexus - #[transactional]
+#### Hiver - #[transactional]
 
 ```rust
 use hiver_macros::transactional;
@@ -928,7 +928,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-#### Nexus - 参数校验
+#### Hiver - 参数校验
 
 ```rust
 // 1. 添加依赖
@@ -1096,7 +1096,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-#### Nexus - 全局异常处理
+#### Hiver - 全局异常处理
 
 ```rust
 use hiver_core::error::{ErrorHandler, Error, ErrorKind};
@@ -1293,7 +1293,7 @@ management:
       show-details: when-authorized
 ```
 
-#### Nexus - 配置结构
+#### Hiver - 配置结构
 
 ```rust
 // 1. 配置结构体定义
@@ -1469,7 +1469,7 @@ logging:
     name: /var/log/myapp/application.log
 ```
 
-#### Nexus - 环境配置
+#### Hiver - 环境配置
 
 ```rust
 // 1. 环境枚举
@@ -1640,7 +1640,7 @@ public class EmailService {
 }
 ```
 
-#### Nexus - 配置注入
+#### Hiver - 配置注入
 
 ```rust
 // 1. 配置属性结构
@@ -1730,7 +1730,7 @@ impl EmailService {
 
 ### 核心功能对比 / Core Features Comparison
 
-| 功能 / Feature | Spring Boot | Nexus | 完成度 |
+| 功能 / Feature | Spring Boot | Hiver | 完成度 |
 |----------------|-------------|-------|--------|
 | **依赖注入 / DI** | @Autowired | #[autowired] | ✅ 100% |
 | **组件扫描 / Component Scan** | @ComponentScan | 自动扫描 | ✅ 100% |

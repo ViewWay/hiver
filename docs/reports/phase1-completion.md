@@ -137,7 +137,7 @@ async fn main() {
 
     runtime.block_on(async {
         // Async work here
-        println!("Hello from Nexus runtime!");
+        println!("Hello from Hiver runtime!");
     });
 }
 ```
@@ -245,7 +245,7 @@ select! {
 
 ## Spring Boot Equivalents / Spring Boot 等价物
 
-| Nexus | Spring Boot / Java |
+| Hiver | Spring Boot / Java |
 |-------|-------------------|
 | `Runtime` | `SpringApplication`, `ExecutorService` |
 | `spawn()` | `@Async`, `CompletableFuture` |

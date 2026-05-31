@@ -476,7 +476,7 @@ impl Condition for ConditionalOnClass {
         //
         // For feature-gated types, we use environment variables to simulate.
         let env_key = format!(
-            "NEXUS_CONDITIONAL_ON_CLASS_{}",
+            "HIVER_CONDITIONAL_ON_CLASS_{}",
             self.type_name
                 .replace("::", "_")
                 .replace(['<', '>'], "_")

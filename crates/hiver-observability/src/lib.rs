@@ -1,12 +1,12 @@
-//! Nexus Observability - Tracing, metrics, and logging
-//! Nexus可观测性 - 追踪、指标和日志
+//! Hiver Observability - Tracing, metrics, and logging
+//! Hiver可观测性 - 追踪、指标和日志
 //!
 //! # Overview / 概述
 //!
 //! `hiver-observability` provides distributed tracing, metrics collection,
-//! and structured logging for the Nexus framework.
+//! and structured logging for the Hiver framework.
 //!
-//! `hiver-observability` 为Nexus框架提供分布式追踪、指标收集和结构化日志。
+//! `hiver-observability` 为Hiver框架提供分布式追踪、指标收集和结构化日志。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

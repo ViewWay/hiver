@@ -4,20 +4,20 @@
 //! # Description / 描述
 //!
 //! This module bridges `async-graphql` (the most mature Rust GraphQL library)
-//! into the Nexus framework, providing:
+//! into the Hiver framework, providing:
 //! - SDL schema parsing and validation
 //! - Full query / mutation execution
 //! - Subscription streams over async channels
 //! - DataLoader integration
 //! - GraphiQL playground HTML
 //!
-//! 本模块将 async-graphql 集成到 Nexus 框架，提供真实的 SDL 解析、
+//! 本模块将 async-graphql 集成到 Hiver 框架，提供真实的 SDL 解析、
 //! Query/Mutation 执行、Subscription 流以及 DataLoader 集成。
 //!
 //! # Example / 示例
 //! ```rust,ignore
 //! use async_graphql::{Object, SimpleObject, EmptyMutation, EmptySubscription, Schema};
-//! use hiver_graphql::engine::{NexusGraphQL, GraphQLRequest};
+//! use hiver_graphql::engine::{HiverGraphQL, GraphQLRequest};
 //!
 //! #[derive(SimpleObject)]
 //! struct User { id: u64, name: String }
@@ -29,7 +29,7 @@
 //! }
 //!
 //! let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
-//! let engine = NexusGraphQL::new(schema);
+//! let engine = HiverGraphQL::new(schema);
 //! let resp = engine.execute(GraphQLRequest::new("{ user(id: 1) { name } }")).await;
 //! ```
 
@@ -129,16 +129,16 @@ mod engine_impl {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // NexusGraphQL engine
+    // HiverGraphQL engine
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// The Nexus GraphQL execution engine backed by `async-graphql`.
-    /// 基于 async-graphql 的 Nexus GraphQL 执行引擎。
+    /// The Hiver GraphQL execution engine backed by `async-graphql`.
+    /// 基于 async-graphql 的 Hiver GraphQL 执行引擎。
     ///
     /// Type parameters mirror `async-graphql::Schema<Q, M, S>`.
     /// 类型参数与 async-graphql::Schema<Q, M, S> 对应。
     #[derive(Clone)]
-    pub struct NexusGraphQL<Q, M, S>
+    pub struct HiverGraphQL<Q, M, S>
     where
         Q: ObjectType + 'static,
         M: ObjectType + 'static,
@@ -147,7 +147,7 @@ mod engine_impl {
         schema: Arc<Schema<Q, M, S>>,
     }
 
-    impl<Q, M, S> NexusGraphQL<Q, M, S>
+    impl<Q, M, S> HiverGraphQL<Q, M, S>
     where
         Q: ObjectType + 'static,
         M: ObjectType + 'static,
@@ -204,17 +204,17 @@ mod engine_impl {
     // SchemaBuilder helper
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// Convenience builder for constructing a Nexus-wrapped `async-graphql` schema.
-    /// 方便构建 Nexus 包装的 async-graphql schema 的辅助构建器。
+    /// Convenience builder for constructing a Hiver-wrapped `async-graphql` schema.
+    /// 方便构建 Hiver 包装的 async-graphql schema 的辅助构建器。
     ///
     /// # Example / 示例
     /// ```rust,ignore
-    /// let engine = NexusGraphQLBuilder::new(QueryRoot, EmptyMutation, EmptySubscription)
+    /// let engine = HiverGraphQLBuilder::new(QueryRoot, EmptyMutation, EmptySubscription)
     ///     .max_depth(10)
     ///     .introspection(true)
     ///     .build();
     /// ```
-    pub struct NexusGraphQLBuilder<Q, M, S>
+    pub struct HiverGraphQLBuilder<Q, M, S>
     where
         Q: ObjectType + 'static,
         M: ObjectType + 'static,
@@ -223,7 +223,7 @@ mod engine_impl {
         inner: async_graphql::SchemaBuilder<Q, M, S>,
     }
 
-    impl<Q, M, S> NexusGraphQLBuilder<Q, M, S>
+    impl<Q, M, S> HiverGraphQLBuilder<Q, M, S>
     where
         Q: ObjectType + 'static,
         M: ObjectType + 'static,
@@ -265,10 +265,10 @@ mod engine_impl {
             self
         }
 
-        /// Build the `NexusGraphQL` engine.
-        /// 构建 NexusGraphQL 引擎。
-        pub fn build(self) -> NexusGraphQL<Q, M, S> {
-            NexusGraphQL::new(self.inner.finish())
+        /// Build the `HiverGraphQL` engine.
+        /// 构建 HiverGraphQL 引擎。
+        pub fn build(self) -> HiverGraphQL<Q, M, S> {
+            HiverGraphQL::new(self.inner.finish())
         }
     }
 
@@ -284,7 +284,7 @@ mod engine_impl {
             .unwrap_or_default();
         format!(
             concat!(
-                "<!DOCTYPE html><html><head><title>GraphiQL - Nexus</title>",
+                "<!DOCTYPE html><html><head><title>GraphiQL - Hiver</title>",
                 "<meta charset=\"utf-8\"/>",
                 "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>",
                 "<script src=\"https://unpkg.com/react@17/umd/react.development.js\"></script>",
@@ -327,8 +327,8 @@ mod engine_impl {
             async fn add(&self, a: i32, b: i32) -> i32 { a + b }
         }
 
-        fn make_engine() -> NexusGraphQL<QueryRoot, EmptyMutation, EmptySubscription> {
-            NexusGraphQLBuilder::new(QueryRoot, EmptyMutation, EmptySubscription)
+        fn make_engine() -> HiverGraphQL<QueryRoot, EmptyMutation, EmptySubscription> {
+            HiverGraphQLBuilder::new(QueryRoot, EmptyMutation, EmptySubscription)
                 .max_depth(10)
                 .introspection(true)
                 .build()

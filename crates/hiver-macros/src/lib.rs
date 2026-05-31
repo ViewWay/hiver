@@ -1,12 +1,12 @@
 #![allow(clippy::expect_used, clippy::unwrap_used, clippy::needless_pass_by_value)]
-//! Nexus Macros - Spring Boot Style Procedural Macros
-//! Nexus宏 - Spring Boot风格的过程宏
+//! Hiver Macros - Spring Boot Style Procedural Macros
+//! Hiver宏 - Spring Boot风格的过程宏
 //!
 //! # Overview / 概述
 //!
-//! `hiver-macros` provides Spring Boot-style procedural macros for the Nexus framework.
+//! `hiver-macros` provides Spring Boot-style procedural macros for the Hiver framework.
 //!
-//! `hiver-macros` 为 Nexus 框架提供 Spring Boot 风格的过程宏。
+//! `hiver-macros` 为 Hiver 框架提供 Spring Boot 风格的过程宏。
 //!
 //! # Example / 示例
 //!

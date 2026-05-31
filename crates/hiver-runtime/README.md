@@ -2,7 +2,7 @@
 
 **High-performance async runtime for the Hiver Framework.**
 
-**Nexus框架的高性能异步运行时。**
+**Hiver框架的高性能异步运行时。**
 
 ## Overview / 概述
 
@@ -26,7 +26,7 @@
 
 ## Equivalent to Spring Boot / 等价于 Spring Boot
 
-| Spring Boot | Nexus Runtime |
+| Spring Boot | Hiver Runtime |
 |-------------|--------------|
 | Tomcat/Netty thread pool | Thread-per-core executor |
 | `@Async` | `spawn` |
@@ -176,7 +176,7 @@ let runtime = Builder::new()
 
 ## License / 许可证
 
-MIT License. See [LICENSE](https://github.com/hiver-rs/nexus/blob/main/LICENSE) for details.
+MIT License. See [LICENSE](https://github.com/hiver-rs/hiver/blob/main/LICENSE) for details.
 
 ---
 

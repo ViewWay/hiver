@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Common data access abstractions for Hiver Framework"
-keywords = ["nexus", "data", "repository", "spring-data"]
+keywords = ["hiver", "data", "repository", "spring-data"]
 categories = ["database", "asynchronous"]
 
 [features]

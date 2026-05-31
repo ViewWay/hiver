@@ -1,9 +1,9 @@
 //! @Transactional Annotation Examples / @Transactional 注解示例
 //!
 //! This example demonstrates the use of the @Transactional annotation
-//! for automatic transaction management in the Nexus framework.
+//! for automatic transaction management in the Hiver framework.
 //!
-//! 此示例演示了在 Nexus 框架中使用 @Transactional 注解进行自动事务管理。
+//! 此示例演示了在 Hiver 框架中使用 @Transactional 注解进行自动事务管理。
 
 use hiver_data_annotations::Transactional;
 use hiver_data_annotations::transactional::{

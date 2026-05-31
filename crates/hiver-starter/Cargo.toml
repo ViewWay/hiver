@@ -1,4 +1,4 @@
-# Nexus Starter - Spring Boot风格的自动配置 / Spring Boot-style Auto-Configuration
+# Hiver Starter - Spring Boot风格的自动配置 / Spring Boot-style Auto-Configuration
 #
 # 提供开箱即用的自动配置能力
 # Provides out-of-the-box auto-configuration capabilities
@@ -30,7 +30,7 @@ name = "hiver-starter"
 version = "0.1.0"
 description = "Spring Boot-style auto-configuration for Hiver Framework"
 documentation = "https://docs.rs/hiver-starter"
-repository = "https://github.com/hiver-rs/nexus"
+repository = "https://github.com/hiver-rs/hiver"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 rust-version = "1.75"

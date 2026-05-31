@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Router / 路由 - Nexus Framework Guide / Nexus框架指南</title>
+        <title>Router / 路由 - Hiver Framework Guide / Hiver框架指南</title>
 
 
         <!-- Custom HTML head -->
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Nexus Framework Guide / Nexus框架指南</h1>
+                    <h1 class="menu-title">Hiver Framework Guide / Hiver框架指南</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -176,15 +176,15 @@
                     <main>
                         <h1 id="router"><a class="header" href="#router">Router</a></h1>
 <h1 id="路由"><a class="header" href="#路由">路由</a></h1>
-<p>The <code>nexus-router</code> crate provides high-performance HTTP request routing using a trie-based data structure.</p>
-<p><code>nexus-router</code> crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。</p>
+<p>The <code>hiver-router</code> crate provides high-performance HTTP request routing using a trie-based data structure.</p>
+<p><code>hiver-router</code> crate 使用基于 trie 的数据结构提供高性能 HTTP 请求路由。</p>
 <h2 id="overview--概述"><a class="header" href="#overview--概述">Overview / 概述</a></h2>
 <p>The router maps HTTP method + path combinations to handler functions:</p>
 <p>路由器将 HTTP 方法 + 路径组合映射到处理函数：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
-use nexus_http::{Response, StatusCode, Body};
+</span>use hiver_router::Router;
+use hiver_http::{Response, StatusCode, Body};
 
 let router = Router::new()
     .get("/", index)
@@ -232,7 +232,7 @@ async fn get_user(req: Request) -&gt; Response {
 <h2 id="http-methods--http-方法"><a class="header" href="#http-methods--http-方法">HTTP Methods / HTTP 方法</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use nexus_router::Router;
+</span>use hiver_router::Router;
 
 let router = Router::new()
     .get("/resource", handler)      // GET
@@ -250,7 +250,7 @@ let router = Router::new()
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::sync::Arc;
-use nexus_router::Router;
+use hiver_router::Router;
 
 let router = Router::new()
     .get("/", index)
@@ -282,7 +282,7 @@ async fn get_user(req: Request) -&gt; Response {
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Spring Boot</th><th>Nexus Router</th><th>Description</th></tr>
+<tr><th>Spring Boot</th><th>Hiver Router</th><th>Description</th></tr>
 </thead>
 <tbody>
 <tr><td><code>@GetMapping("/path")</code></td><td><code>.get("/path", handler)</code></td><td>GET route</td></tr>
@@ -312,8 +312,8 @@ async fn get_user(req: Request) -&gt; Response {
 </table>
 </div>
 <h2 id="complete-example--完整示例"><a class="header" href="#complete-example--完整示例">Complete Example / 完整示例</a></h2>
-<pre class="playground"><code class="language-rust">use nexus_router::Router;
-use nexus_http::{Body, Request, Response, Result, StatusCode};
+<pre class="playground"><code class="language-rust">use hiver_router::Router;
+use hiver_http::{Body, Request, Response, Result, StatusCode};
 use serde::Serialize;
 
 #[derive(Serialize)]

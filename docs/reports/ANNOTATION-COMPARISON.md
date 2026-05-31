@@ -1,4 +1,4 @@
-# Spring Boot vs Nexus 注解功能对比 / Annotation Feature Comparison
+# Spring Boot vs Hiver 注解功能对比 / Annotation Feature Comparison
 
 生成时间 / Generated: 2026-01-25
 
@@ -10,9 +10,9 @@
 ═══════════════════════════════════════════════════════════════
 
   Spring Boot 注解总数 / Total:  41
-  Nexus 完全实现 / Fully Implemented:  28 (68%)
-  Nexus 部分实现 / Partially Implemented:  6 (15%)
-  Nexus 未实现 / Not Implemented:  7 (17%)
+  Hiver 完全实现 / Fully Implemented:  28 (68%)
+  Hiver 部分实现 / Partially Implemented:  6 (15%)
+  Hiver 未实现 / Not Implemented:  7 (17%)
   设计差异 / Different Design:  8 (20%)
 
 ═══════════════════════════════════════════════════════════════
@@ -22,13 +22,13 @@
 
 ## 🧩 第一类：应用入口注解 / Application Entry Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
-| `@SpringBootApplication` | ❌ 无直接对应 | **不同设计** | Nexus 使用函数式启动而非注解驱动 |
+| `@SpringBootApplication` | ❌ 无直接对应 | **不同设计** | Hiver 使用函数式启动而非注解驱动 |
 
 **说明 / Notes**:
 - Spring Boot: `@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan`
-- Nexus: 使用 `#[tokio::main]` + `Server::bind()` 的函数式启动方式
+- Hiver: 使用 `#[tokio::main]` + `Server::bind()` 的函数式启动方式
 - 原因 / Reason: Rust 的宏系统更适合显式配置，而非自动扫描
 
 **示例对比 / Example Comparison**:
@@ -44,7 +44,7 @@ public class MyApp {
 ```
 
 ```rust
-// Nexus
+// Hiver
 #[tokio::main]
 async fn main() {
     let app = Router::new()
@@ -62,11 +62,11 @@ async fn main() {
 
 ## 🧩 第二类：组件注册注解 / Component Registration Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Component` | ❌ 无 | **不同设计** | Rust 不需要组件扫描，编译时确定 |
 | `@Service` | ❌ 无 | **不同设计** | 使用普通 struct + impl block |
-| `@Repository` | ✅ `@Repository` (90%) | **部分对标** | Nexus 有同名注解但用于 trait |
+| `@Repository` | ✅ `@Repository` (90%) | **部分对标** | Hiver 有同名注解但用于 trait |
 | `@Controller` | ✅ Router (85%) | **部分对标** | 使用路由函数而非注解 |
 | `@RestController` | ✅ Router + JSON (90%) | **部分对标** | 默认返回 JSON |
 
@@ -86,7 +86,7 @@ public class UserService {
 ```
 
 ```rust
-// Nexus
+// Hiver
 pub struct UserService {
     repository: Arc<UserRepository>,
 }
@@ -116,7 +116,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 ```
 
 ```rust
-// Nexus - 更强大的声明式查询
+// Hiver - 更强大的声明式查询
 trait UserRepository {
     #[Query("SELECT * FROM users WHERE id = :id")]
     async fn find_by_id(&self, id: i64) -> Result<Option<User>, Error>;
@@ -127,7 +127,7 @@ trait UserRepository {
 
 ## 🧩 第三类：依赖注入注解 / Dependency Injection Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Autowired` | ❌ 无 | **不同设计** | 使用构造函数注入 |
 | `@Qualifier` | ❌ 无 | **不同设计** | Rust 类型系统已足够 |
@@ -135,7 +135,7 @@ trait UserRepository {
 | `@Inject` | ❌ 无 | **不适用** | JSR-330 标准 |
 
 **说明 / Notes**:
-- Nexus 采用**构造函数注入**模式，更符合 Rust 最佳实践
+- Hiver 采用**构造函数注入**模式，更符合 Rust 最佳实践
 - Rust 的类型系统可以在编译时确定所有依赖，无需运行时注入
 
 **示例对比 / Example Comparison**:
@@ -154,7 +154,7 @@ public class UserService {
 ```
 
 ```rust
-// Nexus - 构造函数注入（编译时安全）
+// Hiver - 构造函数注入（编译时安全）
 pub struct UserService {
     repository: Arc<UserRepository>,
     email_service: Arc<dyn EmailService>,
@@ -177,7 +177,7 @@ impl UserService {
 
 ## 🧩 第四类：配置注解 / Configuration Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Configuration` | ❌ 无 | **不同设计** | 使用函数式配置 |
 | `@Bean` | ❌ 无 | **不同设计** | 使用 Arc::new() 直接创建 |
@@ -199,7 +199,7 @@ public class AppConfig {
 ```
 
 ```rust
-// Nexus
+// Hiver
 #[derive(Debug, Deserialize)]
 struct AppConfig {
     name: String,
@@ -217,7 +217,7 @@ let config: AppConfig = Config::builder()
 
 ## 🧩 第五类：Web 请求映射注解 / Web Request Mapping Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@RequestMapping` | ✅ Router::route (95%) | **完全对标** | 支持所有 HTTP 方法 |
 | `@GetMapping` | ✅ Router::get (100%) | **完全对标** | 语义完全相同 |
@@ -257,7 +257,7 @@ public class UserController {
 ```
 
 ```rust
-// Nexus
+// Hiver
 async fn user_routes() -> Router {
     Router::new()
         .path("/api/users")
@@ -287,7 +287,7 @@ async fn search_users(Query(params): Query<HashMap<String, String>>) -> Result<J
 
 ## 🧩 第六类：生命周期注解 / Lifecycle Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@PostConstruct` | ✅ 自定义实现 (70%) | **部分对标** | 可在 new() 中实现 |
 | `@PreDestroy` | ✅ Drop trait (80%) | **部分对标** | 使用 RAII 模式 |
@@ -311,7 +311,7 @@ public class DatabaseConnection {
 ```
 
 ```rust
-// Nexus - 使用 RAII 模式
+// Hiver - 使用 RAII 模式
 pub struct DatabaseConnection {
     pool: PgPool,
 }
@@ -337,7 +337,7 @@ impl Drop for DatabaseConnection {
 
 ## 🧩 第七类：测试注解 / Testing Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@SpringBootTest` | ❌ 无直接对应 | **不同设计** | 使用单元测试集成 |
 | `@WebMvcTest` | ❌ 无直接对应 | **不同设计** | 使用独立测试框架 |
@@ -365,7 +365,7 @@ class UserServiceTest {
 ```
 
 ```rust
-// Nexus
+// Hiver
 #[tokio::test]
 async fn test_find_by_id() {
     let service = create_test_service().await;
@@ -383,7 +383,7 @@ async fn create_test_service() -> UserService {
 
 ## 🧩 第八类：数据库相关注解 / Database Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Mapper` (MyBatis) | ✅ 对应 trait (100%) | **完全对标** | 使用 trait 而非注解 |
 | `@Select` | ✅ `@Query` (100%) | **完全对标** | 功能完全相同 |
@@ -423,7 +423,7 @@ public interface UserMapper {
 ```
 
 ```rust
-// Nexus - 统一的声明式方式
+// Hiver - 统一的声明式方式
 #[Entity]
 #[Table(name = "users")]
 #[Data]
@@ -460,7 +460,7 @@ impl UserService {
 
 ## 🧩 第九类：AOP 注解 / AOP Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Aspect` | ✅ `@Aspect` (100%) | **完全对标** | 切面定义 |
 | `@Before` | ✅ `@Before` (100%) | **完全对标** | 前置通知 |
@@ -500,7 +500,7 @@ public class LoggingAspect {
 ```
 
 ```rust
-// Nexus - 功能完全相同
+// Hiver - 功能完全相同
 #[Aspect]
 struct LoggingAspect;
 
@@ -530,7 +530,7 @@ impl LoggingAspect {
 
 ## 🧩 第十类：条件配置注解 / Conditional Configuration Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Conditional` | ❌ 无直接对应 | **不同设计** | 使用编译时 cfg |
 | `@Profile` | ✅ Profile (85%) | **部分对标** | 环境配置支持 |
@@ -550,7 +550,7 @@ public class DevConfig {
 ```
 
 ```rust
-// Nexus
+// Hiver
 impl DevConfig {
     pub fn dataSource() -> DataSource {
         if Profile::is_active("dev") {
@@ -572,7 +572,7 @@ fn create_datasource() -> DataSource {
 
 ## 🧩 第十一类：异步与定时注解 / Async & Scheduling Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@Async` | ❌ 无直接对应 | **不同设计** | 使用 tokio::spawn |
 | `@Scheduled` | ✅ `@Scheduled` (95%) | **完全对标** | 支持 cron/fixed-rate/delay |
@@ -598,7 +598,7 @@ public class ScheduledTasks {
 ```
 
 ```rust
-// Nexus
+// Hiver
 struct CleanupService;
 
 impl CleanupService {
@@ -620,7 +620,7 @@ async fn async_task() {
 
 ## 🧩 第十二类：Spring Security 注解 / Security Annotations
 
-| Spring Boot | Nexus | 对标情况 | 说明 |
+| Spring Boot | Hiver | 对标情况 | 说明 |
 |------------|-------|---------|------|
 | `@EnableWebSecurity` | ❌ 无直接对应 | **不同设计** | 使用中间件 |
 | `@PreAuthorize` | ✅ `@PreAuthorize` (90%) | **部分对标** | 支持表达式 |
@@ -642,7 +642,7 @@ public class AdminController {
 ```
 
 ```rust
-// Nexus - 使用中间件
+// Hiver - 使用中间件
 async fn delete_user(
     auth: Auth,  // 认证提取器 / Auth extractor
     Path(id): Path<i64>
@@ -659,11 +659,11 @@ async fn delete_user(
 
 ---
 
-## 🆕 Nexus 独有注解 / Nexus Exclusive Annotations
+## 🆕 Hiver 独有注解 / Hiver Exclusive Annotations
 
 这些注解在 Spring Boot 中**没有直接对应**，是 Hiver 框架的特色功能：
 
-| Nexus 注解 | 功能 | 优势 |
+| Hiver 注解 | 功能 | 优势 |
 |-----------|------|------|
 | `@Data` | 自动生成 getter/setter/构造函数 | 减少 90% 样板代码 |
 | `@Builder` | 生成构建器模式 | 流式 API 构建 |
@@ -674,10 +674,10 @@ async fn delete_user(
 | `@Cacheable` / `@CacheEvict` | 缓存注解 | 方法级缓存 |
 | `@Validatable` trait | 统一验证接口 | 自定义验证逻辑 |
 
-**示例 - Nexus 特色**:
+**示例 - Hiver 特色**:
 
 ```rust
-// Nexus - Lombok 风格注解
+// Hiver - Lombok 风格注解
 #[Data]  // 自动生成 ~80 行代码
 #[derive(Debug, Clone)]
 pub struct User {
@@ -764,7 +764,7 @@ pub struct User {
 
 ---
 
-## 🏆 Nexus 相比 Spring Boot 的优势 / Nexus Advantages
+## 🏆 Hiver 相比 Spring Boot 的优势 / Hiver Advantages
 
 ### 1. 零成本抽象 / Zero-Cost Abstractions
 
@@ -785,7 +785,7 @@ public class User { private Long id; private String name; }
 ### 2. 类型安全 / Type Safety
 
 ```rust
-// Nexus - 编译时检查
+// Hiver - 编译时检查
 #[Query("SELECT * FROM users WHERE id = :id")]
 async fn find_by_id(&self, id: i64) -> Result<Option<User>, Error>;
 //     ^^^^^ 类型不匹配会在编译时捕获
@@ -802,7 +802,7 @@ User findById(@Param("id") Long id);  // 类型错误运行时才发现
 ### 3. 内存安全 / Memory Safety
 
 ```rust
-// Nexus - 无 GC，确定性析构
+// Hiver - 无 GC，确定性析构
 impl Drop for DatabaseConnection {
     fn drop(&mut self) {
         self.pool.close();  // 确定性清理
@@ -823,7 +823,7 @@ public void cleanup() {
 ### 4. 并发性能 / Concurrency
 
 ```rust
-// Nexus - 无锁并发
+// Hiver - 无锁并发
 pub struct Cache {
     map: Arc<DashMap<String, Value>>,  // 无锁哈希表
 }
@@ -855,7 +855,7 @@ public class Cache {
 
 ### 设计哲学差异 / Design Philosophy Differences
 
-| 方面 / Aspect | Spring Boot | Nexus |
+| 方面 / Aspect | Spring Boot | Hiver |
 |-------------|-------------|--------|
 | **配置方式** | 注解驱动 + 自动配置 | 显式配置 + 类型安全 |
 | **依赖注入** | 运行时注入 | 编译时 + 构造函数 |
@@ -872,7 +872,7 @@ public class Cache {
 - AOP（100%）
 - 验证（100%）
 
-🎯 **Nexus 相比 Spring Boot 的核心优势**：
+🎯 **Hiver 相比 Spring Boot 的核心优势**：
 - **零成本抽象** - 编译时代码生成，无运行时开销
 - **完全类型安全** - 编译时捕获所有错误
 - **内存安全** - 无 GC，确定性析构
@@ -888,4 +888,4 @@ public class Cache {
 
 **生成时间 / Generated**: 2026-01-25
 **文档版本 / Version**: 1.0.0
-**对比基准 / Comparison Baseline**: Spring Boot 3.x vs Nexus 0.1.0-alpha
+**对比基准 / Comparison Baseline**: Spring Boot 3.x vs Hiver 0.1.0-alpha

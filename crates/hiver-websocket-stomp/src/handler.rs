@@ -141,7 +141,7 @@ pub struct StompConfig {
 impl Default for StompConfig {
     fn default() -> Self {
         Self {
-            server_name: "Nexus-STOMP/1.0".to_string(),
+            server_name: "Hiver-STOMP/1.0".to_string(),
             max_message_size: 64 * 1024, // 64KB
             heartbeat_send: Some(10000),
             heartbeat_receive: Some(10000),
@@ -814,7 +814,7 @@ mod tests {
     #[tokio::test]
     async fn test_config_default() {
         let config = StompConfig::default();
-        assert_eq!(config.server_name, "Nexus-STOMP/1.0");
+        assert_eq!(config.server_name, "Hiver-STOMP/1.0");
         assert_eq!(config.max_message_size, 64 * 1024);
         assert!(!config.require_login);
         assert_eq!(config.max_delivery_attempts, 3);

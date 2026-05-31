@@ -7,7 +7,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "ORM integration for Hiver Framework (Active Record, Query Builder)"
-keywords = ["nexus", "data", "orm", "active-record", "query-builder"]
+keywords = ["hiver", "data", "orm", "active-record", "query-builder"]
 categories = ["database", "asynchronous"]
 
 [features]
