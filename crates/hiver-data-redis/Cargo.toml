@@ -36,11 +36,11 @@ hiver-data-macros = { path = "../hiver-data-macros" }
 hiver-runtime = { path = "../hiver-runtime", optional = true }
 
 # Redis driver
-redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }
+redis = { version = "1.2", features = ["aio", "tokio-comp", "connection-manager"] }
 
 # Connection pool (optional)
-deadpool = { version = "0.12", optional = true }
-deadpool-redis = { version = "0.16", optional = true }
+deadpool = { version = "0.13", optional = true }
+deadpool-redis = { version = "0.23", optional = true }
 
 # Error handling
 thiserror = { workspace = true }
@@ -54,7 +54,7 @@ serde_json = { workspace = true }
 async-trait = { workspace = true }
 
 # UUID support
-uuid = { version = "1.12", features = ["v4", "serde"] }
+uuid = { version = "1.23", features = ["v4", "serde"] }
 
 # Chrono for datetime
 chrono = { version = "0.4", features = ["serde"] }
