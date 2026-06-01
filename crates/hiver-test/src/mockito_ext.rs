@@ -175,11 +175,14 @@ impl MockInteraction<'_> {
     ///
     /// 值被包装在 `Box<dyn Any>` 中，每当模拟方法被调用时都会返回。
     pub async fn then_return(self, value: Box<dyn Any + Send + Sync>) {
+        let shared: Arc<dyn Any + Send + Sync> = Arc::from(value);
         self.helper
             .registry
             .register_mock(&self.bean_name, &self.method_name, move |_args| {
-                let _ = &value;
-                unimplemented!("use then_return_clone for multiple invocations")
+                // Wrap in Arc for safe cloning across multiple invocations.
+                // 将值包装在 Arc 中以安全地在多次调用间克隆。
+                let cloned: Arc<dyn Any + Send + Sync> = Arc::clone(&shared);
+                Box::new(cloned) as Box<dyn Any + Send + Sync>
             })
             .await;
     }

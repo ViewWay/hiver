@@ -62,11 +62,20 @@ cache = ["hiver-cache"]
 # 定时任务
 schedule = ["hiver-schedule"]
 
+# WebSocket
+websocket = ["hiver-ws"]
+
+# 批处理
+batch = ["hiver-batch"]
+
+# 参数校验
+validation = ["hiver-validation"]
+
 # 监控端点
 actuator = ["hiver-actuator"]
 
 # 全功能
-full = ["web", "security", "data", "cache", "schedule", "actuator"]
+full = ["web", "security", "data", "cache", "schedule", "websocket", "batch", "validation", "actuator"]
 
 # 开发模式（包含测试支持）
 dev = ["full"]
@@ -90,6 +99,9 @@ hiver-tx = { path = "../hiver-tx", optional = true }
 sqlx = { workspace = true, optional = true, features = ["runtime-tokio", "postgres"] }
 hiver-cache = { path = "../hiver-cache", optional = true }
 hiver-schedule = { path = "../hiver-schedule", optional = true }
+hiver-ws = { path = "../hiver-ws", optional = true }
+hiver-batch = { path = "../hiver-batch", optional = true }
+hiver-validation = { path = "../hiver-validation", optional = true }
 hiver-actuator = { path = "../hiver-actuator", optional = true }
 
 # 外部依赖
