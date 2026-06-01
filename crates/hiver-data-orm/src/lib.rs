@@ -69,6 +69,9 @@ pub mod migrations;
 pub mod mock_connection;
 pub mod projection;
 pub mod query_runtime;
+pub mod query_metadata;
+pub mod mapper;
+pub mod executor;
 pub mod repository;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
@@ -90,6 +93,9 @@ pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, Wi
 pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
 pub use mock_connection::Connection;
 pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType};
+pub use query_metadata::{QueryMetadata as AnnotatedQueryMeta, ParamStyle as AnnotatedParamStyle, QueryType as AnnotatedQueryType};
+pub use mapper::{RowMapper, ResultSetExtractor, BeanRowMapper, MappingResultSetExtractor, FirstRowExtractor};
+pub use executor::{QueryExecutor, AnnotatedQueryExecutor as ExecutorAlias};
 
 /// Version of the data-orm module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -102,6 +108,7 @@ pub mod prelude {
         Model, ActiveRecord, Save, Delete, Refresh,
         QueryBuilder, WhereClause,
         AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType,
+        RowMapper, ResultSetExtractor, BeanRowMapper, QueryExecutor,
     };
 
     #[cfg(feature = "diesel")]

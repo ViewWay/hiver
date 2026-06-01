@@ -114,6 +114,7 @@ mod tests;
 pub mod api_response;
 pub mod body;
 pub mod builder;
+#[cfg(feature = "client")]
 pub mod client;
 pub mod conn;
 pub mod controller_advice;
