@@ -187,7 +187,16 @@ pub enum ParamStyle {
 /// Query type.
 /// 查询类型。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum QueryType { Select, Insert, Update, Delete }
+pub enum QueryType {
+    /// SELECT query / SELECT 查询
+    Select,
+    /// INSERT query / INSERT 查询
+    Insert,
+    /// UPDATE query / UPDATE 查询
+    Update,
+    /// DELETE query / DELETE 查询
+    Delete,
+}
 
 #[cfg(test)]
 mod tests {

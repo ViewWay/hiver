@@ -64,7 +64,7 @@ etcd-rs = { version = "1.0", optional = true }
 nacos = { version = "0.0", optional = true }
 
 # Async runtime / 异步运行时
-tokio = { workspace = true }
+tokio = { workspace = true, features = ["time"] }
 
 # Metrics / 指标 (Spring Cloud Circuit Breaker Metrics)
 prometheus = { version = "0.14", optional = true }

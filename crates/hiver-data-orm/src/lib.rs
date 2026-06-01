@@ -92,10 +92,8 @@ pub use hiver_data_rdbc::QueryParam;
 pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, WithRelations, EagerQueryBuilder, Relation, RelationType, OnDelete};
 pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
 pub use mock_connection::Connection;
-pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType};
-pub use query_metadata::{QueryMetadata as AnnotatedQueryMeta, ParamStyle as AnnotatedParamStyle, QueryType as AnnotatedQueryType};
-pub use mapper::{RowMapper, ResultSetExtractor, BeanRowMapper, MappingResultSetExtractor, FirstRowExtractor};
-pub use executor::{QueryExecutor, AnnotatedQueryExecutor as ExecutorAlias};
+// query_runtime re-exports from the split modules (query_metadata, mapper, executor)
+pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType, QueryExecutor, RowMapper, ResultSetExtractor, BeanRowMapper, MappingResultSetExtractor, FirstRowExtractor};
 
 /// Version of the data-orm module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -107,8 +105,8 @@ pub mod prelude {
         Error, Result,
         Model, ActiveRecord, Save, Delete, Refresh,
         QueryBuilder, WhereClause,
-        AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType,
-        RowMapper, ResultSetExtractor, BeanRowMapper, QueryExecutor,
+        AnnotatedQueryExecutor, QueryExecutor, ParamStyle, QueryMetadata, QueryType,
+        RowMapper, ResultSetExtractor, BeanRowMapper,
     };
 
     #[cfg(feature = "diesel")]
