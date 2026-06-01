@@ -783,3 +783,107 @@ The following features have no direct Spring equivalent:
 ---
 
 *Hiver Framework — 为 Web 开发的未来而构建。 / Built for the future of web development.*
+
+---
+
+## 附录 C：审计补全 / Appendix C: Audit Additions
+
+> 以下章节由对标审计发现补充，覆盖 feature-matrix 中存在但 SPRING-COMPARISON 未提及的功能。
+> The following sections were added based on audit findings, covering features present in feature-matrix but missing from SPRING-COMPARISON.
+
+### C.1 统一响应 / Unified Response
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| `@RestControllerAdvice` + `ResponseEntity` | `ResponseAdvice` trait | 全局统一响应格式 |
+| `ResponseBodyAdvice` | `impl ResponseAdvice` | 响应体后处理 |
+| 自定义 `Result<T>` wrapper | `ApiResult<T>` | 统一成功/失败响应 |
+
+```rust
+// Hiver 统一响应
+pub struct ApiResponse<T> {
+    pub code: u16,
+    pub message: String,
+    pub data: Option<T>,
+}
+
+impl<T: Serialize> IntoResponse for ApiResponse<T> {
+    fn into_response(self) -> Response {
+        Json(self).into_response()
+    }
+}
+```
+
+### C.2 数据权限 / Data Permissions
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| `@DataScope` (MyBatis-Plus) | `DataScope` evaluator | 数据范围过滤 |
+| Hibernate Filter | `QueryFilter` trait | 查询条件注入 |
+| Row-level security | `PermissionRegistry` | 行级权限控制 |
+
+### C.3 邮件 / Email
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| `spring-boot-starter-mail` | `hiver-middleware` (邮件模块) | SMTP 邮件发送 |
+| `JavaMailSender` | `EmailSender` trait | 邮件发送接口 |
+| `MimeMessage` | `EmailBuilder` | HTML/附件邮件 |
+| `@Async` + mail | `async fn send_email()` | 异步邮件发送 |
+
+### C.4 导出功能 / Export Features
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| Apache POI (Excel) | `export` 模块 | Excel/PDF 导出 |
+| EasyExcel | `CsvExporter` / `ExcelExporter` | 大数据量导出 |
+| JasperReports | `PdfExporter` | PDF 报表 |
+| OpenCSV | `CsvExporter` | CSV 导出 |
+
+### C.5 文件上传配置 / Upload Configuration
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| `spring.servlet.multipart.*` | `[upload]` (application.toml) | 上传配置 |
+| `MultipartFile` | `MultipartFile` extractor | 文件提取 |
+| `max-file-size` | `max_file_size` | 文件大小限制 |
+| `max-request-size` | `max_request_size` | 请求大小限制 |
+| 本地/云存储 | `FileStorage` trait | 存储抽象 |
+
+### C.6 Postman 集成 / Postman Integration
+
+| Spring | Hiver | 说明 |
+|--------|-------|------|
+| (第三方插件) | `PostmanGenerator` | 自动生成 Postman Collection |
+| Swagger → Postman | OpenAPI → Postman import | 通过 OpenAPI 中转 |
+
+### C.7 完成度分级说明 / Completion Level Explanation
+
+SPRING-COMPARISON 中标注的 ✅ 对应以下完成度：
+
+| 标记 | 完成度 | 说明 |
+|------|--------|------|
+| ✅ | 90-100% | 核心功能已实现，可能有边缘场景待完善 |
+| 🔄 | 开发中 | 已有框架代码，功能在逐步实现 |
+| ❌ | 未实现 | 功能尚未开始 |
+
+主要模块完成度：
+
+| 模块 | 完成度 | 备注 |
+|------|--------|------|
+| IoC/DI | 95% | Bean 生命周期、Scope 已完成 |
+| HTTP Server | 95% | HTTP/1.1 完整，HTTP/2 计划中 |
+| Router | 95% | 路径参数、通配符、中间件链 |
+| Security | 90% | JWT/OAuth2 已完成，LDAP 完成中 |
+| Data ORM | 90% | ActiveRecord、Query、Relationship 完成 |
+| Validation | 90% | JSR-380 风格注解已完成 |
+| OpenAPI | 95% | Swagger UI 集成 |
+| File Upload | 90% | Multipart 解析完成 |
+| Email | 90% | SMTP 发送完成 |
+| Unified Response | 95% | ResponseAdvice 完成 |
+| Data Permissions | 90% | DataScope 评估器完成 |
+| Export | 85% | CSV 完成，Excel/PDF 进行中 |
+
+---
+
+*Updated: 2026-06-01 — 审计补全完成 / Audit additions complete*
