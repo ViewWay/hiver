@@ -130,8 +130,8 @@ ulid = "1.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false }
 tracing-appender = "0.2"
-opentelemetry = "0.31.0"
-opentelemetry_sdk = { version = "0.31.0", features = ["rt-tokio"] }
+opentelemetry = "0.32.0"
+opentelemetry_sdk = { version = "0.32.1", features = ["rt-tokio"] }
 opentelemetry-jaeger = "0.22"
 metric = "0.1.2"
 metrics = "0.24.3"
@@ -148,7 +148,7 @@ darling_core = "0.23.0"
 # Equivalent to: Spring Exception Handling
 thiserror = "2.0"
 anyhow = "1.0"
-error-stack = "0.6.0"
+error-stack = "0.7.1"
 
 # Async Runtime & Utilities / 异步运行时和工具
 # Equivalent to: Spring Reactive, Project Reactor
@@ -161,7 +161,7 @@ pin-project-lite = "0.2"
 # Configuration / 配置
 # Equivalent to: Spring Boot Configuration, @ConfigurationProperties
 config = "0.15"
-toml = "0.9.8"
+toml = "1.1.2"
 yaml-rust2 = "0.11.0"
 dotenvy = "0.15"
 
@@ -204,26 +204,26 @@ tokio-postgres = "0.7"
 # Equivalent to: Spring Security
 # Using aws_lc_rs feature for crypto (secure alternative to rust_crypto)
 jsonwebtoken = { version = "10.3", features = ["aws_lc_rs"] }
-bcrypt = "0.18.0"
-rand = "0.9.3"
-hmac = "0.12"
+bcrypt = "0.19.1"
+rand = "0.10.1"
+hmac = "0.13"
 base64 = "0.22"
 hex = "0.4"
-getrandom = "0.3"
-sha3 = "0.10"
-sha2 = "0.10"
+getrandom = "0.4"
+sha3 = "0.11"
+sha2 = "0.11"
 aes-gcm = "0.10"
 
 # Template Engines / 模板引擎
 # Equivalent to: Spring Thymeleaf, FreeMarker
-askama = "0.15.1"
+askama = "0.16.0"
 tera = "1.20"
 handlebars = "6.4.0"
 
 # WebSocket / WebSocket
 # Equivalent to: Spring WebSocket
-tokio-tungstenite = "0.28.0"
-tungstenite = "0.28.0"
+tokio-tungstenite = "0.29.0"
+tungstenite = "0.29.0"
 
 # HTTP/2 & TLS / HTTP/2 和 TLS
 # Equivalent to: Spring HTTP/2 support
@@ -242,7 +242,7 @@ futures-rustls = "0.26"
 # API Documentation / API 文档
 # Equivalent to: SpringDoc OpenAPI (Swagger 3)
 utoipa = { version = "5", features = ["chrono", "uuid", "decimal", "repr"] }
-utoipa-swagger-ui = { version = "8", features = ["actix-web", "axum"] }
+utoipa-swagger-ui = { version = "9", features = ["actix-web", "axum"] }
 
 # Web3 / 区块链
 # Equivalent to: Spring Web3 (community projects)
@@ -251,22 +251,22 @@ utoipa-swagger-ui = { version = "8", features = ["actix-web", "axum"] }
 alloy = { version = "2.0", features = ["network", "rpc", "rpc-types"] }
 alloy-consensus = { version = "2.0", default-features = false }
 alloy-primitives = "1.6"
-alloy-transport = "1.5"
-alloy-network = "1.5"
-alloy-rpc-types = "1.5"
+alloy-transport = "2.0"
+alloy-network = "2.0"
+alloy-rpc-types = "2.0"
 
 # CLI / 命令行
 # Equivalent to: Spring Shell
-clap = { version = "4.5", features = ["derive"] }
-dialoguer = "0.11"
-indicatif = "0.17"
-console = "0.15"
-rustyline = "15"
-colored = "2"
+clap = { version = "4.6", features = ["derive"] }
+dialoguer = "0.12"
+indicatif = "0.18"
+console = "0.16"
+rustyline = "17"
+colored = "3"
 
 # Spreadsheet / 电子表格
 # Equivalent to: Spring Apache POI
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "3", default-features = false, features = ["deflate"] }
 
 # Service Discovery / 服务发现
 # Equivalent to: Spring Cloud Service Discovery
@@ -276,14 +276,14 @@ nacos = "0.0"
 
 # System Info / 系统信息
 # Equivalent to: Spring Boot Actuator system metrics
-sysinfo = "0.38"
+sysinfo = "0.39"
 
 # Testing / 测试
 # Equivalent to: Spring Test
 criterion = "0.8.1"
-quickcheck = "1.0"
-quickcheck_macros = "1.0"
-proptest = "1.5"
+quickcheck = "1.1"
+quickcheck_macros = "1.2"
+proptest = "1.11"
 mockito = "1.6"
 trybuild = "1.0"
 tokio-test = "0.4"
@@ -294,7 +294,7 @@ indexmap = { version = "2.13.0", features = ["serde"] }
 inventory = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 time = { version = "0.3.46", features = ["serde", "local-offset"] }
-uuid = { version = "1.12", features = ["v4", "serde"] }
+uuid = { version = "1.23", features = ["v4", "serde"] }
 url = "2.5"
 percent-encoding = "2.3"
 
@@ -310,8 +310,8 @@ matchit = "0.9.1"
 serde_yaml = "0.9"
 proc-macro-error = "1.0"
 proc-macro-error-attr = "1.0"
-tracing-opentelemetry = "0.32"
-opentelemetry-otlp = { version = "0.31", features = ["grpc-tonic"] }
+tracing-opentelemetry = "0.33"
+opentelemetry-otlp = { version = "0.32", features = ["grpc-tonic"] }
 # opentelemetry-prometheus is discontinued - removed due to security vulnerabilities
 # Use custom metrics export or opentelemetry-prometheus-text-exporter instead
 prometheus = "0.14"
@@ -320,7 +320,7 @@ tracing-core = "0.1"
 log = "0.4"
 slog = "2.8"
 env_logger = "0.11"
-bevy_reflect = "0.13"
+bevy_reflect = "0.18"
 
 # ==============================================================================
 # Release Configuration / 发布配置
