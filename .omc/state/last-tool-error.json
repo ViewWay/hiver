@@ -1,7 +1,7 @@
 {
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"rustc --version && cat rust-toolchain.toml\",\"description\":\"Check actual rust version and toolchain config\"}",
-  "error": "Exit code 1\ninfo: syncing channel updates for 1.93-aarch64-apple-darwin\ninfo: latest update on 2026-02-12 for version 1.93.1 (01f6ddf75 2026-02-11)\nerror: some components are unavailable for download for channel '1.93': 'miri' for target 'aarch64-apple-darwin', 'rustc-codegen-cranelift' for target 'aarch64-apple-darwin'",
-  "timestamp": "2026-05-31T16:01:43.312Z",
+  "tool_name": "mcp__codegraph__codegraph_search",
+  "tool_input_preview": "{\"query\":\"generate\",\"projectPath\":\"/Users/yimiliya/RustroverProjects/hiver\"}",
+  "error": "Error: Tool execution failed: Failed to load any SQLite backend.\n  Native (better-sqlite3): Cannot find module 'better-sqlite3'\nRequire stack:\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/db/sqlite-adapter.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/db/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/mcp/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegra...",
+  "timestamp": "2026-06-01T00:03:30.503Z",
   "retry_count": 1
 }
