@@ -486,6 +486,7 @@ Hiver 从根本上设计为高性能：
 | **书籍** | [docs.hiverframework.com](https://docs.hiverframework.com) |
 | **API 文档** | [docs.rs/hiver](https://docs.rs/hiver) |
 | **设计规范** | [design-spec.md](docs/design-spec.md) |
+| **Spring 全生态对标** | [SPRING-COMPARISON.md](docs/SPRING-COMPARISON.md) — Spring vs Hiver 全面对比 |
 | **实施计划** | [implementation-plan.md](docs/design/implementation-plan.md) |
 | **文档索引** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
 | **示例** | [examples/](examples/) |

@@ -486,6 +486,7 @@ Hiver is designed for high performance from the ground up:
 | **Book** | [docs.hiverframework.com](https://docs.hiverframework.com) |
 | **API Docs** | [docs.rs/hiver](https://docs.rs/hiver) |
 | **Design Spec** | [design-spec.md](docs/design-spec.md) |
+| **Spring Comparison** | [SPRING-COMPARISON.md](docs/SPRING-COMPARISON.md) — Spring vs Hiver ecosystem comparison |
 | **Implementation Plan** | [implementation-plan.md](docs/design/implementation-plan.md) |
 | **Docs Index** | [DOCS-INDEX.md](docs/DOCS-INDEX.md) |
 | **Examples** | [examples/](examples/) |
