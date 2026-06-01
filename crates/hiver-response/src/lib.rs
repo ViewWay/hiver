@@ -18,11 +18,15 @@
 #[cfg(test)]
 mod tests;
 
+pub mod csv;
 pub mod excel;
 pub mod html;
 pub mod json;
+pub mod pdf;
 pub mod response;
 pub mod result;
+#[cfg(feature = "sse")]
+pub mod sse;
 pub mod unified;
 
 pub use html::Html;
@@ -31,8 +35,24 @@ pub use response::{IntoResponse, Response};
 pub use result::{PageResult, Result, ResultCode};
 pub use unified::{ApiResponse, DefaultResponseAdvice, ResponseAdvice, ResponseResult};
 
+// SSE re-exports
+#[cfg(feature = "sse")]
+pub use sse::{
+    SseEmitter, SseError, SseEvent, SseEventBuilder, SseSender, sse_channel,
+};
+
+// CSV re-exports
+pub use csv::{
+    Csv, CsvError, CsvExportConfig, CsvExporter, CsvTable, export_to_csv,
+};
+
 // Excel re-exports
 pub use excel::{
     CellAlignment, Excel, ExcelCell, ExcelError, ExcelExportConfig, ExcelExporter, ExcelCellStyle,
     ExcelTable, export_to_excel,
+};
+
+// PDF re-exports
+pub use pdf::{
+    Pdf, PdfDocument, PdfError, PdfFont, PdfLine, PdfPage, PdfTable, PdfText,
 };

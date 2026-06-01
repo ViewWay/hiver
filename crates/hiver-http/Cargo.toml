@@ -43,6 +43,9 @@ futures-rustls = { workspace = true, optional = true }
 rustls = { workspace = true }
 tokio-rustls = { workspace = true, optional = true }
 
+# Async runtime for HTTP client / HTTP客户端的异步运行时
+tokio = { workspace = true, features = ["net", "io-util", "time"], optional = true }
+
 # Bytes / 字节
 bytes = { workspace = true }
 
@@ -76,7 +79,7 @@ http1 = ["hyper?/http1"]
 http2 = ["hyper", "hyper-util", "dep:h2"]
 http3 = ["dep:h3", "dep:h3-quinn", "dep:quinn", "dep:futures-rustls", "dep:tokio-rustls"]
 server = ["hyper", "hyper-util/server"]
-client = ["hyper", "hyper-util/client"]
+client = ["hyper", "hyper-util/client", "dep:tokio"]
 tls = ["dep:tokio-rustls"]
 full = ["http1", "http2", "http3", "server", "client", "tls", "json"]
 json = ["dep:serde_json"]

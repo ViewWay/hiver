@@ -114,6 +114,7 @@ mod tests;
 pub mod api_response;
 pub mod body;
 pub mod builder;
+pub mod client;
 pub mod conn;
 pub mod controller_advice;
 pub mod error;

@@ -63,6 +63,7 @@
 | **spring-web** | `hiver-http` | HTTP 服务器、请求/响应 | ✅ |
 | **spring-webmvc** | `hiver-router` + `hiver-extractors` | MVC 路由、参数提取 | ✅ |
 | **spring-webflux** | `hiver-runtime` | 响应式运行时 | ✅ |
+| **spring-webclient** | `hiver-http` (client feature) | HTTP 客户端 (WebClient) | ✅ |
 | **spring-websocket** | `hiver-ws` | WebSocket | ✅ |
 | **spring-websocket-stomp** | `hiver-websocket-stomp` | STOMP 协议 | ✅ |
 | **spring-hateoas** | `hiver-hateoas` | HATEOAS 超媒体 | ✅ |
@@ -122,6 +123,7 @@
 |---------------------|-------------|----------|------|
 | **Resilience4j** (非Spring) | `hiver-resilience` | 熔断器、限流器 | ✅ |
 | **spring-retry** | `hiver-retry` + `hiver-retry-macros` | 重试策略 | ✅ |
+| **MDC RequestId** (Sleuth) | `hiver-middleware` (request_id) | 请求 ID 追踪 | ✅ |
 
 ### 2.9 企业级 / Enterprise
 
@@ -153,8 +155,8 @@
 | **spring-boot-devtools** | `hiver-lombok` | Lombok 风格派生宏 | ✅ |
 | **spring-validation** | `hiver-validation` + `hiver-validation-annotations` | 参数校验 | ✅ |
 | **spring-openapi** (Swagger) | `hiver-openapi` | OpenAPI/Swagger 文档 | ✅ |
-| **spring-cli** | `hiver-cli` *(NEW)* | 项目脚手架 | 🔄 |
-| **Spring Initializr** | `hiver-cli` *(NEW)* | 项目初始化 | 🔄 |
+| **spring-cli** | `hiver-cli` | 项目脚手架 | ✅ |
+| **Spring Initializr** | `hiver-cli` | 项目初始化 | ✅ |
 | **spring-benchmarks** | `hiver-benches` | Criterion 基准测试 | ✅ |
 | **spring-web3** (Web3j) | `hiver-web3` | 区块链/智能合约 | ✅ |
 
@@ -579,7 +581,7 @@ async fn handle_order_created(event: OrderCreatedEvent) {
 | 熔断器 / Circuit Breaker | `@CircuitBreaker` | `CircuitBreaker::new()` |
 | 限流 / Rate Limiting | `@RateLimiter` | `RateLimiter::token_bucket()` |
 | 重试 / Retry | `@Retryable` | `#[retryable]` / `RetryPolicy` |
-| 隔离 / Bulkhead | `@Bulkhead` | (计划中) |
+| 隔离 / Bulkhead | `@Bulkhead` | `Bulkhead::new()` |
 | 降级 / Fallback | `@Fallback` | `breaker.call(|| ...).or_fallback()` |
 
 ### 5.8 Web3 / Blockchain
@@ -835,10 +837,12 @@ impl<T: Serialize> IntoResponse for ApiResponse<T> {
 
 | Spring | Hiver | 说明 |
 |--------|-------|------|
-| Apache POI (Excel) | `export` 模块 | Excel/PDF 导出 |
-| EasyExcel | `CsvExporter` / `ExcelExporter` | 大数据量导出 |
-| JasperReports | `PdfExporter` | PDF 报表 |
-| OpenCSV | `CsvExporter` | CSV 导出 |
+| Apache POI (Excel) | `hiver-response::excel` | OOXML .xlsx 导出，支持样式/自动筛选/冻结 |
+| EasyExcel | `hiver-response::csv` / `hiver-response::excel` | 大数据量导出 |
+| JasperReports | `hiver-response::pdf` | PDF 1.4 生成，支持文本/表格/线条 |
+| OpenCSV | `hiver-response::csv` | RFC 4180 CSV，支持 TSV/BOM/自定义分隔符 |
+| `CsvMapper` | `CsvTable` trait + `export_to_csv()` | 结构体自动导出 CSV |
+| `ExcelTable` | `ExcelTable` trait + `export_to_excel()` | 结构体自动导出 Excel |
 
 ### C.5 文件上传配置 / Upload Configuration
 
@@ -882,7 +886,10 @@ SPRING-COMPARISON 中标注的 ✅ 对应以下完成度：
 | Email | 90% | SMTP 发送完成 |
 | Unified Response | 95% | ResponseAdvice 完成 |
 | Data Permissions | 90% | DataScope 评估器完成 |
-| Export | 85% | CSV 完成，Excel/PDF 进行中 |
+| Resilience/Bulkhead | 95% | CircuitBreaker/Bulkhead/RateLimiter/Retry/Timeout 全模式 |
+| SSE (Server-Sent Events) | 95% | SseEmitter + SseEvent + 通道架构 |
+| Export (CSV/Excel/PDF) | 95% | CSV (RFC 4180) + Excel (OOXML) + PDF (1.4) 全完成 |
+| Request ID Middleware | 95% | UUID/Counter/Timestamp 策略，X-Request-Id 传播 |
 
 ---
 
