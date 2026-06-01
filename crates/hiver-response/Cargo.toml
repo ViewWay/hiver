@@ -25,10 +25,11 @@ default = ["json"]
 json = []
 html = ["dep:tera"]
 xml = []
+sse = ["dep:tokio"]
 ssr = ["dep:askama"]
 handlebars = ["dep:handlebars"]
 templates = ["dep:tera", "dep:askama", "dep:handlebars"]
-full = ["json", "html", "xml", "ssr", "templates"]
+full = ["json", "html", "xml", "sse", "ssr", "templates"]
 
 [dependencies]
 # HTTP types / HTTP类型 (Spring Web HTTP)
@@ -66,6 +67,9 @@ chrono = { workspace = true }
 
 # Spreadsheet / 电子表格 (Spring Apache POI)
 zip = { workspace = true }
+
+# SSE (Server-Sent Events) / 服务器发送事件
+tokio = { workspace = true, features = ["sync", "macros", "rt", "time"], optional = true }
 
 [lints]
 workspace = true

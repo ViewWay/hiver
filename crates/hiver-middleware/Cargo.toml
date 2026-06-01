@@ -48,7 +48,7 @@ hiver-security = { path = "../hiver-security" }
 
 # Runtime / 运行时
 hiver-runtime = { path = "../hiver-runtime" }
-tokio = { workspace = true, features = ["time"] }
+tokio = { workspace = true, features = ["rt", "time"] }
 
 # Compression / 压缩 (Spring Content-Encoding, GzipFilter)
 async-compression = { workspace = true, features = ["tokio", "brotli", "gzip", "zstd", "deflate"], optional = true }
@@ -95,4 +95,4 @@ workspace = true
 
 [dev-dependencies]
 # Testing / 测试 (Spring Test)
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }

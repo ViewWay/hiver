@@ -30,12 +30,16 @@
 #[cfg(test)]
 mod tests;
 
+pub mod bulkhead;
 pub mod circuit;
 pub mod discovery;
 pub mod rate_limit;
 pub mod retry;
 pub mod timeout;
 
+pub use bulkhead::{
+    Bulkhead, BulkheadConfig, BulkheadError, BulkheadMetrics, BulkheadPermit, BulkheadRegistry,
+};
 pub use circuit::{
     CircuitBreaker, CircuitBreakerConfig, CircuitBreakerError, CircuitBreakerRegistry,
     CircuitMetrics, CircuitState,

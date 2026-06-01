@@ -42,9 +42,8 @@
 #![warn(unreachable_pub)]
 
 use proc_macro::TokenStream;
-use proc_macro2::{Ident, TokenStream as TokenStream2};
 use quote::{format_ident, quote};
-use syn::{parse_macro_input, DeriveInput};
+use syn::parse_macro_input;
 
 // ========================================================================
 // @Valid Attribute / @Valid 属性
@@ -101,7 +100,7 @@ pub fn derive_not_null(input: TokenStream) -> TokenStream {
     // 提取字段并生成验证代码
     let fields = extract_fields_with_validation(&input);
 
-    let validation_methods = fields.iter().map(|(field_name, field_type)| {
+    let validation_methods = fields.iter().map(|(field_name, _field_type)| {
         // Generate function name using format_ident for stable Rust compatibility
         // 使用 format_ident 生成函数名以确保稳定版 Rust 兼容性
         let validate_fn_name = format_ident!("validate_{}", field_name);

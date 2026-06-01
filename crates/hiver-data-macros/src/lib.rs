@@ -523,6 +523,24 @@ fn to_snake_case(s: &str) -> String {
 /// | `existsByXxx` | `SELECT EXISTS(...)` | `existsByEmail` |
 /// | `deleteByXxx` | `DELETE WHERE xxx = ?` | `deleteByUserId` |
 ///
+/// ## `#[Modifying]` Annotation / `#[Modifying]` 注解
+///
+/// When applied to a `#[Query]` method, forces the generated code to use
+/// `execute_params` (for UPDATE/DELETE/INSERT), regardless of the SQL prefix.
+/// Returns the number of affected rows (as `usize` or `i64`).
+///
+/// 应用于 `#[Query]` 方法时，强制生成的代码使用 `execute_params`（用于 UPDATE/DELETE/INSERT），
+/// 忽略 SQL 前缀。返回受影响的行数（以 `usize` 或 `i64` 形式）。
+///
+/// ```rust,no_run,ignore
+/// #[Repository]
+/// pub trait UserRepository: CrudRepository<User, i64> {
+///     #[Modifying]
+///     #[Query("UPDATE users SET active = ? WHERE last_login < ?")]
+///     async fn deactivate_inactive_users(&self, cutoff: chrono::NaiveDateTime) -> Result<usize, Error>;
+/// }
+/// ```
+///
 /// # Example / 示例
 ///
 /// ```rust,no_run,ignore
@@ -581,9 +599,11 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
             // Check for @Query annotation
             let query_sql = extract_query_attr(&method.attrs);
 
+            let is_modifying = extract_modifying_attr(&method.attrs);
+
             if let Some(sql) = query_sql {
                 // Custom query implementation
-                query_methods.push(generate_query_method(method, &sql, &entity_type));
+                query_methods.push(generate_query_method(method, &sql, &entity_type, is_modifying));
             } else if method_name_str.starts_with("find_by")
                 || method_name_str.starts_with("count_by")
                 || method_name_str.starts_with("exists_by")
@@ -808,6 +828,14 @@ fn extract_query_attr(attrs: &[syn::Attribute]) -> Option<String> {
     None
 }
 
+/// Check for #[Modifying] annotation (equivalent to Spring Data @Modifying).
+/// When present, @Query methods perform UPDATE/DELETE/INSERT instead of SELECT.
+/// 检查 #[Modifying] 注解（等价于 Spring Data @Modifying）。
+/// 存在时 @Query 方法执行 UPDATE/DELETE/INSERT 而不是 SELECT。
+fn extract_modifying_attr(attrs: &[syn::Attribute]) -> bool {
+    attrs.iter().any(|attr| attr.path().is_ident("Modifying"))
+}
+
 /// Convert `?` placeholders to `$N` positional markers.
 fn convert_placeholders(sql: &str) -> String {
     let mut result = String::with_capacity(sql.len());
@@ -836,10 +864,18 @@ fn extract_args(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Com
 }
 
 /// Generate a custom @Query method implementation.
+///
+/// When `is_modifying` is true (from `#[Modifying]`), the method always uses
+/// `execute_params` regardless of the SQL prefix, allowing UPDATE/DELETE/INSERT
+/// queries that don't start with "SELECT".
+///
+/// 当 `is_modifying` 为 true（来自 `#[Modifying]`）时，无论 SQL 前缀是什么，
+/// 该方法始终使用 `execute_params`，允许执行不以 "SELECT" 开头的 UPDATE/DELETE/INSERT 查询。
 fn generate_query_method(
     method: &syn::TraitItemFn,
     sql: &str,
     entity_type: &proc_macro2::TokenStream,
+    is_modifying: bool,
 ) -> proc_macro2::TokenStream {
     let method_sig = &method.sig;
     let return_type_str = quote!(#method_sig.output).to_string();
@@ -847,7 +883,7 @@ fn generate_query_method(
     let converted_sql = convert_placeholders(sql);
 
     let returns_option = return_type_str.contains("Option");
-    let _returns_vec = return_type_str.contains("Vec");
+    let returns_usize = return_type_str.contains("usize") || return_type_str.contains("i64");
 
     let params_build = quote! {
         let params: Vec<hiver_data_rdbc::QueryParam> = vec![
@@ -855,7 +891,27 @@ fn generate_query_method(
         ];
     };
 
-    let implementation = if sql.trim().to_uppercase().starts_with("SELECT") {
+    let implementation = if is_modifying {
+        // #[Modifying] overrides: always use execute_params
+        // Returns the number of affected rows
+        if returns_usize {
+            quote! {
+                let sql: &str = #converted_sql;
+                #params_build
+                let n = self.client.execute_params(sql, &params).await
+                    .map_err(|e| hiver_data_commons::Error::other(e.to_string()))?;
+                Ok(n as usize)
+            }
+        } else {
+            quote! {
+                let sql: &str = #converted_sql;
+                #params_build
+                self.client.execute_params(sql, &params).await
+                    .map_err(|e| hiver_data_commons::Error::other(e.to_string()))?;
+                Ok(())
+            }
+        }
+    } else if sql.trim().to_uppercase().starts_with("SELECT") {
         if returns_option {
             quote! {
                 let sql: &str = #converted_sql;
