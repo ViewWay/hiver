@@ -246,8 +246,9 @@ utoipa-swagger-ui = { version = "8", features = ["actix-web", "axum"] }
 
 # Web3 / 区块链
 # Equivalent to: Spring Web3 (community projects)
-# Note: Using 2.0.x which fixes jsonwebtoken CVE-2026-25537 (uses ^10.3.0)
-# WARNING: alloy-rpc-types-engine still pulls in jsonwebtoken 9.3.1 transitively - tracked in Dependabot (uses ^10.3.0)
+# Note: jsonwebtoken direct dep is ^10.3 (fixes CVE-2026-25537)
+# CVE-2026-25537: alloy-rpc-types-engine 1.8.x transitively depends on jsonwebtoken 9.3.1.
+# Tracked in Dependabot #4. Cannot [patch] (9→10 API break). Needs upstream alloy to update.
 alloy = { version = "2.0", features = ["network", "rpc", "rpc-types"] }
 alloy-consensus = { version = "2.0", default-features = false }
 alloy-primitives = "1.6"
