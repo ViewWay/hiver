@@ -194,7 +194,7 @@ tokio-cron-scheduler = "0.15.1"
 # Equivalent to: Spring Data, Spring JDBC
 sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "postgres", "mysql", "chrono"] }
 sea-orm = { version = "2.0.0-rc", features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql"] }
-diesel = { version = "2.2", features = ["postgres", "mysql", "sqlite"] }
+diesel = { version = "2.3", features = ["postgres", "mysql", "sqlite"] }
 
 # Transaction Management / 事务管理
 # Equivalent to: Spring Transaction Management
