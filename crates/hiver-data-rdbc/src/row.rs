@@ -18,7 +18,9 @@ pub struct Row {
 impl Row {
     /// Create a new empty row
     pub fn new() -> Self {
-        Self { columns: Vec::new() }
+        Self {
+            columns: Vec::new(),
+        }
     }
 
     /// Add a column value
@@ -51,9 +53,10 @@ impl Row {
     /// Try to get a value, returning None if not found
     pub fn try_get<T: FromRowValue>(&self, name: &str) -> Result<Option<T>, Error> {
         match self.get(name) {
-            Some(v) => v.as_type().map(Some).ok_or_else(|| {
-                Error::RowMapping(format!("cannot convert column '{}'", name))
-            }),
+            Some(v) => v
+                .as_type()
+                .map(Some)
+                .ok_or_else(|| Error::RowMapping(format!("cannot convert column '{}'", name))),
             None => Ok(None),
         }
     }
@@ -343,6 +346,12 @@ mod tests {
         ]);
 
         let user: User = row.deserialize().unwrap();
-        assert_eq!(user, User { id: 42, name: "Bob".into() });
+        assert_eq!(
+            user,
+            User {
+                id: 42,
+                name: "Bob".into()
+            }
+        );
     }
 }

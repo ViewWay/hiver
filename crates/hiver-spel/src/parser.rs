@@ -71,7 +71,7 @@ impl fmt::Display for SpelExpr {
             Self::HasAnyRole(rs) => {
                 let args: Vec<String> = rs.iter().map(|r| format!("'{r}'")).collect();
                 write!(f, "hasAnyRole({})", args.join(", "))
-            }
+            },
             Self::PermitAll => write!(f, "permitAll"),
             Self::DenyAll => write!(f, "denyAll"),
             Self::And(a, b) => write!(f, "({a} and {b})"),
@@ -87,7 +87,7 @@ impl fmt::Display for SpelExpr {
                     CmpOp::LtEq => "<=",
                 };
                 write!(f, "{l} {s} {r}")
-            }
+            },
             Self::Variable(n) => write!(f, "#{n}"),
             Self::LiteralBool(b) => write!(f, "{b}"),
             Self::LiteralNumber(n) => write!(f, "{n}"),
@@ -130,15 +130,15 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
             '(' => {
                 tokens.push(Token::LParen);
                 pos += 1;
-            }
+            },
             ')' => {
                 tokens.push(Token::RParen);
                 pos += 1;
-            }
+            },
             ',' => {
                 tokens.push(Token::Comma);
                 pos += 1;
-            }
+            },
             '#' => {
                 pos += 1;
                 let mut name = String::new();
@@ -150,7 +150,7 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
                     return Err(SpelError::Parse("expected variable name after '#'".into()));
                 }
                 tokens.push(Token::Variable(name));
-            }
+            },
             '\'' => {
                 pos += 1;
                 let mut s = String::new();
@@ -163,45 +163,46 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
                 }
                 pos += 1;
                 tokens.push(Token::StringLit(s));
-            }
+            },
             '=' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
                 tokens.push(Token::Eq);
                 pos += 2;
-            }
+            },
             '!' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
                 tokens.push(Token::NotEq);
                 pos += 2;
-            }
+            },
             '!' => {
                 tokens.push(Token::Bang);
                 pos += 1;
-            }
+            },
             '>' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
                 tokens.push(Token::GtEq);
                 pos += 2;
-            }
+            },
             '>' => {
                 tokens.push(Token::Gt);
                 pos += 1;
-            }
+            },
             '<' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
                 tokens.push(Token::LtEq);
                 pos += 2;
-            }
+            },
             '<' => {
                 tokens.push(Token::Lt);
                 pos += 1;
-            }
+            },
             c if c.is_ascii_digit() => {
                 let start = pos;
                 while pos < chars.len() && (chars[pos].is_ascii_digit() || chars[pos] == '.') {
                     pos += 1;
                 }
                 let s: String = chars[start..pos].iter().collect();
-                let n: f64 =
-                    s.parse().map_err(|_| SpelError::Parse(format!("invalid number: {s}")))?;
+                let n: f64 = s
+                    .parse()
+                    .map_err(|_| SpelError::Parse(format!("invalid number: {s}")))?;
                 tokens.push(Token::Number(n));
-            }
+            },
             c if c.is_alphabetic() || c == '_' => {
                 let mut s = String::new();
                 while pos < chars.len() && (chars[pos].is_alphanumeric() || chars[pos] == '_') {
@@ -209,7 +210,7 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
                     pos += 1;
                 }
                 tokens.push(Token::Ident(s));
-            }
+            },
             c => return Err(SpelError::Parse(format!("unexpected character: '{c}'"))),
         }
     }
@@ -242,9 +243,7 @@ impl Parser {
     fn parse(&mut self) -> Result<SpelExpr, SpelError> {
         let expr = self.parse_or()?;
         if self.pos < self.tokens.len() {
-            return Err(SpelError::Parse(
-                "unexpected tokens after expression".into(),
-            ));
+            return Err(SpelError::Parse("unexpected tokens after expression".into()));
         }
         Ok(expr)
     }
@@ -299,12 +298,12 @@ impl Parser {
                 self.advance();
                 let expr = self.parse_not()?;
                 Ok(SpelExpr::Not(Box::new(expr)))
-            }
+            },
             Some(Token::Ident(s)) if s == "not" => {
                 self.advance();
                 let expr = self.parse_not()?;
                 Ok(SpelExpr::Not(Box::new(expr)))
-            }
+            },
             _ => self.parse_primary(),
         }
     }
@@ -317,19 +316,19 @@ impl Parser {
                 let expr = self.parse_or()?;
                 self.expect_rparen()?;
                 Ok(expr)
-            }
+            },
             Some(Token::Variable(name)) => {
                 self.advance();
                 Ok(SpelExpr::Variable(name))
-            }
+            },
             Some(Token::StringLit(s)) => {
                 self.advance();
                 Ok(SpelExpr::LiteralString(s))
-            }
+            },
             Some(Token::Number(n)) => {
                 self.advance();
                 Ok(SpelExpr::LiteralNumber(n))
-            }
+            },
             Some(Token::Ident(ident)) => {
                 self.advance();
                 match ident.as_str() {
@@ -340,11 +339,9 @@ impl Parser {
                     "denyAll" => Ok(SpelExpr::DenyAll),
                     "true" => Ok(SpelExpr::LiteralBool(true)),
                     "false" => Ok(SpelExpr::LiteralBool(false)),
-                    other => Err(SpelError::Parse(format!(
-                        "unknown identifier: '{other}'"
-                    ))),
+                    other => Err(SpelError::Parse(format!("unknown identifier: '{other}'"))),
                 }
-            }
+            },
             _ => Err(SpelError::Parse("unexpected end of expression".into())),
         }
     }
@@ -375,7 +372,7 @@ impl Parser {
             Some(Token::LParen) => {
                 self.advance();
                 Ok(())
-            }
+            },
             _ => Err(SpelError::Parse("expected '('".into())),
         }
     }
@@ -385,7 +382,7 @@ impl Parser {
             Some(Token::RParen) => {
                 self.advance();
                 Ok(())
-            }
+            },
             _ => Err(SpelError::Parse("expected ')'".into())),
         }
     }
@@ -395,7 +392,7 @@ impl Parser {
             Some(Token::StringLit(s)) => {
                 self.advance();
                 Ok(s)
-            }
+            },
             _ => Err(SpelError::Parse("expected string literal".into())),
         }
     }

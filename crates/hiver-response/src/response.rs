@@ -81,7 +81,8 @@ impl IntoHeaderVal for String {
 /// 使用 `try_from` 为 `&String` 实现
 impl IntoHeaderVal for &String {
     fn into_header_val(self) -> HeaderValue {
-        HeaderValue::try_from(self.as_str()).unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
+        HeaderValue::try_from(self.as_str())
+            .unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
     }
 }
 
@@ -443,26 +444,36 @@ impl IntoResponse for &'static [u8] {
 
 impl IntoResponse for Vec<u8> {
     fn into_response(self) -> Response {
-        Response::builder().body(self).unwrap_or_else(|_| Response::new())
+        Response::builder()
+            .body(self)
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
 impl IntoResponse for Bytes {
     fn into_response(self) -> Response {
-        Response::builder().body(self).unwrap_or_else(|_| Response::new())
+        Response::builder()
+            .body(self)
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
 impl IntoResponse for StatusCode {
     fn into_response(self) -> Response {
-        Response::builder().status(self).finish().unwrap_or_else(|_| Response::new())
+        Response::builder()
+            .status(self)
+            .finish()
+            .unwrap_or_else(|_| Response::new())
     }
 }
 
 /// Create a response with the given status code
 /// 使用给定状态码创建响应
 pub fn status(status: StatusCode) -> Response {
-    Response::builder().status(status).finish().unwrap_or_else(|_| Response::new())
+    Response::builder()
+        .status(status)
+        .finish()
+        .unwrap_or_else(|_| Response::new())
 }
 
 #[cfg(test)]

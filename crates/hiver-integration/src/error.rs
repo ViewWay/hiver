@@ -1,7 +1,6 @@
 //! Integration framework errors
 //! 集成框架错误
 
-
 /// Integration framework error
 /// 集成框架错误
 pub type Result<T> = std::result::Result<T, IntegrationError>;

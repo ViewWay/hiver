@@ -5,8 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// Delivery mode
 /// 传递模式
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum DeliveryMode {
     /// Transient (not persisted)
     /// 瞬态（不持久化）
@@ -17,7 +16,6 @@ pub enum DeliveryMode {
     /// 持久化（代理重启后存活）
     Persistent = 2,
 }
-
 
 /// Message properties
 /// 消息属性
@@ -31,8 +29,7 @@ pub enum DeliveryMode {
 ///     .setExpiration("60000")
 ///     .build();
 /// ```
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct MessageProperties {
     /// Content type
     /// 内容类型
@@ -100,7 +97,6 @@ pub struct MessageProperties {
     pub headers: std::collections::HashMap<String, serde_json::Value>,
 }
 
-
 impl MessageProperties {
     /// Create new message properties
     /// 创建新的消息属性
@@ -159,7 +155,11 @@ impl MessageProperties {
 
     /// Add header
     /// 添加头
-    pub fn with_header(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_header(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.headers.insert(key.into(), value.into());
         self
     }
@@ -456,12 +456,11 @@ mod tests {
     /// Test Message serialization round-trip / 测试 Message 序列化往返
     #[test]
     fn test_message_serde_roundtrip() {
-        let msg = Message::from_string("hello")
-            .with_properties(
-                MessageProperties::new()
-                    .with_content_type("text/plain")
-                    .with_delivery_mode(DeliveryMode::Persistent),
-            );
+        let msg = Message::from_string("hello").with_properties(
+            MessageProperties::new()
+                .with_content_type("text/plain")
+                .with_delivery_mode(DeliveryMode::Persistent),
+        );
         let json = serde_json::to_string(&msg).unwrap();
         let deserialized: Message = serde_json::from_str(&json).unwrap();
         assert_eq!(msg.payload, deserialized.payload);
@@ -471,8 +470,7 @@ mod tests {
     /// Test MessageProperties serialization skips None fields / 测试 MessageProperties 序列化跳过 None 字段
     #[test]
     fn test_message_properties_skip_none_serialization() {
-        let props = MessageProperties::new()
-            .with_content_type("application/json");
+        let props = MessageProperties::new().with_content_type("application/json");
         let json = serde_json::to_string(&props).unwrap();
         assert!(json.contains("content_type"));
         assert!(!json.contains("content_encoding"));

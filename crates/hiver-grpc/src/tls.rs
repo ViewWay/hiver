@@ -62,20 +62,15 @@ impl TlsConfig {
         let mut config = tonic::transport::ClientTlsConfig::new();
         if let Some(ca) = &self.ca_cert_path {
             let ca_cert = read_file(ca)?;
-            config =
-                config.ca_certificate(tonic::transport::Certificate::from_pem(ca_cert));
+            config = config.ca_certificate(tonic::transport::Certificate::from_pem(ca_cert));
         }
         Ok(config)
     }
 }
 
 fn read_file(path: &PathBuf) -> GrpcResult<Vec<u8>> {
-    std::fs::read(path).map_err(|e| {
-        GrpcError::config(format!(
-            "failed to read file {}: {e}",
-            path.display()
-        ))
-    })
+    std::fs::read(path)
+        .map_err(|e| GrpcError::config(format!("failed to read file {}: {e}", path.display())))
 }
 
 #[cfg(test)]

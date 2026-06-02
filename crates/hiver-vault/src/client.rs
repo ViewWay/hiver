@@ -215,9 +215,7 @@ impl VaultClient {
             .danger_accept_invalid_certs(config.skip_verify);
 
         // Build TLS config if certificates provided / 如果提供了证书则构建 TLS 配置
-        if config.ca_cert.is_some()
-            || config.client_cert.is_some()
-        {
+        if config.ca_cert.is_some() || config.client_cert.is_some() {
             builder = builder.use_rustls_tls();
         }
 
@@ -267,8 +265,7 @@ impl VaultClient {
         secret_id: &str,
         mount: &str,
     ) -> VaultResult<crate::auth::AuthResult> {
-        let auth =
-            crate::auth::AppRoleAuth::new(role_id, secret_id, mount);
+        let auth = crate::auth::AppRoleAuth::new(role_id, secret_id, mount);
         let result = auth.authenticate(self).await?;
         self.set_token(&result.client_token);
         Ok(result)
@@ -281,17 +278,13 @@ impl VaultClient {
             Err(e) => {
                 tracing::warn!("Token lock poisoned, recovering: {}", e);
                 *e.into_inner() = Some(token.to_string());
-            }
+            },
         }
     }
 
     /// Get the current authentication token / 获取当前认证 Token
     pub fn token(&self) -> Option<String> {
-        self.inner
-            .token
-            .lock()
-            .ok()
-            .and_then(|guard| guard.clone())
+        self.inner.token.lock().ok().and_then(|guard| guard.clone())
     }
 
     /// Get a reference to the underlying HTTP client / 获取底层 HTTP 客户端的引用
@@ -322,11 +315,7 @@ impl VaultClient {
     }
 
     /// Perform a POST request to Vault / 向 Vault 执行 POST 请求
-    pub async fn post<T: Serialize>(
-        &self,
-        path: &str,
-        body: &T,
-    ) -> VaultResult<reqwest::Response> {
+    pub async fn post<T: Serialize>(&self, path: &str, body: &T) -> VaultResult<reqwest::Response> {
         let url = self.url(path)?;
         let mut req = self.inner.http.post(url).json(body);
         req = self.add_auth(req)?;
@@ -335,11 +324,7 @@ impl VaultClient {
     }
 
     /// Perform a PUT request to Vault / 向 Vault 执行 PUT 请求
-    pub async fn put<T: Serialize>(
-        &self,
-        path: &str,
-        body: &T,
-    ) -> VaultResult<reqwest::Response> {
+    pub async fn put<T: Serialize>(&self, path: &str, body: &T) -> VaultResult<reqwest::Response> {
         let url = self.url(path)?;
         let mut req = self.inner.http.put(url).json(body);
         req = self.add_auth(req)?;
@@ -368,14 +353,12 @@ impl VaultClient {
     }
 
     /// Add authentication headers to a request / 为请求添加认证头
-    fn add_auth(
-        &self,
-        mut req: reqwest::RequestBuilder,
-    ) -> VaultResult<reqwest::RequestBuilder> {
+    fn add_auth(&self, mut req: reqwest::RequestBuilder) -> VaultResult<reqwest::RequestBuilder> {
         if let Ok(guard) = self.inner.token.lock()
-            && let Some(ref token) = *guard {
-                req = req.header(AUTHORIZATION, format!("Bearer {token}"));
-            }
+            && let Some(ref token) = *guard
+        {
+            req = req.header(AUTHORIZATION, format!("Bearer {token}"));
+        }
         if let Some(ref ns) = self.inner.namespace {
             req = req.header("X-Vault-Namespace", ns);
         }
@@ -383,10 +366,7 @@ impl VaultClient {
     }
 
     /// Check response status / 检查响应状态
-    async fn check_response(
-        &self,
-        resp: reqwest::Response,
-    ) -> VaultResult<reqwest::Response> {
+    async fn check_response(&self, resp: reqwest::Response) -> VaultResult<reqwest::Response> {
         let status = resp.status();
         if status.is_success() {
             Ok(resp)

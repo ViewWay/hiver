@@ -88,7 +88,9 @@ impl TrieRouter {
         let param_names: Vec<String> = path
             .split('/')
             .filter_map(|s| {
-                s.strip_prefix('{').and_then(|s| s.strip_suffix('}')).map(ToString::to_string)
+                s.strip_prefix('{')
+                    .and_then(|s| s.strip_suffix('}'))
+                    .map(ToString::to_string)
             })
             .collect();
 

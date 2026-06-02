@@ -216,11 +216,8 @@ impl Default for InMemoryCsrfTokenRepository {
 impl CsrfTokenRepository for InMemoryCsrfTokenRepository {
     async fn generate_token(&self, identifier: &str) -> CsrfToken {
         let token_value = self.random_token();
-        let csrf_token = CsrfToken::new(
-            token_value,
-            self.header_name.clone(),
-            self.parameter_name.clone(),
-        );
+        let csrf_token =
+            CsrfToken::new(token_value, self.header_name.clone(), self.parameter_name.clone());
         self.save_token(identifier, &csrf_token).await;
         csrf_token
     }
@@ -410,11 +407,8 @@ impl Default for CookieCsrfTokenRepository {
 impl CsrfTokenRepository for CookieCsrfTokenRepository {
     async fn generate_token(&self, identifier: &str) -> CsrfToken {
         let token_value = Self::random_token();
-        let csrf_token = CsrfToken::new(
-            token_value,
-            self.header_name.clone(),
-            self.parameter_name.clone(),
-        );
+        let csrf_token =
+            CsrfToken::new(token_value, self.header_name.clone(), self.parameter_name.clone());
         self.save_token(identifier, &csrf_token).await;
         csrf_token
     }
@@ -586,10 +580,7 @@ impl<R: CsrfTokenRepository> CsrfValidator<R> {
 
     /// Generate a new CSRF token for the given identifier.
     /// 为给定标识符生成新的CSRF令牌。
-    pub async fn generate_token(
-        &self,
-        identifier: &str,
-    ) -> crate::SecurityResult<CsrfToken> {
+    pub async fn generate_token(&self, identifier: &str) -> crate::SecurityResult<CsrfToken> {
         if !self.config.enabled {
             return Err(SecurityError::CsrfValidationFailed(
                 "CSRF protection is disabled".to_string(),
@@ -619,21 +610,16 @@ impl<R: CsrfTokenRepository> CsrfValidator<R> {
             .load_token(identifier)
             .await
             .ok_or_else(|| {
-                SecurityError::CsrfValidationFailed(
-                    "No CSRF token found for session".to_string(),
-                )
+                SecurityError::CsrfValidationFailed("No CSRF token found for session".to_string())
             })?;
 
         // Constant-time comparison to prevent timing attacks.
         // 恒定时间比较以防止时序攻击。
-        if subtle::ConstantTimeEq::ct_eq(stored.token.as_bytes(), submitted_token.as_bytes())
-            .into()
+        if subtle::ConstantTimeEq::ct_eq(stored.token.as_bytes(), submitted_token.as_bytes()).into()
         {
             Ok(())
         } else {
-            Err(SecurityError::CsrfValidationFailed(
-                "CSRF token mismatch".to_string(),
-            ))
+            Err(SecurityError::CsrfValidationFailed("CSRF token mismatch".to_string()))
         }
     }
 
@@ -891,7 +877,9 @@ mod tests {
         let repo = InMemoryCsrfTokenRepository::new();
         let validator = CsrfValidator::new(config, repo);
 
-        let result = validator.validate_token("no-such-session", "any-token").await;
+        let result = validator
+            .validate_token("no-such-session", "any-token")
+            .await;
         assert!(result.is_err());
     }
 

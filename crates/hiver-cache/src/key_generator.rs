@@ -204,9 +204,10 @@ impl SpelKeyGenerator {
         if let Some(stripped) = expr.strip_prefix("#p") {
             // Parameter by index: #p0, #p1, etc.
             if let Ok(index) = stripped.parse::<usize>()
-                && let Some(param) = params.get(index) {
-                    return param.as_key_string();
-                }
+                && let Some(param) = params.get(index)
+            {
+                return param.as_key_string();
+            }
         } else if let Some(param_name) = expr.strip_prefix('#') {
             // Parameter by name (simplified - just use first param)
             if !params.is_empty() {

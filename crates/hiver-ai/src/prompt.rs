@@ -297,8 +297,8 @@ mod tests {
 
     #[test]
     fn test_default_variables() {
-        let template = PromptTemplate::new("Hello, {{name}}! You are a {{role}}.")
-            .var("role", "assistant");
+        let template =
+            PromptTemplate::new("Hello, {{name}}! You are a {{role}}.").var("role", "assistant");
 
         let mut vars = HashMap::new();
         vars.insert("name".to_string(), "Bob".to_string());

@@ -93,13 +93,8 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// Re-exports of commonly used types / 常用类型预导入
 pub mod prelude {
     pub use super::{
-        MongoError, MongoResult,
-        MongoClient, MongoTemplate,
-        MongoRepository, MongoRepositoryBuilder,
-        MongoFilter, MongoQueryOptions,
-        Aggregation, AggregationResults,
-        IndexBuilder, IndexDirection, IndexOperations,
-        BulkOperations, BulkWriteResult,
-        FieldProjection,
+        Aggregation, AggregationResults, BulkOperations, BulkWriteResult, FieldProjection,
+        IndexBuilder, IndexDirection, IndexOperations, MongoClient, MongoError, MongoFilter,
+        MongoQueryOptions, MongoRepository, MongoRepositoryBuilder, MongoResult, MongoTemplate,
     };
 }

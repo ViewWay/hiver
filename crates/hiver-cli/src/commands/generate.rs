@@ -42,8 +42,10 @@ pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
     if file_path.exists() {
         return Err(format!(
             "File '{}' already exists / 文件 '{}' 已存在",
-            file_path.display(), file_path.display()
-        ).into());
+            file_path.display(),
+            file_path.display()
+        )
+        .into());
     }
 
     fs::write(&file_path, code)?;
@@ -63,7 +65,7 @@ pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
 /// 生成控制器模板。
 fn generate_controller(pascal: &str, snake: &str) -> String {
     format!(
-r#"//! {pascal} controller.
+        r#"//! {pascal} controller.
 //! {pascal} 控制器。
 
 /// {pascal} controller / {pascal} 控制器
@@ -92,7 +94,8 @@ impl {pascal}Controller {{
     }}
 }}
 "#,
-        pascal = pascal, snake = snake
+        pascal = pascal,
+        snake = snake
     )
 }
 
@@ -100,7 +103,7 @@ impl {pascal}Controller {{
 /// 生成服务模板。
 fn generate_service(pascal: &str, _snake: &str) -> String {
     format!(
-r#"//! {pascal} service.
+        r#"//! {pascal} service.
 //! {pascal} 服务。
 
 /// {pascal} service trait / {pascal} 服务 trait
@@ -136,7 +139,7 @@ impl {pascal}Service for Default{pascal}Service {{
 /// 生成仓储模板。
 fn generate_repository(pascal: &str, _snake: &str) -> String {
     format!(
-r#"//! {pascal} repository.
+        r#"//! {pascal} repository.
 //! {pascal} 仓储。
 
 /// {pascal} repository trait / {pascal} 仓储 trait
@@ -162,7 +165,7 @@ pub trait {pascal}Repository {{
 /// 生成实体模板。
 fn generate_entity(pascal: &str, _snake: &str) -> String {
     format!(
-r#"//! {pascal} entity.
+        r#"//! {pascal} entity.
 //! {pascal} 实体。
 
 use serde::{{Deserialize, Serialize}};
@@ -188,7 +191,7 @@ pub struct {pascal} {{
 /// 生成中间件模板。
 fn generate_middleware(pascal: &str, _snake: &str) -> String {
     format!(
-r#"//! {pascal} middleware.
+        r#"//! {pascal} middleware.
 //! {pascal} 中间件。
 
 /// {pascal} middleware / {pascal} 中间件
@@ -215,7 +218,7 @@ impl Default for {pascal}Middleware {{
 /// 生成配置模板。
 fn generate_config(pascal: &str, _snake: &str) -> String {
     format!(
-r#"//! {pascal} configuration.
+        r#"//! {pascal} configuration.
 //! {pascal} 配置。
 
 use serde::{{Deserialize, Serialize}};

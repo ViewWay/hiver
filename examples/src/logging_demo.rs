@@ -1,4 +1,17 @@
-#![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::ref_option, clippy::items_after_statements, clippy::format_push_string, clippy::manual_clamp, clippy::used_underscore_binding)]
+#![allow(
+    dead_code,
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::ref_option,
+    clippy::items_after_statements,
+    clippy::format_push_string,
+    clippy::manual_clamp,
+    clippy::used_underscore_binding
+)]
 
 //! Hiver 统一日志系统演示
 //! Hiver Unified Logging System Demo
@@ -19,8 +32,8 @@
 //! HIVER_LOG_MODE=simple cargo run --bin logging_demo
 //! ```
 
-use hiver_observability::log::{Logger, LoggerConfig, LogLevel, LogMode};
-use tracing::{info, warn, error, debug, trace};
+use hiver_observability::log::{LogLevel, LogMode, Logger, LoggerConfig};
+use tracing::{debug, error, info, trace, warn};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -85,12 +98,16 @@ struct StartupInfo {
 
 impl StartupInfo {
     fn new(profile: Option<String>) -> Self {
-        println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Starting Hiver Logging Demo",
-        format_timestamp());
+        println!(
+            "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Starting Hiver Logging Demo",
+            format_timestamp()
+        );
         if let Some(ref profile) = profile {
-            println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Active profile: {}",
+            println!(
+                "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Active profile: {}",
                 format_timestamp(),
-                profile);
+                profile
+            );
         }
 
         Self {
@@ -102,10 +119,12 @@ impl StartupInfo {
     fn print_started(&self) {
         let elapsed = self.start_time.elapsed().as_millis();
         println!();
-        println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Started Demo in {}.{:03} seconds",
+        println!(
+            "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Started Demo in {}.{:03} seconds",
             format_timestamp(),
             elapsed / 1000,
-            elapsed % 1000);
+            elapsed % 1000
+        );
         println!();
     }
 }
@@ -128,10 +147,16 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
 
     // 打印日志配置信息
     // Print logging configuration
-    println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log level: {}",
-        format_timestamp(), level);
-    println!("\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log mode: {}",
-        format_timestamp(), mode);
+    println!(
+        "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log level: {}",
+        format_timestamp(),
+        level
+    );
+    println!(
+        "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Logging : Log mode: {}",
+        format_timestamp(),
+        mode
+    );
     println!();
 
     let config = LoggerConfig {
@@ -237,10 +262,14 @@ fn format_timestamp() -> String {
     let month = (day_of_year / 30) + 1;
     let day = (day_of_year % 30) + 1;
 
-    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02} {:03}",
-        year, month, day,
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02} {:03}",
+        year,
+        month,
+        day,
         (secs % 86400 / 3600) as u32,
         (secs % 3600 / 60) as u32,
         (secs % 60) as u32,
-        millis)
+        millis
+    )
 }

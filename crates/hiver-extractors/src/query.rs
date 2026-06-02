@@ -149,9 +149,10 @@ pub fn url_decode(input: &str) -> String {
             let hex: String = chars.by_ref().take(2).collect();
             if hex.len() == 2
                 && let Ok(byte) = u8::from_str_radix(&hex, 16)
-                    && let Some(decoded) = char::from_u32(byte as u32) {
-                        result.push(decoded);
-                    }
+                && let Some(decoded) = char::from_u32(byte as u32)
+            {
+                result.push(decoded);
+            }
         } else {
             result.push(c);
         }

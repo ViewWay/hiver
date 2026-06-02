@@ -177,11 +177,11 @@ where
             Ok(_) => {
                 step_execution.set_status(BatchStatus::Completed);
                 step_execution.set_exit_status(ExitStatus::completed());
-            }
+            },
             Err(_e) => {
                 step_execution.set_status(BatchStatus::Failed);
                 step_execution.set_exit_status(ExitStatus::failed());
-            }
+            },
         }
 
         if let Some(listener) = &self.listener {
@@ -222,7 +222,7 @@ where
                         }
                         step_execution.increment_skip_count();
                         continue;
-                    }
+                    },
                 };
                 step_execution.increment_read_count();
                 items.push(item);
@@ -239,21 +239,21 @@ where
                     Ok(None) => {
                         // Filtered out
                         Ok(None)
-                    }
+                    },
                     Err(e) => {
                         step_execution.increment_rollback_count();
                         Err(e)
-                    }
+                    },
                 };
 
                 match result {
                     Ok(Some(processed_item)) => {
                         processed.push(processed_item);
                         step_execution.increment_process_count();
-                    }
+                    },
                     Ok(None) => {
                         step_execution.increment_filter_count();
-                    }
+                    },
                     Err(_e) => {
                         skip_count += 1;
                         if skip_count > self.skip_limit {
@@ -263,7 +263,7 @@ where
                             });
                         }
                         step_execution.increment_skip_count();
-                    }
+                    },
                 }
             }
 
@@ -375,12 +375,7 @@ impl StepBuilder {
 
     /// Build step with reader, processor, and writer
     /// 使用读取器、处理器和写入器构建步骤
-    pub fn build_with_processor<R, P, W>(
-        self,
-        reader: R,
-        processor: P,
-        writer: W,
-    ) -> Step<R, P, W>
+    pub fn build_with_processor<R, P, W>(self, reader: R, processor: P, writer: W) -> Step<R, P, W>
     where
         R: ItemReader + Send + Sync,
         R::Item: Send + Sync,
@@ -471,11 +466,7 @@ impl StepListener for LoggingStepListener {
         step_execution: &StepExecution,
         _context: &StepContext,
     ) -> BatchResult<()> {
-        tracing::info!(
-            "[{}] Starting step: {}",
-            self.log_prefix,
-            step_execution.step_name
-        );
+        tracing::info!("[{}] Starting step: {}", self.log_prefix, step_execution.step_name);
         Ok(())
     }
 

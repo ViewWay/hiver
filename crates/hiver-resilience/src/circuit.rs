@@ -439,9 +439,7 @@ impl CircuitBreaker {
     /// 使用熔断器保护执行函数
     pub async fn call<F, T, E>(&self, f: F) -> Result<T>
     where
-        F: FnOnce() -> std::pin::Pin<
-            Box<dyn Future<Output = std::result::Result<T, E>> + Send>,
-        >,
+        F: FnOnce() -> std::pin::Pin<Box<dyn Future<Output = std::result::Result<T, E>> + Send>>,
         E: std::error::Error,
     {
         // Check if request is permitted

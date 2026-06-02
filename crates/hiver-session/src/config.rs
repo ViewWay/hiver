@@ -234,7 +234,6 @@ pub enum SameSitePolicy {
     None,
 }
 
-
 /// Session strategy
 /// 会话策略
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -254,7 +253,6 @@ pub enum SessionStrategy {
     /// `Cookie和Header`
     Both,
 }
-
 
 #[cfg(test)]
 mod tests {

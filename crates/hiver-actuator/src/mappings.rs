@@ -93,9 +93,7 @@ mod tests {
 
     #[test]
     fn test_mappings_serialize() {
-        let resp = MappingsBuilder::new()
-            .mapping("GET", "/", "index")
-            .build();
+        let resp = MappingsBuilder::new().mapping("GET", "/", "index").build();
         let json = serde_json::to_string(&resp).unwrap();
         assert!(json.contains("\"mappings\""));
         assert!(json.contains("\"GET\""));

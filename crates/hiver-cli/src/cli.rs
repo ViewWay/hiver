@@ -9,7 +9,10 @@ use crate::commands;
 /// Hiver CLI - 项目脚手架工具。
 #[derive(Parser)]
 #[command(name = "hiver")]
-#[command(version, about = "Hiver project scaffolding tool / Hiver 项目脚手架工具")]
+#[command(
+    version,
+    about = "Hiver project scaffolding tool / Hiver 项目脚手架工具"
+)]
 pub struct Cli {
     #[command(subcommand)]
     command: Commands,

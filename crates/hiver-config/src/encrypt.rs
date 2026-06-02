@@ -102,21 +102,20 @@ impl ConfigEncryptor {
     /// 递归解密 JSON 值中的所有 `ENC(...)` 值。
     pub fn decrypt_json_value(&self, value: &mut serde_json::Value) -> Result<(), EncryptError> {
         match value {
-            serde_json::Value::String(s)
-                if Self::is_encrypted(s) => {
-                    *s = self.decrypt(s)?;
-                }
+            serde_json::Value::String(s) if Self::is_encrypted(s) => {
+                *s = self.decrypt(s)?;
+            },
             serde_json::Value::Object(map) => {
                 for v in map.values_mut() {
                     self.decrypt_json_value(v)?;
                 }
-            }
+            },
             serde_json::Value::Array(arr) => {
                 for v in arr.iter_mut() {
                     self.decrypt_json_value(v)?;
                 }
-            }
-            _ => {}
+            },
+            _ => {},
         }
         Ok(())
     }
@@ -125,8 +124,8 @@ impl ConfigEncryptor {
 /// Derive a 256-bit key from a password using HMAC-SHA256.
 /// 使用 HMAC-SHA256 从密码派生 256 位密钥。
 fn derive_key(password: &str) -> [u8; 32] {
-    let mut mac = <HmacSha256 as Mac>::new_from_slice(b"hiver-config-encryptor")
-        .expect("HMAC key is valid");
+    let mut mac =
+        <HmacSha256 as Mac>::new_from_slice(b"hiver-config-encryptor").expect("HMAC key is valid");
     mac.update(password.as_bytes());
     let result = mac.finalize().into_bytes();
 

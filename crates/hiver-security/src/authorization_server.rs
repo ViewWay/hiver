@@ -151,7 +151,7 @@ impl RegisteredClient {
             Some(hash) => {
                 let provided_hash = format!("{:x}", Sha256::digest(secret.as_bytes()));
                 provided_hash == *hash
-            }
+            },
         }
     }
 }
@@ -172,7 +172,9 @@ struct PendingCode {
     ttl: Duration,
 }
 impl PendingCode {
-    fn is_expired(&self) -> bool { self.issued_at.elapsed() > self.ttl }
+    fn is_expired(&self) -> bool {
+        self.issued_at.elapsed() > self.ttl
+    }
 }
 
 /// Status of a device authorization request.
@@ -319,16 +321,19 @@ impl AuthorizationServer {
         drop(clients);
 
         let code = random_token(32);
-        self.codes.write().await.insert(code.clone(), PendingCode {
-            client_id: client_id.to_string(),
-            redirect_uri: redirect_uri.to_string(),
-            scope: scope.to_string(),
-            subject: subject.to_string(),
-            code_challenge: code_challenge.map(str::to_string),
-            code_challenge_method: code_challenge_method.map(str::to_string),
-            issued_at: Instant::now(),
-            ttl: Duration::from_mins(10),
-        });
+        self.codes.write().await.insert(
+            code.clone(),
+            PendingCode {
+                client_id: client_id.to_string(),
+                redirect_uri: redirect_uri.to_string(),
+                scope: scope.to_string(),
+                subject: subject.to_string(),
+                code_challenge: code_challenge.map(str::to_string),
+                code_challenge_method: code_challenge_method.map(str::to_string),
+                issued_at: Instant::now(),
+                ttl: Duration::from_mins(10),
+            },
+        );
         debug!(client_id, subject, "authorization code issued");
         Ok(code)
     }
@@ -358,16 +363,28 @@ impl AuthorizationServer {
             let verifier = code_verifier.ok_or_else(|| {
                 SecurityError::AccessDenied("code_verifier required (PKCE)".into())
             })?;
-            verify_pkce(verifier, challenge, entry.code_challenge_method.as_deref().unwrap_or("S256"))?;
+            verify_pkce(
+                verifier,
+                challenge,
+                entry.code_challenge_method.as_deref().unwrap_or("S256"),
+            )?;
         }
-        let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
-            SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
-        })?;
+        let client = self
+            .clients
+            .read()
+            .await
+            .get(client_id)
+            .cloned()
+            .ok_or_else(|| {
+                SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
+            })?;
         if let Some(secret) = client_secret
-            && !client.verify_secret(secret) {
-                return Err(SecurityError::AuthenticationFailed("invalid client_secret".into()));
-            }
-        self.issue_tokens(&entry.subject, client_id, &entry.scope, &client).await
+            && !client.verify_secret(secret)
+        {
+            return Err(SecurityError::AuthenticationFailed("invalid client_secret".into()));
+        }
+        self.issue_tokens(&entry.subject, client_id, &entry.scope, &client)
+            .await
     }
 
     /// Issue tokens for the Client Credentials grant.
@@ -378,9 +395,15 @@ impl AuthorizationServer {
         client_secret: &str,
         scope: &str,
     ) -> SecurityResult<IssuedTokenResponse> {
-        let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
-            SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
-        })?;
+        let client = self
+            .clients
+            .read()
+            .await
+            .get(client_id)
+            .cloned()
+            .ok_or_else(|| {
+                SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
+            })?;
         if !client.grant_types.contains(&GrantType::ClientCredentials) {
             return Err(SecurityError::AccessDenied(
                 "client does not support client_credentials grant".into(),
@@ -389,7 +412,8 @@ impl AuthorizationServer {
         if !client.verify_secret(client_secret) {
             return Err(SecurityError::AuthenticationFailed("invalid client_secret".into()));
         }
-        self.issue_tokens(client_id, client_id, scope, &client).await
+        self.issue_tokens(client_id, client_id, scope, &client)
+            .await
     }
 
     /// Exchange a refresh token for a new access token.
@@ -408,10 +432,17 @@ impl AuthorizationServer {
         if stored_client_id != client_id {
             return Err(SecurityError::AccessDenied("client_id mismatch".into()));
         }
-        let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
-            SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
-        })?;
-        self.issue_tokens(&subject, client_id, &scope, &client).await
+        let client = self
+            .clients
+            .read()
+            .await
+            .get(client_id)
+            .cloned()
+            .ok_or_else(|| {
+                SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
+            })?;
+        self.issue_tokens(&subject, client_id, &scope, &client)
+            .await
     }
 
     // ── Device Authorization Flow (RFC 8628) ─────────────────────────────────
@@ -423,9 +454,15 @@ impl AuthorizationServer {
         client_id: &str,
         scope: &str,
     ) -> SecurityResult<DeviceAuthorizationResponse> {
-        let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
-            SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
-        })?;
+        let client = self
+            .clients
+            .read()
+            .await
+            .get(client_id)
+            .cloned()
+            .ok_or_else(|| {
+                SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
+            })?;
         if !client.grant_types.contains(&GrantType::DeviceCode) {
             return Err(SecurityError::AccessDenied(
                 "client does not support device_code grant".into(),
@@ -434,16 +471,19 @@ impl AuthorizationServer {
         let device_code = random_token(32);
         let user_code = random_user_code();
         let ttl = Duration::from_mins(30);
-        self.device_codes.write().await.insert(device_code.clone(), DeviceCodeEntry {
-            device_code: device_code.clone(),
-            user_code: user_code.clone(),
-            client_id: client_id.to_string(),
-            scope: scope.to_string(),
-            status: DeviceCodeStatus::Pending,
-            subject: None,
-            issued_at: Instant::now(),
-            ttl,
-        });
+        self.device_codes.write().await.insert(
+            device_code.clone(),
+            DeviceCodeEntry {
+                device_code: device_code.clone(),
+                user_code: user_code.clone(),
+                client_id: client_id.to_string(),
+                scope: scope.to_string(),
+                status: DeviceCodeStatus::Pending,
+                subject: None,
+                issued_at: Instant::now(),
+                ttl,
+            },
+        );
         let verification_uri = format!("{}/device", self.issuer);
         let verification_uri_complete = format!("{verification_uri}?user_code={user_code}");
         info!(client_id, "device authorization initiated");
@@ -482,9 +522,13 @@ impl AuthorizationServer {
         device_code: &str,
         client_id: &str,
     ) -> SecurityResult<IssuedTokenResponse> {
-        let entry = self.device_codes.read().await.get(device_code).cloned().ok_or_else(|| {
-            SecurityError::AuthenticationFailed("invalid device_code".into())
-        })?;
+        let entry = self
+            .device_codes
+            .read()
+            .await
+            .get(device_code)
+            .cloned()
+            .ok_or_else(|| SecurityError::AuthenticationFailed("invalid device_code".into()))?;
         if entry.client_id != client_id {
             return Err(SecurityError::AccessDenied("client_id mismatch".into()));
         }
@@ -492,17 +536,28 @@ impl AuthorizationServer {
             return Err(SecurityError::AuthenticationFailed("device code expired".into()));
         }
         match entry.status {
-            DeviceCodeStatus::Pending => Err(SecurityError::AccessDenied("authorization_pending".into())),
+            DeviceCodeStatus::Pending => {
+                Err(SecurityError::AccessDenied("authorization_pending".into()))
+            },
             DeviceCodeStatus::Denied => Err(SecurityError::AccessDenied("access_denied".into())),
-            DeviceCodeStatus::Expired => Err(SecurityError::AuthenticationFailed("expired_token".into())),
+            DeviceCodeStatus::Expired => {
+                Err(SecurityError::AuthenticationFailed("expired_token".into()))
+            },
             DeviceCodeStatus::Approved => {
                 let subject = entry.subject.as_deref().unwrap_or(client_id);
-                let client = self.clients.read().await.get(client_id).cloned().ok_or_else(|| {
-                    SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
-                })?;
+                let client = self
+                    .clients
+                    .read()
+                    .await
+                    .get(client_id)
+                    .cloned()
+                    .ok_or_else(|| {
+                        SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
+                    })?;
                 self.device_codes.write().await.remove(device_code);
-                self.issue_tokens(subject, client_id, &entry.scope, &client).await
-            }
+                self.issue_tokens(subject, client_id, &entry.scope, &client)
+                    .await
+            },
         }
     }
 
@@ -554,7 +609,7 @@ impl AuthorizationServer {
                     scope,
                     client_id,
                 }
-            }
+            },
             Err(_) => IntrospectionResult {
                 active: false,
                 sub: None,
@@ -648,8 +703,11 @@ impl AuthorizationServerBuilder {
         };
         let secret = self.jwt_secret.unwrap_or_else(|| random_token(32));
         let jwt_provider = JwtTokenProvider::new_hmac(secret, &issuer);
-        let clients: HashMap<String, RegisteredClient> =
-            self.clients.into_iter().map(|c| (c.client_id.clone(), c)).collect();
+        let clients: HashMap<String, RegisteredClient> = self
+            .clients
+            .into_iter()
+            .map(|c| (c.client_id.clone(), c))
+            .collect();
         AuthorizationServer {
             issuer,
             clients: Arc::new(RwLock::new(clients)),
@@ -673,8 +731,12 @@ fn random_token(byte_count: usize) -> String {
 fn random_user_code() -> String {
     let chars: Vec<char> = "BCDFGHJKLMNPQRSTVWXZ".chars().collect();
     let n = chars.len();
-    let part1: String = (0..4).map(|_| chars[rand::random::<u8>() as usize % n]).collect();
-    let part2: String = (0..4).map(|_| chars[rand::random::<u8>() as usize % n]).collect();
+    let part1: String = (0..4)
+        .map(|_| chars[rand::random::<u8>() as usize % n])
+        .collect();
+    let part2: String = (0..4)
+        .map(|_| chars[rand::random::<u8>() as usize % n])
+        .collect();
     format!("{part1}-{part2}")
 }
 
@@ -688,17 +750,15 @@ fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<
             } else {
                 Err(SecurityError::AccessDenied("PKCE verification failed".into()))
             }
-        }
+        },
         "plain" => {
             if verifier == challenge {
                 Ok(())
             } else {
                 Err(SecurityError::AccessDenied("PKCE verification failed".into()))
             }
-        }
-        m => Err(SecurityError::AccessDenied(format!(
-            "unsupported code_challenge_method: {m}"
-        ))),
+        },
+        m => Err(SecurityError::AccessDenied(format!("unsupported code_challenge_method: {m}"))),
     }
 }
 
@@ -1140,7 +1200,13 @@ mod tests {
             .unwrap();
 
         let result = server
-            .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", Some("wrong_verifier"))
+            .token_from_code(
+                &code,
+                "app",
+                Some("s3cr3t"),
+                "https://app.test/cb",
+                Some("wrong_verifier"),
+            )
             .await;
         assert!(result.is_err());
         let err = result.unwrap_err().to_string();
@@ -1265,10 +1331,7 @@ mod tests {
         let server = AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("key")
-            .register_client(
-                RegisteredClient::new("code-only")
-                    .secret("s"),
-            )
+            .register_client(RegisteredClient::new("code-only").secret("s"))
             .build();
 
         let result = server
@@ -1382,13 +1445,18 @@ mod tests {
         let resp = server.device_authorize("app", "read").await.unwrap();
 
         // Before approval, polling returns pending
-        let poll_result = server.token_from_device_code(&resp.device_code, "app").await;
+        let poll_result = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await;
         assert!(poll_result.is_err());
         let err = poll_result.unwrap_err().to_string();
         assert!(err.contains("authorization_pending"));
 
         // Approve the device code
-        server.device_approve(&resp.user_code, "alice").await.unwrap();
+        server
+            .device_approve(&resp.user_code, "alice")
+            .await
+            .unwrap();
 
         // Now polling should succeed
         let token = server
@@ -1418,7 +1486,10 @@ mod tests {
     async fn test_device_flow_code_consumed_after_approval() {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
-        server.device_approve(&resp.user_code, "carol").await.unwrap();
+        server
+            .device_approve(&resp.user_code, "carol")
+            .await
+            .unwrap();
 
         let _token = server
             .token_from_device_code(&resp.device_code, "app")
@@ -1426,7 +1497,9 @@ mod tests {
             .unwrap();
 
         // Second poll should fail (device code removed)
-        let result = server.token_from_device_code(&resp.device_code, "app").await;
+        let result = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await;
         assert!(result.is_err());
     }
 
@@ -1505,7 +1578,9 @@ mod tests {
             }
         }
 
-        let result = server.token_from_device_code(&resp.device_code, "app").await;
+        let result = server
+            .token_from_device_code(&resp.device_code, "app")
+            .await;
         assert!(result.is_err());
         let err = result.unwrap_err().to_string();
         assert!(err.contains("access_denied"));
@@ -1685,9 +1760,8 @@ mod tests {
 
     #[test]
     fn test_random_user_codes_differ() {
-        let codes: std::collections::HashSet<String> = (0..10)
-            .map(|_| random_user_code())
-            .collect();
+        let codes: std::collections::HashSet<String> =
+            (0..10).map(|_| random_user_code()).collect();
         // 10 random codes should produce at least 9 unique values
         assert!(codes.len() >= 9);
     }
@@ -1718,8 +1792,14 @@ mod tests {
 
         // Device flow
         let device = server.device_authorize("app", "openid").await.unwrap();
-        server.device_approve(&device.user_code, "user_c").await.unwrap();
-        let token_c = server.token_from_device_code(&device.device_code, "app").await.unwrap();
+        server
+            .device_approve(&device.user_code, "user_c")
+            .await
+            .unwrap();
+        let token_c = server
+            .token_from_device_code(&device.device_code, "app")
+            .await
+            .unwrap();
 
         // All tokens are distinct
         assert_ne!(token_a.access_token, token_b.access_token);
@@ -1744,7 +1824,10 @@ mod tests {
             .token_from_code(&code, "app", Some("s3cr3t"), "https://app.test/cb", None)
             .await
             .unwrap();
-        let r1 = server.token_from_refresh(&t1.refresh_token.unwrap(), "app").await.unwrap();
+        let r1 = server
+            .token_from_refresh(&t1.refresh_token.unwrap(), "app")
+            .await
+            .unwrap();
         assert!(r1.access_token.len() > 10);
 
         // Client credentials -> refresh
@@ -1752,7 +1835,10 @@ mod tests {
             .token_from_client_credentials("app", "s3cr3t", "openid")
             .await
             .unwrap();
-        let r2 = server.token_from_refresh(&t2.refresh_token.unwrap(), "app").await.unwrap();
+        let r2 = server
+            .token_from_refresh(&t2.refresh_token.unwrap(), "app")
+            .await
+            .unwrap();
         assert!(r2.access_token.len() > 10);
     }
 
@@ -1760,8 +1846,18 @@ mod tests {
     async fn test_empty_server_rejects_all_requests() {
         let server = make_empty_server();
 
-        assert!(server.authorize("any", "https://x.com/cb", "openid", "u", None, None).await.is_err());
-        assert!(server.token_from_client_credentials("any", "s", "openid").await.is_err());
+        assert!(
+            server
+                .authorize("any", "https://x.com/cb", "openid", "u", None, None)
+                .await
+                .is_err()
+        );
+        assert!(
+            server
+                .token_from_client_credentials("any", "s", "openid")
+                .await
+                .is_err()
+        );
         assert!(server.device_authorize("any", "openid").await.is_err());
         assert!(server.token_from_device_code("any", "any").await.is_err());
         assert!(server.token_from_refresh("any", "any").await.is_err());

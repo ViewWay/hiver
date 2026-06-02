@@ -3,7 +3,7 @@
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[With] derive macro
 /// 实现 #[With] 派生宏
@@ -30,8 +30,8 @@ pub fn impl_with(input: DeriveInput) -> TokenStream {
                 "#[With] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Collect fields that should not be skipped
@@ -41,7 +41,9 @@ pub fn impl_with(input: DeriveInput) -> TokenStream {
     let mut with_method_names = Vec::new();
 
     for field in fields {
-        let Some(field_name) = field.ident.as_ref() else { continue; };
+        let Some(field_name) = field.ident.as_ref() else {
+            continue;
+        };
         let field_type = &field.ty;
 
         // Check if field should be skipped

@@ -97,10 +97,10 @@ impl GraphQLError {
         match &mut self.extensions {
             Some(serde_json::Value::Object(map)) => {
                 map.insert("code".to_string(), serde_json::Value::String(code));
-            }
+            },
             _ => {
                 self.extensions = Some(serde_json::json!({ "code": code }));
-            }
+            },
         }
         self
     }
@@ -128,12 +128,9 @@ impl GraphQLError {
     /// Create a resolver not found error
     /// 创建解析器未找到错误
     pub fn resolver_not_found(type_name: &str, field_name: &str) -> Self {
-        Self::new(format!(
-            "No resolver registered for {}.{}",
-            type_name, field_name
-        ))
-        .with_code("RESOLVER_NOT_FOUND")
-        .with_path_segments(&[type_name, field_name])
+        Self::new(format!("No resolver registered for {}.{}", type_name, field_name))
+            .with_code("RESOLVER_NOT_FOUND")
+            .with_path_segments(&[type_name, field_name])
     }
 
     /// Create a context error
@@ -151,9 +148,8 @@ impl GraphQLError {
     /// Convert to an HTTP response body as JSON
     /// 转换为HTTP响应体的JSON格式
     pub fn to_json_bytes(&self) -> Vec<u8> {
-        serde_json::to_vec(self).unwrap_or_else(|_| {
-            format!("{{\"message\":\"{}\"}}", self.message).into_bytes()
-        })
+        serde_json::to_vec(self)
+            .unwrap_or_else(|_| format!("{{\"message\":\"{}\"}}", self.message).into_bytes())
     }
 }
 

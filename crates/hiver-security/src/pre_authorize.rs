@@ -97,10 +97,11 @@ impl SecurityExpression {
                     expressions.push(SecurityExpression::HasRole(role.to_string()));
                 }
             } else if let Some(start) = input.find("hasRole(\"")
-                && let Some(end) = input[start..].find("\")") {
-                    let role = &input[start + 9..start + end];
-                    expressions.push(SecurityExpression::HasRole(role.to_string()));
-                }
+                && let Some(end) = input[start..].find("\")")
+            {
+                let role = &input[start + 9..start + end];
+                expressions.push(SecurityExpression::HasRole(role.to_string()));
+            }
         }
 
         // Try hasAuthority with single quotes first, then double quotes
@@ -111,10 +112,11 @@ impl SecurityExpression {
                     expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
                 }
             } else if let Some(start) = input.find("hasAuthority(\"")
-                && let Some(end) = input[start..].find("\")") {
-                    let auth = &input[start + 14..start + end];
-                    expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
-                }
+                && let Some(end) = input[start..].find("\")")
+            {
+                let auth = &input[start + 14..start + end];
+                expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
+            }
         }
 
         if input.contains("isAuthenticated()") {

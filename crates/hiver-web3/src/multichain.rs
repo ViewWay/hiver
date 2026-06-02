@@ -145,11 +145,28 @@ impl Chain {
     /// 获取此链的原生货币。
     pub const fn native_currency(self) -> NativeCurrency {
         match self {
-            Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>
-                NativeCurrency { symbol: "ETH", decimals: 18, name: "Ether" },
-            Self::Polygon => NativeCurrency { symbol: "MATIC", decimals: 18, name: "Matic" },
-            Self::Bsc => NativeCurrency { symbol: "BNB", decimals: 18, name: "BNB" },
-            Self::Avalanche => NativeCurrency { symbol: "AVAX", decimals: 18, name: "Avalanche" },
+            Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync => {
+                NativeCurrency {
+                    symbol: "ETH",
+                    decimals: 18,
+                    name: "Ether",
+                }
+            },
+            Self::Polygon => NativeCurrency {
+                symbol: "MATIC",
+                decimals: 18,
+                name: "Matic",
+            },
+            Self::Bsc => NativeCurrency {
+                symbol: "BNB",
+                decimals: 18,
+                name: "BNB",
+            },
+            Self::Avalanche => NativeCurrency {
+                symbol: "AVAX",
+                decimals: 18,
+                name: "Avalanche",
+            },
         }
     }
 
@@ -469,7 +486,7 @@ impl fmt::Display for BridgeError {
         match self {
             Self::UnsupportedRoute(from, to) => {
                 write!(f, "Unsupported bridge route: chain {} -> {}", from, to)
-            }
+            },
             Self::InsufficientLiquidity => write!(f, "Insufficient bridge liquidity"),
             Self::AmountTooLow => write!(f, "Bridge amount below minimum"),
             Self::AmountTooHigh => write!(f, "Bridge amount exceeds maximum"),
@@ -790,7 +807,11 @@ mod tests {
     fn test_bridge_status_display() {
         assert_eq!(BridgeStatus::Pending.to_string(), "Pending");
         assert_eq!(BridgeStatus::Completed.to_string(), "Completed");
-        assert!(BridgeStatus::Failed("timeout".into()).to_string().contains("timeout"));
+        assert!(
+            BridgeStatus::Failed("timeout".into())
+                .to_string()
+                .contains("timeout")
+        );
     }
 
     #[test]

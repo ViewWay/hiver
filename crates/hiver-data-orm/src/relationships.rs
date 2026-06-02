@@ -144,11 +144,7 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T> {
     /// Load the related records using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>> {
-        let sql = format!(
-            "SELECT * FROM {} WHERE {} = $1",
-            T::table_name(),
-            self.foreign_key,
-        );
+        let sql = format!("SELECT * FROM {} WHERE {} = $1", T::table_name(), self.foreign_key,);
         let rows = client
             .fetch_all_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
@@ -198,11 +194,8 @@ impl<T: Model + serde::de::DeserializeOwned> HasOne<T> {
     /// Load the related record using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
-        let sql = format!(
-            "SELECT * FROM {} WHERE {} = $1 LIMIT 1",
-            T::table_name(),
-            self.foreign_key,
-        );
+        let sql =
+            format!("SELECT * FROM {} WHERE {} = $1 LIMIT 1", T::table_name(), self.foreign_key,);
         let row = client
             .fetch_one_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
@@ -242,11 +235,8 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T> {
     /// Load the related record using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
     pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
-        let sql = format!(
-            "SELECT * FROM {} WHERE {} = $1 LIMIT 1",
-            T::table_name(),
-            self.foreign_key,
-        );
+        let sql =
+            format!("SELECT * FROM {} WHERE {} = $1 LIMIT 1", T::table_name(), self.foreign_key,);
         let row = client
             .fetch_one_params(&sql, &[QueryParam::Text(self.foreign_key_value.clone())])
             .await
@@ -320,16 +310,24 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
 
     /// Attach a related record (insert into join table).
     /// 附加相关记录（插入到连接表）。
-    pub async fn attach<C: DatabaseClient>(&self, client: &C, related_id: impl Into<String>) -> Result<()> {
+    pub async fn attach<C: DatabaseClient>(
+        &self,
+        client: &C,
+        related_id: impl Into<String>,
+    ) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
             "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
-            self.join_table,
-            self.foreign_key,
-            self.related_foreign_key,
+            self.join_table, self.foreign_key, self.related_foreign_key,
         );
         client
-            .execute_params(&sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid)])
+            .execute_params(
+                &sql,
+                &[
+                    QueryParam::Text(self.current_id.clone()),
+                    QueryParam::Text(rid),
+                ],
+            )
             .await
             .map_err(|e| Error::relationship(format!("attach failed: {e}")))?;
         Ok(())
@@ -337,16 +335,24 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
 
     /// Detach a related record (delete from join table).
     /// 分离相关记录（从连接表删除）。
-    pub async fn detach<C: DatabaseClient>(&self, client: &C, related_id: impl Into<String>) -> Result<()> {
+    pub async fn detach<C: DatabaseClient>(
+        &self,
+        client: &C,
+        related_id: impl Into<String>,
+    ) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
             "DELETE FROM {} WHERE {} = $1 AND {} = $2",
-            self.join_table,
-            self.foreign_key,
-            self.related_foreign_key,
+            self.join_table, self.foreign_key, self.related_foreign_key,
         );
         client
-            .execute_params(&sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid)])
+            .execute_params(
+                &sql,
+                &[
+                    QueryParam::Text(self.current_id.clone()),
+                    QueryParam::Text(rid),
+                ],
+            )
             .await
             .map_err(|e| Error::relationship(format!("detach failed: {e}")))?;
         Ok(())
@@ -364,14 +370,24 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     /// 此方法执行 DELETE + 多个 INSERT 操作，内部无事务保护。
     /// 调用者**必须**在事务中执行此方法以保证原子性。
     /// 如果 INSERT 在 DELETE 成功后失败，可能导致数据丢失。
-    pub async fn sync<C: DatabaseClient>(&self, client: &C, related_ids: &[impl ToString]) -> Result<()> {
-        debug_assert!(validate_identifier(&self.join_table), "Invalid join table: {}", self.join_table);
-        debug_assert!(validate_identifier(&self.foreign_key), "Invalid foreign key: {}", self.foreign_key);
-        // Delete all current associations / 删除所有当前关联
-        let delete_sql = format!(
-            "DELETE FROM {} WHERE {} = $1",
-            self.join_table, self.foreign_key,
+    pub async fn sync<C: DatabaseClient>(
+        &self,
+        client: &C,
+        related_ids: &[impl ToString],
+    ) -> Result<()> {
+        debug_assert!(
+            validate_identifier(&self.join_table),
+            "Invalid join table: {}",
+            self.join_table
         );
+        debug_assert!(
+            validate_identifier(&self.foreign_key),
+            "Invalid foreign key: {}",
+            self.foreign_key
+        );
+        // Delete all current associations / 删除所有当前关联
+        let delete_sql =
+            format!("DELETE FROM {} WHERE {} = $1", self.join_table, self.foreign_key,);
         client
             .execute_params(&delete_sql, &[QueryParam::Text(self.current_id.clone())])
             .await
@@ -382,12 +398,16 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
             let rid_str = rid.to_string();
             let insert_sql = format!(
                 "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
-                self.join_table,
-                self.foreign_key,
-                self.related_foreign_key,
+                self.join_table, self.foreign_key, self.related_foreign_key,
             );
             client
-                .execute_params(&insert_sql, &[QueryParam::Text(self.current_id.clone()), QueryParam::Text(rid_str)])
+                .execute_params(
+                    &insert_sql,
+                    &[
+                        QueryParam::Text(self.current_id.clone()),
+                        QueryParam::Text(rid_str),
+                    ],
+                )
                 .await
                 .map_err(|e| Error::relationship(format!("sync insert failed: {e}")))?;
         }
@@ -468,7 +488,10 @@ impl<M> WithRelations<M> {
     /// Get the loaded rows for a named relationship.
     /// 获取命名关系的已加载行。
     pub fn relation_rows(&self, name: &str) -> &[serde_json::Value] {
-        self.relations.get(name).map(|v| v.as_slice()).unwrap_or(&[])
+        self.relations
+            .get(name)
+            .map(|v| v.as_slice())
+            .unwrap_or(&[])
     }
 
     /// Deserialize the loaded rows for a named relationship into a concrete type.
@@ -478,7 +501,11 @@ impl<M> WithRelations<M> {
             .get(name)
             .map(|rows| {
                 rows.iter()
-                    .map(|v| serde_json::from_value(v.clone()).map_err(|e| Error::relationship(format!("deserialize relation '{name}': {e}"))))
+                    .map(|v| {
+                        serde_json::from_value(v.clone()).map_err(|e| {
+                            Error::relationship(format!("deserialize relation '{name}': {e}"))
+                        })
+                    })
                     .collect::<Result<Vec<T>>>()
             })
             .unwrap_or(Ok(Vec::new()))
@@ -520,8 +547,14 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
     /// - `name` — Relationship name (used as key in results) / 关系名称（结果中的键）
     /// - `foreign_key` — Foreign key column in the target table / 目标表中的外键列
     /// - `target_table` — Target table to query / 要查询的目标表
-    pub fn with(mut self, name: impl Into<String>, foreign_key: impl Into<String>, target_table: impl Into<String>) -> Self {
-        self.eager.push((name.into(), foreign_key.into(), target_table.into()));
+    pub fn with(
+        mut self,
+        name: impl Into<String>,
+        foreign_key: impl Into<String>,
+        target_table: impl Into<String>,
+    ) -> Self {
+        self.eager
+            .push((name.into(), foreign_key.into(), target_table.into()));
         self
     }
 
@@ -574,14 +607,18 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
             }
 
             // Build IN clause: WHERE foreign_key IN ($1, $2, ...)
-            let placeholders: Vec<String> = (1..=parent_ids.len()).map(|i| format!("${i}")).collect();
+            let placeholders: Vec<String> =
+                (1..=parent_ids.len()).map(|i| format!("${i}")).collect();
             let sql = format!(
                 "SELECT * FROM {} WHERE {} IN ({})",
                 target_table,
                 foreign_key,
                 placeholders.join(", "),
             );
-            let params: Vec<QueryParam> = parent_ids.iter().map(|id| QueryParam::Text(id.clone())).collect();
+            let params: Vec<QueryParam> = parent_ids
+                .iter()
+                .map(|id| QueryParam::Text(id.clone()))
+                .collect();
 
             let rows = client
                 .fetch_all_params(&sql, &params)
@@ -593,13 +630,13 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
                     .get(foreign_key)
                     .and_then(|v| v.as_type())
                     .unwrap_or_default();
-                let json_val: serde_json::Value = row
-                    .deserialize()
-                    .unwrap_or(serde_json::Value::Null);
+                let json_val: serde_json::Value =
+                    row.deserialize().unwrap_or(serde_json::Value::Null);
                 map.entry(fk_val).or_default().push(json_val);
             }
 
-            let mut keyed: HashMap<String, HashMap<String, Vec<serde_json::Value>>> = HashMap::new();
+            let mut keyed: HashMap<String, HashMap<String, Vec<serde_json::Value>>> =
+                HashMap::new();
             keyed.insert(name.clone(), map);
             relation_maps.push(keyed);
         }
@@ -615,7 +652,10 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
                     relations.insert(name.clone(), rows);
                 }
             }
-            results.push(WithRelations { model: parent, relations });
+            results.push(WithRelations {
+                model: parent,
+                relations,
+            });
         }
 
         Ok(results)
@@ -653,8 +693,10 @@ where
                 client
                     .execute_params(&sql, &[QueryParam::Text(pk.clone())])
                     .await
-                    .map_err(|e| Error::relationship(format!("cascade delete on '{}': {e}", relation.name)))?;
-            }
+                    .map_err(|e| {
+                        Error::relationship(format!("cascade delete on '{}': {e}", relation.name))
+                    })?;
+            },
             OnDelete::SetNull => {
                 let sql = format!(
                     "UPDATE {} SET {} = NULL WHERE {} = $1",
@@ -663,8 +705,10 @@ where
                 client
                     .execute_params(&sql, &[QueryParam::Text(pk.clone())])
                     .await
-                    .map_err(|e| Error::relationship(format!("set-null on '{}': {e}", relation.name)))?;
-            }
+                    .map_err(|e| {
+                        Error::relationship(format!("set-null on '{}': {e}", relation.name))
+                    })?;
+            },
             OnDelete::Restrict => {
                 let sql = format!(
                     "SELECT 1 FROM {} WHERE {} = $1 LIMIT 1",
@@ -673,17 +717,19 @@ where
                 let row = client
                     .fetch_one_params(&sql, &[QueryParam::Text(pk.clone())])
                     .await
-                    .map_err(|e| Error::relationship(format!("restrict check on '{}': {e}", relation.name)))?;
+                    .map_err(|e| {
+                        Error::relationship(format!("restrict check on '{}': {e}", relation.name))
+                    })?;
                 if row.is_some() {
                     return Err(Error::relationship(format!(
                         "cannot delete: relation '{}' has dependent records (OnDelete::Restrict)",
                         relation.name
                     )));
                 }
-            }
+            },
             OnDelete::SetDefault | OnDelete::NoAction => {
                 // No action needed / 无需操作
-            }
+            },
         }
     }
 
@@ -726,7 +772,8 @@ mod tests {
 
     #[test]
     fn test_belongs_to_many_creation() {
-        let belongs_to_many = BelongsToMany::<MockModel>::new("789", "user_roles", "user_id", "role_id");
+        let belongs_to_many =
+            BelongsToMany::<MockModel>::new("789", "user_roles", "user_id", "role_id");
         assert_eq!(belongs_to_many.current_id, "789");
         assert_eq!(belongs_to_many.join_table, "user_roles");
         assert_eq!(belongs_to_many.foreign_key, "user_id");

@@ -164,14 +164,15 @@ fn parse_cookies(req: &Request) -> HashMap<String, String> {
     let mut cookies = HashMap::new();
 
     if let Some(cookie_header) = req.headers().get("cookie")
-        && let Ok(cookie_str) = cookie_header.to_str() {
-            for pair in cookie_str.split(';') {
-                let pair = pair.trim();
-                if let Some((key, value)) = pair.split_once('=') {
-                    cookies.insert(key.trim().to_string(), value.trim().to_string());
-                }
+        && let Ok(cookie_str) = cookie_header.to_str()
+    {
+        for pair in cookie_str.split(';') {
+            let pair = pair.trim();
+            if let Some((key, value)) = pair.split_once('=') {
+                cookies.insert(key.trim().to_string(), value.trim().to_string());
             }
         }
+    }
 
     cookies
 }

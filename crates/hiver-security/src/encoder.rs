@@ -70,9 +70,8 @@ impl PasswordEncoder for BcryptPasswordEncoder {
         // If bcrypt fails, that's a fatal error requiring investigation.
         // 安全：绝不静默降级到更弱的哈希算法。
         // 如果 bcrypt 失败，那是需要调查的致命错误。
-        bcrypt::hash(raw, self.cost).expect(
-            "BCrypt encoding failed — this is a fatal error, not a condition for fallback",
-        )
+        bcrypt::hash(raw, self.cost)
+            .expect("BCrypt encoding failed — this is a fatal error, not a condition for fallback")
     }
 
     fn matches(&self, raw: &str, encoded: &str) -> bool {
@@ -82,9 +81,10 @@ impl PasswordEncoder for BcryptPasswordEncoder {
     fn upgrade_encoding(&self, encoded: &str) -> bool {
         // Check if the encoded password has the target cost
         if let Some(prefix) = encoded.split('$').nth(2)
-            && let Ok(cost) = prefix.parse::<u32>() {
-                return cost != self.cost;
-            }
+            && let Ok(cost) = prefix.parse::<u32>()
+        {
+            return cost != self.cost;
+        }
         true
     }
 }
@@ -247,8 +247,8 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
 
         for block_idx in 1..=blocks_needed {
             // U1 = PRF(Password, Salt || INT(block_idx))
-            let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
-                .expect("HMAC accepts any key length");
+            let mut mac =
+                HmacSha256::new_from_slice(raw.as_bytes()).expect("HMAC accepts any key length");
             mac.update(&salt);
             mac.update(&(block_idx as u32).to_be_bytes());
             let mut u = mac.finalize().into_bytes();
@@ -275,12 +275,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         dk.truncate(self.key_length);
 
         // Format: iterations$salt$key
-        format!(
-            "{}${}${}",
-            self.iterations,
-            hex::encode(&salt),
-            hex::encode(&dk)
-        )
+        format!("{}${}${}", self.iterations, hex::encode(&salt), hex::encode(&dk))
     }
 
     fn matches(&self, raw: &str, encoded: &str) -> bool {
@@ -317,8 +312,8 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         let mut dk = Vec::with_capacity(blocks_needed * hash_len);
 
         for block_idx in 1..=blocks_needed {
-            let mut mac = HmacSha256::new_from_slice(raw.as_bytes())
-                .expect("HMAC accepts any key length");
+            let mut mac =
+                HmacSha256::new_from_slice(raw.as_bytes()).expect("HMAC accepts any key length");
             mac.update(&salt);
             mac.update(&(block_idx as u32).to_be_bytes());
             let mut u = mac.finalize().into_bytes();

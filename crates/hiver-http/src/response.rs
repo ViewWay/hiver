@@ -8,11 +8,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use super::{
-    body::Body,
-    error::Result,
-    status::StatusCode,
-};
+use super::{body::Body, error::Result, status::StatusCode};
 use std::collections::HashMap;
 
 /// HTTP Response / HTTP 响应

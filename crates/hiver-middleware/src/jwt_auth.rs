@@ -20,9 +20,9 @@
 //!     .get("/api/users", get_users);
 //! ```
 
+use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::future::Future;
 
 use crate::{Error, Request, Response, Result};
 use hiver_router::{Middleware, Next};
@@ -219,21 +219,30 @@ where
             let path = req.path();
 
             // Skip authentication for certain paths
-            if skip_paths.iter().any(|p| path == p || path.starts_with(&format!("{}/", p))) {
+            if skip_paths
+                .iter()
+                .any(|p| path == p || path.starts_with(&format!("{}/", p)))
+            {
                 tracing::debug!("Skipping authentication for path: {}", path);
                 return next.call(req, state).await;
             }
 
             // Extract JWT token from headers
-            let token = match req.headers().get(&token_header).and_then(|v| v.to_str().ok()) {
+            let token = match req
+                .headers()
+                .get(&token_header)
+                .and_then(|v| v.to_str().ok())
+            {
                 Some(auth_header) if auth_header.starts_with(&token_prefix) => {
                     Some(auth_header[token_prefix.len()..].to_string())
-                }
+                },
                 Some(_) => None,
                 None => None,
             };
 
-            let token = if let Some(t) = token { t } else {
+            let token = if let Some(t) = token {
+                t
+            } else {
                 tracing::warn!("Missing JWT token for path: {}", path);
                 return Err(Error::unauthorized());
             };
@@ -243,19 +252,19 @@ where
                 Ok(claims) => {
                     tracing::debug!("JWT verified for user: {}", claims.username);
                     claims
-                }
+                },
                 Err(SecurityError::TokenExpired(msg)) => {
                     tracing::warn!("JWT token expired: {}", msg);
                     return Err(Error::unauthorized());
-                }
+                },
                 Err(SecurityError::InvalidToken(msg)) => {
                     tracing::warn!("Invalid JWT token: {}", msg);
                     return Err(Error::unauthorized());
-                }
+                },
                 Err(e) => {
                     tracing::error!("JWT verification error: {:?}", e);
                     return Err(Error::internal("Authentication error"));
-                }
+                },
             };
 
             // Note: JWT claims extraction successful

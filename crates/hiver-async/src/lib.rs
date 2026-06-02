@@ -48,12 +48,12 @@
 #[cfg(test)]
 mod tests;
 
-mod executor;
-mod task;
 mod config;
 mod error;
+mod executor;
+mod task;
 
-pub use executor::{AsyncTaskExecutor, TaskExecutor};
-pub use config::{TaskExecutorConfig, ExecutionMode, RejectionPolicy};
-pub use task::{AsyncTask, AsyncTaskHandle, RunnableTask};
+pub use config::{ExecutionMode, RejectionPolicy, TaskExecutorConfig};
 pub use error::{AsyncError, AsyncResult};
+pub use executor::{AsyncTaskExecutor, TaskExecutor};
+pub use task::{AsyncTask, AsyncTaskHandle, RunnableTask};

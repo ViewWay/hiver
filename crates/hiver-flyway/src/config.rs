@@ -106,9 +106,9 @@ impl Config {
     pub fn from_env() -> Result<Self> {
         let url = std::env::var("FLYWAY_URL")
             .or_else(|_| std::env::var("DATABASE_URL"))
-            .map_err(|_| FlywayError::ConfigError(
-                "FLYWAY_URL or DATABASE_URL must be set".to_string(),
-            ))?;
+            .map_err(|_| {
+                FlywayError::ConfigError("FLYWAY_URL or DATABASE_URL must be set".to_string())
+            })?;
 
         let database_type = DatabaseType::from_url(&url).ok_or_else(|| {
             FlywayError::ConfigError(format!(
@@ -142,15 +142,11 @@ impl Config {
     /// 校验配置
     pub fn validate(&self) -> Result<()> {
         if self.datasource_url.is_empty() {
-            return Err(FlywayError::ConfigError(
-                "datasource_url cannot be empty".to_string(),
-            ));
+            return Err(FlywayError::ConfigError("datasource_url cannot be empty".to_string()));
         }
 
         if self.locations.is_empty() {
-            return Err(FlywayError::ConfigError(
-                "locations cannot be empty".to_string(),
-            ));
+            return Err(FlywayError::ConfigError("locations cannot be empty".to_string()));
         }
 
         Ok(())
@@ -183,7 +179,6 @@ pub struct ConfigBuilder {
     config: Config,
 }
 
-
 impl ConfigBuilder {
     /// Create a new builder
     /// 创建新构建器
@@ -198,8 +193,8 @@ impl ConfigBuilder {
     /// 自动从 URL scheme 检测数据库类型。
     pub fn datasource_url(mut self, url: impl Into<String>) -> Self {
         let url_str = url.into();
-        self.config.database_type = DatabaseType::from_url(&url_str)
-            .unwrap_or(DatabaseType::Postgres);
+        self.config.database_type =
+            DatabaseType::from_url(&url_str).unwrap_or(DatabaseType::Postgres);
         self.config.datasource_url = url_str;
         self
     }

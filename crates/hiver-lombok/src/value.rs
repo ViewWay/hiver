@@ -3,7 +3,7 @@
 
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Value] derive macro
 /// 实现 #[Value] 派生宏
@@ -33,16 +33,13 @@ pub fn impl_value(input: DeriveInput) -> TokenStream {
                 "#[Value] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Get field names and types
     // 获取字段名和类型
-    let field_names: Vec<&Ident> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<&Ident> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
@@ -70,35 +67,44 @@ pub fn impl_value(input: DeriveInput) -> TokenStream {
 
     // Generate getters
     // 生成 getters
-    let getters: Vec<TokenStream> = field_names.iter().zip(field_types.iter()).map(|(name, ty)| {
-        quote! {
-            #[inline]
-            pub fn #name(&self) -> #ty
-            where
-                #ty: ::std::clone::Clone,
-            {
-                self.#name.clone()
+    let getters: Vec<TokenStream> = field_names
+        .iter()
+        .zip(field_types.iter())
+        .map(|(name, ty)| {
+            quote! {
+                #[inline]
+                pub fn #name(&self) -> #ty
+                where
+                    #ty: ::std::clone::Clone,
+                {
+                    self.#name.clone()
+                }
             }
-        }
-    }).collect();
+        })
+        .collect();
 
     // Generate with_methods
     // 生成 with_methods
-    let with_methods: Vec<TokenStream> = field_names.iter().zip(field_types.iter()).zip(with_method_names.iter()).map(|((name, ty), with_name)| {
-        quote! {
-            #[inline]
-            #[must_use]
-            #[doc = concat!("Creates a modified copy with `", stringify!(#name), "` changed.")]
-            pub fn #with_name(&self, #name: #ty) -> Self
-            where
-                #ty: Clone,
-            {
-                let mut result = self.clone();
-                result.#name = #name;
-                result
+    let with_methods: Vec<TokenStream> = field_names
+        .iter()
+        .zip(field_types.iter())
+        .zip(with_method_names.iter())
+        .map(|((name, ty), with_name)| {
+            quote! {
+                #[inline]
+                #[must_use]
+                #[doc = concat!("Creates a modified copy with `", stringify!(#name), "` changed.")]
+                pub fn #with_name(&self, #name: #ty) -> Self
+                where
+                    #ty: Clone,
+                {
+                    let mut result = self.clone();
+                    result.#name = #name;
+                    result
+                }
             }
-        }
-    }).collect();
+        })
+        .collect();
 
     // Combine all expansions
     // 合并所有展开

@@ -13,8 +13,8 @@ fn test_core_container_create() {
 
 #[tokio::test]
 async fn test_core_reactive_flux() {
-    use hiver_core::reactive::Flux;
     use futures::StreamExt;
+    use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5]);
     let collected: Vec<i32> = flux.collect().await;
     assert_eq!(collected, vec![1, 2, 3, 4, 5]);
@@ -22,8 +22,8 @@ async fn test_core_reactive_flux() {
 
 #[tokio::test]
 async fn test_core_reactive_flux_backpressure() {
-    use hiver_core::reactive::Flux;
     use futures::StreamExt;
+    use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5, 6]);
     let buffered = flux.on_backpressure_buffer(10);
     let collected: Vec<_> = buffered.collect().await;
@@ -60,13 +60,19 @@ fn test_modulith_register_and_verify() {
 
     struct ModA;
     impl Module for ModA {
-        fn name(&self) -> &str { "a" }
+        fn name(&self) -> &str {
+            "a"
+        }
     }
 
     struct ModB;
     impl Module for ModB {
-        fn name(&self) -> &str { "b" }
-        fn dependencies(&self) -> Vec<&str> { vec!["a"] }
+        fn name(&self) -> &str {
+            "b"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["a"]
+        }
     }
 
     let registry = ModuleRegistry::new();
@@ -84,14 +90,22 @@ fn test_modulith_detects_cycle() {
 
     struct ModX;
     impl Module for ModX {
-        fn name(&self) -> &str { "x" }
-        fn dependencies(&self) -> Vec<&str> { vec!["y"] }
+        fn name(&self) -> &str {
+            "x"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["y"]
+        }
     }
 
     struct ModY;
     impl Module for ModY {
-        fn name(&self) -> &str { "y" }
-        fn dependencies(&self) -> Vec<&str> { vec!["x"] }
+        fn name(&self) -> &str {
+            "y"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["x"]
+        }
     }
 
     let registry = ModuleRegistry::new();
@@ -105,7 +119,7 @@ fn test_modulith_detects_cycle() {
 
 #[tokio::test]
 async fn test_modulith_domain_events() {
-    use hiver_modulith::{DomainEvent, EventPublisher, EventHandler, InMemoryEventPublisher};
+    use hiver_modulith::{DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher};
     use serde::Serialize;
 
     #[derive(Serialize)]
@@ -118,7 +132,9 @@ async fn test_modulith_domain_events() {
     let event = DomainEvent::new(
         "user.created",
         "user-module",
-        UserPayload { user_id: "user-123".to_string() },
+        UserPayload {
+            user_id: "user-123".to_string(),
+        },
     );
 
     // Verify event creation
@@ -133,30 +149,39 @@ async fn test_modulith_domain_events() {
 
 #[test]
 fn test_statemachine_with_persistence() {
-    use hiver_state_machine::persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot};
+    use hiver_state_machine::persist::{
+        InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot,
+    };
     use hiver_state_machine::state::StateData;
     use hiver_state_machine::{Event, State, StateMachineBuilder};
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum OrderState { Pending, Confirmed, Shipped }
+    enum OrderState {
+        Pending,
+        Confirmed,
+        Shipped,
+    }
     impl State for OrderState {}
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum OrderEvent { Confirm, Ship }
+    enum OrderEvent {
+        Confirm,
+        Ship,
+    }
     impl Event for OrderEvent {}
 
     let mut sm = StateMachineBuilder::new()
         .initial_state(OrderState::Pending)
         .transition()
-            .source(OrderState::Pending)
-            .target(OrderState::Confirmed)
-            .event(OrderEvent::Confirm)
-            .and()
+        .source(OrderState::Pending)
+        .target(OrderState::Confirmed)
+        .event(OrderEvent::Confirm)
+        .and()
         .transition()
-            .source(OrderState::Confirmed)
-            .target(OrderState::Shipped)
-            .event(OrderEvent::Ship)
-            .and()
+        .source(OrderState::Confirmed)
+        .target(OrderState::Shipped)
+        .event(OrderEvent::Ship)
+        .and()
         .build()
         .unwrap();
 
@@ -179,7 +204,7 @@ fn test_statemachine_with_persistence() {
 
 #[test]
 fn test_statemachine_visualization() {
-    use hiver_state_machine::config::{StateMachineConfig, StateConfig, TransitionConfig};
+    use hiver_state_machine::config::{StateConfig, StateMachineConfig, TransitionConfig};
     use hiver_state_machine::visualizer::{DiagramFormat, StateMachineVisualizer};
 
     let config = StateMachineConfig::new("order", "Pending")
@@ -206,12 +231,21 @@ fn test_statemachine_fork_join() {
     use hiver_state_machine::state::State;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum S { A1, A2, B1, B2 }
+    enum S {
+        A1,
+        A2,
+        B1,
+        B2,
+    }
     impl State for S {}
 
     let mut fj = ForkJoinRegion::new();
     fj.add_region(Region::new("left", S::A1).add_state(S::A1).add_state(S::A2));
-    fj.add_region(Region::new("right", S::B1).add_state(S::B1).add_state(S::B2));
+    fj.add_region(
+        Region::new("right", S::B1)
+            .add_state(S::B1)
+            .add_state(S::B2),
+    );
     fj.set_end_states(vec![S::A2, S::B2]);
 
     fj.fork().unwrap();
@@ -231,8 +265,7 @@ fn test_statemachine_timers() {
 
     let mut scheduler = TimerScheduler::new();
     scheduler.register(
-        StateMachineTimer::new("waiting", "timeout", Duration::from_secs(30))
-            .with_max_firings(2),
+        StateMachineTimer::new("waiting", "timeout", Duration::from_secs(30)).with_max_firings(2),
     );
 
     assert!(scheduler.can_fire(0));

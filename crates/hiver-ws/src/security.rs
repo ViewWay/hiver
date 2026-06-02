@@ -46,7 +46,11 @@ pub struct SecurityConfig {
 impl SecurityConfig {
     /// Create a new default security config / 创建默认安全配置
     pub fn new() -> Self {
-        Self { username: None, password: None, signing_key: None }
+        Self {
+            username: None,
+            password: None,
+            signing_key: None,
+        }
     }
 
     /// Set username and password credentials / 设置用户名和密码凭据
@@ -87,7 +91,9 @@ impl SecurityConfig {
 }
 
 impl Default for SecurityConfig {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]

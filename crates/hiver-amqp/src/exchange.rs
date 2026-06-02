@@ -5,8 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// Exchange type
 /// 交换机类型
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum ExchangeType {
     /// Direct exchange (exact match)
     /// 直连交换机（精确匹配）
@@ -25,7 +24,6 @@ pub enum ExchangeType {
     /// 头交换机（头匹配）
     Headers,
 }
-
 
 impl std::fmt::Display for ExchangeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -158,7 +156,11 @@ impl Exchange {
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.arguments.insert(key.into(), value.into());
         self
     }
@@ -166,7 +168,8 @@ impl Exchange {
     /// Set alternate exchange
     /// 设置备用交换机
     pub fn with_alternate_exchange(mut self, exchange: impl Into<String>) -> Self {
-        self.arguments.insert("alternate-exchange".to_string(), serde_json::json!(exchange.into()));
+        self.arguments
+            .insert("alternate-exchange".to_string(), serde_json::json!(exchange.into()));
         self
     }
 }
@@ -236,7 +239,11 @@ impl ExchangeBuilder {
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.exchange = self.exchange.with_argument(key, value);
         self
     }
@@ -338,12 +345,8 @@ mod tests {
     /// Test with_alternate_exchange convenience method / 测试 with_alternate_exchange 便捷方法
     #[test]
     fn test_exchange_alternate_exchange() {
-        let ex = Exchange::direct("primary")
-            .with_alternate_exchange("fallback");
-        assert_eq!(
-            ex.arguments.get("alternate-exchange").unwrap(),
-            &serde_json::json!("fallback")
-        );
+        let ex = Exchange::direct("primary").with_alternate_exchange("fallback");
+        assert_eq!(ex.arguments.get("alternate-exchange").unwrap(), &serde_json::json!("fallback"));
     }
 
     /// Test Exchange serialization round-trip / 测试 Exchange 序列化往返

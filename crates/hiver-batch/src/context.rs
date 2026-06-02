@@ -63,7 +63,9 @@ impl JobContext {
     /// 从上下文移除值
     pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T> {
         let mut store = self.inner.write().await;
-        store.remove(key).and_then(|boxed| boxed.downcast::<T>().ok().map(|b| *b))
+        store
+            .remove(key)
+            .and_then(|boxed| boxed.downcast::<T>().ok().map(|b| *b))
     }
 
     /// Check if key exists
@@ -162,15 +164,14 @@ impl StepContext {
     /// 从步骤上下文移除值
     pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T> {
         let mut store = self.inner.write().await;
-        store.remove(key).and_then(|boxed| boxed.downcast::<T>().ok().map(|b| *b))
+        store
+            .remove(key)
+            .and_then(|boxed| boxed.downcast::<T>().ok().map(|b| *b))
     }
 
     /// Get value from step context, fallback to job context
     /// 从步骤上下文获取值，回退到作业上下文
-    pub async fn get_or_from_job<T: Any + Send + Sync + Clone>(
-        &self,
-        key: &str,
-    ) -> Option<T> {
+    pub async fn get_or_from_job<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T> {
         match self.get(key).await {
             Some(value) => Some(value),
             None => self.job_context.get(key).await,
@@ -248,14 +249,8 @@ mod tests {
 
         assert_eq!(step_context.get::<i32>("step_level").await, Some(456));
         assert_eq!(step_context.get::<i32>("job_level").await, None);
-        assert_eq!(
-            step_context.get_or_from_job::<i32>("job_level").await,
-            Some(123)
-        );
-        assert_eq!(
-            step_context.get_or_from_job::<i32>("step_level").await,
-            Some(456)
-        );
+        assert_eq!(step_context.get_or_from_job::<i32>("job_level").await, Some(123));
+        assert_eq!(step_context.get_or_from_job::<i32>("step_level").await, Some(456));
     }
 
     #[tokio::test]

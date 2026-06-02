@@ -3,18 +3,16 @@
 //! 自动配置数据源和事务管理。
 //! Auto-configures data source and transaction management.
 
-use crate::core::{AutoConfiguration, ApplicationContext};
-use std::sync::Arc;
-use hiver_tx::{NoopTransactionManager, set_global_tx_manager};
+use crate::core::{ApplicationContext, AutoConfiguration};
 #[cfg(feature = "sqlx")]
 use hiver_tx::SqlxTransactionManager;
+use hiver_tx::{NoopTransactionManager, set_global_tx_manager};
+use std::sync::Arc;
 
 // Re-export data types
 // 重新导出数据类型
-pub use hiver_data_rdbc::{
-    DatabaseClient, TransactionManager, PoolConfig,
-};
 pub use hiver_data_rdbc::SqlxPoolClient;
+pub use hiver_data_rdbc::{DatabaseClient, PoolConfig, TransactionManager};
 
 /// Database type detected from JDBC-style URL.
 /// 从 JDBC 风格 URL 检测的数据库类型。
@@ -76,7 +74,11 @@ impl DataSourceConfig {
 
     /// 设置用户名和密码
     /// Set username and password
-    pub fn with_credentials(mut self, username: impl Into<String>, password: impl Into<String>) -> Self {
+    pub fn with_credentials(
+        mut self,
+        username: impl Into<String>,
+        password: impl Into<String>,
+    ) -> Self {
         self.username = Some(username.into());
         self.password = Some(password.into());
         self
@@ -197,7 +199,7 @@ impl AutoConfiguration for DataSourceAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        -50  // 较高优先级，在其他配置之前
+        -50 // 较高优先级，在其他配置之前
     }
 
     fn condition(&self) -> bool {
@@ -217,8 +219,7 @@ impl AutoConfiguration for DataSourceAutoConfiguration {
             if let (Some(ref username), Some(ref password)) = (&self.username, &self.password) {
                 config = config.with_credentials(username, password);
             }
-            config = config
-                .with_max_connections(self.max_connections);
+            config = config.with_max_connections(self.max_connections);
 
             // Register as bean
             // 注册为 bean
@@ -248,7 +249,7 @@ impl AutoConfiguration for TransactionAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        50  // 在数据源配置之后
+        50 // 在数据源配置之后
     }
 
     fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
@@ -259,12 +260,13 @@ impl AutoConfiguration for TransactionAutoConfiguration {
         tracing::info!("Registered TransactionManager bean");
 
         set_global_tx_manager(Arc::new(NoopTransactionManager::default()));
-        tracing::info!("Registered global NoopTransactionManager (override in start() when datasource present)");
+        tracing::info!(
+            "Registered global NoopTransactionManager (override in start() when datasource present)"
+        );
 
         Ok(())
     }
 }
-
 
 /// Register a real SQLx transaction manager when a datasource URL is configured.
 /// 当配置了数据源 URL 时注册真实的 SQLx 事务管理器。
@@ -275,7 +277,8 @@ pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyh
 
     #[cfg(feature = "sqlx")]
     {
-        let mgr = SqlxTransactionManager::connect(&cfg.url).await
+        let mgr = SqlxTransactionManager::connect(&cfg.url)
+            .await
             .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?;
         set_global_tx_manager(Arc::new(mgr));
         tracing::info!("Registered global SqlxTransactionManager");

@@ -162,8 +162,7 @@ impl Parameter {
 
 /// Example definition
 /// 示例定义
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Example {
     /// Summary
     /// 摘要
@@ -207,7 +206,6 @@ impl Example {
         self
     }
 }
-
 
 /// Security scheme
 /// 安全方案
@@ -297,8 +295,7 @@ pub enum SecurityScheme {
 ///     }
 /// )
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Operation {
     /// Tags
     /// 标签列表
@@ -421,7 +418,6 @@ impl Operation {
     }
 }
 
-
 /// External documentation
 /// 外部文档
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -438,8 +434,7 @@ pub struct ExternalDocs {
 
 /// Request body
 /// 请求体
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct RequestBody {
     /// Description
     /// 描述
@@ -485,11 +480,9 @@ impl RequestBody {
     }
 }
 
-
 /// Media type
 /// 媒体类型
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MediaType {
     /// Schema
     /// 模式
@@ -533,7 +526,6 @@ impl MediaType {
         self
     }
 }
-
 
 /// Encoding
 /// 编码

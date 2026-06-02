@@ -163,25 +163,25 @@ pub fn format_pattern(
             match chars.next() {
                 Some('d') => {
                     formatted.push_str(timestamp);
-                }
+                },
                 Some('t') => {
                     formatted.push_str(&thread_id.to_string());
-                }
+                },
                 Some('p') => {
                     formatted.push_str(&level.to_string());
-                }
+                },
                 Some('c') => {
                     formatted.push_str(target);
-                }
+                },
                 Some('m') => {
                     formatted.push_str(message);
-                }
+                },
                 Some('n') => {
                     formatted.push('\n');
-                }
+                },
                 Some('%') | None => {
                     formatted.push('%');
-                }
+                },
                 Some('X') => {
                     // MDC placeholder %X{key}
                     // MDC 占位符 %X{key}
@@ -200,11 +200,11 @@ pub fn format_pattern(
                             let _ = write!(formatted, "[{}]", key);
                         }
                     }
-                }
+                },
                 Some(other) => {
                     formatted.push('%');
                     formatted.push(other);
-                }
+                },
             }
         } else {
             formatted.push(c);
@@ -376,7 +376,8 @@ impl Default for LoggerConfig {
 
         // Get mode from environment or derive from profile
         let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
-            LogMode::from_str(&mode_str).unwrap_or_else(|| LogMode::from_profile(profile.as_deref()))
+            LogMode::from_str(&mode_str)
+                .unwrap_or_else(|| LogMode::from_profile(profile.as_deref()))
         } else {
             LogMode::from_profile(profile.as_deref())
         };
@@ -415,7 +416,7 @@ impl Default for LoggerConfig {
             profile,
             file_path,
             with_thread: matches!(mode, LogMode::Verbose), // Verbose mode includes thread
-            with_file: matches!(mode, LogMode::Verbose),  // Verbose mode includes file
+            with_file: matches!(mode, LogMode::Verbose),   // Verbose mode includes file
             with_target: true,
             rotation,
             max_files,
@@ -480,11 +481,7 @@ impl Logger {
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
-                            .with(
-                                fmt::layer()
-                                    .with_writer(file_appender)
-                                    .compact()
-                            )
+                            .with(fmt::layer().with_writer(file_appender).compact())
                             .try_init()?;
                     } else {
                         Registry::default()
@@ -496,20 +493,14 @@ impl Logger {
                 #[cfg(not(feature = "hiver-format"))]
                 {
                     // Fallback to standard compact
-                    let fmt_layer = fmt::layer()
-                        .with_target(config.with_target)
-                        .compact();
+                    let fmt_layer = fmt::layer().with_target(config.with_target).compact();
 
                     if let Some(ref path) = config.file_path {
                         let file_appender = create_file_appender(path, config.rotation)?;
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
-                            .with(
-                                fmt::layer()
-                                    .with_writer(file_appender)
-                                    .compact()
-                            )
+                            .with(fmt::layer().with_writer(file_appender).compact())
                             .try_init()?;
                     } else {
                         Registry::default()
@@ -518,7 +509,7 @@ impl Logger {
                             .try_init()?;
                     }
                 }
-            }
+            },
             LogMode::Verbose => {
                 // Verbose mode - full format based on LogFormat
                 // 详细模式 - 根据 LogFormat 使用完整格式
@@ -535,7 +526,8 @@ impl Logger {
 
                             if let Some(ref path) = config.file_path {
                                 let file_appender = create_file_appender(path, config.rotation)?;
-                                let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+                                let (non_blocking, _guard) =
+                                    tracing_appender::non_blocking(file_appender);
 
                                 let file_layer = fmt::layer()
                                     .with_file(config.with_file)
@@ -567,7 +559,8 @@ impl Logger {
 
                             if let Some(ref path) = config.file_path {
                                 let file_appender = create_file_appender(path, config.rotation)?;
-                                let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+                                let (non_blocking, _guard) =
+                                    tracing_appender::non_blocking(file_appender);
 
                                 let file_layer = fmt::layer()
                                     .with_file(config.with_file)
@@ -651,7 +644,7 @@ impl Logger {
                         }
                     },
                 }
-            }
+            },
         }
 
         Ok(())
@@ -684,9 +677,10 @@ impl Logger {
 
         // Spring Boot: logging.level.root
         if let Ok(level) = std::env::var("LOGGING_LEVEL_ROOT")
-            && let Some(lvl) = LogLevel::from_str(&level) {
-                config.level = lvl;
-            }
+            && let Some(lvl) = LogLevel::from_str(&level)
+        {
+            config.level = lvl;
+        }
 
         // Spring Boot: logging.file.name
         if let Ok(file) = std::env::var("LOGGING_FILE_NAME") {
@@ -700,9 +694,10 @@ impl Logger {
 
         // Also support HIVER_LOG_PATTERN
         if std::env::var("HIVER_LOG_PATTERN").is_ok()
-            && let Ok(pattern) = std::env::var("HIVER_LOG_PATTERN") {
-                config.custom_pattern = Some(pattern);
-            }
+            && let Ok(pattern) = std::env::var("HIVER_LOG_PATTERN")
+        {
+            config.custom_pattern = Some(pattern);
+        }
 
         Logger::init_with_config(&config)
     }
@@ -742,9 +737,12 @@ impl Logger {
     /// Logger::init_from_config(&config)?;
     /// ```
     #[cfg(feature = "config")]
-    pub fn init_from_config(config: &hiver_config::Config) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn init_from_config(
+        config: &hiver_config::Config,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         // Get profile first (affects defaults)
-        let profile = config.get("hiver.profile")
+        let profile = config
+            .get("hiver.profile")
             .or_else(|| config.get("profile"))
             .and_then(|v| v.as_str().map(String::from));
 
@@ -795,7 +793,7 @@ impl Logger {
                     "daily" => logger_config.rotation = LogRotation::Daily,
                     "hourly" => logger_config.rotation = LogRotation::Hourly,
                     "never" => logger_config.rotation = LogRotation::Never,
-                    _ => {}
+                    _ => {},
                 }
             }
         }
@@ -826,7 +824,6 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter {
 
     // Support Spring Boot style: logging.level.<package>=<LEVEL>
     // 支持Spring Boot风格：logging.level.<package>=<LEVEL>
-    
 
     if let Ok(level_str) = std::env::var("LOGGING_LEVEL") {
         let parts: Vec<&str> = level_str.split('=').collect();
@@ -1098,40 +1095,19 @@ mod tests {
 
     #[test]
     fn test_format_pattern_percent() {
-        let result = format_pattern(
-            "Progress: 50%% complete",
-            "",
-            0,
-            &LogLevel::Info,
-            "",
-            "",
-        );
+        let result = format_pattern("Progress: 50%% complete", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "Progress: 50% complete");
     }
 
     #[test]
     fn test_format_pattern_newline() {
-        let result = format_pattern(
-            "Line 1%nLine 2",
-            "",
-            0,
-            &LogLevel::Info,
-            "",
-            "",
-        );
+        let result = format_pattern("Line 1%nLine 2", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "Line 1\nLine 2");
     }
 
     #[test]
     fn test_format_pattern_mdc() {
-        let result = format_pattern(
-            "User: %X{userId}",
-            "",
-            0,
-            &LogLevel::Info,
-            "",
-            "",
-        );
+        let result = format_pattern("User: %X{userId}", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "User: [userId]");
     }
 }

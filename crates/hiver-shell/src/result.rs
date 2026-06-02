@@ -141,7 +141,8 @@ impl TableResult {
 
     /// Add a row / 添加行
     pub fn row(mut self, values: &[&str]) -> Self {
-        self.rows.push(values.iter().map(ToString::to_string).collect());
+        self.rows
+            .push(values.iter().map(ToString::to_string).collect());
         self
     }
 
@@ -323,7 +324,7 @@ impl ResultHandler {
             OutputFormat::Json => {
                 let json = serde_json::json!({ "result": text });
                 serde_json::to_string_pretty(&json).unwrap_or_else(|_| text.to_string())
-            }
+            },
             _ => text.to_string(),
         }
     }
@@ -338,7 +339,7 @@ impl ResultHandler {
                 });
                 serde_json::to_string_pretty(&json)
                     .unwrap_or_else(|_| format!("{{\"error\": true, \"message\": \"{error}\"}}"))
-            }
+            },
             _ => format!("{} {}", "ERROR:".red().bold(), error),
         }
     }

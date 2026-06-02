@@ -112,7 +112,11 @@ impl Response {
 
     /// Add content
     /// 添加内容
-    pub fn add_content(mut self, content_type: impl Into<String>, content: ResponseContent) -> Self {
+    pub fn add_content(
+        mut self,
+        content_type: impl Into<String>,
+        content: ResponseContent,
+    ) -> Self {
         self.content
             .get_or_insert_with(HashMap::new)
             .insert(content_type.into(), content);
@@ -131,8 +135,7 @@ impl Response {
 
 /// Header definition
 /// 头定义
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Header {
     /// Description
     /// 描述
@@ -181,7 +184,6 @@ impl Header {
         self
     }
 }
-
 
 /// Response content
 /// 响应内容
@@ -239,53 +241,87 @@ impl ApiResponse {
     /// Create a success response with data
     /// 创建带数据的成功响应
     pub fn success(data_type: impl Into<String>) -> Response {
-        Response::ok("Successful operation")
-            .json(
-                crate::Schema::object()
-                    .add_property("code", crate::Schema::integer().description("Response code").into())
-                    .add_property("message", crate::Schema::string().description("Response message").into())
-                    .add_property("data", crate::Schema::reference(format!("#/components/schemas/{}", data_type.into())).into())
-                    .add_property("timestamp", crate::Schema::long().description("Response timestamp").into())
-            )
+        Response::ok("Successful operation").json(
+            crate::Schema::object()
+                .add_property("code", crate::Schema::integer().description("Response code").into())
+                .add_property(
+                    "message",
+                    crate::Schema::string()
+                        .description("Response message")
+                        .into(),
+                )
+                .add_property(
+                    "data",
+                    crate::Schema::reference(format!("#/components/schemas/{}", data_type.into()))
+                        .into(),
+                )
+                .add_property(
+                    "timestamp",
+                    crate::Schema::long()
+                        .description("Response timestamp")
+                        .into(),
+                ),
+        )
     }
 
     /// Create a paginated response
     /// 创建分页响应
     pub fn page(data_type: impl Into<String>) -> Response {
-        Response::ok("Paginated response")
-            .json(
-                crate::Schema::object()
-                    .add_property("content", crate::Schema::array(crate::Schema::reference(format!("#/components/schemas/{}", data_type.into()))).into())
-                    .add_property("page", crate::Schema::integer().description("Current page").into())
-                    .add_property("size", crate::Schema::integer().description("Page size").into())
-                    .add_property("totalElements", crate::Schema::long().description("Total elements").into())
-                    .add_property("totalPages", crate::Schema::integer().description("Total pages").into())
-            )
+        Response::ok("Paginated response").json(
+            crate::Schema::object()
+                .add_property(
+                    "content",
+                    crate::Schema::array(crate::Schema::reference(format!(
+                        "#/components/schemas/{}",
+                        data_type.into()
+                    )))
+                    .into(),
+                )
+                .add_property("page", crate::Schema::integer().description("Current page").into())
+                .add_property("size", crate::Schema::integer().description("Page size").into())
+                .add_property(
+                    "totalElements",
+                    crate::Schema::long().description("Total elements").into(),
+                )
+                .add_property(
+                    "totalPages",
+                    crate::Schema::integer().description("Total pages").into(),
+                ),
+        )
     }
 
     /// Create an error response
     /// 创建错误响应
     pub fn error() -> Response {
-        Response::internal_error("Error occurred")
-            .json(
-                crate::Schema::object()
-                    .add_property("code", crate::Schema::integer().description("Error code").into())
-                    .add_property("message", crate::Schema::string().description("Error message").into())
-                    .add_property("timestamp", crate::Schema::long().description("Error timestamp").into())
-                    .add_property("path", crate::Schema::string().description("Request path").into())
-            )
+        Response::internal_error("Error occurred").json(
+            crate::Schema::object()
+                .add_property("code", crate::Schema::integer().description("Error code").into())
+                .add_property(
+                    "message",
+                    crate::Schema::string().description("Error message").into(),
+                )
+                .add_property(
+                    "timestamp",
+                    crate::Schema::long().description("Error timestamp").into(),
+                )
+                .add_property("path", crate::Schema::string().description("Request path").into()),
+        )
     }
 
     /// Create a validation error response
     /// 创建验证错误响应
     pub fn validation_error() -> Response {
-        Response::bad_request("Validation failed")
-            .json(
-                crate::Schema::object()
-                    .add_property("code", crate::Schema::integer().description("Error code").into())
-                    .add_property("message", crate::Schema::string().description("Validation message").into())
-                    .add_property("errors", crate::Schema::object().description("Field errors").into())
-            )
+        Response::bad_request("Validation failed").json(
+            crate::Schema::object()
+                .add_property("code", crate::Schema::integer().description("Error code").into())
+                .add_property(
+                    "message",
+                    crate::Schema::string()
+                        .description("Validation message")
+                        .into(),
+                )
+                .add_property("errors", crate::Schema::object().description("Field errors").into()),
+        )
     }
 }
 
@@ -304,7 +340,7 @@ mod tests {
         let response = Response::ok("Success").json(
             crate::Schema::object()
                 .add_property("id", crate::Schema::integer().into())
-                .add_property("name", crate::Schema::string().into())
+                .add_property("name", crate::Schema::string().into()),
         );
 
         assert!(response.content.is_some());

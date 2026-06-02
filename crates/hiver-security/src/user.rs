@@ -479,7 +479,8 @@ mod tests {
             "john",
             "secret",
             &[Role::User],
-        )]).await;
+        )])
+        .await;
 
         assert!(service.user_exists("john").await);
 

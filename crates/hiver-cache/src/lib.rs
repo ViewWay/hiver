@@ -53,7 +53,6 @@
 #![allow(dead_code)]
 
 mod cache;
-mod global_cache;
 mod cache_config;
 mod cache_evict;
 mod cache_manager;
@@ -61,6 +60,7 @@ mod cache_put;
 mod cacheable;
 mod caching;
 mod condition_evaluator;
+mod global_cache;
 mod key_generator;
 mod resolver;
 
@@ -77,9 +77,9 @@ pub use cache_put::{CachePut, CachePutExec, CachePutOptions};
 pub use cacheable::{Cacheable, CacheableOptions, Cached};
 pub use caching::{Caching, CachingBuilder, CachingExec};
 pub use condition_evaluator::evaluate_cache_condition;
+pub use global_cache::{cache_evict_key, cache_get, cache_put, global_cache_manager};
 pub use key_generator::{DefaultKeyGenerator, HashKeyGenerator, KeyGenerator};
 pub use resolver::{CacheResolver, SimpleCacheResolver};
-pub use global_cache::{cache_evict_key, cache_get, cache_put, global_cache_manager};
 
 #[cfg(feature = "redis")]
 pub use redis_cache::{RedisCache, RedisConfig, SerializationFormat};

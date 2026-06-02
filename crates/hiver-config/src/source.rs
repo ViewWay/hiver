@@ -338,9 +338,18 @@ mod tests {
     /// 测试CommandLine具有最高优先级（最低顺序号）
     #[test]
     fn test_source_type_priority_ordering() {
-        assert!(PropertySourceType::CommandLine.default_order() < PropertySourceType::SystemEnvironment.default_order());
-        assert!(PropertySourceType::SystemEnvironment.default_order() < PropertySourceType::ApplicationProperties.default_order());
-        assert!(PropertySourceType::ApplicationProperties.default_order() < PropertySourceType::Custom.default_order());
+        assert!(
+            PropertySourceType::CommandLine.default_order()
+                < PropertySourceType::SystemEnvironment.default_order()
+        );
+        assert!(
+            PropertySourceType::SystemEnvironment.default_order()
+                < PropertySourceType::ApplicationProperties.default_order()
+        );
+        assert!(
+            PropertySourceType::ApplicationProperties.default_order()
+                < PropertySourceType::Custom.default_order()
+        );
     }
 
     // ============================================================

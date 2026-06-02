@@ -81,11 +81,7 @@ pub struct ComponentDefinition {
 
 impl ComponentDefinition {
     /// 创建新的组件定义
-    pub fn new(
-        name: String,
-        component_type: ComponentType,
-        type_name: String,
-    ) -> Self {
+    pub fn new(name: String, component_type: ComponentType, type_name: String) -> Self {
         Self {
             name,
             component_type,
@@ -238,10 +234,7 @@ impl ComponentScanner {
     pub fn scan(&self, _ctx: &mut ApplicationContext) -> Result<Vec<ComponentDefinition>> {
         let components = Vec::new();
 
-        tracing::debug!(
-            "Scanning components in packages: {:?}",
-            self.base_packages
-        );
+        tracing::debug!("Scanning components in packages: {:?}", self.base_packages);
 
         Ok(components)
     }
@@ -264,8 +257,7 @@ impl ComponentScanner {
     fn register_component(
         &self,
         _ctx: &mut ApplicationContext,
-        #[allow(clippy::needless_pass_by_value)]
-        component: ComponentDefinition,
+        #[allow(clippy::needless_pass_by_value)] component: ComponentDefinition,
     ) -> Result<()> {
         tracing::debug!(
             "Registering component: {} ({})",

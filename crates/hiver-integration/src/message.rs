@@ -2,7 +2,7 @@
 //! 集成模式的消息表示
 
 use crate::error::{IntegrationError, Result};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use std::any::Any;
 use std::collections::HashMap;
 use std::time::SystemTime;
@@ -141,9 +141,7 @@ impl Message {
     /// Get correlation ID
     /// 获取关联 ID
     pub fn correlation_id(&self) -> Option<Uuid> {
-        self.headers
-            .get("correlation_id")
-            .and_then(|v| v.as_uuid())
+        self.headers.get("correlation_id").and_then(|v| v.as_uuid())
     }
 
     /// Set correlation ID
@@ -337,9 +335,7 @@ impl Headers {
     /// Iterate over headers
     /// 遍历头部
     pub fn iter(&self) -> impl Iterator<Item = (&str, &HeaderValue)> {
-        self.inner
-            .iter()
-            .map(|(k, v)| (k.as_str(), v))
+        self.inner.iter().map(|(k, v)| (k.as_str(), v))
     }
 
     /// Get header count
@@ -520,9 +516,12 @@ impl Payload {
             .inner
             .ok_or_else(|| IntegrationError::Payload("Payload is empty".to_string()))?;
 
-        inner.downcast_ref::<T>()
-            .cloned()
-            .ok_or_else(|| IntegrationError::Payload(format!("Failed to downcast payload to {}", std::any::type_name::<T>())))
+        inner.downcast_ref::<T>().cloned().ok_or_else(|| {
+            IntegrationError::Payload(format!(
+                "Failed to downcast payload to {}",
+                std::any::type_name::<T>()
+            ))
+        })
     }
 }
 

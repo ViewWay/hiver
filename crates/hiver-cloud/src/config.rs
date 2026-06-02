@@ -416,32 +416,51 @@ pub trait ConfigEncryptor: Send + Sync {
 
 /// Simple XOR-based encryptor (NOT production-safe).
 /// 基于 XOR 的简单加密器（非生产安全）。
-pub struct SimpleEncryptor { key: Vec<u8> }
+pub struct SimpleEncryptor {
+    key: Vec<u8>,
+}
 
 impl SimpleEncryptor {
     /// Create with a secret key.
-    pub fn new(key: impl Into<String>) -> Self { Self { key: key.into().into_bytes() } }
+    pub fn new(key: impl Into<String>) -> Self {
+        Self {
+            key: key.into().into_bytes(),
+        }
+    }
 }
 
 #[allow(clippy::indexing_slicing)]
 impl ConfigEncryptor for SimpleEncryptor {
     fn encrypt(&self, plain: &str) -> Result<String, ConfigError> {
-        let bytes: Vec<u8> = plain.bytes().enumerate().map(|(i, b)| b ^ self.key[i % self.key.len()]).collect();
+        let bytes: Vec<u8> = plain
+            .bytes()
+            .enumerate()
+            .map(|(i, b)| b ^ self.key[i % self.key.len()])
+            .collect();
         Ok(format!("ENC({})", hex::encode_upper(&bytes)))
     }
 
     fn decrypt(&self, cipher: &str) -> Result<String, ConfigError> {
-        let inner = cipher.strip_prefix("ENC(").and_then(|s| s.strip_suffix(')'))
+        let inner = cipher
+            .strip_prefix("ENC(")
+            .and_then(|s| s.strip_suffix(')'))
             .ok_or_else(|| ConfigError::Encryption("Not an ENC(...) value".into()))?;
         let bytes = hex::decode(inner).map_err(|e| ConfigError::Encryption(e.to_string()))?;
-        let dec: Vec<u8> = bytes.iter().enumerate().map(|(i, &b)| b ^ self.key[i % self.key.len()]).collect();
+        let dec: Vec<u8> = bytes
+            .iter()
+            .enumerate()
+            .map(|(i, &b)| b ^ self.key[i % self.key.len()])
+            .collect();
         String::from_utf8(dec).map_err(|e| ConfigError::Encryption(e.to_string()))
     }
 }
 
 /// Decrypt all `ENC(...)` values in a property map.
 /// 解密属性映射中所有 `ENC(...)` 值。
-pub fn decrypt_properties<S: std::hash::BuildHasher>(props: &mut HashMap<String, String, S>, encryptor: &dyn ConfigEncryptor) -> Result<(), ConfigError> {
+pub fn decrypt_properties<S: std::hash::BuildHasher>(
+    props: &mut HashMap<String, String, S>,
+    encryptor: &dyn ConfigEncryptor,
+) -> Result<(), ConfigError> {
     for value in props.values_mut() {
         if value.starts_with("ENC(") && value.ends_with(')') {
             *value = encryptor.decrypt(value)?;
@@ -462,13 +481,20 @@ pub struct ConfigEnvironment {
 impl ConfigEnvironment {
     /// Create a new environment with default profile.
     pub fn new() -> Self {
-        Self { profiles: vec!["default".to_string()], sources: HashMap::new(), listeners: Vec::new(), encryptor: None }
+        Self {
+            profiles: vec!["default".to_string()],
+            sources: HashMap::new(),
+            listeners: Vec::new(),
+            encryptor: None,
+        }
     }
 
     /// Add an active profile.
     pub fn with_profile(mut self, profile: impl Into<String>) -> Self {
         let p = profile.into();
-        if !self.profiles.contains(&p) { self.profiles.push(p); }
+        if !self.profiles.contains(&p) {
+            self.profiles.push(p);
+        }
         self
     }
 
@@ -492,12 +518,19 @@ impl ConfigEnvironment {
         let mut result = None;
         for profile in &self.profiles {
             if let Some(props) = self.sources.get(profile)
-                && let Some(v) = props.get(key) { result = Some(v.clone()); }
+                && let Some(v) = props.get(key)
+            {
+                result = Some(v.clone());
+            }
         }
         if let Some(ref v) = result
-            && v.starts_with("ENC(") && v.ends_with(')')
-                && let Some(ref enc) = self.encryptor
-                    && let Ok(d) = enc.decrypt(v) { return Some(d); }
+            && v.starts_with("ENC(")
+            && v.ends_with(')')
+            && let Some(ref enc) = self.encryptor
+            && let Ok(d) = enc.decrypt(v)
+        {
+            return Some(d);
+        }
         result
     }
 
@@ -508,13 +541,19 @@ impl ConfigEnvironment {
         let mut changes = Vec::new();
         for (key, new_val) in &new_props {
             let old_val = old_props.get(key).cloned();
-            if old_val.as_ref() != Some(new_val) { changes.push((key.clone(), old_val, Some(new_val.clone()))); }
+            if old_val.as_ref() != Some(new_val) {
+                changes.push((key.clone(), old_val, Some(new_val.clone())));
+            }
         }
         for (key, old_val) in &old_props {
-            if !new_props.contains_key(key) { changes.push((key.clone(), Some(old_val.clone()), None)); }
+            if !new_props.contains_key(key) {
+                changes.push((key.clone(), Some(old_val.clone()), None));
+            }
         }
         self.sources.insert(default.to_string(), new_props);
-        for listener in &self.listeners { listener.on_change(&changes); }
+        for listener in &self.listeners {
+            listener.on_change(&changes);
+        }
     }
 
     /// Get all resolved properties (merged across profiles).
@@ -529,7 +568,11 @@ impl ConfigEnvironment {
     }
 }
 
-impl Default for ConfigEnvironment { fn default() -> Self { Self::new() } }
+impl Default for ConfigEnvironment {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -558,9 +601,12 @@ mod tests {
     #[test]
     fn test_profile_resolution() {
         let mut env = ConfigEnvironment::new().with_profile("prod");
-        let mut dp = HashMap::new(); dp.insert("host".into(), "localhost".into());
-        let mut pp = HashMap::new(); pp.insert("host".into(), "prod.example.com".into());
-        env.set_properties("default", dp); env.set_properties("prod", pp);
+        let mut dp = HashMap::new();
+        dp.insert("host".into(), "localhost".into());
+        let mut pp = HashMap::new();
+        pp.insert("host".into(), "prod.example.com".into());
+        env.set_properties("default", dp);
+        env.set_properties("prod", pp);
         assert_eq!(env.get("host").unwrap(), "prod.example.com");
     }
 
@@ -570,7 +616,8 @@ mod tests {
         let encrypted = enc.encrypt("secret").unwrap();
         let mut env = ConfigEnvironment::new();
         env.set_encryptor(Box::new(enc));
-        let mut p = HashMap::new(); p.insert("pw".into(), encrypted);
+        let mut p = HashMap::new();
+        p.insert("pw".into(), encrypted);
         env.set_properties("default", p);
         assert_eq!(env.get("pw").unwrap(), "secret");
     }
@@ -579,15 +626,20 @@ mod tests {
     fn test_refresh_notifies() {
         let ch: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
         let cc = ch.clone();
-        struct L { c: Arc<Mutex<Vec<String>>> }
+        struct L {
+            c: Arc<Mutex<Vec<String>>>,
+        }
         impl PropertyChangeListener for L {
             fn on_change(&self, ch: &[(String, Option<String>, Option<String>)]) {
-                for (k, _, _) in ch { self.c.lock().unwrap().push(k.clone()); }
+                for (k, _, _) in ch {
+                    self.c.lock().unwrap().push(k.clone());
+                }
             }
         }
         let mut env = ConfigEnvironment::new();
         env.add_listener(Box::new(L { c: cc }));
-        let mut p = HashMap::new(); p.insert("k1".into(), "v1".into());
+        let mut p = HashMap::new();
+        p.insert("k1".into(), "v1".into());
         env.refresh(p);
         assert!(ch.lock().unwrap().contains(&"k1".to_string()));
     }

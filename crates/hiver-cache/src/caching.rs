@@ -192,11 +192,12 @@ impl CachingExec {
         for opts in &operations.cacheable {
             for cache_name in &opts.cache_names {
                 if let Some(cache) = caches.get(cache_name)
-                    && let Some(value) = cache.get(&key).await {
-                        // Found in cache - return this value
-                        // 在缓存中找到 - 返回此值
-                        return Some(value);
-                    }
+                    && let Some(value) = cache.get(&key).await
+                {
+                    // Found in cache - return this value
+                    // 在缓存中找到 - 返回此值
+                    return Some(value);
+                }
             }
         }
 
@@ -395,7 +396,11 @@ mod tests {
         let caching = CachingBuilder::new()
             .cacheable(CacheableOptions::new().cache_name("users"))
             .put(CachePutOptions::new().cache_name("currentUser"))
-            .evict(CacheEvictOptions::new().cache_name("userList").all_entries(true))
+            .evict(
+                CacheEvictOptions::new()
+                    .cache_name("userList")
+                    .all_entries(true),
+            )
             .build();
 
         assert_eq!(caching.cacheable.len(), 1);
@@ -429,7 +434,8 @@ mod tests {
         let cache2 = MemoryCache::new(CacheConfig::new("currentUser"));
 
         caches.insert("users".to_string(), Arc::new(cache1) as Arc<dyn Cache<String, String>>);
-        caches.insert("currentUser".to_string(), Arc::new(cache2) as Arc<dyn Cache<String, String>>);
+        caches
+            .insert("currentUser".to_string(), Arc::new(cache2) as Arc<dyn Cache<String, String>>);
 
         let operations = Caching::new()
             .cacheable(CacheableOptions::new().cache_name("users"))

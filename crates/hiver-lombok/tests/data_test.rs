@@ -4,7 +4,9 @@
 //! Covers: Data, Getter, Setter, AllArgsConstructor, NoArgsConstructor,
 //! Builder, Value, With — including edge cases and error paths.
 
-use hiver_lombok::{Data, Getter, Setter, AllArgsConstructor, NoArgsConstructor, Builder, Value, With};
+use hiver_lombok::{
+    AllArgsConstructor, Builder, Data, Getter, NoArgsConstructor, Setter, Value, With,
+};
 
 // ============================================================================
 // 1. Data macro tests / Data 宏测试
@@ -516,7 +518,7 @@ fn test_with_preserves_other_fields() {
 /// 测试 Data 与 serde Serialize/Deserialize 组合使用。
 #[test]
 fn test_data_with_serde() {
-    use serde::{Serialize, Deserialize};
+    use serde::{Deserialize, Serialize};
 
     #[derive(Data, Clone, PartialEq, Debug, Serialize, Deserialize)]
     struct Product {
@@ -538,15 +540,7 @@ fn test_data_with_serde() {
 /// 测试 AllArgsConstructor + NoArgsConstructor（通过 Default）组合不冲突。
 #[test]
 fn test_combined_derives() {
-    #[derive(
-        Getter,
-        Setter,
-        AllArgsConstructor,
-        NoArgsConstructor,
-        Clone,
-        PartialEq,
-        Debug,
-    )]
+    #[derive(Getter, Setter, AllArgsConstructor, NoArgsConstructor, Clone, PartialEq, Debug)]
     struct Item {
         sku: String,
         qty: u32,

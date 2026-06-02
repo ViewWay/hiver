@@ -11,16 +11,24 @@ use crate::cli::AddArgs;
 /// Module to Cargo dependency mapping.
 /// 模块到 Cargo 依赖的映射。
 const MODULE_DEPS: &[(&str, &[&str])] = &[
-    ("web",        &["hiver-http", "hiver-router", "hiver-middleware"]),
-    ("security",   &["hiver-security"]),
-    ("data",       &["hiver-data-rdbc", "hiver-data-orm", "hiver-tx", "hiver-flyway"]),
-    ("cache",      &["hiver-data-redis"]),
-    ("schedule",   &["hiver-schedule"]),
-    ("actuator",   &["hiver-actuator"]),
-    ("web3",       &["hiver-web3"]),
-    ("graphql",    &["hiver-graphql"]),
-    ("grpc",       &["hiver-grpc"]),
-    ("ai",         &["hiver-ai"]),
+    ("web", &["hiver-http", "hiver-router", "hiver-middleware"]),
+    ("security", &["hiver-security"]),
+    (
+        "data",
+        &[
+            "hiver-data-rdbc",
+            "hiver-data-orm",
+            "hiver-tx",
+            "hiver-flyway",
+        ],
+    ),
+    ("cache", &["hiver-data-redis"]),
+    ("schedule", &["hiver-schedule"]),
+    ("actuator", &["hiver-actuator"]),
+    ("web3", &["hiver-web3"]),
+    ("graphql", &["hiver-graphql"]),
+    ("grpc", &["hiver-grpc"]),
+    ("ai", &["hiver-ai"]),
 ];
 
 /// Run the `hiver add` command.
@@ -50,7 +58,9 @@ pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>> {
     // Ensure [dependencies] section exists.
     // 确保 [dependencies] 段存在。
     if doc.get("dependencies").is_none() {
-        doc.as_table_mut().unwrap().insert("dependencies".to_string(), toml::Value::Table(toml::map::Map::new()));
+        doc.as_table_mut()
+            .unwrap()
+            .insert("dependencies".to_string(), toml::Value::Table(toml::map::Map::new()));
     }
 
     let deps_table = doc["dependencies"].as_table_mut().unwrap();
@@ -59,17 +69,9 @@ pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>> {
     for dep in deps {
         if !deps_table.contains_key(*dep) {
             deps_table.insert(dep.to_string(), toml::Value::String(version.to_string()));
-            println!(
-                "  {} Added dependency: {}",
-                style("+").green(),
-                style(dep).green().bold()
-            );
+            println!("  {} Added dependency: {}", style("+").green(), style(dep).green().bold());
         } else {
-            println!(
-                "  {} Already exists: {}",
-                style("→").yellow(),
-                style(dep).yellow()
-            );
+            println!("  {} Already exists: {}", style("→").yellow(), style(dep).yellow());
         }
     }
 

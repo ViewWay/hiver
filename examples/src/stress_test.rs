@@ -1,4 +1,13 @@
-#![allow(clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
+#![allow(
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::items_after_statements,
+    clippy::format_push_string
+)]
 //! HTTP Server Stress Test
 //! HTTP 服务器压力测试
 //!
@@ -52,15 +61,17 @@ async fn run_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
                 let body_bytes = body.data().to_vec();
                 let content_type = response.header("content-type").unwrap_or("text/plain");
 
-                let _ = writer.write_all(
-                    format!(
-                        "HTTP/1.1 {} OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
-                        status,
-                        content_type,
-                        body_bytes.len()
+                let _ = writer
+                    .write_all(
+                        format!(
+                            "HTTP/1.1 {} OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
+                            status,
+                            content_type,
+                            body_bytes.len()
+                        )
+                        .as_bytes(),
                     )
-                    .as_bytes(),
-                ).await;
+                    .await;
                 let _ = writer.write_all(&body_bytes).await;
             }
         });
@@ -69,7 +80,11 @@ async fn run_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
 
 /// Send concurrent requests to the server
 /// 向服务器发送并发请求
-async fn send_requests(port: u16, num_requests: u64, concurrency: usize) -> Result<Duration, Box<dyn std::error::Error>> {
+async fn send_requests(
+    port: u16,
+    num_requests: u64,
+    concurrency: usize,
+) -> Result<Duration, Box<dyn std::error::Error>> {
     let start = Instant::now();
     let mut join_set = JoinSet::new();
     let requests_per_task = num_requests / concurrency as u64;
@@ -158,7 +173,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Find best throughput / 找到最佳吞吐量
-    let best = results.iter().max_by(|a, b| a.1.partial_cmp(&b.1).unwrap()).unwrap();
+    let best = results
+        .iter()
+        .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+        .unwrap();
     println!("\nBest throughput: {:.2} req/s at {} concurrency", best.1, best.0);
 
     server_handle.abort();

@@ -54,8 +54,7 @@ impl<T: Any> Bean for T {}
 
 /// Bean scope
 /// Bean作用域
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Scope {
     /// Single instance per container (default)
     /// 每个容器单个实例（默认）
@@ -78,7 +77,6 @@ pub enum Scope {
     /// 每个应用单个实例
     Application,
 }
-
 
 /// Bean definition
 /// Bean定义
@@ -218,11 +216,9 @@ mod tests {
     #[test]
     fn test_scope_hash() {
         use std::collections::HashSet;
-        let set: HashSet<Scope> = [
-            Scope::Singleton,
-            Scope::Prototype,
-            Scope::Singleton,
-        ].into_iter().collect();
+        let set: HashSet<Scope> = [Scope::Singleton, Scope::Prototype, Scope::Singleton]
+            .into_iter()
+            .collect();
         assert_eq!(set.len(), 2);
     }
 

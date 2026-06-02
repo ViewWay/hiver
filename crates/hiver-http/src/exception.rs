@@ -35,9 +35,9 @@
 //! }
 //! ```
 
+use crate::StatusCode;
 use crate::body::Body;
 use crate::response::Response;
-use crate::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -103,7 +103,10 @@ impl ErrorResponse {
         let status_obj = StatusCode::from_u16(status);
         Self {
             status,
-            error: status_obj.canonical_reason().unwrap_or("Unknown").to_string(),
+            error: status_obj
+                .canonical_reason()
+                .unwrap_or("Unknown")
+                .to_string(),
             code: code.into(),
             message: message.into(),
             path: None,
@@ -235,7 +238,7 @@ pub trait IntoErrorResponse: Send + Sync {
 
 /// Exception handler function type
 /// 异常处理器函数类型
-pub type ExceptionHandlerFn =dyn Fn(&dyn std::any::Any) -> ErrorResponse + Send + Sync;
+pub type ExceptionHandlerFn = dyn Fn(&dyn std::any::Any) -> ErrorResponse + Send + Sync;
 
 /// Global exception handler registry
 /// 全局异常处理器注册表
@@ -256,10 +259,7 @@ impl ExceptionHandlerRegistry {
 
     /// Register an exception handler for a specific error type
     /// 为特定错误类型注册异常处理器
-    pub fn register<E: 'static + IntoErrorResponse>(
-        &mut self,
-        handler: fn(&E) -> ErrorResponse,
-    ) {
+    pub fn register<E: 'static + IntoErrorResponse>(&mut self, handler: fn(&E) -> ErrorResponse) {
         let type_id = std::any::TypeId::of::<E>();
         let boxed_handler: Box<ExceptionHandlerFn> = Box::new(move |err| {
             if let Some(typed_err) = err.downcast_ref::<E>() {
@@ -277,7 +277,10 @@ impl ExceptionHandlerRegistry {
 
     /// Handle an error, returning an `ErrorResponse` if a handler is registered
     /// 处理错误，如果注册了处理器则返回 `ErrorResponse`
-    pub fn handle<E: 'static + IntoErrorResponse + std::any::Any>(&self, error: &E) -> ErrorResponse {
+    pub fn handle<E: 'static + IntoErrorResponse + std::any::Any>(
+        &self,
+        error: &E,
+    ) -> ErrorResponse {
         let type_id = std::any::TypeId::of::<E>();
         if let Some(handler) = self.handlers.get(&type_id) {
             handler(error)
@@ -411,11 +414,7 @@ impl ResourceNotFoundException {
 
 impl std::fmt::Display for ResourceNotFoundException {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} with id '{}' not found",
-            self.resource_type, self.resource_id
-        )
+        write!(f, "{} with id '{}' not found", self.resource_type, self.resource_id)
     }
 }
 
@@ -425,10 +424,7 @@ impl IntoErrorResponse for ResourceNotFoundException {
     fn to_error_response(&self) -> ErrorResponse {
         ErrorResponse::not_found()
             .code("RESOURCE_NOT_FOUND")
-            .message(format!(
-                "{} with id '{}' not found",
-                self.resource_type, self.resource_id
-            ))
+            .message(format!("{} with id '{}' not found", self.resource_type, self.resource_id))
     }
 }
 
@@ -536,10 +532,8 @@ impl IntoErrorResponse for ValidationException {
             .message(&self.message);
 
         for field_error in &self.field_errors {
-            error_response = error_response.detail(
-                format!("field.{}", field_error.field),
-                &field_error.message,
-            );
+            error_response =
+                error_response.detail(format!("field.{}", field_error.field), &field_error.message);
         }
 
         error_response
@@ -596,8 +590,7 @@ mod tests {
 
     #[test]
     fn test_error_response_with_path() {
-        let error = ErrorResponse::bad_request()
-            .path("/api/users");
+        let error = ErrorResponse::bad_request().path("/api/users");
 
         assert_eq!(error.path, Some("/api/users".to_string()));
     }
@@ -609,10 +602,7 @@ mod tests {
             .detail("field.email", "Email is invalid");
 
         assert_eq!(error.details.len(), 2);
-        assert_eq!(
-            error.details.get("field.username"),
-            Some(&"Username is required".to_string())
-        );
+        assert_eq!(error.details.get("field.username"), Some(&"Username is required".to_string()));
     }
 
     #[test]

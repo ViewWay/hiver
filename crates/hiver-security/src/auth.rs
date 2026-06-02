@@ -436,12 +436,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_simple_auth_manager() {
-        let user_service =
-            Arc::new(crate::InMemoryUserService::with_users(vec![User::with_roles(
+        let user_service = Arc::new(
+            crate::InMemoryUserService::with_users(vec![User::with_roles(
                 "john",
                 "HASH:secret123",
                 &[Role::User],
-            )]).await);
+            )])
+            .await,
+        );
 
         let manager = SimpleAuthenticationManager::new(user_service, Arc::new(MockPasswordEncoder));
 

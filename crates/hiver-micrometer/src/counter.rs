@@ -2,8 +2,8 @@
 //! 计数器指标
 
 use crate::metric::{MetricId, Tags};
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Counter metric - monotonically increasing value
 /// 计数器指标 - 单调递增值
@@ -140,9 +140,7 @@ mod tests {
 
     #[test]
     fn test_counter_increment() {
-        let counter = Counter::new(MetricId::from_name(
-            MetricName::new("test_counter").unwrap(),
-        ));
+        let counter = Counter::new(MetricId::from_name(MetricName::new("test_counter").unwrap()));
 
         assert_eq!(counter.count(), 0);
         assert_eq!(counter.increment(), 1);
@@ -152,9 +150,7 @@ mod tests {
 
     #[test]
     fn test_counter_increment_by() {
-        let counter = Counter::new(MetricId::from_name(
-            MetricName::new("test_counter").unwrap(),
-        ));
+        let counter = Counter::new(MetricId::from_name(MetricName::new("test_counter").unwrap()));
 
         assert_eq!(counter.increment_by(5), 5);
         assert_eq!(counter.increment_by(3), 8);

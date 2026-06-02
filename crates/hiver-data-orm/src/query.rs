@@ -34,10 +34,7 @@ use hiver_data_rdbc::{DatabaseClient, QueryParam};
 use std::marker::PhantomData;
 
 pub(crate) fn validate_identifier(name: &str) -> bool {
-    !name.is_empty()
-        && name
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || c == '_')
+    !name.is_empty() && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
 /// Where clause
@@ -375,9 +372,11 @@ impl<M: Model> QueryBuilder<M> {
     pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
         let placeholder_count = condition.matches('?').count();
         assert_eq!(
-            placeholder_count, params.len(),
+            placeholder_count,
+            params.len(),
             "where_() placeholder count ({}) != params count ({})",
-            placeholder_count, params.len()
+            placeholder_count,
+            params.len()
         );
         self.wheres.push(WhereClause {
             condition: condition.to_string(),
@@ -454,7 +453,10 @@ impl<M: Model> QueryBuilder<M> {
     /// 验证原始 SQL 条件以拒绝注入模式。
     fn validate_raw_condition(condition: &str, context: &str) {
         assert!(
-            !condition.contains('\'') && !condition.contains(';') && !condition.contains("--") && !condition.contains("/*"),
+            !condition.contains('\'')
+                && !condition.contains(';')
+                && !condition.contains("--")
+                && !condition.contains("/*"),
             "{context} contains disallowed characters (quotes, semicolons, or comments): {condition}"
         );
     }
@@ -579,7 +581,11 @@ impl<M: Model> QueryBuilder<M> {
                 .wheres
                 .iter()
                 .map(|w| {
-                    let condition = hiver_data_commons::replace_placeholders(&w.condition, w.params.len(), param_idx);
+                    let condition = hiver_data_commons::replace_placeholders(
+                        &w.condition,
+                        w.params.len(),
+                        param_idx,
+                    );
                     param_idx += w.params.len() as u32;
                     condition
                 })
@@ -692,7 +698,11 @@ impl<M: Model> QueryBuilder<M> {
                 .wheres
                 .iter()
                 .map(|w| {
-                    let condition = hiver_data_commons::replace_placeholders(&w.condition, w.params.len(), param_idx);
+                    let condition = hiver_data_commons::replace_placeholders(
+                        &w.condition,
+                        w.params.len(),
+                        param_idx,
+                    );
                     param_idx += w.params.len() as u32;
                     condition
                 })
@@ -743,14 +753,8 @@ impl<M: Model> QueryBuilder<M> {
             })
             .collect::<Result<Vec<M>>>()?;
 
-        Ok(hiver_data_commons::Page::new(
-            records,
-            page,
-            per_page,
-            total as u64,
-        ))
+        Ok(hiver_data_commons::Page::new(records, page, per_page, total as u64))
     }
-
 }
 
 impl<M: Model> Default for QueryBuilder<M> {
@@ -801,9 +805,12 @@ mod tests {
     impl Model for User {
         fn meta() -> crate::ModelMeta {
             let mut meta = crate::ModelMeta::new("users");
-            meta.columns.push(crate::Column::new("id", crate::ColumnType::I64));
-            meta.columns.push(crate::Column::new("name", crate::ColumnType::String));
-            meta.columns.push(crate::Column::new("email", crate::ColumnType::String));
+            meta.columns
+                .push(crate::Column::new("id", crate::ColumnType::I64));
+            meta.columns
+                .push(crate::Column::new("name", crate::ColumnType::String));
+            meta.columns
+                .push(crate::Column::new("email", crate::ColumnType::String));
             meta
         }
 
@@ -854,10 +861,7 @@ mod tests {
 
     #[test]
     fn test_query_builder_limit_offset() {
-        let query = QueryBuilder::<User>::new()
-            .limit(10)
-            .offset(20)
-            .to_sql();
+        let query = QueryBuilder::<User>::new().limit(10).offset(20).to_sql();
 
         assert!(query.contains("LIMIT 10"));
         assert!(query.contains("OFFSET 20"));

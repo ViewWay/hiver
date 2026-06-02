@@ -131,7 +131,11 @@ impl AmqpConfig {
 
     /// Set credentials
     /// 设置凭据
-    pub fn with_credentials(mut self, username: impl Into<String>, password: impl Into<String>) -> Self {
+    pub fn with_credentials(
+        mut self,
+        username: impl Into<String>,
+        password: impl Into<String>,
+    ) -> Self {
         self.username = username.into();
         self.password = password.into();
         self.url.clear();
@@ -336,8 +340,7 @@ mod tests {
     /// Test build_url URL-encodes special characters in credentials / 测试 build_url 对凭据中的特殊字符进行 URL 编码
     #[test]
     fn test_amqp_config_build_url_encodes_credentials() {
-        let config = AmqpConfig::new()
-            .with_credentials("user@domain", "p@ss:w0rd");
+        let config = AmqpConfig::new().with_credentials("user@domain", "p@ss:w0rd");
         let url = config.build_url();
         // '@' and ':' should be percent-encoded in the user/password portion
         assert!(url.contains("user%40domain"));

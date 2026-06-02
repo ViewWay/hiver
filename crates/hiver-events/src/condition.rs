@@ -206,7 +206,7 @@ impl PropertyCondition {
                 } else {
                     actual > self.value.as_str()
                 }
-            }
+            },
             CompareOp::Lt => {
                 // Try numeric comparison first
                 if let (Ok(a_num), Ok(b_num)) = (actual.parse::<f64>(), self.value.parse::<f64>()) {
@@ -214,7 +214,7 @@ impl PropertyCondition {
                 } else {
                     actual < self.value.as_str()
                 }
-            }
+            },
             CompareOp::Contains => actual.contains(&self.value),
         }
     }
@@ -275,12 +275,12 @@ pub fn evaluate_condition<E: ConditionPropertyProvider + Any>(
     // Try CompositeCondition
     if let Some(cc) = (condition as &dyn Any).downcast_ref::<CompositeCondition>() {
         return match cc {
-            CompositeCondition::And(conditions) => {
-                conditions.iter().all(|c| evaluate_condition(c.as_ref(), event))
-            }
-            CompositeCondition::Or(conditions) => {
-                conditions.iter().any(|c| evaluate_condition(c.as_ref(), event))
-            }
+            CompositeCondition::And(conditions) => conditions
+                .iter()
+                .all(|c| evaluate_condition(c.as_ref(), event)),
+            CompositeCondition::Or(conditions) => conditions
+                .iter()
+                .any(|c| evaluate_condition(c.as_ref(), event)),
             CompositeCondition::Not(inner) => !evaluate_condition(inner.as_ref(), event),
         };
     }
@@ -338,10 +338,10 @@ impl fmt::Debug for CompositeCondition {
         match self {
             Self::And(conditions) => {
                 write!(f, "CompositeCondition::And({} conditions)", conditions.len())
-            }
+            },
             Self::Or(conditions) => {
                 write!(f, "CompositeCondition::Or({} conditions)", conditions.len())
-            }
+            },
             Self::Not(_) => write!(f, "CompositeCondition::Not(..)"),
         }
     }
@@ -568,7 +568,10 @@ struct ParserState<'a> {
 
 impl<'a> ParserState<'a> {
     fn new(tokens: &'a [String]) -> Self {
-        Self { tokens, position: 0 }
+        Self {
+            tokens,
+            position: 0,
+        }
     }
 
     fn has_more(&self) -> bool {
@@ -588,10 +591,9 @@ impl<'a> ParserState<'a> {
     fn expect(&mut self, expected: &str) -> Result<(), ConditionParseError> {
         match self.advance() {
             Some(token) if token == expected => Ok(()),
-            Some(token) => Err(ConditionParseError::ExpectedToken(format!(
-                "'{}', got '{}'",
-                expected, token
-            ))),
+            Some(token) => {
+                Err(ConditionParseError::ExpectedToken(format!("'{}', got '{}'", expected, token)))
+            },
             None => Err(ConditionParseError::UnexpectedEnd),
         }
     }
@@ -654,9 +656,7 @@ impl<'a> ParserState<'a> {
             .ok_or(ConditionParseError::UnexpectedEnd)?
             .to_string();
 
-        let op_token = self
-            .advance()
-            .ok_or(ConditionParseError::UnexpectedEnd)?;
+        let op_token = self.advance().ok_or(ConditionParseError::UnexpectedEnd)?;
 
         let operator = CompareOp::from_token(op_token).ok_or_else(|| {
             ConditionParseError::ExpectedToken(format!("comparison operator, got '{}'", op_token))
@@ -669,10 +669,7 @@ impl<'a> ParserState<'a> {
 
         // Strip surrounding quotes from string literals
         // 去除字符串字面量的外围引号
-        let clean_value = if value.starts_with('\'')
-            && value.ends_with('\'')
-            && value.len() >= 2
-        {
+        let clean_value = if value.starts_with('\'') && value.ends_with('\'') && value.len() >= 2 {
             value[1..value.len() - 1].to_string()
         } else {
             value
@@ -908,10 +905,7 @@ mod tests {
     #[test]
     fn test_tokenize_and_or() {
         let tokens = tokenize("status == 'active' and priority > 5").unwrap();
-        assert_eq!(
-            tokens,
-            vec!["status", "==", "'active'", "and", "priority", ">", "5"]
-        );
+        assert_eq!(tokens, vec!["status", "==", "'active'", "and", "priority", ">", "5"]);
     }
 
     #[test]

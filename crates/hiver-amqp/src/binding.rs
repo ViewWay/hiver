@@ -57,7 +57,11 @@ pub enum BindingDestination {
 impl Binding {
     /// Create new binding
     /// 创建新绑定
-    pub fn new(destination: BindingDestination, source: Exchange, routing_key: impl Into<String>) -> Self {
+    pub fn new(
+        destination: BindingDestination,
+        source: Exchange,
+        routing_key: impl Into<String>,
+    ) -> Self {
         Self {
             destination,
             source,
@@ -79,16 +83,16 @@ impl Binding {
         source: Exchange,
         routing_key: impl Into<String>,
     ) -> Self {
-        Self::new(
-            BindingDestination::Exchange(destination.into()),
-            source,
-            routing_key,
-        )
+        Self::new(BindingDestination::Exchange(destination.into()), source, routing_key)
     }
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.arguments.insert(key.into(), value.into());
         self
     }
@@ -166,7 +170,11 @@ impl BindingBuilder {
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.binding = self.binding.with_argument(key, value);
         self
     }

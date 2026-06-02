@@ -3,14 +3,13 @@
 //! 自动配置监控端点（健康检查、指标等）。
 //! Auto-configures monitoring endpoints (health check, metrics, etc.).
 
-use crate::core::{AutoConfiguration, ApplicationContext};
+use crate::core::{ApplicationContext, AutoConfiguration};
 
 // Re-export actuator types
 // 重新导出 actuator 类型
 pub use hiver_actuator::{
-    Actuator, InfoBuilder, HealthCheck, HealthIndicator, HealthStatus,
-    MetricsRegistry, Metric, MetricType,
-    Environment, EnvironmentCollector,
+    Actuator, Environment, EnvironmentCollector, HealthCheck, HealthIndicator, HealthStatus,
+    InfoBuilder, Metric, MetricType, MetricsRegistry,
 };
 
 // Re-export the handler function
@@ -67,8 +66,7 @@ impl ActuatorAutoConfiguration {
                 .get_property("actuator.metrics.enabled")
                 .and_then(|p| p.parse().ok())
                 .unwrap_or(true),
-            base_path: ctx
-                .get_property_or("actuator.base_path", "/actuator"),
+            base_path: ctx.get_property_or("actuator.base_path", "/actuator"),
         }
     }
 }
@@ -85,7 +83,7 @@ impl AutoConfiguration for ActuatorAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        200  // 较低优先级，在业务配置之后
+        200 // 较低优先级，在业务配置之后
     }
 
     fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {

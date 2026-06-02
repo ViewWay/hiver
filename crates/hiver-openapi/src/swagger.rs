@@ -76,8 +76,7 @@ pub struct SwaggerConfig {
 
 /// Model rendering mode
 /// 模型渲染模式
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ModelRendering {
     /// Example
     /// 示例
@@ -88,11 +87,9 @@ pub enum ModelRendering {
     Model,
 }
 
-
 /// Syntax highlight theme
 /// 语法高亮主题
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum SyntaxHighlightTheme {
     /// Agate theme
     Agate,
@@ -120,7 +117,6 @@ pub enum SyntaxHighlightTheme {
     /// VS Code Light theme
     VsCodeLight,
 }
-
 
 impl SyntaxHighlightTheme {
     /// Get the theme name for Swagger UI
@@ -424,10 +420,15 @@ impl SwaggerUi {
         let (body, status) = if path == self.config.spec_path {
             // Serve OpenAPI JSON spec
             // 服务 OpenAPI JSON 规范
-            headers.insert("content-type", HeaderValue::from_static("application/json; charset=utf-8"));
+            headers.insert(
+                "content-type",
+                HeaderValue::from_static("application/json; charset=utf-8"),
+            );
             match self.spec_json() {
                 Ok(spec) => (spec, StatusCode::OK),
-                Err(_) => ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR),
+                Err(_) => {
+                    ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR)
+                },
             }
         } else if path == self.config.path || path == format!("{}/", self.config.path) {
             // Serve Swagger UI HTML
@@ -437,10 +438,15 @@ impl SwaggerUi {
         } else if path == format!("{}.json", self.config.spec_path.trim_end_matches(".json")) {
             // Serve YAML spec (if requested)
             // 服务 YAML 规范（如果请求）
-            headers.insert("content-type", HeaderValue::from_static("application/x-yaml; charset=utf-8"));
+            headers.insert(
+                "content-type",
+                HeaderValue::from_static("application/x-yaml; charset=utf-8"),
+            );
             match self.spec_yaml() {
                 Ok(spec) => (spec, StatusCode::OK),
-                Err(_) => ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR),
+                Err(_) => {
+                    ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR)
+                },
             }
         } else {
             // Not found

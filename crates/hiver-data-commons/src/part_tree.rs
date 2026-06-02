@@ -85,10 +85,7 @@ impl Subject {
     /// Returns true if this subject returns a collection.
     /// 返回此主体是否返回集合。
     pub fn is_collection_returning(&self) -> bool {
-        matches!(
-            self,
-            Subject::Find | Subject::Read | Subject::Query | Subject::Stream
-        )
+        matches!(self, Subject::Find | Subject::Read | Subject::Query | Subject::Stream)
     }
 }
 
@@ -222,10 +219,7 @@ impl PartType {
     /// Check if this part type requires no arguments.
     /// 检查此部件类型是否不需要参数。
     pub fn needs_no_argument(&self) -> bool {
-        matches!(
-            self,
-            PartType::IsNull | PartType::IsNotNull | PartType::True | PartType::False
-        )
+        matches!(self, PartType::IsNull | PartType::IsNotNull | PartType::True | PartType::False)
     }
 
     /// Check if this part type requires two arguments.
@@ -300,7 +294,11 @@ impl Part {
 
     /// Create a new part with ignore_case flag.
     /// 创建带有 ignore_case 标志的新部件。
-    pub fn with_ignore_case(property_path: impl Into<String>, part_type: PartType, ignore_case: bool) -> Self {
+    pub fn with_ignore_case(
+        property_path: impl Into<String>,
+        part_type: PartType,
+        ignore_case: bool,
+    ) -> Self {
         Self {
             property_path: property_path.into(),
             part_type,
@@ -905,7 +903,11 @@ fn find_keyword(text: &str) -> Option<(PartType, usize)> {
             if text.len() == consumed {
                 return Some((*pt, consumed));
             }
-            let next = text.as_bytes().get(consumed).map(|&b| b as char).unwrap_or('\0');
+            let next = text
+                .as_bytes()
+                .get(consumed)
+                .map(|&b| b as char)
+                .unwrap_or('\0');
             if next.is_uppercase() {
                 return Some((*pt, consumed));
             }

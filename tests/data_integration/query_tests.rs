@@ -49,7 +49,7 @@ mod tests {
     fn test_pagination() {
         let page = 2;
         let size = 20;
-        let offset = (page - 1) * size;  // (2 - 1) * 20 = 20
+        let offset = (page - 1) * size; // (2 - 1) * 20 = 20
         let sql = format!("LIMIT {} OFFSET {}", size, offset);
         assert!(sql.contains("LIMIT 20"));
         assert!(sql.contains("OFFSET 20"));

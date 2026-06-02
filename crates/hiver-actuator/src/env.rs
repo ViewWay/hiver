@@ -202,9 +202,10 @@ impl EnvironmentCollector {
 
             // Current working directory
             if let Ok(val) = env::current_dir()
-                && let Some(path) = val.to_str() {
-                    properties.insert("user.dir".to_string(), PropertyValue::new(path));
-                }
+                && let Some(path) = val.to_str()
+            {
+                properties.insert("user.dir".to_string(), PropertyValue::new(path));
+            }
 
             // Home directory
             if let Ok(val) = env::var("HOME") {
@@ -216,8 +217,7 @@ impl EnvironmentCollector {
             // OS info
             properties.insert("os.name".to_string(), PropertyValue::new(env::consts::OS));
             properties.insert("os.arch".to_string(), PropertyValue::new(env::consts::ARCH));
-            properties
-                .insert("os.family".to_string(), PropertyValue::new(env::consts::FAMILY));
+            properties.insert("os.family".to_string(), PropertyValue::new(env::consts::FAMILY));
 
             for (key, value) in properties {
                 sources.push(PropertySource {
@@ -257,9 +257,10 @@ impl EnvironmentCollector {
 
         // Check environment variables
         if self.include_system_env
-            && let Ok(value) = env::var(key) {
-                return Some(value);
-            }
+            && let Ok(value) = env::var(key)
+        {
+            return Some(value);
+        }
 
         None
     }

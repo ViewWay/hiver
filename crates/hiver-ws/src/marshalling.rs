@@ -4,7 +4,7 @@
 //! Equivalent to Spring WS OXM (Object/XML Mapping)
 //! 等价于 Spring WS OXM（对象/XML映射）
 
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use thiserror::Error;
 
 /// Marshalling error / 编组错误
@@ -40,15 +40,14 @@ pub struct DefaultMarshaller;
 impl DefaultMarshaller {
     /// Serialize a value to XML / 将值序列化为XML
     pub fn to_xml<T: Serialize>(value: &T) -> Result<String, MarshalError> {
-        let json = serde_json::to_string(value)
-            .map_err(|e| MarshalError::Serialization(e.to_string()))?;
+        let json =
+            serde_json::to_string(value).map_err(|e| MarshalError::Serialization(e.to_string()))?;
         Ok(format!("<envelope><body>{}</body></envelope>", json))
     }
 
     /// Deserialize a value from XML (JSON intermediate) / 从XML反序列化值（JSON中间格式）
     pub fn from_xml<T: DeserializeOwned>(xml: &str) -> Result<T, MarshalError> {
-        serde_json::from_str(xml)
-            .map_err(|e| MarshalError::Deserialization(e.to_string()))
+        serde_json::from_str(xml).map_err(|e| MarshalError::Deserialization(e.to_string()))
     }
 }
 
@@ -58,11 +57,15 @@ mod tests {
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Serialize, Deserialize, PartialEq)]
-    struct Greeting { message: String }
+    struct Greeting {
+        message: String,
+    }
 
     #[test]
     fn test_marshal() {
-        let g = Greeting { message: "hello".into() };
+        let g = Greeting {
+            message: "hello".into(),
+        };
         let xml = DefaultMarshaller::to_xml(&g).unwrap();
         assert!(xml.contains("hello"));
     }

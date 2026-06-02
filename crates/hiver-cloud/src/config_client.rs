@@ -120,13 +120,7 @@ impl ConfigServerClient {
     ///
     /// Pattern: `{base_url}/{application}/{profile}/{label}`
     fn build_url(&self, application: &str, profile: &str, label: &str) -> String {
-        format!(
-            "{}/{}/{}/{}",
-            self.base_url.trim_end_matches('/'),
-            application,
-            profile,
-            label
-        )
+        format!("{}/{}/{}/{}", self.base_url.trim_end_matches('/'), application, profile, label)
     }
 
     /// Build the cache key from app/profile/label.
@@ -160,11 +154,7 @@ impl ConfigServerClient {
                     .to_std()
                     .unwrap_or(Duration::ZERO);
                 if age < self.cache_ttl {
-                    tracing::debug!(
-                        "Config cache hit for {} (age: {}ms)",
-                        key,
-                        age.as_millis()
-                    );
+                    tracing::debug!("Config cache hit for {} (age: {}ms)", key, age.as_millis());
                     return Ok(props.clone());
                 }
             }
@@ -218,9 +208,7 @@ impl ConfigServerClient {
 
             match self.fetch_single(url, app, profile, label).await {
                 Ok(props) => return Ok(props),
-                Err(
-                    e @ ConfigClientError::Connection(_),
-                ) => {
+                Err(e @ ConfigClientError::Connection(_)) => {
                     // Transient — retry / 瞬态 — 重试
                     tracing::warn!(
                         "Config server transient error (attempt {}/{}): {}",
@@ -229,18 +217,17 @@ impl ConfigServerClient {
                         e
                     );
                     last_err = Some(e);
-                }
+                },
                 Err(e) => {
                     // Non-transient — return immediately / 非瞬态 — 立即返回
                     return Err(e);
-                }
+                },
             }
         }
 
         // All retries exhausted / 所有重试耗尽
-        Err(last_err.unwrap_or_else(|| {
-            ConfigClientError::Connection("All retries exhausted".to_string())
-        }))
+        Err(last_err
+            .unwrap_or_else(|| ConfigClientError::Connection("All retries exhausted".to_string())))
     }
 
     /// Perform a single HTTP GET to the config server.
@@ -317,7 +304,9 @@ impl Default for ConfigServerClient {
 
 /// Recursively flatten a JSON value into `HashMap<String, String>`.
 /// 递归地将JSON值扁平化为`HashMap<String, String>`。
-fn flatten_json_value(value: &serde_json::Value) -> Result<HashMap<String, String>, ConfigClientError> {
+fn flatten_json_value(
+    value: &serde_json::Value,
+) -> Result<HashMap<String, String>, ConfigClientError> {
     let mut map = HashMap::new();
 
     // If the value is the Spring Cloud Config envelope, drill into propertySources.
@@ -352,7 +341,7 @@ fn flatten_object(
         match value {
             serde_json::Value::Object(inner) => {
                 flatten_object(inner, &full_key, out);
-            }
+            },
             other => {
                 // Convert non-string values to their string representation
                 let string_val = match other {
@@ -363,11 +352,11 @@ fn flatten_object(
                     serde_json::Value::Array(arr) => {
                         // Serialize array as JSON string
                         serde_json::to_string(arr).unwrap_or_default()
-                    }
+                    },
                     _ => other.to_string(),
                 };
                 out.insert(full_key, string_val);
-            }
+            },
         }
     }
 }
@@ -427,13 +416,9 @@ impl ConfigProvider for ConfigSource {
                 let profile_name = profile.as_deref().unwrap_or("default");
                 let label_name = label.as_deref().unwrap_or("main");
                 client.get_config(app_name, profile_name, label_name).await
-            }
-            ConfigSource::Local { path } => {
-                load_local_config(path).await
-            }
-            ConfigSource::Environment { prefix } => {
-                Ok(load_env_config(prefix.as_deref()))
-            }
+            },
+            ConfigSource::Local { path } => load_local_config(path).await,
+            ConfigSource::Environment { prefix } => Ok(load_env_config(prefix.as_deref())),
         }
     }
 
@@ -467,7 +452,7 @@ async fn load_local_config(path: &PathBuf) -> Result<HashMap<String, String>, Co
             let value: serde_json::Value = serde_json::from_str(&content)
                 .map_err(|e| ConfigClientError::Parse(e.to_string()))?;
             flatten_json_value(&value)
-        }
+        },
         "properties" => {
             let mut map = HashMap::new();
             for line in content.lines() {
@@ -480,18 +465,16 @@ async fn load_local_config(path: &PathBuf) -> Result<HashMap<String, String>, Co
                 }
             }
             Ok(map)
-        }
+        },
         "yml" | "yaml" => {
             // Basic YAML parsing: try to parse as JSON first (subset of YAML)
             // In production, use the `serde_yaml` crate for full YAML support.
-            let value: serde_json::Value = serde_json::from_str(&content)
-                .map_err(|e| ConfigClientError::Parse(format!("YAML parsing requires serde_yaml: {}", e)))?;
+            let value: serde_json::Value = serde_json::from_str(&content).map_err(|e| {
+                ConfigClientError::Parse(format!("YAML parsing requires serde_yaml: {}", e))
+            })?;
             flatten_json_value(&value)
-        }
-        _ => Err(ConfigClientError::Parse(format!(
-            "Unsupported config file format: {}",
-            ext
-        ))),
+        },
+        _ => Err(ConfigClientError::Parse(format!("Unsupported config file format: {}", ext))),
     }
 }
 
@@ -546,7 +529,9 @@ impl CompositeConfigSource {
     /// Create an empty composite source
     /// 创建空的复合源
     pub fn new() -> Self {
-        Self { sources: Vec::new() }
+        Self {
+            sources: Vec::new(),
+        }
     }
 
     /// Add a source. Sources added first have higher priority.
@@ -698,10 +683,10 @@ impl PollingConfigRefresher {
             Ok(props) => {
                 *self.current.write().await = props;
                 *self.last_refresh.write().await = Some(Utc::now());
-            }
+            },
             Err(e) => {
                 tracing::warn!("Config refresh failed: {}", e);
-            }
+            },
         }
     }
 
@@ -822,10 +807,7 @@ mod tests {
 
         let map = flatten_json_value(&json).unwrap();
         assert_eq!(map.get("server.port"), Some(&"8080".to_string()));
-        assert_eq!(
-            map.get("spring.profiles.active"),
-            Some(&"dev".to_string())
-        );
+        assert_eq!(map.get("spring.profiles.active"), Some(&"dev".to_string()));
     }
 
     #[tokio::test]
@@ -886,20 +868,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_polling_config_refresher_manual_refresh() {
-        let composite = Arc::new(
-            CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
+        let composite =
+            Arc::new(CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
                 prefix: Some("HIVER_POLL_TEST_".to_string()),
-            }),
-        );
+            }));
 
         unsafe { std::env::set_var("HIVER_POLL_TEST_DB", "postgres") };
         let refresher = PollingConfigRefresher::new(composite, Duration::from_secs(60));
         refresher.refresh().await;
 
-        assert_eq!(
-            refresher.get("db").await,
-            Some("postgres".to_string())
-        );
+        assert_eq!(refresher.get("db").await, Some("postgres".to_string()));
 
         let last = refresher.last_refresh().await;
         assert!(last.is_some());
@@ -910,11 +888,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_polling_config_refresher_current_snapshot() {
-        let composite = Arc::new(
-            CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
+        let composite =
+            Arc::new(CompositeConfigSource::new().with_config_source(ConfigSource::Environment {
                 prefix: Some("HIVER_SNAP_TEST_".to_string()),
-            }),
-        );
+            }));
 
         unsafe { std::env::set_var("HIVER_SNAP_TEST_KEY", "snapshot_val") };
         let refresher = PollingConfigRefresher::new(composite, Duration::from_secs(60));
@@ -983,10 +960,7 @@ mod tests {
         assert_eq!(client.base_url, crate::DEFAULT_CONFIG_SERVER_URL);
         assert_eq!(client.cache_ttl, Duration::from_secs(DEFAULT_CACHE_TTL_SECS));
         assert_eq!(client.max_retries, DEFAULT_MAX_RETRIES);
-        assert_eq!(
-            client.retry_backoff,
-            Duration::from_millis(DEFAULT_RETRY_BACKOFF_MS)
-        );
+        assert_eq!(client.retry_backoff, Duration::from_millis(DEFAULT_RETRY_BACKOFF_MS));
     }
 
     #[tokio::test]
@@ -1070,14 +1044,8 @@ mod tests {
             map.get("spring.datasource.url"),
             Some(&"jdbc:postgresql://localhost/db".to_string())
         );
-        assert_eq!(
-            map.get("spring.datasource.username"),
-            Some(&"admin".to_string())
-        );
-        assert_eq!(
-            map.get("spring.profiles.active"),
-            Some(&"dev".to_string())
-        );
+        assert_eq!(map.get("spring.datasource.username"), Some(&"admin".to_string()));
+        assert_eq!(map.get("spring.profiles.active"), Some(&"dev".to_string()));
         assert_eq!(map.get("count"), Some(&"42".to_string()));
         assert_eq!(map.get("enabled"), Some(&"true".to_string()));
         assert_eq!(map.get("empty"), Some(&"".to_string()));
@@ -1103,19 +1071,16 @@ mod tests {
         assert!(result.is_err());
         match result.unwrap_err() {
             ConfigClientError::Connection(msg) => {
-                assert!(
-                    !msg.is_empty(),
-                    "Connection error should have a message"
-                );
-            }
+                assert!(!msg.is_empty(), "Connection error should have a message");
+            },
             other => panic!("Expected Connection error, got: {:?}", other),
         }
     }
 
     #[test]
     fn test_config_server_client_timeout_in_builder() {
-        let client = ConfigServerClient::new("http://config:8888")
-            .with_retry(0, Duration::from_millis(100));
+        let client =
+            ConfigServerClient::new("http://config:8888").with_retry(0, Duration::from_millis(100));
         assert_eq!(client.max_retries, 0);
     }
 }

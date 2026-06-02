@@ -4,9 +4,7 @@
 /// Generate Cargo.toml content.
 /// 生成 Cargo.toml 内容。
 pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
-    let mut deps = vec![
-        ("hiver-runtime", r#""0.1""#),
-    ];
+    let mut deps = vec![("hiver-runtime", r#""0.1""#)];
 
     for module in modules {
         match module.as_str() {
@@ -18,13 +16,13 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
                 deps.push(("hiver-response", r#""0.1""#));
                 deps.push(("serde", r#"{ version = "1", features = ["derive"] }"#));
                 deps.push(("serde_json", r#""0.1""#));
-            }
+            },
             "security" => deps.push(("hiver-security", r#""0.1""#)),
             "data" => {
                 deps.push(("hiver-data-rdbc", r#""0.1""#));
                 deps.push(("hiver-data-orm", r#""0.1""#));
                 deps.push(("hiver-tx", r#""0.1""#));
-            }
+            },
             "cache" => deps.push(("hiver-data-redis", r#""0.1""#)),
             "schedule" => deps.push(("hiver-schedule", r#""0.1""#)),
             "actuator" => deps.push(("hiver-actuator", r#""0.1""#)),
@@ -32,7 +30,7 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
             "graphql" => deps.push(("hiver-graphql", r#""0.1""#)),
             "grpc" => deps.push(("hiver-grpc", r#""0.1""#)),
             "ai" => deps.push(("hiver-ai", r#""0.1""#)),
-            _ => {}
+            _ => {},
         }
     }
 
@@ -40,7 +38,8 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
         deps.push(("serde", r#"{ version = "1", features = ["derive"] }"#));
     }
 
-    let deps_str = deps.iter()
+    let deps_str = deps
+        .iter()
         .map(|(name, version)| format!("{} = {}", name, version))
         .collect::<Vec<_>>()
         .join("\n");
@@ -93,7 +92,8 @@ async fn hello(_req: hiver_http::Request) -> Result<Response, hiver_http::Error>
         .body(Body::from(body))
         .unwrap())
 }
-"##.to_string()
+"##
+    .to_string()
 }
 
 /// Generate main.rs content for non-web projects.
@@ -118,7 +118,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok::<_, Box<dyn std::error::Error>>(())
     })
 }
-"#.to_string()
+"#
+    .to_string()
 }
 
 /// Generate main.rs content.

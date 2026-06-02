@@ -37,7 +37,10 @@ use std::sync::Arc;
 pub trait EventConsumer<E>: Send + Sync {
     /// Consume an event
     /// 消费事件
-    fn call_event(&self, event: &E) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
+    fn call_event(
+        &self,
+        event: &E,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
 
     /// Get consumer ID
     /// 获取消费者ID
@@ -176,13 +179,14 @@ where
     E: Send + Sync + Clone + 'static,
     F: Fn(&E) -> Result<(), String> + Send + Sync + Clone + 'static,
 {
-    fn call_event(&self, event: &E) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    fn call_event(
+        &self,
+        event: &E,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
         // Clone the event to create an owned value for the 'static future
         let event_clone = event.clone();
         let handler = self.handler.clone();
-        Box::pin(async move {
-            handler(&event_clone)
-        })
+        Box::pin(async move { handler(&event_clone) })
     }
 
     fn consumer_id(&self) -> &str {
@@ -422,7 +426,10 @@ impl fmt::Debug for BoxedEventConsumer {
 pub trait ConsumerFn: Send + Sync {
     /// Call with type-erased event
     /// 使用类型擦除的事件调用
-    fn call_boxed(&self, event: &(dyn Any + Send + Sync)) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
+    fn call_boxed(
+        &self,
+        event: &(dyn Any + Send + Sync),
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
 }
 
 /// Type-erased consumer wrapper
@@ -454,13 +461,14 @@ where
     E: ApplicationEvent + Send + Sync + Clone + 'static,
     C: EventConsumer<E> + Send + Sync + 'static,
 {
-    fn call_boxed(&self, event: &(dyn Any + Send + Sync)) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    fn call_boxed(
+        &self,
+        event: &(dyn Any + Send + Sync),
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
         if let Some(typed) = event.downcast_ref::<E>() {
             let typed = typed.clone();
             let consumer = self.consumer.clone();
-            Box::pin(async move {
-                consumer.call_event(&typed).await
-            })
+            Box::pin(async move { consumer.call_event(&typed).await })
         } else {
             Box::pin(async move {
                 Err(format!("Invalid event type: expected {}", std::any::type_name::<E>()))
@@ -500,12 +508,13 @@ where
     E: Send + Sync + Clone + 'static,
     L: EventListener<E> + Send + Sync + Clone + 'static,
 {
-    fn call_event(&self, event: &E) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    fn call_event(
+        &self,
+        event: &E,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
         let event_clone = event.clone();
         let listener = self.listener.clone();
-        Box::pin(async move {
-            listener.on_event(&event_clone)
-        })
+        Box::pin(async move { listener.on_event(&event_clone) })
     }
 
     fn consumer_id(&self) -> &str {
@@ -548,12 +557,13 @@ where
     E: Send + Sync + Clone + 'static,
     L: AsyncEventListener<E> + Send + Sync + 'static,
 {
-    fn call_event(&self, event: &E) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    fn call_event(
+        &self,
+        event: &E,
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
         let listener = self.listener.clone();
         let event = event.clone();
-        Box::pin(async move {
-            listener.on_event(&event).await
-        })
+        Box::pin(async move { listener.on_event(&event).await })
     }
 
     fn consumer_id(&self) -> &str {
@@ -584,8 +594,7 @@ where
 /// @EventListener(condition = "#event.success", order = 10)
 /// public void handleEvent(MyEvent event) { }
 /// ```
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct ListenerConfig {
     /// Listener ID for identification
     /// 用于标识的监听器ID
@@ -599,7 +608,6 @@ pub struct ListenerConfig {
     /// 可选条件表达式（在注册时解析）
     pub condition: Option<String>,
 }
-
 
 impl ListenerConfig {
     /// Create a new default configuration
@@ -636,8 +644,12 @@ impl ListenerConfig {
     /// Returns `Err` if the condition expression is syntactically invalid.
     /// 如果没有配置条件则返回 `None`。
     /// 如果条件表达式语法无效则返回 `Err`。
-    pub fn build_condition(&self) -> Option<Result<Box<dyn EventCondition>, crate::condition::ConditionParseError>> {
-        self.condition.as_ref().map(|expr| ConditionParser::parse(expr))
+    pub fn build_condition(
+        &self,
+    ) -> Option<Result<Box<dyn EventCondition>, crate::condition::ConditionParseError>> {
+        self.condition
+            .as_ref()
+            .map(|expr| ConditionParser::parse(expr))
     }
 }
 
@@ -958,10 +970,7 @@ mod tests {
 
     #[test]
     fn test_listener_builder_basic() {
-        let listener = ListenerBuilder::new(|_event: &TestEvent| {
-            Ok(())
-        })
-        .build();
+        let listener = ListenerBuilder::new(|_event: &TestEvent| Ok(())).build();
 
         let event = TestEvent { value: 42 };
         assert!(listener.on_event(&event).is_ok());
@@ -969,12 +978,10 @@ mod tests {
 
     #[test]
     fn test_listener_builder_with_id_and_order() {
-        let listener = ListenerBuilder::new(|event: &TestEvent| {
-            Ok(())
-        })
-        .with_id("ordered_listener")
-        .with_order(42)
-        .build();
+        let listener = ListenerBuilder::new(|event: &TestEvent| Ok(()))
+            .with_id("ordered_listener")
+            .with_order(42)
+            .build();
 
         assert_eq!(listener.consumer_id(), "ordered_listener");
         assert_eq!(listener.order(), 42);
@@ -982,10 +989,8 @@ mod tests {
 
     #[test]
     fn test_listener_builder_with_condition() {
-        let builder = ListenerBuilder::new(|_event: &TestEvent| {
-            Ok(())
-        })
-        .with_condition("value > 10");
+        let builder =
+            ListenerBuilder::new(|_event: &TestEvent| Ok(())).with_condition("value > 10");
 
         let config = builder.config();
         assert_eq!(config.condition.as_deref(), Some("value > 10"));

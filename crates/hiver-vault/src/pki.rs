@@ -177,21 +177,14 @@ impl<'a> Pki<'a> {
     }
 
     /// Create or update a certificate role / 创建或更新证书角色
-    pub async fn set_role(
-        &self,
-        role_name: &str,
-        role: &CertificateRole,
-    ) -> VaultResult<()> {
+    pub async fn set_role(&self, role_name: &str, role: &CertificateRole) -> VaultResult<()> {
         let path = format!("{}/roles/{}", self.mount, role_name);
         self.client.post(&path, role).await?;
         Ok(())
     }
 
     /// Read a certificate role / 读取证书角色
-    pub async fn read_role(
-        &self,
-        role_name: &str,
-    ) -> VaultResult<serde_json::Value> {
+    pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value> {
         let path = format!("{}/roles/{}", self.mount, role_name);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -214,10 +207,7 @@ impl<'a> Pki<'a> {
     }
 
     /// Revoke a certificate by serial number / 通过序列号撤销证书
-    pub async fn revoke(
-        &self,
-        serial_number: &str,
-    ) -> VaultResult<()> {
+    pub async fn revoke(&self, serial_number: &str) -> VaultResult<()> {
         let path = format!("{}/revoke", self.mount);
         let body = serde_json::json!({
             "serial_number": serial_number
@@ -239,10 +229,7 @@ impl<'a> Pki<'a> {
     }
 
     /// Read a certificate by serial number / 通过序列号读取证书
-    pub async fn read_certificate(
-        &self,
-        serial_number: &str,
-    ) -> VaultResult<String> {
+    pub async fn read_certificate(&self, serial_number: &str) -> VaultResult<String> {
         let path = format!("{}/cert/{}", self.mount, serial_number);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -260,10 +247,7 @@ impl<'a> Pki<'a> {
     }
 
     /// Set the CA certificate and private key / 设置 CA 证书和私钥
-    pub async fn set_ca(
-        &self,
-        pem_bundle: &str,
-    ) -> VaultResult<()> {
+    pub async fn set_ca(&self, pem_bundle: &str) -> VaultResult<()> {
         let path = format!("{}/config/ca", self.mount);
         let body = CaSetRequest {
             pem_bundle: pem_bundle.to_string(),

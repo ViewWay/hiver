@@ -4,7 +4,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Field, LitStr};
+use syn::{DeriveInput, Field, LitStr, parse_macro_input};
 
 /// Field-level helper attributes recognized and consumed by #[Entity].
 /// #[Entity] 识别并消费的字段级辅助属性。
@@ -154,12 +154,12 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
             "Id" => {
                 meta.is_id = true;
                 meta.nullable = false;
-            }
+            },
             "GeneratedValue" => {
                 let args = parse_attr_args(attr);
                 meta.id_strategy =
                     Some(extract_string(&args, "strategy").unwrap_or_else(|| "AUTO".into()));
-            }
+            },
             "Column" => {
                 let args = parse_attr_args(attr);
                 meta.column_name = extract_string(&args, "name");
@@ -170,43 +170,43 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
                     meta.unique = u;
                 }
                 meta.length = extract_usize(&args, "length");
-            }
+            },
             "Transient" => {
                 meta.is_transient = true;
-            }
+            },
             "OneToMany" => {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("one_to_many".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
-            }
+            },
             "OneToOne" => {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("one_to_one".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
-            }
+            },
             "ManyToOne" => {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("many_to_one".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
-            }
+            },
             "ManyToMany" => {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("many_to_many".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
-            }
+            },
             "JoinColumn" => {
                 let args = parse_attr_args(attr);
                 meta.join_column = extract_string(&args, "name");
-            }
+            },
             "JoinTable" => {
                 let args = parse_attr_args(attr);
                 meta.join_table = extract_string(&args, "name");
-            }
-            _ => {}
+            },
+            _ => {},
         }
     }
 
@@ -288,13 +288,13 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
                 )
                 .to_compile_error()
                 .into();
-            }
+            },
         },
         _ => {
             return syn::Error::new_spanned(name, "Entity can only be applied to structs")
                 .to_compile_error()
                 .into();
-        }
+        },
     };
 
     if fields.is_empty() {
@@ -308,22 +308,21 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
 
     // Strip helper attrs from struct fields
     if let syn::Data::Struct(data) = &mut input.data
-        && let syn::Fields::Named(named) = &mut data.fields {
-            for field in &mut named.named {
-                field.attrs.retain(|attr| {
-                    attr.path()
-                        .get_ident()
-                        .is_none_or(|id| !HELPER_ATTRS.contains(&id.to_string().as_str()))
-                });
-            }
+        && let syn::Fields::Named(named) = &mut data.fields
+    {
+        for field in &mut named.named {
+            field.attrs.retain(|attr| {
+                attr.path()
+                    .get_ident()
+                    .is_none_or(|id| !HELPER_ATTRS.contains(&id.to_string().as_str()))
+            });
         }
+    }
 
     // Strip #[Table] from struct attrs (Entity handles it)
-    input.attrs.retain(|attr| {
-        attr.path()
-            .get_ident()
-            .is_none_or(|id| id != "Table")
-    });
+    input
+        .attrs
+        .retain(|attr| attr.path().get_ident().is_none_or(|id| id != "Table"));
 
     // -- Build generated code --
     let field_name_lits: Vec<LitStr> = fields
@@ -387,7 +386,9 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
             if let Some(t) = &f.relation_target {
                 let target = LitStr::new(t, Span::call_site());
                 quote! { (#field, #kind, Some(#target)) }
-            } else { quote! { (#field, #kind, None) } }
+            } else {
+                quote! { (#field, #kind, None) }
+            }
         })
         .collect();
 
@@ -401,8 +402,14 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .filter(|f| f.join_column.is_some() || f.join_table.is_some())
         .map(|f| {
             let field = LitStr::new(&f.name, Span::call_site());
-            let jc = f.join_column.as_deref().map(|s| LitStr::new(s, Span::call_site()));
-            let jt = f.join_table.as_deref().map(|s| LitStr::new(s, Span::call_site()));
+            let jc = f
+                .join_column
+                .as_deref()
+                .map(|s| LitStr::new(s, Span::call_site()));
+            let jt = f
+                .join_table
+                .as_deref()
+                .map(|s| LitStr::new(s, Span::call_site()));
             let jc_code = jc.map(|l| quote! { Some(#l) }).unwrap_or(quote! { None });
             let jt_code = jt.map(|l| quote! { Some(#l) }).unwrap_or(quote! { None });
             quote! { (#field, #jc_code, #jt_code) }
@@ -413,7 +420,11 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .iter()
         .map(|f| {
             let fname = LitStr::new(&f.name, Span::call_site());
-            if let Some(l) = f.length { quote! { #fname => Some(#l) } } else { quote! { #fname => None } }
+            if let Some(l) = f.length {
+                quote! { #fname => Some(#l) }
+            } else {
+                quote! { #fname => None }
+            }
         })
         .collect();
 
@@ -540,10 +551,7 @@ pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
     } else {
         let attr_str = attr.to_string();
         if let Some(eq_pos) = attr_str.find('=') {
-            attr_str[eq_pos + 1..]
-                .trim()
-                .trim_matches('"')
-                .to_string()
+            attr_str[eq_pos + 1..].trim().trim_matches('"').to_string()
         } else {
             attr_str.trim_matches('"').to_string()
         }

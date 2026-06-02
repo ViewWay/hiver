@@ -289,19 +289,20 @@ impl SessionStore for RedisSessionStore {
 
     async fn get(&self, id: &SessionId) -> Result<Option<Session>, String> {
         let key = self.session_key(id);
-        let value = self.client
+        let value = self
+            .client
             .get(&key)
             .await
             .map_err(|e| format!("Failed to get session: {}", e))?;
 
         match value {
             Some(v) => {
-                let json = String::from_utf8(v)
-                    .map_err(|e| format!("Failed to parse session: {}", e))?;
+                let json =
+                    String::from_utf8(v).map_err(|e| format!("Failed to parse session: {}", e))?;
                 let data: SessionData = serde_json::from_str(&json)
                     .map_err(|e| format!("Failed to deserialize session: {}", e))?;
                 Ok(Some(data.to_session()))
-            }
+            },
             None => Ok(None),
         }
     }
@@ -319,7 +320,8 @@ impl SessionStore for RedisSessionStore {
         // Use SCAN to get all session keys
         // 使用SCAN获取所有会话键
         let pattern = format!("{}*", self.key_prefix);
-        let keys = self.client
+        let keys = self
+            .client
             .keys(&pattern)
             .await
             .map_err(|e| format!("Failed to get session IDs: {}", e))?;
@@ -423,8 +425,8 @@ impl SessionStore for MongoSessionStore {
         let data = SessionData::from_session(session).await;
         let json = serde_json::to_string(&data)
             .map_err(|e| format!("Failed to serialize session: {}", e))?;
-        let doc: serde_json::Value = serde_json::from_str(&json)
-            .map_err(|e| format!("Failed to convert session: {}", e))?;
+        let doc: serde_json::Value =
+            serde_json::from_str(&json).map_err(|e| format!("Failed to convert session: {}", e))?;
 
         self.client
             .insert(&self.database, &self.collection, doc)
@@ -434,7 +436,8 @@ impl SessionStore for MongoSessionStore {
 
     async fn get(&self, id: &SessionId) -> Result<Option<Session>, String> {
         let filter = serde_json::json!({ "id": id.as_str() });
-        let result = self.client
+        let result = self
+            .client
             .find_one(&self.database, &self.collection, filter)
             .await
             .map_err(|e| format!("Failed to get session: {}", e))?;
@@ -446,7 +449,7 @@ impl SessionStore for MongoSessionStore {
                 let data: SessionData = serde_json::from_str(&json)
                     .map_err(|e| format!("Failed to deserialize session: {}", e))?;
                 Ok(Some(data.to_session()))
-            }
+            },
             None => Ok(None),
         }
     }
@@ -461,7 +464,8 @@ impl SessionStore for MongoSessionStore {
     }
 
     async fn ids(&self) -> Result<Vec<SessionId>, String> {
-        let results = self.client
+        let results = self
+            .client
             .find(&self.database, &self.collection, serde_json::json!({}))
             .await
             .map_err(|e| format!("Failed to get session IDs: {}", e))?;

@@ -319,10 +319,11 @@ impl CircuitBreaker {
         if state == CircuitState::Open {
             // Check if we should transition to half-open
             if let Some(last_fail) = *self.last_failure.read().await
-                && last_fail.elapsed() >= self.config.open_timeout {
-                    *self.state.write().await = CircuitState::HalfOpen;
-                    self.successes.store(0, Ordering::SeqCst);
-                }
+                && last_fail.elapsed() >= self.config.open_timeout
+            {
+                *self.state.write().await = CircuitState::HalfOpen;
+                self.successes.store(0, Ordering::SeqCst);
+            }
         }
     }
 
@@ -404,9 +405,10 @@ impl CircuitBreaker {
             return;
         }
         if let Some(w) = self.window.read().await.as_ref()
-            && w.slow_call_rate() >= self.config.slow_call_rate_threshold {
-                self.transition_to(CircuitState::Open).await;
-            }
+            && w.slow_call_rate() >= self.config.slow_call_rate_threshold
+        {
+            self.transition_to(CircuitState::Open).await;
+        }
     }
 
     /// Transition to a new state with event emission.
@@ -419,7 +421,10 @@ impl CircuitBreaker {
                 self.failures.store(0, Ordering::SeqCst);
                 self.successes.store(0, Ordering::SeqCst);
             }
-            self.emit_event(CircuitBreakerEvent::StateTransition { from: old, to: new_state });
+            self.emit_event(CircuitBreakerEvent::StateTransition {
+                from: old,
+                to: new_state,
+            });
         }
     }
 
@@ -484,7 +489,10 @@ impl CircuitBreaker {
         *self.state.write().await = CircuitState::Open;
         *self.last_failure.write().await = Some(std::time::Instant::now());
         if old != CircuitState::Open {
-            self.emit_event(CircuitBreakerEvent::StateTransition { from: old, to: CircuitState::Open });
+            self.emit_event(CircuitBreakerEvent::StateTransition {
+                from: old,
+                to: CircuitState::Open,
+            });
         }
     }
 
@@ -816,7 +824,9 @@ mod tests {
                 .failure_rate_threshold(80.0),
         );
 
-        let _ = cb.execute(|| Box::pin(async { Ok::<(), String>(()) })).await;
+        let _ = cb
+            .execute(|| Box::pin(async { Ok::<(), String>(()) }))
+            .await;
         let _ = cb
             .execute(|| Box::pin(async { Err::<(), _>("err".to_string()) }))
             .await;
@@ -849,7 +859,9 @@ mod tests {
             events_clone.lock().unwrap().push(name);
         }));
 
-        let _ = cb.execute(|| Box::pin(async { Ok::<(), String>(()) })).await;
+        let _ = cb
+            .execute(|| Box::pin(async { Ok::<(), String>(()) }))
+            .await;
         let _ = cb
             .execute(|| Box::pin(async { Err::<(), _>("err".to_string()) }))
             .await;

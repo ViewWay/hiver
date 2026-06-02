@@ -146,7 +146,8 @@ impl MultipartFile {
     /// Get file extension
     /// 获取文件扩展名
     pub fn extension(&self) -> Option<&str> {
-        self.filename.as_ref()?
+        self.filename
+            .as_ref()?
             .rsplit('.')
             .next()
             .filter(|ext| !ext.is_empty())
@@ -403,10 +404,9 @@ impl FromMultipart for MultipartData {
 
             // Parse multipart boundary
             // 解析 multipart 边界
-            let _boundary = content_type
-                .split("boundary=")
-                .nth(1)
-                .ok_or_else(|| Error::bad_request("Missing boundary in Content-Type".to_string()))?;
+            let _boundary = content_type.split("boundary=").nth(1).ok_or_else(|| {
+                Error::bad_request("Missing boundary in Content-Type".to_string())
+            })?;
 
             // For now, return empty data - full multipart parsing would be implemented here
             // 现在返回空数据 - 完整的 multipart 解析将在这里实现
@@ -465,7 +465,7 @@ impl FileSizeLimits {
     /// 默认限制：每个文件 10MB，总共 100MB
     pub fn default_limits() -> Self {
         Self {
-            max_file_size: 10 * 1024 * 1024, // 10MB
+            max_file_size: 10 * 1024 * 1024,     // 10MB
             max_request_size: 100 * 1024 * 1024, // 100MB
         }
     }
@@ -499,10 +499,11 @@ impl Default for FileSizeLimits {
 /// Validate file extension
 /// 验证文件扩展名
 pub fn validate_extension(filename: &str, allowed: &[&str]) -> bool {
-    filename
-        .rsplit('.')
-        .next()
-        .is_some_and(|ext| allowed.iter().any(|allowed| ext.eq_ignore_ascii_case(allowed)))
+    filename.rsplit('.').next().is_some_and(|ext| {
+        allowed
+            .iter()
+            .any(|allowed| ext.eq_ignore_ascii_case(allowed))
+    })
 }
 
 /// Validate content type

@@ -28,8 +28,7 @@ pub struct Publisher {
 
 /// Publishing options
 /// 发布选项
-#[derive(Clone, Debug)]
-#[derive(Default)]
+#[derive(Clone, Debug, Default)]
 pub struct PublishingOptions {
     /// Exchange
     /// 交换机
@@ -79,7 +78,6 @@ pub struct PublishingOptions {
     /// 内容编码
     pub content_encoding: Option<String>,
 }
-
 
 impl PublishingOptions {
     /// Create new publishing options
@@ -164,12 +162,7 @@ impl Publisher {
 
     /// Publish message
     /// 发布消息
-    pub fn publish(
-        &self,
-        exchange: &str,
-        routing_key: &str,
-        payload: &[u8],
-    ) -> Result<(), String> {
+    pub fn publish(&self, exchange: &str, routing_key: &str, payload: &[u8]) -> Result<(), String> {
         // Mock implementation
         // In a real implementation, this would publish to AMQP
         // 模拟实现
@@ -209,8 +202,8 @@ impl Publisher {
         routing_key: &str,
         payload: &T,
     ) -> Result<(), String> {
-        let json = serde_json::to_vec(payload)
-            .map_err(|e| format!("Failed to serialize JSON: {}", e))?;
+        let json =
+            serde_json::to_vec(payload).map_err(|e| format!("Failed to serialize JSON: {}", e))?;
         self.publish(exchange, routing_key, &json)
     }
 
@@ -314,8 +307,7 @@ mod tests {
     #[test]
     fn test_publisher_publish_with_options() {
         let pub_ = create_publisher();
-        let opts = PublishingOptions::new()
-            .with_delivery_mode(DeliveryMode::Persistent);
+        let opts = PublishingOptions::new().with_delivery_mode(DeliveryMode::Persistent);
         let result = pub_.publish_with_options("ex", "rk", b"data", &opts);
         assert!(result.is_ok());
     }
@@ -325,8 +317,14 @@ mod tests {
     fn test_publisher_publish_json() {
         let pub_ = create_publisher();
         #[derive(serde::Serialize)]
-        struct Order { id: u64, item: String }
-        let order = Order { id: 1, item: "widget".to_string() };
+        struct Order {
+            id: u64,
+            item: String,
+        }
+        let order = Order {
+            id: 1,
+            item: "widget".to_string(),
+        };
         let result = pub_.publish_json("orders", "order.created", &order);
         assert!(result.is_ok());
     }

@@ -68,7 +68,11 @@ impl PostgresContainer {
         let host = container.get_host().await.expect("get host").to_string();
         let port = container.get_host_port_ipv4(5432).await.expect("get port");
         info!("PostgreSQL container started at {}:{}", host, port);
-        Self { container, host, port }
+        Self {
+            container,
+            host,
+            port,
+        }
     }
 
     /// JDBC-style connection URL (compatible with most Rust crates).
@@ -81,11 +85,15 @@ impl PostgresContainer {
 
     /// Host the container is reachable on.
     /// 可访问容器的主机。
-    pub fn host(&self) -> &str { &self.host }
+    pub fn host(&self) -> &str {
+        &self.host
+    }
 
     /// Mapped host port for PostgreSQL (default container port: 5432).
     /// PostgreSQL 的映射主机端口（默认容器端口：5432）。
-    pub fn port(&self) -> u16 { self.port }
+    pub fn port(&self) -> u16 {
+        self.port
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -113,7 +121,11 @@ impl RedisContainer {
         let host = container.get_host().await.expect("get host").to_string();
         let port = container.get_host_port_ipv4(6379).await.expect("get port");
         info!("Redis container started at {}:{}", host, port);
-        Self { container, host, port }
+        Self {
+            container,
+            host,
+            port,
+        }
     }
 
     /// Redis connection URL.
@@ -126,11 +138,15 @@ impl RedisContainer {
 
     /// Host the container is reachable on.
     /// 可访问容器的主机。
-    pub fn host(&self) -> &str { &self.host }
+    pub fn host(&self) -> &str {
+        &self.host
+    }
 
     /// Mapped host port for Redis (default container port: 6379).
     /// Redis 的映射主机端口（默认容器端口：6379）。
-    pub fn port(&self) -> u16 { self.port }
+    pub fn port(&self) -> u16 {
+        self.port
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,7 +174,11 @@ impl KafkaContainer {
         let host = container.get_host().await.expect("get host").to_string();
         let port = container.get_host_port_ipv4(9093).await.expect("get port");
         info!("Kafka container started at {}:{}", host, port);
-        Self { container, host, port }
+        Self {
+            container,
+            host,
+            port,
+        }
     }
 
     /// Kafka bootstrap server address.
@@ -169,11 +189,15 @@ impl KafkaContainer {
 
     /// Host the container is reachable on.
     /// 可访问容器的主机。
-    pub fn host(&self) -> &str { &self.host }
+    pub fn host(&self) -> &str {
+        &self.host
+    }
 
     /// Mapped host port for Kafka.
     /// Kafka 的映射主机端口。
-    pub fn port(&self) -> u16 { self.port }
+    pub fn port(&self) -> u16 {
+        self.port
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -203,29 +227,62 @@ pub struct ContainerSetBuilder {
 impl ContainerSetBuilder {
     /// Create a new builder.
     /// 创建新构建器。
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Include a PostgreSQL container.
     /// 包含 PostgreSQL 容器。
-    pub fn postgres(mut self) -> Self { self.need_postgres = true; self }
+    pub fn postgres(mut self) -> Self {
+        self.need_postgres = true;
+        self
+    }
 
     /// Include a Redis container.
     /// 包含 Redis 容器。
-    pub fn redis(mut self) -> Self { self.need_redis = true; self }
+    pub fn redis(mut self) -> Self {
+        self.need_redis = true;
+        self
+    }
 
     /// Include a Kafka container.
     /// 包含 Kafka 容器。
-    pub fn kafka(mut self) -> Self { self.need_kafka = true; self }
+    pub fn kafka(mut self) -> Self {
+        self.need_kafka = true;
+        self
+    }
 
     /// Start all requested containers concurrently.
     /// 并发启动所有请求的容器。
     pub async fn build(self) -> ContainerSet {
         let (pg, redis, kafka) = tokio::join!(
-            async { if self.need_postgres { Some(PostgresContainer::start().await) } else { None } },
-            async { if self.need_redis { Some(RedisContainer::start().await) } else { None } },
-            async { if self.need_kafka { Some(KafkaContainer::start().await) } else { None } },
+            async {
+                if self.need_postgres {
+                    Some(PostgresContainer::start().await)
+                } else {
+                    None
+                }
+            },
+            async {
+                if self.need_redis {
+                    Some(RedisContainer::start().await)
+                } else {
+                    None
+                }
+            },
+            async {
+                if self.need_kafka {
+                    Some(KafkaContainer::start().await)
+                } else {
+                    None
+                }
+            },
         );
-        ContainerSet { postgres: pg, redis, kafka }
+        ContainerSet {
+            postgres: pg,
+            redis,
+            kafka,
+        }
     }
 }
 
@@ -243,12 +300,16 @@ pub struct ContainerSet {
 impl ContainerSet {
     /// Create a builder.
     /// 创建构建器。
-    pub fn builder() -> ContainerSetBuilder { ContainerSetBuilder::new() }
+    pub fn builder() -> ContainerSetBuilder {
+        ContainerSetBuilder::new()
+    }
 
     /// PostgreSQL connection URL if a container was started.
     /// 若容器已启动，返回 PostgreSQL 连接 URL。
     pub fn postgres_url(&self) -> Option<String> {
-        self.postgres.as_ref().map(PostgresContainer::connection_url)
+        self.postgres
+            .as_ref()
+            .map(PostgresContainer::connection_url)
     }
 
     /// Redis connection URL if a container was started.

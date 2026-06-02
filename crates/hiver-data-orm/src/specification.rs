@@ -109,27 +109,25 @@ impl CompositeSpec {
     /// 转换为 SQL WHERE 子句和参数
     pub fn to_sql(&self) -> (String, Vec<String>) {
         match self {
-            CompositeSpec::Leaf(spec) => {
-                (spec.clause.clone(), spec.params.clone())
-            }
+            CompositeSpec::Leaf(spec) => (spec.clause.clone(), spec.params.clone()),
             CompositeSpec::And(left, right) => {
                 let (l_clause, l_params) = left.to_sql();
                 let (r_clause, r_params) = right.to_sql();
                 let mut params = l_params;
                 params.extend(r_params);
                 (format!("({} AND {})", l_clause, r_clause), params)
-            }
+            },
             CompositeSpec::Or(left, right) => {
                 let (l_clause, l_params) = left.to_sql();
                 let (r_clause, r_params) = right.to_sql();
                 let mut params = l_params;
                 params.extend(r_params);
                 (format!("({} OR {})", l_clause, r_clause), params)
-            }
+            },
             CompositeSpec::Not(inner) => {
                 let (clause, params) = inner.to_sql();
                 (format!("NOT ({})", clause), params)
-            }
+            },
         }
     }
 }
@@ -150,15 +148,27 @@ pub trait Specification: Send + Sync {
 pub trait JpaSpecificationExecutor<T: Send>: Send + Sync {
     /// Find all entities matching the specification
     /// 查找所有匹配规约的实体
-    fn find_by_spec(&self, spec: &(dyn Specification + Send + Sync)) -> impl std::future::Future<Output = Result<Vec<T>, crate::OrmError>> + Send;
+    fn find_by_spec(
+        &self,
+        spec: &(dyn Specification + Send + Sync),
+    ) -> impl std::future::Future<Output = Result<Vec<T>, crate::OrmError>> + Send;
 
     /// Count entities matching the specification
     /// 计算匹配规约的实体数
-    fn count_by_spec(&self, spec: &(dyn Specification + Send + Sync)) -> impl std::future::Future<Output = Result<i64, crate::OrmError>> + Send;
+    fn count_by_spec(
+        &self,
+        spec: &(dyn Specification + Send + Sync),
+    ) -> impl std::future::Future<Output = Result<i64, crate::OrmError>> + Send;
 
     /// Check if any entity matches
     /// 检查是否有实体匹配
-    fn exists_by_spec(&self, spec: &(dyn Specification + Send + Sync)) -> impl std::future::Future<Output = Result<bool, crate::OrmError>> + Send where Self: Sync {
+    fn exists_by_spec(
+        &self,
+        spec: &(dyn Specification + Send + Sync),
+    ) -> impl std::future::Future<Output = Result<bool, crate::OrmError>> + Send
+    where
+        Self: Sync,
+    {
         async move { Ok(self.count_by_spec(spec).await? > 0) }
     }
 }

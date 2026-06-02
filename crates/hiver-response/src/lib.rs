@@ -37,22 +37,16 @@ pub use unified::{ApiResponse, DefaultResponseAdvice, ResponseAdvice, ResponseRe
 
 // SSE re-exports
 #[cfg(feature = "sse")]
-pub use sse::{
-    SseEmitter, SseError, SseEvent, SseEventBuilder, SseSender, sse_channel,
-};
+pub use sse::{SseEmitter, SseError, SseEvent, SseEventBuilder, SseSender, sse_channel};
 
 // CSV re-exports
-pub use csv::{
-    Csv, CsvError, CsvExportConfig, CsvExporter, CsvTable, export_to_csv,
-};
+pub use csv::{Csv, CsvError, CsvExportConfig, CsvExporter, CsvTable, export_to_csv};
 
 // Excel re-exports
 pub use excel::{
-    CellAlignment, Excel, ExcelCell, ExcelError, ExcelExportConfig, ExcelExporter, ExcelCellStyle,
+    CellAlignment, Excel, ExcelCell, ExcelCellStyle, ExcelError, ExcelExportConfig, ExcelExporter,
     ExcelTable, export_to_excel,
 };
 
 // PDF re-exports
-pub use pdf::{
-    Pdf, PdfDocument, PdfError, PdfFont, PdfLine, PdfPage, PdfTable, PdfText,
-};
+pub use pdf::{Pdf, PdfDocument, PdfError, PdfFont, PdfLine, PdfPage, PdfTable, PdfText};

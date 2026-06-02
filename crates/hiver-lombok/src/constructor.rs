@@ -3,7 +3,7 @@
 
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[AllArgsConstructor] derive macro
 /// 实现 #[AllArgsConstructor] 派生宏
@@ -24,16 +24,13 @@ pub fn impl_all_args(input: DeriveInput) -> TokenStream {
                 "#[AllArgsConstructor] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Get field names and types
     // 获取字段名和类型
-    let field_names: Vec<_> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<_> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
@@ -74,16 +71,13 @@ pub fn impl_no_args(input: DeriveInput) -> TokenStream {
                 "#[NoArgsConstructor] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Get field names and types
     // 获取字段名和类型
-    let field_names: Vec<_> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<_> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 

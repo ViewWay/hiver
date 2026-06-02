@@ -470,9 +470,10 @@ where
     async fn open(&mut self) -> BatchResult<()> {
         // Clear file if exists
         if self.write_headers
-            && let Some(headers) = &self.headers {
-                self.write_line(headers.clone()).await?;
-            }
+            && let Some(headers) = &self.headers
+        {
+            self.write_line(headers.clone()).await?;
+        }
         Ok(())
     }
 
@@ -622,9 +623,6 @@ mod tests {
         assert_eq!(CsvWriter::<String>::escape_csv("simple"), "simple");
         assert_eq!(CsvWriter::<String>::escape_csv("with,comma"), "\"with,comma\"");
         assert_eq!(CsvWriter::<String>::escape_csv("with\"quote"), "\"with\"\"quote\"");
-        assert_eq!(
-            CsvWriter::<String>::escape_csv("with\nnewline"),
-            "\"with\nnewline\""
-        );
+        assert_eq!(CsvWriter::<String>::escape_csv("with\nnewline"), "\"with\nnewline\"");
     }
 }

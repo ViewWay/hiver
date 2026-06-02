@@ -125,9 +125,7 @@ impl AutoConfigurationEntry {
     /// 检查条件是否满足（无条件时默认为 true）
     /// Check if condition is met (defaults to true when no condition)
     pub fn matches(&self, ctx: &ApplicationContext) -> bool {
-        self.condition
-            .as_ref()
-            .map_or(true, |c| c.matches(ctx))
+        self.condition.as_ref().map_or(true, |c| c.matches(ctx))
     }
 
     /// 执行工厂函数
@@ -376,10 +374,7 @@ impl AutoConfigurationRegistry {
 
     /// 将 Before/After 约束应用到引用切片
     /// Apply Before/After constraints to a reference slice
-    fn apply_order_constraints_ref(
-        &self,
-        entries: &mut Vec<&AutoConfigurationEntry>,
-    ) {
+    fn apply_order_constraints_ref(&self, entries: &mut Vec<&AutoConfigurationEntry>) {
         for _ in 0..self.order_constraints.len() {
             let mut swapped = false;
             for constraint in &self.order_constraints {
@@ -477,12 +472,9 @@ impl Condition for ConditionalOnClass {
         // For feature-gated types, we use environment variables to simulate.
         let env_key = format!(
             "HIVER_CONDITIONAL_ON_CLASS_{}",
-            self.type_name
-                .replace("::", "_")
-                .replace(['<', '>'], "_")
+            self.type_name.replace("::", "_").replace(['<', '>'], "_")
         );
-        std::env::var(env_key)
-            .map_or(true, |v| v == "true" || v == "1")
+        std::env::var(env_key).map_or(true, |v| v == "true" || v == "1")
     }
 }
 
@@ -767,8 +759,8 @@ mod tests {
 
     #[test]
     fn test_entry_with_priority() {
-        let entry = AutoConfigurationEntry::new("HighPriorityConfig", noop_factory)
-            .with_priority(-100);
+        let entry =
+            AutoConfigurationEntry::new("HighPriorityConfig", noop_factory).with_priority(-100);
         assert_eq!(entry.priority(), -100);
     }
 
@@ -851,8 +843,11 @@ mod tests {
     #[test]
     fn test_registry_sort_by_priority() {
         let mut registry = AutoConfigurationRegistry::new();
-        registry.register(AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100));
-        registry.register(AutoConfigurationEntry::new("HighPriority", noop_factory).with_priority(-100));
+        registry
+            .register(AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100));
+        registry.register(
+            AutoConfigurationEntry::new("HighPriority", noop_factory).with_priority(-100),
+        );
         registry.register(AutoConfigurationEntry::new("DefaultPriority", noop_factory));
 
         registry.sort_by_priority();

@@ -57,9 +57,7 @@ pub mod timer;
 pub mod transition;
 pub mod visualizer;
 
-pub use builder::{
-    ActionExt, GuardExt, StateMachineBuilder, TransitionBuilder,
-};
+pub use builder::{ActionExt, GuardExt, StateMachineBuilder, TransitionBuilder};
 pub use config::{StateConfig, StateDataValueConfig, StateMachineConfig, TransitionConfig};
 pub use error::{StateMachineError, StateMachineResult};
 pub use persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot};

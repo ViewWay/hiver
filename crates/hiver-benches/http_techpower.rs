@@ -116,22 +116,18 @@ fn bench_json_list(c: &mut Criterion) {
 
     for count in [1usize, 5, 20, 100, 500].iter() {
         group.throughput(Throughput::Elements(*count as u64));
-        group.bench_with_input(
-            BenchmarkId::new("world_list", count),
-            count,
-            |b, &count| {
-                let worlds: Vec<World> = (1..=count as i32).map(World::new).collect();
-                b.iter(|| {
-                    let body = serde_json::to_vec(black_box(&worlds)).unwrap();
-                    let response = Response::builder()
-                        .status(StatusCode::OK)
-                        .header("content-type", "application/json")
-                        .body(Body::from(body))
-                        .unwrap();
-                    black_box(response)
-                });
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("world_list", count), count, |b, &count| {
+            let worlds: Vec<World> = (1..=count as i32).map(World::new).collect();
+            b.iter(|| {
+                let body = serde_json::to_vec(black_box(&worlds)).unwrap();
+                let response = Response::builder()
+                    .status(StatusCode::OK)
+                    .header("content-type", "application/json")
+                    .body(Body::from(body))
+                    .unwrap();
+                black_box(response)
+            });
+        });
     }
 
     group.finish();
@@ -154,7 +150,8 @@ fn bench_json_deserialize(c: &mut Criterion) {
 
     // Deserialize world list
     // 反序列化 World 列表
-    let worlds_json = serde_json::to_string(&(1..=20i32).map(World::new).collect::<Vec<_>>()).unwrap();
+    let worlds_json =
+        serde_json::to_string(&(1..=20i32).map(World::new).collect::<Vec<_>>()).unwrap();
     group.bench_function("deserialize_20_worlds", |b| {
         b.iter(|| {
             let worlds: Vec<World> = serde_json::from_str(black_box(&worlds_json)).unwrap();
@@ -240,22 +237,18 @@ fn bench_db_query_sim(c: &mut Criterion) {
     // 多次查询：获取 N 个 world，序列化为 JSON 数组
     for count in [5usize, 20, 100].iter() {
         group.throughput(Throughput::Elements(*count as u64));
-        group.bench_with_input(
-            BenchmarkId::new("multiple_queries", count),
-            count,
-            |b, &count| {
-                b.iter(|| {
-                    let worlds: Vec<World> = (1..=count as i32).map(World::new).collect();
-                    let json = serde_json::to_vec(&worlds).unwrap();
-                    let response = Response::builder()
-                        .status(StatusCode::OK)
-                        .header("content-type", "application/json")
-                        .body(Body::from(json))
-                        .unwrap();
-                    black_box(response)
-                });
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("multiple_queries", count), count, |b, &count| {
+            b.iter(|| {
+                let worlds: Vec<World> = (1..=count as i32).map(World::new).collect();
+                let json = serde_json::to_vec(&worlds).unwrap();
+                let response = Response::builder()
+                    .status(StatusCode::OK)
+                    .header("content-type", "application/json")
+                    .body(Body::from(json))
+                    .unwrap();
+                black_box(response)
+            });
+        });
     }
 
     group.finish();

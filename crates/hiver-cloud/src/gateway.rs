@@ -31,7 +31,7 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, AtomicU8, Ordering};
+use std::sync::atomic::{AtomicU8, AtomicU64, Ordering};
 use std::time::Duration;
 
 /// Gateway
@@ -557,12 +557,11 @@ impl TokenBucketRateLimiter {
                 return false;
             }
             let new_value = after_refill - TOKEN_SCALE;
-            if self.tokens.compare_exchange(
-                current,
-                new_value,
-                Ordering::SeqCst,
-                Ordering::SeqCst,
-            ).is_ok() {
+            if self
+                .tokens
+                .compare_exchange(current, new_value, Ordering::SeqCst, Ordering::SeqCst)
+                .is_ok()
+            {
                 return true;
             }
             // Another thread changed it; retry.
@@ -592,10 +591,7 @@ impl std::fmt::Debug for TokenBucketRateLimiter {
         f.debug_struct("TokenBucketRateLimiter")
             .field("available", &self.available_tokens())
             .field("max_tokens", &(self.max_tokens / TOKEN_SCALE))
-            .field(
-                "refill_rate_per_sec",
-                &(self.refill_rate_per_sec / TOKEN_SCALE),
-            )
+            .field("refill_rate_per_sec", &(self.refill_rate_per_sec / TOKEN_SCALE))
             .finish()
     }
 }
@@ -745,7 +741,7 @@ impl GatewayCircuitBreaker {
                 } else {
                     false
                 }
-            }
+            },
         }
     }
 
@@ -774,11 +770,11 @@ impl GatewayCircuitBreaker {
                     self.failure_count.store(0, Ordering::SeqCst);
                     self.success_count.store(0, Ordering::SeqCst);
                 }
-            }
+            },
             GatewayCbState::Closed => {
                 self.failure_count.store(0, Ordering::SeqCst);
-            }
-            GatewayCbState::Open => {}
+            },
+            GatewayCbState::Open => {},
         }
     }
 
@@ -807,7 +803,7 @@ impl GatewayCircuitBreaker {
                     );
                     self.last_failure_time.store(now, Ordering::SeqCst);
                 }
-            }
+            },
             GatewayCbState::HalfOpen => {
                 let _ = self.state.compare_exchange(
                     raw,
@@ -817,8 +813,8 @@ impl GatewayCircuitBreaker {
                 );
                 self.last_failure_time.store(now, Ordering::SeqCst);
                 self.success_count.store(0, Ordering::SeqCst);
-            }
-            GatewayCbState::Open => {}
+            },
+            GatewayCbState::Open => {},
         }
     }
 
@@ -893,26 +889,26 @@ impl Predicate {
                 } else {
                     request.path.starts_with(pattern.as_str())
                 }
-            }
+            },
             Predicate::Method(methods) => methods
                 .iter()
                 .any(|m| m.eq_ignore_ascii_case(request.method.as_ref())),
             Predicate::Header(name, _pattern) => {
                 // Simple existence check for the header
                 request.headers.contains_key(name)
-            }
+            },
             Predicate::Query(param) => {
                 // Check if query string contains the parameter
                 request
                     .query
                     .as_ref()
                     .is_some_and(|q| q.contains(&format!("{}=", param)))
-            }
+            },
             Predicate::Weight(_w) => {
                 // Weight predicates are evaluated at the route level,
                 // not individually against requests.
                 true
-            }
+            },
         }
     }
 }
@@ -951,7 +947,7 @@ fn glob_match(pattern: &str, path: &str) -> bool {
                 } else {
                     p == h && match_parts(&pp[1..], &hp[1..])
                 }
-            }
+            },
         }
     }
 
@@ -1054,38 +1050,43 @@ impl Filter {
         match self {
             Filter::RemoveHeader(name) => {
                 request.headers.remove(name);
-            }
+            },
             Filter::RewritePath(from, to) => {
                 if request.path.starts_with(from) {
                     request.path = format!("{}{}", to, &request.path[from.len()..]);
                 }
-            }
+            },
             Filter::AddRequestHeader(name, value) => {
                 request.headers.insert(name.clone(), value.clone());
-            }
+            },
             Filter::StripPrefix(n) => {
-                let segments: Vec<&str> = request.path.split('/').filter(|s| !s.is_empty()).collect();
-                let stripped = segments.iter().skip(*n as usize).copied().collect::<Vec<_>>();
+                let segments: Vec<&str> =
+                    request.path.split('/').filter(|s| !s.is_empty()).collect();
+                let stripped = segments
+                    .iter()
+                    .skip(*n as usize)
+                    .copied()
+                    .collect::<Vec<_>>();
                 request.path = if stripped.is_empty() {
                     "/".to_string()
                 } else {
                     format!("/{}", stripped.join("/"))
                 };
-            }
+            },
             Filter::PrefixPath(prefix) => {
                 let old_path = request.path.trim_start_matches('/');
                 request.path = format!("{}/{}", prefix.trim_end_matches('/'), old_path);
-            }
+            },
             Filter::SetPath(path) => {
                 request.path = path.clone();
-            }
+            },
             Filter::AddHeader(_, _)
             | Filter::RateLimit(_)
             | Filter::CircuitBreaker(_)
             | Filter::Timeout(_)
             | Filter::Retry { .. }
             | Filter::SetStatus(_)
-            | Filter::RequestSize(_) => {}
+            | Filter::RequestSize(_) => {},
         }
     }
 
@@ -1095,13 +1096,13 @@ impl Filter {
         match self {
             Filter::AddHeader(name, value) => {
                 response.headers.insert(name.clone(), value.clone());
-            }
+            },
             Filter::SetStatus(code) => {
                 if let Ok(s) = http::StatusCode::from_u16(*code) {
                     response.status = s;
                 }
-            }
-            _ => {}
+            },
+            _ => {},
         }
     }
 
@@ -1465,40 +1466,35 @@ impl GatewayRouter {
                 Filter::RateLimit(rate) => {
                     let key = rate.to_string();
                     if let Some(limiter) = self.rate_limiters.get(&key)
-                        && !limiter.try_acquire() {
-                            tracing::warn!(
-                                "Rate limit exceeded for key={}, path={}",
-                                key,
-                                request.path
-                            );
-                            return Err(
-                                GatewayResponse::new(http::StatusCode::TOO_MANY_REQUESTS)
-                                    .body("Rate limit exceeded".as_bytes().to_owned()),
-                            );
-                        }
+                        && !limiter.try_acquire()
+                    {
+                        tracing::warn!(
+                            "Rate limit exceeded for key={}, path={}",
+                            key,
+                            request.path
+                        );
+                        return Err(GatewayResponse::new(http::StatusCode::TOO_MANY_REQUESTS)
+                            .body("Rate limit exceeded".as_bytes().to_owned()));
+                    }
                     // If no limiter is registered for this rate, the request
                     // passes through (passthrough mode).
                     // 如果没有为此速率注册限流器，请求直接通过（透传模式）。
-                }
+                },
                 Filter::CircuitBreaker(name) => {
                     if let Some(cb) = self.circuit_breakers.get(name)
-                        && !cb.allow_request() {
-                            tracing::warn!(
-                                "Circuit breaker '{}' is open, rejecting request path={}",
-                                name,
-                                request.path
-                            );
-                            return Err(
-                                GatewayResponse::new(http::StatusCode::SERVICE_UNAVAILABLE)
-                                    .body(
-                                        format!("Circuit breaker '{}' is open", name)
-                                            .into_bytes(),
-                                    ),
-                            );
-                        }
-                }
-                _ => {} // Handled by apply_to_request / apply_to_response.
-                        // 由apply_to_request / apply_to_response处理。
+                        && !cb.allow_request()
+                    {
+                        tracing::warn!(
+                            "Circuit breaker '{}' is open, rejecting request path={}",
+                            name,
+                            request.path
+                        );
+                        return Err(GatewayResponse::new(http::StatusCode::SERVICE_UNAVAILABLE)
+                            .body(format!("Circuit breaker '{}' is open", name).into_bytes()));
+                    }
+                },
+                _ => {}, // Handled by apply_to_request / apply_to_response.
+                         // 由apply_to_request / apply_to_response处理。
             }
         }
         Ok(())
@@ -1511,25 +1507,27 @@ impl GatewayRouter {
         let is_success = response.status.is_success();
         for filter in &route.filters {
             if let Filter::CircuitBreaker(name) = filter
-                && let Some(cb) = self.circuit_breakers.get(name) {
-                    if is_success {
-                        cb.record_success();
-                    } else {
-                        cb.record_failure();
-                    }
+                && let Some(cb) = self.circuit_breakers.get(name)
+            {
+                if is_success {
+                    cb.record_success();
+                } else {
+                    cb.record_failure();
                 }
+            }
         }
         // Also check global filters for circuit breakers.
         // 同时检查全局过滤器中的断路器。
         for filter in &self.config.global_filters {
             if let Filter::CircuitBreaker(name) = filter
-                && let Some(cb) = self.circuit_breakers.get(name) {
-                    if is_success {
-                        cb.record_success();
-                    } else {
-                        cb.record_failure();
-                    }
+                && let Some(cb) = self.circuit_breakers.get(name)
+            {
+                if is_success {
+                    cb.record_success();
+                } else {
+                    cb.record_failure();
                 }
+            }
         }
     }
 
@@ -1650,7 +1648,8 @@ mod tests {
     fn test_predicate_header() {
         let pred = Predicate::Header("X-Custom".to_string(), ".*".to_string());
         let mut req = GatewayRequest::new(http::Method::GET, "/any");
-        req.headers.insert("X-Custom".to_string(), "value".to_string());
+        req.headers
+            .insert("X-Custom".to_string(), "value".to_string());
         assert!(pred.matches(&req));
 
         let req2 = GatewayRequest::new(http::Method::GET, "/any");
@@ -1782,10 +1781,7 @@ mod tests {
             .add_route(
                 Route::new("users", "http://user-service:8080")
                     .predicate(Predicate::Path("/users".to_string()))
-                    .filter(Filter::AddHeader(
-                        "X-Routed".to_string(),
-                        "users".to_string(),
-                    )),
+                    .filter(Filter::AddHeader("X-Routed".to_string(), "users".to_string())),
             )
             .await;
         locator
@@ -1826,10 +1822,7 @@ mod tests {
             .await;
 
         let config = GatewayConfig::with_defaults()
-            .global_filter(Filter::AddHeader(
-                "X-Gateway".to_string(),
-                "hiver".to_string(),
-            ));
+            .global_filter(Filter::AddHeader("X-Gateway".to_string(), "hiver".to_string()));
 
         let router = GatewayRouter::with_config(locator, config);
 
@@ -1885,10 +1878,7 @@ mod tests {
         }
 
         assert!(!req.headers.contains_key("X-Removed"));
-        assert_eq!(
-            resp.headers.get("X-Added"),
-            Some(&"yes".to_string())
-        );
+        assert_eq!(resp.headers.get("X-Added"), Some(&"yes".to_string()));
     }
 
     // =======================================================================
@@ -2085,7 +2075,9 @@ mod tests {
         assert!(Filter::CircuitBreaker("svc".to_string()).is_infrastructure_filter());
         assert!(!Filter::AddHeader("k".to_string(), "v".to_string()).is_infrastructure_filter());
         assert!(!Filter::RemoveHeader("k".to_string()).is_infrastructure_filter());
-        assert!(!Filter::RewritePath("/a".to_string(), "/b".to_string()).is_infrastructure_filter());
+        assert!(
+            !Filter::RewritePath("/a".to_string(), "/b".to_string()).is_infrastructure_filter()
+        );
     }
 
     // =======================================================================
@@ -2189,7 +2181,10 @@ mod tests {
 
         // Simulate a successful response.
         let resp = GatewayResponse::new(http::StatusCode::OK);
-        let matched = router.match_route(&GatewayRequest::new(http::Method::GET, "/svc")).await.unwrap();
+        let matched = router
+            .match_route(&GatewayRequest::new(http::Method::GET, "/svc"))
+            .await
+            .unwrap();
         router.record_response(&resp, &matched);
         assert_eq!(cb.state(), GatewayCbState::Closed);
     }
@@ -2207,7 +2202,10 @@ mod tests {
 
         // Record 3 failures via the response recording mechanism.
         let fail_resp = GatewayResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR);
-        let matched = router.match_route(&GatewayRequest::new(http::Method::GET, "/svc")).await.unwrap();
+        let matched = router
+            .match_route(&GatewayRequest::new(http::Method::GET, "/svc"))
+            .await
+            .unwrap();
         for _ in 0..3 {
             router.record_response(&fail_resp, &matched);
         }
@@ -2338,6 +2336,12 @@ mod tests {
     #[test]
     fn test_filter_timeout_and_retry_are_infrastructure() {
         assert!(Filter::Timeout(5000).is_infrastructure_filter());
-        assert!(Filter::Retry { max_attempts: 3, statuses: vec![500, 502] }.is_infrastructure_filter());
+        assert!(
+            Filter::Retry {
+                max_attempts: 3,
+                statuses: vec![500, 502]
+            }
+            .is_infrastructure_filter()
+        );
     }
 }

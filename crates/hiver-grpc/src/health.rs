@@ -102,7 +102,10 @@ impl HealthService {
     /// Remove a service from tracking.
     /// 从跟踪中移除服务。
     pub fn remove(&self, service: &str) {
-        self.statuses.write().expect("health service lock poisoned").remove(service);
+        self.statuses
+            .write()
+            .expect("health service lock poisoned")
+            .remove(service);
     }
 
     /// Returns true if the overall server is in Serving state.

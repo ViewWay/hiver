@@ -1,7 +1,7 @@
 //! Core metric types
 //! 核心指标类型
 
-use crate::error::{Result, MicrometerError};
+use crate::error::{MicrometerError, Result};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -115,7 +115,12 @@ fn validate_tag_key(key: &str) -> Result<()> {
     }
 
     // Tag keys must start with a letter
-    if !key.chars().next().map(|c| c.is_alphabetic()).unwrap_or(false) {
+    if !key
+        .chars()
+        .next()
+        .map(|c| c.is_alphabetic())
+        .unwrap_or(false)
+    {
         return Err(MicrometerError::InvalidTag(format!(
             "Tag key must start with a letter: {}",
             key

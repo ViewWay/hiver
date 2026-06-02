@@ -91,10 +91,7 @@ impl<'a> StateMachineVisualizer<'a> {
                 Some(event) => format!(" : {}", event),
                 None => String::new(),
             };
-            lines.push(format!(
-                "{} --> {}{}",
-                transition.source, transition.target, label
-            ));
+            lines.push(format!("{} --> {}{}", transition.source, transition.target, label));
         }
 
         lines.push("@enduml".to_string());

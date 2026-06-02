@@ -53,7 +53,10 @@ pub struct KeyConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub exportable: Option<bool>,
     /// Whether to allow plaintext backup / 是否允许明文备份
-    #[serde(rename = "allow_plaintext_backup", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "allow_plaintext_backup",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub allow_plaintext_backup: Option<bool>,
     /// Convergent encryption / 收敛加密
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -140,11 +143,7 @@ impl<'a> Transit<'a> {
     ///
     /// Creates a named key in the Transit engine with the specified type.
     /// 在 Transit 引擎中创建指定类型的命名密钥。
-    pub async fn create_key(
-        &self,
-        key_name: &str,
-        key_type: &str,
-    ) -> VaultResult<()> {
+    pub async fn create_key(&self, key_name: &str, key_type: &str) -> VaultResult<()> {
         let path = format!("{}/keys/{}", self.mount, key_name);
         let body = serde_json::json!({
             "type": key_type
@@ -186,14 +185,13 @@ impl<'a> Transit<'a> {
     ///
     /// 使用命名密钥加密给定明文。明文在发送前必须经过 base64 编码
     ///（此方法会处理 `&[u8]` 的编码）。
-    pub async fn encrypt(
-        &self,
-        key_name: &str,
-        plaintext: &[u8],
-    ) -> VaultResult<String> {
+    pub async fn encrypt(&self, key_name: &str, plaintext: &[u8]) -> VaultResult<String> {
         let path = format!("{}/encrypt/{}", self.mount, key_name);
         let body = EncryptRequest {
-            plaintext: base64::Engine::encode(&base64::engine::general_purpose::STANDARD, plaintext),
+            plaintext: base64::Engine::encode(
+                &base64::engine::general_purpose::STANDARD,
+                plaintext,
+            ),
             associated_data: None,
             context: None,
         };
@@ -212,9 +210,15 @@ impl<'a> Transit<'a> {
     ) -> VaultResult<String> {
         let path = format!("{}/encrypt/{}", self.mount, key_name);
         let body = EncryptRequest {
-            plaintext: base64::Engine::encode(&base64::engine::general_purpose::STANDARD, plaintext),
+            plaintext: base64::Engine::encode(
+                &base64::engine::general_purpose::STANDARD,
+                plaintext,
+            ),
             associated_data: None,
-            context: Some(base64::Engine::encode(&base64::engine::general_purpose::STANDARD, context)),
+            context: Some(base64::Engine::encode(
+                &base64::engine::general_purpose::STANDARD,
+                context,
+            )),
         };
 
         let resp = self.client.post(&path, &body).await?;
@@ -226,11 +230,7 @@ impl<'a> Transit<'a> {
     ///
     /// Decrypts the given ciphertext using the named key. Returns the raw bytes.
     /// 使用命名密钥解密给定密文。返回原始字节。
-    pub async fn decrypt(
-        &self,
-        key_name: &str,
-        ciphertext: &str,
-    ) -> VaultResult<Vec<u8>> {
+    pub async fn decrypt(&self, key_name: &str, ciphertext: &str) -> VaultResult<Vec<u8>> {
         let path = format!("{}/decrypt/{}", self.mount, key_name);
         let body = DecryptRequest {
             ciphertext: ciphertext.to_string(),
@@ -255,7 +255,10 @@ impl<'a> Transit<'a> {
         let body = DecryptRequest {
             ciphertext: ciphertext.to_string(),
             associated_data: None,
-            context: Some(base64::Engine::encode(&base64::engine::general_purpose::STANDARD, context)),
+            context: Some(base64::Engine::encode(
+                &base64::engine::general_purpose::STANDARD,
+                context,
+            )),
         };
 
         let resp = self.client.post(&path, &body).await?;
@@ -272,11 +275,7 @@ impl<'a> Transit<'a> {
     }
 
     /// Rewrap ciphertext (re-encrypt with latest key version) / 重包装密文（使用最新密钥版本重新加密）
-    pub async fn rewrap(
-        &self,
-        key_name: &str,
-        ciphertext: &str,
-    ) -> VaultResult<String> {
+    pub async fn rewrap(&self, key_name: &str, ciphertext: &str) -> VaultResult<String> {
         let path = format!("{}/rewrap/{}", self.mount, key_name);
         let body = serde_json::json!({
             "ciphertext": ciphertext
@@ -294,11 +293,7 @@ impl<'a> Transit<'a> {
     }
 
     /// Update key configuration / 更新密钥配置
-    pub async fn update_key_config(
-        &self,
-        key_name: &str,
-        config: &KeyConfig,
-    ) -> VaultResult<()> {
+    pub async fn update_key_config(&self, key_name: &str, config: &KeyConfig) -> VaultResult<()> {
         let path = format!("{}/keys/{}/config", self.mount, key_name);
         self.client.post(&path, config).await?;
         Ok(())

@@ -1,7 +1,7 @@
 //! `OpenAPI` path definitions
 //! `OpenAPI路径定义`
 
-use crate::{Operation, Schema, Response, Parameter};
+use crate::{Operation, Parameter, Response, Schema};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -48,8 +48,7 @@ pub enum PathMethod {
 ///
 /// Describes the operations available on a single path.
 /// 描述单个路径上可用的操作。
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PathItem {
     /// GET operation
     /// GET操作
@@ -145,7 +144,6 @@ impl PathItem {
     }
 }
 
-
 /// Path operation
 /// 路径操作
 ///
@@ -222,9 +220,7 @@ impl SchemaRef {
     /// Create a new schema reference
     /// 创建新模式引用
     pub fn new(ref_: impl Into<String>) -> Self {
-        Self {
-            ref_: ref_.into(),
-        }
+        Self { ref_: ref_.into() }
     }
 
     /// Reference to component schema
@@ -236,8 +232,7 @@ impl SchemaRef {
 
 /// Components
 /// 组件
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Components {
     /// Schemas
     /// 模式列表
@@ -315,7 +310,6 @@ impl Components {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -326,7 +320,7 @@ mod tests {
             "/users/{id}",
             Operation::new()
                 .summary("Get user")
-                .add_response("200", Response::ok("User found"))
+                .add_response("200", Response::ok("User found")),
         );
 
         assert_eq!(op.path, "/users/{id}");

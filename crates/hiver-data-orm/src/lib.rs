@@ -58,42 +58,48 @@
 #[cfg(test)]
 mod tests;
 
-pub mod error;
-pub mod model;
 pub mod active_record;
-pub mod query;
+#[cfg(feature = "diesel")]
+pub mod diesel;
+pub mod error;
 pub mod example;
-pub mod specification;
-pub mod relationships;
+pub mod executor;
+pub mod mapper;
 pub mod migrations;
 pub mod mock_connection;
+pub mod model;
 pub mod projection;
-pub mod query_runtime;
+pub mod query;
 pub mod query_metadata;
-pub mod mapper;
-pub mod executor;
+pub mod query_runtime;
+pub mod relationships;
 pub mod repository;
 #[cfg(feature = "sea-orm")]
 pub mod sea_orm;
-#[cfg(feature = "diesel")]
-pub mod diesel;
+pub mod specification;
 #[cfg(feature = "sqlx")]
 pub mod sqlx;
 
 // Re-export the Model derive macro
 pub use hiver_data_macros::Model;
 
-pub use error::{OrmError, Error, Result, OrmResult};
-pub use model::{Model, ModelMeta, Column, ColumnType, SqlDialect};
-pub use active_record::{ActiveRecord, Save, Delete, Refresh, Count, OptimisticLock};
-pub use query::{QueryBuilder, WhereClause, OrderBy, Limit};
+pub use active_record::{ActiveRecord, Count, Delete, OptimisticLock, Refresh, Save};
+pub use error::{Error, OrmError, OrmResult, Result};
 pub use hiver_data_commons::ToSql;
 pub use hiver_data_rdbc::QueryParam;
-pub use relationships::{HasMany, HasOne, BelongsTo, BelongsToMany, EagerLoad, WithRelations, EagerQueryBuilder, Relation, RelationType, OnDelete};
-pub use migrations::{Migration, Migrator, MigrationDirection, Schema};
+pub use migrations::{Migration, MigrationDirection, Migrator, Schema};
 pub use mock_connection::Connection;
+pub use model::{Column, ColumnType, Model, ModelMeta, SqlDialect};
+pub use query::{Limit, OrderBy, QueryBuilder, WhereClause};
+pub use relationships::{
+    BelongsTo, BelongsToMany, EagerLoad, EagerQueryBuilder, HasMany, HasOne, OnDelete, Relation,
+    RelationType, WithRelations,
+};
 // query_runtime re-exports from the split modules (query_metadata, mapper, executor)
-pub use query_runtime::{AnnotatedQueryExecutor, ParamStyle, QueryMetadata, QueryType, QueryExecutor, RowMapper, ResultSetExtractor, BeanRowMapper, MappingResultSetExtractor, FirstRowExtractor};
+pub use query_runtime::{
+    AnnotatedQueryExecutor, BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor,
+    ParamStyle, QueryExecutor, QueryMetadata, QueryType, ResultSetExtractor, RowMapper,
+};
 
 /// Version of the data-orm module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -102,19 +108,19 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        Error, Result,
-        Model, ActiveRecord, Save, Delete, Refresh,
-        QueryBuilder, WhereClause,
-        AnnotatedQueryExecutor, QueryExecutor, ParamStyle, QueryMetadata, QueryType,
-        RowMapper, ResultSetExtractor, BeanRowMapper,
+        ActiveRecord, AnnotatedQueryExecutor, BeanRowMapper, Delete, Error, Model, ParamStyle,
+        QueryBuilder, QueryExecutor, QueryMetadata, QueryType, Refresh, Result, ResultSetExtractor,
+        RowMapper, Save, WhereClause,
     };
 
     #[cfg(feature = "diesel")]
-    pub use super::diesel::{DieselSchema, DieselQuery, DieselColumnType, OrderDirection};
+    pub use super::diesel::{DieselColumnType, DieselQuery, DieselSchema, OrderDirection};
 
     #[cfg(feature = "sqlx")]
-    pub use super::sqlx::{SqlxQuery, SqlxOrder, FromRow, VerifiedQuery};
+    pub use super::sqlx::{FromRow, SqlxOrder, SqlxQuery, VerifiedQuery};
 }
 
 // Re-export hiver-data-commons for convenience
-pub use hiver_data_commons::{Repository, CrudRepository, PagingAndSortingRepository, Page, PageRequest, Sort};
+pub use hiver_data_commons::{
+    CrudRepository, Page, PageRequest, PagingAndSortingRepository, Repository, Sort,
+};

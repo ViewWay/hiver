@@ -67,8 +67,12 @@ impl Timer {
     /// 记录一个持续时间
     pub fn record(&self, duration: Duration) {
         let ns = duration.as_nanos() as u64;
-        self.inner.count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        self.inner.total_time_ns.fetch_add(ns, std::sync::atomic::Ordering::Relaxed);
+        self.inner
+            .count
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        self.inner
+            .total_time_ns
+            .fetch_add(ns, std::sync::atomic::Ordering::Relaxed);
 
         // Update max
         let mut current_max = self.inner.max_ns.load(std::sync::atomic::Ordering::Relaxed);
@@ -100,7 +104,10 @@ impl Timer {
     /// Get total time
     /// 获取总时间
     pub fn total_time(&self) -> Duration {
-        let ns = self.inner.total_time_ns.load(std::sync::atomic::Ordering::Relaxed);
+        let ns = self
+            .inner
+            .total_time_ns
+            .load(std::sync::atomic::Ordering::Relaxed);
         Duration::from_nanos(ns)
     }
 
@@ -108,7 +115,10 @@ impl Timer {
     /// 获取平均时间
     pub fn average_time(&self) -> Option<Duration> {
         let count = self.count();
-        let total_ns = self.inner.total_time_ns.load(std::sync::atomic::Ordering::Relaxed);
+        let total_ns = self
+            .inner
+            .total_time_ns
+            .load(std::sync::atomic::Ordering::Relaxed);
         total_ns.checked_div(count).map(Duration::from_nanos)
     }
 
@@ -147,9 +157,7 @@ impl Timer {
 
 impl Default for Timer {
     fn default() -> Self {
-        Self::new(MetricId::from_name(
-            crate::metric::MetricName::new("timer").unwrap(),
-        ))
+        Self::new(MetricId::from_name(crate::metric::MetricName::new("timer").unwrap()))
     }
 }
 
@@ -230,10 +238,7 @@ impl LongTaskTimer {
     /// 创建新的长任务计时器
     pub fn new(id: MetricId) -> Self {
         Self {
-            inner: Timer::with_description(
-                id,
-                "Long running task timer",
-            ),
+            inner: Timer::with_description(id, "Long running task timer"),
         }
     }
 
@@ -301,9 +306,8 @@ mod tests {
 
     #[test]
     fn test_timer_record() {
-        let timer = Timer::new(MetricId::from_name(
-            crate::metric::MetricName::new("test_timer").unwrap(),
-        ));
+        let timer =
+            Timer::new(MetricId::from_name(crate::metric::MetricName::new("test_timer").unwrap()));
 
         timer.record(Duration::from_millis(100));
         timer.record(Duration::from_millis(200));
@@ -316,9 +320,8 @@ mod tests {
 
     #[test]
     fn test_timer_context() {
-        let timer = Timer::new(MetricId::from_name(
-            crate::metric::MetricName::new("test_timer").unwrap(),
-        ));
+        let timer =
+            Timer::new(MetricId::from_name(crate::metric::MetricName::new("test_timer").unwrap()));
 
         {
             let _ctx = timer.time_context();

@@ -7,7 +7,7 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, parse_macro_input};
-use syn::{parse::ParseStream, Result as SynResult, parse::Parse};
+use syn::{Result as SynResult, parse::Parse, parse::ParseStream};
 
 /// Parses @Transactional attributes
 /// 解析 @Transactional 属性

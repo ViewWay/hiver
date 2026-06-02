@@ -1,7 +1,7 @@
 //! Kafka consumer
 //! Kafka消费者
 
-use crate::{ConsumerConfig, KafkaMessage, ConsumerOffset};
+use crate::{ConsumerConfig, ConsumerOffset, KafkaMessage};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -362,11 +362,7 @@ mod tests {
     /// 测试监听器启动和停止生命周期
     #[tokio::test]
     async fn test_listener_lifecycle() {
-        let listener = ConsumerListener::new(
-            "listener-1",
-            vec!["topic-a".to_string()],
-            "my-group",
-        );
+        let listener = ConsumerListener::new("listener-1", vec!["topic-a".to_string()], "my-group");
         assert!(!listener.is_running().await);
 
         listener.start().await.unwrap();

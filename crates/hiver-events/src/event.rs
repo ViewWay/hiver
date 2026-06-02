@@ -462,8 +462,8 @@ mod tests {
 
     #[test]
     fn test_event_creation() {
-        let event: Event<String> = Event::new("test payload".to_string())
-            .with_source("test_source");
+        let event: Event<String> =
+            Event::new("test payload".to_string()).with_source("test_source");
 
         assert_eq!(event.payload, "test payload");
         assert_eq!(event.source, Some("test_source".to_string()));

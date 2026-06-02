@@ -23,9 +23,9 @@
 //! let matches = ops.compare("cn=user,dc=example,dc=com", "uid", "jdoe").await?;
 //! ```
 
+use crate::LdapTemplate;
 use crate::context::LdapContextSource;
 use crate::error::LdapResult;
-use crate::LdapTemplate;
 
 /// Advanced LDAP operations wrapper / 高级 LDAP 操作包装器
 ///
@@ -89,7 +89,8 @@ impl AdvancedOperations {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.template.context_source().get_context().await?;
-            conn.modify_dn(dn, new_rdn, delete_old_rdn, new_superior).await
+            conn.modify_dn(dn, new_rdn, delete_old_rdn, new_superior)
+                .await
         }
         #[cfg(not(feature = "ldap"))]
         {
@@ -118,12 +119,7 @@ impl AdvancedOperations {
     /// let is_member = ops.compare("cn=user,dc=example,dc=com", "objectClass", "person").await?;
     /// ```
     #[allow(clippy::unused_async)]
-    pub async fn compare(
-        &self,
-        dn: &str,
-        attribute: &str,
-        value: &str,
-    ) -> LdapResult<bool> {
+    pub async fn compare(&self, dn: &str, attribute: &str, value: &str) -> LdapResult<bool> {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.template.context_source().get_context().await?;
@@ -252,7 +248,9 @@ mod tests {
     async fn test_modify_dn_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
-        let result = ops.modify_dn("cn=old,dc=example,dc=com", "cn=new", true, None).await;
+        let result = ops
+            .modify_dn("cn=old,dc=example,dc=com", "cn=new", true, None)
+            .await;
         assert!(result.is_ok());
     }
 
@@ -260,12 +258,14 @@ mod tests {
     async fn test_modify_dn_with_superior_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
-        let result = ops.modify_dn(
-            "cn=john,ou=users,dc=example,dc=com",
-            "cn=john",
-            true,
-            Some("ou=admins,dc=example,dc=com"),
-        ).await;
+        let result = ops
+            .modify_dn(
+                "cn=john,ou=users,dc=example,dc=com",
+                "cn=john",
+                true,
+                Some("ou=admins,dc=example,dc=com"),
+            )
+            .await;
         assert!(result.is_ok());
     }
 
@@ -273,7 +273,9 @@ mod tests {
     async fn test_compare_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
-        let result = ops.compare("cn=user,dc=example,dc=com", "objectClass", "person").await;
+        let result = ops
+            .compare("cn=user,dc=example,dc=com", "objectClass", "person")
+            .await;
         assert!(result.is_ok());
         // Stub returns false
         assert!(!result.unwrap());

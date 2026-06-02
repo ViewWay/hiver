@@ -156,9 +156,7 @@ where
     },
     /// Neither Redis nor fallback is available (degraded, no-op mode).
     /// Redis 和回退均不可用（降级、空操作模式）。
-    Degraded {
-        config: RedisConfig,
-    },
+    Degraded { config: RedisConfig },
 }
 
 impl<K, V> std::fmt::Debug for RedisCacheInner<K, V>
@@ -241,7 +239,7 @@ where
                     memory,
                     config: redis_config.clone(),
                 }
-            }
+            },
             Err(_) => {
                 #[cfg(feature = "tracing")]
                 tracing::error!(
@@ -251,7 +249,7 @@ where
                 RedisCacheInner::Degraded {
                     config: redis_config.clone(),
                 }
-            }
+            },
         }
     }
 
@@ -280,7 +278,7 @@ where
                 } else {
                     false
                 }
-            }
+            },
         }
     }
 
@@ -369,14 +367,14 @@ where
                             stats.calculate_hit_rate();
                             None
                         }
-                    }
+                    },
                     None => {
                         stats.misses += 1;
                         stats.calculate_hit_rate();
                         None
-                    }
+                    },
                 }
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 drop(guard);
                 drop(stats);
@@ -390,20 +388,17 @@ where
                 }
                 stats.calculate_hit_rate();
                 value
-            }
+            },
             RedisCacheInner::Degraded { .. } => {
                 stats.misses += 1;
                 stats.calculate_hit_rate();
                 None
-            }
+            },
         }
     }
 
     async fn put(&self, key: K, value: V) {
-        let ttl = self
-            .redis_config
-            .default_ttl_secs
-            .or(self.config.ttl_secs);
+        let ttl = self.redis_config.default_ttl_secs.or(self.config.ttl_secs);
         if let Some(ttl_secs) = ttl {
             self.put_with_ttl(key, value, ttl_secs).await;
         } else {
@@ -418,13 +413,13 @@ where
                             .query_async::<()>(conn)
                             .await;
                     }
-                }
+                },
                 RedisCacheInner::Fallback { memory, .. } => {
                     let k = key;
                     drop(guard);
                     memory.put(k, value).await;
-                }
-                RedisCacheInner::Degraded { .. } => {}
+                },
+                RedisCacheInner::Degraded { .. } => {},
             }
         }
     }
@@ -442,13 +437,13 @@ where
                         .query_async::<()>(conn)
                         .await;
                 }
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 let k = key;
                 drop(guard);
                 memory.put_with_ttl(k, value, ttl_secs).await;
-            }
-            RedisCacheInner::Degraded { .. } => {}
+            },
+            RedisCacheInner::Degraded { .. } => {},
         }
     }
 
@@ -461,12 +456,12 @@ where
                     .arg(&full_key)
                     .query_async::<()>(conn)
                     .await;
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 drop(guard);
                 memory.invalidate(key).await;
-            }
-            RedisCacheInner::Degraded { .. } => {}
+            },
+            RedisCacheInner::Degraded { .. } => {},
         }
     }
 
@@ -487,17 +482,14 @@ where
                     .ok()
                     .unwrap_or_default();
                 if !keys.is_empty() {
-                    let _ = redis::cmd("DEL")
-                        .arg(keys)
-                        .query_async::<()>(conn)
-                        .await;
+                    let _ = redis::cmd("DEL").arg(keys).query_async::<()>(conn).await;
                 }
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 drop(guard);
                 memory.invalidate_all().await;
-            }
-            RedisCacheInner::Degraded { .. } => {}
+            },
+            RedisCacheInner::Degraded { .. } => {},
         }
     }
 
@@ -512,11 +504,11 @@ where
                     .await
                     .map(|v| v > 0)
                     .unwrap_or(false)
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 drop(guard);
                 memory.contains_key(key).await
-            }
+            },
             RedisCacheInner::Degraded { .. } => false,
         }
     }
@@ -535,11 +527,11 @@ where
                     .await
                     .map(|keys| keys.len())
                     .unwrap_or(0)
-            }
+            },
             RedisCacheInner::Fallback { memory, .. } => {
                 drop(guard);
                 memory.size().await
-            }
+            },
             RedisCacheInner::Degraded { .. } => 0,
         }
     }
@@ -871,14 +863,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_full_key_with_prefix() {
-        let redis_cfg =
-            RedisConfig::new("redis://127.0.0.1:1").key_prefix("cache:users:").no_fallback();
+        let redis_cfg = RedisConfig::new("redis://127.0.0.1:1")
+            .key_prefix("cache:users:")
+            .no_fallback();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_fullkey_prefix"), redis_cfg).await;
-        assert_eq!(
-            cache.full_key(&"mykey".to_string()),
-            "cache:users:\"mykey\""
-        );
+        assert_eq!(cache.full_key(&"mykey".to_string()), "cache:users:\"mykey\"");
     }
 
     // -----------------------------------------------------------------------
@@ -940,7 +930,9 @@ mod tests {
         // Vec values
         let cache_vec: RedisCache<String, Vec<String>> =
             RedisCache::new(test_config("types_vec"), redis_cfg).await;
-        cache_vec.put("list".to_string(), vec!["a".into(), "b".into()]).await;
+        cache_vec
+            .put("list".to_string(), vec!["a".into(), "b".into()])
+            .await;
         assert_eq!(
             cache_vec.get(&"list".to_string()).await,
             Some(vec!["a".to_string(), "b".to_string()])

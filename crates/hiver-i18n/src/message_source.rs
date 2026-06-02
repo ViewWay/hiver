@@ -47,7 +47,10 @@ pub trait MessageSource: Send + Sync {
 
     /// Get message for MessageSourceResolvable
     /// 获取MessageSourceResolvable的消息
-    async fn get_resolvable(&self, resolvable: Box<dyn MessageSourceResolvable>) -> I18nResult<String> {
+    async fn get_resolvable(
+        &self,
+        resolvable: Box<dyn MessageSourceResolvable>,
+    ) -> I18nResult<String> {
         let locale = resolvable.locale();
         let args = resolvable.args();
         self.get_message(resolvable.code(), args, locale).await
@@ -229,11 +232,9 @@ impl MessageSource for StaticMessageSource {
         self.messages
             .get(&key)
             .map(|msg| self.format_message(msg, args))
-            .ok_or_else(|| {
-                I18nError::MessageNotFound {
-                    code: code.to_string(),
-                    locale: _locale.to_string(),
-                }
+            .ok_or_else(|| I18nError::MessageNotFound {
+                code: code.to_string(),
+                locale: _locale.to_string(),
             })
     }
 
@@ -272,10 +273,16 @@ mod tests {
             .add_message("welcome", "Welcome!")
             .add_message("greeting", "Hello, {0}!");
 
-        let msg = source.get_message("welcome", &[], "en").await.expect("get_message should succeed");
+        let msg = source
+            .get_message("welcome", &[], "en")
+            .await
+            .expect("get_message should succeed");
         assert_eq!(msg, "Welcome!");
 
-        let msg = source.get_message("greeting", &["Alice".to_string()], "en").await.expect("get_message should succeed");
+        let msg = source
+            .get_message("greeting", &["Alice".to_string()], "en")
+            .await
+            .expect("get_message should succeed");
         assert_eq!(msg, "Hello, Alice!");
 
         // Test with default

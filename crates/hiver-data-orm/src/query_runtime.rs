@@ -11,9 +11,11 @@
 
 // Re-export from split modules for backward compatibility
 // 从拆分模块重新导出以保持向后兼容
-pub use crate::query_metadata::{QueryMetadata, ParamStyle, QueryType};
-pub use crate::mapper::{RowMapper, ResultSetExtractor, BeanRowMapper, MappingResultSetExtractor, FirstRowExtractor};
-pub use crate::executor::{QueryExecutor, AnnotatedQueryExecutor};
+pub use crate::executor::{AnnotatedQueryExecutor, QueryExecutor};
+pub use crate::mapper::{
+    BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor, RowMapper,
+};
+pub use crate::query_metadata::{ParamStyle, QueryMetadata, QueryType};
 
 #[cfg(test)]
 mod tests {

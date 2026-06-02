@@ -1,10 +1,10 @@
 //! MongoDB reactive template
 //! MongoDB 响应式模板
 
-use crate::{client::MongoClient, error::MongoError, MongoResult};
+use crate::{MongoResult, client::MongoClient, error::MongoError};
 use futures_util::stream::StreamExt;
-use mongodb::bson::{doc, Document};
-use serde::{de::DeserializeOwned, Serialize};
+use mongodb::bson::{Document, doc};
+use serde::{Serialize, de::DeserializeOwned};
 
 /// MongoDB reactive template similar to Spring Data's MongoTemplate
 /// MongoDB 响应式模板，类似于 Spring Data 的 MongoTemplate
@@ -34,7 +34,11 @@ impl MongoTemplate {
     }
 
     /// Insert a document / 插入文档
-    pub async fn insert<T>(&self, collection_name: &str, entity: &T) -> MongoResult<mongodb::bson::Bson>
+    pub async fn insert<T>(
+        &self,
+        collection_name: &str,
+        entity: &T,
+    ) -> MongoResult<mongodb::bson::Bson>
     where
         T: Serialize + Send + Sync,
     {

@@ -549,9 +549,10 @@ impl Future for Sleep {
             // Check if the duration has elapsed
             // 检查持续时间是否已过
             if let Some(start) = self.start
-                && start.elapsed() >= self.duration {
-                    return Poll::Ready(());
-                }
+                && start.elapsed() >= self.duration
+            {
+                return Poll::Ready(());
+            }
             Poll::Pending
         } else {
             // First poll: register the timer

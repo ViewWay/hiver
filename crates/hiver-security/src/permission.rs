@@ -108,8 +108,7 @@ impl PermissionRegistry {
         description: impl Into<String>,
     ) {
         let name = name.into();
-        let def =
-            PermissionDef::new(name.clone(), resource, action, description);
+        let def = PermissionDef::new(name.clone(), resource, action, description);
         self.permissions.insert(name, def);
     }
 
@@ -139,10 +138,7 @@ impl PermissionRegistry {
         role: impl Into<String>,
         permissions: impl IntoIterator<Item = impl Into<String>>,
     ) {
-        let set = self
-            .role_permissions
-            .entry(role.into())
-            .or_default();
+        let set = self.role_permissions.entry(role.into()).or_default();
         for p in permissions {
             set.insert(p.into());
         }
@@ -150,11 +146,7 @@ impl PermissionRegistry {
 
     /// Revoke a permission from a role.
     /// 从角色撤销权限。
-    pub fn revoke_role_permission(
-        &mut self,
-        role: &str,
-        permission: &str,
-    ) -> bool {
+    pub fn revoke_role_permission(&mut self, role: &str, permission: &str) -> bool {
         if let Some(perms) = self.role_permissions.get_mut(role) {
             perms.remove(permission)
         } else {
@@ -254,9 +246,7 @@ impl PermissionEvaluator {
 
     /// Create from a shared `Arc<RwLock<PermissionRegistry>>`.
     /// 从共享的 `Arc<RwLock<PermissionRegistry>>` 创建。
-    pub fn from_shared(
-        registry: Arc<RwLock<PermissionRegistry>>,
-    ) -> Self {
+    pub fn from_shared(registry: Arc<RwLock<PermissionRegistry>>) -> Self {
         Self {
             registry,
             cache: Arc::new(RwLock::new(HashMap::new())),
@@ -273,11 +263,7 @@ impl PermissionEvaluator {
 
     /// Check if the given roles include a specific permission.
     /// 检查给定角色是否包含特定权限。
-    pub async fn has_permission(
-        &self,
-        user_roles: &[String],
-        permission: &str,
-    ) -> bool {
+    pub async fn has_permission(&self, user_roles: &[String], permission: &str) -> bool {
         let key = Self::cache_key(user_roles, permission);
 
         // Check cache first / 先检查缓存
@@ -290,7 +276,9 @@ impl PermissionEvaluator {
 
         // Evaluate / 评估
         let registry = self.registry.read().await;
-        let result = registry.effective_permissions(user_roles).contains(permission);
+        let result = registry
+            .effective_permissions(user_roles)
+            .contains(permission);
 
         // Store in cache / 存入缓存
         {
@@ -303,11 +291,7 @@ impl PermissionEvaluator {
 
     /// Check if the given roles include any of the specified permissions.
     /// 检查给定角色是否包含任一指定权限。
-    pub async fn has_any_permission(
-        &self,
-        user_roles: &[String],
-        permissions: &[&str],
-    ) -> bool {
+    pub async fn has_any_permission(&self, user_roles: &[String], permissions: &[&str]) -> bool {
         for perm in permissions {
             if self.has_permission(user_roles, perm).await {
                 return true;
@@ -318,11 +302,7 @@ impl PermissionEvaluator {
 
     /// Check if the given roles include all of the specified permissions.
     /// 检查给定角色是否包含所有指定权限。
-    pub async fn has_all_permissions(
-        &self,
-        user_roles: &[String],
-        permissions: &[&str],
-    ) -> bool {
+    pub async fn has_all_permissions(&self, user_roles: &[String], permissions: &[&str]) -> bool {
         for perm in permissions {
             if !self.has_permission(user_roles, perm).await {
                 return false;
@@ -629,18 +609,12 @@ mod tests {
     async fn test_has_any_permission() {
         let ev = make_evaluator();
         assert!(
-            ev.has_any_permission(
-                &["USER".to_string()],
-                &["user:write", "user:read"],
-            )
-            .await
+            ev.has_any_permission(&["USER".to_string()], &["user:write", "user:read"],)
+                .await
         );
         assert!(
-            !ev.has_any_permission(
-                &["GUEST".to_string()],
-                &["admin:panel", "user:write"],
-            )
-            .await
+            !ev.has_any_permission(&["GUEST".to_string()], &["admin:panel", "user:write"],)
+                .await
         );
     }
 
@@ -655,11 +629,8 @@ mod tests {
             .await
         );
         assert!(
-            !ev.has_all_permissions(
-                &["USER".to_string()],
-                &["user:read", "user:write"],
-            )
-            .await
+            !ev.has_all_permissions(&["USER".to_string()], &["user:read", "user:write"],)
+                .await
         );
     }
 
@@ -701,7 +672,9 @@ mod tests {
     async fn test_cache_key_order_independent() {
         let ev = make_evaluator();
         let a = ev.has_permission(&["USER".to_string()], "user:read").await;
-        let b = ev.has_permission(&["ADMIN".to_string(), "USER".to_string()], "user:read").await;
+        let b = ev
+            .has_permission(&["ADMIN".to_string(), "USER".to_string()], "user:read")
+            .await;
         assert!(a);
         assert!(b);
     }
@@ -717,7 +690,8 @@ mod tests {
 
     #[test]
     fn test_audit_entry_new() {
-        let entry = PermissionAuditEntry::new("alice", "user:read", true, Some("doc/1".to_string()));
+        let entry =
+            PermissionAuditEntry::new("alice", "user:read", true, Some("doc/1".to_string()));
         assert_eq!(entry.user, "alice");
         assert!(entry.granted);
         assert_eq!(entry.resource.as_deref(), Some("doc/1"));
@@ -751,7 +725,12 @@ mod tests {
             .await
             .unwrap();
         logger
-            .log_access(PermissionAuditEntry::new("bob", "user:write", false, Some("doc".to_string())))
+            .log_access(PermissionAuditEntry::new(
+                "bob",
+                "user:write",
+                false,
+                Some("doc".to_string()),
+            ))
             .await
             .unwrap();
 

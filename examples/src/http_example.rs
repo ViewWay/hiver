@@ -1,4 +1,14 @@
-#![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
+#![allow(
+    dead_code,
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::items_after_statements,
+    clippy::format_push_string
+)]
 
 //! Hiver HTTP Example / Hiver HTTP示例
 //!
@@ -13,9 +23,7 @@
 //! - `StatusCode` → `HttpStatus`
 //! - `Body` → `Response body`
 
-use hiver_http::{
-    header, content_type, Body, IntoResponse, Json, Response, StatusCode,
-};
+use hiver_http::{Body, IntoResponse, Json, Response, StatusCode, content_type, header};
 use serde::{Deserialize, Serialize};
 
 #[tokio::main]

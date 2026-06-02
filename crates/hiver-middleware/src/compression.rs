@@ -214,7 +214,8 @@ impl CompressionMiddleware {
                 // Note: CompressionType::None is not in compression_types, but may be selected
                 // 检查我们是否支持这种压缩类型
                 // 注意：CompressionType::None 不在 compression_types 中，但可能会被选择
-                let is_supported = comp == CompressionType::None || self.compression_types.contains(&comp);
+                let is_supported =
+                    comp == CompressionType::None || self.compression_types.contains(&comp);
 
                 if is_supported && quality > best_quality {
                     best_type = Some(comp);
@@ -243,9 +244,9 @@ impl CompressionMiddleware {
     /// 检查用户代理是否被排除
     fn is_agent_excluded(&self, user_agent: Option<&str>) -> bool {
         if let Some(ua) = user_agent {
-            self.excluded_agents.iter().any(|excluded| {
-                ua.contains(excluded.as_str())
-            })
+            self.excluded_agents
+                .iter()
+                .any(|excluded| ua.contains(excluded.as_str()))
         } else {
             false
         }
@@ -260,11 +261,7 @@ impl CompressionMiddleware {
     /// Compress response body using the specified compression type
     /// 使用指定的压缩类型压缩响应体
     #[cfg(feature = "compression")]
-    fn compress_body(
-        &self,
-        body: Body,
-        compression: CompressionType,
-    ) -> Result<Body> {
+    fn compress_body(&self, body: Body, compression: CompressionType) -> Result<Body> {
         let body_bytes = body.data();
 
         // Check if body is large enough to compress
@@ -276,32 +273,26 @@ impl CompressionMiddleware {
         // Compress based on type / 根据类型压缩
         let compressed = match compression {
             #[cfg(all(feature = "compression", feature = "gzip"))]
-            CompressionType::Gzip => {
-                self.compress_gzip(body_bytes)?
-            }
+            CompressionType::Gzip => self.compress_gzip(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "gzip")))]
             CompressionType::Gzip => {
                 tracing::warn!("Gzip compression requested but feature not enabled");
                 body_bytes.clone()
-            }
+            },
             #[cfg(all(feature = "compression", feature = "deflate"))]
-            CompressionType::Deflate => {
-                self.compress_deflate(body_bytes)?
-            }
+            CompressionType::Deflate => self.compress_deflate(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "deflate")))]
             CompressionType::Deflate => {
                 tracing::warn!("Deflate compression requested but feature not enabled");
                 body_bytes.clone()
-            }
+            },
             #[cfg(all(feature = "compression", feature = "brotli"))]
-            CompressionType::Brotli => {
-                self.compress_brotli(body_bytes)?
-            }
+            CompressionType::Brotli => self.compress_brotli(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "brotli")))]
             CompressionType::Brotli => {
                 tracing::warn!("Brotli compression requested but feature not enabled");
                 body_bytes.clone()
-            }
+            },
             CompressionType::None => body_bytes.clone(),
         };
 
@@ -312,11 +303,12 @@ impl CompressionMiddleware {
     /// 使用 gzip 压缩数据
     #[cfg(all(feature = "compression", feature = "gzip"))]
     fn compress_gzip(&self, data: &Bytes) -> Result<Bytes> {
-        use flate2::write::GzEncoder;
         use flate2::Compression;
+        use flate2::write::GzEncoder;
         use std::io::Write;
 
-        let mut encoder = GzEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
+        let mut encoder =
+            GzEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
         encoder
             .write_all(data.as_ref())
             .map_err(|e| hiver_http::Error::internal(format!("Gzip compression failed: {}", e)))?;
@@ -331,17 +323,18 @@ impl CompressionMiddleware {
     /// 使用 deflate 压缩数据
     #[cfg(all(feature = "compression", feature = "deflate"))]
     fn compress_deflate(&self, data: &Bytes) -> Result<Bytes> {
-        use flate2::write::ZlibEncoder;
         use flate2::Compression;
+        use flate2::write::ZlibEncoder;
         use std::io::Write;
 
-        let mut encoder = ZlibEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
-        encoder
-            .write_all(data.as_ref())
-            .map_err(|e| hiver_http::Error::internal(format!("Deflate compression failed: {}", e)))?;
-        let compressed = encoder
-            .finish()
-            .map_err(|e| hiver_http::Error::internal(format!("Deflate finalization failed: {}", e)))?;
+        let mut encoder =
+            ZlibEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
+        encoder.write_all(data.as_ref()).map_err(|e| {
+            hiver_http::Error::internal(format!("Deflate compression failed: {}", e))
+        })?;
+        let compressed = encoder.finish().map_err(|e| {
+            hiver_http::Error::internal(format!("Deflate finalization failed: {}", e))
+        })?;
 
         Ok(Bytes::from(compressed))
     }
@@ -359,13 +352,13 @@ impl CompressionMiddleware {
             // CompressorWriter::new 接受: writer, buffer_size, quality, lgwin
             let mut writer = CompressorWriter::new(
                 &mut compressed,
-                4096,  // buffer size / 缓冲区大小
-                self.compression_level as u32,  // quality / 质量
-                22,  // lgwin (log window size) / lgwin（窗口大小对数）
+                4096,                          // buffer size / 缓冲区大小
+                self.compression_level as u32, // quality / 质量
+                22,                            // lgwin (log window size) / lgwin（窗口大小对数）
             );
-            writer
-                .write_all(data.as_ref())
-                .map_err(|e| hiver_http::Error::internal(format!("Brotli compression failed: {}", e)))?;
+            writer.write_all(data.as_ref()).map_err(|e| {
+                hiver_http::Error::internal(format!("Brotli compression failed: {}", e))
+            })?;
         }
         Ok(Bytes::from(compressed))
     }
@@ -508,11 +501,11 @@ where
                     );
 
                     Ok(response)
-                }
+                },
                 Err(e) => {
                     tracing::warn!("Compression failed, returning uncompressed: {}", e);
                     Ok(response)
-                }
+                },
             }
         })
     }
@@ -538,7 +531,11 @@ mod tests {
             .level(9);
 
         assert_eq!(compression.min_response_size, 2048);
-        assert!(compression.mime_types.contains(&"application/xml".to_string()));
+        assert!(
+            compression
+                .mime_types
+                .contains(&"application/xml".to_string())
+        );
         assert_eq!(compression.compression_level, 9);
     }
 
@@ -579,10 +576,7 @@ mod tests {
         let middleware = CompressionMiddleware::new();
 
         // Basic gzip
-        assert_eq!(
-            middleware.select_compression("gzip"),
-            Some(CompressionType::Gzip)
-        );
+        assert_eq!(middleware.select_compression("gzip"), Some(CompressionType::Gzip));
 
         // Multiple encodings
         assert_eq!(
@@ -597,10 +591,7 @@ mod tests {
         );
 
         // Identity (no compression)
-        assert_eq!(
-            middleware.select_compression("identity"),
-            Some(CompressionType::None)
-        );
+        assert_eq!(middleware.select_compression("identity"), Some(CompressionType::None));
 
         // Empty header
         assert_eq!(middleware.select_compression(""), None);

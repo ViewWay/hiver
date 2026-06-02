@@ -70,7 +70,7 @@ pub fn evaluate_cache_condition(
             match c {
                 '(' => depth += 1,
                 ')' => depth -= 1,
-                _ => {}
+                _ => {},
             }
             if depth == 0 && i < expr.len() - 1 {
                 balanced = false;
@@ -160,9 +160,10 @@ pub fn evaluate_cache_condition(
             && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
-            ) {
-                return left_num > right_num;
-            }
+            )
+        {
+            return left_num > right_num;
+        }
     }
 
     // Handle less than
@@ -172,9 +173,10 @@ pub fn evaluate_cache_condition(
             && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
-            ) {
-                return left_num < right_num;
-            }
+            )
+        {
+            return left_num < right_num;
+        }
     }
 
     // Handle greater than or equal
@@ -184,9 +186,10 @@ pub fn evaluate_cache_condition(
             && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
-            ) {
-                return left_num >= right_num;
-            }
+            )
+        {
+            return left_num >= right_num;
+        }
     }
 
     // Handle less than or equal
@@ -196,9 +199,10 @@ pub fn evaluate_cache_condition(
             && let (Some(left_num), Some(right_num)) = (
                 extract_number(parts[0].trim(), args, result),
                 extract_number(parts[1].trim(), args, result),
-            ) {
-                return left_num <= right_num;
-            }
+            )
+        {
+            return left_num <= right_num;
+        }
     }
 
     // Handle method calls like isEmpty()
@@ -250,9 +254,10 @@ fn get_value(
 
     // Handle parameter reference like #param
     if let Some(param_name) = expr.strip_prefix('#')
-        && let Some(value) = args.get(param_name) {
-            return value.clone();
-        }
+        && let Some(value) = args.get(param_name)
+    {
+        return value.clone();
+    }
 
     // Handle string literals (both single and double quotes)
     // 处理字符串字面量（单引号和双引号）
@@ -268,9 +273,10 @@ fn get_value(
     }
 
     if let Ok(num) = expr.parse::<f64>()
-        && let Some(n) = serde_json::Number::from_f64(num) {
-            return JsonValue::Number(n);
-        }
+        && let Some(n) = serde_json::Number::from_f64(num)
+    {
+        return JsonValue::Number(n);
+    }
 
     // Handle boolean literals
     if expr == "true" {

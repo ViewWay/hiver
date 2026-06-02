@@ -73,11 +73,10 @@ pub fn slf4j(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as syn::ItemStruct);
     let name = &input.ident;
 
-    let has_log_field = input.fields.iter().any(|f| {
-        f.ident
-            .as_ref()
-            .is_some_and(|i| *i == "log")
-    });
+    let has_log_field = input
+        .fields
+        .iter()
+        .any(|f| f.ident.as_ref().is_some_and(|i| *i == "log"));
 
     if has_log_field {
         return TokenStream::from(quote! { #input });

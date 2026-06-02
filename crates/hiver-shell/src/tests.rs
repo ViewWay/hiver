@@ -117,14 +117,10 @@ fn test_command_registry_aliases() {
 #[test]
 fn test_command_registry_execute_line() {
     let mut registry = CommandRegistry::new();
-    registry.register(TestCommand::with_handler(
-        "add",
-        "Add numbers",
-        |args| {
-            let sum: i32 = args.iter().filter_map(|s| s.parse::<i32>().ok()).sum();
-            Ok(sum.to_string())
-        },
-    ));
+    registry.register(TestCommand::with_handler("add", "Add numbers", |args| {
+        let sum: i32 = args.iter().filter_map(|s| s.parse::<i32>().ok()).sum();
+        Ok(sum.to_string())
+    }));
 
     let result = registry.execute_line("add 1 2 3").unwrap();
     assert_eq!(result, "6");
@@ -159,7 +155,9 @@ fn test_command_registry_hidden_commands() {
     struct HiddenCmd;
     impl Command for HiddenCmd {
         fn meta(&self) -> CommandMeta {
-            CommandMeta::new("secret").description("Hidden cmd").hidden(true)
+            CommandMeta::new("secret")
+                .description("Hidden cmd")
+                .hidden(true)
         }
         fn execute(&self, _args: &[&str]) -> Result<String, ShellError> {
             Ok("secret".to_string())
@@ -220,8 +218,7 @@ fn test_table_result_render() {
 
 #[test]
 fn test_table_result_json() {
-    let table = TableResult::new(&["Name", "Age"])
-        .row(&["Alice", "30"]);
+    let table = TableResult::new(&["Name", "Age"]).row(&["Alice", "30"]);
 
     let json = table.render_json();
     assert!(json.contains("\"Name\""));
@@ -403,7 +400,7 @@ fn test_builtin_exit_command() {
     let result = cmd.execute(&[]);
     assert!(result.is_err());
     match result.unwrap_err() {
-        ShellError::ExitRequested => {}
+        ShellError::ExitRequested => {},
         _ => panic!("Expected ExitRequested"),
     }
 }
@@ -483,9 +480,7 @@ fn test_shell_builder_default() {
 
 #[test]
 fn test_shell_builder_no_builtins() {
-    let shell = ShellBuilder::new()
-        .register_builtins(false)
-        .build();
+    let shell = ShellBuilder::new().register_builtins(false).build();
     assert!(shell.registry().is_empty());
 }
 
@@ -505,14 +500,10 @@ fn test_shell_builder_custom_commands() {
 #[test]
 fn test_shell_execute_line() {
     let shell = ShellBuilder::new()
-        .register(TestCommand::with_handler(
-            "double",
-            "Double a number",
-            |args| {
-                let n: i32 = args.first().unwrap_or(&"0").parse().unwrap_or(0);
-                Ok((n * 2).to_string())
-            },
-        ))
+        .register(TestCommand::with_handler("double", "Double a number", |args| {
+            let n: i32 = args.first().unwrap_or(&"0").parse().unwrap_or(0);
+            Ok((n * 2).to_string())
+        }))
         .build();
 
     let result = shell.execute("double 21").unwrap();
@@ -522,11 +513,7 @@ fn test_shell_execute_line() {
 #[test]
 fn test_shell_execute_script() {
     let shell = ShellBuilder::new()
-        .register(TestCommand::with_handler(
-            "echo",
-            "Echo",
-            |args| Ok(args.join(" ")),
-        ))
+        .register(TestCommand::with_handler("echo", "Echo", |args| Ok(args.join(" "))))
         .build();
 
     let script = "echo hello\n# comment\necho world\n";
@@ -606,13 +593,10 @@ fn test_builtin_state_record_error() {
 
 #[test]
 fn test_shell_command_macro() {
-    let cmd: CommandBox = crate::shell_command!(
-        "test-macro",
-        "A macro-defined command",
-        |args: &[&str]| {
+    let cmd: CommandBox =
+        crate::shell_command!("test-macro", "A macro-defined command", |args: &[&str]| {
             Ok(format!("macro output: {}", args.join(",")))
-        }
-    );
+        });
 
     assert_eq!(cmd.name(), "test-macro");
     assert_eq!(cmd.description(), "A macro-defined command");

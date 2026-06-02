@@ -298,16 +298,19 @@ impl ConsulServiceRegistry {
     /// Convert a `ServiceInstance` to Consul's registration payload.
     /// 将 `ServiceInstance` 转换为 Consul 的注册请求体。
     fn instance_to_registration(&self, instance: &ServiceInstance) -> AgentServiceRegistration {
-        let check = instance.health_check_url.as_ref().map(|url| AgentServiceCheck {
-            http: Some(url.clone()),
-            interval: Some(format!("{}s", self.config.health_check_interval_secs)),
-            timeout: Some("5s".to_string()),
-            ttl: None,
-            deregister_critical_service_after: Some(format!(
-                "{}s",
-                self.config.deregister_critical_after_secs
-            )),
-        });
+        let check = instance
+            .health_check_url
+            .as_ref()
+            .map(|url| AgentServiceCheck {
+                http: Some(url.clone()),
+                interval: Some(format!("{}s", self.config.health_check_interval_secs)),
+                timeout: Some("5s".to_string()),
+                ttl: None,
+                deregister_critical_service_after: Some(format!(
+                    "{}s",
+                    self.config.deregister_critical_after_secs
+                )),
+            });
 
         AgentServiceRegistration {
             id: Some(instance.instance_id.clone()),
@@ -394,10 +397,7 @@ impl ServiceRegistry for ConsulServiceRegistry {
         } else {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
-            Err(format!(
-                "Consul register failed with status {}: {}",
-                status, text
-            ))
+            Err(format!("Consul register failed with status {}: {}", status, text))
         }
     }
 
@@ -420,10 +420,7 @@ impl ServiceRegistry for ConsulServiceRegistry {
         } else {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
-            Err(format!(
-                "Consul deregister failed with status {}: {}",
-                status, text
-            ))
+            Err(format!("Consul deregister failed with status {}: {}", status, text))
         }
     }
 
@@ -434,18 +431,12 @@ impl ServiceRegistry for ConsulServiceRegistry {
     /// 使用 Consul 的健康服务 API，仅返回通过健康检查的实例。
     async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         let path = format!("/v1/health/service/{}?passing", service_id);
-        let resp = self
-            .request(reqwest::Method::GET, &path)
-            .send()
-            .await;
+        let resp = self.request(reqwest::Method::GET, &path).send().await;
 
         match resp {
             Ok(response) if response.status().is_success() => {
                 match response.json::<Vec<HealthServiceEntry>>().await {
-                    Ok(entries) => entries
-                        .iter()
-                        .map(Self::health_entry_to_instance)
-                        .collect(),
+                    Ok(entries) => entries.iter().map(Self::health_entry_to_instance).collect(),
                     Err(e) => {
                         tracing::warn!(
                             "Failed to parse Consul health response for {}: {}",
@@ -453,9 +444,9 @@ impl ServiceRegistry for ConsulServiceRegistry {
                             e
                         );
                         Vec::new()
-                    }
+                    },
                 }
-            }
+            },
             Ok(response) => {
                 tracing::warn!(
                     "Consul health query for {} returned status {}",
@@ -463,15 +454,11 @@ impl ServiceRegistry for ConsulServiceRegistry {
                     response.status()
                 );
                 Vec::new()
-            }
+            },
             Err(e) => {
-                tracing::warn!(
-                    "Consul health query request failed for {}: {}",
-                    service_id,
-                    e
-                );
+                tracing::warn!("Consul health query request failed for {}: {}", service_id, e);
                 Vec::new()
-            }
+            },
         }
     }
 
@@ -496,10 +483,7 @@ impl ServiceRegistry for ConsulServiceRegistry {
         } else {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
-            Err(format!(
-                "Consul heartbeat failed with status {}: {}",
-                status, text
-            ))
+            Err(format!("Consul heartbeat failed with status {}: {}", status, text))
         }
     }
 
@@ -521,20 +505,17 @@ impl ServiceRegistry for ConsulServiceRegistry {
                     Err(e) => {
                         tracing::warn!("Failed to parse Consul catalog services: {}", e);
                         Vec::new()
-                    }
+                    },
                 }
-            }
+            },
             Ok(response) => {
-                tracing::warn!(
-                    "Consul catalog services returned status {}",
-                    response.status()
-                );
+                tracing::warn!("Consul catalog services returned status {}", response.status());
                 Vec::new()
-            }
+            },
             Err(e) => {
                 tracing::warn!("Consul catalog services request failed: {}", e);
                 Vec::new()
-            }
+            },
         }
     }
 }
@@ -717,8 +698,8 @@ mod tests {
         let config = ConsulConfig::new(server.url());
         let registry = ConsulServiceRegistry::new(config);
 
-        let instance = test_instance("userservice", "inst-1", 8080)
-            .add_metadata("version", "2.0.0");
+        let instance =
+            test_instance("userservice", "inst-1", 8080).add_metadata("version", "2.0.0");
         let result = registry.register(instance).await;
         assert!(result.is_ok());
         mock.assert_async().await;
@@ -843,7 +824,10 @@ mod tests {
         let instances = registry.get_instances("userservice").await;
         assert_eq!(instances.len(), 2);
 
-        let inst1 = instances.iter().find(|i| i.instance_id == "inst-1").unwrap();
+        let inst1 = instances
+            .iter()
+            .find(|i| i.instance_id == "inst-1")
+            .unwrap();
         assert_eq!(inst1.service_id, "userservice");
         assert_eq!(inst1.host, "10.0.0.1");
         assert_eq!(inst1.port, 8080);
@@ -851,7 +835,10 @@ mod tests {
         assert_eq!(inst1.metadata.get("version"), Some(&"1.0.0".to_string()));
         assert_eq!(inst1.metadata.get("region"), Some(&"us-east".to_string()));
 
-        let inst2 = instances.iter().find(|i| i.instance_id == "inst-2").unwrap();
+        let inst2 = instances
+            .iter()
+            .find(|i| i.instance_id == "inst-2")
+            .unwrap();
         assert_eq!(inst2.uri, "http://10.0.0.2:8080");
 
         mock.assert_async().await;
@@ -1149,12 +1136,11 @@ mod tests {
     // -----------------------------------------------------------------------
     #[test]
     fn test_registration_includes_deregister_config() {
-        let config = ConsulConfig::new("http://localhost:8500")
-            .deregister_critical_after_secs(120);
+        let config = ConsulConfig::new("http://localhost:8500").deregister_critical_after_secs(120);
         let registry = ConsulServiceRegistry::new(config);
 
-        let instance = test_instance("svc", "inst-1", 8080)
-            .health_check_url("http://127.0.0.1:8080/health");
+        let instance =
+            test_instance("svc", "inst-1", 8080).health_check_url("http://127.0.0.1:8080/health");
         let reg = registry.instance_to_registration(&instance);
 
         assert!(reg.check.is_some());

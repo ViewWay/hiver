@@ -259,7 +259,7 @@ impl ConsumerGroupManager {
                         // In a real implementation, this would look up the offset
                         // at the given timestamp via offsetsForTimes API.
                         info.end_offset
-                    }
+                    },
                 };
                 info.committed_offset = new_offset;
                 info.lag = info.end_offset - new_offset;

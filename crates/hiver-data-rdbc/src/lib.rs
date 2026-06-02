@@ -8,21 +8,21 @@
 #[cfg(test)]
 mod tests;
 
-pub mod error;
-pub mod config;
-pub mod row;
-pub mod connection;
-pub mod transaction;
 pub mod client;
+pub mod config;
+pub mod connection;
+pub mod error;
 pub mod pool;
+pub mod row;
+pub mod transaction;
 
-#[cfg(feature = "tx-bridge")]
-pub mod tx_bridge;
 pub mod executor;
 pub mod sql_builder;
+#[cfg(feature = "tx-bridge")]
+pub mod tx_bridge;
 
 // Error types
-pub use error::{Error, Result, R2dbcError, R2dbcResult};
+pub use error::{Error, R2dbcError, R2dbcResult, Result};
 
 // Config types
 pub use config::{DatabaseConfig, MySqlConfig, PostgresConfig, SqliteConfig, SslMode};
@@ -42,11 +42,11 @@ pub use transaction::{IsolationLevel, Transaction, TransactionManager};
 pub use client::{DatabaseClient, QueryParam, ToSql};
 
 // Pool types
-pub use pool::{PgPoolClient, SqlxPoolClient};
 #[cfg(any(feature = "mysql", feature = "all"))]
 pub use pool::MySqlPoolClient;
 #[cfg(any(feature = "sqlite", feature = "all"))]
 pub use pool::SqlitePoolClient;
+pub use pool::{PgPoolClient, SqlxPoolClient};
 
 // Executor types
 pub use executor::QueryExecutor;
@@ -70,16 +70,15 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Commonly used types re-exported for convenience
 pub mod prelude {
-    pub use super::{
-        DatabaseClient, DatabaseConfig, Error, IsolationLevel, MySqlConfig,
-        PgPoolClient, PostgresConfig, QueryExecutor, Result,
-        Row, SqliteConfig, SqlxPoolClient,
-        Transaction, TransactionManager,
-    };
     #[cfg(any(feature = "mysql", feature = "all"))]
     pub use super::MySqlPoolClient;
     #[cfg(any(feature = "sqlite", feature = "all"))]
     pub use super::SqlitePoolClient;
+    pub use super::{
+        DatabaseClient, DatabaseConfig, Error, IsolationLevel, MySqlConfig, PgPoolClient,
+        PostgresConfig, QueryExecutor, Result, Row, SqliteConfig, SqlxPoolClient, Transaction,
+        TransactionManager,
+    };
 }
 
 pub use hiver_data_commons::Error as DataError;

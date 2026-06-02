@@ -238,9 +238,7 @@ impl SessionEventPublisher {
     /// Get the number of registered listeners.
     /// 获取已注册的监听器数量。
     pub fn listener_count(&self) -> usize {
-        self.listeners
-            .try_read()
-            .map_or(0, |g| g.len())
+        self.listeners.try_read().map_or(0, |g| g.len())
     }
 
     /// Emit a session event to all registered listeners.
@@ -284,11 +282,7 @@ impl SessionEventPublisher {
 
     /// Emit an attribute changed event.
     /// 发出属性更改事件。
-    pub async fn emit_attribute_changed(
-        &self,
-        session_id: SessionId,
-        attribute_name: String,
-    ) {
+    pub async fn emit_attribute_changed(&self, session_id: SessionId, attribute_name: String) {
         self.emit(SessionEvent::AttributeChanged {
             session_id,
             attribute_name,
@@ -328,42 +322,52 @@ pub struct LoggingSessionListener;
 impl SessionEventListener for LoggingSessionListener {
     async fn on_event(&self, event: &SessionEvent) {
         match event {
-            SessionEvent::Created { session_id, principal } => {
+            SessionEvent::Created {
+                session_id,
+                principal,
+            } => {
                 println!(
                     "[Session] Created: {} (principal: {})",
                     session_id,
                     principal.as_deref().unwrap_or("anonymous")
                 );
-            }
-            SessionEvent::Expired { session_id, principal } => {
+            },
+            SessionEvent::Expired {
+                session_id,
+                principal,
+            } => {
                 println!(
                     "[Session] Expired: {} (principal: {})",
                     session_id,
                     principal.as_deref().unwrap_or("anonymous")
                 );
-            }
-            SessionEvent::Destroyed { session_id, principal } => {
+            },
+            SessionEvent::Destroyed {
+                session_id,
+                principal,
+            } => {
                 println!(
                     "[Session] Destroyed: {} (principal: {})",
                     session_id,
                     principal.as_deref().unwrap_or("anonymous")
                 );
-            }
-            SessionEvent::AttributeChanged { session_id, attribute_name } => {
-                println!(
-                    "[Session] Attribute changed: {} [{}]",
-                    session_id,
-                    attribute_name
-                );
-            }
-            SessionEvent::MaxSessionsExceeded { principal, current_count, max_allowed } => {
+            },
+            SessionEvent::AttributeChanged {
+                session_id,
+                attribute_name,
+            } => {
+                println!("[Session] Attribute changed: {} [{}]", session_id, attribute_name);
+            },
+            SessionEvent::MaxSessionsExceeded {
+                principal,
+                current_count,
+                max_allowed,
+            } => {
                 println!(
                     "[Session] Max sessions exceeded for {}: {}/{}",
-                    principal,
-                    current_count,
-                    max_allowed
+                    principal, current_count, max_allowed
                 );
-            }
+            },
         }
     }
 }
@@ -491,11 +495,7 @@ impl ConcurrentSessionControl {
     /// was reached and the strategy is `PreventNew`.
     ///
     /// 如果会话已注册则返回 `true`，如果达到限制且策略为 `PreventNew` 则返回 `false`。
-    pub async fn check_and_register(
-        &self,
-        principal: &str,
-        new_session_id: SessionId,
-    ) -> bool {
+    pub async fn check_and_register(&self, principal: &str, new_session_id: SessionId) -> bool {
         // Phase 1: Determine action under lock
         let action = {
             let mut sessions = self.user_sessions.write().await;
@@ -516,7 +516,7 @@ impl ConcurrentSessionControl {
                                 .await;
                         }
                         return false;
-                    }
+                    },
                     ConcurrentSessionStrategy::ExpireOldest => {
                         // Remove the oldest session
                         let expired = if user_sessions.is_empty() {
@@ -527,7 +527,7 @@ impl ConcurrentSessionControl {
                         };
                         user_sessions.push(new_session_id);
                         expired
-                    }
+                    },
                 }
             } else {
                 user_sessions.push(new_session_id);
@@ -539,7 +539,9 @@ impl ConcurrentSessionControl {
         if let Some(expired_id) = action
             && let Some(ref publisher) = self.publisher
         {
-            publisher.emit_expired(expired_id, Some(principal.to_string())).await;
+            publisher
+                .emit_expired(expired_id, Some(principal.to_string()))
+                .await;
         }
 
         true
@@ -648,8 +650,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_concurrent_session_control_prevent_new() {
-        let control = ConcurrentSessionControl::new(2)
-            .with_strategy(ConcurrentSessionStrategy::PreventNew);
+        let control =
+            ConcurrentSessionControl::new(2).with_strategy(ConcurrentSessionStrategy::PreventNew);
 
         let s1 = SessionId::new();
         let s2 = SessionId::new();
@@ -664,8 +666,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_concurrent_session_control_expire_oldest() {
-        let control = ConcurrentSessionControl::new(2)
-            .with_strategy(ConcurrentSessionStrategy::ExpireOldest);
+        let control =
+            ConcurrentSessionControl::new(2).with_strategy(ConcurrentSessionStrategy::ExpireOldest);
 
         let s1 = SessionId::new();
         let s2 = SessionId::new();

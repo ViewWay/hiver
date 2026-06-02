@@ -34,7 +34,7 @@
 //! }
 //! ```
 
-use crate::{ValidationError, ValidationErrors, Validate};
+use crate::{Validate, ValidationError, ValidationErrors};
 use std::fmt;
 
 /// Marker trait for nested validation

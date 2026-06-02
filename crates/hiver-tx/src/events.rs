@@ -53,7 +53,9 @@ pub enum TransactionPhase {
 pub trait TransactionSynchronization: Send + Sync {
     /// Called before the transaction commits. Return `Err(())` to vote for rollback.
     /// 在事务提交前调用。返回 `Err(())` 投票回滚。
-    async fn before_commit(&self, _tx_name: &str) -> Result<(), ()> { Ok(()) }
+    async fn before_commit(&self, _tx_name: &str) -> Result<(), ()> {
+        Ok(())
+    }
 
     /// Called before completion (commit or rollback).
     /// 在完成前调用（提交或回滚）。
@@ -73,7 +75,9 @@ pub trait TransactionSynchronization: Send + Sync {
 
     /// Human-readable name for debugging.
     /// 用于调试的可读名称。
-    fn name(&self) -> &'static str { std::any::type_name::<Self>() }
+    fn name(&self) -> &'static str {
+        std::any::type_name::<Self>()
+    }
 }
 
 /// A phase-filtered listener — fires only on a specific phase.
@@ -90,24 +94,35 @@ impl PhaseListener {
     /// Create a listener that fires at the given phase.
     /// 创建在给定阶段触发的监听器。
     pub fn new(phase: TransactionPhase, callback: impl Fn(&str) + Send + Sync + 'static) -> Self {
-        Self { phase, callback: Arc::new(callback) }
+        Self {
+            phase,
+            callback: Arc::new(callback),
+        }
     }
 }
 
 #[async_trait::async_trait]
 impl TransactionSynchronization for PhaseListener {
     async fn before_commit(&self, tx_name: &str) -> Result<(), ()> {
-        if self.phase == TransactionPhase::BeforeCommit { (self.callback)(tx_name); }
+        if self.phase == TransactionPhase::BeforeCommit {
+            (self.callback)(tx_name);
+        }
         Ok(())
     }
     async fn after_commit(&self, tx_name: &str) {
-        if self.phase == TransactionPhase::AfterCommit { (self.callback)(tx_name); }
+        if self.phase == TransactionPhase::AfterCommit {
+            (self.callback)(tx_name);
+        }
     }
     async fn after_rollback(&self, tx_name: &str) {
-        if self.phase == TransactionPhase::AfterRollback { (self.callback)(tx_name); }
+        if self.phase == TransactionPhase::AfterRollback {
+            (self.callback)(tx_name);
+        }
     }
     async fn after_completion(&self, tx_name: &str, _committed: bool) {
-        if self.phase == TransactionPhase::AfterCompletion { (self.callback)(tx_name); }
+        if self.phase == TransactionPhase::AfterCompletion {
+            (self.callback)(tx_name);
+        }
     }
     fn name(&self) -> &'static str {
         match self.phase {
@@ -132,7 +147,9 @@ impl SynchronizationRegistry {
     /// Create an empty registry.
     /// 创建空注册表。
     pub fn new() -> Self {
-        Self { synchronizations: Arc::new(RwLock::new(Vec::new())) }
+        Self {
+            synchronizations: Arc::new(RwLock::new(Vec::new())),
+        }
     }
 
     /// Register a synchronization callback.
@@ -159,7 +176,9 @@ impl SynchronizationRegistry {
     /// 触发提交前回调。如果有投票回滚则返回 `Err(())`。
     pub async fn trigger_before_commit(&self, tx_name: &str) -> Result<(), ()> {
         let syncs = self.synchronizations.read().await;
-        for sync in syncs.iter() { sync.before_commit(tx_name).await?; }
+        for sync in syncs.iter() {
+            sync.before_commit(tx_name).await?;
+        }
         Ok(())
     }
 
@@ -167,38 +186,50 @@ impl SynchronizationRegistry {
     /// 触发完成前回调。
     pub async fn trigger_before_completion(&self, tx_name: &str) {
         let syncs = self.synchronizations.read().await;
-        for sync in syncs.iter() { sync.before_completion(tx_name).await; }
+        for sync in syncs.iter() {
+            sync.before_completion(tx_name).await;
+        }
     }
 
     /// Trigger after-commit callbacks.
     /// 触发提交后回调。
     pub async fn trigger_after_commit(&self, tx_name: &str) {
         let syncs = self.synchronizations.read().await;
-        for sync in syncs.iter() { sync.after_commit(tx_name).await; }
+        for sync in syncs.iter() {
+            sync.after_commit(tx_name).await;
+        }
     }
 
     /// Trigger after-rollback callbacks.
     /// 触发回滚后回调。
     pub async fn trigger_after_rollback(&self, tx_name: &str) {
         let syncs = self.synchronizations.read().await;
-        for sync in syncs.iter() { sync.after_rollback(tx_name).await; }
+        for sync in syncs.iter() {
+            sync.after_rollback(tx_name).await;
+        }
     }
 
     /// Trigger after-completion callbacks.
     /// 触发完成后回调。
     pub async fn trigger_after_completion(&self, tx_name: &str, committed: bool) {
         let syncs = self.synchronizations.read().await;
-        for sync in syncs.iter() { sync.after_completion(tx_name, committed).await; }
+        for sync in syncs.iter() {
+            sync.after_completion(tx_name, committed).await;
+        }
     }
 }
 
 impl Default for SynchronizationRegistry {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Clone for SynchronizationRegistry {
     fn clone(&self) -> Self {
-        Self { synchronizations: self.synchronizations.clone() }
+        Self {
+            synchronizations: self.synchronizations.clone(),
+        }
     }
 }
 
@@ -219,10 +250,19 @@ impl TransactionSynchronization for LoggingSynchronization {
         println!("[TxSync] after_rollback: {}", tx_name);
     }
     async fn after_completion(&self, tx_name: &str, committed: bool) {
-        println!("[TxSync] after_completion: {} ({})", tx_name,
-            if committed { "committed" } else { "rolled back" });
+        println!(
+            "[TxSync] after_completion: {} ({})",
+            tx_name,
+            if committed {
+                "committed"
+            } else {
+                "rolled back"
+            }
+        );
     }
-    fn name(&self) -> &'static str { "LoggingSynchronization" }
+    fn name(&self) -> &'static str {
+        "LoggingSynchronization"
+    }
 }
 
 #[cfg(test)]
@@ -250,10 +290,19 @@ mod tests {
 
     #[async_trait::async_trait]
     impl TransactionSynchronization for CountingSync {
-        async fn before_commit(&self, _: &str) -> Result<(), ()> { self.before_commit.fetch_add(1, Ordering::SeqCst); Ok(()) }
-        async fn after_commit(&self, _: &str) { self.after_commit.fetch_add(1, Ordering::SeqCst); }
-        async fn after_rollback(&self, _: &str) { self.after_rollback.fetch_add(1, Ordering::SeqCst); }
-        async fn after_completion(&self, _: &str, _: bool) { self.after_completion.fetch_add(1, Ordering::SeqCst); }
+        async fn before_commit(&self, _: &str) -> Result<(), ()> {
+            self.before_commit.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }
+        async fn after_commit(&self, _: &str) {
+            self.after_commit.fetch_add(1, Ordering::SeqCst);
+        }
+        async fn after_rollback(&self, _: &str) {
+            self.after_rollback.fetch_add(1, Ordering::SeqCst);
+        }
+        async fn after_completion(&self, _: &str, _: bool) {
+            self.after_completion.fetch_add(1, Ordering::SeqCst);
+        }
     }
 
     // Wrapper to make Arc<CountingSync> work as TransactionSynchronization
@@ -261,10 +310,18 @@ mod tests {
 
     #[async_trait::async_trait]
     impl TransactionSynchronization for W {
-        async fn before_commit(&self, tx: &str) -> Result<(), ()> { self.0.before_commit(tx).await }
-        async fn after_commit(&self, tx: &str) { self.0.after_commit(tx).await }
-        async fn after_rollback(&self, tx: &str) { self.0.after_rollback(tx).await }
-        async fn after_completion(&self, tx: &str, c: bool) { self.0.after_completion(tx, c).await }
+        async fn before_commit(&self, tx: &str) -> Result<(), ()> {
+            self.0.before_commit(tx).await
+        }
+        async fn after_commit(&self, tx: &str) {
+            self.0.after_commit(tx).await
+        }
+        async fn after_rollback(&self, tx: &str) {
+            self.0.after_rollback(tx).await
+        }
+        async fn after_completion(&self, tx: &str, c: bool) {
+            self.0.after_completion(tx, c).await
+        }
     }
 
     #[tokio::test]
@@ -321,7 +378,9 @@ mod tests {
         struct VetoSync;
         #[async_trait::async_trait]
         impl TransactionSynchronization for VetoSync {
-            async fn before_commit(&self, _: &str) -> Result<(), ()> { Err(()) }
+            async fn before_commit(&self, _: &str) -> Result<(), ()> {
+                Err(())
+            }
         }
         let registry = SynchronizationRegistry::new();
         registry.register(VetoSync);

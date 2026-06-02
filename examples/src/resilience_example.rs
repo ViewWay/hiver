@@ -12,10 +12,7 @@
 //! - `RetryPolicy` → Resilience4j Retry
 //! - `ServiceDiscovery` → Spring Cloud Service Discovery
 
-use hiver_resilience::{
-    CircuitBreaker, CircuitBreakerConfig, CircuitState,
-    RetryPolicy,
-};
+use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig, CircuitState, RetryPolicy};
 use std::sync::Arc;
 use std::time::Duration;
 

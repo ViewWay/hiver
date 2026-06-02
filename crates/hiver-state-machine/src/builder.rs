@@ -1,10 +1,10 @@
 //! Fluent builder API for state machines
 //! 状态机的流式构建器 API
 
-use crate::{Event, State};
 use crate::error::{StateMachineError, StateMachineResult};
 use crate::state::StateContext;
 use crate::transition::{Action, Guard, Transition};
+use crate::{Event, State};
 use std::sync::Arc;
 
 /// State machine builder
@@ -55,11 +55,11 @@ where
             match builder.build() {
                 Ok(transition) => {
                     self.transitions.push(transition);
-                }
+                },
                 Err(_e) => {
                     // Store error for later reporting
                     // 存储错误以供稍后报告
-                }
+                },
             }
         }
         self
@@ -123,9 +123,9 @@ where
         S: State + Clone + PartialEq + Eq + 'static,
         E: Event + Clone + 'static,
     {
-        let initial = self
-            .initial
-            .ok_or_else(|| StateMachineError::InvalidConfiguration("Initial state not set".to_string()))?;
+        let initial = self.initial.ok_or_else(|| {
+            StateMachineError::InvalidConfiguration("Initial state not set".to_string())
+        })?;
 
         let mut machine = crate::StateMachine::new(initial);
 

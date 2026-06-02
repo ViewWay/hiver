@@ -14,8 +14,8 @@
 //! - `ConversationSummaryMemory`：总结旧消息以节省 token。
 //! - `ConversationBufferWindowMemory`：保留最近消息的滑动窗口。
 
-use std::fmt::Write;
 use crate::chat_model::{ChatMessage, ChatModel, ChatRequest, Role};
+use std::fmt::Write;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -247,9 +247,7 @@ impl ConversationMemory for ConversationSummaryMemory {
         let mut result = Vec::new();
         let summary = self.summary.read().await;
         if !summary.is_empty() {
-            result.push(ChatMessage::system(format!(
-                "Summary of earlier conversation: {summary}"
-            )));
+            result.push(ChatMessage::system(format!("Summary of earlier conversation: {summary}")));
         }
         let messages = self.messages.read().await;
         result.extend(messages.iter().cloned());
@@ -350,7 +348,9 @@ mod tests {
     async fn test_buffer_memory_add_and_get() {
         let memory = ConversationBufferMemory::new();
         memory.add_message(ChatMessage::user("Hello")).await;
-        memory.add_message(ChatMessage::assistant("Hi there!")).await;
+        memory
+            .add_message(ChatMessage::assistant("Hi there!"))
+            .await;
         memory.add_message(ChatMessage::user("How are you?")).await;
 
         let messages = memory.get_messages().await;
@@ -410,7 +410,9 @@ mod tests {
     #[tokio::test]
     async fn test_window_memory_preserves_system_messages() {
         let memory = ConversationBufferWindowMemory::new(2);
-        memory.add_message(ChatMessage::system("System instruction")).await;
+        memory
+            .add_message(ChatMessage::system("System instruction"))
+            .await;
         memory.add_message(ChatMessage::user("Msg 1")).await;
         memory.add_message(ChatMessage::user("Msg 2")).await;
         memory.add_message(ChatMessage::user("Msg 3")).await;

@@ -79,11 +79,7 @@ impl ApplicableConfig {
 
 impl fmt::Display for ApplicableConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "ApplicableConfig[name={}, priority={}]",
-            self.name, self.priority
-        )
+        write!(f, "ApplicableConfig[name={}, priority={}]", self.name, self.priority)
     }
 }
 
@@ -296,9 +292,11 @@ mod tests {
 
     fn create_test_registry() -> AutoConfigurationRegistry {
         let mut registry = AutoConfigurationRegistry::new();
-        registry.register(AutoConfigurationEntry::new("CoreConfig", noop_factory).with_priority(-100));
+        registry
+            .register(AutoConfigurationEntry::new("CoreConfig", noop_factory).with_priority(-100));
         registry.register(AutoConfigurationEntry::new("WebConfig", noop_factory).with_priority(0));
-        registry.register(AutoConfigurationEntry::new("DataConfig", noop_factory).with_priority(50));
+        registry
+            .register(AutoConfigurationEntry::new("DataConfig", noop_factory).with_priority(50));
         registry
     }
 
@@ -399,9 +397,9 @@ mod tests {
         registry.register(AutoConfigurationEntry::new("AlwaysConfig", noop_factory));
         registry.register_conditional(
             AutoConfigurationEntry::new("ConditionalConfig", noop_factory).with_condition(
-                Box::new(
-                    crate::core::autoconfigure::ConditionalOnPropertyCondition::new("missing.prop"),
-                ),
+                Box::new(crate::core::autoconfigure::ConditionalOnPropertyCondition::new(
+                    "missing.prop",
+                )),
             ),
         );
 
@@ -458,8 +456,11 @@ mod tests {
     fn test_exclude_all() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
-        let evaluator =
-            ConditionEvaluator::new(&registry).exclude_many(&["CoreConfig", "WebConfig", "DataConfig"]);
+        let evaluator = ConditionEvaluator::new(&registry).exclude_many(&[
+            "CoreConfig",
+            "WebConfig",
+            "DataConfig",
+        ]);
 
         let applicable = evaluator.evaluate(&ctx);
         assert!(applicable.is_empty());

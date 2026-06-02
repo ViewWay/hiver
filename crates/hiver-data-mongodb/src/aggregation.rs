@@ -183,7 +183,13 @@ impl Aggregation {
     /// Add a $lookup stage (left outer join with another collection).
     /// 添加 $lookup 阶段（与另一个集合的左外连接）。
     #[must_use]
-    pub fn lookup(mut self, from: &str, local_field: &str, foreign_field: &str, as_name: &str) -> Self {
+    pub fn lookup(
+        mut self,
+        from: &str,
+        local_field: &str,
+        foreign_field: &str,
+        as_name: &str,
+    ) -> Self {
         let doc = mongodb::bson::doc! {
             "from": from,
             "localField": local_field,
@@ -238,8 +244,7 @@ impl Aggregation {
     /// 添加 $count 阶段。
     #[must_use]
     pub fn count(mut self, field_name: impl Into<String>) -> Self {
-        self.stages
-            .push(AggregationStage::Count(field_name.into()));
+        self.stages.push(AggregationStage::Count(field_name.into()));
         self
     }
 

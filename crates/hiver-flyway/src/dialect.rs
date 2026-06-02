@@ -155,10 +155,7 @@ impl DatabaseType {
     /// 生成获取下一个 installed_rank 的 SQL
     pub fn next_rank_sql(&self, table_name: &str) -> String {
         // Same query works across all three databases
-        format!(
-            "SELECT COALESCE(MAX(installed_rank), -1) + 1 FROM {}",
-            table_name
-        )
+        format!("SELECT COALESCE(MAX(installed_rank), -1) + 1 FROM {}", table_name)
     }
 
     /// Generate the clean/drop-all DDL (debug builds only)
@@ -167,7 +164,9 @@ impl DatabaseType {
         match self {
             DatabaseType::Postgres => "DROP SCHEMA public CASCADE; CREATE SCHEMA public;",
             DatabaseType::Mysql => "DROP DATABASE; -- MySQL clean requires explicit DB recreation",
-            DatabaseType::Sqlite => "SELECT 'SQLite clean: drop tables manually'; -- No schema in SQLite",
+            DatabaseType::Sqlite => {
+                "SELECT 'SQLite clean: drop tables manually'; -- No schema in SQLite"
+            },
         }
     }
 
@@ -282,14 +281,8 @@ mod tests {
 
     #[test]
     fn test_detect_sqlite_url() {
-        assert_eq!(
-            DatabaseType::from_url("sqlite://test.db"),
-            Some(DatabaseType::Sqlite)
-        );
-        assert_eq!(
-            DatabaseType::from_url("sqlite::memory:"),
-            Some(DatabaseType::Sqlite)
-        );
+        assert_eq!(DatabaseType::from_url("sqlite://test.db"), Some(DatabaseType::Sqlite));
+        assert_eq!(DatabaseType::from_url("sqlite::memory:"), Some(DatabaseType::Sqlite));
     }
 
     #[test]

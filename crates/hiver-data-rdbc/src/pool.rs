@@ -70,10 +70,7 @@ impl DatabaseClient for SqlxPoolClient {
             .await
             .map_err(Error::from)?;
 
-        db_rows
-            .iter()
-            .map(any_row_to_hiver_row)
-            .collect()
+        db_rows.iter().map(any_row_to_hiver_row).collect()
     }
 
     async fn fetch_one(&self, sql: &str) -> Result<Option<Row>> {
@@ -104,11 +101,9 @@ impl DatabaseClient for SqlxPoolClient {
             .await
             .map_err(|e| Error::Transaction(format!("begin transaction failed: {}", e)))?;
 
-        Ok(crate::Transaction::new(std::sync::Arc::new(
-            AnyTransactionInner {
-                inner: std::sync::Arc::new(tokio::sync::Mutex::new(Some(tx))),
-            },
-        )))
+        Ok(crate::Transaction::new(std::sync::Arc::new(AnyTransactionInner {
+            inner: std::sync::Arc::new(tokio::sync::Mutex::new(Some(tx))),
+        })))
     }
 
     async fn ping(&self) -> Result<()> {
@@ -202,8 +197,11 @@ fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Resu
                 Ok(ColumnValue::String(val))
             }
         },
-        "timestamp" | "timestamptz" | "datetime"
-        | "timestamp without time zone" | "timestamp with time zone" => {
+        "timestamp"
+        | "timestamptz"
+        | "datetime"
+        | "timestamp without time zone"
+        | "timestamp with time zone" => {
             let val: String = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
@@ -244,12 +242,15 @@ struct AnyTransactionInner {
 
 async fn take_tx(
     inner: &Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
-) -> std::result::Result<sqlx::Transaction<'static, Any>, Box<dyn std::error::Error + Send + Sync>> {
+) -> std::result::Result<sqlx::Transaction<'static, Any>, Box<dyn std::error::Error + Send + Sync>>
+{
     inner
         .lock()
         .await
         .take()
-        .ok_or_else(|| -> Box<dyn std::error::Error + Send + Sync> { "transaction already consumed".into() })
+        .ok_or_else(|| -> Box<dyn std::error::Error + Send + Sync> {
+            "transaction already consumed".into()
+        })
 }
 
 async fn put_tx(
@@ -265,15 +266,17 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     fn execute(
         &self,
         sql: &str,
-    ) -> futures_util::future::BoxFuture<'_, std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>> {
+    ) -> futures_util::future::BoxFuture<
+        '_,
+        std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>,
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
             let mut tx = take_tx(&inner).await?;
-            let result = sqlx::query(&sql)
-                .execute(&mut *tx)
-                .await
-                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            let result = sqlx::query(&sql).execute(&mut *tx).await.map_err(
+                |e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() },
+            )?;
             put_tx(&inner, tx).await?;
             Ok(result.rows_affected())
         })
@@ -281,20 +284,22 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     fn fetch_all(
         &self,
         sql: &str,
-    ) -> futures_util::future::BoxFuture<'_, std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>> {
+    ) -> futures_util::future::BoxFuture<
+        '_,
+        std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>,
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
             let mut tx = take_tx(&inner).await?;
-            let db_rows = sqlx::query(&sql)
-                .fetch_all(&mut *tx)
-                .await
-                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
-            let rows: std::result::Result<Vec<Row>, crate::error::Error> = db_rows
-                .iter()
-                .map(any_row_to_hiver_row)
-                .collect();
-            let rows = rows.map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            let db_rows = sqlx::query(&sql).fetch_all(&mut *tx).await.map_err(
+                |e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() },
+            )?;
+            let rows: std::result::Result<Vec<Row>, crate::error::Error> =
+                db_rows.iter().map(any_row_to_hiver_row).collect();
+            let rows = rows.map_err(|e| -> Box<dyn std::error::Error + Send + Sync> {
+                e.to_string().into()
+            })?;
             put_tx(&inner, tx).await?;
             Ok(rows)
         })
@@ -302,15 +307,17 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     fn fetch_one(
         &self,
         sql: &str,
-    ) -> futures_util::future::BoxFuture<'_, std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>> {
+    ) -> futures_util::future::BoxFuture<
+        '_,
+        std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>,
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
             let mut tx = take_tx(&inner).await?;
-            let db_row = sqlx::query(&sql)
-                .fetch_optional(&mut *tx)
-                .await
-                .map_err(|e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() })?;
+            let db_row = sqlx::query(&sql).fetch_optional(&mut *tx).await.map_err(
+                |e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() },
+            )?;
             let result = match db_row {
                 Some(row) => Ok(Some(any_row_to_hiver_row(&row)?)),
                 None => Ok(None),
@@ -321,7 +328,10 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     }
     fn commit(
         &self,
-    ) -> futures_util::future::BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>> {
+    ) -> futures_util::future::BoxFuture<
+        '_,
+        std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>,
+    > {
         let inner = self.inner.clone();
         Box::pin(async move {
             let tx = take_tx(&inner).await?;
@@ -332,7 +342,10 @@ impl crate::transaction::TransactionInner for AnyTransactionInner {
     }
     fn rollback(
         &self,
-    ) -> futures_util::future::BoxFuture<'_, std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>> {
+    ) -> futures_util::future::BoxFuture<
+        '_,
+        std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>,
+    > {
         let inner = self.inner.clone();
         Box::pin(async move {
             let tx = take_tx(&inner).await?;

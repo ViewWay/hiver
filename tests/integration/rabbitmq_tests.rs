@@ -12,9 +12,9 @@ use futures::StreamExt;
 use lapin::options::*;
 use lapin::types::FieldTable;
 use lapin::{BasicProperties, Channel, Connection, ConnectionProperties, ExchangeKind};
+use testcontainers::GenericImage;
 use testcontainers::core::IntoContainerPort;
 use testcontainers::runners::AsyncRunner;
-use testcontainers::GenericImage;
 
 /// Helper: start a RabbitMQ container and return channel + container.
 /// 辅助函数：启动 RabbitMQ 容器并返回 channel 和容器。
@@ -35,12 +35,9 @@ async fn setup_rabbitmq() -> (Channel, testcontainers::ContainerAsync<GenericIma
 
     let amqp_url = format!("amqp://guest:guest@127.0.0.1:{host_port}/%2f");
 
-    let connection = Connection::connect(
-        &amqp_url,
-        ConnectionProperties::default(),
-    )
-    .await
-    .expect("Failed to connect to RabbitMQ");
+    let connection = Connection::connect(&amqp_url, ConnectionProperties::default())
+        .await
+        .expect("Failed to connect to RabbitMQ");
 
     let channel = connection
         .create_channel()
@@ -78,11 +75,7 @@ async fn test_rabbitmq_container_connectivity() {
 
     // If we can declare a queue, the connection is working
     let queue = declare_test_queue(&channel, "test.connectivity").await;
-    assert_eq!(
-        queue.name().as_str(),
-        "test.connectivity",
-        "Queue name should match"
-    );
+    assert_eq!(queue.name().as_str(), "test.connectivity", "Queue name should match");
 }
 
 // ============================================================
@@ -157,12 +150,10 @@ async fn test_rabbitmq_publish_consume_single() {
         .await
         .expect("Failed to create consumer");
 
-    let delivery = tokio::time::timeout(Duration::from_secs(10), async {
-        consumer.next().await
-    })
-    .await
-    .expect("Timed out waiting for message")
-    .expect("Consumer stream ended unexpectedly");
+    let delivery = tokio::time::timeout(Duration::from_secs(10), async { consumer.next().await })
+        .await
+        .expect("Timed out waiting for message")
+        .expect("Consumer stream ended unexpectedly");
 
     let (_, delivery) = delivery.expect("Delivery error");
     assert_eq!(
@@ -267,13 +258,11 @@ async fn test_rabbitmq_message_ack() {
         .await
         .expect("Failed to create consumer");
 
-    let delivery = tokio::time::timeout(Duration::from_secs(10), async {
-        consumer.next().await
-    })
-    .await
-    .expect("Timed out")
-    .expect("Stream ended")
-    .expect("Delivery error");
+    let delivery = tokio::time::timeout(Duration::from_secs(10), async { consumer.next().await })
+        .await
+        .expect("Timed out")
+        .expect("Stream ended")
+        .expect("Delivery error");
 
     let (tag, delivery) = delivery;
 
@@ -332,35 +321,37 @@ async fn test_rabbitmq_message_nack_requeue() {
         .expect("Failed to create consumer");
 
     // First delivery: NACK with requeue
-    let delivery = tokio::time::timeout(Duration::from_secs(10), async {
-        consumer.next().await
-    })
-    .await
-    .expect("Timed out")
-    .expect("Stream ended")
-    .expect("Delivery error");
+    let delivery = tokio::time::timeout(Duration::from_secs(10), async { consumer.next().await })
+        .await
+        .expect("Timed out")
+        .expect("Stream ended")
+        .expect("Delivery error");
 
     let (_, delivery) = delivery;
     delivery
-        .nack(NackOptions { requeue: true, ..Default::default() })
+        .nack(NackOptions {
+            requeue: true,
+            ..Default::default()
+        })
         .await
         .expect("Failed to NACK");
 
     // Should receive the same message again
-    let delivery2 = tokio::time::timeout(Duration::from_secs(10), async {
-        consumer.next().await
-    })
-    .await
-    .expect("Timed out waiting for requeued message")
-    .expect("Stream ended")
-    .expect("Delivery error");
+    let delivery2 = tokio::time::timeout(Duration::from_secs(10), async { consumer.next().await })
+        .await
+        .expect("Timed out waiting for requeued message")
+        .expect("Stream ended")
+        .expect("Delivery error");
 
     let (_, delivery2) = delivery2;
     assert_eq!(
         std::str::from_utf8(&delivery2.data).expect("Data should be UTF-8"),
         "nack-message"
     );
-    delivery2.ack(BasicAckOptions::default()).await.expect("Failed to ACK");
+    delivery2
+        .ack(BasicAckOptions::default())
+        .await
+        .expect("Failed to ACK");
 }
 
 // ============================================================
@@ -391,12 +382,24 @@ async fn test_rabbitmq_fanout_exchange() {
     let q2 = declare_test_queue(&channel, "test.fanout.q2").await;
 
     channel
-        .queue_bind("test.fanout.q1", "test.fanout", "", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.fanout.q1",
+            "test.fanout",
+            "",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind q1");
 
     channel
-        .queue_bind("test.fanout.q2", "test.fanout", "", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.fanout.q2",
+            "test.fanout",
+            "",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind q2");
 
@@ -454,12 +457,24 @@ async fn test_rabbitmq_direct_exchange() {
     declare_test_queue(&channel, "test.direct.blue").await;
 
     channel
-        .queue_bind("test.direct.red", "test.direct", "red", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.direct.red",
+            "test.direct",
+            "red",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind red queue");
 
     channel
-        .queue_bind("test.direct.blue", "test.direct", "blue", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.direct.blue",
+            "test.direct",
+            "blue",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind blue queue");
 
@@ -518,12 +533,24 @@ async fn test_rabbitmq_topic_exchange() {
 
     // Bind with wildcard patterns
     channel
-        .queue_bind("test.topic.all", "test.topic", "#", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.topic.all",
+            "test.topic",
+            "#",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind all queue");
 
     channel
-        .queue_bind("test.topic.orders", "test.topic", "order.*", QueueBindOptions::default(), FieldTable::default())
+        .queue_bind(
+            "test.topic.orders",
+            "test.topic",
+            "order.*",
+            QueueBindOptions::default(),
+            FieldTable::default(),
+        )
         .await
         .expect("Failed to bind orders queue");
 
@@ -675,10 +702,7 @@ async fn test_rabbitmq_queue_delete() {
 
     // Delete the queue
     let delete_count = channel
-        .queue_delete(
-            "test.delete",
-            QueueDeleteOptions::default(),
-        )
+        .queue_delete("test.delete", QueueDeleteOptions::default())
         .await
         .expect("Failed to delete queue");
 

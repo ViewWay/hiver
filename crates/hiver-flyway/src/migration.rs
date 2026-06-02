@@ -104,7 +104,7 @@ impl Migration {
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
                 Ok(())
-            }
+            },
         }
     }
 }

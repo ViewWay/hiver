@@ -158,11 +158,7 @@ impl Listener {
 
     /// Listen on a queue
     /// 监听队列
-    pub async fn listen<H>(
-        &self,
-        queue: impl Into<String>,
-        _handler: H,
-    ) -> Result<(), String>
+    pub async fn listen<H>(&self, queue: impl Into<String>, _handler: H) -> Result<(), String>
     where
         H: MessageHandler + 'static,
     {
@@ -179,11 +175,7 @@ impl Listener {
 
     /// Listen with a function
     /// 使用函数监听
-    pub async fn listen_fn<F>(
-        &self,
-        queue: impl Into<String>,
-        f: F,
-    ) -> Result<(), String>
+    pub async fn listen_fn<F>(&self, queue: impl Into<String>, f: F) -> Result<(), String>
     where
         F: Fn(AmqpMessage) -> Result<(), String> + Send + Sync + 'static,
     {
@@ -255,10 +247,7 @@ mod tests {
         let listener = create_listener();
         assert_eq!(listener.listener_count().await, 0);
 
-        listener
-            .listen_fn("my_queue", |_msg| Ok(()))
-            .await
-            .unwrap();
+        listener.listen_fn("my_queue", |_msg| Ok(())).await.unwrap();
         assert_eq!(listener.listener_count().await, 1);
     }
 
@@ -266,14 +255,8 @@ mod tests {
     #[tokio::test]
     async fn test_listener_stop_all() {
         let listener = create_listener();
-        listener
-            .listen_fn("queue_a", |_msg| Ok(()))
-            .await
-            .unwrap();
-        listener
-            .listen_fn("queue_b", |_msg| Ok(()))
-            .await
-            .unwrap();
+        listener.listen_fn("queue_a", |_msg| Ok(())).await.unwrap();
+        listener.listen_fn("queue_b", |_msg| Ok(())).await.unwrap();
         assert_eq!(listener.listener_count().await, 2);
 
         listener.stop_all().await.unwrap();

@@ -82,9 +82,7 @@ impl JobLauncher {
         {
             let running = self.running_jobs.read().await;
             if running.len() >= self.max_concurrent_jobs {
-                return Err(BatchError::Other(
-                    "Maximum concurrent jobs limit reached".to_string(),
-                ));
+                return Err(BatchError::Other("Maximum concurrent jobs limit reached".to_string()));
             }
         }
 
@@ -154,12 +152,7 @@ impl JobLauncher {
     /// Get all running jobs
     /// 获取所有正在运行的作业
     pub async fn running_jobs(&self) -> Vec<String> {
-        self.running_jobs
-            .read()
-            .await
-            .keys()
-            .cloned()
-            .collect()
+        self.running_jobs.read().await.keys().cloned().collect()
     }
 
     /// Get job execution by job name
@@ -186,7 +179,7 @@ impl JobLauncher {
                     resource: "JobExecution".to_string(),
                     id: job_name.to_string(),
                 });
-            }
+            },
         };
 
         if last.status == JobStatus::Completed {
@@ -360,10 +353,7 @@ mod tests {
         let writer = ItemStreamWriter::new();
         let step = StepBuilder::new("step1").build(reader, writer);
 
-        let job = JobBuilder::new("test-job")
-            .add_step(step)
-            .build()
-            .unwrap();
+        let job = JobBuilder::new("test-job").add_step(step).build().unwrap();
 
         let execution = launcher.run(job).await.unwrap();
 
@@ -381,19 +371,13 @@ mod tests {
 
         // First execution
         let step1 = StepBuilder::new("step1").build(reader.clone(), writer.clone());
-        let job1 = JobBuilder::new("test-job")
-            .add_step(step1)
-            .build()
-            .unwrap();
+        let job1 = JobBuilder::new("test-job").add_step(step1).build().unwrap();
 
         let _exec1 = launcher.run(job1).await.unwrap();
 
         // Second execution should work since first is complete
         let step2 = StepBuilder::new("step1").build(reader, writer);
-        let job2 = JobBuilder::new("test-job")
-            .add_step(step2)
-            .build()
-            .unwrap();
+        let job2 = JobBuilder::new("test-job").add_step(step2).build().unwrap();
 
         let result = launcher.run(job2).await;
 
@@ -410,10 +394,7 @@ mod tests {
         let writer = ItemStreamWriter::new();
 
         let step = StepBuilder::new("step1").build(reader, writer);
-        let job = JobBuilder::new("test-job")
-            .add_step(step)
-            .build()
-            .unwrap();
+        let job = JobBuilder::new("test-job").add_step(step).build().unwrap();
 
         let _exec = launcher.run(job).await.unwrap();
 

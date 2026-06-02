@@ -173,22 +173,19 @@ impl AcknowledgableMessage {
     /// 并委托给底层 `AmqpMessage::ack()`。
     pub fn ack(&mut self) -> Result<(), String> {
         if self.state != AckState::Pending {
-            return Err(format!(
-                "Message already in state {:?}, cannot ack",
-                self.state
-            ));
+            return Err(format!("Message already in state {:?}, cannot ack", self.state));
         }
 
         match self.ack_mode {
             AckMode::Auto | AckMode::None => {
                 self.state = AckState::Acknowledged;
                 Ok(())
-            }
+            },
             AckMode::Manual | AckMode::ManualAck => {
                 self.message.ack()?;
                 self.state = AckState::Acknowledged;
                 Ok(())
-            }
+            },
         }
     }
 
@@ -200,22 +197,19 @@ impl AcknowledgableMessage {
     /// * `requeue` - Whether to requeue the message for redelivery / 是否将消息重新入队以便重新投递
     pub fn nack(&mut self, requeue: bool) -> Result<(), String> {
         if self.state != AckState::Pending {
-            return Err(format!(
-                "Message already in state {:?}, cannot nack",
-                self.state
-            ));
+            return Err(format!("Message already in state {:?}, cannot nack", self.state));
         }
 
         match self.ack_mode {
             AckMode::Auto | AckMode::None => {
                 self.state = AckState::Nacked;
                 Ok(())
-            }
+            },
             AckMode::Manual | AckMode::ManualAck => {
                 self.message.nack(requeue)?;
                 self.state = AckState::Nacked;
                 Ok(())
-            }
+            },
         }
     }
 
@@ -230,22 +224,19 @@ impl AcknowledgableMessage {
     /// * `requeue` - Whether to requeue the message / 是否将消息重新入队
     pub fn reject(&mut self, requeue: bool) -> Result<(), String> {
         if self.state != AckState::Pending {
-            return Err(format!(
-                "Message already in state {:?}, cannot reject",
-                self.state
-            ));
+            return Err(format!("Message already in state {:?}, cannot reject", self.state));
         }
 
         match self.ack_mode {
             AckMode::Auto | AckMode::None => {
                 self.state = AckState::Rejected;
                 Ok(())
-            }
+            },
             AckMode::Manual | AckMode::ManualAck => {
                 self.message.reject(requeue)?;
                 self.state = AckState::Rejected;
                 Ok(())
-            }
+            },
         }
     }
 
@@ -285,12 +276,7 @@ pub trait ChannelExt {
     /// * `queue` - Queue name to consume from / 要消费的队列名称
     /// * `ack_mode` - Acknowledgment mode to use / 使用的确认模式
     /// * `handler` - Function called for each message / 每条消息调用的处理函数
-    fn consume_with_ack<F>(
-        &self,
-        queue: &str,
-        ack_mode: AckMode,
-        handler: F,
-    ) -> Result<(), String>
+    fn consume_with_ack<F>(&self, queue: &str, ack_mode: AckMode, handler: F) -> Result<(), String>
     where
         F: Fn(AcknowledgableMessage) -> Result<(), String> + Send + Sync + 'static;
 }

@@ -232,9 +232,7 @@ impl SecurityContextGuard {
     /// Create a new guard wrapping the given [`SecurityContext`].
     /// 创建新的守卫，包装给定的 [`SecurityContext`]。
     pub fn new(ctx: SecurityContext) -> Self {
-        Self {
-            ctx: Arc::new(ctx),
-        }
+        Self { ctx: Arc::new(ctx) }
     }
 
     /// Run a synchronous closure with this context installed as the
@@ -389,10 +387,7 @@ mod tests {
         context.set_authentication(auth).await;
 
         assert!(context.is_authenticated().await);
-        assert_eq!(
-            context.get_username().await,
-            Some("john".to_string())
-        );
+        assert_eq!(context.get_username().await, Some("john".to_string()));
     }
 
     #[test]
@@ -522,20 +517,14 @@ mod tests {
         let username = guard
             .scope_async(|| async {
                 // First check before yield.
-                let before = get_security_context()
-                    .unwrap()
-                    .get_username()
-                    .await;
+                let before = get_security_context().unwrap().get_username().await;
                 assert_eq!(before, Some("dave".to_string()));
 
                 // Yield to the scheduler — context must survive.
                 tokio::task::yield_now().await;
 
                 // Check after yield.
-                let after = get_security_context()
-                    .unwrap()
-                    .get_username()
-                    .await;
+                let after = get_security_context().unwrap().get_username().await;
                 assert_eq!(after, Some("dave".to_string()));
 
                 after

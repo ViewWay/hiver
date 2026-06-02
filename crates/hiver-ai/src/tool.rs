@@ -213,15 +213,11 @@ impl ToolRegistry {
 
     /// Executes a registered tool by name with the given arguments.
     /// 使用给定参数按名称执行已注册的工具。
-    pub async fn execute_by_name(
-        &self,
-        name: &str,
-        args: Value,
-    ) -> Result<String, ModelError> {
+    pub async fn execute_by_name(&self, name: &str, args: Value) -> Result<String, ModelError> {
         let guard = self.tools.read().await;
-        let tool = guard.get(name).ok_or_else(|| {
-            ModelError::Custom(format!("Tool not found: {name}"))
-        })?;
+        let tool = guard
+            .get(name)
+            .ok_or_else(|| ModelError::Custom(format!("Tool not found: {name}")))?;
         tool.execute(args).await
     }
 
@@ -331,17 +327,18 @@ mod tests {
 
     #[test]
     fn test_tool_parameter_with_default() {
-        let param =
-            ToolParameterSchema::optional("string", "A value").default_value(Value::String(
-                "default".to_string(),
-            ));
+        let param = ToolParameterSchema::optional("string", "A value")
+            .default_value(Value::String("default".to_string()));
         assert_eq!(param.default, Some(Value::String("default".to_string())));
     }
 
     #[test]
     fn test_tool_parameter_with_enum() {
-        let param = ToolParameterSchema::required("string", "A color")
-            .enum_values(vec!["red".to_string(), "green".to_string(), "blue".to_string()]);
+        let param = ToolParameterSchema::required("string", "A color").enum_values(vec![
+            "red".to_string(),
+            "green".to_string(),
+            "blue".to_string(),
+        ]);
         assert_eq!(param.enum_values.as_ref().unwrap().len(), 3);
     }
 
@@ -472,8 +469,7 @@ mod tests {
 // ToolRegistry 的手动 Debug 实现，因为 dyn ToolCallback 不实现 Debug
 impl std::fmt::Debug for ToolRegistry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("ToolRegistry")
-            .finish_non_exhaustive()
+        f.debug_struct("ToolRegistry").finish_non_exhaustive()
     }
 }
 
@@ -527,7 +523,11 @@ impl ToolResult {
     /// Creates a new successful tool result.
     /// 创建新的成功工具结果。
     #[must_use]
-    pub fn ok(call_id: impl Into<String>, tool_name: impl Into<String>, output: impl Into<String>) -> Self {
+    pub fn ok(
+        call_id: impl Into<String>,
+        tool_name: impl Into<String>,
+        output: impl Into<String>,
+    ) -> Self {
         Self {
             call_id: call_id.into(),
             tool_name: tool_name.into(),
@@ -539,7 +539,11 @@ impl ToolResult {
     /// Creates a new failed tool result.
     /// 创建新的失败工具结果。
     #[must_use]
-    pub fn err(call_id: impl Into<String>, tool_name: impl Into<String>, error: impl Into<String>) -> Self {
+    pub fn err(
+        call_id: impl Into<String>,
+        tool_name: impl Into<String>,
+        error: impl Into<String>,
+    ) -> Self {
         Self {
             call_id: call_id.into(),
             tool_name: tool_name.into(),
@@ -705,16 +709,24 @@ impl ToolExecutor {
         let result = if self.config.timeout_ms > 0 {
             match tokio::time::timeout(
                 std::time::Duration::from_millis(self.config.timeout_ms),
-                self.registry.execute_by_name(&call.name, call.arguments.clone()),
+                self.registry
+                    .execute_by_name(&call.name, call.arguments.clone()),
             )
             .await
             {
                 Ok(Ok(output)) => Ok(output),
                 Ok(Err(e)) => Err(e.to_string()),
-                Err(_) => Err(format!("Tool '{}' timed out after {}ms", call.name, self.config.timeout_ms)),
+                Err(_) => Err(format!(
+                    "Tool '{}' timed out after {}ms",
+                    call.name, self.config.timeout_ms
+                )),
             }
         } else {
-            match self.registry.execute_by_name(&call.name, call.arguments.clone()).await {
+            match self
+                .registry
+                .execute_by_name(&call.name, call.arguments.clone())
+                .await
+            {
                 Ok(output) => Ok(output),
                 Err(e) => Err(e.to_string()),
             }
@@ -818,11 +830,7 @@ where
 {
     /// Creates a new function tool with the given name, description, and function.
     /// 使用给定的名称、描述和函数创建新的函数工具。
-    pub fn new(
-        name: impl Into<String>,
-        description: impl Into<String>,
-        func: F,
-    ) -> Self {
+    pub fn new(name: impl Into<String>, description: impl Into<String>, func: F) -> Self {
         let name_str = name.into();
         let desc_str = description.into();
         let definition = ToolDefinition::new(&name_str, &desc_str);

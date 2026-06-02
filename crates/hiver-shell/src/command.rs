@@ -246,9 +246,10 @@ impl CommandRegistry {
             return Some(cmd.as_ref());
         }
         if let Some(primary) = self.aliases.get(name)
-            && let Some(cmd) = self.commands.get(primary) {
-                return Some(cmd.as_ref());
-            }
+            && let Some(cmd) = self.commands.get(primary)
+        {
+            return Some(cmd.as_ref());
+        }
         None
     }
 
@@ -266,8 +267,7 @@ impl CommandRegistry {
 
     /// Get all command metadata including hidden / 获取所有命令元数据（含隐藏）
     pub fn all_commands_including_hidden(&self) -> Vec<CommandMeta> {
-        let mut metas: Vec<CommandMeta> =
-            self.commands.values().map(|c| c.meta()).collect();
+        let mut metas: Vec<CommandMeta> = self.commands.values().map(|c| c.meta()).collect();
         metas.sort_by(|a, b| a.name.cmp(&b.name));
         metas
     }
@@ -311,9 +311,7 @@ impl CommandRegistry {
 
         match self.get(cmd_name) {
             Some(cmd) => cmd.execute(args),
-            None => Err(crate::result::ShellError::CommandNotFound(
-                cmd_name.to_string(),
-            )),
+            None => Err(crate::result::ShellError::CommandNotFound(cmd_name.to_string())),
         }
     }
 }
@@ -339,8 +337,7 @@ macro_rules! shell_command {
         struct DynCommand;
         impl $crate::command::Command for DynCommand {
             fn meta(&self) -> $crate::command::CommandMeta {
-                $crate::command::CommandMeta::new($name)
-                    .description($desc)
+                $crate::command::CommandMeta::new($name).description($desc)
             }
             fn execute(&self, args: &[&str]) -> $crate::result::ShellResult<String> {
                 $handler(args)

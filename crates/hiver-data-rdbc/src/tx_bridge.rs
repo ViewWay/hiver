@@ -107,7 +107,9 @@ struct RdbcLiveTx {
 }
 
 impl LiveTransaction for RdbcLiveTx {
-    fn commit_boxed(self: Box<Self>) -> Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>> {
+    fn commit_boxed(
+        self: Box<Self>,
+    ) -> Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>> {
         Box::pin(async move {
             self.tx
                 .commit()
@@ -116,7 +118,9 @@ impl LiveTransaction for RdbcLiveTx {
         })
     }
 
-    fn rollback_boxed(self: Box<Self>) -> Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>> {
+    fn rollback_boxed(
+        self: Box<Self>,
+    ) -> Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>> {
         Box::pin(async move {
             self.tx
                 .rollback()
@@ -180,7 +184,10 @@ impl<C> TransactionManager for RdbcTransactionManager<C>
 where
     C: DatabaseClient + 'static,
 {
-    async fn begin(&self, definition: &TransactionDefinition) -> TransactionResult<TransactionStatus> {
+    async fn begin(
+        &self,
+        definition: &TransactionDefinition,
+    ) -> TransactionResult<TransactionStatus> {
         let status = TransactionStatus::new(definition.name.clone());
         let tx = self
             .client

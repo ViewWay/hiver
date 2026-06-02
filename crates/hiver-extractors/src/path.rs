@@ -128,18 +128,26 @@ where
                 return Err(ExtractorError::Missing("expected 2 path parameters".to_string()));
             }
 
-            let v1 = T1::from_str(path_vars.get(var_names.first().ok_or_else(|| {
-                ExtractorError::Missing("expected 2 path parameters".to_string())
-            })?).ok_or_else(|| {
-                ExtractorError::Missing("expected 2 path parameters".to_string())
-            })?)
-                .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
-            let v2 = T2::from_str(path_vars.get(var_names.get(1).ok_or_else(|| {
-                ExtractorError::Missing("expected 2 path parameters".to_string())
-            })?).ok_or_else(|| {
-                ExtractorError::Missing("expected 2 path parameters".to_string())
-            })?)
-                .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
+            let v1 = T1::from_str(
+                path_vars
+                    .get(var_names.first().ok_or_else(|| {
+                        ExtractorError::Missing("expected 2 path parameters".to_string())
+                    })?)
+                    .ok_or_else(|| {
+                        ExtractorError::Missing("expected 2 path parameters".to_string())
+                    })?,
+            )
+            .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
+            let v2 = T2::from_str(
+                path_vars
+                    .get(var_names.get(1).ok_or_else(|| {
+                        ExtractorError::Missing("expected 2 path parameters".to_string())
+                    })?)
+                    .ok_or_else(|| {
+                        ExtractorError::Missing("expected 2 path parameters".to_string())
+                    })?,
+            )
+            .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
 
             Ok(Path((v1, v2)))
         })
@@ -165,24 +173,36 @@ where
                 return Err(ExtractorError::Missing("expected 3 path parameters".to_string()));
             }
 
-            let v1 = T1::from_str(path_vars.get(var_names.first().ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?).ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?)
-                .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
-            let v2 = T2::from_str(path_vars.get(var_names.get(1).ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?).ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?)
-                .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
-            let v3 = T3::from_str(path_vars.get(var_names.get(2).ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?).ok_or_else(|| {
-                ExtractorError::Missing("expected 3 path parameters".to_string())
-            })?)
-                .map_err(|e| ExtractorError::Invalid(format!("parameter 2: {}", e)))?;
+            let v1 = T1::from_str(
+                path_vars
+                    .get(var_names.first().ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?)
+                    .ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?,
+            )
+            .map_err(|e| ExtractorError::Invalid(format!("parameter 0: {}", e)))?;
+            let v2 = T2::from_str(
+                path_vars
+                    .get(var_names.get(1).ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?)
+                    .ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?,
+            )
+            .map_err(|e| ExtractorError::Invalid(format!("parameter 1: {}", e)))?;
+            let v3 = T3::from_str(
+                path_vars
+                    .get(var_names.get(2).ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?)
+                    .ok_or_else(|| {
+                        ExtractorError::Missing("expected 3 path parameters".to_string())
+                    })?,
+            )
+            .map_err(|e| ExtractorError::Invalid(format!("parameter 2: {}", e)))?;
 
             Ok(Path((v1, v2, v3)))
         })

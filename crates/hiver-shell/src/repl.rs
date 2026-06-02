@@ -4,11 +4,10 @@
 //! # Equivalent to Spring Shell / 等价于 Spring Shell
 //! Core REPL loop using rustyline, similar to Spring Shell's `ShellRunner`.
 
-
 use colored::Colorize;
+use rustyline::Editor;
 use rustyline::error::ReadlineError;
 use rustyline::history::DefaultHistory;
-use rustyline::Editor;
 
 use crate::command::CommandRegistry;
 use crate::completion::{CompletionProvider, ShellCompleter};
@@ -177,7 +176,7 @@ impl Repl {
                         Err(e) => {
                             eprintln!("{}", self.result_handler.handle_error(&e));
                             continue;
-                        }
+                        },
                     };
 
                     if validated.is_empty() {
@@ -190,7 +189,7 @@ impl Repl {
                             if !output.is_empty() {
                                 println!("{}", output);
                             }
-                        }
+                        },
                         Err(ShellError::ExitRequested) => {
                             println!("{}", "Goodbye! / 再见!".dimmed());
                             // Save history / 保存历史
@@ -198,16 +197,16 @@ impl Repl {
                                 let _ = editor.save_history(history_file);
                             }
                             return Ok(());
-                        }
+                        },
                         Err(e) => {
                             eprintln!("{}", self.result_handler.handle_error(&e));
-                        }
+                        },
                     }
-                }
+                },
                 Err(ReadlineError::Interrupted) => {
                     // Ctrl-C — just continue
                     println!("{}", "^C".dimmed());
-                }
+                },
                 Err(ReadlineError::Eof) => {
                     // Ctrl-D — exit
                     println!("{}", "Goodbye! / 再见!".dimmed());
@@ -215,12 +214,12 @@ impl Repl {
                         let _ = editor.save_history(history_file);
                     }
                     return Ok(());
-                }
+                },
                 Err(e) => {
                     return Err(ShellError::Runtime(format!(
                         "Readline error: {e} / 读取错误: {e}"
                     )));
-                }
+                },
             }
         }
     }

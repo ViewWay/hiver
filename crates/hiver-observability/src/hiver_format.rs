@@ -123,12 +123,14 @@ where
         let pid_reset = if self.with_colors { "\x1b[0m" } else { "" };
 
         // Get thread name or ID
-        let thread = std::thread::current()
-            .name().map_or_else(|| {
+        let thread = std::thread::current().name().map_or_else(
+            || {
                 format!("{:?}", std::thread::current().id())
                     .replace("ThreadId(", "")
                     .replace(')', "")
-            }, ToString::to_string);
+            },
+            ToString::to_string,
+        );
 
         // Get target (logger/module name) and shorten it
         let target = event.metadata().target();
@@ -200,9 +202,9 @@ fn format_level(level: Level) -> (&'static str, &'static str) {
 fn level_color(level: Level) -> &'static str {
     match level {
         Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
-        Level::INFO => "\x1b[32m",  // Green
-        Level::WARN => "\x1b[33m",  // Yellow
-        Level::ERROR => "\x1b[31m", // Red
+        Level::INFO => "\x1b[32m",                 // Green
+        Level::WARN => "\x1b[33m",                 // Yellow
+        Level::ERROR => "\x1b[31m",                // Red
     }
 }
 
@@ -326,9 +328,7 @@ impl RequestLogFormat {
     /// Format as a compact one-line log
     /// 格式化为紧凑的单行日志
     pub fn format_compact(&self) -> String {
-        let status = self
-            .status
-            .map_or("-".to_string(), |s| s.to_string());
+        let status = self.status.map_or("-".to_string(), |s| s.to_string());
         format!("{} {} {} {}ms", self.method, self.path, status, self.duration_ms)
     }
 
@@ -338,11 +338,7 @@ impl RequestLogFormat {
         let mut parts = vec![
             format!("method={}", self.method),
             format!("uri={}", self.path),
-            format!(
-                "status={}",
-                self.status
-                    .map_or("-".to_string(), |s| s.to_string())
-            ),
+            format!("status={}", self.status.map_or("-".to_string(), |s| s.to_string())),
             format!("duration={}ms", self.duration_ms),
         ];
 
@@ -516,17 +512,13 @@ impl SimpleFormatter {
     /// Create a new simple formatter
     /// 创建新的精简格式化器
     pub fn new() -> Self {
-        Self {
-            with_colors: true,
-        }
+        Self { with_colors: true }
     }
 
     /// Create without colors
     /// 创建不带颜色的格式化器
     pub fn without_colors() -> Self {
-        Self {
-            with_colors: false,
-        }
+        Self { with_colors: false }
     }
 
     /// Set color support
@@ -597,9 +589,9 @@ fn simple_level_str(level: Level) -> &'static str {
 fn simple_level_color(level: Level) -> &'static str {
     match level {
         Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
-        Level::INFO => "\x1b[32m",  // Green
-        Level::WARN => "\x1b[33m",  // Yellow
-        Level::ERROR => "\x1b[31m", // Red
+        Level::INFO => "\x1b[32m",                 // Green
+        Level::WARN => "\x1b[33m",                 // Yellow
+        Level::ERROR => "\x1b[31m",                // Red
     }
 }
 

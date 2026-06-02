@@ -11,9 +11,9 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use sqlx::mysql::MySqlPoolOptions;
 use sqlx::{Executor, MySqlPool, Row};
+use testcontainers::GenericImage;
 use testcontainers::core::IntoContainerPort;
 use testcontainers::runners::AsyncRunner;
-use testcontainers::GenericImage;
 
 /// Test product entity for CRUD operations.
 /// 用于 CRUD 操作的测试产品实体。
@@ -46,8 +46,7 @@ async fn setup_mysql() -> (MySqlPool, testcontainers::ContainerAsync<GenericImag
         .await
         .expect("Failed to get MySQL port");
 
-    let connection_string =
-        format!("mysql://testuser:testpass@127.0.0.1:{host_port}/testdb");
+    let connection_string = format!("mysql://testuser:testpass@127.0.0.1:{host_port}/testdb");
 
     let pool = MySqlPoolOptions::new()
         .max_connections(5)
@@ -108,11 +107,7 @@ async fn test_mysql_container_connectivity() {
         .await
         .expect("Failed to query MySQL version");
 
-    assert!(
-        row.0.contains("8.0"),
-        "Expected MySQL 8.0 version string, got: {}",
-        row.0
-    );
+    assert!(row.0.contains("8.0"), "Expected MySQL 8.0 version string, got: {}", row.0);
 }
 
 // ============================================================
@@ -190,10 +185,7 @@ async fn test_mysql_update() {
         .expect("Failed to select product after update");
 
     let price = product.price.expect("Price should not be NULL");
-    assert!(
-        (price - 12.99).abs() < 0.01,
-        "Price should be 12.99, got {price}"
-    );
+    assert!((price - 12.99).abs() < 0.01, "Price should be 12.99, got {price}");
 }
 
 // ============================================================
@@ -218,12 +210,11 @@ async fn test_mysql_delete() {
         .expect("Failed to count products");
     assert_eq!(count.0, 2);
 
-    let result =
-        sqlx::query_as::<_, TestProduct>("SELECT * FROM test_products WHERE name = ?")
-            .bind("Gadget")
-            .fetch_optional(&pool)
-            .await
-            .expect("Failed to check deleted product");
+    let result = sqlx::query_as::<_, TestProduct>("SELECT * FROM test_products WHERE name = ?")
+        .bind("Gadget")
+        .fetch_optional(&pool)
+        .await
+        .expect("Failed to check deleted product");
     assert!(result.is_none());
 }
 
@@ -272,24 +263,21 @@ async fn test_mysql_transaction_rollback() {
 
     let mut tx = pool.begin().await.expect("Failed to begin transaction");
 
-    sqlx::query(
-        "INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)",
-    )
-    .bind("rollback_product")
-    .bind(999)
-    .bind(false)
-    .execute(&mut *tx)
-    .await
-    .expect("Failed to insert in transaction");
+    sqlx::query("INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)")
+        .bind("rollback_product")
+        .bind(999)
+        .bind(false)
+        .execute(&mut *tx)
+        .await
+        .expect("Failed to insert in transaction");
 
     tx.rollback().await.expect("Failed to rollback transaction");
 
-    let result =
-        sqlx::query_as::<_, TestProduct>("SELECT * FROM test_products WHERE name = ?")
-            .bind("rollback_product")
-            .fetch_optional(&pool)
-            .await
-            .expect("Failed to check rolled-back product");
+    let result = sqlx::query_as::<_, TestProduct>("SELECT * FROM test_products WHERE name = ?")
+        .bind("rollback_product")
+        .fetch_optional(&pool)
+        .await
+        .expect("Failed to check rolled-back product");
     assert!(result.is_none(), "Rolled-back row should not exist");
 }
 
@@ -303,20 +291,18 @@ async fn test_mysql_pagination() {
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
 
-    let page1: Vec<TestProduct> = sqlx::query_as(
-        "SELECT * FROM test_products ORDER BY id ASC LIMIT 2 OFFSET 0",
-    )
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to fetch page 1");
+    let page1: Vec<TestProduct> =
+        sqlx::query_as("SELECT * FROM test_products ORDER BY id ASC LIMIT 2 OFFSET 0")
+            .fetch_all(&pool)
+            .await
+            .expect("Failed to fetch page 1");
     assert_eq!(page1.len(), 2);
 
-    let page2: Vec<TestProduct> = sqlx::query_as(
-        "SELECT * FROM test_products ORDER BY id ASC LIMIT 2 OFFSET 2",
-    )
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to fetch page 2");
+    let page2: Vec<TestProduct> =
+        sqlx::query_as("SELECT * FROM test_products ORDER BY id ASC LIMIT 2 OFFSET 2")
+            .fetch_all(&pool)
+            .await
+            .expect("Failed to fetch page 2");
     assert_eq!(page2.len(), 1);
 }
 
@@ -330,20 +316,16 @@ async fn test_mysql_aggregation() {
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
 
-    let stats: (i64, Option<f64>) = sqlx::query_as(
-        "SELECT COUNT(*) as cnt, AVG(price) as avg_price FROM test_products",
-    )
-    .fetch_one(&pool)
-    .await
-    .expect("Failed to run aggregation query");
+    let stats: (i64, Option<f64>) =
+        sqlx::query_as("SELECT COUNT(*) as cnt, AVG(price) as avg_price FROM test_products")
+            .fetch_one(&pool)
+            .await
+            .expect("Failed to run aggregation query");
 
     assert_eq!(stats.0, 3, "Should have 3 rows");
     // AVG of 9.99, 24.99, 4.99 = 13.3233...
     let avg = stats.1.expect("Average should not be NULL");
-    assert!(
-        (avg - 13.32).abs() < 1.0,
-        "Average price should be ~13.32, got {avg}"
-    );
+    assert!((avg - 13.32).abs() < 1.0, "Average price should be ~13.32, got {avg}");
 }
 
 // ============================================================
@@ -355,32 +337,26 @@ async fn test_mysql_auto_increment() {
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
-    sqlx::query(
-        "INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)",
-    )
-    .bind("first")
-    .bind(1)
-    .bind(true)
-    .execute(&pool)
-    .await
-    .expect("Failed to insert first product");
+    sqlx::query("INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)")
+        .bind("first")
+        .bind(1)
+        .bind(true)
+        .execute(&pool)
+        .await
+        .expect("Failed to insert first product");
 
-    sqlx::query(
-        "INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)",
-    )
-    .bind("second")
-    .bind(2)
-    .bind(true)
-    .execute(&pool)
-    .await
-    .expect("Failed to insert second product");
+    sqlx::query("INSERT INTO test_products (name, stock, is_available) VALUES (?, ?, ?)")
+        .bind("second")
+        .bind(2)
+        .bind(true)
+        .execute(&pool)
+        .await
+        .expect("Failed to insert second product");
 
-    let products: Vec<TestProduct> = sqlx::query_as(
-        "SELECT * FROM test_products ORDER BY id ASC",
-    )
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to fetch products");
+    let products: Vec<TestProduct> = sqlx::query_as("SELECT * FROM test_products ORDER BY id ASC")
+        .fetch_all(&pool)
+        .await
+        .expect("Failed to fetch products");
 
     assert!(products[0].id < products[1].id, "IDs should be ascending");
 }
@@ -395,13 +371,11 @@ async fn test_mysql_like_pattern() {
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
 
-    let results: Vec<TestProduct> = sqlx::query_as(
-        "SELECT * FROM test_products WHERE name LIKE ?",
-    )
-    .bind("%get%")
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to run LIKE query");
+    let results: Vec<TestProduct> = sqlx::query_as("SELECT * FROM test_products WHERE name LIKE ?")
+        .bind("%get%")
+        .fetch_all(&pool)
+        .await
+        .expect("Failed to run LIKE query");
 
     // Should match "Widget" and "Gadget"
     assert_eq!(results.len(), 2, "LIKE '%get%' should match Widget and Gadget");
@@ -419,8 +393,10 @@ async fn test_mysql_concurrent_queries() {
     for i in 0..10 {
         let pool_clone = pool.clone();
         handles.push(tokio::spawn(async move {
-            let row: (i32,) =
-                sqlx::query_as("SELECT ? AS val").bind(i).fetch_one(&pool_clone).await;
+            let row: (i32,) = sqlx::query_as("SELECT ? AS val")
+                .bind(i)
+                .fetch_one(&pool_clone)
+                .await;
             row
         }));
     }

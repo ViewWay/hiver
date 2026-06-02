@@ -240,21 +240,15 @@ impl ExcelCell {
                 } else {
                     Some(format!("{}", n))
                 }
-            }
-            ExcelCell::Boolean(b) => Some(if *b {
-                "1".to_string()
-            } else {
-                "0".to_string()
-            }),
+            },
+            ExcelCell::Boolean(b) => Some(if *b { "1".to_string() } else { "0".to_string() }),
             ExcelCell::Date(t) | ExcelCell::DateTime(t) => {
-                let duration = t
-                    .duration_since(SystemTime::UNIX_EPOCH)
-                    .unwrap_or_default();
+                let duration = t.duration_since(SystemTime::UNIX_EPOCH).unwrap_or_default();
                 let secs = duration.as_secs();
                 let days = secs / 86400;
                 let days_since_epoch = days as i64 - 25569;
                 Some(format!("{}", days_since_epoch + 1))
-            }
+            },
             ExcelCell::Empty => None,
         }
     }
@@ -410,17 +404,11 @@ impl ExcelExporter {
         zip.write_all(RELS_XML.as_bytes())?;
 
         // 3. xl/workbook.xml
-        zip.start_file(
-            "xl/workbook.xml",
-            options,
-        )?;
+        zip.start_file("xl/workbook.xml", options)?;
         zip.write_all(workbook_xml(&self.config).as_bytes())?;
 
         // 4. xl/_rels/workbook.xml.rels
-        zip.start_file(
-            "xl/_rels/workbook.xml.rels",
-            options,
-        )?;
+        zip.start_file("xl/_rels/workbook.xml.rels", options)?;
         zip.write_all(WORKBOOK_RELS_XML.as_bytes())?;
 
         // 5. xl/styles.xml
@@ -428,10 +416,7 @@ impl ExcelExporter {
         zip.write_all(styles_xml(self).as_bytes())?;
 
         // 6. xl/worksheets/sheet1.xml
-        zip.start_file(
-            "xl/worksheets/sheet1.xml",
-            options,
-        )?;
+        zip.start_file("xl/worksheets/sheet1.xml", options)?;
         zip.write_all(sheet_xml(self).as_bytes())?;
 
         let cursor = zip.finish()?;
@@ -615,12 +600,16 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
     let mut fonts_section = String::from(
         r#"<fonts count="1"><font><sz val="11"/><color rgb="FF000000"/><name val="Calibri"/></font></fonts>"#,
     );
-    let mut fills_section = String::from(r#"<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>"#);
+    let mut fills_section = String::from(
+        r#"<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>"#,
+    );
     let mut borders_section = String::from(
         r#"<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>"#,
     );
 
-    let mut cell_xfs = String::from(r#"<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>"#);
+    let mut cell_xfs = String::from(
+        r#"<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>"#,
+    );
 
     // Track what we've added so we can assign sequential IDs.
     let mut num_fmt_count = 0;
@@ -633,10 +622,10 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
 
     // Helper to register a number format and return its numFmtId.
     let register_num_fmt = |fmt: &str,
-                           num_fmts_section: &mut String,
-                           num_fmt_id_map: &mut HashMap<String, u32>,
-                           next_num_fmt_id: &mut u32,
-                           num_fmt_count: &mut u32| {
+                            num_fmts_section: &mut String,
+                            num_fmt_id_map: &mut HashMap<String, u32>,
+                            next_num_fmt_id: &mut u32,
+                            num_fmt_count: &mut u32| {
         if let Some(&id) = num_fmt_id_map.get(fmt) {
             return id;
         }
@@ -654,24 +643,23 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
     };
 
     // Helper to register a font and return its fontId.
-    let register_font = |style: &ExcelCellStyle,
-                         fonts_section: &mut String,
-                         next_font_id: &mut u32| {
-        let id = *next_font_id;
-        let color_attr = style
-            .font_color
-            .as_deref()
-            .map(|c| format!(" rgb=\"{}\"", c))
-            .unwrap_or_default();
-        let bold_attr = if style.bold { "<b/>" } else { "" };
-        let _ = write!(
-            fonts_section,
-            "<font><sz val=\"{}\"/><color{}/><name val=\"Calibri\"/>{}</font>",
-            style.font_size, color_attr, bold_attr
-        );
-        *next_font_id += 1;
-        id
-    };
+    let register_font =
+        |style: &ExcelCellStyle, fonts_section: &mut String, next_font_id: &mut u32| {
+            let id = *next_font_id;
+            let color_attr = style
+                .font_color
+                .as_deref()
+                .map(|c| format!(" rgb=\"{}\"", c))
+                .unwrap_or_default();
+            let bold_attr = if style.bold { "<b/>" } else { "" };
+            let _ = write!(
+                fonts_section,
+                "<font><sz val=\"{}\"/><color{}/><name val=\"Calibri\"/>{}</font>",
+                style.font_size, color_attr, bold_attr
+            );
+            *next_font_id += 1;
+            id
+        };
 
     // Helper to register a fill and return its fillId.
     let register_fill = |style: &ExcelCellStyle,
@@ -714,13 +702,26 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
         let fill_id = register_fill(hs, &mut fills_section, &mut next_fill_id);
         let border_id = register_border(hs, &mut borders_section, &mut next_border_id);
 
-        let num_fmt_id = hs
-            .number_format
-            .as_deref()
-            .map_or(0, |fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count));
+        let num_fmt_id = hs.number_format.as_deref().map_or(0, |fmt| {
+            register_num_fmt(
+                fmt,
+                &mut num_fmts_section,
+                &mut num_fmt_id_map,
+                &mut next_num_fmt_id,
+                &mut num_fmt_count,
+            )
+        });
 
         let apply = build_apply_attributes(hs);
-        let xf = build_xf(num_fmt_id, font_id, fill_id.unwrap_or(0), border_id.unwrap_or(0), hs.alignment, next_xf_id, &apply);
+        let xf = build_xf(
+            num_fmt_id,
+            font_id,
+            fill_id.unwrap_or(0),
+            border_id.unwrap_or(0),
+            hs.alignment,
+            next_xf_id,
+            &apply,
+        );
         next_xf_id += 1;
         cell_xfs.push_str(&xf);
     }
@@ -728,8 +729,22 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
     // Register date format as xfId (if we have date columns or a config date_format)
     {
         let date_fmt = &exporter.config.date_format;
-        let num_fmt_id = register_num_fmt(date_fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count);
-        let xf = build_xf(num_fmt_id, 0, 0, 0, CellAlignment::Left, next_xf_id, "applyNumberFormat=\"1\"");
+        let num_fmt_id = register_num_fmt(
+            date_fmt,
+            &mut num_fmts_section,
+            &mut num_fmt_id_map,
+            &mut next_num_fmt_id,
+            &mut num_fmt_count,
+        );
+        let xf = build_xf(
+            num_fmt_id,
+            0,
+            0,
+            0,
+            CellAlignment::Left,
+            next_xf_id,
+            "applyNumberFormat=\"1\"",
+        );
         next_xf_id += 1;
         cell_xfs.push_str(&xf);
     }
@@ -741,13 +756,26 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
             let fill_id = register_fill(cs, &mut fills_section, &mut next_fill_id);
             let border_id = register_border(cs, &mut borders_section, &mut next_border_id);
 
-            let num_fmt_id = cs
-                .number_format
-                .as_deref()
-                .map_or(0, |fmt| register_num_fmt(fmt, &mut num_fmts_section, &mut num_fmt_id_map, &mut next_num_fmt_id, &mut num_fmt_count));
+            let num_fmt_id = cs.number_format.as_deref().map_or(0, |fmt| {
+                register_num_fmt(
+                    fmt,
+                    &mut num_fmts_section,
+                    &mut num_fmt_id_map,
+                    &mut next_num_fmt_id,
+                    &mut num_fmt_count,
+                )
+            });
 
             let apply = build_apply_attributes(cs);
-            let xf = build_xf(num_fmt_id, font_id, fill_id.unwrap_or(0), border_id.unwrap_or(0), cs.alignment, next_xf_id, &apply);
+            let xf = build_xf(
+                num_fmt_id,
+                font_id,
+                fill_id.unwrap_or(0),
+                border_id.unwrap_or(0),
+                cs.alignment,
+                next_xf_id,
+                &apply,
+            );
             next_xf_id += 1;
             cell_xfs.push_str(&xf);
         }
@@ -755,11 +783,8 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
 
     // Build final output
     if num_fmt_count > 0 {
-        let _ = writeln!(
-            xml,
-            "<numFmts count=\"{}\">{}</numFmts>",
-            num_fmt_count, num_fmts_section
-        );
+        let _ =
+            writeln!(xml, "<numFmts count=\"{}\">{}</numFmts>", num_fmt_count, num_fmts_section);
     }
 
     // Update counts in section headers
@@ -768,9 +793,12 @@ fn styles_xml(exporter: &ExcelExporter) -> String {
     let border_count = next_border_id;
     let xf_count = next_xf_id;
 
-    let fonts_section = fonts_section.replacen("count=\"1\"", &format!("count=\"{}\"", font_count), 1);
-    let fills_section = fills_section.replacen("count=\"2\"", &format!("count=\"{}\"", fill_count), 1);
-    let borders_section = borders_section.replacen("count=\"1\"", &format!("count=\"{}\"", border_count), 1);
+    let fonts_section =
+        fonts_section.replacen("count=\"1\"", &format!("count=\"{}\"", font_count), 1);
+    let fills_section =
+        fills_section.replacen("count=\"2\"", &format!("count=\"{}\"", fill_count), 1);
+    let borders_section =
+        borders_section.replacen("count=\"1\"", &format!("count=\"{}\"", border_count), 1);
     let cell_xfs = cell_xfs.replacen("count=\"1\"", &format!("count=\"{}\"", xf_count), 1);
 
     xml.push_str(&fonts_section);
@@ -821,7 +849,13 @@ fn build_xf(
 ) -> String {
     format!(
         "<xf numFmtId=\"{}\" fontId=\"{}\" fillId=\"{}\" borderId=\"{}\" xfId=\"{}\" {}><alignment horizontal=\"{}\"/></xf>",
-        num_fmt_id, font_id, fill_id, border_id, xf_id, apply, alignment.as_str()
+        num_fmt_id,
+        font_id,
+        fill_id,
+        border_id,
+        xf_id,
+        apply,
+        alignment.as_str()
     )
 }
 
@@ -853,17 +887,16 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
     if exporter.config.auto_filter && has_header && num_cols > 0 {
         let start_col = col_ref(0);
         let end_col = col_ref(num_cols - 1);
-        let _ = writeln!(
-            xml,
-            "<autoFilter ref=\"{}1:{}{}\"/>",
-            start_col, end_col, last_data_row
-        );
+        let _ = writeln!(xml, "<autoFilter ref=\"{}1:{}{}\"/>", start_col, end_col, last_data_row);
     }
 
     // Freeze pane (freeze header row)
     if exporter.config.freeze_header && has_header {
         // Freeze below row 1, no split column
-        let _ = writeln!(xml, "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"1\" topLeftCell=\"A2\" activePane=\"bottomLeft\" state=\"frozen\"/></sheetView></sheetViews>");
+        let _ = writeln!(
+            xml,
+            "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"1\" topLeftCell=\"A2\" activePane=\"bottomLeft\" state=\"frozen\"/></sheetView></sheetViews>"
+        );
     }
 
     xml.push_str("<sheetData>\n");
@@ -874,12 +907,20 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
     // 2 = date format
     // 3+ = column styles (in sorted order by column index)
     let header_xf_id = i32::from(exporter.header_style.is_some());
-    let date_xf_id = if exporter.header_style.is_some() { 2 } else { 1 };
+    let date_xf_id = if exporter.header_style.is_some() {
+        2
+    } else {
+        1
+    };
     let mut col_style_xf_ids: HashMap<usize, u32> = HashMap::new();
     let mut sorted_cols: Vec<usize> = exporter.column_styles.keys().copied().collect();
     sorted_cols.sort_unstable();
     for (i, &col) in sorted_cols.iter().enumerate() {
-        let base_xf = if exporter.header_style.is_some() { 3 } else { 2 };
+        let base_xf = if exporter.header_style.is_some() {
+            3
+        } else {
+            2
+        };
         col_style_xf_ids.insert(col, base_xf + i as u32);
     }
 
@@ -891,7 +932,9 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
             let _ = writeln!(
                 xml,
                 "<c r=\"{}\" s=\"{}\" t=\"inlineStr\"><is><t>{}</t></is></c>",
-                ref_str, header_xf_id, escape_xml(header)
+                ref_str,
+                header_xf_id,
+                escape_xml(header)
             );
         }
         xml.push_str("</row>\n");
@@ -907,16 +950,13 @@ fn sheet_xml(exporter: &ExcelExporter) -> String {
                 let _ = write!(xml, "<c r=\"{}\"/>", ref_str);
             } else {
                 // Determine style based on column style or cell type
-                let xf_id = col_style_xf_ids
-                    .get(&col_idx)
-                    .copied()
-                    .unwrap_or({
-                        if matches!(cell, ExcelCell::Date(_) | ExcelCell::DateTime(_)) {
-                            date_xf_id
-                        } else {
-                            0
-                        }
-                    });
+                let xf_id = col_style_xf_ids.get(&col_idx).copied().unwrap_or({
+                    if matches!(cell, ExcelCell::Date(_) | ExcelCell::DateTime(_)) {
+                        date_xf_id
+                    } else {
+                        0
+                    }
+                });
 
                 let _ = write!(
                     xml,
@@ -965,7 +1005,10 @@ impl crate::IntoResponse for Excel {
     fn into_response(self) -> crate::Response {
         match self.0.to_bytes() {
             Ok(bytes) => crate::Response::builder()
-                .header("content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .header(
+                    "content-type",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
                 .header("content-disposition", "attachment; filename=\"export.xlsx\"")
                 .body(bytes)
                 .unwrap_or_else(|_| crate::Response::new()),
@@ -1041,14 +1084,8 @@ mod tests {
             .header("Score");
 
         let mut exporter = ExcelExporter::new(config);
-        exporter.add_row(vec![
-            ExcelCell::Text("Alice".into()),
-            ExcelCell::Number(95.5),
-        ]);
-        exporter.add_row(vec![
-            ExcelCell::Text("Bob".into()),
-            ExcelCell::Number(87.0),
-        ]);
+        exporter.add_row(vec![ExcelCell::Text("Alice".into()), ExcelCell::Number(95.5)]);
+        exporter.add_row(vec![ExcelCell::Text("Bob".into()), ExcelCell::Number(87.0)]);
 
         let bytes = exporter.to_bytes().unwrap();
         assert!(!bytes.is_empty());
@@ -1104,8 +1141,7 @@ mod tests {
 
     #[test]
     fn test_export_with_boolean_cell() {
-        let config = ExcelExportConfig::new("Flags")
-            .header("Active");
+        let config = ExcelExportConfig::new("Flags").header("Active");
 
         let mut exporter = ExcelExporter::new(config);
         exporter.add_row(vec![ExcelCell::Boolean(true)]);
@@ -1129,10 +1165,7 @@ mod tests {
                 .alignment(CellAlignment::Right)
                 .number_format("#,##0.00"),
         );
-        exporter.add_row(vec![
-            ExcelCell::Text("Alice".into()),
-            ExcelCell::Number(12345.67),
-        ]);
+        exporter.add_row(vec![ExcelCell::Text("Alice".into()), ExcelCell::Number(12345.67)]);
 
         let bytes = exporter.to_bytes().unwrap();
         assert!(!bytes.is_empty());
@@ -1203,10 +1236,7 @@ mod tests {
     fn test_export_no_headers() {
         let config = ExcelExportConfig::new("NoHeaders");
         let mut exporter = ExcelExporter::new(config);
-        exporter.add_row(vec![
-            ExcelCell::Number(1.0),
-            ExcelCell::Number(2.0),
-        ]);
+        exporter.add_row(vec![ExcelCell::Number(1.0), ExcelCell::Number(2.0)]);
 
         let bytes = exporter.to_bytes().unwrap();
         assert!(!bytes.is_empty());

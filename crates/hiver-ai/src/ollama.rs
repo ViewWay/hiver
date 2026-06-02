@@ -370,7 +370,7 @@ impl ChatModel for OllamaChatModel {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
-                    }
+                    },
                 };
 
                 buffer.push_str(&String::from_utf8_lossy(&chunk));
@@ -409,10 +409,10 @@ impl ChatModel for OllamaChatModel {
                                     });
                                 }
                             }
-                        }
+                        },
                         Err(e) => {
                             tracing::warn!("Failed to parse Ollama NDJSON line: {e}");
-                        }
+                        },
                     }
                 }
 
@@ -707,10 +707,7 @@ mod tests {
         let chunk: OllamaStreamChunk = serde_json::from_str(json).expect("deserialize");
         assert_eq!(chunk.model.as_deref(), Some("llama3.2"));
         assert!(chunk.message.is_some());
-        assert_eq!(
-            chunk.message.as_ref().unwrap().content.as_deref(),
-            Some("Hello")
-        );
+        assert_eq!(chunk.message.as_ref().unwrap().content.as_deref(), Some("Hello"));
         assert_eq!(chunk.done, Some(false));
     }
 
@@ -750,10 +747,7 @@ mod tests {
     fn test_error_response_deserialization() {
         let json = r#"{"error": "model \"nonexistent\" not found"}"#;
         let error: OllamaErrorResponse = serde_json::from_str(json).expect("deserialize");
-        assert_eq!(
-            error.error.as_deref(),
-            Some("model \"nonexistent\" not found")
-        );
+        assert_eq!(error.error.as_deref(), Some("model \"nonexistent\" not found"));
     }
 
     #[test]
@@ -796,14 +790,16 @@ mod tests {
                 .to_string(),
             ))
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "model": "llama3.2",
                 "created_at": "2024-01-01T00:00:00Z",
                 "message": {"role": "assistant", "content": "Hi there! How can I help?"},
                 "done": true,
                 "eval_count": 7,
                 "prompt_eval_count": 3
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -811,7 +807,10 @@ mod tests {
         let model = OllamaChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hello"));
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
 
         assert_eq!(response.content, "Hi there! How can I help?");
         assert_eq!(response.model, "llama3.2");
@@ -828,14 +827,16 @@ mod tests {
         let mock = server
             .mock("POST", "/api/chat")
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "model": "llama3.2",
                 "created_at": "2024-01-01T00:00:00Z",
                 "message": {"role": "assistant", "content": "Rust is fast!"},
                 "done": true,
                 "eval_count": 5,
                 "prompt_eval_count": 10
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -846,7 +847,10 @@ mod tests {
             .message(ChatMessage::system("Be brief."))
             .message(ChatMessage::user("What is Rust?"));
 
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
         assert_eq!(response.content, "Rust is fast!");
         assert_eq!(response.usage.total_tokens, 15);
 
@@ -866,14 +870,19 @@ mod tests {
         let config = OllamaConfig::new().base_url(server.url());
         let model = OllamaChatModel::new(config);
 
-        let request = ChatRequest::new().model("nonexistent").message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with 404");
+        let request = ChatRequest::new()
+            .model("nonexistent")
+            .message(ChatMessage::user("Hi"));
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with 404");
 
         match err {
             ModelError::ApiError { status, message } => {
                 assert_eq!(status, 404);
                 assert!(message.contains("not found"));
-            }
+            },
             _ => panic!("Expected ApiError, got: {err}"),
         }
 
@@ -894,13 +903,16 @@ mod tests {
         let model = OllamaChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with server error");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with server error");
 
         match err {
             ModelError::ApiError { status, message } => {
                 assert_eq!(status, 500);
                 assert!(message.contains("internal server error"));
-            }
+            },
             _ => panic!("Expected ApiError, got: {err}"),
         }
 
@@ -922,10 +934,12 @@ mod tests {
                 .to_string(),
             ))
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "model": "nomic-embed-text",
                 "embedding": [0.1, 0.2, 0.3, -0.4, 0.5]
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -1018,7 +1032,7 @@ mod tests {
             ModelError::ApiError { status, message } => {
                 assert_eq!(status, 404);
                 assert!(message.contains("model not found"));
-            }
+            },
             _ => panic!("Expected ApiError, got: {err}"),
         }
 

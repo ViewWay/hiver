@@ -85,7 +85,9 @@ where
         {
             let mut pending = self.pending.lock().expect("lock poisoned");
             for key in keys {
-                if result.contains_key(&key) { continue; }
+                if result.contains_key(&key) {
+                    continue;
+                }
                 let (tx, rx) = tokio::sync::oneshot::channel();
                 pending.entry(key.clone()).or_default().push(tx);
                 receivers.push((key, rx));
@@ -116,9 +118,16 @@ where
     /// Dispatch pending keys to the batch loader. / 将待处理键分发给批量加载器。
     pub async fn dispatch(&self) -> usize {
         let pending_keys: Vec<K> = {
-            self.pending.lock().expect("lock poisoned").keys().cloned().collect()
+            self.pending
+                .lock()
+                .expect("lock poisoned")
+                .keys()
+                .cloned()
+                .collect()
         };
-        if pending_keys.is_empty() { return 0; }
+        if pending_keys.is_empty() {
+            return 0;
+        }
         let batch_keys: Vec<K> = pending_keys.into_iter().take(self.max_batch_size).collect();
         let loaded = self.loader.load(&batch_keys).await;
         let mut pending = self.pending.lock().expect("lock poisoned");
@@ -129,7 +138,9 @@ where
                 cache.insert(key.clone(), value.clone());
                 count += 1;
                 if let Some(senders) = pending.remove(key) {
-                    for tx in senders { let _ = tx.send(value.clone()); }
+                    for tx in senders {
+                        let _ = tx.send(value.clone());
+                    }
                 }
             }
         }
@@ -140,7 +151,9 @@ where
     pub async fn dispatch_all(&self) {
         loop {
             let n = self.dispatch().await;
-            if n == 0 { break; }
+            if n == 0 {
+                break;
+            }
         }
     }
 }
@@ -153,9 +166,13 @@ pub struct DataLoaderRegistry {
 
 impl DataLoaderRegistry {
     /// Create a new registry with the given name. / 使用给定名称创建新注册表。
-    pub fn new(name: impl Into<String>) -> Self { Self { name: name.into() } }
+    pub fn new(name: impl Into<String>) -> Self {
+        Self { name: name.into() }
+    }
     /// Return the registry name. / 返回注册表名称。
-    pub fn name(&self) -> &str { &self.name }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 #[cfg(test)]

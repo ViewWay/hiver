@@ -10,10 +10,10 @@
 //! 3. 环境变量 (HIVER_*, APP_*)
 //! 4. 命令行参数
 
+use anyhow::Result;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
-use anyhow::Result;
 
 use super::environment::Environment;
 
@@ -216,16 +216,16 @@ impl ConfigurationLoader {
         match self.format {
             ConfigFormat::Toml => {
                 self.parse_toml(&content)?;
-            }
+            },
             ConfigFormat::Yaml => {
                 self.parse_yaml(&content)?;
-            }
+            },
             ConfigFormat::Json => {
                 self.parse_json(&content)?;
-            }
+            },
             ConfigFormat::Properties => {
                 self.parse_properties(&content)?;
-            }
+            },
         }
 
         Ok(())
@@ -235,8 +235,8 @@ impl ConfigurationLoader {
     /// Parse TOML configuration
     fn parse_toml(&mut self, content: &str) -> Result<()> {
         // 使用 toml crate 解析 / Parse using toml crate
-        let value: toml::Value = toml::from_str(content)
-            .map_err(|e| anyhow::anyhow!("Failed to parse TOML: {}", e))?;
+        let value: toml::Value =
+            toml::from_str(content).map_err(|e| anyhow::anyhow!("Failed to parse TOML: {}", e))?;
 
         // 递归解析 TOML 值并展平为点分隔的键
         // Recursively parse TOML value and flatten to dot-separated keys
@@ -250,22 +250,22 @@ impl ConfigurationLoader {
         match value {
             toml::Value::String(s) => {
                 self.properties.insert(prefix, s.clone());
-            }
+            },
             toml::Value::Integer(i) => {
                 self.properties.insert(prefix.clone(), i.to_string());
-            }
+            },
             toml::Value::Float(f) => {
                 self.properties.insert(prefix.clone(), f.to_string());
-            }
+            },
             toml::Value::Boolean(b) => {
                 self.properties.insert(prefix.clone(), b.to_string());
-            }
+            },
             toml::Value::Array(arr) => {
                 for (i, item) in arr.iter().enumerate() {
                     let key = format!("{}[{}]", prefix, i);
                     self.insert_toml_value(key, item);
                 }
-            }
+            },
             toml::Value::Table(table) => {
                 for (k, v) in table {
                     let key = if prefix.is_empty() {
@@ -275,10 +275,10 @@ impl ConfigurationLoader {
                     };
                     self.insert_toml_value(key, v);
                 }
-            }
+            },
             toml::Value::Datetime(dt) => {
                 self.properties.insert(prefix, dt.to_string());
-            }
+            },
         }
     }
 
@@ -301,22 +301,22 @@ impl ConfigurationLoader {
         match value {
             serde_yaml::Value::String(s) => {
                 self.properties.insert(prefix, s.clone());
-            }
+            },
             serde_yaml::Value::Number(n) => {
                 self.properties.insert(prefix.clone(), n.to_string());
-            }
+            },
             serde_yaml::Value::Bool(b) => {
                 self.properties.insert(prefix.clone(), b.to_string());
-            }
+            },
             serde_yaml::Value::Null => {
                 // 跳过 null 值 / Skip null values
-            }
+            },
             serde_yaml::Value::Sequence(arr) => {
                 for (i, item) in arr.iter().enumerate() {
                     let key = format!("{}[{}]", prefix, i);
                     self.insert_yaml_value(key, item);
                 }
-            }
+            },
             serde_yaml::Value::Mapping(map) => {
                 for (k, v) in map {
                     if let Some(key_str) = k.as_str() {
@@ -328,11 +328,11 @@ impl ConfigurationLoader {
                         self.insert_yaml_value(key, v);
                     }
                 }
-            }
+            },
             // Tagged values are handled as their underlying value
             serde_yaml::Value::Tagged(tagged) => {
                 self.insert_yaml_value(prefix, &tagged.value);
-            }
+            },
         }
     }
 
@@ -383,12 +383,10 @@ impl ConfigurationLoader {
     fn load_system_properties(&mut self) {
         // 加载常见的系统属性
         if let Ok(user_dir) = std::env::var("USER") {
-            self.properties
-                .insert("user.dir".to_string(), user_dir);
+            self.properties.insert("user.dir".to_string(), user_dir);
         }
         if let Ok(user_home) = std::env::var("HOME") {
-            self.properties
-                .insert("user.home".to_string(), user_home);
+            self.properties.insert("user.home".to_string(), user_home);
         }
     }
 

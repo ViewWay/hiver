@@ -231,9 +231,7 @@ impl PropertyPlaceholderProcessor {
     /// 默认使用 `${` 和 `}` 作为占位符分隔符，`:` 作为默认值分隔符。
     /// Uses `${` and `}` as placeholder delimiters, `:` as default separator.
     pub fn new() -> Self {
-        Self {
-            separator: ':',
-        }
+        Self { separator: ':' }
     }
 
     /// 设置默认值分隔符
@@ -291,14 +289,13 @@ impl PropertyPlaceholderProcessor {
 
                         // 解析 key 和默认值
                         // Parse key and default value
-                        let (key, default) =
-                            if let Some(sep_pos) = content.find(self.separator) {
-                                let k = &content[..sep_pos];
-                                let d = &content[sep_pos + 1..];
-                                (k, Some(d))
-                            } else {
-                                (content, None)
-                            };
+                        let (key, default) = if let Some(sep_pos) = content.find(self.separator) {
+                            let k = &content[..sep_pos];
+                            let d = &content[sep_pos + 1..];
+                            (k, Some(d))
+                        } else {
+                            (content, None)
+                        };
 
                         // 查找属性值
                         // Look up property value

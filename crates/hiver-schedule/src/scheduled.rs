@@ -13,15 +13,16 @@
 use crate::DEFAULT_INITIAL_DELAY_MS;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::time::{interval, sleep};
 use tokio::task::JoinHandle;
+use tokio::time::{interval, sleep};
 use tracing::info;
 
 /// Task function type / 任务函数类型
 pub type TaskFn = Arc<dyn Fn() + Send + Sync + 'static>;
 
 /// Async task function type / 异步任务函数类型
-pub type AsyncTaskFn = Arc<dyn Fn() -> std::pin::Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync + 'static>;
+pub type AsyncTaskFn =
+    Arc<dyn Fn() -> std::pin::Pin<Box<dyn Future<Output = ()> + Send>> + Send + Sync + 'static>;
 
 /// Schedule type
 /// 调度类型
@@ -216,15 +217,11 @@ impl TaskScheduler {
         }
 
         let handle = match task.schedule_type.clone() {
-            ScheduleType::FixedRate(duration) => {
-                self.spawn_fixed_rate_task(task, duration)
-            }
-            ScheduleType::FixedDelay(duration) => {
-                self.spawn_fixed_delay_task(task, duration)
-            }
+            ScheduleType::FixedRate(duration) => self.spawn_fixed_rate_task(task, duration),
+            ScheduleType::FixedDelay(duration) => self.spawn_fixed_delay_task(task, duration),
             ScheduleType::Cron(_) => {
                 return Err("Cron scheduling not yet implemented".to_string());
-            }
+            },
         };
 
         let mut handles = self.handles.write().await;
@@ -331,10 +328,7 @@ impl Default for TaskScheduler {
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub async fn schedule_fixed_rate<F, Fut>(
-    interval_ms: u64,
-    mut f: F,
-) -> JoinHandle<()>
+pub async fn schedule_fixed_rate<F, Fut>(interval_ms: u64, mut f: F) -> JoinHandle<()>
 where
     F: FnMut() -> Fut + Send + 'static,
     Fut: Future<Output = ()> + Send + 'static,
@@ -360,10 +354,7 @@ where
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub async fn schedule_fixed_delay<F, Fut>(
-    delay_ms: u64,
-    mut f: F,
-) -> JoinHandle<()>
+pub async fn schedule_fixed_delay<F, Fut>(delay_ms: u64, mut f: F) -> JoinHandle<()>
 where
     F: FnMut() -> Fut + Send + 'static,
     Fut: Future<Output = ()> + Send + 'static,
@@ -381,10 +372,7 @@ where
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub fn schedule_fixed_rate_sync<F>(
-    interval_ms: u64,
-    mut f: F,
-) -> JoinHandle<()>
+pub fn schedule_fixed_rate_sync<F>(interval_ms: u64, mut f: F) -> JoinHandle<()>
 where
     F: FnMut() + Send + 'static,
 {
@@ -402,10 +390,7 @@ where
 ///
 /// Returns a `JoinHandle` that can be used to cancel the task.
 /// 返回一个JoinHandle，可用于取消任务。
-pub fn schedule_fixed_delay_sync<F>(
-    delay_ms: u64,
-    mut f: F,
-) -> JoinHandle<()>
+pub fn schedule_fixed_delay_sync<F>(delay_ms: u64, mut f: F) -> JoinHandle<()>
 where
     F: FnMut() + Send + 'static,
 {
@@ -420,8 +405,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicU32, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicU32, Ordering};
 
     #[test]
     fn test_scheduled_task_creation() {
@@ -437,8 +422,7 @@ mod tests {
 
     #[test]
     fn test_scheduled_task_builder() {
-        let task = ScheduledTask::fixed_rate("test", 5000)
-            .with_initial_delay(1000);
+        let task = ScheduledTask::fixed_rate("test", 5000).with_initial_delay(1000);
 
         assert_eq!(task.name, "test");
         assert_eq!(task.initial_delay, Duration::from_millis(1000));
@@ -466,7 +450,8 @@ mod tests {
             async move {
                 // Task body
             }
-        }).await;
+        })
+        .await;
 
         // Wait for a few executions
         sleep(Duration::from_millis(350)).await;
@@ -487,7 +472,8 @@ mod tests {
             async move {
                 // Task body
             }
-        }).await;
+        })
+        .await;
 
         // Wait for a few executions
         sleep(Duration::from_millis(350)).await;
@@ -503,13 +489,12 @@ mod tests {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
-        let task = ScheduledTask::fixed_rate("test", 100)
-            .with_async_fn(move || {
-                let c = counter_clone.clone();
-                async move {
-                    c.fetch_add(1, Ordering::Relaxed);
-                }
-            });
+        let task = ScheduledTask::fixed_rate("test", 100).with_async_fn(move || {
+            let c = counter_clone.clone();
+            async move {
+                c.fetch_add(1, Ordering::Relaxed);
+            }
+        });
 
         // Execute the task manually a few times
         for _ in 0..3 {
@@ -527,13 +512,12 @@ mod tests {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
-        let task = ScheduledTask::fixed_rate("test_task", 100)
-            .with_async_fn(move || {
-                let c = counter_clone.clone();
-                async move {
-                    c.fetch_add(1, Ordering::Relaxed);
-                }
-            });
+        let task = ScheduledTask::fixed_rate("test_task", 100).with_async_fn(move || {
+            let c = counter_clone.clone();
+            async move {
+                c.fetch_add(1, Ordering::Relaxed);
+            }
+        });
 
         scheduler.schedule(task).await.unwrap();
 

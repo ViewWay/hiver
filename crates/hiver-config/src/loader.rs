@@ -403,10 +403,14 @@ impl Watcher {
     /// 添加要监视的文件
     pub fn watch_file(&self, path: PathBuf) {
         if let Ok(metadata) = std::fs::metadata(&path)
-            && let Ok(modified) = metadata.modified() {
-                let mut files = self.watched_files.write().unwrap_or_else(std::sync::PoisonError::into_inner);
-                files.insert(path, modified);
-            }
+            && let Ok(modified) = metadata.modified()
+        {
+            let mut files = self
+                .watched_files
+                .write()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            files.insert(path, modified);
+        }
     }
 
     /// Start watching
@@ -430,15 +434,18 @@ impl Watcher {
             while running.load(std::sync::atomic::Ordering::SeqCst) {
                 std::thread::sleep(interval);
 
-                let mut files = watched_files.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+                let mut files = watched_files
+                    .write()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 let mut changed = Vec::new();
 
                 for (path, last_modified) in files.iter() {
                     if let Ok(metadata) = std::fs::metadata(path)
                         && let Ok(modified) = metadata.modified()
-                            && modified != *last_modified {
-                                changed.push((path.clone(), modified));
-                            }
+                        && modified != *last_modified
+                    {
+                        changed.push((path.clone(), modified));
+                    }
                 }
 
                 for (path, modified) in changed {
@@ -658,9 +665,7 @@ mod tests {
         let source = PropertySource::new("test");
         config.add_property_source(source);
 
-        let validator = StandardPostProcessors::required_validator(vec![
-            "missing.key".to_string(),
-        ]);
+        let validator = StandardPostProcessors::required_validator(vec!["missing.key".to_string()]);
         assert!(validator.post_process(&mut config).is_err());
     }
 

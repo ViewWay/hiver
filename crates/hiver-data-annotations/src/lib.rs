@@ -53,7 +53,8 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
-#![allow(dead_code)] // Annotations/traits intended for external use via proc macros; 注解/Trait 供外部 proc macro 使用
+#![allow(dead_code)]
+// Annotations/traits intended for external use via proc macros; 注解/Trait 供外部 proc macro 使用
 #![allow(clippy::expect_used, clippy::unwrap_used)]
 
 use proc_macro::TokenStream;
@@ -68,16 +69,16 @@ use proc_macro::TokenStream;
 //       不能导出常规模块或运行时类型。
 //       运行时类型应该在单独的库 crate 中。
 
+mod audit;
 mod column;
 mod entity;
 mod id;
+mod lifecycle;
 mod query;
 mod relation;
 mod repository;
 mod transactional;
 mod transactional_macro;
-mod audit;
-mod lifecycle;
 
 // Pre-authorize macro module (conditionally compiled with security feature)
 // Pre-authorize 宏模块（使用 security feature 条件编译）

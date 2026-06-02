@@ -38,47 +38,45 @@
 mod tests;
 
 mod config;
-pub mod listener;
-mod producer;
 mod consumer;
-mod topic;
-mod message;
-mod serialization;
-pub mod kafka_client;
 mod consumer_group_manager;
+pub mod kafka_client;
+pub mod listener;
+mod message;
 mod offset_manager;
+mod producer;
+mod serialization;
+mod topic;
 mod transactional_producer;
 
-pub use config::{ProducerConfig, ConsumerConfig, ConsumerOffset};
-pub use producer::{Producer, Record, RecordHeader, ProduceOptions};
-pub use consumer::{Consumer, ConsumerGroup, ConsumerListener, MessageHandler, FnHandler};
-pub use topic::{TopicPartition, Offset, TopicPartitionBuilder};
-pub use kafka_client::{KafkaProducer, KafkaConsumer};
+pub use config::{ConsumerConfig, ConsumerOffset, ProducerConfig};
+pub use consumer::{Consumer, ConsumerGroup, ConsumerListener, FnHandler, MessageHandler};
+pub use consumer_group_manager::{
+    ConsumerGroupManager, GroupDescription, GroupMemberInfo, GroupSummary, OffsetResetStrategy,
+    PartitionOffsetInfo, TopicPartitionAssignment,
+};
 #[cfg(feature = "rdkafka")]
 pub use kafka_client::KafkaError;
-pub use message::{KafkaMessage, MessageKey, MessageHeaders, MessageValue, MessageHeaderValue};
-pub use serialization::{
-    Serializer, Deserializer, JsonSerializer, JsonDeserializer, BytesSerializer,
-    KeySerializer, SerializeData
-};
-pub use consumer_group_manager::{
-    ConsumerGroupManager, OffsetResetStrategy, GroupDescription, GroupMemberInfo,
-    GroupSummary, PartitionOffsetInfo, TopicPartitionAssignment,
-};
+pub use kafka_client::{KafkaConsumer, KafkaProducer};
+pub use message::{KafkaMessage, MessageHeaderValue, MessageHeaders, MessageKey, MessageValue};
 pub use offset_manager::OffsetManager;
-pub use transactional_producer::{
-    TransactionalProducer, TransactionOffset, TransactionState,
+pub use producer::{ProduceOptions, Producer, Record, RecordHeader};
+pub use serialization::{
+    BytesSerializer, Deserializer, JsonDeserializer, JsonSerializer, KeySerializer, SerializeData,
+    Serializer,
 };
+pub use topic::{Offset, TopicPartition, TopicPartitionBuilder};
+pub use transactional_producer::{TransactionOffset, TransactionState, TransactionalProducer};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        ProducerConfig, ConsumerConfig, ConsumerOffset, Producer, Record, ProduceOptions,
-        Consumer, ConsumerGroup, TopicPartition, Offset, KafkaMessage, MessageKey,
-        JsonSerializer, JsonDeserializer, BytesSerializer,
-        ConsumerGroupManager, OffsetResetStrategy, GroupDescription,
-        OffsetManager, TransactionalProducer, TransactionOffset, TransactionState,
+        BytesSerializer, Consumer, ConsumerConfig, ConsumerGroup, ConsumerGroupManager,
+        ConsumerOffset, GroupDescription, JsonDeserializer, JsonSerializer, KafkaMessage,
+        MessageKey, Offset, OffsetManager, OffsetResetStrategy, ProduceOptions, Producer,
+        ProducerConfig, Record, TopicPartition, TransactionOffset, TransactionState,
+        TransactionalProducer,
     };
 }
 

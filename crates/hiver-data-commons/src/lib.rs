@@ -60,58 +60,52 @@
 #[cfg(test)]
 mod tests;
 
-pub mod error;
-pub mod entity;
-pub mod repository;
-pub mod page;
-pub mod sort;
-pub mod method_name;
-pub mod specification;
-pub mod projection;
 pub mod auditing;
+pub mod entity;
+pub mod error;
+pub mod method_name;
 pub mod optimistic_lock;
+pub mod page;
 pub mod part_tree;
+pub mod projection;
 #[cfg(feature = "query")]
 pub mod query;
+pub mod repository;
+pub mod sort;
+pub mod specification;
 
-pub use error::{Error, Result};
-pub use repository::{
-    Repository, CrudRepository, PagingAndSortingRepository,
+pub use auditing::{
+    AuditingEntity, AuditingHandler, AuditorAware, CreatedBy, CreatedDate, LastModifiedBy,
+    LastModifiedDate,
 };
-pub use page::{Page, PageRequest, Slice, List};
-pub use sort::{Sort, Order, Direction, NullHandling};
 pub use entity::{
-    AggregateRoot, Identifier, Auditable, Versioned,
-    SoftDeletable, EntityWithLifecycle, LifecycleEvent,
-    TableName, ColumnName, Entity,
+    AggregateRoot, Auditable, ColumnName, Entity, EntityWithLifecycle, Identifier, LifecycleEvent,
+    SoftDeletable, TableName, Versioned,
 };
+pub use error::{Error, Result};
 pub use method_name::MethodName;
-pub use specification::{
-    Specification as Spec, Predicate as SpecPredicate,
-    SpecValue, Specifications as SpecBuilder,
-    BuiltSpecification, JpaSpecificationExecutor,
-    SpecFactories, AlwaysSpec, SimpleSpec, AndSpec, OrSpec, NotSpec,
+pub use optimistic_lock::{
+    OptimisticLockError, Version, VersionCheckedUpdate, Versioned as VersionedEntity,
+};
+pub use page::{List, Page, PageRequest, Slice};
+pub use part_tree::{
+    AndOr, Keyword, OrderBy, OrderDirection as PartTreeOrderDirection, Part, PartTree, PartType,
+    Subject,
 };
 pub use projection::{
-    Projection, ProjectionField, ProjectionTransformer,
-    DtoProjection, ClosedProjection,
-};
-pub use auditing::{
-    CreatedDate, LastModifiedDate, CreatedBy, LastModifiedBy,
-    AuditorAware, AuditingEntity, AuditingHandler,
-};
-pub use optimistic_lock::{
-    OptimisticLockError, Version, Versioned as VersionedEntity,
-    VersionCheckedUpdate,
-};
-pub use part_tree::{
-    PartTree, Subject, Keyword, PartType, Part, OrderBy,
-    OrderDirection as PartTreeOrderDirection, AndOr,
+    ClosedProjection, DtoProjection, Projection, ProjectionField, ProjectionTransformer,
 };
 #[cfg(feature = "query")]
 pub use query::{
-    QueryWrapper, UpdateWrapper, Condition, QueryOrder,
-    Value, ToValue, Specification, LambdaQueryWrapper, Predicate,
+    Condition, LambdaQueryWrapper, Predicate, QueryOrder, QueryWrapper, Specification, ToValue,
+    UpdateWrapper, Value,
+};
+pub use repository::{CrudRepository, PagingAndSortingRepository, Repository};
+pub use sort::{Direction, NullHandling, Order, Sort};
+pub use specification::{
+    AlwaysSpec, AndSpec, BuiltSpecification, JpaSpecificationExecutor, NotSpec, OrSpec,
+    Predicate as SpecPredicate, SimpleSpec, SpecFactories, SpecValue, Specification as Spec,
+    Specifications as SpecBuilder,
 };
 
 /// Trait for converting Rust types to SQL literal strings.
@@ -126,19 +120,29 @@ pub trait ToSql: Send + Sync {
 }
 
 impl ToSql for i32 {
-    fn to_sql(&self) -> String { self.to_string() }
+    fn to_sql(&self) -> String {
+        self.to_string()
+    }
 }
 impl ToSql for i64 {
-    fn to_sql(&self) -> String { self.to_string() }
+    fn to_sql(&self) -> String {
+        self.to_string()
+    }
 }
 impl ToSql for u32 {
-    fn to_sql(&self) -> String { self.to_string() }
+    fn to_sql(&self) -> String {
+        self.to_string()
+    }
 }
 impl ToSql for u64 {
-    fn to_sql(&self) -> String { self.to_string() }
+    fn to_sql(&self) -> String {
+        self.to_string()
+    }
 }
 impl ToSql for f64 {
-    fn to_sql(&self) -> String { self.to_string() }
+    fn to_sql(&self) -> String {
+        self.to_string()
+    }
 }
 impl ToSql for &str {
     fn to_sql(&self) -> String {
@@ -152,7 +156,11 @@ impl ToSql for String {
 }
 impl ToSql for bool {
     fn to_sql(&self) -> String {
-        if *self { "TRUE".to_string() } else { "FALSE".to_string() }
+        if *self {
+            "TRUE".to_string()
+        } else {
+            "FALSE".to_string()
+        }
     }
 }
 
@@ -183,10 +191,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        Error, Result,
-        Repository, CrudRepository, PagingAndSortingRepository,
-        Page, PageRequest, Sort, Order, Direction,
-        AggregateRoot, Identifier, Versioned, TableName,
-        MethodName,
+        AggregateRoot, CrudRepository, Direction, Error, Identifier, MethodName, Order, Page,
+        PageRequest, PagingAndSortingRepository, Repository, Result, Sort, TableName, Versioned,
     };
 }

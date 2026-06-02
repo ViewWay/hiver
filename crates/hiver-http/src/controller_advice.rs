@@ -18,9 +18,9 @@
 //! // Returns 404 JSON error response
 //! ```
 
+use crate::StatusCode;
 use crate::body::Body;
 use crate::response::Response;
-use crate::StatusCode;
 use serde::Serialize;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -458,9 +458,9 @@ impl crate::IntoResponse for ControllerErrorResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::IntoResponse;
     use crate::body::HttpBody;
     use crate::error::Error;
-    use crate::IntoResponse;
 
     #[test]
     fn test_error_response_basic() {

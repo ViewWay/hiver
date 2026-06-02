@@ -47,10 +47,10 @@
 #![warn(unreachable_pub)]
 
 use proc_macro::TokenStream;
+use proc_macro2::{Ident, Literal, Span};
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Data, DataStruct, Fields};
 use syn::Type;
-use proc_macro2::{Ident, Span, Literal};
+use syn::{Data, DataStruct, DeriveInput, Fields, parse_macro_input};
 
 /// Derive macro for Model trait
 /// Model trait 的 derive 宏
@@ -153,11 +153,11 @@ fn parse_field_attrs(attrs: &[syn::Attribute]) -> FieldAttrs {
                                 if let Ok(n) = value.parse::<usize>() {
                                     result.max_length = Some(n);
                                 }
-                            }
+                            },
                             "column" => result.column = Some(value.to_string()),
-                            "table" => { /* handled at struct level */ }
-                            "schema" => { /* handled at struct level */ }
-                            _ => {}
+                            "table" => { /* handled at struct level */ },
+                            "schema" => { /* handled at struct level */ },
+                            _ => {},
                         }
                     }
                 }
@@ -190,7 +190,7 @@ fn parse_struct_attrs(attrs: &[syn::Attribute]) -> StructAttrs {
                         match key {
                             "table" => result.table = Some(value.to_string()),
                             "schema" => result.schema = Some(value.to_string()),
-                            _ => {}
+                            _ => {},
                         }
                     }
                 }
@@ -224,7 +224,9 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     let struct_attrs = parse_struct_attrs(&input.attrs);
 
     // Default table name: struct name in snake_case
-    let table_name = struct_attrs.table.unwrap_or_else(|| to_snake_case(&struct_name.to_string()));
+    let table_name = struct_attrs
+        .table
+        .unwrap_or_else(|| to_snake_case(&struct_name.to_string()));
 
     // Parse fields and generate column metadata
     let mut column_definitions = Vec::new();
@@ -235,77 +237,78 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     let mut ignored_fields: Vec<Ident> = Vec::new();
 
     if let Data::Struct(DataStruct { fields, .. }) = &input.data
-        && let Fields::Named(named_fields) = fields {
-            for field in &named_fields.named {
-                let field_name = field.ident.as_ref().unwrap();
-                let field_name_str = field_name.to_string();
-                field_names.push(field_name.clone());
+        && let Fields::Named(named_fields) = fields
+    {
+        for field in &named_fields.named {
+            let field_name = field.ident.as_ref().unwrap();
+            let field_name_str = field_name.to_string();
+            field_names.push(field_name.clone());
 
-                // Parse field attributes
-                let field_attrs = parse_field_attrs(&field.attrs);
+            // Parse field attributes
+            let field_attrs = parse_field_attrs(&field.attrs);
 
-                if field_attrs.ignore {
-                    ignored_fields.push(field_name.clone());
-                    continue;
-                }
-
-                if field_attrs.primary_key {
-                    primary_keys.push(field_name_str.clone());
-                }
-
-                if field_attrs.version {
-                    version_field = Some(field_name.clone());
-                }
-
-                // Get the type
-                let field_type = &field.ty;
-                let column_type = map_type_to_column_type(field_type);
-
-                // Column name (custom or field name)
-                let column_name = field_attrs.column.unwrap_or_else(|| field_name_str.clone());
-
-                field_infos.push(FieldInfo {
-                    field_ident: field_name.clone(),
-                    column_name: column_name.clone(),
-                    nullable: field_attrs.nullable,
-                    field_type: field_type.clone(),
-                });
-
-                // Build column metadata
-                let primary_key_method = if field_attrs.primary_key {
-                    quote! { .primary_key() }
-                } else {
-                    quote! {}
-                };
-
-                let unique_method = if field_attrs.unique {
-                    quote! { .unique() }
-                } else {
-                    quote! {}
-                };
-
-                let nullable_method = if field_attrs.nullable {
-                    quote! { .nullable() }
-                } else {
-                    quote! {}
-                };
-
-                let default_method = if let Some(default) = &field_attrs.default {
-                    let default_lit = Literal::string(default);
-                    quote! { .with_default(#default_lit) }
-                } else {
-                    quote! {}
-                };
-
-                column_definitions.push(quote! {
-                    hiver_data_orm::Column::new(#column_name, #column_type)
-                        #primary_key_method
-                        #unique_method
-                        #nullable_method
-                        #default_method
-                });
+            if field_attrs.ignore {
+                ignored_fields.push(field_name.clone());
+                continue;
             }
+
+            if field_attrs.primary_key {
+                primary_keys.push(field_name_str.clone());
+            }
+
+            if field_attrs.version {
+                version_field = Some(field_name.clone());
+            }
+
+            // Get the type
+            let field_type = &field.ty;
+            let column_type = map_type_to_column_type(field_type);
+
+            // Column name (custom or field name)
+            let column_name = field_attrs.column.unwrap_or_else(|| field_name_str.clone());
+
+            field_infos.push(FieldInfo {
+                field_ident: field_name.clone(),
+                column_name: column_name.clone(),
+                nullable: field_attrs.nullable,
+                field_type: field_type.clone(),
+            });
+
+            // Build column metadata
+            let primary_key_method = if field_attrs.primary_key {
+                quote! { .primary_key() }
+            } else {
+                quote! {}
+            };
+
+            let unique_method = if field_attrs.unique {
+                quote! { .unique() }
+            } else {
+                quote! {}
+            };
+
+            let nullable_method = if field_attrs.nullable {
+                quote! { .nullable() }
+            } else {
+                quote! {}
+            };
+
+            let default_method = if let Some(default) = &field_attrs.default {
+                let default_lit = Literal::string(default);
+                quote! { .with_default(#default_lit) }
+            } else {
+                quote! {}
+            };
+
+            column_definitions.push(quote! {
+                hiver_data_orm::Column::new(#column_name, #column_type)
+                    #primary_key_method
+                    #unique_method
+                    #nullable_method
+                    #default_method
+            });
         }
+    }
 
     // Generate primary_key and set_primary_key implementations
     let pk_field = if !primary_keys.is_empty() {
@@ -332,40 +335,50 @@ fn model_derive_impl(input: DeriveInput) -> TokenStream {
     };
 
     // Build column_names static list
-    let column_name_strs: Vec<&str> = field_infos.iter().map(|fi| fi.column_name.as_str()).collect();
+    let column_name_strs: Vec<&str> = field_infos
+        .iter()
+        .map(|fi| fi.column_name.as_str())
+        .collect();
     let column_name_count = column_name_strs.len();
 
     // Build from_row field extractions (non-ignored fields from row, ignored fields from Default)
-    let from_row_fields: Vec<proc_macro2::TokenStream> = field_infos.iter().map(|fi| {
-        let ident = &fi.field_ident;
-        let col = &fi.column_name;
-        let ty = &fi.field_type;
-        if fi.nullable {
-            // Nullable fields use Default (Option<T> defaults to None).
-            // Attempt to extract from row; if column is missing/Null, Default applies.
-            // nullable 字段使用 Default（Option<T> 默认为 None）。
-            quote! {
-                #ident: row.get_as::<#ty>(#col).unwrap_or_default()
+    let from_row_fields: Vec<proc_macro2::TokenStream> = field_infos
+        .iter()
+        .map(|fi| {
+            let ident = &fi.field_ident;
+            let col = &fi.column_name;
+            let ty = &fi.field_type;
+            if fi.nullable {
+                // Nullable fields use Default (Option<T> defaults to None).
+                // Attempt to extract from row; if column is missing/Null, Default applies.
+                // nullable 字段使用 Default（Option<T> 默认为 None）。
+                quote! {
+                    #ident: row.get_as::<#ty>(#col).unwrap_or_default()
+                }
+            } else {
+                quote! {
+                    #ident: row.get_as::<#ty>(#col).map_err(|e| hiver_data_orm::Error::unknown(
+                        format!("failed to read column '{}': {}", #col, e)
+                    ))?
+                }
             }
-        } else {
-            quote! {
-                #ident: row.get_as::<#ty>(#col).map_err(|e| hiver_data_orm::Error::unknown(
-                    format!("failed to read column '{}': {}", #col, e)
-                ))?
-            }
-        }
-    }).chain(ignored_fields.iter().map(|ident| {
-        quote! { #ident: Default::default() }
-    })).collect();
+        })
+        .chain(ignored_fields.iter().map(|ident| {
+            quote! { #ident: Default::default() }
+        }))
+        .collect();
 
     // Build to_row field conversions
-    let to_row_fields: Vec<proc_macro2::TokenStream> = field_infos.iter().map(|fi| {
-        let ident = &fi.field_ident;
-        let col = &fi.column_name;
-        quote! {
-            (#col, Box::new(self.#ident.clone()) as Box<dyn std::any::Any + Send>)
-        }
-    }).collect();
+    let to_row_fields: Vec<proc_macro2::TokenStream> = field_infos
+        .iter()
+        .map(|fi| {
+            let ident = &fi.field_ident;
+            let col = &fi.column_name;
+            quote! {
+                (#col, Box::new(self.#ident.clone()) as Box<dyn std::any::Any + Send>)
+            }
+        })
+        .collect();
 
     // Generate the Model implementation
     let expanded = quote! {
@@ -439,8 +452,6 @@ fn map_type_to_column_type(ty: &Type) -> proc_macro2::TokenStream {
         .replace(" ", "")
         .replace("alloc::string::String", "String")
         .replace("&str", "str");
-
-    
 
     match simplified.as_str() {
         "i8" => quote!(hiver_data_orm::ColumnType::I8),
@@ -582,10 +593,7 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
     let table_name = to_snake_case(&entity_type.to_string());
 
     // Generate repository struct
-    let struct_name = Ident::new(
-        &format!("{}Impl", trait_name),
-        trait_name.span()
-    );
+    let struct_name = Ident::new(&format!("{}Impl", trait_name), trait_name.span());
 
     // Parse methods and generate implementations
     let mut method_impls = Vec::new();
@@ -611,11 +619,7 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
                 || method_name_str.starts_with("find_all_by")
             {
                 // Derive query from method name
-                method_impls.push(generate_derived_query_method(
-                    method,
-                    &table_name,
-                    &entity_type,
-                ));
+                method_impls.push(generate_derived_query_method(method, &table_name, &entity_type));
             }
         }
     }
@@ -775,7 +779,7 @@ fn repository_impl(trait_def: syn::ItemTrait) -> TokenStream {
 
 /// Extract entity and ID types from super traits
 fn extract_super_traits(
-    bounds: &syn::punctuated::Punctuated<syn::TypeParamBound, syn::token::Plus>
+    bounds: &syn::punctuated::Punctuated<syn::TypeParamBound, syn::token::Plus>,
 ) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
     let mut entity_type = None;
     let mut id_type = None;
@@ -852,15 +856,21 @@ fn convert_placeholders(sql: &str) -> String {
 }
 
 /// Extract typed argument identifiers from a trait method signature (skips &self / self).
-fn extract_args(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>) -> Vec<proc_macro2::TokenStream> {
-    inputs.iter().filter_map(|arg| {
-        if let syn::FnArg::Typed(pt) = arg
-            && let syn::Pat::Ident(pi) = &*pt.pat {
+fn extract_args(
+    inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>,
+) -> Vec<proc_macro2::TokenStream> {
+    inputs
+        .iter()
+        .filter_map(|arg| {
+            if let syn::FnArg::Typed(pt) = arg
+                && let syn::Pat::Ident(pi) = &*pt.pat
+            {
                 let ident = &pi.ident;
                 return Some(quote!(#ident));
             }
-        None
-    }).collect()
+            None
+        })
+        .collect()
 }
 
 /// Generate a custom @Query method implementation.
@@ -973,23 +983,56 @@ fn generate_derived_query_method(
 
     // Build WHERE clause with $N placeholders
     let mut param_idx = 0usize;
-    let where_parts: Vec<String> = conditions.iter().map(|c| {
-        let field = to_snake_case(c.field());
-        match c {
-            QueryCondition::Eq(_) => { param_idx += 1; format!("{} = ${}", field, param_idx) }
-            QueryCondition::Like(_) => { param_idx += 1; format!("{} LIKE ${}", field, param_idx) }
-            QueryCondition::NotLike(_) => { param_idx += 1; format!("{} NOT LIKE ${}", field, param_idx) }
-            QueryCondition::GreaterThan(_) => { param_idx += 1; format!("{} > ${}", field, param_idx) }
-            QueryCondition::GreaterThanEqual(_) => { param_idx += 1; format!("{} >= ${}", field, param_idx) }
-            QueryCondition::LessThan(_) => { param_idx += 1; format!("{} < ${}", field, param_idx) }
-            QueryCondition::LessThanEqual(_) => { param_idx += 1; format!("{} <= ${}", field, param_idx) }
-            QueryCondition::In(_) => { param_idx += 1; format!("{} IN (${})", field, param_idx) }
-            QueryCondition::Between(_) => { param_idx += 2; format!("{} BETWEEN ${} AND ${}", field, param_idx - 1, param_idx) }
-            QueryCondition::IsNull(_) => format!("{} IS NULL", field),
-            QueryCondition::IsNotNull(_) => format!("{} IS NOT NULL", field),
-            QueryCondition::Not(_) => { param_idx += 1; format!("{} != ${}", field, param_idx) }
-        }
-    }).collect();
+    let where_parts: Vec<String> = conditions
+        .iter()
+        .map(|c| {
+            let field = to_snake_case(c.field());
+            match c {
+                QueryCondition::Eq(_) => {
+                    param_idx += 1;
+                    format!("{} = ${}", field, param_idx)
+                },
+                QueryCondition::Like(_) => {
+                    param_idx += 1;
+                    format!("{} LIKE ${}", field, param_idx)
+                },
+                QueryCondition::NotLike(_) => {
+                    param_idx += 1;
+                    format!("{} NOT LIKE ${}", field, param_idx)
+                },
+                QueryCondition::GreaterThan(_) => {
+                    param_idx += 1;
+                    format!("{} > ${}", field, param_idx)
+                },
+                QueryCondition::GreaterThanEqual(_) => {
+                    param_idx += 1;
+                    format!("{} >= ${}", field, param_idx)
+                },
+                QueryCondition::LessThan(_) => {
+                    param_idx += 1;
+                    format!("{} < ${}", field, param_idx)
+                },
+                QueryCondition::LessThanEqual(_) => {
+                    param_idx += 1;
+                    format!("{} <= ${}", field, param_idx)
+                },
+                QueryCondition::In(_) => {
+                    param_idx += 1;
+                    format!("{} IN (${})", field, param_idx)
+                },
+                QueryCondition::Between(_) => {
+                    param_idx += 2;
+                    format!("{} BETWEEN ${} AND ${}", field, param_idx - 1, param_idx)
+                },
+                QueryCondition::IsNull(_) => format!("{} IS NULL", field),
+                QueryCondition::IsNotNull(_) => format!("{} IS NOT NULL", field),
+                QueryCondition::Not(_) => {
+                    param_idx += 1;
+                    format!("{} != ${}", field, param_idx)
+                },
+            }
+        })
+        .collect();
 
     let where_clause = if where_parts.is_empty() {
         String::new()
@@ -1006,11 +1049,15 @@ fn generate_derived_query_method(
     let limit_clause = limit.map(|n| format!(" LIMIT {}", n)).unwrap_or_default();
 
     let sql = match operation.as_str() {
-        "find" | "find_all" => format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause),
+        "find" | "find_all" => {
+            format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause)
+        },
         "count" => format!("SELECT COUNT(*) AS cnt FROM {} {}", table_name, where_clause),
         "exists" => format!("SELECT EXISTS(SELECT 1 FROM {} {}) AS ex", table_name, where_clause),
         "delete" => format!("DELETE FROM {} {}", table_name, where_clause),
-        _ => format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause),
+        _ => {
+            format!("SELECT * FROM {} {}{}{}", table_name, where_clause, order_clause, limit_clause)
+        },
     };
 
     let returns_option = return_type_str.contains("Option");
@@ -1134,11 +1181,17 @@ enum QueryCondition {
 impl QueryCondition {
     fn field(&self) -> &str {
         match self {
-            Self::Eq(f) | Self::Like(f) | Self::NotLike(f)
-            | Self::GreaterThan(f) | Self::GreaterThanEqual(f)
-            | Self::LessThan(f) | Self::LessThanEqual(f)
-            | Self::In(f) | Self::Between(f)
-            | Self::IsNull(f) | Self::IsNotNull(f)
+            Self::Eq(f)
+            | Self::Like(f)
+            | Self::NotLike(f)
+            | Self::GreaterThan(f)
+            | Self::GreaterThanEqual(f)
+            | Self::LessThan(f)
+            | Self::LessThanEqual(f)
+            | Self::In(f)
+            | Self::Between(f)
+            | Self::IsNull(f)
+            | Self::IsNotNull(f)
             | Self::Not(f) => f,
         }
     }
@@ -1159,7 +1212,9 @@ impl QueryCondition {
 /// - `count_by_active` → SELECT COUNT(*) ... WHERE active = $1
 /// - `find_all_by_status_order_by_name` → ... ORDER BY name
 /// - `find_by_active_limit_10` → ... LIMIT 10
-fn parse_method_name(method_name: &str) -> (String, Vec<QueryCondition>, Vec<String>, Option<usize>) {
+fn parse_method_name(
+    method_name: &str,
+) -> (String, Vec<QueryCondition>, Vec<String>, Option<usize>) {
     let method_name_lower = method_name.to_lowercase();
 
     let (operation, rest) = if method_name_lower.starts_with("find_all_by_") {
@@ -1188,17 +1243,24 @@ fn parse_method_name(method_name: &str) -> (String, Vec<QueryCondition>, Vec<Str
 
     // Strip _limit_N suffix and _order_by_... suffix for condition parsing
     let conditions_part = rest_lower
-        .split("_order_by_").next().unwrap_or(&rest_lower)
-        .split("_limit_").next().unwrap_or(&rest_lower);
+        .split("_order_by_")
+        .next()
+        .unwrap_or(&rest_lower)
+        .split("_limit_")
+        .next()
+        .unwrap_or(&rest_lower);
 
     // Split by _and_ and _or_ to get condition segments
     let conditions = parse_conditions(conditions_part);
 
     // Extract ORDER BY fields
     let order_by = if let Some(idx) = rest_lower.find("_order_by_") {
-        let order_part = rest_lower[idx + 10..]
-            .split("_limit_").next().unwrap_or("");
-        order_part.split('_').filter(|s| !s.is_empty()).map(String::from).collect()
+        let order_part = rest_lower[idx + 10..].split("_limit_").next().unwrap_or("");
+        order_part
+            .split('_')
+            .filter(|s| !s.is_empty())
+            .map(String::from)
+            .collect()
     } else {
         Vec::new()
     };
@@ -1217,27 +1279,49 @@ fn parse_conditions(part: &str) -> Vec<QueryCondition> {
 
         if seg_str.ends_with("_greater_than_equal") {
             let field = &seg_str[..seg_str.len() - 20];
-            if !field.is_empty() { conditions.push(QueryCondition::GreaterThanEqual(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::GreaterThanEqual(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_less_than_equal") {
-            if !field.is_empty() { conditions.push(QueryCondition::LessThanEqual(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::LessThanEqual(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_greater_than") {
-            if !field.is_empty() { conditions.push(QueryCondition::GreaterThan(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::GreaterThan(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_less_than") {
-            if !field.is_empty() { conditions.push(QueryCondition::LessThan(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::LessThan(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_not_like") {
-            if !field.is_empty() { conditions.push(QueryCondition::NotLike(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::NotLike(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_like") {
-            if !field.is_empty() { conditions.push(QueryCondition::Like(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::Like(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_is_not_null") {
-            if !field.is_empty() { conditions.push(QueryCondition::IsNotNull(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::IsNotNull(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_is_null") {
-            if !field.is_empty() { conditions.push(QueryCondition::IsNull(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::IsNull(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_in") {
-            if !field.is_empty() { conditions.push(QueryCondition::In(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::In(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_between") {
-            if !field.is_empty() { conditions.push(QueryCondition::Between(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::Between(field.to_string()));
+            }
         } else if let Some(field) = seg_str.strip_suffix("_not") {
-            if !field.is_empty() { conditions.push(QueryCondition::Not(field.to_string())); }
+            if !field.is_empty() {
+                conditions.push(QueryCondition::Not(field.to_string()));
+            }
         } else if !seg_str.is_empty() {
             conditions.push(QueryCondition::Eq(seg_str.to_string()));
         }
@@ -1254,18 +1338,24 @@ fn split_conditions(s: &str) -> Vec<String> {
     let len = bytes.len();
     let mut i = 0;
     while i < len {
-        if i + 5 <= len && &s[i..i+5] == "_and_" {
-            if !current.is_empty() { result.push(std::mem::take(&mut current)); }
+        if i + 5 <= len && &s[i..i + 5] == "_and_" {
+            if !current.is_empty() {
+                result.push(std::mem::take(&mut current));
+            }
             i += 5;
-        } else if i + 4 <= len && &s[i..i+4] == "_or_" {
-            if !current.is_empty() { result.push(std::mem::take(&mut current)); }
+        } else if i + 4 <= len && &s[i..i + 4] == "_or_" {
+            if !current.is_empty() {
+                result.push(std::mem::take(&mut current));
+            }
             i += 4;
         } else {
             current.push(bytes[i] as char);
             i += 1;
         }
     }
-    if !current.is_empty() { result.push(current); }
+    if !current.is_empty() {
+        result.push(current);
+    }
     result
 }
 

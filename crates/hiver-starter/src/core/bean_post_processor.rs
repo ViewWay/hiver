@@ -399,11 +399,8 @@ impl CommonAnnotationBeanPostProcessor {
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `callback`: 回调函数 / Callback function
-    pub fn register_post_construct<F>(
-        &mut self,
-        bean_name: impl Into<String>,
-        callback: F,
-    ) where
+    pub fn register_post_construct<F>(&mut self, bean_name: impl Into<String>, callback: F)
+    where
         F: Fn(&dyn Any) -> Result<()> + Send + Sync + 'static,
     {
         self.post_construct_callbacks
@@ -417,11 +414,8 @@ impl CommonAnnotationBeanPostProcessor {
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `callback`: 回调函数 / Callback function
-    pub fn register_pre_destroy<F>(
-        &mut self,
-        bean_name: impl Into<String>,
-        callback: F,
-    ) where
+    pub fn register_pre_destroy<F>(&mut self, bean_name: impl Into<String>, callback: F)
+    where
         F: Fn(&dyn Any) -> Result<()> + Send + Sync + 'static,
     {
         self.pre_destroy_callbacks
@@ -435,11 +429,7 @@ impl CommonAnnotationBeanPostProcessor {
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `bean`: Bean 实例 / Bean instance
-    pub fn invoke_post_construct(
-        &mut self,
-        bean_name: &str,
-        bean: &dyn Any,
-    ) -> Result<()> {
+    pub fn invoke_post_construct(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()> {
         if let Some(callback) = self.post_construct_callbacks.get(bean_name) {
             callback(bean)?;
             self.initialized_beans.push(bean_name.to_string());
@@ -458,11 +448,7 @@ impl CommonAnnotationBeanPostProcessor {
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `bean`: Bean 实例 / Bean instance
-    pub fn invoke_pre_destroy(
-        &mut self,
-        bean_name: &str,
-        bean: &dyn Any,
-    ) -> Result<()> {
+    pub fn invoke_pre_destroy(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()> {
         if let Some(callback) = self.pre_destroy_callbacks.get(bean_name) {
             callback(bean)?;
             self.destroyed_beans.push(bean_name.to_string());
@@ -609,11 +595,7 @@ impl BeanPostProcessorChain {
     ///
     /// - `bean`: Bean 实例 / Bean instance
     /// - `context`: Bean 上下文 / Bean context
-    pub fn before_initialization(
-        &self,
-        bean: &mut dyn Any,
-        context: &BeanContext,
-    ) -> Result<()> {
+    pub fn before_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()> {
         for processor in &self.processors {
             processor.post_process_before_initialization(bean, context)?;
         }
@@ -627,11 +609,7 @@ impl BeanPostProcessorChain {
     ///
     /// - `bean`: Bean 实例 / Bean instance
     /// - `context`: Bean 上下文 / Bean context
-    pub fn after_initialization(
-        &self,
-        bean: &mut dyn Any,
-        context: &BeanContext,
-    ) -> Result<()> {
+    pub fn after_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()> {
         for processor in &self.processors {
             processor.post_process_after_initialization(bean, context)?;
         }

@@ -8,7 +8,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Data, DataStruct, DeriveInput, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields, parse_macro_input};
 
 /// Derive macro for FromRequest trait
 /// FromRequest trait的派生宏
@@ -46,14 +46,11 @@ pub fn from_request(input: TokenStream) -> TokenStream {
                 "FromRequest can only be derived for structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
-    let field_names: Vec<_> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<_> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let expanded = quote! {
         #[automatically_derived]

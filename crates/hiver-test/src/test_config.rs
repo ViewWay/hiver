@@ -72,7 +72,6 @@ pub enum TestMode {
     E2E,
 }
 
-
 /// Server configuration for tests
 /// 测试的服务器配置
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -226,9 +225,10 @@ impl TestConfig {
         // Load common test configuration from environment
         // 从环境变量加载常用测试配置
         if let Ok(port) = std::env::var("TEST_SERVER_PORT")
-            && let Ok(p) = port.parse::<u16>() {
-                self.server.port = p;
-            }
+            && let Ok(p) = port.parse::<u16>()
+        {
+            self.server.port = p;
+        }
 
         if let Ok(db_url) = std::env::var("TEST_DATABASE_URL") {
             self.database.url = Some(db_url);
@@ -240,7 +240,7 @@ impl TestConfig {
                 "unit" => self.test_mode = TestMode::Unit,
                 "integration" => self.test_mode = TestMode::Integration,
                 "e2e" => self.test_mode = TestMode::E2E,
-                _ => {}
+                _ => {},
             }
         }
     }
@@ -308,8 +308,8 @@ impl Default for TestConfigHolder {
 /// Global test configuration holder
 /// 全局测试配置持有者
 pub fn global_test_config() -> &'static TestConfigHolder {
-    
-    static CONFIG: std::sync::LazyLock<TestConfigHolder> = std::sync::LazyLock::new(TestConfigHolder::new);
+    static CONFIG: std::sync::LazyLock<TestConfigHolder> =
+        std::sync::LazyLock::new(TestConfigHolder::new);
     &CONFIG
 }
 

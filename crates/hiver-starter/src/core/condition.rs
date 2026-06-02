@@ -426,9 +426,7 @@ impl<'a> ExpressionParser<'a> {
 
         if self.pos > start {
             let num_str = &self.input[start..self.pos];
-            num_str.parse::<f64>()
-                .ok()
-                .map(Value::Number)
+            num_str.parse::<f64>().ok().map(Value::Number)
         } else {
             None
         }
@@ -564,10 +562,10 @@ impl Value {
             (Value::Null, Value::Null) => true,
             (Value::String(a), Value::Number(b)) => {
                 a.parse::<f64>().is_ok_and(|n| (n - b).abs() < f64::EPSILON)
-            }
+            },
             (Value::Number(a), Value::String(b)) => {
                 b.parse::<f64>().is_ok_and(|n| (a - n).abs() < f64::EPSILON)
-            }
+            },
             _ => false,
         }
     }
@@ -591,20 +589,32 @@ impl Value {
     fn compare(&self, other: &Value) -> Option<i32> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => {
-                if a < b { Some(-1) }
-                else if a > b { Some(1) }
-                else { Some(0) }
-            }
+                if a < b {
+                    Some(-1)
+                } else if a > b {
+                    Some(1)
+                } else {
+                    Some(0)
+                }
+            },
             (Value::String(a), Value::String(b)) => {
-                if a < b { Some(-1) }
-                else if a > b { Some(1) }
-                else { Some(0) }
-            }
+                if a < b {
+                    Some(-1)
+                } else if a > b {
+                    Some(1)
+                } else {
+                    Some(0)
+                }
+            },
             (Value::Boolean(a), Value::Boolean(b)) => {
-                if !a && *b { Some(-1) }
-                else if *a && !b { Some(1) }
-                else { Some(0) }
-            }
+                if !a && *b {
+                    Some(-1)
+                } else if *a && !b {
+                    Some(1)
+                } else {
+                    Some(0)
+                }
+            },
             _ => None,
         }
     }
@@ -768,8 +778,8 @@ macro_rules! any_conditions {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
     use crate::config::loader::ConfigurationLoader;
+    use std::sync::Arc;
 
     #[test]
     fn test_conditional_on_property() {
@@ -888,7 +898,8 @@ mod tests {
         let ctx = ApplicationContext::with_config_loader(Arc::new(loader));
 
         // 复杂表达式: env == "production" && (port >= 8080 || !enabled)
-        let cond = ConditionalOnExpression::new(r#"env == "production" && (port >= 8080 || !enabled)"#);
+        let cond =
+            ConditionalOnExpression::new(r#"env == "production" && (port >= 8080 || !enabled)"#);
         assert!(cond.matches(&ctx));
 
         // 复杂表达式: env == "dev" || port < 8000

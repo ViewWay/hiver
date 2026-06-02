@@ -87,21 +87,21 @@
 #[cfg(test)]
 mod tests;
 
-mod auth;
 pub mod acl;
-pub mod authorization_server;
+mod auth;
 mod authority;
+pub mod authorization_server;
 mod context;
-pub mod data_scope;
 mod csrf;
+pub mod data_scope;
 pub mod email;
 mod encoder;
 mod error;
 mod jwt;
 mod oauth2;
 pub mod permission;
-mod pre_authorize;
 mod post_authorize;
+mod pre_authorize;
 mod rbac;
 mod rememberme;
 mod request_ext;
@@ -112,21 +112,25 @@ mod user;
 pub use auth::{Authentication, AuthenticationManager};
 pub use authority::{Authority, GrantedAuthority};
 pub use context::{SecurityContext, SecurityContextGuard};
-pub use data_scope::{
-    DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
-    DataScopeType,
-};
 pub use csrf::{CsrfProtectionConfig, CsrfToken, CsrfTokenRepository, InMemoryCsrfTokenRepository};
-pub use encoder::{BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder, StandardPasswordEncoder};
+pub use data_scope::{
+    DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule, DataScopeType,
+};
+pub use encoder::{
+    BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder,
+    StandardPasswordEncoder,
+};
 pub use error::{SecurityError, SecurityResult};
-pub use jwt::{JwtAlgorithm, JwtAuthentication, JwtClaims, JwtClaimsBuilder, JwtTokenProvider, JwtUtil};
+pub use jwt::{
+    JwtAlgorithm, JwtAuthentication, JwtClaims, JwtClaimsBuilder, JwtTokenProvider, JwtUtil,
+};
 pub use oauth2::{
-    IntrospectionResponse, OIDCDiscovery, OIDCDiscoveryDocument, OAuth2Client, OAuth2Config,
+    IntrospectionResponse, OAuth2Client, OAuth2Config, OIDCDiscovery, OIDCDiscoveryDocument,
     PkceParams, StateManager, TokenEndpointAuthMethod, TokenResponse, TokenResponseWithTimestamp,
     UserInfo,
 };
-pub use pre_authorize::{PreAuthorize, SecurityExpression};
 pub use post_authorize::{PostAuthorize, PostAuthorizeOptions};
+pub use pre_authorize::{PreAuthorize, SecurityExpression};
 pub use rbac::{
     AuditLog, AuditLogger, ConsoleAuditLogger, PermissionEntry, RbacConfig, RbacManager,
     RolePermission, UserRole,
@@ -137,8 +141,8 @@ pub use secured::{Secured, SecuredHelper, SecurityMetadata};
 pub use user::{InMemoryUserService, User, UserDetails, UserService};
 
 pub use authorization_server::{
-    AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse,
-    DeviceCodeStatus, GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
+    AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse, DeviceCodeStatus,
+    GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
 };
 pub use email::{
     Attachment, EmailConfig, EmailError, EmailMessage, EmailQueue, EmailResult, EmailSender,
@@ -156,11 +160,11 @@ pub mod prelude {
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,
         DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
         DataScopeType, GrantedAuthority, JwtAuthentication, JwtClaims, JwtTokenProvider, JwtUtil,
-        PasswordEncoder, Permission, PermissionAuditEntry, PermissionAuditLogger,
-        PermissionAuditLog, PermissionDef, PermissionEvaluator, PermissionEntry,
-        PermissionRegistry, PreAuthorize, RbacConfig, RbacManager, RoleEnum, RolePermission,
-        Roles, Secured, SecurityContext, SecurityContextGuard, SecurityExpression, User,
-        UserDetails, UserRole, UserService,
+        PasswordEncoder, Permission, PermissionAuditEntry, PermissionAuditLog,
+        PermissionAuditLogger, PermissionDef, PermissionEntry, PermissionEvaluator,
+        PermissionRegistry, PreAuthorize, RbacConfig, RbacManager, RoleEnum, RolePermission, Roles,
+        Secured, SecurityContext, SecurityContextGuard, SecurityExpression, User, UserDetails,
+        UserRole, UserService,
     };
 
     // CSRF re-exports / CSRF重新导出

@@ -127,11 +127,8 @@ pub trait BeanPostProcessor: Send + Sync {
     ///   要处理的原始Bean实例。
     /// * `bean_name` — The name of the bean.
     ///   Bean的名称。
-    fn post_process_before_initialization(
-        &self,
-        bean: &mut dyn Any,
-        bean_name: &str,
-    ) -> Result<()>;
+    fn post_process_before_initialization(&self, bean: &mut dyn Any, bean_name: &str)
+    -> Result<()>;
 
     /// Apply this processor after the bean's initialization callback.
     /// 在Bean的初始化回调之后应用此处理器。
@@ -145,11 +142,7 @@ pub trait BeanPostProcessor: Send + Sync {
     ///   要处理的原始Bean实例。
     /// * `bean_name` — The name of the bean.
     ///   Bean的名称。
-    fn post_process_after_initialization(
-        &self,
-        bean: &mut dyn Any,
-        bean_name: &str,
-    ) -> Result<()>;
+    fn post_process_after_initialization(&self, bean: &mut dyn Any, bean_name: &str) -> Result<()>;
 }
 
 /// Hook for custom modification of the bean factory's definition registry.
@@ -298,8 +291,8 @@ pub fn destroy_bean<T: DisposableBean>(bean: &mut T) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     /// A sample bean that tracks whether `after_properties_set` was called.
     /// 一个示例Bean，跟踪 `after_properties_set` 是否被调用。
@@ -390,12 +383,16 @@ mod tests {
         let processor = NoOpBeanPostProcessor;
         let mut data: Box<dyn Any> = Box::new(42i32);
 
-        assert!(processor
-            .post_process_before_initialization(&mut *data, "test")
-            .is_ok());
-        assert!(processor
-            .post_process_after_initialization(&mut *data, "test")
-            .is_ok());
+        assert!(
+            processor
+                .post_process_before_initialization(&mut *data, "test")
+                .is_ok()
+        );
+        assert!(
+            processor
+                .post_process_after_initialization(&mut *data, "test")
+                .is_ok()
+        );
     }
 
     #[test]

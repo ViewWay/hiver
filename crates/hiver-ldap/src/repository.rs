@@ -9,9 +9,9 @@
 
 use crate::error::LdapResult;
 use crate::mapper::AttrMap;
-use crate::odm::{build_dn, OdmEntry};
 #[cfg(test)]
 use crate::odm::{AttributeMapping, ObjectDirectoryMapper};
+use crate::odm::{OdmEntry, build_dn};
 use crate::template::LdapTemplate;
 use async_trait::async_trait;
 use std::marker::PhantomData;
@@ -174,7 +174,7 @@ impl<T: OdmEntry + Send + Sync + 'static, ID: Send + Sync + 'static> LdapReposit
         // Cannot construct T generically; users should use TypedLdapRepository
         // 无法泛型构造 T；用户应使用 TypedLdapRepository
         Err(crate::error::LdapError::Operation(
-            "Use TypedLdapRepository for save operations".into()
+            "Use TypedLdapRepository for save operations".into(),
         ))
     }
 
@@ -304,16 +304,19 @@ where
     }
 
     async fn find_all(&self) -> LdapResult<Vec<T>> {
-        let attr_maps = self.template.search_attrs(&self.base, "(objectClass=*)").await?;
-        Ok(attr_maps.iter().map(|am| self.mapper.map_entry(am)).collect())
+        let attr_maps = self
+            .template
+            .search_attrs(&self.base, "(objectClass=*)")
+            .await?;
+        Ok(attr_maps
+            .iter()
+            .map(|am| self.mapper.map_entry(am))
+            .collect())
     }
 
     async fn find_by_id(&self, id: &ID) -> LdapResult<Option<T>> {
         let dn = self.build_id_dn(id);
-        let results = self.template.search_attrs(
-            &dn,
-            "(objectClass=*)",
-        ).await?;
+        let results = self.template.search_attrs(&dn, "(objectClass=*)").await?;
         Ok(results.first().map(|am| self.mapper.map_entry(am)))
     }
 
@@ -324,34 +327,37 @@ where
 
         if exists {
             // Modify existing entry / 修改现有条目
-            let _modifications: Vec<(&str, &[&str])> = attrs.iter().map(|(k, v)| {
-                let _refs: Vec<&str> = v.iter().map(String::as_str).collect();
-                // We need owned storage for the refs; use a leak-free approach
-                (k.as_str(), &[] as &[&str]) // placeholder, real impl below
-            }).collect();
+            let _modifications: Vec<(&str, &[&str])> = attrs
+                .iter()
+                .map(|(k, v)| {
+                    let _refs: Vec<&str> = v.iter().map(String::as_str).collect();
+                    // We need owned storage for the refs; use a leak-free approach
+                    (k.as_str(), &[] as &[&str]) // placeholder, real impl below
+                })
+                .collect();
 
             // Since the template::modify takes borrowed slices and we need to
             // hold the owned String values alive, we build the call inline.
-            let mods: Vec<(&str, Vec<&str>)> = attrs.iter().map(|(k, v)| {
-                let refs: Vec<&str> = v.iter().map(String::as_str).collect();
-                (k.as_str(), refs)
-            }).collect();
-            let mod_slices: Vec<(&str, &[&str])> = mods.iter().map(|(k, v)| {
-                (*k, v.as_slice())
-            }).collect();
+            let mods: Vec<(&str, Vec<&str>)> = attrs
+                .iter()
+                .map(|(k, v)| {
+                    let refs: Vec<&str> = v.iter().map(String::as_str).collect();
+                    (k.as_str(), refs)
+                })
+                .collect();
+            let mod_slices: Vec<(&str, &[&str])> =
+                mods.iter().map(|(k, v)| (*k, v.as_slice())).collect();
             self.template.modify(&dn, &mod_slices).await?;
         } else {
             // Create new entry / 创建新条目
-            let mut ldap_attrs: Vec<(&str, Vec<&str>)> = vec![
-                ("objectClass", T::object_classes().to_vec()),
-            ];
+            let mut ldap_attrs: Vec<(&str, Vec<&str>)> =
+                vec![("objectClass", T::object_classes().to_vec())];
             for (key, values) in &attrs {
                 let refs: Vec<&str> = values.iter().map(String::as_str).collect();
                 ldap_attrs.push((key.as_str(), refs));
             }
-            let attr_slices: Vec<(&str, &[&str])> = ldap_attrs.iter().map(|(k, v)| {
-                (*k, v.as_slice())
-            }).collect();
+            let attr_slices: Vec<(&str, &[&str])> =
+                ldap_attrs.iter().map(|(k, v)| (*k, v.as_slice())).collect();
             self.template.bind(&dn, &attr_slices).await?;
         }
 
@@ -373,7 +379,10 @@ where
     }
 
     async fn delete_all(&self) -> LdapResult<()> {
-        let results = self.template.search_attrs(&self.base, "(objectClass=*)").await?;
+        let results = self
+            .template
+            .search_attrs(&self.base, "(objectClass=*)")
+            .await?;
         for attr_map in results {
             // AttrMap doesn't store DN, so we re-derive from attributes.
             // For a full impl, the search method would also return the DN.
@@ -400,8 +409,12 @@ mod tests {
     }
 
     impl OdmEntry for Person {
-        fn base_dn() -> &'static str { "ou=people,dc=example,dc=com" }
-        fn rdn_attribute() -> &'static str { "uid" }
+        fn base_dn() -> &'static str {
+            "ou=people,dc=example,dc=com"
+        }
+        fn rdn_attribute() -> &'static str {
+            "uid"
+        }
         fn object_classes() -> &'static [&'static str] {
             &["top", "person", "organizationalPerson", "inetOrgPerson"]
         }
@@ -450,7 +463,8 @@ mod tests {
     fn test_simple_repository_creation() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let repo = SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
+        let repo =
+            SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
         assert_eq!(repo.base(), "ou=people,dc=example,dc=com");
     }
 
@@ -458,7 +472,8 @@ mod tests {
     async fn test_simple_repository_find_all_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let repo = SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
+        let repo =
+            SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
         let result = repo.find_all().await.unwrap();
         assert!(result.is_empty());
     }
@@ -467,7 +482,8 @@ mod tests {
     async fn test_simple_repository_find_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let repo = SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
+        let repo =
+            SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
         let result = repo.find_by_id(&"john".to_string()).await.unwrap();
         assert!(result.is_none());
     }
@@ -476,7 +492,8 @@ mod tests {
     async fn test_simple_repository_exists_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let repo = SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
+        let repo =
+            SimpleLdapRepository::<Person, String>::new(template, "ou=people,dc=example,dc=com");
         let result = repo.exists_by_id(&"john".to_string()).await.unwrap();
         assert!(!result);
     }
@@ -506,7 +523,11 @@ mod tests {
             PersonSerializer,
             PersonIdExtractor,
         );
-        let person = Person { uid: "john".into(), cn: "John".into(), mail: "john@example.com".into() };
+        let person = Person {
+            uid: "john".into(),
+            cn: "John".into(),
+            mail: "john@example.com".into(),
+        };
         let dn = repo.build_entry_dn(&person);
         assert_eq!(dn, "uid=john,ou=people,dc=example,dc=com");
     }
@@ -631,7 +652,11 @@ mod tests {
 
     #[test]
     fn test_person_serializer_rdn_value() {
-        let person = Person { uid: "jane".into(), cn: "Jane".into(), mail: "".into() };
+        let person = Person {
+            uid: "jane".into(),
+            cn: "Jane".into(),
+            mail: "".into(),
+        };
         let serializer = PersonSerializer;
         assert_eq!(serializer.rdn_value(&person), "jane");
     }
@@ -640,7 +665,11 @@ mod tests {
 
     #[test]
     fn test_person_id_extractor() {
-        let person = Person { uid: "john".into(), cn: "John".into(), mail: "".into() };
+        let person = Person {
+            uid: "john".into(),
+            cn: "John".into(),
+            mail: "".into(),
+        };
         let extractor = PersonIdExtractor;
         assert_eq!(extractor.extract_id(&person), "john");
     }

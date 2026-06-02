@@ -244,7 +244,7 @@ impl BulkOperations {
                         .await
                         .map_err(MongoError::from)?;
                     result.inserted_count += 1;
-                }
+                },
                 BulkWriteModel::UpdateOne {
                     filter,
                     update,
@@ -263,7 +263,7 @@ impl BulkOperations {
                     if r.upserted_id.is_some() {
                         result.upserted_count += 1;
                     }
-                }
+                },
                 BulkWriteModel::UpdateMany {
                     filter,
                     update,
@@ -282,7 +282,7 @@ impl BulkOperations {
                     if r.upserted_id.is_some() {
                         result.upserted_count += 1;
                     }
-                }
+                },
                 BulkWriteModel::ReplaceOne {
                     filter,
                     replacement,
@@ -301,21 +301,21 @@ impl BulkOperations {
                     if r.upserted_id.is_some() {
                         result.upserted_count += 1;
                     }
-                }
+                },
                 BulkWriteModel::DeleteOne { filter } => {
                     let r = collection
                         .delete_one(filter.clone())
                         .await
                         .map_err(MongoError::from)?;
                     result.deleted_count += r.deleted_count;
-                }
+                },
                 BulkWriteModel::DeleteMany { filter } => {
                     let r = collection
                         .delete_many(filter.clone())
                         .await
                         .map_err(MongoError::from)?;
                     result.deleted_count += r.deleted_count;
-                }
+                },
             }
         }
 
@@ -397,10 +397,7 @@ mod tests {
     fn test_bulk_mixed_operations() {
         let bulk = BulkOperations::new()
             .insert_one(doc! { "name": "Alice" })
-            .update_one(
-                doc! { "name": "Alice" },
-                doc! { "$set": { "age": 30 } },
-            )
+            .update_one(doc! { "name": "Alice" }, doc! { "$set": { "age": 30 } })
             .delete_one(doc! { "name": "Bob" })
             .upsert_one(
                 doc! { "name": "Charlie" },
@@ -451,20 +448,14 @@ mod tests {
     #[test]
     fn test_bulk_replace_one() {
         let bulk = BulkOperations::new()
-            .replace_one(
-                doc! { "_id": 1 },
-                doc! { "_id": 1, "name": "Updated" },
-            );
+            .replace_one(doc! { "_id": 1 }, doc! { "_id": 1, "name": "Updated" });
         assert_eq!(bulk.len(), 1);
     }
 
     #[test]
     fn test_bulk_replace_one_upsert() {
         let bulk = BulkOperations::new()
-            .replace_one_upsert(
-                doc! { "_id": 99 },
-                doc! { "_id": 99, "name": "New" },
-            );
+            .replace_one_upsert(doc! { "_id": 99 }, doc! { "_id": 99, "name": "New" });
         assert_eq!(bulk.len(), 1);
     }
 }

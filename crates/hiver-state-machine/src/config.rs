@@ -89,15 +89,17 @@ impl StateMachineConfig {
     /// Convert to JSON
     /// 转换为 JSON
     pub fn to_json(&self) -> StateMachineResult<String> {
-        serde_json::to_string_pretty(self)
-            .map_err(|e| StateMachineError::InvalidConfiguration(format!("JSON serialization failed: {}", e)))
+        serde_json::to_string_pretty(self).map_err(|e| {
+            StateMachineError::InvalidConfiguration(format!("JSON serialization failed: {}", e))
+        })
     }
 
     /// Parse from JSON
     /// 从 JSON 解析
     pub fn from_json(json: &str) -> StateMachineResult<Self> {
-        serde_json::from_str(json)
-            .map_err(|e| StateMachineError::InvalidConfiguration(format!("JSON deserialization failed: {}", e)))
+        serde_json::from_str(json).map_err(|e| {
+            StateMachineError::InvalidConfiguration(format!("JSON deserialization failed: {}", e))
+        })
     }
 }
 
@@ -166,11 +168,7 @@ impl StateConfig {
 
     /// Add extended state data
     /// 添加扩展状态数据
-    pub fn extended_data(
-        mut self,
-        key: impl Into<String>,
-        value: StateDataValueConfig,
-    ) -> Self {
+    pub fn extended_data(mut self, key: impl Into<String>, value: StateDataValueConfig) -> Self {
         self.extended_state.insert(key.into(), value);
         self
     }
@@ -330,8 +328,7 @@ mod tests {
 
     #[test]
     fn test_config_to_json() {
-        let config = StateMachineConfig::new("test", "A")
-            .add_state(StateConfig::new("A"));
+        let config = StateMachineConfig::new("test", "A").add_state(StateConfig::new("A"));
 
         let json = config.to_json();
         assert!(json.is_ok());

@@ -28,11 +28,11 @@
 #[cfg(feature = "rdkafka")]
 mod inner {
     use rdkafka::{
+        Message,
         config::ClientConfig,
         consumer::{CommitMode, Consumer as RdConsumer, StreamConsumer},
         message::OwnedHeaders,
         producer::{FutureProducer, FutureRecord},
-        Message,
     };
     use std::sync::Arc;
     use std::time::Duration;
@@ -210,18 +210,19 @@ mod inner {
                             let payload = msg.payload().unwrap_or(&[]).to_vec();
                             match handler(topic.clone(), partition, key, payload).await {
                                 Ok(()) => {
-                                    if let Err(e) = consumer.commit_message(&msg, CommitMode::Async) {
+                                    if let Err(e) = consumer.commit_message(&msg, CommitMode::Async)
+                                    {
                                         error!("commit failed: {e}");
                                     }
-                                }
+                                },
                                 Err(e) => {
                                     error!("handler error for topic={}: {}", topic, e);
-                                }
+                                },
                             }
-                        }
+                        },
                         Err(e) => {
                             error!("Kafka stream error: {e}");
-                        }
+                        },
                     }
                 }
             });

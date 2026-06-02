@@ -306,14 +306,14 @@ impl CsvFileReader {
                         current.push('"');
                         chars.next();
                     }
-                }
+                },
                 ',' if !in_quotes => {
                     result.push(current.trim().to_string());
                     current = String::new();
-                }
+                },
                 _ => {
                     current.push(c);
-                }
+                },
             }
         }
 

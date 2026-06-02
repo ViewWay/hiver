@@ -139,11 +139,8 @@ mod tests {
 
     #[test]
     fn test_timer_creation() {
-        let timer = StateMachineTimer::new(
-            TestState::Waiting,
-            TestEvent::Timeout,
-            Duration::from_secs(5),
-        );
+        let timer =
+            StateMachineTimer::new(TestState::Waiting, TestEvent::Timeout, Duration::from_secs(5));
         assert_eq!(timer.source_state, TestState::Waiting);
         assert_eq!(timer.period, Duration::from_secs(5));
         assert!(timer.max_firings.is_none());
@@ -151,12 +148,9 @@ mod tests {
 
     #[test]
     fn test_timer_with_max_firings() {
-        let timer = StateMachineTimer::new(
-            TestState::Waiting,
-            TestEvent::Timeout,
-            Duration::from_secs(1),
-        )
-        .with_max_firings(3);
+        let timer =
+            StateMachineTimer::new(TestState::Waiting, TestEvent::Timeout, Duration::from_secs(1))
+                .with_max_firings(3);
         assert_eq!(timer.max_firings, Some(3));
     }
 
@@ -199,12 +193,8 @@ mod tests {
     fn test_scheduler_max_firings_limit() {
         let mut scheduler = TimerScheduler::new();
         scheduler.register(
-            StateMachineTimer::new(
-                TestState::Waiting,
-                TestEvent::Timeout,
-                Duration::from_secs(1),
-            )
-            .with_max_firings(2),
+            StateMachineTimer::new(TestState::Waiting, TestEvent::Timeout, Duration::from_secs(1))
+                .with_max_firings(2),
         );
 
         assert!(scheduler.can_fire(0));

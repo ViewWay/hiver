@@ -65,7 +65,7 @@ impl TaskCore {
 
     /// Increment reference count. Returns the raw pointer for convenience.
     fn inc_ref(ptr: *const Self) -> *const Self {
-        let core = & unsafe { &*ptr };
+        let core = &unsafe { &*ptr };
         core.ref_count.fetch_add(1, Ordering::Relaxed);
         ptr
     }
@@ -182,8 +182,7 @@ unsafe fn waker_drop(data: *const ()) {
 fn try_re_enqueue(core: *const TaskCore) {
     unsafe {
         let c = &*core;
-        if c
-            .state
+        if c.state
             .compare_exchange(STATE_WAITING, STATE_RUNNING, Ordering::AcqRel, Ordering::Relaxed)
             .is_err()
         {
@@ -232,10 +231,7 @@ unsafe impl Sync for TaskRef {}
 
 /// Allocate a new task. Returns (RawTask for queue, TaskRef for JoinHandle).
 /// ref_count starts at 2: one for queue slot, one for JoinHandle.
-pub(crate) fn allocate_task<F>(
-    future: F,
-    scheduler: SchedulerHandle,
-) -> (RawTask, TaskRef)
+pub(crate) fn allocate_task<F>(future: F, scheduler: SchedulerHandle) -> (RawTask, TaskRef)
 where
     F: Future + Send + 'static,
     F::Output: Send + 'static,
@@ -291,11 +287,7 @@ pub unsafe fn deallocate_completed_task(raw_task: RawTask) {
 pub(crate) unsafe fn read_output<T>(core: &TaskCore) -> Option<T> {
     let mut output: MaybeUninit<T> = MaybeUninit::uninit();
     let ok = (core.vtable.take_output)(core, &mut output as *mut _ as *mut ());
-    if ok {
-        Some(output.assume_init())
-    } else {
-        None
-    }
+    if ok { Some(output.assume_init()) } else { None }
 }
 
 #[cfg(test)]

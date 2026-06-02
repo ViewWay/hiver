@@ -354,8 +354,7 @@ mod tests {
 
         // Test 2: Explicit no-rollback for specific error
         // 测试 2: 明确指定特定错误不回滚
-        let options = TransactionalOptions::new()
-            .no_rollback_for("Invalid");
+        let options = TransactionalOptions::new().no_rollback_for("Invalid");
 
         let validation_error = TransactionError::InvalidState("Invalid input".to_string());
         // Should not rollback for "Invalid" errors (explicitly excluded)

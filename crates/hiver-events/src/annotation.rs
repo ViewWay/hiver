@@ -156,7 +156,8 @@ mod tests {
 
         // This method would be annotated with #[EventListener]
         async fn handle_test_event(&self, event: &TestEvent) -> Result<(), String> {
-            self.call_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            self.call_count
+                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             println!("Event received: {}", event.value);
             Ok(())
         }

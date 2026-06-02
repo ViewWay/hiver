@@ -163,7 +163,7 @@ impl HeaderTransformer {
     }
 
     /// Add a header to be removed
-        /// 添加要删除的头部
+    /// 添加要删除的头部
     pub fn remove_header(mut self, key: impl Into<String>) -> Self {
         self.remove.push(key.into());
         self
@@ -231,9 +231,12 @@ where
     F: Fn(I) -> Result<O> + Send + Sync,
 {
     async fn transform(&self, message: Message) -> Result<Message> {
-        let input = message
-            .get_payload::<I>()
-            .ok_or_else(|| IntegrationError::Transformation(format!("Payload is not of type {}", std::any::type_name::<I>())))?;
+        let input = message.get_payload::<I>().ok_or_else(|| {
+            IntegrationError::Transformation(format!(
+                "Payload is not of type {}",
+                std::any::type_name::<I>()
+            ))
+        })?;
 
         let output = (self.f)(input)?;
         Ok(message.clone_with_payload(output))
@@ -284,7 +287,10 @@ impl Transformer for ContentTypeTransformer {
         })?;
 
         let transformer = self.transformers.get(&content_type).ok_or_else(|| {
-            IntegrationError::Transformation(format!("No transformer for content-type: {}", content_type))
+            IntegrationError::Transformation(format!(
+                "No transformer for content-type: {}",
+                content_type
+            ))
         })?;
 
         transformer.transform(message).await
@@ -344,7 +350,9 @@ impl JsonTransformer {
 
     /// Transform JSON string to typed value
     /// 将 JSON 字符串转换为类型化值
-    pub fn from_json<T: serde::de::DeserializeOwned + Send + Sync + Clone + 'static>(message: Message) -> Result<Message> {
+    pub fn from_json<T: serde::de::DeserializeOwned + Send + Sync + Clone + 'static>(
+        message: Message,
+    ) -> Result<Message> {
         let json_str = message.get_payload::<String>().ok_or_else(|| {
             IntegrationError::Transformation("Payload is not a string".to_string())
         })?;
@@ -357,13 +365,19 @@ impl JsonTransformer {
 
     /// Transform typed value to JSON string
     /// 将类型化值转换为 JSON 字符串
-    pub fn to_json<T: serde::Serialize + Send + Sync + Clone + 'static>(message: Message) -> Result<Message> {
+    pub fn to_json<T: serde::Serialize + Send + Sync + Clone + 'static>(
+        message: Message,
+    ) -> Result<Message> {
         let value = message.get_payload::<T>().ok_or_else(|| {
-            IntegrationError::Transformation(format!("Payload is not of type {}", std::any::type_name::<T>()))
+            IntegrationError::Transformation(format!(
+                "Payload is not of type {}",
+                std::any::type_name::<T>()
+            ))
         })?;
 
-        let json_str = serde_json::to_string(&value)
-            .map_err(|e| IntegrationError::Transformation(format!("JSON serialize error: {}", e)))?;
+        let json_str = serde_json::to_string(&value).map_err(|e| {
+            IntegrationError::Transformation(format!("JSON serialize error: {}", e))
+        })?;
 
         Ok(message.clone_with_payload(json_str))
     }
@@ -413,15 +427,9 @@ mod tests {
 
         let result = transformer.transform(msg).await.unwrap();
 
-        assert_eq!(
-            result.header("new_header").and_then(|h| h.as_str()),
-            Some("new_value")
-        );
+        assert_eq!(result.header("new_header").and_then(|h| h.as_str()), Some("new_value"));
         assert!(result.header("old_header").is_none());
-        assert_eq!(
-            result.header("keep_header").and_then(|h| h.as_str()),
-            Some("keep_value")
-        );
+        assert_eq!(result.header("keep_header").and_then(|h| h.as_str()), Some("keep_value"));
     }
 
     #[tokio::test]

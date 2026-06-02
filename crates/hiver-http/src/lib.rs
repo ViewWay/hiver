@@ -121,9 +121,9 @@ pub mod controller_advice;
 pub mod error;
 pub mod exception;
 pub mod ext;
-pub mod multipart;
 pub mod http2;
 pub mod method;
+pub mod multipart;
 pub mod proto;
 pub mod request;
 pub mod response;
@@ -136,20 +136,20 @@ pub mod websocket;
 
 // Re-exports for convenience
 // 重新导出以便使用
-pub use api_response::{IntoApiResponse, PageResponse, ResultCode};
 pub use api_response::ApiResponse;
+pub use api_response::{IntoApiResponse, PageResponse, ResultCode};
 pub use body::{Body, EmptyBody, FullBody, HttpBody};
 pub use builder::{Uri, UriBuilder};
 pub use conn::{Connection, ConnectionState};
-pub use error::{Error, Result};
-pub use exception::{
-    ApplicationException, ErrorResponse, ExceptionHandlerRegistry, FieldError,
-    IntoErrorResponse, ResourceNotFoundException, ValidationException,
-};
 pub use controller_advice::{
     ControllerAdvice, ControllerAdviceBuilder, ControllerErrorResponse, ExceptionHandler,
     ForbiddenHandler, InternalErrorHandler, NotFoundHandler, UnauthorizedHandler,
     ValidationHandler,
+};
+pub use error::{Error, Result};
+pub use exception::{
+    ApplicationException, ErrorResponse, ExceptionHandlerRegistry, FieldError, IntoErrorResponse,
+    ResourceNotFoundException, ValidationException,
 };
 pub use http2::{
     ErrorCode, FrameType, Http2Config, Http2Error, Priority, SettingsParameter, StreamId,
@@ -159,16 +159,16 @@ pub use http2::{
 // 使用不同的名称重新导出 http2::ConnectionState 以避免冲突
 pub use http2::ConnectionState as Http2ConnectionState;
 pub use method::Method;
+pub use multipart::{
+    FileSizeLimits, FromMultipart, MultipartData, MultipartFile, MultipartForm,
+    media_type_for_extension, validate_content_type, validate_extension,
+};
 pub use request::Request;
 pub use response::{BodyBuilder, Response};
 pub use server::Server;
 pub use service::HttpService;
 pub use sse::{Event, Sse, SseKeepAlive};
 pub use status::StatusCode;
-pub use multipart::{
-    FileSizeLimits, FromMultipart, MultipartFile, MultipartData, MultipartForm,
-    media_type_for_extension, validate_content_type, validate_extension,
-};
 pub use validation::{
     Validatable, ValidatableExtractor, Validated, ValidationError, ValidationErrors,
     ValidationHelpers, ValidationMiddleware,
@@ -399,8 +399,7 @@ impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E {
 
 impl IntoResponse for error::ResponseStatusException {
     fn into_response(self) -> Response {
-        ErrorResponse::new(self.status.as_u16(), "STATUS_EXCEPTION", &self.reason)
-            .to_response()
+        ErrorResponse::new(self.status.as_u16(), "STATUS_EXCEPTION", &self.reason).to_response()
     }
 }
 

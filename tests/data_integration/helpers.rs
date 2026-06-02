@@ -1,8 +1,8 @@
 //! Integration test helpers
 //! 集成测试辅助工具
 
-use sqlx::{SqlitePool, sqlite::SqliteConnectOptions};
 use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::{SqlitePool, sqlite::SqliteConnectOptions};
 use tokio::sync::OnceCell;
 
 /// Test database pool (using OnceCell for thread-safe lazy initialization)
@@ -12,25 +12,27 @@ static TEST_POOL: OnceCell<SqlitePool> = OnceCell::const_new();
 /// Get or create the test database pool
 /// 获取或创建测试数据库连接池
 pub async fn get_test_pool() -> &'static SqlitePool {
-    TEST_POOL.get_or_init(|| async {
-        // Create new pool with shared in-memory database
-        // Using file:memdb?mode=memory&cache=shared allows sharing across connections
-        let options = SqliteConnectOptions::new()
-            .filename("file:memdb?mode=memory&cache=shared")
-            .create_if_missing(true)
-            .shared_cache(true);
+    TEST_POOL
+        .get_or_init(|| async {
+            // Create new pool with shared in-memory database
+            // Using file:memdb?mode=memory&cache=shared allows sharing across connections
+            let options = SqliteConnectOptions::new()
+                .filename("file:memdb?mode=memory&cache=shared")
+                .create_if_missing(true)
+                .shared_cache(true);
 
-        let pool = SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
-            .expect("Failed to create test database pool");
+            let pool = SqlitePoolOptions::new()
+                .max_connections(5)
+                .connect_with(options)
+                .await
+                .expect("Failed to create test database pool");
 
-        // Initialize schema
-        init_test_schema_with_pool(&pool).await.unwrap();
+            // Initialize schema
+            init_test_schema_with_pool(&pool).await.unwrap();
 
-        pool
-    }).await
+            pool
+        })
+        .await
 }
 
 /// Initialize the test database schema with given pool
@@ -96,24 +98,24 @@ pub async fn cleanup_test_data() -> Result<(), sqlx::Error> {
 pub async fn insert_test_user(email: &str, name: Option<&str>) -> Result<i64, sqlx::Error> {
     let pool = get_test_pool().await;
 
-    let result = sqlx::query(
-        "INSERT INTO users (email, name) VALUES (?, ?)"
-    )
-    .bind(email)
-    .bind(name)
-    .execute(pool)
-    .await?;
+    let result = sqlx::query("INSERT INTO users (email, name) VALUES (?, ?)")
+        .bind(email)
+        .bind(name)
+        .execute(pool)
+        .await?;
 
     Ok(result.last_insert_rowid())
 }
 
 /// Find a user by email (returns tuple)
 /// 通过邮箱查找用户（返回元组）
-pub async fn find_user_by_email(email: &str) -> Result<Option<(i64, String, Option<String>)>, sqlx::Error> {
+pub async fn find_user_by_email(
+    email: &str,
+) -> Result<Option<(i64, String, Option<String>)>, sqlx::Error> {
     let pool = get_test_pool().await;
 
     let row = sqlx::query_as::<_, (i64, String, Option<String>)>(
-        "SELECT id, email, name FROM users WHERE email = ?"
+        "SELECT id, email, name FROM users WHERE email = ?",
     )
     .bind(email)
     .fetch_one(pool)
@@ -145,7 +147,9 @@ mod tests {
         cleanup_test_data().await.unwrap();
 
         // Insert a test user
-        let id = insert_test_user("test@example.com", Some("Test User")).await.unwrap();
+        let id = insert_test_user("test@example.com", Some("Test User"))
+            .await
+            .unwrap();
         assert!(id > 0);
 
         // Find the user

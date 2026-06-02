@@ -581,8 +581,7 @@ mod tests {
 
     #[test]
     fn test_server_config() {
-        let server = ServerConfig::new("http://localhost:8080")
-            .description("Local server");
+        let server = ServerConfig::new("http://localhost:8080").description("Local server");
 
         assert_eq!(server.url, "http://localhost:8080");
         assert_eq!(server.description, Some("Local server".to_string()));
@@ -590,8 +589,7 @@ mod tests {
 
     #[test]
     fn test_tag_config() {
-        let tag = TagConfig::new("users")
-            .description("User operations");
+        let tag = TagConfig::new("users").description("User operations");
 
         assert_eq!(tag.name, "users");
         assert_eq!(tag.description, Some("User operations".to_string()));

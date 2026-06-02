@@ -407,9 +407,7 @@ impl ContextBuilder {
         question: &str,
     ) -> String {
         let context = self.build(results);
-        format!(
-            "{system_prompt}\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
-        )
+        format!("{system_prompt}\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:")
     }
 }
 
@@ -591,8 +589,7 @@ impl RagPipeline {
                 metadata.insert("source".to_string(), source.clone());
                 metadata.insert("chunk_index".to_string(), i.to_string());
 
-                let chunk_doc = Document::new(chunk_id, chunk_text)
-                    .metadata(metadata);
+                let chunk_doc = Document::new(chunk_id, chunk_text).metadata(metadata);
 
                 all_chunks.push(chunk_doc);
                 chunk_count += 1;
@@ -641,8 +638,7 @@ impl RagPipeline {
 
         let response = self.chat_model.complete(request).await?;
 
-        Ok(RagResponse::new(response.content, results)
-            .total_tokens(response.usage.total_tokens))
+        Ok(RagResponse::new(response.content, results).total_tokens(response.usage.total_tokens))
     }
 
     /// Queries the pipeline and returns a streaming response.

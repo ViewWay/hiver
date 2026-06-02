@@ -296,8 +296,11 @@ impl AdviceChain {
     /// Total number of advices in the chain.
     /// 链中通知总数。
     pub fn total(&self) -> usize {
-        self.before.len() + self.around.len() + self.after.len()
-            + self.after_returning.len() + self.after_throwing.len()
+        self.before.len()
+            + self.around.len()
+            + self.after.len()
+            + self.after_returning.len()
+            + self.after_throwing.len()
     }
 
     /// Check if the chain is empty.
@@ -672,7 +675,11 @@ mod tests {
 
     /// Create a JoinPoint with typed arguments for testing
     /// 创建带类型参数的 JoinPoint 用于测试
-    fn make_join_point_with_args(method: &str, class: &str, args: Vec<Arc<dyn Any + Send + Sync>>) -> JoinPoint {
+    fn make_join_point_with_args(
+        method: &str,
+        class: &str,
+        args: Vec<Arc<dyn Any + Send + Sync>>,
+    ) -> JoinPoint {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("target");
         let sig = format!("{}({} args)", method, args.len());
         JoinPoint::new(target, method.to_string(), args, sig, class.to_string())
@@ -782,13 +789,8 @@ mod tests {
     #[test]
     fn test_join_point_target_accessor() {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("my_target");
-        let jp = JoinPoint::new(
-            target,
-            "m".to_string(),
-            vec![],
-            "m()".to_string(),
-            "C".to_string(),
-        );
+        let jp =
+            JoinPoint::new(target, "m".to_string(), vec![], "m()".to_string(), "C".to_string());
 
         let retrieved = jp.target();
         let downcast = retrieved.downcast_ref::<&str>();
@@ -823,7 +825,9 @@ mod tests {
     /// 测试带有具体方法名的 execution 切点匹配
     #[test]
     fn test_pointcut_execution_specific_method() {
-        let expr = PointcutExpression::new("execution(* com.example.Service.specific_method(..))".to_string());
+        let expr = PointcutExpression::new(
+            "execution(* com.example.Service.specific_method(..))".to_string(),
+        );
 
         let matching_jp = make_join_point("specific_method", "Service");
         let non_matching_jp = make_join_point("other_method", "Service");
@@ -1033,7 +1037,12 @@ mod tests {
 
         let pointcut = PointcutExpression::new("execution(* *..*.*(..))".to_string());
         registry
-            .register_pointcut(pointcut, AdviceType::Before, "LogAspect".to_string(), "log_before".to_string())
+            .register_pointcut(
+                pointcut,
+                AdviceType::Before,
+                "LogAspect".to_string(),
+                "log_before".to_string(),
+            )
             .await;
 
         let jp = make_join_point("any_method", "AnyClass");
@@ -1146,23 +1155,40 @@ mod tests {
 
         // Register before advice
         // 注册前置通知
-        let before_cut = PointcutExpression::new("execution(* com.example.service..*.*(..))".to_string());
+        let before_cut =
+            PointcutExpression::new("execution(* com.example.service..*.*(..))".to_string());
         registry
-            .register_pointcut(before_cut, AdviceType::Before, "TransactionAspect".to_string(), "begin_tx".to_string())
+            .register_pointcut(
+                before_cut,
+                AdviceType::Before,
+                "TransactionAspect".to_string(),
+                "begin_tx".to_string(),
+            )
             .await;
 
         // Register after advice
         // 注册后置通知
-        let after_cut = PointcutExpression::new("execution(* com.example.service..*.*(..))".to_string());
+        let after_cut =
+            PointcutExpression::new("execution(* com.example.service..*.*(..))".to_string());
         registry
-            .register_pointcut(after_cut, AdviceType::After, "TransactionAspect".to_string(), "commit_tx".to_string())
+            .register_pointcut(
+                after_cut,
+                AdviceType::After,
+                "TransactionAspect".to_string(),
+                "commit_tx".to_string(),
+            )
             .await;
 
         // Register around advice
         // 注册环绕通知
         let around_cut = PointcutExpression::new("within(*)".to_string());
         registry
-            .register_pointcut(around_cut, AdviceType::Around, "TransactionAspect".to_string(), "wrap_tx".to_string())
+            .register_pointcut(
+                around_cut,
+                AdviceType::Around,
+                "TransactionAspect".to_string(),
+                "wrap_tx".to_string(),
+            )
             .await;
 
         // Simulate method call
@@ -1195,13 +1221,28 @@ mod tests {
         let wildcard = PointcutExpression::new("execution(* *..*.*(..))".to_string());
 
         registry
-            .register_pointcut(wildcard.clone(), AdviceType::Before, "A".to_string(), "b".to_string())
+            .register_pointcut(
+                wildcard.clone(),
+                AdviceType::Before,
+                "A".to_string(),
+                "b".to_string(),
+            )
             .await;
         registry
-            .register_pointcut(wildcard.clone(), AdviceType::Around, "A".to_string(), "r".to_string())
+            .register_pointcut(
+                wildcard.clone(),
+                AdviceType::Around,
+                "A".to_string(),
+                "r".to_string(),
+            )
             .await;
         registry
-            .register_pointcut(wildcard.clone(), AdviceType::After, "A".to_string(), "a".to_string())
+            .register_pointcut(
+                wildcard.clone(),
+                AdviceType::After,
+                "A".to_string(),
+                "a".to_string(),
+            )
             .await;
 
         let jp = make_join_point("ordered", "Svc");

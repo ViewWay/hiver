@@ -4,7 +4,6 @@
 //! Provides generic read/write/list/delete operations on Vault secrets.
 //! 提供对 Vault 密钥的通用读/写/列表/删除操作。
 
-
 use serde::{Deserialize, Serialize};
 
 use crate::client::VaultClient;
@@ -67,10 +66,7 @@ impl From<SecretResponse> for Secret {
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.read(path)`.
 /// 等价于 Spring Vault 的 `VaultTemplate.read(path)`。
-pub async fn read(
-    client: &VaultClient,
-    path: &str,
-) -> VaultResult<Secret> {
+pub async fn read(client: &VaultClient, path: &str) -> VaultResult<Secret> {
     let resp = client.get(path).await?;
     let secret_resp: SecretResponse = resp.json().await?;
     Ok(secret_resp.into())
@@ -98,10 +94,7 @@ pub async fn write(
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.list(path)`.
 /// 等价于 Spring Vault 的 `VaultTemplate.list(path)`。
-pub async fn list(
-    client: &VaultClient,
-    path: &str,
-) -> VaultResult<Vec<String>> {
+pub async fn list(client: &VaultClient, path: &str) -> VaultResult<Vec<String>> {
     let resp = client.list(path).await?;
     let body: serde_json::Value = resp.json().await?;
 

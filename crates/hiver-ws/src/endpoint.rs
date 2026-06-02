@@ -4,8 +4,8 @@
 //! Equivalent to Spring WS @Endpoint
 //! 等价于 Spring WS @Endpoint
 
-use async_trait::async_trait;
 use crate::soap::SoapMessage;
+use async_trait::async_trait;
 
 /// SOAP endpoint trait / `SOAP端点trait`
 ///
@@ -19,7 +19,10 @@ pub trait Endpoint: Send + Sync {
 
     /// Invoke the endpoint with the SOAP body
     /// 使用SOAP主体调用端点
-    async fn invoke(&self, body: &str) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>>;
+    async fn invoke(
+        &self,
+        body: &str,
+    ) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>>;
 }
 
 /// `PayloadRoot` annotation — maps endpoint to SOAP payload root element
@@ -70,7 +73,10 @@ mod tests {
         fn handles(&self, action: &str) -> bool {
             action == "urn:SayHello"
         }
-        async fn invoke(&self, _: &str) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>> {
+        async fn invoke(
+            &self,
+            _: &str,
+        ) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>> {
             Ok(SoapMessage::new(serde_json::json!({"greeting": "Hello, World!"})))
         }
     }

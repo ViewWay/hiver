@@ -59,15 +59,18 @@
 #[cfg(test)]
 mod tests;
 
+pub mod config;
+pub mod events;
+pub mod middleware;
 pub mod session;
 pub mod store;
-pub mod config;
-pub mod middleware;
-pub mod events;
 
-pub use session::{Session, SessionId, SessionAttribute};
-pub use store::{SessionStore, MemorySessionStore};
-pub use events::{SessionEvent, SessionEventListener, SessionEventPublisher, ConcurrentSessionControl, ConcurrentSessionStrategy};
+pub use events::{
+    ConcurrentSessionControl, ConcurrentSessionStrategy, SessionEvent, SessionEventListener,
+    SessionEventPublisher,
+};
+pub use session::{Session, SessionAttribute, SessionId};
+pub use store::{MemorySessionStore, SessionStore};
 
 #[cfg(feature = "redis")]
 pub use store::RedisSessionStore;
@@ -75,7 +78,7 @@ pub use store::RedisSessionStore;
 #[cfg(feature = "mongodb")]
 pub use store::MongoSessionStore;
 
-pub use config::{SessionConfig, CookieConfig, SessionStrategy};
+pub use config::{CookieConfig, SessionConfig, SessionStrategy};
 
 /// Version of the session module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -96,9 +99,8 @@ pub const DEFAULT_SESSION_ID_LENGTH: usize = 32;
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        Session, SessionId, SessionAttribute,
-        SessionStore, MemorySessionStore, SessionConfig,
-        DEFAULT_SESSION_TIMEOUT_SECS, DEFAULT_COOKIE_NAME,
+        DEFAULT_COOKIE_NAME, DEFAULT_SESSION_TIMEOUT_SECS, MemorySessionStore, Session,
+        SessionAttribute, SessionConfig, SessionId, SessionStore,
     };
 
     #[cfg(feature = "redis")]

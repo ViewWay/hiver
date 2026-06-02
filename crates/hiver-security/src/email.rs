@@ -141,9 +141,7 @@ impl EmailConfig {
             return Err(EmailError::ConfigError("smtp_host is required".into()));
         }
         if self.from_address.is_empty() || !self.from_address.contains('@') {
-            return Err(EmailError::ConfigError(
-                "from_address must be a valid email".into(),
-            ));
+            return Err(EmailError::ConfigError("from_address must be a valid email".into()));
         }
         Ok(())
     }
@@ -173,11 +171,7 @@ pub struct Attachment {
 impl Attachment {
     /// Create a new attachment.
     /// 创建新的附件。
-    pub fn new(
-        name: impl Into<String>,
-        content_type: impl Into<String>,
-        data: Vec<u8>,
-    ) -> Self {
+    pub fn new(name: impl Into<String>, content_type: impl Into<String>, data: Vec<u8>) -> Self {
         Self {
             name: name.into(),
             content_type: content_type.into(),
@@ -424,25 +418,22 @@ impl SmtpEmailSender {
 
     /// Read a complete SMTP response (multi-line `250-...` / final `250 ...`).
     /// 读取完整的 SMTP 响应（多行 `250-...` / 最终 `250 ...`）。
-    async fn read_response<R: tokio::io::AsyncBufRead + Unpin>(
-        reader: &mut R,
-    ) -> EmailResult<u16> {
+    async fn read_response<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> EmailResult<u16> {
         let mut line = String::new();
         let mut code: u16;
         loop {
             line.clear();
-            let n = reader.read_line(&mut line).await.map_err(|e| {
-                EmailError::SmtpError(format!("failed to read SMTP response: {e}"))
-            })?;
+            let n = reader
+                .read_line(&mut line)
+                .await
+                .map_err(|e| EmailError::SmtpError(format!("failed to read SMTP response: {e}")))?;
             if n == 0 {
-                return Err(EmailError::SmtpError(
-                    "SMTP connection closed unexpectedly".into(),
-                ));
+                return Err(EmailError::SmtpError("SMTP connection closed unexpectedly".into()));
             }
             if line.len() >= 4 {
-                code = line[..3].parse::<u16>().map_err(|_| {
-                    EmailError::SmtpError(format!("invalid SMTP response: {line}"))
-                })?;
+                code = line[..3]
+                    .parse::<u16>()
+                    .map_err(|_| EmailError::SmtpError(format!("invalid SMTP response: {line}")))?;
                 // A space after the code means this is the final line of the response.
                 if line.as_bytes()[3] == b' ' {
                     break;
@@ -478,12 +469,9 @@ impl EmailSender for SmtpEmailSender {
         message.validate()?;
 
         let addr = format!("{}:{}", self.config.smtp_host, self.config.smtp_port);
-        let stream =
-            tokio::net::TcpStream::connect(&addr).await.map_err(|e| {
-                EmailError::SmtpError(format!(
-                    "failed to connect to SMTP server {addr}: {e}"
-                ))
-            })?;
+        let stream = tokio::net::TcpStream::connect(&addr).await.map_err(|e| {
+            EmailError::SmtpError(format!("failed to connect to SMTP server {addr}: {e}"))
+        })?;
 
         let (reader, mut writer) = tokio::io::split(stream);
         let mut reader = tokio::io::BufReader::new(reader);
@@ -499,21 +487,14 @@ impl EmailSender for SmtpEmailSender {
         // EHLO.
         let hostname = "hiver.local";
         let ehlo_code =
-            Self::send_command(&mut writer, &mut reader, &format!("EHLO {hostname}\r\n"))
-                .await?;
+            Self::send_command(&mut writer, &mut reader, &format!("EHLO {hostname}\r\n")).await?;
         if ehlo_code != 250 {
-            return Err(EmailError::SmtpError(format!(
-                "SMTP EHLO rejected with code {ehlo_code}"
-            )));
+            return Err(EmailError::SmtpError(format!("SMTP EHLO rejected with code {ehlo_code}")));
         }
 
         // MAIL FROM.
-        let mail_from_cmd = format!(
-            "MAIL FROM:<{}>\r\n",
-            self.config.from_address
-        );
-        let mail_code =
-            Self::send_command(&mut writer, &mut reader, &mail_from_cmd).await?;
+        let mail_from_cmd = format!("MAIL FROM:<{}>\r\n", self.config.from_address);
+        let mail_code = Self::send_command(&mut writer, &mut reader, &mail_from_cmd).await?;
         if mail_code != 250 {
             return Err(EmailError::SmtpError(format!(
                 "SMTP MAIL FROM rejected with code {mail_code}"
@@ -521,10 +502,14 @@ impl EmailSender for SmtpEmailSender {
         }
 
         // RCPT TO (for each recipient).
-        for recipient in message.to.iter().chain(message.cc.iter()).chain(message.bcc.iter()) {
+        for recipient in message
+            .to
+            .iter()
+            .chain(message.cc.iter())
+            .chain(message.bcc.iter())
+        {
             let rcpt_cmd = format!("RCPT TO:<{recipient}>\r\n");
-            let rcpt_code =
-                Self::send_command(&mut writer, &mut reader, &rcpt_cmd).await?;
+            let rcpt_code = Self::send_command(&mut writer, &mut reader, &rcpt_cmd).await?;
             if rcpt_code != 250 {
                 return Err(EmailError::SmtpError(format!(
                     "SMTP RCPT TO <{recipient}> rejected with code {rcpt_code}"
@@ -533,12 +518,9 @@ impl EmailSender for SmtpEmailSender {
         }
 
         // DATA.
-        let data_code =
-            Self::send_command(&mut writer, &mut reader, "DATA\r\n").await?;
+        let data_code = Self::send_command(&mut writer, &mut reader, "DATA\r\n").await?;
         if data_code != 354 {
-            return Err(EmailError::SmtpError(format!(
-                "SMTP DATA rejected with code {data_code}"
-            )));
+            return Err(EmailError::SmtpError(format!("SMTP DATA rejected with code {data_code}")));
         }
 
         // Build a minimal RFC 5322 message.
@@ -643,10 +625,7 @@ impl EmailQueue {
     ///
     /// Returns the number of messages successfully sent.
     /// 返回成功发送的消息数。
-    pub async fn process_queue(
-        &self,
-        sender: &dyn EmailSender,
-    ) -> EmailResult<usize> {
+    pub async fn process_queue(&self, sender: &dyn EmailSender) -> EmailResult<usize> {
         let mut queue = self.sender.lock().await;
         let batch = std::mem::take(&mut *queue);
         drop(queue);
@@ -808,8 +787,7 @@ mod tests {
 
     #[test]
     fn test_template_unknown_variable_unchanged() {
-        let tmpl = EmailTemplate::new("Hello {{name}}! {{unknown}}")
-            .variable("name", "Bob");
+        let tmpl = EmailTemplate::new("Hello {{name}}! {{unknown}}").variable("name", "Bob");
         let rendered = tmpl.render().unwrap();
         assert_eq!(rendered, "Hello Bob! {{unknown}}");
     }
@@ -834,8 +812,7 @@ mod tests {
 
     #[test]
     fn test_template_multiple_same_variable() {
-        let tmpl = EmailTemplate::new("{{x}} and {{x}}")
-            .variable("x", "val");
+        let tmpl = EmailTemplate::new("{{x}} and {{x}}").variable("x", "val");
         let rendered = tmpl.render().unwrap();
         assert_eq!(rendered, "val and val");
     }

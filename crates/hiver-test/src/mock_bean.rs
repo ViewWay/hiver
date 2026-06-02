@@ -47,7 +47,7 @@ pub struct MockRegistry {
 
     /// Mock call counts
     /// 模拟调用计数
-    call_counts: Arc<RwLock<HashMap<String, usize>> >,
+    call_counts: Arc<RwLock<HashMap<String, usize>>>,
 }
 
 /// Mock definition
@@ -186,7 +186,12 @@ impl MockRegistry {
 
     /// Verify mock was called exactly n times
     /// 验证模拟被调用恰好n次
-    pub async fn verify_call_count(&self, bean_name: &str, method_name: &str, expected: usize) -> bool {
+    pub async fn verify_call_count(
+        &self,
+        bean_name: &str,
+        method_name: &str,
+        expected: usize,
+    ) -> bool {
         self.call_count(bean_name, method_name).await == expected
     }
 
@@ -224,7 +229,7 @@ impl Default for MockRegistry {
 /// Global mock registry
 /// 全局模拟注册表
 pub fn global_mock_registry() -> &'static MockRegistry {
-    
-    static REGISTRY: std::sync::LazyLock<MockRegistry> = std::sync::LazyLock::new(MockRegistry::new);
+    static REGISTRY: std::sync::LazyLock<MockRegistry> =
+        std::sync::LazyLock::new(MockRegistry::new);
     &REGISTRY
 }

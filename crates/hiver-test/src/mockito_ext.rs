@@ -192,10 +192,7 @@ impl MockInteraction<'_> {
     ///
     /// The value is wrapped in `Arc` so that it can be returned on every call.
     /// 值被包装在 `Arc` 中，以便在每次调用时都能返回。
-    pub async fn then_return_clone<T: Clone + Any + Send + Sync + 'static>(
-        self,
-        value: T,
-    ) {
+    pub async fn then_return_clone<T: Clone + Any + Send + Sync + 'static>(self, value: T) {
         let shared = Arc::new(value);
         self.helper
             .registry
@@ -358,12 +355,7 @@ impl MockitoHelper {
 
     /// Verify that a mocked method was called exactly `n` times.
     /// 验证模拟方法恰好被调用了 `n` 次。
-    pub async fn verify_times(
-        &self,
-        bean_name: &str,
-        method_name: &str,
-        expected: usize,
-    ) -> bool {
+    pub async fn verify_times(&self, bean_name: &str, method_name: &str, expected: usize) -> bool {
         self.registry
             .verify_call_count(bean_name, method_name, expected)
             .await
@@ -458,9 +450,7 @@ mod tests {
 
         let arg_a: Arc<dyn Any + Send + Sync> = Arc::new(3_i32);
         let arg_b: Arc<dyn Any + Send + Sync> = Arc::new(4_i32);
-        let result: Option<i32> = mock
-            .call("calculator", "add", vec![arg_a, arg_b])
-            .await;
+        let result: Option<i32> = mock.call("calculator", "add", vec![arg_a, arg_b]).await;
 
         assert_eq!(result, Some(7));
     }
@@ -470,9 +460,7 @@ mod tests {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
-        mock.when("service", "doWork")
-            .then_return_clone(())
-            .await;
+        mock.when("service", "doWork").then_return_clone(()).await;
 
         // Not called yet.
         // 尚未调用。
@@ -510,9 +498,7 @@ mod tests {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
-        mock.when("service", "action")
-            .then_return_clone(true)
-            .await;
+        mock.when("service", "action").then_return_clone(true).await;
 
         let _: Option<bool> = mock.call("service", "action", vec![]).await;
         assert_eq!(mock.call_count("service", "action").await, 1);

@@ -197,8 +197,7 @@ pub struct TransactionState {
 
 /// Heartbeat configuration
 /// 心跳配置
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct HeartbeatConfig {
     /// Client send interval (ms)
     /// 客户端发送间隔
@@ -216,7 +215,6 @@ pub struct HeartbeatConfig {
     /// 服务端接收间隔
     pub server_receive: Option<u64>,
 }
-
 
 impl StompSession {
     /// Create a new session
@@ -277,7 +275,11 @@ impl StompSession {
     /// Get subscription
     /// 获取订阅
     pub fn subscription(&self, id: &str) -> Option<Subscription> {
-        self.subscriptions.read().expect("lock poisoned").get(id).cloned()
+        self.subscriptions
+            .read()
+            .expect("lock poisoned")
+            .get(id)
+            .cloned()
     }
 
     /// Get all subscriptions
@@ -339,9 +341,9 @@ impl StompSession {
     /// 添加消息到事务
     pub fn add_to_transaction(&self, tx_id: &str, frame: StompFrame) -> Result<()> {
         let mut txs = self.transactions.write().expect("lock poisoned");
-        let tx = txs
-            .get_mut(tx_id)
-            .ok_or_else(|| StompError::InvalidHeader(format!("Transaction not found: {}", tx_id)))?;
+        let tx = txs.get_mut(tx_id).ok_or_else(|| {
+            StompError::InvalidHeader(format!("Transaction not found: {}", tx_id))
+        })?;
         tx.pending_messages.push(frame);
         Ok(())
     }
@@ -434,7 +436,10 @@ impl StompSession {
     /// Get the authenticated user for this session, if any.
     /// 获取此会话的已认证用户（如果有）。
     pub fn authenticated_user(&self) -> Option<String> {
-        self.authenticated_user.read().expect("lock poisoned").clone()
+        self.authenticated_user
+            .read()
+            .expect("lock poisoned")
+            .clone()
     }
 }
 
@@ -458,7 +463,12 @@ pub trait StompBroker: Send + Sync {
 
     /// Send message to destination
     /// 发送消息到目标
-    async fn send(&self, destination: &str, body: Bytes, headers: HashMap<String, String>) -> Result<()>;
+    async fn send(
+        &self,
+        destination: &str,
+        body: Bytes,
+        headers: HashMap<String, String>,
+    ) -> Result<()>;
 
     /// Check if destination exists
     /// 检查目标是否存在
@@ -505,7 +515,12 @@ impl StompBroker for MemoryBroker {
         Ok(())
     }
 
-    async fn send(&self, _destination: &str, _body: Bytes, _headers: HashMap<String, String>) -> Result<()> {
+    async fn send(
+        &self,
+        _destination: &str,
+        _body: Bytes,
+        _headers: HashMap<String, String>,
+    ) -> Result<()> {
         // In-memory broker doesn't actually deliver messages
         // Use a proper broker implementation for production
         Ok(())
@@ -568,7 +583,9 @@ mod tests {
         let session = StompSession::new("test".to_string());
 
         session.begin_transaction("tx-1".to_string());
-        session.add_to_transaction("tx-1", StompFrame::connect()).unwrap();
+        session
+            .add_to_transaction("tx-1", StompFrame::connect())
+            .unwrap();
 
         let messages = session.commit_transaction("tx-1").unwrap();
         assert_eq!(messages.len(), 1);

@@ -100,7 +100,11 @@ where
                 .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string()))?;
             let map = match &json {
                 serde_json::Value::Object(m) => m,
-                _ => return Err(hiver_data_commons::Error::data_integrity_violation("not an object")),
+                _ => {
+                    return Err(hiver_data_commons::Error::data_integrity_violation(
+                        "not an object",
+                    ));
+                },
             };
             let cols: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
             let params: Vec<QueryParam> = map.values().map(json_value_to_param).collect();
@@ -112,10 +116,13 @@ where
                 placeholders.join(", ")
             );
             match self.client.fetch_one_params(&sql, &params).await {
-                Ok(Some(row)) => row
-                    .deserialize()
-                    .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string())),
-                Ok(None) => Err(hiver_data_commons::Error::entity_not_found(T::table_name(), "INSERT returned no row")),
+                Ok(Some(row)) => row.deserialize().map_err(|e| {
+                    hiver_data_commons::Error::data_integrity_violation(e.to_string())
+                }),
+                Ok(None) => Err(hiver_data_commons::Error::entity_not_found(
+                    T::table_name(),
+                    "INSERT returned no row",
+                )),
                 Err(e) => Err(hiver_data_commons::Error::connection(e.to_string())),
             }
         } else {
@@ -124,13 +131,19 @@ where
                 .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string()))?;
             let map = match &json {
                 serde_json::Value::Object(m) => m,
-                _ => return Err(hiver_data_commons::Error::data_integrity_violation("not an object")),
+                _ => {
+                    return Err(hiver_data_commons::Error::data_integrity_violation(
+                        "not an object",
+                    ));
+                },
             };
             let mut set_parts: Vec<String> = Vec::new();
             let mut params: Vec<QueryParam> = Vec::new();
             let mut idx = 1u32;
             for (k, v) in map.iter() {
-                if k == "id" { continue; }
+                if k == "id" {
+                    continue;
+                }
                 set_parts.push(format!("{} = ${idx}", k));
                 params.push(json_value_to_param(v));
                 idx += 1;
@@ -144,10 +157,12 @@ where
                 set_parts.join(", ")
             );
             match self.client.fetch_one_params(&sql, &params).await {
-                Ok(Some(row)) => row
-                    .deserialize()
-                    .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string())),
-                Ok(None) => Err(hiver_data_commons::Error::entity_not_found(T::table_name(), &pk_param)),
+                Ok(Some(row)) => row.deserialize().map_err(|e| {
+                    hiver_data_commons::Error::data_integrity_violation(e.to_string())
+                }),
+                Ok(None) => {
+                    Err(hiver_data_commons::Error::entity_not_found(T::table_name(), &pk_param))
+                },
                 Err(e) => Err(hiver_data_commons::Error::connection(e.to_string())),
             }
         }
@@ -219,9 +234,8 @@ where
     }
 }
 
-impl<T> CrudRepository<T, String> for OrmRepository<T>
-where
-    T: Model + Send + Sync + serde::de::DeserializeOwned + serde::Serialize + 'static,
+impl<T> CrudRepository<T, String> for OrmRepository<T> where
+    T: Model + Send + Sync + serde::de::DeserializeOwned + serde::Serialize + 'static
 {
 }
 
@@ -237,7 +251,7 @@ fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
             } else {
                 QueryParam::Text(n.to_string())
             }
-        }
+        },
         serde_json::Value::String(s) => QueryParam::Text(s.clone()),
         _ => QueryParam::Text(v.to_string()),
     }

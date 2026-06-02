@@ -286,9 +286,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_closure_task() {
-        let task = closure_task("closure_task", || async {
-            Ok(())
-        });
+        let task = closure_task("closure_task", || async { Ok(()) });
 
         assert_eq!(task.name(), "closure_task");
         task.run().await.unwrap();

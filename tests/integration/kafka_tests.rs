@@ -9,14 +9,14 @@
 use std::time::Duration;
 
 use futures::StreamExt;
+use rdkafka::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::{Headers, Message};
 use rdkafka::producer::{FutureProducer, FutureRecord};
 use rdkafka::types::RDKafkaLogLevel;
-use rdkafka::ClientConfig;
+use testcontainers::GenericImage;
 use testcontainers::core::IntoContainerPort;
 use testcontainers::runners::AsyncRunner;
-use testcontainers::GenericImage;
 
 /// Helper: start a Kafka (with Zookeeper) container and return broker URL + container.
 /// 辅助函数：启动 Kafka（含 Zookeeper）容器并返回 broker URL 和容器。
@@ -24,11 +24,17 @@ async fn setup_kafka() -> (String, testcontainers::ContainerAsync<GenericImage>)
     // Use confluentinc/cp-kafka which includes both Zookeeper and Kafka in one image
     let container = GenericImage::new("confluentinc/cp-kafka", "7.6.0")
         .with_env_var("KAFKA_NODE_ID", "1")
-        .with_env_var("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,HOST:PLAINTEXT")
+        .with_env_var(
+            "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
+            "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,HOST:PLAINTEXT",
+        )
         .with_env_var("KAFKA_ADVERTISED_LISTENERS", "PLAINTEXT://kafka:29092,HOST://localhost:9092")
         .with_env_var("KAFKA_PROCESS_ROLES", "broker,controller")
         .with_env_var("KAFKA_CONTROLLER_QUORUM_VOTERS", "1@kafka:29093")
-        .with_env_var("KAFKA_LISTENERS", "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,HOST://0.0.0.0:9092")
+        .with_env_var(
+            "KAFKA_LISTENERS",
+            "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,HOST://0.0.0.0:9092",
+        )
         .with_env_var("KAFKA_CONTROLLER_LISTENER_NAMES", "CONTROLLER")
         .with_env_var("CLUSTER_ID", "MkU3OEVBNTcwNTJENDM2Qk")
         .with_mapped_port(9092, 9092.tcp())
@@ -83,7 +89,11 @@ async fn wait_for_kafka(broker_url: &str) {
             .create::<FutureProducer>()
         {
             // Try to fetch metadata to verify broker is responsive
-            if producer.client().fetch_metadata(None, Duration::from_secs(2)).is_ok() {
+            if producer
+                .client()
+                .fetch_metadata(None, Duration::from_secs(2))
+                .is_ok()
+            {
                 return;
             }
         }
@@ -110,10 +120,7 @@ async fn test_kafka_container_connectivity() {
         .fetch_metadata(None, Duration::from_secs(10))
         .expect("Failed to fetch metadata");
 
-    assert!(
-        metadata.brokers().len() >= 1,
-        "Should have at least 1 broker"
-    );
+    assert!(metadata.brokers().len() >= 1, "Should have at least 1 broker");
 }
 
 // ============================================================
@@ -248,10 +255,7 @@ async fn test_kafka_produce_consume_batch() {
 
     assert_eq!(received.len(), 5, "Should receive all 5 messages");
     for i in 0..5 {
-        assert!(
-            received.contains(&format!("message_{i}")),
-            "Should contain message_{i}"
-        );
+        assert!(received.contains(&format!("message_{i}")), "Should contain message_{i}");
     }
 }
 
@@ -289,13 +293,8 @@ async fn test_kafka_message_key_preserved() {
     .await
     .expect("Timed out waiting for message");
 
-    let key = message
-        .key()
-        .expect("Key should exist");
-    assert_eq!(
-        std::str::from_utf8(key).expect("Key should be UTF-8"),
-        "my-key"
-    );
+    let key = message.key().expect("Key should exist");
+    assert_eq!(std::str::from_utf8(key).expect("Key should be UTF-8"), "my-key");
 }
 
 // ============================================================
@@ -327,8 +326,12 @@ async fn test_kafka_consumer_group() {
     let consumer1 = create_consumer(&broker_url, "test-shared-group");
     let consumer2 = create_consumer(&broker_url, "test-shared-group");
 
-    consumer1.subscribe(&[topic]).expect("Failed to subscribe c1");
-    consumer2.subscribe(&[topic]).expect("Failed to subscribe c2");
+    consumer1
+        .subscribe(&[topic])
+        .expect("Failed to subscribe c1");
+    consumer2
+        .subscribe(&[topic])
+        .expect("Failed to subscribe c2");
 
     // Give rebalance time
     tokio::time::sleep(Duration::from_secs(3)).await;
@@ -336,10 +339,7 @@ async fn test_kafka_consumer_group() {
     // Collect from both consumers
     let mut all_received = Vec::new();
 
-    async fn collect_messages(
-        consumer: &StreamConsumer,
-        timeout: Duration,
-    ) -> Vec<String> {
+    async fn collect_messages(consumer: &StreamConsumer, timeout: Duration) -> Vec<String> {
         let mut results = Vec::new();
         let mut stream = consumer.stream();
         let deadline = tokio::time::sleep(timeout);
@@ -416,10 +416,7 @@ async fn test_kafka_message_headers() {
     let trace_id = headers
         .get("trace_id")
         .expect("trace_id header should exist");
-    assert_eq!(
-        std::str::from_utf8(trace_id).expect("Header should be UTF-8"),
-        "abc123"
-    );
+    assert_eq!(std::str::from_utf8(trace_id).expect("Header should be UTF-8"), "abc123");
 }
 
 // ============================================================
@@ -435,10 +432,7 @@ async fn test_kafka_null_payload() {
     let producer = create_producer(&broker_url);
 
     producer
-        .send(
-            FutureRecord::to(topic).key("null-payload-key"),
-            Duration::from_secs(5),
-        )
+        .send(FutureRecord::to(topic).key("null-payload-key"), Duration::from_secs(5))
         .await
         .expect("Failed to produce null payload");
 
@@ -456,13 +450,9 @@ async fn test_kafka_null_payload() {
     .await
     .expect("Timed out waiting for message");
 
-    assert!(
-        message.payload().is_none(),
-        "Message payload should be None (null)"
-    );
+    assert!(message.payload().is_none(), "Message payload should be None (null)");
     assert_eq!(
-        std::str::from_utf8(message.key().expect("Key should exist"))
-            .expect("Key should be UTF-8"),
+        std::str::from_utf8(message.key().expect("Key should exist")).expect("Key should be UTF-8"),
         "null-payload-key"
     );
 }
@@ -560,8 +550,7 @@ async fn test_kafka_json_message() {
         .expect("Failed to parse payload")
         .expect("Payload should not be empty");
 
-    let parsed: serde_json::Value =
-        serde_json::from_str(payload).expect("Should parse as JSON");
+    let parsed: serde_json::Value = serde_json::from_str(payload).expect("Should parse as JSON");
     assert_eq!(parsed["user_id"], 42);
     assert_eq!(parsed["action"], "login");
 }
@@ -581,18 +570,12 @@ async fn test_kafka_multi_topic_subscribe() {
     let topic_b = "test-multi-b";
 
     producer
-        .send(
-            FutureRecord::to(topic_a).payload("from_a").key("a"),
-            Duration::from_secs(5),
-        )
+        .send(FutureRecord::to(topic_a).payload("from_a").key("a"), Duration::from_secs(5))
         .await
         .expect("Failed to produce to topic_a");
 
     producer
-        .send(
-            FutureRecord::to(topic_b).payload("from_b").key("b"),
-            Duration::from_secs(5),
-        )
+        .send(FutureRecord::to(topic_b).payload("from_b").key("b"), Duration::from_secs(5))
         .await
         .expect("Failed to produce to topic_b");
 
@@ -643,13 +626,12 @@ async fn test_kafka_produce_to_new_topic() {
 
     let result = producer
         .send(
-            FutureRecord::to(&unique_topic).payload("first-msg").key("k"),
+            FutureRecord::to(&unique_topic)
+                .payload("first-msg")
+                .key("k"),
             Duration::from_secs(10),
         )
         .await;
 
-    assert!(
-        result.is_ok(),
-        "Should be able to produce to a new (auto-created) topic"
-    );
+    assert!(result.is_ok(), "Should be able to produce to a new (auto-created) topic");
 }

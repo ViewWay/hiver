@@ -18,8 +18,7 @@ use serde::{Deserialize, Serialize};
 /// @Transactional(propagation = Propagation.REQUIRES_NEW)
 /// public void auditAction() { ... }
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub enum Propagation {
     /// Required
     /// 必需
@@ -117,7 +116,6 @@ impl Propagation {
         }
     }
 }
-
 
 impl std::fmt::Display for Propagation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

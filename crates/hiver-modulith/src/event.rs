@@ -124,8 +124,7 @@ mod tests {
 
     #[test]
     fn test_domain_event_metadata() {
-        let event = DomainEvent::new("test", "mod", "payload")
-            .with_metadata("trace_id", "abc-123");
+        let event = DomainEvent::new("test", "mod", "payload").with_metadata("trace_id", "abc-123");
         assert_eq!(event.metadata.get("trace_id"), Some(&"abc-123".to_string()));
     }
 

@@ -463,9 +463,10 @@ impl ValueExtractor {
         T::Err: fmt::Display,
     {
         if let Some(value) = env.get_property(key)
-            && let Ok(parsed) = value.into::<T>() {
-                return Ok(parsed);
-            }
+            && let Ok(parsed) = value.into::<T>()
+        {
+            return Ok(parsed);
+        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -478,9 +479,10 @@ impl ValueExtractor {
         env: &crate::Environment,
     ) -> Result<String, ConfigError> {
         if let Some(value) = env.get_property(key)
-            && let Some(s) = value.as_str() {
-                return Ok(s.to_string());
-            }
+            && let Some(s) = value.as_str()
+        {
+            return Ok(s.to_string());
+        }
 
         default
             .map(ToString::to_string)
@@ -495,9 +497,10 @@ impl ValueExtractor {
         env: &crate::Environment,
     ) -> Result<bool, ConfigError> {
         if let Some(value) = env.get_property(key)
-            && let Some(b) = value.as_bool() {
-                return Ok(b);
-            }
+            && let Some(b) = value.as_bool()
+        {
+            return Ok(b);
+        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -515,9 +518,10 @@ impl ValueExtractor {
     {
         if let Some(value) = env.get_property(key)
             && let Some(i) = value.as_i64()
-                && let Ok(parsed) = i.to_string().parse::<T>() {
-                    return Ok(parsed);
-                }
+            && let Ok(parsed) = i.to_string().parse::<T>()
+        {
+            return Ok(parsed);
+        }
 
         default.ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -548,9 +552,10 @@ impl ValueExtractor {
         let (key, default) = Self::parse_placeholder(input);
 
         if let Some(value) = env.get_property(&key)
-            && let Some(s) = value.as_str() {
-                return s.to_string();
-            }
+            && let Some(s) = value.as_str()
+        {
+            return s.to_string();
+        }
 
         default.unwrap_or_default()
     }
@@ -956,7 +961,6 @@ mod tests {
     /// 测试从环境提取字符串值
     #[test]
     fn test_extract_string_present() {
-
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("greeting", Value::string("hello"));
@@ -988,7 +992,6 @@ mod tests {
     /// 测试从环境提取布尔值
     #[test]
     fn test_extract_bool() {
-
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("debug", Value::bool(true));
@@ -1011,7 +1014,6 @@ mod tests {
     /// 测试从环境提取整数值
     #[test]
     fn test_extract_int() {
-
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("port", Value::integer(9090));
@@ -1034,7 +1036,6 @@ mod tests {
     /// 测试泛型extract方法
     #[test]
     fn test_extract_generic() {
-
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("count", Value::integer(7));

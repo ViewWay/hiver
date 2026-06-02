@@ -119,9 +119,7 @@ impl WebTestClient {
         let timeout = Duration::from_secs(30);
         let builder = f(reqwest::Client::builder().timeout(timeout));
         Self {
-            inner: builder
-                .build()
-                .expect("failed to build reqwest client"),
+            inner: builder.build().expect("failed to build reqwest client"),
             base_url: base,
             timeout,
         }
@@ -174,11 +172,7 @@ impl WebTestClient {
         let url = if path.starts_with("http://") || path.starts_with("https://") {
             path.to_string()
         } else {
-            format!(
-                "{}{}",
-                self.base_url.trim_end_matches('/'),
-                path
-            )
+            format!("{}{}", self.base_url.trim_end_matches('/'), path)
         };
 
         RequestSpec {
@@ -298,7 +292,7 @@ impl RequestSpec {
                     self = self.json();
                 }
                 self
-            }
+            },
             Err(e) => panic!("Failed to serialise JSON body: {e}"),
         }
     }
@@ -332,15 +326,16 @@ impl RequestSpec {
             .headers()
             .iter()
             .map(|(name, value)| {
-                (
-                    name.as_str().to_string(),
-                    value.to_str().unwrap_or_default().to_string(),
-                )
+                (name.as_str().to_string(), value.to_str().unwrap_or_default().to_string())
             })
             .collect();
 
         let status = response.status().as_u16();
-        let body_bytes = response.bytes().await.map(|b| b.to_vec()).unwrap_or_default();
+        let body_bytes = response
+            .bytes()
+            .await
+            .map(|b| b.to_vec())
+            .unwrap_or_default();
 
         Ok(ResponseSpec {
             status,
@@ -425,11 +420,7 @@ impl ResponseSpec {
     /// Returns `&self` for chaining.
     /// 返回 `&self` 以便链式调用。
     pub fn assert_status(&self, expected: u16) -> &Self {
-        assert_eq!(
-            self.status, expected,
-            "Expected status {expected}, got {}",
-            self.status
-        );
+        assert_eq!(self.status, expected, "Expected status {expected}, got {}", self.status);
         self
     }
 
@@ -496,10 +487,8 @@ impl ResponseSpec {
     /// 断言响应头等于预期值。
     pub fn assert_header(&self, name: &str, expected: &str) -> &Self {
         match self.header(name) {
-            Some(v) if v == expected => {}
-            Some(v) => panic!(
-                "Expected header '{name}' to be '{expected}', got '{v}'"
-            ),
+            Some(v) if v == expected => {},
+            Some(v) => panic!("Expected header '{name}' to be '{expected}', got '{v}'"),
             None => panic!("Expected header '{name}' to be present"),
         }
         self
@@ -509,21 +498,14 @@ impl ResponseSpec {
     /// 断言响应body包含给定文本。
     pub fn assert_body_contains(&self, text: &str) -> &Self {
         let body = self.text();
-        assert!(
-            body.contains(text),
-            "Expected body to contain '{text}', got: {body}"
-        );
+        assert!(body.contains(text), "Expected body to contain '{text}', got: {body}");
         self
     }
 
     /// Assert that the response body is empty.
     /// 断言响应body为空。
     pub fn assert_body_empty(&self) -> &Self {
-        assert!(
-            self.body.is_empty(),
-            "Expected empty body, got: {}",
-            self.text()
-        );
+        assert!(self.body.is_empty(), "Expected empty body, got: {}", self.text());
         self
     }
 
@@ -535,22 +517,15 @@ impl ResponseSpec {
 
     /// Assert that the response body matches the expected JSON value.
     /// 断言响应body与预期的JSON值匹配。
-    pub fn assert_json<T: serde::Serialize + std::fmt::Debug>(
-        &self,
-        expected: &T,
-    ) -> &Self {
+    pub fn assert_json<T: serde::Serialize + std::fmt::Debug>(&self, expected: &T) -> &Self {
         let actual_str = self.text();
         let expected_str =
             serde_json::to_string(expected).expect("failed to serialise expected value");
 
-        let actual_value: serde_json::Value =
-            serde_json::from_str(&actual_str).unwrap_or_else(|e| {
-                panic!("Response body is not valid JSON: {e}\nBody: {actual_str}")
-            });
-        let expected_value: serde_json::Value =
-            serde_json::from_str(&expected_str).unwrap_or_else(|e| {
-                panic!("Expected value is not valid JSON: {e}")
-            });
+        let actual_value: serde_json::Value = serde_json::from_str(&actual_str)
+            .unwrap_or_else(|e| panic!("Response body is not valid JSON: {e}\nBody: {actual_str}"));
+        let expected_value: serde_json::Value = serde_json::from_str(&expected_str)
+            .unwrap_or_else(|e| panic!("Expected value is not valid JSON: {e}"));
 
         assert_eq!(
             actual_value, expected_value,
@@ -773,12 +748,10 @@ mod tests {
         }
 
         let spec = WebTestClient::bind_to_port(0);
-        let _request = spec
-            .post("/any")
-            .json_body(&Payload {
-                name: "test".to_string(),
-                count: 42,
-            });
+        let _request = spec.post("/any").json_body(&Payload {
+            name: "test".to_string(),
+            count: 42,
+        });
         // We only verify construction; sending would fail since port 0 has no server.
         // 我们只验证构建；发送会失败，因为端口0没有服务器。
     }

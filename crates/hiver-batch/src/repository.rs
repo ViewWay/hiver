@@ -1,9 +1,9 @@
 //! Job repository for storing job metadata and execution history
 //! 作业存储库，用于存储作业元数据和执行历史
 
-use async_trait::async_trait;
 use crate::error::{BatchError, BatchResult};
-use crate::execution::{JobExecution, StepExecution, JobStatus};
+use crate::execution::{JobExecution, JobStatus, StepExecution};
+use async_trait::async_trait;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -106,10 +106,7 @@ pub trait JobRepository: Send + Sync {
 
     /// Get all job executions for a job instance
     /// 获取作业实例的所有执行
-    async fn get_job_executions(
-        &self,
-        job_instance_id: Uuid,
-    ) -> BatchResult<Vec<JobExecution>>;
+    async fn get_job_executions(&self, job_instance_id: Uuid) -> BatchResult<Vec<JobExecution>>;
 
     /// Create step execution
     /// 创建步骤执行
@@ -201,7 +198,12 @@ impl InMemoryJobRepository {
     /// Get all step executions
     /// 获取所有步骤执行
     pub async fn get_all_step_executions(&self) -> Vec<StepExecution> {
-        self.step_executions.read().await.values().cloned().collect()
+        self.step_executions
+            .read()
+            .await
+            .values()
+            .cloned()
+            .collect()
     }
 }
 
@@ -234,7 +236,10 @@ impl JobRepository for InMemoryJobRepository {
         let execution = JobExecution::new(job_name, instance_id);
 
         // Mark as running
-        self.running_jobs.write().await.insert(execution.job_name.clone(), execution.id);
+        self.running_jobs
+            .write()
+            .await
+            .insert(execution.job_name.clone(), execution.id);
 
         Ok(execution)
     }
@@ -255,10 +260,7 @@ impl JobRepository for InMemoryJobRepository {
 
         // Clear from running if terminal
         if execution.status.is_terminal() {
-            self.running_jobs
-                .write()
-                .await
-                .remove(&execution.job_name);
+            self.running_jobs.write().await.remove(&execution.job_name);
         }
 
         Ok(())
@@ -287,10 +289,7 @@ impl JobRepository for InMemoryJobRepository {
         Ok(last.cloned())
     }
 
-    async fn get_job_executions(
-        &self,
-        job_instance_id: Uuid,
-    ) -> BatchResult<Vec<JobExecution>> {
+    async fn get_job_executions(&self, job_instance_id: Uuid) -> BatchResult<Vec<JobExecution>> {
         let executions = self.job_executions.read().await;
 
         let filtered = executions
@@ -347,9 +346,7 @@ impl JobRepository for InMemoryJobRepository {
         let executions = self.get_job_executions(job_instance_id).await?;
 
         // Check if any execution completed successfully
-        Ok(executions
-            .iter()
-            .any(|e| e.status == JobStatus::Completed))
+        Ok(executions.iter().any(|e| e.status == JobStatus::Completed))
     }
 }
 
@@ -387,10 +384,7 @@ mod tests {
             .await;
 
         assert!(result.is_err());
-        assert!(matches!(
-            result.unwrap_err(),
-            BatchError::JobAlreadyRunning { .. }
-        ));
+        assert!(matches!(result.unwrap_err(), BatchError::JobAlreadyRunning { .. }));
     }
 
     #[tokio::test]
@@ -454,10 +448,7 @@ mod tests {
         repository.clear().await;
 
         assert!(!repository.is_job_running("test-job").await.unwrap());
-        assert!(repository
-            .get_all_job_executions()
-            .await
-            .is_empty());
+        assert!(repository.get_all_job_executions().await.is_empty());
     }
 
     #[tokio::test]
@@ -470,10 +461,7 @@ mod tests {
             .unwrap();
         repository.save_job_execution(&execution).await.unwrap();
 
-        let last = repository
-            .get_last_job_execution("test-job")
-            .await
-            .unwrap();
+        let last = repository.get_last_job_execution("test-job").await.unwrap();
 
         assert!(last.is_some());
         assert_eq!(last.unwrap().job_name, "test-job");

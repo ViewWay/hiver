@@ -410,7 +410,11 @@ mod tests {
             .default_model("mock-v2")
             .build();
 
-        let response = client.prompt("test").call().await.expect("call should succeed");
+        let response = client
+            .prompt("test")
+            .call()
+            .await
+            .expect("call should succeed");
         assert_eq!(response.content, "ok");
     }
 

@@ -111,15 +111,12 @@ impl Serializer for JsonSerializer {
         // Try to get string representation and serialize as JSON
         // 尝试获取字符串表示并序列化为JSON
         if let Some(s) = data.as_string() {
-            serde_json::to_vec(s)
-                .map_err(|e| format!("Failed to serialize JSON: {}", e))
+            serde_json::to_vec(s).map_err(|e| format!("Failed to serialize JSON: {}", e))
         } else if let Some(b) = data.as_bytes() {
             // Try to serialize bytes as JSON string
             // 尝试将字节序列化为JSON字符串
-            let s = String::from_utf8(b.to_vec())
-                .map_err(|e| format!("Invalid UTF-8: {}", e))?;
-            serde_json::to_vec(&s)
-                .map_err(|e| format!("Failed to serialize JSON: {}", e))
+            let s = String::from_utf8(b.to_vec()).map_err(|e| format!("Invalid UTF-8: {}", e))?;
+            serde_json::to_vec(&s).map_err(|e| format!("Failed to serialize JSON: {}", e))
         } else {
             Err("Cannot serialize to JSON".to_string())
         }
@@ -154,8 +151,7 @@ pub struct JsonDeserializer;
 
 impl Deserializer for JsonDeserializer {
     fn deserialize<'a, T: serde::Deserialize<'a>>(&self, bytes: &'a [u8]) -> Result<T, String> {
-        serde_json::from_slice(bytes)
-            .map_err(|e| format!("Failed to deserialize JSON: {}", e))
+        serde_json::from_slice(bytes).map_err(|e| format!("Failed to deserialize JSON: {}", e))
     }
 }
 
@@ -187,9 +183,7 @@ impl KeySerializer {
     /// Create new key serializer
     /// 创建新的键序列化器
     pub fn new() -> Self {
-        Self {
-            use_string: true,
-        }
+        Self { use_string: true }
     }
 
     /// Set to use string keys

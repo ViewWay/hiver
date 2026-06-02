@@ -4,13 +4,11 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        Producer, Consumer, ProducerConfig, ConsumerConfig, ConsumerOffset,
-        Record, ProduceOptions, ConsumerGroup, ConsumerListener,
-        TopicPartition, TopicPartitionBuilder, Offset,
-        KafkaMessage, MessageKey, MessageValue, MessageHeaders, MessageHeaderValue,
-        BytesSerializer, JsonSerializer, JsonDeserializer, KeySerializer,
-        Serializer, Deserializer, SerializeData,
-        VERSION, DEFAULT_KAFKA_PORT, DEFAULT_GROUP_ID,
+        BytesSerializer, Consumer, ConsumerConfig, ConsumerGroup, ConsumerListener, ConsumerOffset,
+        DEFAULT_GROUP_ID, DEFAULT_KAFKA_PORT, Deserializer, JsonDeserializer, JsonSerializer,
+        KafkaMessage, KeySerializer, MessageHeaderValue, MessageHeaders, MessageKey, MessageValue,
+        Offset, ProduceOptions, Producer, ProducerConfig, Record, SerializeData, Serializer,
+        TopicPartition, TopicPartitionBuilder, VERSION,
     };
 
     // ── Module constants ──────────────────────────────────────────────
@@ -76,8 +74,8 @@ mod tests {
     /// 测试完整消费者生命周期：订阅 -> 轮询 -> 提交 -> 取消订阅
     #[tokio::test]
     async fn test_consumer_full_lifecycle() {
-        let config = ConsumerConfig::new("lifecycle-group")
-            .with_bootstrap_servers("localhost:9092");
+        let config =
+            ConsumerConfig::new("lifecycle-group").with_bootstrap_servers("localhost:9092");
         let consumer = Consumer::new("localhost:9092", &config);
 
         // Subscribe
@@ -205,7 +203,9 @@ mod tests {
         assert_eq!(key_bytes, b"order-456".to_vec());
 
         // Serialize value
-        let value_bytes = value_serializer.serialize(&"payload-data".to_string()).unwrap();
+        let value_bytes = value_serializer
+            .serialize(&"payload-data".to_string())
+            .unwrap();
         let restored: String = serde_json::from_slice(&value_bytes).unwrap();
         assert_eq!(restored, "payload-data");
     }

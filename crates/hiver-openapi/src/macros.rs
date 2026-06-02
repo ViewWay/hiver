@@ -64,10 +64,7 @@
 
 // Re-export utoipa macros for convenience
 // 为了方便重新导出 utoipa 宏
-pub use utoipa::{
-    IntoParams, ToSchema, ToResponse,
-    openapi,
-};
+pub use utoipa::{IntoParams, ToResponse, ToSchema, openapi};
 
 /// Helper trait for schema documentation
 /// 模式文档助手 trait

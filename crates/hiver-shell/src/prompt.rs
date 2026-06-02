@@ -135,30 +135,12 @@ impl Default for Banner {
     fn default() -> Self {
         Self {
             lines: vec![
-                format!(
-                    "{}",
-                    "  _   _                     ".bright_black()
-                ),
-                format!(
-                    "{}",
-                    " | \\ | |_   _ _ __   ___ _ __ ".bright_black()
-                ),
-                format!(
-                    "{}",
-                    " |  \\| | | | | '_ \\ / _ \\ '__|".bright_black()
-                ),
-                format!(
-                    "{}",
-                    " | |\\  | |_| | | | |  __/ |   ".bright_black()
-                ),
-                format!(
-                    "{}",
-                    " |_| \\_|\\__, |_| |_|\\___|_|   ".bright_black()
-                ),
-                format!(
-                    "{}",
-                    "       |___/                  ".bright_black()
-                ),
+                format!("{}", "  _   _                     ".bright_black()),
+                format!("{}", " | \\ | |_   _ _ __   ___ _ __ ".bright_black()),
+                format!("{}", " |  \\| | | | | '_ \\ / _ \\ '__|".bright_black()),
+                format!("{}", " | |\\  | |_| | | | |  __/ |   ".bright_black()),
+                format!("{}", " |_| \\_|\\__, |_| |_|\\___|_|   ".bright_black()),
+                format!("{}", "       |___/                  ".bright_black()),
             ],
             enabled: true,
         }
@@ -201,18 +183,9 @@ impl Banner {
 
         let mut output = self.lines.join("\n");
         output.push('\n');
-        let _ = writeln!(
-            output,
-            "  {} {}",
-            "Hiver Shell".cyan().bold(),
-            "v0.1.0-alpha".dimmed()
-        );
-        let _ = writeln!(
-            output,
-            "  {} {}",
-            "Type".dimmed(),
-            "'help' for available commands.".dimmed()
-        );
+        let _ = writeln!(output, "  {} {}", "Hiver Shell".cyan().bold(), "v0.1.0-alpha".dimmed());
+        let _ =
+            writeln!(output, "  {} {}", "Type".dimmed(), "'help' for available commands.".dimmed());
         output
     }
 }

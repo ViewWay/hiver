@@ -139,8 +139,7 @@ impl RedisCacheManager {
     /// Check whether this manager is operating in fallback (in-memory) mode.
     /// 检查此管理器是否在回退（内存）模式下运行。
     pub fn is_fallback(&self) -> bool {
-        self.is_fallback
-            .load(std::sync::atomic::Ordering::Relaxed)
+        self.is_fallback.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Set the fallback mode flag.

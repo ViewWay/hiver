@@ -42,7 +42,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Global trace ID generator
 /// 全局追踪ID生成器
-static TRACE_ID_GENERATOR: std::sync::LazyLock<Arc<IdGenerator>> = std::sync::LazyLock::new(|| Arc::new(IdGenerator::new()));
+static TRACE_ID_GENERATOR: std::sync::LazyLock<Arc<IdGenerator>> =
+    std::sync::LazyLock::new(|| Arc::new(IdGenerator::new()));
 
 /// ID generator for trace and span IDs
 /// ID生成器，用于追踪和span ID
@@ -125,11 +126,7 @@ impl TraceId {
     /// 获取高64位
     #[allow(clippy::expect_used)]
     pub fn high(&self) -> u64 {
-        u64::from_be_bytes(
-            self.0[0..8]
-                .try_into()
-                .expect("slice has correct length"),
-        )
+        u64::from_be_bytes(self.0[0..8].try_into().expect("slice has correct length"))
     }
 
     /// Get low 64 bits
@@ -932,7 +929,11 @@ pub fn init_tracer(service_name: impl Into<String>) -> Tracer {
 /// 获取全局追踪器
 #[allow(clippy::expect_used)]
 pub fn global_tracer() -> Option<Tracer> {
-    GLOBAL_TRACER.read().expect("lock poisoned").as_ref().cloned()
+    GLOBAL_TRACER
+        .read()
+        .expect("lock poisoned")
+        .as_ref()
+        .cloned()
 }
 
 #[cfg(test)]

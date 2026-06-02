@@ -237,7 +237,7 @@ impl DriverFactory {
                     std::io::ErrorKind::Unsupported,
                     "Failed to detect a suitable driver for this platform",
                 ))
-            }
+            },
         }
     }
 

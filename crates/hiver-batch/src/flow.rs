@@ -93,7 +93,8 @@ impl FlowStep {
 
     /// Add a transition on a specific exit code.
     pub fn on(mut self, exit_code: &str, next_step: impl Into<String>) -> Self {
-        self.transitions.push((exit_code.to_string(), next_step.into()));
+        self.transitions
+            .push((exit_code.to_string(), next_step.into()));
         self
     }
 
@@ -177,13 +178,13 @@ impl JobFlow {
             match flow_step.resolve_next(&step_result) {
                 FlowDecision::Next(next) => {
                     current = next;
-                }
+                },
                 FlowDecision::End => return Ok(ExitStatus::completed()),
                 FlowDecision::Stop => return Ok(ExitStatus::stopped()),
                 FlowDecision::Fail => return Ok(ExitStatus::failed()),
                 FlowDecision::Branch(name) => {
                     current = name;
-                }
+                },
             }
         }
     }
@@ -237,10 +238,7 @@ mod tests {
             .on("COMPLETED", "step2")
             .on("FAILED", "error-handler");
 
-        assert_eq!(
-            step.resolve_next(&ExitStatus::completed()),
-            FlowDecision::Next("step2".into())
-        );
+        assert_eq!(step.resolve_next(&ExitStatus::completed()), FlowDecision::Next("step2".into()));
         assert_eq!(
             step.resolve_next(&ExitStatus::failed()),
             FlowDecision::Next("error-handler".into())
@@ -259,10 +257,7 @@ mod tests {
     #[test]
     fn test_flow_step_default_next() {
         let step = FlowStep::new("step1").default_next("step2");
-        assert_eq!(
-            step.resolve_next(&ExitStatus::completed()),
-            FlowDecision::Next("step2".into())
-        );
+        assert_eq!(step.resolve_next(&ExitStatus::completed()), FlowDecision::Next("step2".into()));
     }
 
     #[test]
@@ -278,10 +273,7 @@ mod tests {
             cond.evaluate(&ExitStatus::completed()),
             FlowDecision::Next("success-step".into())
         );
-        assert_eq!(
-            cond.evaluate(&ExitStatus::failed()),
-            FlowDecision::Next("failure-step".into())
-        );
+        assert_eq!(cond.evaluate(&ExitStatus::failed()), FlowDecision::Next("failure-step".into()));
     }
 
     #[test]

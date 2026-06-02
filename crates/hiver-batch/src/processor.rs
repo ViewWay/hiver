@@ -369,9 +369,7 @@ where
     type Output = T;
 
     async fn process(&self, item: T) -> BatchResult<Option<T>> {
-        (self.validator)(&item).map_err(|msg| BatchError::ValidationError {
-            message: msg,
-        })?;
+        (self.validator)(&item).map_err(|msg| BatchError::ValidationError { message: msg })?;
         Ok(Some(item))
     }
 }
@@ -398,9 +396,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_function_processor() {
-        let processor = FunctionProcessor::new(|item: i32| {
-            Ok(Some(item * 2))
-        });
+        let processor = FunctionProcessor::new(|item: i32| Ok(Some(item * 2)));
 
         assert_eq!(processor.process(5).await.unwrap(), Some(10));
         assert_eq!(processor.process(-3).await.unwrap(), Some(-6));

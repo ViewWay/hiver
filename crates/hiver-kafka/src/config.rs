@@ -438,8 +438,8 @@ mod tests {
     /// 测试消费者配置构建器方法
     #[test]
     fn test_consumer_config_builder() {
-        let config = ConsumerConfig::new("test-group")
-            .with_bootstrap_servers("broker.example.com:9093");
+        let config =
+            ConsumerConfig::new("test-group").with_bootstrap_servers("broker.example.com:9093");
         assert_eq!(config.group_id, "test-group");
         assert_eq!(config.bootstrap_servers, "broker.example.com:9093");
     }

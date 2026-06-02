@@ -287,7 +287,9 @@ impl SessionExtractor {
     /// Require session (returns error if no session)
     /// 需要会话（如果没有会话则返回错误）
     pub fn require_session(&self) -> Result<&Session, String> {
-        self.context.session().ok_or_else(|| "No session found".to_string())
+        self.context
+            .session()
+            .ok_or_else(|| "No session found".to_string())
     }
 
     /// Get session attribute
@@ -355,17 +357,11 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(loaded.id(), session.id());
-        assert_eq!(
-            loaded.get::<String>("test_key").await,
-            Some("test_value".to_string())
-        );
+        assert_eq!(loaded.get::<String>("test_key").await, Some("test_value".to_string()));
 
         // Refresh session
         let refreshed = manager.refresh(&session).await.unwrap();
         assert_ne!(refreshed.id(), session.id());
-        assert_eq!(
-            refreshed.get::<String>("test_key").await,
-            Some("test_value".to_string())
-        );
+        assert_eq!(refreshed.get::<String>("test_key").await, Some("test_value".to_string()));
     }
 }

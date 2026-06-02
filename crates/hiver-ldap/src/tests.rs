@@ -9,13 +9,15 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
     use crate::context::LdapContextSourceBuilder;
     use crate::mapper::{self, AttrMap};
-    use crate::odm::{self, AttributeMapping, ObjectDirectoryMapper, Dn, build_dn, parse_rdn_value};
+    use crate::odm::{
+        self, AttributeMapping, Dn, ObjectDirectoryMapper, build_dn, parse_rdn_value,
+    };
     use crate::pool::{LdapPool, PoolConfig};
     use crate::query::LdapQueryBuilder;
-    use crate::repository::{TypedLdapRepository, EntryMapper, EntrySerializer, IdExtractor};
+    use crate::repository::{EntryMapper, EntrySerializer, IdExtractor, TypedLdapRepository};
+    use crate::*;
 
     // ============================================================
     // Domain types for testing / 用于测试的领域类型
@@ -29,8 +31,12 @@ mod tests {
     }
 
     impl odm::OdmEntry for Person {
-        fn base_dn() -> &'static str { "ou=people,dc=example,dc=com" }
-        fn rdn_attribute() -> &'static str { "uid" }
+        fn base_dn() -> &'static str {
+            "ou=people,dc=example,dc=com"
+        }
+        fn rdn_attribute() -> &'static str {
+            "uid"
+        }
         fn object_classes() -> &'static [&'static str] {
             &["top", "person", "inetOrgPerson"]
         }
@@ -47,8 +53,12 @@ mod tests {
     }
 
     impl odm::OdmEntry for Group {
-        fn base_dn() -> &'static str { "ou=groups,dc=example,dc=com" }
-        fn rdn_attribute() -> &'static str { "cn" }
+        fn base_dn() -> &'static str {
+            "ou=groups,dc=example,dc=com"
+        }
+        fn rdn_attribute() -> &'static str {
+            "cn"
+        }
         fn object_classes() -> &'static [&'static str] {
             &["top", "groupOfNames"]
         }
@@ -74,12 +84,16 @@ mod tests {
                 ("mail".into(), vec![p.mail.clone()]),
             ]
         }
-        fn rdn_value(&self, p: &Person) -> String { p.uid.clone() }
+        fn rdn_value(&self, p: &Person) -> String {
+            p.uid.clone()
+        }
     }
 
     struct PersonIdExtractor;
     impl IdExtractor<Person, String> for PersonIdExtractor {
-        fn extract_id(&self, p: &Person) -> String { p.uid.clone() }
+        fn extract_id(&self, p: &Person) -> String {
+            p.uid.clone()
+        }
     }
 
     struct GroupMapper;
@@ -87,7 +101,10 @@ mod tests {
         fn map_entry(&self, attrs: &AttrMap) -> Group {
             Group {
                 cn: attrs.get_first("cn").unwrap_or_default().to_string(),
-                description: attrs.get_first("description").unwrap_or_default().to_string(),
+                description: attrs
+                    .get_first("description")
+                    .unwrap_or_default()
+                    .to_string(),
                 member_count: 0,
             }
         }
@@ -101,12 +118,16 @@ mod tests {
                 ("description".into(), vec![g.description.clone()]),
             ]
         }
-        fn rdn_value(&self, g: &Group) -> String { g.cn.clone() }
+        fn rdn_value(&self, g: &Group) -> String {
+            g.cn.clone()
+        }
     }
 
     struct GroupIdExtractor;
     impl IdExtractor<Group, String> for GroupIdExtractor {
-        fn extract_id(&self, g: &Group) -> String { g.cn.clone() }
+        fn extract_id(&self, g: &Group) -> String {
+            g.cn.clone()
+        }
     }
 
     // Helper to create a template / 创建模板的辅助函数
@@ -115,7 +136,8 @@ mod tests {
         LdapTemplate::new(ctx)
     }
 
-    fn person_repo() -> TypedLdapRepository<Person, String, PersonMapper, PersonSerializer, PersonIdExtractor> {
+    fn person_repo()
+    -> TypedLdapRepository<Person, String, PersonMapper, PersonSerializer, PersonIdExtractor> {
         TypedLdapRepository::new(
             test_template(),
             "ou=people,dc=example,dc=com",
@@ -125,7 +147,8 @@ mod tests {
         )
     }
 
-    fn group_repo() -> TypedLdapRepository<Group, String, GroupMapper, GroupSerializer, GroupIdExtractor> {
+    fn group_repo()
+    -> TypedLdapRepository<Group, String, GroupMapper, GroupSerializer, GroupIdExtractor> {
         TypedLdapRepository::new(
             test_template(),
             "ou=groups,dc=example,dc=com",
@@ -236,7 +259,10 @@ mod tests {
     #[tokio::test]
     async fn test_template_search_empty() {
         let template = test_template();
-        let results = template.search_attrs("dc=example,dc=com", "(objectClass=*)").await.unwrap();
+        let results = template
+            .search_attrs("dc=example,dc=com", "(objectClass=*)")
+            .await
+            .unwrap();
         assert!(results.is_empty());
     }
 
@@ -245,19 +271,23 @@ mod tests {
         let template = test_template();
         struct CtxMapper;
         impl mapper::ContextMapper<String> for CtxMapper {
-            fn map_from_context(&self, ctx: &str) -> String { ctx.to_string() }
+            fn map_from_context(&self, ctx: &str) -> String {
+                ctx.to_string()
+            }
         }
-        let result = template.lookup("cn=missing,dc=example,dc=com", &CtxMapper).await.unwrap();
+        let result = template
+            .lookup("cn=missing,dc=example,dc=com", &CtxMapper)
+            .await
+            .unwrap();
         assert!(result.is_none());
     }
 
     #[tokio::test]
     async fn test_template_bind_ok() {
         let template = test_template();
-        let result = template.bind(
-            "cn=new,dc=example,dc=com",
-            &[("objectClass", &["person"] as &[&str])],
-        ).await;
+        let result = template
+            .bind("cn=new,dc=example,dc=com", &[("objectClass", &["person"] as &[&str])])
+            .await;
         assert!(result.is_ok());
     }
 
@@ -271,24 +301,29 @@ mod tests {
     #[tokio::test]
     async fn test_template_modify_ok() {
         let template = test_template();
-        let result = template.modify(
-            "cn=user,dc=example,dc=com",
-            &[("sn", &["newValue"] as &[&str])],
-        ).await;
+        let result = template
+            .modify("cn=user,dc=example,dc=com", &[("sn", &["newValue"] as &[&str])])
+            .await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
     async fn test_template_exists_false() {
         let template = test_template();
-        let exists = template.exists("cn=missing,dc=example,dc=com").await.unwrap();
+        let exists = template
+            .exists("cn=missing,dc=example,dc=com")
+            .await
+            .unwrap();
         assert!(!exists);
     }
 
     #[tokio::test]
     async fn test_template_count_zero() {
         let template = test_template();
-        let count = template.count("dc=example,dc=com", "(objectClass=*)").await.unwrap();
+        let count = template
+            .count("dc=example,dc=com", "(objectClass=*)")
+            .await
+            .unwrap();
         assert_eq!(count, 0);
     }
 
@@ -305,7 +340,11 @@ mod tests {
     #[test]
     fn test_person_repo_build_entry_dn() {
         let repo = person_repo();
-        let person = Person { uid: "alice".into(), cn: "Alice".into(), mail: "alice@example.com".into() };
+        let person = Person {
+            uid: "alice".into(),
+            cn: "Alice".into(),
+            mail: "alice@example.com".into(),
+        };
         assert_eq!(repo.build_entry_dn(&person), "uid=alice,ou=people,dc=example,dc=com");
     }
 
@@ -346,7 +385,11 @@ mod tests {
     #[test]
     fn test_group_repo_build_entry_dn() {
         let repo = group_repo();
-        let group = Group { cn: "admins".into(), description: "Admins".into(), member_count: 5 };
+        let group = Group {
+            cn: "admins".into(),
+            description: "Admins".into(),
+            member_count: 5,
+        };
         assert_eq!(repo.build_entry_dn(&group), "cn=admins,ou=groups,dc=example,dc=com");
     }
 
@@ -425,10 +468,7 @@ mod tests {
 
     #[test]
     fn test_parse_rdn_value_not_found() {
-        assert_eq!(
-            parse_rdn_value("uid=john,ou=people,dc=example,dc=com", "cn"),
-            None
-        );
+        assert_eq!(parse_rdn_value("uid=john,ou=people,dc=example,dc=com", "cn"), None);
     }
 
     // ============================================================
@@ -526,7 +566,10 @@ mod tests {
     #[test]
     fn test_pool_exhaustion() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
-        let config = PoolConfig { max_size: 2, ..PoolConfig::default() };
+        let config = PoolConfig {
+            max_size: 2,
+            ..PoolConfig::default()
+        };
         let pool = LdapPool::new(ctx, config);
 
         let c1 = pool.borrow().unwrap();
@@ -558,9 +601,11 @@ mod tests {
     #[test]
     fn test_query_and() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("objectClass").is("person")
+            .where_attr("objectClass")
+            .is("person")
             .and()
-            .where_attr("sn").is("Smith")
+            .where_attr("sn")
+            .is("Smith")
             .build();
         assert_eq!(filter, "(&(objectClass=person)(sn=Smith))");
     }
@@ -568,9 +613,11 @@ mod tests {
     #[test]
     fn test_query_or() {
         let filter = LdapQueryBuilder::or_query()
-            .where_attr("cn").is("John")
+            .where_attr("cn")
+            .is("John")
             .or()
-            .where_attr("cn").is("Jane")
+            .where_attr("cn")
+            .is("Jane")
             .build();
         assert_eq!(filter, "(|(cn=John)(cn=Jane))");
     }
@@ -578,23 +625,24 @@ mod tests {
     #[test]
     fn test_query_not_equal() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("status").is_not("inactive")
+            .where_attr("status")
+            .is_not("inactive")
             .build();
         assert_eq!(filter, "(!(status=inactive))");
     }
 
     #[test]
     fn test_query_present() {
-        assert_eq!(
-            LdapQueryBuilder::new().present("mail").build(),
-            "(mail=*)"
-        );
+        assert_eq!(LdapQueryBuilder::new().present("mail").build(), "(mail=*)");
     }
 
     #[test]
     fn test_query_like() {
         assert_eq!(
-            LdapQueryBuilder::new().where_attr("cn").like("John").build(),
+            LdapQueryBuilder::new()
+                .where_attr("cn")
+                .like("John")
+                .build(),
             "(cn=*John*)"
         );
     }
@@ -602,7 +650,10 @@ mod tests {
     #[test]
     fn test_query_starts_with() {
         assert_eq!(
-            LdapQueryBuilder::new().where_attr("cn").starts_with("J").build(),
+            LdapQueryBuilder::new()
+                .where_attr("cn")
+                .starts_with("J")
+                .build(),
             "(cn=J*)"
         );
     }
@@ -610,7 +661,10 @@ mod tests {
     #[test]
     fn test_query_ends_with() {
         assert_eq!(
-            LdapQueryBuilder::new().where_attr("mail").ends_with("@example.com").build(),
+            LdapQueryBuilder::new()
+                .where_attr("mail")
+                .ends_with("@example.com")
+                .build(),
             "(mail=*@example.com)"
         );
     }
@@ -636,9 +690,11 @@ mod tests {
     #[test]
     fn test_query_exists_not_exists() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("mail").exists()
+            .where_attr("mail")
+            .exists()
             .and()
-            .where_attr("password").not_exists()
+            .where_attr("password")
+            .not_exists()
             .build();
         assert_eq!(filter, "(&(mail=*)(!(password=*)))");
     }

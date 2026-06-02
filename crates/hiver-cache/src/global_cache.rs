@@ -28,9 +28,7 @@ pub async fn cache_get(cache_name: &str, key: &str) -> Option<String> {
 /// Put a JSON string value into the cache.
 /// 将 JSON 字符串值放入缓存。
 pub async fn cache_put(cache_name: &str, key: String, value: String) {
-    let entry = caches()
-        .entry(cache_name.to_string())
-        .or_default();
+    let entry = caches().entry(cache_name.to_string()).or_default();
     entry.insert(key, value);
 }
 

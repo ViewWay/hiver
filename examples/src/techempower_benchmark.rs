@@ -1,4 +1,15 @@
-#![allow(clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string, clippy::manual_clamp, clippy::no_effect_underscore_binding)]
+#![allow(
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::items_after_statements,
+    clippy::format_push_string,
+    clippy::manual_clamp,
+    clippy::no_effect_underscore_binding
+)]
 //! `TechEmpower` Benchmark Example
 //! `TechEmpower` 基准测试示例
 //!
@@ -43,15 +54,14 @@ fn db_query() -> Response {
 fn multiple_queries(query: Option<&str>) -> Response {
     let count = query
         .and_then(|q| {
-            q.split('&')
-                .find_map(|p| {
-                    let mut parts = p.split('=');
-                    if parts.next() == Some("queries") {
-                        parts.next().and_then(|v| v.parse::<usize>().ok())
-                    } else {
-                        None
-                    }
-                })
+            q.split('&').find_map(|p| {
+                let mut parts = p.split('=');
+                if parts.next() == Some("queries") {
+                    parts.next().and_then(|v| v.parse::<usize>().ok())
+                } else {
+                    None
+                }
+            })
         })
         .unwrap_or(1)
         .max(1)
@@ -80,15 +90,14 @@ fn plaintext() -> Response {
 fn update(query: Option<&str>) -> Response {
     let count = query
         .and_then(|q| {
-            q.split('&')
-                .find_map(|p| {
-                    let mut parts = p.split('=');
-                    if parts.next() == Some("queries") {
-                        parts.next().and_then(|v| v.parse::<usize>().ok())
-                    } else {
-                        None
-                    }
-                })
+            q.split('&').find_map(|p| {
+                let mut parts = p.split('=');
+                if parts.next() == Some("queries") {
+                    parts.next().and_then(|v| v.parse::<usize>().ok())
+                } else {
+                    None
+                }
+            })
         })
         .unwrap_or(1)
         .max(1)
@@ -114,12 +123,10 @@ fn fortunes() -> Response {
         (2, "A computer scientist is someone who fixes things that aren't broken."),
     ];
 
-    let mut html = String::from("<!DOCTYPE html><html><head><title>Fortunes</title></head><body><table>");
+    let mut html =
+        String::from("<!DOCTYPE html><html><head><title>Fortunes</title></head><body><table>");
     for (id, fortune) in fortunes {
-        html.push_str(&format!(
-            "<tr><td>{}</td><td>{}</td></tr>",
-            id, fortune
-        ));
+        html.push_str(&format!("<tr><td>{}</td><td>{}</td></tr>", id, fortune));
     }
     html.push_str("</table></body></html>");
 
@@ -207,21 +214,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // Convert body to bytes / 将body转换为字节
                     let body_bytes = body.data().to_vec();
 
-                    let content_type = response
-                        .header("content-type")
-                        .unwrap_or("text/plain");
+                    let content_type = response.header("content-type").unwrap_or("text/plain");
 
-                    writer.write_all(
-                        format!(
-                            "HTTP/1.1 {} OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
-                            status,
-                            content_type,
-                            body_bytes.len()
+                    writer
+                        .write_all(
+                            format!(
+                                "HTTP/1.1 {} OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
+                                status,
+                                content_type,
+                                body_bytes.len()
+                            )
+                            .as_bytes(),
                         )
-                        .as_bytes(),
-                    )
-                    .await
-                    .ok();
+                        .await
+                        .ok();
                     writer.write_all(&body_bytes).await.ok();
                 }
             }

@@ -357,7 +357,7 @@ impl<M: Model> DynamicProjection<M> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Model, ModelMeta, Column, ColumnType};
+    use crate::{Column, ColumnType, Model, ModelMeta};
 
     #[derive(Debug, Clone)]
     struct TestUser;
@@ -365,7 +365,8 @@ mod tests {
     impl Model for TestUser {
         fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("users");
-            meta.columns.push(Column::new("id", ColumnType::I64).primary_key());
+            meta.columns
+                .push(Column::new("id", ColumnType::I64).primary_key());
             meta.columns.push(Column::new("name", ColumnType::String));
             meta.columns.push(Column::new("email", ColumnType::String));
             meta

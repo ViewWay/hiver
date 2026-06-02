@@ -330,12 +330,18 @@ impl Shell {
     pub fn execute(&self, line: &str) -> ShellResult<String> {
         // Record in history / 记录到历史
         {
-            let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let mut state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             state.add_history(line);
         }
         let result = self.repl.execute_line(line);
         if let Err(ref e) = result {
-            let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let mut state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             state.record_error(e);
         }
         result

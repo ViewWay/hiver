@@ -18,8 +18,7 @@ mod tests;
 pub mod scheduled;
 
 pub use scheduled::{
-    ScheduleType, ScheduledTask, TaskScheduler,
-    schedule_fixed_rate, schedule_fixed_delay,
+    ScheduleType, ScheduledTask, TaskScheduler, schedule_fixed_delay, schedule_fixed_rate,
 };
 
 /// Re-exports of commonly used types

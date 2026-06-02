@@ -136,10 +136,7 @@ impl JwtClaims {
 
     /// Create a JwtClaims builder for advanced configuration
     /// 创建JwtClaims构建器用于高级配置
-    pub fn builder(
-        user_id: impl Into<String>,
-        username: impl Into<String>,
-    ) -> JwtClaimsBuilder {
+    pub fn builder(user_id: impl Into<String>, username: impl Into<String>) -> JwtClaimsBuilder {
         JwtClaimsBuilder {
             sub: user_id.into(),
             username: username.into(),
@@ -171,7 +168,10 @@ impl JwtClaims {
     /// 设置多个受众
     pub fn with_audiences(mut self, audiences: Vec<String>) -> Self {
         self.aud = Some(serde_json::Value::Array(
-            audiences.into_iter().map(serde_json::Value::String).collect(),
+            audiences
+                .into_iter()
+                .map(serde_json::Value::String)
+                .collect(),
         ));
         self
     }
@@ -549,12 +549,14 @@ impl JwtUtil {
             ));
         }
 
-        let payload = parts.get(1).ok_or_else(|| {
-            SecurityError::InvalidToken("Token payload part missing".to_string())
-        })?;
+        let payload = parts
+            .get(1)
+            .ok_or_else(|| SecurityError::InvalidToken("Token payload part missing".to_string()))?;
         let decoded = base64::engine::general_purpose::URL_SAFE_NO_PAD
             .decode(payload)
-            .map_err(|_| SecurityError::InvalidToken("Failed to decode token payload".to_string()))?;
+            .map_err(|_| {
+                SecurityError::InvalidToken("Failed to decode token payload".to_string())
+            })?;
 
         let claims: JwtClaims = serde_json::from_slice(&decoded)
             .map_err(|e| SecurityError::InvalidToken(format!("Failed to parse claims: {}", e)))?;
@@ -595,13 +597,13 @@ impl JwtUtil {
             .map_err(|e| match e.kind() {
                 jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                     SecurityError::TokenExpired("Token has expired".to_string())
-                }
+                },
                 jsonwebtoken::errors::ErrorKind::InvalidToken => {
                     SecurityError::InvalidToken("Token is invalid".to_string())
-                }
+                },
                 jsonwebtoken::errors::ErrorKind::InvalidSignature => {
                     SecurityError::InvalidToken("Invalid token signature".to_string())
-                }
+                },
                 _ => SecurityError::InvalidToken(format!("Token validation failed: {}", e)),
             })
     }
@@ -768,7 +770,7 @@ impl JwtTokenProvider {
                 let pem = self.rsa_public_key_pem.as_deref().unwrap_or(&self.secret);
                 DecodingKey::from_rsa_pem(pem.as_bytes())
                     .map_err(|e| SecurityError::Jwt(format!("Invalid RSA public key: {}", e)))
-            }
+            },
             _ => Ok(DecodingKey::from_secret(self.secret.as_ref())),
         }
     }
@@ -857,10 +859,10 @@ impl JwtTokenProvider {
             .map_err(|e| match e.kind() {
                 jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                     SecurityError::TokenExpired("Token has expired".to_string())
-                }
+                },
                 jsonwebtoken::errors::ErrorKind::InvalidSignature => {
                     SecurityError::InvalidToken("Invalid token signature".to_string())
-                }
+                },
                 _ => SecurityError::InvalidToken(format!("Token validation failed: {}", e)),
             })
     }
@@ -1130,17 +1132,13 @@ mod tests {
         let provider = JwtTokenProvider::with_settings(secret, 24);
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         // Should succeed with the same secret
-        let claims = JwtUtil::decode_and_validate(
-            &token,
-            secret,
-            &JwtAlgorithm::Hs256,
-            None,
-            None,
-        )
-        .unwrap();
+        let claims =
+            JwtUtil::decode_and_validate(&token, secret, &JwtAlgorithm::Hs256, None, None).unwrap();
         assert_eq!(claims.sub, "123");
     }
 
@@ -1150,27 +1148,25 @@ mod tests {
         let provider = JwtTokenProvider::with_settings(secret, 24);
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         // Should fail with wrong secret
-        let result = JwtUtil::decode_and_validate(
-            &token,
-            "wrong-secret",
-            &JwtAlgorithm::Hs256,
-            None,
-            None,
-        );
+        let result =
+            JwtUtil::decode_and_validate(&token, "wrong-secret", &JwtAlgorithm::Hs256, None, None);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_decode_and_validate_with_issuer() {
         let secret = "test-secret";
-        let provider = JwtTokenProvider::with_settings(secret, 24)
-            .with_issuer("my-app");
+        let provider = JwtTokenProvider::with_settings(secret, 24).with_issuer("my-app");
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         // Should succeed with matching issuer
         let claims = JwtUtil::decode_and_validate(
@@ -1187,11 +1183,12 @@ mod tests {
     #[test]
     fn test_decode_and_validate_wrong_issuer() {
         let secret = "test-secret";
-        let provider = JwtTokenProvider::with_settings(secret, 24)
-            .with_issuer("my-app");
+        let provider = JwtTokenProvider::with_settings(secret, 24).with_issuer("my-app");
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         // Should fail with wrong issuer
         let result = JwtUtil::decode_and_validate(
@@ -1211,8 +1208,7 @@ mod tests {
         let token = JwtUtil::create_token("123", "alice", &authorities).unwrap();
 
         // Threshold of 1 hour - token has ~24 hours left, should NOT refresh
-        let (returned_token, refreshed) =
-            JwtUtil::refresh_if_needed(&token, 3600).unwrap();
+        let (returned_token, refreshed) = JwtUtil::refresh_if_needed(&token, 3600).unwrap();
         assert!(!refreshed);
         assert_eq!(returned_token, token);
     }
@@ -1221,22 +1217,24 @@ mod tests {
     fn test_provider_refresh_if_needed_no_refresh() {
         let provider = JwtTokenProvider::new();
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         // Token has ~24h left, threshold 1h -> no refresh
-        let (returned_token, refreshed) =
-            provider.refresh_if_needed(&token, 3600).unwrap();
+        let (returned_token, refreshed) = provider.refresh_if_needed(&token, 3600).unwrap();
         assert!(!refreshed);
         assert_eq!(returned_token, token);
     }
 
     #[test]
     fn test_provider_with_audience() {
-        let provider = JwtTokenProvider::with_settings("secret", 24)
-            .with_audience("my-api");
+        let provider = JwtTokenProvider::with_settings("secret", 24).with_audience("my-api");
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         let claims = provider.decode_and_validate(&token).unwrap();
         assert_eq!(claims.audiences(), vec!["my-api"]);
@@ -1287,19 +1285,18 @@ mod tests {
             claims.custom.get("role").unwrap(),
             &serde_json::Value::String("manager".to_string())
         );
-        assert_eq!(
-            claims.custom.get("level").unwrap(),
-            &serde_json::Value::Number(5.into())
-        );
+        assert_eq!(claims.custom.get("level").unwrap(), &serde_json::Value::Number(5.into()));
     }
 
     #[test]
     fn test_provider_hs384() {
-        let provider = JwtTokenProvider::with_settings("secret-key", 24)
-            .with_algorithm(JwtAlgorithm::Hs384);
+        let provider =
+            JwtTokenProvider::with_settings("secret-key", 24).with_algorithm(JwtAlgorithm::Hs384);
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         assert!(provider.validate_token(&token).unwrap());
 
@@ -1309,11 +1306,13 @@ mod tests {
 
     #[test]
     fn test_provider_hs512() {
-        let provider = JwtTokenProvider::with_settings("secret-key", 24)
-            .with_algorithm(JwtAlgorithm::Hs512);
+        let provider =
+            JwtTokenProvider::with_settings("secret-key", 24).with_algorithm(JwtAlgorithm::Hs512);
 
         let authorities = vec![Authority::Role(Role::User)];
-        let token = provider.generate_token("123", "alice", &authorities).unwrap();
+        let token = provider
+            .generate_token("123", "alice", &authorities)
+            .unwrap();
 
         assert!(provider.validate_token(&token).unwrap());
 
@@ -1335,8 +1334,8 @@ mod tests {
             sub: "123".to_string(),
             username: "alice".to_string(),
             authorities: vec![],
-            iat: Utc::now().timestamp() - 7200,  // 2 hours ago
-            exp: Utc::now().timestamp() - 3600,  // 1 hour ago (expired)
+            iat: Utc::now().timestamp() - 7200, // 2 hours ago
+            exp: Utc::now().timestamp() - 3600, // 1 hour ago (expired)
             iss: Some("hiver-security".to_string()),
             aud: None,
             nbf: None,
@@ -1354,7 +1353,9 @@ mod tests {
             .with_audience("test-audience");
 
         let authorities = vec![Authority::Role(Role::Admin)];
-        let token = provider.generate_token("user-1", "bob", &authorities).unwrap();
+        let token = provider
+            .generate_token("user-1", "bob", &authorities)
+            .unwrap();
 
         let claims = provider.decode_and_validate(&token).unwrap();
 

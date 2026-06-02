@@ -362,11 +362,8 @@ impl HealthChecker for HttpHealthChecker {
                         status
                     ))
                 }
-            }
-            Err(e) => HealthCheckResult::unhealthy(format!(
-                "Health check request failed: {}",
-                e
-            )),
+            },
+            Err(e) => HealthCheckResult::unhealthy(format!("Health check request failed: {}", e)),
         }
     }
 }
@@ -499,7 +496,7 @@ impl ServiceDiscoveryClient {
         let needs_refresh = match last_refresh.get(service_id) {
             Some(last) => {
                 Utc::now().signed_duration_since(*last).num_seconds() as u64 >= self.cache_ttl_secs
-            }
+            },
             None => true,
         };
         drop(last_refresh);
@@ -526,7 +523,10 @@ impl ServiceDiscoveryClient {
         load_balancer: &crate::load_balancer::RoundRobinLoadBalancer,
     ) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
-        let healthy: Vec<_> = instances.into_iter().filter(ServiceInstance::is_healthy).collect();
+        let healthy: Vec<_> = instances
+            .into_iter()
+            .filter(ServiceInstance::is_healthy)
+            .collect();
 
         if healthy.is_empty() {
             return None;
@@ -646,8 +646,13 @@ impl ServiceDiscoveryClient {
 
     /// Get instances filtered by version metadata.
     /// 按版本元数据过滤获取实例。
-    pub async fn get_instances_by_version(&self, service_id: &str, version: &str) -> Vec<ServiceInstance> {
-        self.get_instances_by_metadata(service_id, "version", version).await
+    pub async fn get_instances_by_version(
+        &self,
+        service_id: &str,
+        version: &str,
+    ) -> Vec<ServiceInstance> {
+        self.get_instances_by_metadata(service_id, "version", version)
+            .await
     }
 
     /// Get all service IDs that have at least one healthy instance.
@@ -720,7 +725,10 @@ impl InMemoryServiceRegistry {
 
         // Prevent duplicate registration / 防止重复注册
         let instances = services.entry(service_id).or_insert_with(Vec::new);
-        if instances.iter().any(|i| i.instance_id == instance.instance_id) {
+        if instances
+            .iter()
+            .any(|i| i.instance_id == instance.instance_id)
+        {
             return Err(format!("Instance already registered: {}", instance.instance_id));
         }
         instances.push(instance);
@@ -849,7 +857,10 @@ impl ServiceDiscovery for SimpleDiscoveryClient {
 
     async fn get_instance(&self, service_id: &str) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
-        let healthy: Vec<_> = instances.into_iter().filter(ServiceInstance::is_healthy).collect();
+        let healthy: Vec<_> = instances
+            .into_iter()
+            .filter(ServiceInstance::is_healthy)
+            .collect();
 
         if healthy.is_empty() {
             return None;
@@ -936,10 +947,7 @@ mod tests {
         let instance = ServiceInstance::new("test", "id1", "localhost", 8080)
             .health_check_url("http://localhost:8080/health");
 
-        assert_eq!(
-            instance.health_check_url,
-            Some("http://localhost:8080/health".to_string())
-        );
+        assert_eq!(instance.health_check_url, Some("http://localhost:8080/health".to_string()));
     }
 
     #[test]
@@ -947,8 +955,8 @@ mod tests {
         let up = ServiceInstance::new("test", "id1", "localhost", 8080);
         assert!(up.is_healthy());
 
-        let down = ServiceInstance::new("test", "id2", "localhost", 8080)
-            .status(InstanceStatus::Down);
+        let down =
+            ServiceInstance::new("test", "id2", "localhost", 8080).status(InstanceStatus::Down);
         assert!(!down.is_healthy());
 
         let oos = ServiceInstance::new("test", "id3", "localhost", 8080)

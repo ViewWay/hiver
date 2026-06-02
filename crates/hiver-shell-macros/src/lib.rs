@@ -8,7 +8,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemStruct};
+use syn::{ItemStruct, parse_macro_input};
 
 /// Marks a struct as a shell component that contains shell commands.
 /// 将结构体标记为包含shell命令的shell组件。
@@ -67,7 +67,8 @@ pub fn shell_component(_attr: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn shell_method(attr: TokenStream, item: TokenStream) -> TokenStream {
     // Parse the attributes: first token is command name, rest is description
-    let args: Vec<String> = attr.to_string()
+    let args: Vec<String> = attr
+        .to_string()
         .split(',')
         .map(|s| s.trim().trim_matches('"').to_string())
         .collect();

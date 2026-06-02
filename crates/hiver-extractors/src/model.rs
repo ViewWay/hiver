@@ -140,17 +140,15 @@ where
             let mut merged_params = query_params;
 
             // Merge form data if present (form data takes precedence)
-            if has_form_body
-                && let Some(body) = body_bytes {
-                    let body_str = String::from_utf8(body).map_err(|_| {
-                        ExtractorError::Invalid("Invalid UTF-8 in body".to_string())
-                    })?;
+            if has_form_body && let Some(body) = body_bytes {
+                let body_str = String::from_utf8(body)
+                    .map_err(|_| ExtractorError::Invalid("Invalid UTF-8 in body".to_string()))?;
 
-                    let form_params = parse_form_data(&body_str);
-                    for (key, value) in form_params {
-                        merged_params.insert(key, value);
-                    }
+                let form_params = parse_form_data(&body_str);
+                for (key, value) in form_params {
+                    merged_params.insert(key, value);
                 }
+            }
 
             // Deserialize merged parameters
             serde_json::to_value(&merged_params)

@@ -72,7 +72,10 @@ impl FeignError {
     /// Create a non-successful HTTP status error.
     /// 创建非成功 HTTP 状态错误。
     pub fn http_status(status: u16, body: impl Into<String>) -> Self {
-        Self::HttpStatus { status, body: body.into() }
+        Self::HttpStatus {
+            status,
+            body: body.into(),
+        }
     }
 }
 
@@ -151,9 +154,10 @@ impl FeignClientConfig {
     pub fn build_client(&self) -> Result<Client, reqwest::Error> {
         let mut headers = reqwest::header::HeaderMap::new();
         if let Some(token) = &self.bearer_token
-            && let Ok(v) = reqwest::header::HeaderValue::from_str(&format!("Bearer {token}")) {
-                headers.insert(reqwest::header::AUTHORIZATION, v);
-            }
+            && let Ok(v) = reqwest::header::HeaderValue::from_str(&format!("Bearer {token}"))
+        {
+            headers.insert(reqwest::header::AUTHORIZATION, v);
+        }
         for (k, v) in &self.default_headers {
             if let (Ok(name), Ok(val)) = (
                 reqwest::header::HeaderName::from_bytes(k.as_bytes()),
@@ -325,9 +329,7 @@ impl RetryConfig {
     /// 判断给定错误是否可重试。
     pub fn is_retryable(&self, error: &FeignError) -> bool {
         match error {
-            FeignError::HttpStatus { status, .. } => {
-                self.retry_on_statuses.contains(status)
-            }
+            FeignError::HttpStatus { status, .. } => self.retry_on_statuses.contains(status),
             FeignError::Transport(_) => true,
             _ => false,
         }
@@ -515,9 +517,7 @@ mod tests {
 
     #[test]
     fn test_header_interceptor() {
-        let interp = HeaderInterceptor::new(vec![
-            ("X-Tenant".to_string(), "acme".to_string()),
-        ]);
+        let interp = HeaderInterceptor::new(vec![("X-Tenant".to_string(), "acme".to_string())]);
         let mut headers = vec![];
         interp.intercept(&mut headers);
         assert_eq!(headers[0].0, "X-Tenant");

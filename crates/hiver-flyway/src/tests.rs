@@ -3,8 +3,8 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::dialect::DatabaseType;
     use crate::config::Config;
+    use crate::dialect::DatabaseType;
 
     // ---------------------------------------------------------------
     // Dialect detection tests / 方言检测测试
@@ -24,14 +24,8 @@ mod tests {
             DatabaseType::from_url("mysql://root@localhost:3306/mydb"),
             Some(DatabaseType::Mysql)
         );
-        assert_eq!(
-            DatabaseType::from_url("sqlite://mydb.sqlite"),
-            Some(DatabaseType::Sqlite)
-        );
-        assert_eq!(
-            DatabaseType::from_url("sqlite::memory:"),
-            Some(DatabaseType::Sqlite)
-        );
+        assert_eq!(DatabaseType::from_url("sqlite://mydb.sqlite"), Some(DatabaseType::Sqlite));
+        assert_eq!(DatabaseType::from_url("sqlite::memory:"), Some(DatabaseType::Sqlite));
     }
 
     #[test]

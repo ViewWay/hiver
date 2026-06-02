@@ -3,8 +3,8 @@
 //! 定义配置属性的 trait 和实现。
 //! Defines traits and implementations for configuration properties.
 
-use std::sync::Arc;
 use anyhow::Result;
+use std::sync::Arc;
 
 use super::loader::ConfigurationLoader;
 
@@ -105,25 +105,31 @@ impl PropertyResolver {
 
                     // Find matching closing brace, accounting for nested placeholders
                     let end = self.find_matching_end(&result, start);
-                    let end = if let Some(e) = end { e + self.placeholder_suffix.len() } else {
+                    let end = if let Some(e) = end {
+                        e + self.placeholder_suffix.len()
+                    } else {
                         pos = start + self.placeholder_prefix.len();
                         continue;
                     };
 
                     let placeholder = &result[start..end];
-                    let inner = &placeholder[self.placeholder_prefix.len()..placeholder.len() - self.placeholder_suffix.len()];
+                    let inner = &placeholder[self.placeholder_prefix.len()
+                        ..placeholder.len() - self.placeholder_suffix.len()];
 
                     // 递归解析 inner 中的占位符（处理嵌套情况）
                     // Recursively resolve placeholders in inner (handle nesting)
                     let resolved_key = self.resolve_single(inner);
-                    let resolved = if let Some(colon_pos) = resolved_key.find(&self.value_separator) {
+                    let resolved = if let Some(colon_pos) = resolved_key.find(&self.value_separator)
+                    {
                         // 有默认值: ${key:default}
                         let key = &resolved_key[..colon_pos];
                         let default = &resolved_key[colon_pos + 1..];
                         self.loader.get_or(key, default)
                     } else {
                         // 无默认值: ${key}
-                        self.loader.get(&resolved_key).unwrap_or_else(|| placeholder.to_string())
+                        self.loader
+                            .get(&resolved_key)
+                            .unwrap_or_else(|| placeholder.to_string())
                     };
 
                     result = format!("{}{}{}", &result[..start], &resolved, &result[end..]);
@@ -155,20 +161,25 @@ impl PropertyResolver {
             if let Some(start) = result[pos..].find(&self.placeholder_prefix) {
                 let start = start + pos;
                 let end = self.find_matching_end(&result, start);
-                let end = if let Some(e) = end { e + self.placeholder_suffix.len() } else {
+                let end = if let Some(e) = end {
+                    e + self.placeholder_suffix.len()
+                } else {
                     pos = start + self.placeholder_prefix.len();
                     continue;
                 };
 
                 let placeholder = &result[start..end];
-                let inner = &placeholder[self.placeholder_prefix.len()..placeholder.len() - self.placeholder_suffix.len()];
+                let inner = &placeholder[self.placeholder_prefix.len()
+                    ..placeholder.len() - self.placeholder_suffix.len()];
 
                 let resolved = if let Some(colon_pos) = inner.find(&self.value_separator) {
                     let key = &inner[..colon_pos];
                     let default = &inner[colon_pos + 1..];
                     self.loader.get_or(key, default)
                 } else {
-                    self.loader.get(inner).unwrap_or_else(|| placeholder.to_string())
+                    self.loader
+                        .get(inner)
+                        .unwrap_or_else(|| placeholder.to_string())
                 };
 
                 result = format!("{}{}{}", &result[..start], &resolved, &result[end..]);
@@ -222,9 +233,9 @@ impl PropertyResolver {
     /// 获取必需的属性
     /// Get required property
     pub fn get_required_property(&self, key: &str) -> Result<String> {
-        self.loader.get(key).ok_or_else(|| {
-            anyhow::anyhow!("Required property '{}' not found", key)
-        })
+        self.loader
+            .get(key)
+            .ok_or_else(|| anyhow::anyhow!("Required property '{}' not found", key))
     }
 }
 
@@ -322,7 +333,10 @@ mod tests {
         let mut loader = ConfigurationLoader::new();
         loader.set("server.port".to_string(), "8080".to_string());
         let resolver = PropertyResolver::new(Arc::new(loader));
-        assert_eq!(resolver.resolve(r"Port: \${literal}, Real: ${server.port}"), r"Port: \${literal}, Real: 8080");
+        assert_eq!(
+            resolver.resolve(r"Port: \${literal}, Real: ${server.port}"),
+            r"Port: \${literal}, Real: 8080"
+        );
     }
 
     #[test]

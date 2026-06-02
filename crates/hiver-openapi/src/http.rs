@@ -4,7 +4,7 @@
 //! Provides integration with the HTTP framework for serving `OpenAPI` documentation.
 //! 提供与 HTTP 框架的集成以服务 `OpenAPI` 文档。
 
-use crate::{OpenApi, SwaggerUi, SwaggerConfig};
+use crate::{OpenApi, SwaggerConfig, SwaggerUi};
 use http::{HeaderMap, HeaderValue, StatusCode};
 use std::sync::Arc;
 
@@ -124,9 +124,10 @@ impl OpenApiResponse {
     pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         let name_str = name.into();
         if let Ok(val) = HeaderValue::try_from(value.into())
-            && let Ok(key) = http::header::HeaderName::from_bytes(name_str.as_bytes()) {
-                self.headers.insert(key, val);
-            }
+            && let Ok(key) = http::header::HeaderName::from_bytes(name_str.as_bytes())
+        {
+            self.headers.insert(key, val);
+        }
         self
     }
 
@@ -230,9 +231,9 @@ impl OpenApiRoutes {
     /// Get the full YAML spec path
     /// 获取完整的 YAML 规范路径
     pub fn spec_yaml_path(&self) -> Option<String> {
-        self.spec_yaml.as_ref().map(|path| {
-            format!("{}{}", self.prefix.trim_end_matches('/'), path)
-        })
+        self.spec_yaml
+            .as_ref()
+            .map(|path| format!("{}{}", self.prefix.trim_end_matches('/'), path))
     }
 }
 
@@ -293,10 +294,7 @@ impl OpenApiRouter {
     /// Get all route paths that should be registered
     /// 获取所有应该注册的路由路径
     pub fn paths(&self) -> Vec<String> {
-        let mut paths = vec![
-            self.routes.swagger_ui_path(),
-            self.routes.spec_json_path(),
-        ];
+        let mut paths = vec![self.routes.swagger_ui_path(), self.routes.spec_json_path()];
         if let Some(yaml_path) = self.routes.spec_yaml_path() {
             paths.push(yaml_path);
         }
@@ -383,9 +381,6 @@ mod tests {
             response.headers.get("content-type").unwrap(),
             &HeaderValue::from_static("text/plain")
         );
-        assert_eq!(
-            response.headers.get("x-custom").unwrap(),
-            &HeaderValue::from_static("value")
-        );
+        assert_eq!(response.headers.get("x-custom").unwrap(), &HeaderValue::from_static("value"));
     }
 }

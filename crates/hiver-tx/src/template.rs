@@ -1,9 +1,7 @@
 //! Transaction template
 //! 事务模板
 
-use crate::{
-    IsolationLevel, Propagation, TransactionError, TransactionManager, TransactionResult,
-};
+use crate::{IsolationLevel, Propagation, TransactionError, TransactionManager, TransactionResult};
 use std::sync::Arc;
 
 /// Transaction template
@@ -227,11 +225,11 @@ mod tests {
         let template = TransactionTemplate::new(manager);
 
         let result = template
-            .execute(|| Box::pin(async {
-                Err::<(), TransactionError>(TransactionError::CommitFailed(
-                    "error".to_string(),
-                ))
-            }))
+            .execute(|| {
+                Box::pin(async {
+                    Err::<(), TransactionError>(TransactionError::CommitFailed("error".to_string()))
+                })
+            })
             .await;
 
         assert!(result.is_err());

@@ -266,12 +266,7 @@ impl<T: Version> Versioned<T> {
         if expected == current_db_version {
             Ok(())
         } else {
-            Err(OptimisticLockError::new(
-                type_name,
-                entity_id,
-                expected,
-                current_db_version,
-            ))
+            Err(OptimisticLockError::new(type_name, entity_id, expected, current_db_version))
         }
     }
 
@@ -327,10 +322,7 @@ pub trait VersionCheckedUpdate<T: Version> {
     /// Returns `Ok(updated_entity)` on success, or `Err` if the version
     /// has changed (optimistic lock failure).
     /// 成功返回 `Ok(updated_entity)`，如果版本已改变返回 `Err`（乐观锁失败）。
-    fn update_if_version_matches(
-        &self,
-        versioned: Versioned<T>,
-    ) -> Result<T, Self::Error>;
+    fn update_if_version_matches(&self, versioned: Versioned<T>) -> Result<T, Self::Error>;
 }
 
 #[cfg(test)]

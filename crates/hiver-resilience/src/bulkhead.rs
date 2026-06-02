@@ -76,21 +76,19 @@ pub enum BulkheadError {
 impl fmt::Display for BulkheadError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Full { name, max_concurrent_calls } => {
+            Self::Full {
+                name,
+                max_concurrent_calls,
+            } => {
                 write!(
                     f,
                     "Bulkhead '{}' is full and does not permit further calls (max: {})",
                     name, max_concurrent_calls
                 )
-            }
+            },
             Self::WaitTimeout { name, max_wait } => {
-                write!(
-                    f,
-                    "Bulkhead '{}' wait timeout after {}ms",
-                    name,
-                    max_wait.as_millis()
-                )
-            }
+                write!(f, "Bulkhead '{}' wait timeout after {}ms", name, max_wait.as_millis())
+            },
         }
     }
 }
@@ -213,7 +211,10 @@ impl BulkheadMetrics {
     /// 记录接受的调用——增加进行中和接受的计数。
     fn record_accepted(&self) -> usize {
         let prev = self.accepted_calls.fetch_add(1, Ordering::Relaxed);
-        let current = self.available_concurrent_calls.fetch_add(1, Ordering::Relaxed) + 1;
+        let current = self
+            .available_concurrent_calls
+            .fetch_add(1, Ordering::Relaxed)
+            + 1;
         // Track peak concurrency
         let mut peak = self.max_concurrent_usage.load(Ordering::Relaxed);
         while current as u64 > peak {
@@ -233,7 +234,8 @@ impl BulkheadMetrics {
     /// Record a completed call — decrement in-flight count.
     /// 记录完成的调用——减少进行中计数。
     fn record_completed(&self) {
-        self.available_concurrent_calls.fetch_sub(1, Ordering::Relaxed);
+        self.available_concurrent_calls
+            .fetch_sub(1, Ordering::Relaxed);
     }
 
     /// Record a rejected call (bulkhead full).
@@ -445,7 +447,7 @@ impl Bulkhead {
                             max_wait,
                         });
                     }
-                }
+                },
                 Err(e) => return Err(e),
             }
         }
@@ -750,10 +752,7 @@ mod tests {
         let elapsed = start.elapsed();
 
         assert!(result.is_err());
-        assert!(matches!(
-            result.unwrap_err(),
-            BulkheadError::WaitTimeout { .. }
-        ));
+        assert!(matches!(result.unwrap_err(), BulkheadError::WaitTimeout { .. }));
         assert!(elapsed >= Duration::from_millis(50));
     }
 
@@ -790,7 +789,8 @@ mod tests {
             registry.get_or_create("db", BulkheadConfig::new().with_max_concurrent_calls(999));
         assert_eq!(bh1_again.config().max_concurrent_calls, 10); // unchanged
 
-        let _bh2 = registry.get_or_create("api", BulkheadConfig::new().with_max_concurrent_calls(5));
+        let _bh2 =
+            registry.get_or_create("api", BulkheadConfig::new().with_max_concurrent_calls(5));
         assert_eq!(registry.len(), 2);
 
         // Test iteration

@@ -48,31 +48,45 @@ impl QueryParam {
             Self::Bytes(b) => {
                 let hex: String = b.iter().map(|byte| format!("{byte:02x}")).collect();
                 format!("'\\x{hex}'")
-            }
+            },
         }
     }
 }
 
 impl From<i32> for QueryParam {
-    fn from(v: i32) -> Self { Self::I32(v) }
+    fn from(v: i32) -> Self {
+        Self::I32(v)
+    }
 }
 impl From<i64> for QueryParam {
-    fn from(v: i64) -> Self { Self::I64(v) }
+    fn from(v: i64) -> Self {
+        Self::I64(v)
+    }
 }
 impl From<f64> for QueryParam {
-    fn from(v: f64) -> Self { Self::F64(v) }
+    fn from(v: f64) -> Self {
+        Self::F64(v)
+    }
 }
 impl From<bool> for QueryParam {
-    fn from(v: bool) -> Self { Self::Bool(v) }
+    fn from(v: bool) -> Self {
+        Self::Bool(v)
+    }
 }
 impl From<String> for QueryParam {
-    fn from(v: String) -> Self { Self::Text(v) }
+    fn from(v: String) -> Self {
+        Self::Text(v)
+    }
 }
 impl From<&str> for QueryParam {
-    fn from(v: &str) -> Self { Self::Text(v.to_string()) }
+    fn from(v: &str) -> Self {
+        Self::Text(v.to_string())
+    }
 }
 impl From<u64> for QueryParam {
-    fn from(v: u64) -> Self { Self::I64(v as i64) }
+    fn from(v: u64) -> Self {
+        Self::I64(v as i64)
+    }
 }
 
 impl From<hiver_data_commons::Value> for QueryParam {
@@ -103,7 +117,7 @@ impl From<serde_json::Value> for QueryParam {
                 } else {
                     Self::Text(n.to_string())
                 }
-            }
+            },
             serde_json::Value::String(s) => Self::Text(s),
             _ => Self::Text(v.to_string()),
         }
@@ -294,9 +308,6 @@ mod tests {
         // WHERE name = '''; DROP TABLE users; --'
         // Note: basic escaping alone is not a substitute for parameterized queries.
         // The escaping neutralizes the injection by doubling the quote character.
-        assert!(
-            result.contains("''';"),
-            "leading quote should be escaped: {result}"
-        );
+        assert!(result.contains("''';"), "leading quote should be escaped: {result}");
     }
 }

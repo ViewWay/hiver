@@ -1,8 +1,8 @@
 //! Migration integration tests
 //! 迁移集成测试
 
-use hiver_data_orm::migrations::Migration;
 use crate::data_integration::helpers::*;
+use hiver_data_orm::migrations::Migration;
 
 #[cfg(test)]
 mod tests {
@@ -29,12 +29,10 @@ mod tests {
             .down("DROP TABLE test;");
         assert!(valid_migration.validate().is_ok());
 
-        let invalid_up = Migration::new("002_invalid")
-            .down("DROP TABLE test;");
+        let invalid_up = Migration::new("002_invalid").down("DROP TABLE test;");
         assert!(invalid_up.validate().is_err());
 
-        let invalid_down = Migration::new("003_invalid")
-            .up("CREATE TABLE test (id INTEGER);");
+        let invalid_down = Migration::new("003_invalid").up("CREATE TABLE test (id INTEGER);");
         assert!(invalid_down.validate().is_err());
     }
 
@@ -84,12 +82,11 @@ mod tests {
         let pool = get_test_pool().await;
 
         // Check users table exists
-        let result = sqlx::query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
-        )
-        .fetch_optional(pool)
-        .await
-        .unwrap();
+        let result =
+            sqlx::query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+                .fetch_optional(pool)
+                .await
+                .unwrap();
 
         assert!(result.is_some(), "users table should exist");
 
@@ -103,7 +100,9 @@ mod tests {
         cleanup_test_data().await.unwrap();
 
         // Insert test data
-        let id = insert_test_user("migration@test.com", Some("Migration Test")).await.unwrap();
+        let id = insert_test_user("migration@test.com", Some("Migration Test"))
+            .await
+            .unwrap();
         assert!(id > 0);
 
         // Verify data

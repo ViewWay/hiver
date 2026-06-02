@@ -3,7 +3,7 @@
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Setter] derive macro
 /// 实现 #[Setter] 派生宏
@@ -23,8 +23,8 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream {
                 "#[Setter] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Check for chain attribute
@@ -43,7 +43,9 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream {
     let mut setter_method_names = Vec::new();
 
     for field in fields {
-        let Some(field_name) = field.ident.as_ref() else { continue; };
+        let Some(field_name) = field.ident.as_ref() else {
+            continue;
+        };
         let field_type = &field.ty;
 
         // Check if field should be skipped

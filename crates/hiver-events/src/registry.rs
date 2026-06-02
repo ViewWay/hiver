@@ -179,7 +179,10 @@ impl EventRegistry {
 
         // Add to consumers map
         let mut consumers = self.consumers.write().await;
-        consumers.entry(event_type_id).or_default().push(boxed.clone());
+        consumers
+            .entry(event_type_id)
+            .or_default()
+            .push(boxed.clone());
 
         // Sort by order
         if let Some(list) = consumers.get_mut(&event_type_id) {
@@ -389,7 +392,11 @@ impl EventMulticaster {
 
         // Process in order
         for consumer in consumers {
-            if let Err(e) = consumer.consumer().call_boxed(event as &(dyn std::any::Any + Send + Sync)).await {
+            if let Err(e) = consumer
+                .consumer()
+                .call_boxed(event as &(dyn std::any::Any + Send + Sync))
+                .await
+            {
                 tracing::error!("Listener error: {}", e);
             }
         }
@@ -403,8 +410,8 @@ impl EventMulticaster {
     where
         E: ApplicationEvent + Send + Sync + 'static,
     {
-        let runtime = tokio::runtime::Handle::try_current()
-            .map_err(|_| "No tokio runtime".to_string())?;
+        let runtime =
+            tokio::runtime::Handle::try_current().map_err(|_| "No tokio runtime".to_string())?;
 
         runtime.block_on(self.multicast(event))
     }
@@ -520,8 +527,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_subscription() {
-        let subscription = EventSubscription::new::<TestEvent>("test_consumer")
-            .with_order(10);
+        let subscription = EventSubscription::new::<TestEvent>("test_consumer").with_order(10);
 
         assert_eq!(subscription.consumer_id, "test_consumer");
         assert_eq!(subscription.order, 10);

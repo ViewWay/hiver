@@ -15,9 +15,8 @@ use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, 
 use std::time::Duration as StdDuration;
 
 use hiver_data_orm::{
-    Model, ModelMeta, Column, ColumnType, SqlDialect,
-    QueryBuilder, WhereClause, OrderBy, OrderDirection,
-    JoinType,
+    Column, ColumnType, JoinType, Model, ModelMeta, OrderBy, OrderDirection, QueryBuilder,
+    SqlDialect, WhereClause,
 };
 use hiver_data_rdbc::QueryParam;
 
@@ -33,12 +32,14 @@ struct User;
 impl Model for User {
     fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("users");
-        meta.columns.push(Column::new("id", ColumnType::I64).primary_key());
+        meta.columns
+            .push(Column::new("id", ColumnType::I64).primary_key());
         meta.columns.push(Column::new("name", ColumnType::String));
         meta.columns.push(Column::new("email", ColumnType::String));
         meta.columns.push(Column::new("age", ColumnType::I32));
         meta.columns.push(Column::new("active", ColumnType::Bool));
-        meta.columns.push(Column::new("created_at", ColumnType::Timestamp));
+        meta.columns
+            .push(Column::new("created_at", ColumnType::Timestamp));
         meta
     }
 
@@ -59,16 +60,21 @@ struct Product;
 impl Model for Product {
     fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("products");
-        meta.columns.push(Column::new("id", ColumnType::I64).primary_key());
+        meta.columns
+            .push(Column::new("id", ColumnType::I64).primary_key());
         meta.columns.push(Column::new("name", ColumnType::String));
-        meta.columns.push(Column::new("description", ColumnType::Text));
+        meta.columns
+            .push(Column::new("description", ColumnType::Text));
         meta.columns.push(Column::new("price", ColumnType::F64));
         meta.columns.push(Column::new("stock", ColumnType::I32));
-        meta.columns.push(Column::new("category_id", ColumnType::I64));
-        meta.columns.push(Column::new("sku", ColumnType::String).unique());
+        meta.columns
+            .push(Column::new("category_id", ColumnType::I64));
+        meta.columns
+            .push(Column::new("sku", ColumnType::String).unique());
         meta.columns.push(Column::new("weight", ColumnType::F64));
         meta.columns.push(Column::new("active", ColumnType::Bool));
-        meta.columns.push(Column::new("created_at", ColumnType::Timestamp));
+        meta.columns
+            .push(Column::new("created_at", ColumnType::Timestamp));
         meta
     }
 
@@ -89,11 +95,13 @@ struct Order;
 impl Model for Order {
     fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("orders");
-        meta.columns.push(Column::new("id", ColumnType::I64).primary_key());
+        meta.columns
+            .push(Column::new("id", ColumnType::I64).primary_key());
         meta.columns.push(Column::new("user_id", ColumnType::I64));
         meta.columns.push(Column::new("total", ColumnType::F64));
         meta.columns.push(Column::new("status", ColumnType::String));
-        meta.columns.push(Column::new("created_at", ColumnType::Timestamp));
+        meta.columns
+            .push(Column::new("created_at", ColumnType::Timestamp));
         meta
     }
 
@@ -178,7 +186,11 @@ fn bench_query_complex(c: &mut Criterion) {
     group.bench_function("select_multi_join_group", |b| {
         b.iter(|| {
             let (sql, params) = QueryBuilder::<Order>::new()
-                .select(&["user_id", "COUNT(*) as order_count", "SUM(total) as total_spent"])
+                .select(&[
+                    "user_id",
+                    "COUNT(*) as order_count",
+                    "SUM(total) as total_spent",
+                ])
                 .join(JoinType::Inner, "users", "orders.user_id = users.id")
                 .join(JoinType::Left, "products", "orders.id = products.id")
                 .where_("orders.status = ?", &[QueryParam::Text("completed".into())])
@@ -224,10 +236,8 @@ fn bench_query_throughput(c: &mut Criterion) {
                 b.iter(|| {
                     let mut builder = QueryBuilder::<User>::new();
                     for i in 0..n_wheres {
-                        builder = builder.where_(
-                            &format!("field{} > ?", i),
-                            &[QueryParam::I32(i as i32)],
-                        );
+                        builder = builder
+                            .where_(&format!("field{} > ?", i), &[QueryParam::I32(i as i32)]);
                     }
                     let (sql, params) = builder.build();
                     black_box((sql, params))
@@ -295,15 +305,12 @@ fn bench_column_type_sql(c: &mut Criterion) {
 
     for (type_name, col_type) in &types {
         for (dialect_name, dialect) in &dialects {
-            group.bench_function(
-                &format!("{}_{}", type_name, dialect_name),
-                |b| {
-                    b.iter(|| {
-                        let sql_type = col_type.as_sql(*dialect);
-                        black_box(sql_type)
-                    });
-                },
-            );
+            group.bench_function(&format!("{}_{}", type_name, dialect_name), |b| {
+                b.iter(|| {
+                    let sql_type = col_type.as_sql(*dialect);
+                    black_box(sql_type)
+                });
+            });
         }
     }
 

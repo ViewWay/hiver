@@ -62,10 +62,7 @@ pub trait ValidationGroup: Any + Send + Sync + 'static {
         let type_name = std::any::type_name::<Self>();
         // Extract just the type name from the full path
         // 从完整路径中提取类型名称
-        type_name
-            .rsplit("::")
-            .next()
-            .unwrap_or(type_name)
+        type_name.rsplit("::").next().unwrap_or(type_name)
     }
 
     /// Get the group `TypeId` / `获取分组TypeId`
@@ -163,9 +160,7 @@ impl Default for GroupSet {
 
 impl fmt::Debug for GroupSet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_set()
-            .entries(self.names.iter())
-            .finish()
+        f.debug_set().entries(self.names.iter()).finish()
     }
 }
 
@@ -276,9 +271,11 @@ where
         // The group-based validation will be enhanced with macro support
         // 目前，仅使用Validate trait进行验证
         // 基于分组的验证将通过宏支持增强
-        data.validate()
-            .map_err(|e| ValidationError::from(e))?;
-        Ok(Self { value: data, group: _group })
+        data.validate().map_err(|e| ValidationError::from(e))?;
+        Ok(Self {
+            value: data,
+            group: _group,
+        })
     }
 }
 

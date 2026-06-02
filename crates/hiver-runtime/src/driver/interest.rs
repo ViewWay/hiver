@@ -122,19 +122,19 @@ impl Interest {
         let mut flags = 0u32;
 
         if self.readable {
-            flags |= libc::EPOLLIN;
+            flags |= libc::EPOLLIN as u32;
         }
         if self.writable {
-            flags |= libc::EPOLLOUT;
+            flags |= libc::EPOLLOUT as u32;
         }
         if self.priority {
-            flags |= libc::EPOLLPRI;
+            flags |= libc::EPOLLPRI as u32;
         }
         if self.oneshot {
-            flags |= libc::EPOLLONESHOT;
+            flags |= libc::EPOLLONESHOT as u32;
         }
         if self.edge {
-            flags |= libc::EPOLLET;
+            flags |= libc::EPOLLET as u32;
         }
 
         flags
@@ -145,11 +145,11 @@ impl Interest {
     #[cfg(target_os = "linux")]
     pub fn from_epoll_flags(flags: u32) -> Self {
         Self {
-            readable: (flags & libc::EPOLLIN) != 0,
-            writable: (flags & libc::EPOLLOUT) != 0,
-            priority: (flags & libc::EPOLLPRI) != 0,
-            oneshot: (flags & libc::EPOLLONESHOT) != 0,
-            edge: (flags & libc::EPOLLET) != 0,
+            readable: (flags & libc::EPOLLIN as u32) != 0,
+            writable: (flags & libc::EPOLLOUT as u32) != 0,
+            priority: (flags & libc::EPOLLPRI as u32) != 0,
+            oneshot: (flags & libc::EPOLLONESHOT as u32) != 0,
+            edge: (flags & libc::EPOLLET as u32) != 0,
         }
     }
 

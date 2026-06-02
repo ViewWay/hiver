@@ -3,8 +3,8 @@
 //! 提供应用的核心自动配置功能。
 //! Provides core auto-configuration for the application.
 
-use crate::core::{AutoConfiguration, ApplicationContext};
 use crate::core::logging::{self, StartupInfo};
+use crate::core::{ApplicationContext, AutoConfiguration};
 use anyhow::Result;
 
 /// Get the number of available CPU cores
@@ -176,7 +176,7 @@ impl AutoConfiguration for CoreAutoConfiguration {
     /// 获取配置优先级（最高优先级）
     /// Get configuration priority (highest)
     fn order(&self) -> i32 {
-        -100  // 最高优先级，在其他所有配置之前执行
+        -100 // 最高优先级，在其他所有配置之前执行
     }
 
     /// 配置条件检查

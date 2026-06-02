@@ -46,14 +46,16 @@
 #[cfg(test)]
 mod tests;
 
-mod message_source;
-mod resource_bundle;
-mod locale;
 mod error;
+mod locale;
+mod message_source;
 mod resolver;
+mod resource_bundle;
 
-pub use message_source::{MessageSource, MessageSourceResolvable};
-pub use resource_bundle::{ResourceBundleMessageSource, ResourceBundleSource};
-pub use locale::{Locale, LocaleContextHolder, LocaleResolver};
 pub use error::{I18nError, I18nResult};
-pub use resolver::{AcceptHeaderLocaleResolver, CookieLocaleResolver, SessionLocaleResolver, FixedLocaleResolver};
+pub use locale::{Locale, LocaleContextHolder, LocaleResolver};
+pub use message_source::{MessageSource, MessageSourceResolvable};
+pub use resolver::{
+    AcceptHeaderLocaleResolver, CookieLocaleResolver, FixedLocaleResolver, SessionLocaleResolver,
+};
+pub use resource_bundle::{ResourceBundleMessageSource, ResourceBundleSource};

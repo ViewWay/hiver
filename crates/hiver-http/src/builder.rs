@@ -222,7 +222,7 @@ impl UriBuilder {
             Some((bf, f)) => {
                 *builder = std::mem::take(builder).fragment(f);
                 (bf, true)
-            }
+            },
             None => (remaining, false),
         };
 

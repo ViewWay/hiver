@@ -302,7 +302,6 @@ impl fmt::Debug for Handler {
     }
 }
 
-
 impl Clone for Handler {
     fn clone(&self) -> Self {
         match self {
@@ -348,8 +347,11 @@ mod tests {
     /// 测试一次性设置多个方法。
     #[test]
     fn test_route_multiple_methods() {
-        let route = Route::new("/users", Handler::Unimplemented)
-            .methods(vec![Method::GET, Method::POST, Method::PUT]);
+        let route = Route::new("/users", Handler::Unimplemented).methods(vec![
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+        ]);
         assert_eq!(route.methods.len(), 3);
         assert!(route.methods.contains(&Method::GET));
         assert!(route.methods.contains(&Method::POST));

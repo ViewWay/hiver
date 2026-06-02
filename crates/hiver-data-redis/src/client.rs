@@ -106,6 +106,8 @@ mod tests {
         let client = redis::Client::open("redis://127.0.0.1").unwrap();
         let redis_client = RedisClient::from_client(client);
         // Verify client was created successfully
-        assert!(format!("{:?}", redis_client.inner().get_connection_info().addr).contains("127.0.0.1"));
+        assert!(
+            format!("{:?}", redis_client.inner().get_connection_info().addr).contains("127.0.0.1")
+        );
     }
 }

@@ -88,40 +88,43 @@ impl FileValidator {
     pub fn validate(&self, file: &MultipartFile) -> MultipartResult<()> {
         // Check file size
         if let Some(max) = self.max_size
-            && file.size() > max {
-                return Err(MultipartError::FileTooLarge {
-                    size: file.size(),
-                    max,
-                });
-            }
+            && file.size() > max
+        {
+            return Err(MultipartError::FileTooLarge {
+                size: file.size(),
+                max,
+            });
+        }
 
         // Check MIME type
         if let Some(allowed) = &self.allowed_types
-            && let Some(content_type) = file.content_type() {
-                // Parse MIME type (handle parameters like charset)
-                let mime = content_type
-                    .split(';')
-                    .next()
-                    .unwrap_or(content_type)
-                    .trim();
+            && let Some(content_type) = file.content_type()
+        {
+            // Parse MIME type (handle parameters like charset)
+            let mime = content_type
+                .split(';')
+                .next()
+                .unwrap_or(content_type)
+                .trim();
 
-                if !allowed.contains(mime) {
-                    return Err(MultipartError::InvalidType {
-                        found: mime.to_string(),
-                        allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
-                    });
-                }
+            if !allowed.contains(mime) {
+                return Err(MultipartError::InvalidType {
+                    found: mime.to_string(),
+                    allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
+                });
             }
+        }
 
         // Check extension
         if let Some(allowed) = &self.allowed_extensions
             && let Some(ext) = file.extension()
-                && !allowed.contains(&ext.to_lowercase()) {
-                    return Err(MultipartError::InvalidExtension {
-                        found: ext.to_string(),
-                        allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
-                    });
-                }
+            && !allowed.contains(&ext.to_lowercase())
+        {
+            return Err(MultipartError::InvalidExtension {
+                found: ext.to_string(),
+                allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
+            });
+        }
 
         Ok(())
     }

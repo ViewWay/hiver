@@ -37,10 +37,7 @@ pub enum BatchError {
 
     /// Step execution failed
     /// 步骤执行失败
-    StepExecutionFailed {
-        step_name: String,
-        reason: String,
-    },
+    StepExecutionFailed { step_name: String, reason: String },
 
     /// Read error
     /// 读取错误
@@ -88,46 +85,46 @@ impl fmt::Display for BatchError {
         match self {
             BatchError::JobAlreadyRunning { job_name } => {
                 write!(f, "Job '{}' is already running", job_name)
-            }
+            },
             BatchError::JobAlreadyComplete { job_name } => {
                 write!(f, "Job '{}' is already complete", job_name)
-            }
+            },
             BatchError::JobRestartFailed { job_name, reason } => {
                 write!(f, "Job '{}' restart failed: {}", job_name, reason)
-            }
+            },
             BatchError::InvalidParameters { message } => {
                 write!(f, "Invalid job parameters: {}", message)
-            }
+            },
             BatchError::StepExecutionFailed { step_name, reason } => {
                 write!(f, "Step '{}' execution failed: {}", step_name, reason)
-            }
+            },
             BatchError::ReadError { message } => {
                 write!(f, "Read error: {}", message)
-            }
+            },
             BatchError::WriteError { message } => {
                 write!(f, "Write error: {}", message)
-            }
+            },
             BatchError::ProcessError { message } => {
                 write!(f, "Process error: {}", message)
-            }
+            },
             BatchError::SkipLimitExceeded { limit, count } => {
                 write!(f, "Skip limit exceeded: {}/{}", count, limit)
-            }
+            },
             BatchError::ParseError { message } => {
                 write!(f, "Parse error: {}", message)
-            }
+            },
             BatchError::ValidationError { message } => {
                 write!(f, "Validation error: {}", message)
-            }
+            },
             BatchError::Timeout { duration_secs } => {
                 write!(f, "Operation timeout after {} seconds", duration_secs)
-            }
+            },
             BatchError::RepositoryError { message } => {
                 write!(f, "Repository error: {}", message)
-            }
+            },
             BatchError::NotFound { resource, id } => {
                 write!(f, "Resource '{}' not found: {}", resource, id)
-            }
+            },
             BatchError::Other(msg) => write!(f, "Batch error: {}", msg),
         }
     }
@@ -141,9 +138,7 @@ pub type BatchResult<T> = Result<T, BatchError>;
 
 impl From<tokio::time::error::Elapsed> for BatchError {
     fn from(_: tokio::time::error::Elapsed) -> Self {
-        BatchError::Timeout {
-            duration_secs: 0,
-        }
+        BatchError::Timeout { duration_secs: 0 }
     }
 }
 

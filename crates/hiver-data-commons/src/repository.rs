@@ -155,10 +155,7 @@ pub trait PagingAndSortingRepository<T: Send + 'static, ID: Send + Sync + 'stati
 {
     /// Find all entities with pagination
     /// 分页查找所有实体
-    async fn find_all_pageable(
-        &self,
-        pageable: PageRequest,
-    ) -> Result<Page<T>, Self::Error>;
+    async fn find_all_pageable(&self, pageable: PageRequest) -> Result<Page<T>, Self::Error>;
 
     /// Find all entities with sorting
     /// 排序查找所有实体
@@ -180,5 +177,3 @@ pub trait PagingAndSortingRepository<T: Send + 'static, ID: Send + Sync + 'stati
             .map_err(|e| Self::Error::from(e.into()))
     }
 }
-
-

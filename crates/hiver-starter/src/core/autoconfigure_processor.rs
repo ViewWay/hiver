@@ -309,21 +309,14 @@ impl AutoConfigurationProcessor {
             match entry.configure(ctx) {
                 Ok(()) => {
                     self.processed.push(config_name);
-                    tracing::debug!(
-                        "Successfully applied auto-configuration: {}",
-                        entry.name()
-                    );
-                }
+                    tracing::debug!("Successfully applied auto-configuration: {}", entry.name());
+                },
                 Err(e) => {
                     let error_msg = e.to_string();
-                    tracing::warn!(
-                        "Auto-configuration '{}' failed: {}",
-                        entry.name(),
-                        e
-                    );
+                    tracing::warn!("Auto-configuration '{}' failed: {}", entry.name(), e);
                     self.skipped
                         .push((config_name, SkipReason::ExecutionError(error_msg)));
-                }
+                },
             }
         }
 
@@ -497,8 +490,7 @@ impl std::fmt::Debug for ConditionAdapter {
 mod tests {
     use super::*;
     use crate::core::autoconfigure::{
-        AutoConfigurationEntry, ConditionalOnMissingBeanCondition,
-        ConditionalOnPropertyCondition,
+        AutoConfigurationEntry, ConditionalOnMissingBeanCondition, ConditionalOnPropertyCondition,
     };
     use std::sync::Arc;
 
@@ -547,9 +539,8 @@ mod tests {
     #[test]
     fn test_condition_context_with_bean_names() {
         let ctx = ApplicationContext::new();
-        let cond_ctx = ConditionContext::from_context(&ctx).with_bean_names(HashMap::from([
-            ("myService".to_string(), TypeId::of::<i32>()),
-        ]));
+        let cond_ctx = ConditionContext::from_context(&ctx)
+            .with_bean_names(HashMap::from([("myService".to_string(), TypeId::of::<i32>())]));
 
         assert!(cond_ctx.has_bean_by_name("myService"));
         assert!(!cond_ctx.has_bean_by_name("nonexistent"));
@@ -622,10 +613,9 @@ mod tests {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("AlwaysConfig", register_i32_bean));
         registry.register_conditional(
-            AutoConfigurationEntry::new("ConditionalConfig", register_string_bean)
-                .with_condition(Box::new(
-                    ConditionalOnPropertyCondition::new("nonexistent.property"),
-                )),
+            AutoConfigurationEntry::new("ConditionalConfig", register_string_bean).with_condition(
+                Box::new(ConditionalOnPropertyCondition::new("nonexistent.property")),
+            ),
         );
 
         let mut ctx = ApplicationContext::new();
@@ -669,9 +659,8 @@ mod tests {
     #[test]
     fn test_processor_priority_ordering() {
         let mut registry = AutoConfigurationRegistry::new();
-        registry.register(
-            AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100),
-        );
+        registry
+            .register(AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100));
         registry.register(
             AutoConfigurationEntry::new("HighPriority", noop_factory).with_priority(-100),
         );

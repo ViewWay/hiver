@@ -114,7 +114,11 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
     /// real SQLx would use proper parameter binding.
     /// 使用 `$1`, `$2` ... 标记（如 PostgreSQL/SQLx）。
     #[must_use]
-    pub fn where_(mut self, condition: impl Into<String>, params: &[hiver_data_rdbc::QueryParam]) -> Self {
+    pub fn where_(
+        mut self,
+        condition: impl Into<String>,
+        params: &[hiver_data_rdbc::QueryParam],
+    ) -> Self {
         let mut cond = condition.into();
         for param in params {
             self.param_counter += 1;
@@ -385,7 +389,10 @@ impl VerifiedQuery {
 
     /// Execute this query and fetch all rows.
     /// 执行此查询并获取所有行。
-    pub async fn fetch_all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<hiver_data_rdbc::Row>> {
+    pub async fn fetch_all<C: DatabaseClient>(
+        &self,
+        client: &C,
+    ) -> Result<Vec<hiver_data_rdbc::Row>> {
         client
             .fetch_all(&self.sql)
             .await
@@ -429,12 +436,9 @@ mod tests {
     impl Model for Product {
         fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("products");
-            meta.columns
-                .push(Column::new("id", ColumnType::I64));
-            meta.columns
-                .push(Column::new("name", ColumnType::String));
-            meta.columns
-                .push(Column::new("price", ColumnType::F64));
+            meta.columns.push(Column::new("id", ColumnType::I64));
+            meta.columns.push(Column::new("name", ColumnType::String));
+            meta.columns.push(Column::new("price", ColumnType::F64));
             meta
         }
 

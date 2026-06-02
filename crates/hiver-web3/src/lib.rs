@@ -31,9 +31,9 @@ pub mod wallet;
 
 pub use chain::{Block, BlockNumber, ChainConfig, ChainId, Eip155Chain};
 pub use contract::{CallParams, ContractError, FunctionSelector};
-pub use defi::{DeFiError, Erc20, Erc1155, Erc721, UniswapV2Router};
+pub use defi::{DeFiError, Erc20, Erc721, Erc1155, UniswapV2Router};
 pub use hd_wallet::{DerivedAccount, HdWallet, HdWalletError, MultiSigWallet, WordCount};
-pub use multichain::{BridgeError, ChainRegistry, GasOracle, GasFeeEstimate};
+pub use multichain::{BridgeError, ChainRegistry, GasFeeEstimate, GasOracle};
 pub use rpc::RpcError;
 pub use tx::{Transaction, TransactionBuilder, TxHash, TxType};
 pub use wallet::{Address, LocalWallet, Wallet};

@@ -140,7 +140,9 @@ impl PartitionCollector {
 
     /// Check if all partitions completed successfully.
     pub fn all_completed(&self) -> bool {
-        self.results.iter().all(|r| r.status == BatchStatus::Completed)
+        self.results
+            .iter()
+            .all(|r| r.status == BatchStatus::Completed)
     }
 
     /// Aggregate exit status — COMPLETED if all succeeded, FAILED if any failed.
@@ -154,12 +156,18 @@ impl PartitionCollector {
 
     /// Total read count across all partitions.
     pub fn total_read_count(&self) -> usize {
-        self.results.iter().map(|r| r.step_execution.read_count()).sum()
+        self.results
+            .iter()
+            .map(|r| r.step_execution.read_count())
+            .sum()
     }
 
     /// Total write count across all partitions.
     pub fn total_write_count(&self) -> usize {
-        self.results.iter().map(|r| r.step_execution.write_count()).sum()
+        self.results
+            .iter()
+            .map(|r| r.step_execution.write_count())
+            .sum()
     }
 }
 

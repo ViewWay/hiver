@@ -14,16 +14,16 @@ use crate::templates::project;
 /// Module definitions with display names and feature mappings.
 /// 模块定义，包含显示名称和 feature 映射。
 const MODULES: &[(&str, &str, &str)] = &[
-    ("web",        "Web (HTTP + Router + Middleware)",    "Web 模块 (HTTP + 路由 + 中间件)"),
-    ("security",   "Security (JWT + OAuth2)",             "安全模块 (JWT + OAuth2)"),
-    ("data",       "Data (RDBC + ORM + Flyway)",          "数据模块 (RDBC + ORM + Flyway)"),
-    ("cache",      "Cache (Redis)",                       "缓存模块 (Redis)"),
-    ("schedule",   "Scheduling (Cron)",                   "调度模块 (Cron)"),
-    ("actuator",   "Actuator (Health + Metrics)",         "运维模块 (健康检查 + 指标)"),
-    ("web3",       "Web3 (Blockchain)",                   "Web3 模块 (区块链)"),
-    ("graphql",    "GraphQL",                             "GraphQL 模块"),
-    ("grpc",       "gRPC",                                "gRPC 模块"),
-    ("ai",         "AI (Chat + Embedding + Agent)",       "AI 模块 (聊天 + 向量 + Agent)"),
+    ("web", "Web (HTTP + Router + Middleware)", "Web 模块 (HTTP + 路由 + 中间件)"),
+    ("security", "Security (JWT + OAuth2)", "安全模块 (JWT + OAuth2)"),
+    ("data", "Data (RDBC + ORM + Flyway)", "数据模块 (RDBC + ORM + Flyway)"),
+    ("cache", "Cache (Redis)", "缓存模块 (Redis)"),
+    ("schedule", "Scheduling (Cron)", "调度模块 (Cron)"),
+    ("actuator", "Actuator (Health + Metrics)", "运维模块 (健康检查 + 指标)"),
+    ("web3", "Web3 (Blockchain)", "Web3 模块 (区块链)"),
+    ("graphql", "GraphQL", "GraphQL 模块"),
+    ("grpc", "gRPC", "gRPC 模块"),
+    ("ai", "AI (Chat + Embedding + Agent)", "AI 模块 (聊天 + 向量 + Agent)"),
 ];
 
 /// Run the `hiver new` command.
@@ -36,28 +36,59 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
         return Err(format!(
             "Directory '{}' already exists / 目录 '{}' 已存在",
             project_dir, project_dir
-        ).into());
+        )
+        .into());
     }
 
     // Determine which modules to include.
     // 确定要包含的模块。
     let modules = if args.all {
-        MODULES.iter().map(|(k, _, _)| k.to_string()).collect::<Vec<_>>()
-    } else if args.web || args.security || args.data || args.cache
-        || args.schedule || args.actuator || args.web3 || args.graphql
-        || args.grpc || args.ai
+        MODULES
+            .iter()
+            .map(|(k, _, _)| k.to_string())
+            .collect::<Vec<_>>()
+    } else if args.web
+        || args.security
+        || args.data
+        || args.cache
+        || args.schedule
+        || args.actuator
+        || args.web3
+        || args.graphql
+        || args.grpc
+        || args.ai
     {
         let mut selected = Vec::new();
-        if args.web { selected.push("web"); }
-        if args.security { selected.push("security"); }
-        if args.data { selected.push("data"); }
-        if args.cache { selected.push("cache"); }
-        if args.schedule { selected.push("schedule"); }
-        if args.actuator { selected.push("actuator"); }
-        if args.web3 { selected.push("web3"); }
-        if args.graphql { selected.push("graphql"); }
-        if args.grpc { selected.push("grpc"); }
-        if args.ai { selected.push("ai"); }
+        if args.web {
+            selected.push("web");
+        }
+        if args.security {
+            selected.push("security");
+        }
+        if args.data {
+            selected.push("data");
+        }
+        if args.cache {
+            selected.push("cache");
+        }
+        if args.schedule {
+            selected.push("schedule");
+        }
+        if args.actuator {
+            selected.push("actuator");
+        }
+        if args.web3 {
+            selected.push("web3");
+        }
+        if args.graphql {
+            selected.push("graphql");
+        }
+        if args.grpc {
+            selected.push("grpc");
+        }
+        if args.ai {
+            selected.push("ai");
+        }
         selected.iter().map(|s| s.to_string()).collect()
     } else if !args.no_interactive {
         select_modules_interactive()?
@@ -75,9 +106,11 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let pb = ProgressBar::new(5);
-    pb.set_style(ProgressStyle::default_bar()
-        .template("{msg} {bar:40.cyan/blue} {pos}/{len}")?
-        .progress_chars("##-"));
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{msg} {bar:40.cyan/blue} {pos}/{len}")?
+            .progress_chars("##-"),
+    );
 
     // Step 1: Create directory structure.
     // 步骤 1：创建目录结构。
@@ -141,18 +174,24 @@ fn select_modules_interactive() -> Result<Vec<String>, Box<dyn std::error::Error
     println!("{} 选择要包含的模块（空格切换，回车确认）", style(">").cyan());
     println!();
 
-    let items: Vec<String> = MODULES.iter()
+    let items: Vec<String> = MODULES
+        .iter()
         .map(|(_, en, zh)| format!("{} / {}", en, zh))
         .collect();
 
-    let defaults: Vec<bool> = vec![true, false, false, false, false, false, false, false, false, false];
+    let defaults: Vec<bool> = vec![
+        true, false, false, false, false, false, false, false, false, false,
+    ];
 
     let selections = MultiSelect::new()
         .items(&items)
         .defaults(&defaults)
         .interact()?;
 
-    Ok(selections.iter().map(|&i| MODULES[i].0.to_string()).collect())
+    Ok(selections
+        .iter()
+        .map(|&i| MODULES[i].0.to_string())
+        .collect())
 }
 
 /// Create project directory structure.

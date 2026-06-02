@@ -14,8 +14,7 @@ use std::str::FromStr;
 
 /// HTTP Methods
 /// HTTP 方法
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Method {
     /// GET method - retrieve a resource
     /// GET 方法 - 获取资源
@@ -82,7 +81,6 @@ impl Method {
         )
     }
 }
-
 
 /// Formats the method as an uppercase string (e.g. `"GET"`, `"POST"`).
 /// 将方法格式化为大写字符串（例如 `"GET"`、`"POST"`）。

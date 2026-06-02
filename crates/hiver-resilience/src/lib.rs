@@ -56,6 +56,4 @@ pub use retry::{
     BackoffType, RetryAll, RetryError, RetryErrors, RetryPolicy, RetryState, ShouldRetry, retry,
     retry_with_predicate,
 };
-pub use timeout::{
-    Timeout, TimeoutConfig, TimeoutError, TimeoutMetrics, TimeoutRegistry, timeout,
-};
+pub use timeout::{Timeout, TimeoutConfig, TimeoutError, TimeoutMetrics, TimeoutRegistry, timeout};

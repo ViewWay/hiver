@@ -50,15 +50,22 @@ pub fn to_prometheus_text(registry: &MetricRegistry) -> String {
 
 /// Sanitize a metric name for Prometheus compatibility.
 fn sanitize_prometheus_name(name: &str) -> String {
-    name.chars().enumerate().map(|(i, c)| {
-        if i == 0 {
-            if c.is_ascii_alphabetic() || c == '_' || c == ':' { c } else { '_' }
-        } else if c.is_ascii_alphanumeric() || c == '_' || c == ':' {
-            c
-        } else {
-            '_'
-        }
-    }).collect()
+    name.chars()
+        .enumerate()
+        .map(|(i, c)| {
+            if i == 0 {
+                if c.is_ascii_alphabetic() || c == '_' || c == ':' {
+                    c
+                } else {
+                    '_'
+                }
+            } else if c.is_ascii_alphanumeric() || c == '_' || c == ':' {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect()
 }
 
 /// Format tags as Prometheus label string.
@@ -75,15 +82,17 @@ fn format_labels(tags: &crate::metric::Tags) -> String {
 
 /// Escape special characters in label values.
 fn escape_label_value(value: &str) -> String {
-    value.chars().fold(String::with_capacity(value.len()), |mut s, c| {
-        match c {
-            '\\' => s.push_str("\\\\"),
-            '"' => s.push_str("\\\""),
-            '\n' => s.push_str("\\n"),
-            c => s.push(c),
-        }
-        s
-    })
+    value
+        .chars()
+        .fold(String::with_capacity(value.len()), |mut s, c| {
+            match c {
+                '\\' => s.push_str("\\\\"),
+                '"' => s.push_str("\\\""),
+                '\n' => s.push_str("\\n"),
+                c => s.push(c),
+            }
+            s
+        })
 }
 
 /// HTTP response for `/metrics` endpoint.

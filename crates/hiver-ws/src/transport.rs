@@ -43,7 +43,9 @@ pub struct HttpTransport {
 impl HttpTransport {
     /// Create a new HTTP transport / 创建新的HTTP传输
     pub fn new(url: &str) -> Self {
-        Self { endpoint_url: url.to_string() }
+        Self {
+            endpoint_url: url.to_string(),
+        }
     }
 
     /// Get the endpoint URL / 获取端点URL

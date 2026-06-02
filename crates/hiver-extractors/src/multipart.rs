@@ -138,7 +138,9 @@ impl UploadedFile {
     /// Check if the file is an image based on content type or extension.
     /// 根据内容类型或扩展名检查文件是否为图片。
     pub fn is_image(&self) -> bool {
-        const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "tiff", "avif"];
+        const IMAGE_EXTENSIONS: &[&str] = &[
+            "jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "tiff", "avif",
+        ];
         const IMAGE_TYPES: &[&str] = &["image/"];
 
         if let Some(ct) = &self.content_type {
@@ -146,16 +148,18 @@ impl UploadedFile {
                 return true;
             }
         }
-        self.extension()
-            .is_some_and(|ext| IMAGE_EXTENSIONS.iter().any(|&e| ext.eq_ignore_ascii_case(e)))
+        self.extension().is_some_and(|ext| {
+            IMAGE_EXTENSIONS
+                .iter()
+                .any(|&e| ext.eq_ignore_ascii_case(e))
+        })
     }
 
     /// Check if the file is a document based on content type or extension.
     /// 根据内容类型或扩展名检查文件是否为文档。
     pub fn is_document(&self) -> bool {
         const DOC_EXTENSIONS: &[&str] = &[
-            "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx",
-            "txt", "rtf", "odt", "ods", "csv",
+            "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "odt", "ods", "csv",
         ];
         const DOC_TYPES: &[&str] = &[
             "application/pdf",
@@ -263,10 +267,7 @@ impl Multipart {
     /// Add an uploaded file.
     /// 添加上传文件。
     pub fn add_file(&mut self, name: impl Into<String>, file: UploadedFile) {
-        self.files
-            .entry(name.into())
-            .or_default()
-            .push(file);
+        self.files.entry(name.into()).or_default().push(file);
     }
 
     /// Get a text field value by name.
@@ -809,12 +810,8 @@ impl MultipartParser {
                     });
                 }
 
-                let uploaded_file = UploadedFile::new(
-                    &field_name,
-                    filename,
-                    content_type_part,
-                    file_data,
-                );
+                let uploaded_file =
+                    UploadedFile::new(&field_name, filename, content_type_part, file_data);
 
                 // Validate the file
                 // 验证文件
@@ -1010,7 +1007,8 @@ mod tests {
         let by_ct = UploadedFile::new("f", "file.dat", Some("image/webp".to_string()), vec![]);
         assert!(by_ct.is_image());
 
-        let not_image = UploadedFile::new("f", "doc.pdf", Some("application/pdf".to_string()), vec![]);
+        let not_image =
+            UploadedFile::new("f", "doc.pdf", Some("application/pdf".to_string()), vec![]);
         assert!(!not_image.is_image());
     }
 
@@ -1118,7 +1116,10 @@ mod tests {
         assert!(config.validate_file(&ok).is_ok());
 
         let bad = UploadedFile::new("f", "script.exe", None, vec![]);
-        assert!(matches!(config.validate_file(&bad), Err(UploadError::ExtensionNotAllowed { .. })));
+        assert!(matches!(
+            config.validate_file(&bad),
+            Err(UploadError::ExtensionNotAllowed { .. })
+        ));
     }
 
     #[test]
@@ -1130,8 +1131,16 @@ mod tests {
         let ok = UploadedFile::new("f", "photo.jpg", Some("image/jpeg".to_string()), vec![]);
         assert!(config.validate_file(&ok).is_ok());
 
-        let bad = UploadedFile::new("f", "data.bin", Some("application/octet-stream".to_string()), vec![]);
-        assert!(matches!(config.validate_file(&bad), Err(UploadError::MimeTypeNotAllowed { .. })));
+        let bad = UploadedFile::new(
+            "f",
+            "data.bin",
+            Some("application/octet-stream".to_string()),
+            vec![],
+        );
+        assert!(matches!(
+            config.validate_file(&bad),
+            Err(UploadError::MimeTypeNotAllowed { .. })
+        ));
     }
 
     // -- MultipartParser tests --

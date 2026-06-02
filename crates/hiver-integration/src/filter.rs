@@ -258,9 +258,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_predicate_filter() {
-        let filter = PredicateFilter::new(|msg| {
-            msg.get_payload::<i32>().map_or(false, |v| v > 10)
-        });
+        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 10));
 
         assert!(!filter.test(&Message::new(5)).await);
         assert!(filter.test(&Message::new(15)).await);
@@ -300,9 +298,7 @@ mod tests {
     #[tokio::test]
     async fn test_and_filter() {
         let filter = AndFilter::new(vec![
-            Arc::new(PredicateFilter::new(|msg| {
-                msg.get_payload::<i32>().map_or(false, |v| v > 0)
-            })),
+            Arc::new(PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 0))),
             Arc::new(PredicateFilter::new(|msg| {
                 msg.get_payload::<i32>().map_or(false, |v| v < 100)
             })),
@@ -317,7 +313,8 @@ mod tests {
     async fn test_or_filter() {
         let filter = OrFilter::new(vec![
             Arc::new(PredicateFilter::new(|msg| {
-                msg.get_payload::<String>().map_or(false, |s| s == "special")
+                msg.get_payload::<String>()
+                    .map_or(false, |s| s == "special")
             })),
             Arc::new(PredicateFilter::new(|msg| {
                 msg.get_payload::<i32>().map_or(false, |v| v > 100)
@@ -353,9 +350,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_filter_method() {
-        let filter = PredicateFilter::new(|msg| {
-            msg.get_payload::<i32>().map_or(false, |v| v > 10)
-        });
+        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 10));
 
         let good_msg = Message::new(15i32);
         let bad_msg = Message::new(5i32);

@@ -5,8 +5,7 @@ use serde::{Deserialize, Serialize};
 
 /// Queue type
 /// 队列类型
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum QueueType {
     /// Classic queue
     /// 经典队列
@@ -21,7 +20,6 @@ pub enum QueueType {
     /// 流队列
     Stream,
 }
-
 
 /// AMQP queue
 /// AMQP队列
@@ -93,9 +91,7 @@ impl Queue {
     /// Create temporary queue (non-durable, auto-delete)
     /// 创建临时队列（非持久化，自动删除）
     pub fn temporary(name: impl Into<String>) -> Self {
-        Self::new(name)
-            .with_durable(false)
-            .with_auto_delete(true)
+        Self::new(name).with_durable(false).with_auto_delete(true)
     }
 
     /// Create exclusive queue
@@ -134,7 +130,11 @@ impl Queue {
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.arguments.insert(key.into(), value.into());
         self
     }
@@ -142,42 +142,48 @@ impl Queue {
     /// Set max length
     /// 设置最大长度
     pub fn with_max_length(mut self, length: u32) -> Self {
-        self.arguments.insert("x-max-length".to_string(), serde_json::json!(length));
+        self.arguments
+            .insert("x-max-length".to_string(), serde_json::json!(length));
         self
     }
 
     /// Set message TTL (milliseconds)
     /// 设置消息TTL（毫秒）
     pub fn with_message_ttl(mut self, ttl: u32) -> Self {
-        self.arguments.insert("x-message-ttl".to_string(), serde_json::json!(ttl));
+        self.arguments
+            .insert("x-message-ttl".to_string(), serde_json::json!(ttl));
         self
     }
 
     /// Set queue TTL (milliseconds)
     /// 设置队列TTL（毫秒）
     pub fn with_queue_ttl(mut self, ttl: u32) -> Self {
-        self.arguments.insert("x-expires".to_string(), serde_json::json!(ttl));
+        self.arguments
+            .insert("x-expires".to_string(), serde_json::json!(ttl));
         self
     }
 
     /// Set dead letter exchange
     /// 设置死信交换机
     pub fn with_dead_letter_exchange(mut self, exchange: impl Into<String>) -> Self {
-        self.arguments.insert("x-dead-letter-exchange".to_string(), serde_json::json!(exchange.into()));
+        self.arguments
+            .insert("x-dead-letter-exchange".to_string(), serde_json::json!(exchange.into()));
         self
     }
 
     /// Set dead letter routing key
     /// 设置死信路由键
     pub fn with_dead_letter_routing_key(mut self, key: impl Into<String>) -> Self {
-        self.arguments.insert("x-dead-letter-routing-key".to_string(), serde_json::json!(key.into()));
+        self.arguments
+            .insert("x-dead-letter-routing-key".to_string(), serde_json::json!(key.into()));
         self
     }
 
     /// Set max priority
     /// 设置最大优先级
     pub fn with_max_priority(mut self, priority: u8) -> Self {
-        self.arguments.insert("x-max-priority".to_string(), serde_json::json!(priority));
+        self.arguments
+            .insert("x-max-priority".to_string(), serde_json::json!(priority));
         self
     }
 }
@@ -237,7 +243,11 @@ impl QueueBuilder {
 
     /// Add argument
     /// 添加参数
-    pub fn with_argument(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_argument(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.queue = self.queue.with_argument(key, value);
         self
     }
@@ -313,7 +323,10 @@ mod tests {
         assert_eq!(q.arguments.get("x-message-ttl").unwrap(), &serde_json::json!(60000));
         assert_eq!(q.arguments.get("x-expires").unwrap(), &serde_json::json!(300000));
         assert_eq!(q.arguments.get("x-dead-letter-exchange").unwrap(), &serde_json::json!("dlx"));
-        assert_eq!(q.arguments.get("x-dead-letter-routing-key").unwrap(), &serde_json::json!("dlq"));
+        assert_eq!(
+            q.arguments.get("x-dead-letter-routing-key").unwrap(),
+            &serde_json::json!("dlq")
+        );
         assert_eq!(q.arguments.get("x-max-priority").unwrap(), &serde_json::json!(5));
     }
 

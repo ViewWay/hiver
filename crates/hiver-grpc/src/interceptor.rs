@@ -24,14 +24,14 @@ pub trait ServerInterceptor: Send + Sync + 'static {
     ///
     /// Return `Ok(request)` to continue the call chain, or `Err(Status)` to reject.
     /// 返回 Ok(request) 继续调用链，返回 Err(Status) 以拒绝请求。
-    async fn intercept<T: Send + 'static>(
-        &self,
-        request: Request<T>,
-    ) -> Result<Request<T>, Status>;
+    async fn intercept<T: Send + 'static>(&self, request: Request<T>)
+    -> Result<Request<T>, Status>;
 
     /// Name of this interceptor (for logging / ordering).
     /// 此拦截器的名称（用于日志/排序）。
-    fn name(&self) -> &'static str { "unnamed" }
+    fn name(&self) -> &'static str {
+        "unnamed"
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -47,15 +47,25 @@ pub struct LoggingInterceptor {
 impl LoggingInterceptor {
     /// Create at INFO level.
     /// 以 INFO 级别创建。
-    pub fn new() -> Self { Self { level: tracing::Level::INFO } }
+    pub fn new() -> Self {
+        Self {
+            level: tracing::Level::INFO,
+        }
+    }
 
     /// Create at DEBUG level.
     /// 以 DEBUG 级别创建。
-    pub fn debug() -> Self { Self { level: tracing::Level::DEBUG } }
+    pub fn debug() -> Self {
+        Self {
+            level: tracing::Level::DEBUG,
+        }
+    }
 }
 
 impl Default for LoggingInterceptor {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[async_trait]
@@ -67,14 +77,16 @@ impl ServerInterceptor for LoggingInterceptor {
         match self.level {
             tracing::Level::DEBUG => {
                 tracing::debug!(metadata = ?request.metadata(), "gRPC request received");
-            }
+            },
             _ => {
                 tracing::info!("gRPC request received");
-            }
+            },
         }
         Ok(request)
     }
-    fn name(&self) -> &'static str { "logging" }
+    fn name(&self) -> &'static str {
+        "logging"
+    }
 }
 
 /// Authentication interceptor — validates a Bearer token in metadata.
@@ -87,7 +99,9 @@ impl AuthInterceptor {
     /// Create with the expected static token.
     /// 使用预期的静态 token 创建。
     pub fn new(token: impl Into<String>) -> Self {
-        Self { expected_token: token.into() }
+        Self {
+            expected_token: token.into(),
+        }
     }
 }
 
@@ -108,7 +122,9 @@ impl ServerInterceptor for AuthInterceptor {
             Err(Status::unauthenticated("invalid token"))
         }
     }
-    fn name(&self) -> &'static str { "auth" }
+    fn name(&self) -> &'static str {
+        "auth"
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -123,7 +139,8 @@ pub struct InterceptorChain {
 
 #[async_trait]
 trait ErasedInterceptor: Send + Sync {
-    async fn intercept_erased(&self, metadata: &tonic::metadata::MetadataMap) -> Result<(), Status>;
+    async fn intercept_erased(&self, metadata: &tonic::metadata::MetadataMap)
+    -> Result<(), Status>;
     #[allow(dead_code)] // trait method for future ErasedInterceptor impls
     fn name(&self) -> &'static str;
 }
@@ -132,37 +149,54 @@ struct InterceptorWrapper<I: ServerInterceptor>(I);
 
 #[async_trait]
 impl<I: ServerInterceptor> ErasedInterceptor for InterceptorWrapper<I> {
-    async fn intercept_erased(&self, metadata: &tonic::metadata::MetadataMap) -> Result<(), Status> {
+    async fn intercept_erased(
+        &self,
+        metadata: &tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         use crate::metadata::MetadataMapExt;
         tracing::trace!(interceptor = self.0.name(), bearer = ?metadata.bearer_token(), "checking");
         Ok(())
     }
-    fn name(&self) -> &'static str { self.0.name() }
+    fn name(&self) -> &'static str {
+        self.0.name()
+    }
 }
 
 impl InterceptorChain {
     /// Create an empty chain.
     /// 创建空链。
-    pub fn new() -> Self { Self { interceptors: Vec::new() } }
+    pub fn new() -> Self {
+        Self {
+            interceptors: Vec::new(),
+        }
+    }
 
     /// Add an interceptor to the end of the chain.
     /// 向链末尾添加拦截器。
     pub fn add(mut self, interceptor: impl ServerInterceptor) -> Self {
-        self.interceptors.push(Box::new(InterceptorWrapper(interceptor)));
+        self.interceptors
+            .push(Box::new(InterceptorWrapper(interceptor)));
         self
     }
 
     /// Number of interceptors in the chain.
     /// 链中的拦截器数量。
-    pub fn len(&self) -> usize { self.interceptors.len() }
+    pub fn len(&self) -> usize {
+        self.interceptors.len()
+    }
 
     /// Returns `true` if the chain is empty.
     /// 若链为空则返回 true。
-    pub fn is_empty(&self) -> bool { self.interceptors.is_empty() }
+    pub fn is_empty(&self) -> bool {
+        self.interceptors.is_empty()
+    }
 
     /// Run all interceptors against the request metadata (pre-call check).
     /// 对请求元数据运行所有拦截器（预调用检查）。
-    pub async fn run_metadata(&self, metadata: &tonic::metadata::MetadataMap) -> Result<(), Status> {
+    pub async fn run_metadata(
+        &self,
+        metadata: &tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         for ic in &self.interceptors {
             ic.intercept_erased(metadata).await?;
         }
@@ -171,7 +205,9 @@ impl InterceptorChain {
 }
 
 impl Default for InterceptorChain {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -189,14 +225,14 @@ impl Default for InterceptorChain {
 pub trait ClientInterceptor: Send + Sync + 'static {
     /// Intercept an outgoing request before it is sent.
     /// 在传出请求发送前拦截。
-    async fn intercept<T: Send + 'static>(
-        &self,
-        request: Request<T>,
-    ) -> Result<Request<T>, Status>;
+    async fn intercept<T: Send + 'static>(&self, request: Request<T>)
+    -> Result<Request<T>, Status>;
 
     /// Name of this interceptor (for logging).
     /// 此拦截器的名称（用于日志）。
-    fn name(&self) -> &'static str { "unnamed-client" }
+    fn name(&self) -> &'static str {
+        "unnamed-client"
+    }
 }
 
 /// Bearer token injection interceptor for gRPC clients.
@@ -209,7 +245,9 @@ impl BearerTokenInterceptor {
     /// Create with a static token.
     /// 使用静态令牌创建。
     pub fn new(token: impl Into<String>) -> Self {
-        Self { token: token.into() }
+        Self {
+            token: token.into(),
+        }
     }
 }
 
@@ -220,13 +258,15 @@ impl ClientInterceptor for BearerTokenInterceptor {
         mut request: Request<T>,
     ) -> Result<Request<T>, Status> {
         let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> =
-            format!("Bearer {}", self.token).parse().map_err(|_| {
-                Status::internal("invalid bearer token encoding")
-            })?;
+            format!("Bearer {}", self.token)
+                .parse()
+                .map_err(|_| Status::internal("invalid bearer token encoding"))?;
         request.metadata_mut().insert("authorization", value);
         Ok(request)
     }
-    fn name(&self) -> &'static str { "bearer-token" }
+    fn name(&self) -> &'static str {
+        "bearer-token"
+    }
 }
 
 /// Request ID injection interceptor.
@@ -240,12 +280,15 @@ impl ClientInterceptor for RequestIdInterceptor {
         mut request: Request<T>,
     ) -> Result<Request<T>, Status> {
         let id = uuid::Uuid::new_v4().to_string();
-        let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> =
-            id.parse().map_err(|_| Status::internal("invalid request-id"))?;
+        let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> = id
+            .parse()
+            .map_err(|_| Status::internal("invalid request-id"))?;
         request.metadata_mut().insert("x-request-id", value);
         Ok(request)
     }
-    fn name(&self) -> &'static str { "request-id" }
+    fn name(&self) -> &'static str {
+        "request-id"
+    }
 }
 
 /// Client-side interceptor chain.
@@ -261,7 +304,10 @@ pub struct ClientInterceptorChain {
 #[async_trait]
 #[allow(dead_code)]
 trait ErasedClientInterceptor: Send + Sync {
-    async fn intercept_metadata(&self, metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status>;
+    async fn intercept_metadata(
+        &self,
+        metadata: &mut tonic::metadata::MetadataMap,
+    ) -> Result<(), Status>;
     fn name(&self) -> &'static str;
 }
 
@@ -271,11 +317,16 @@ struct ClientInterceptorWrapper<I: ClientInterceptor>(I);
 #[async_trait]
 #[allow(dead_code)]
 impl<I: ClientInterceptor> ErasedClientInterceptor for ClientInterceptorWrapper<I> {
-    async fn intercept_metadata(&self, _metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status> {
+    async fn intercept_metadata(
+        &self,
+        _metadata: &mut tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         // Metadata-only pre-call check; full interception happens at call site
         Ok(())
     }
-    fn name(&self) -> &'static str { self.0.name() }
+    fn name(&self) -> &'static str {
+        self.0.name()
+    }
 }
 
 /// Bearer token metadata injector (for use in chains).
@@ -286,13 +337,20 @@ struct BearerMetadataInjector {
 
 #[async_trait]
 impl ErasedClientInterceptor for BearerMetadataInjector {
-    async fn intercept_metadata(&self, metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status> {
+    async fn intercept_metadata(
+        &self,
+        metadata: &mut tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> =
-            format!("Bearer {}", self.token).parse().map_err(|_| Status::internal("invalid token"))?;
+            format!("Bearer {}", self.token)
+                .parse()
+                .map_err(|_| Status::internal("invalid token"))?;
         metadata.insert("authorization", value);
         Ok(())
     }
-    fn name(&self) -> &'static str { "bearer-token" }
+    fn name(&self) -> &'static str {
+        "bearer-token"
+    }
 }
 
 /// Request ID metadata injector.
@@ -301,25 +359,37 @@ struct RequestIdMetadataInjector;
 
 #[async_trait]
 impl ErasedClientInterceptor for RequestIdMetadataInjector {
-    async fn intercept_metadata(&self, metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status> {
+    async fn intercept_metadata(
+        &self,
+        metadata: &mut tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         let id = uuid::Uuid::new_v4().to_string();
-        let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> =
-            id.parse().map_err(|_| Status::internal("invalid request-id"))?;
+        let value: tonic::metadata::MetadataValue<tonic::metadata::Ascii> = id
+            .parse()
+            .map_err(|_| Status::internal("invalid request-id"))?;
         metadata.insert("x-request-id", value);
         Ok(())
     }
-    fn name(&self) -> &'static str { "request-id" }
+    fn name(&self) -> &'static str {
+        "request-id"
+    }
 }
 
 impl ClientInterceptorChain {
     /// Create an empty chain.
     /// 创建空链。
-    pub fn new() -> Self { Self { interceptors: Vec::new() } }
+    pub fn new() -> Self {
+        Self {
+            interceptors: Vec::new(),
+        }
+    }
 
     /// Add a bearer token interceptor.
     /// 添加 Bearer 令牌拦截器。
     pub fn bearer_token(mut self, token: impl Into<String>) -> Self {
-        self.interceptors.push(Box::new(BearerMetadataInjector { token: token.into() }));
+        self.interceptors.push(Box::new(BearerMetadataInjector {
+            token: token.into(),
+        }));
         self
     }
 
@@ -332,7 +402,10 @@ impl ClientInterceptorChain {
 
     /// Run all interceptors against request metadata.
     /// 对请求元数据运行所有拦截器。
-    pub async fn run_metadata(&self, metadata: &mut tonic::metadata::MetadataMap) -> Result<(), Status> {
+    pub async fn run_metadata(
+        &self,
+        metadata: &mut tonic::metadata::MetadataMap,
+    ) -> Result<(), Status> {
         for ic in &self.interceptors {
             ic.intercept_metadata(metadata).await?;
         }
@@ -341,15 +414,21 @@ impl ClientInterceptorChain {
 
     /// Number of interceptors.
     /// 拦截器数量。
-    pub fn len(&self) -> usize { self.interceptors.len() }
+    pub fn len(&self) -> usize {
+        self.interceptors.len()
+    }
 
     /// Returns `true` if empty.
     /// 若为空则返回 true。
-    pub fn is_empty(&self) -> bool { self.interceptors.is_empty() }
+    pub fn is_empty(&self) -> bool {
+        self.interceptors.is_empty()
+    }
 }
 
 impl Default for ClientInterceptorChain {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]

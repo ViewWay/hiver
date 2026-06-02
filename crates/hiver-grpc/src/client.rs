@@ -89,9 +89,8 @@ impl GrpcChannelBuilder {
     }
 
     fn build_endpoint(self) -> GrpcResult<Endpoint> {
-        let mut ep = Endpoint::new(self.endpoint).map_err(|e| {
-            GrpcError::config(format!("invalid endpoint: {e}"))
-        })?;
+        let mut ep = Endpoint::new(self.endpoint)
+            .map_err(|e| GrpcError::config(format!("invalid endpoint: {e}")))?;
         if let Some(t) = self.timeout {
             ep = ep.timeout(t);
         }
@@ -106,9 +105,9 @@ impl GrpcChannelBuilder {
         }
         if let Some(tls) = self.tls {
             let tls_config = tls.client_tls_config()?;
-            ep = ep.tls_config(tls_config).map_err(|e| {
-                GrpcError::config(format!("client TLS config failed: {e}"))
-            })?;
+            ep = ep
+                .tls_config(tls_config)
+                .map_err(|e| GrpcError::config(format!("client TLS config failed: {e}")))?;
         }
         Ok(ep)
     }
@@ -137,8 +136,8 @@ impl GrpcChannelPool {
         if self.channels.is_empty() {
             return None;
         }
-        let idx = self.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
-            % self.channels.len();
+        let idx =
+            self.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed) % self.channels.len();
         self.channels.get(idx)
     }
 

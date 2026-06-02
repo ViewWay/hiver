@@ -28,9 +28,9 @@
 //! }
 //! ```
 
+use crate::StatusCode;
 use crate::body::Body;
 use crate::response::Response;
-use crate::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -441,12 +441,7 @@ pub struct PageResponse<T> {
 impl<T> PageResponse<T> {
     /// Create a new page response
     /// 创建新的分页响应
-    pub fn new(
-        content: Vec<T>,
-        page: u32,
-        size: u32,
-        total_elements: u64,
-    ) -> Self {
+    pub fn new(content: Vec<T>, page: u32, size: u32, total_elements: u64) -> Self {
         #[allow(clippy::cast_precision_loss)]
         let total_pages = if size == 0 {
             0
@@ -611,8 +606,7 @@ mod tests {
 
     #[test]
     fn test_page_response() {
-        let content = vec
-![1, 2, 3, 4, 5];
+        let content = vec![1, 2, 3, 4, 5];
         let page = PageResponse::new(content, 0, 5, 12);
 
         assert_eq!(page.page, 0);

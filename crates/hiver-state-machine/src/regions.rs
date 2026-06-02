@@ -133,10 +133,9 @@ impl<S: Clone + PartialEq + Eq + std::fmt::Debug> ForkJoinRegion<S> {
     /// Update a region's current state
     /// 更新区域的当前状态
     pub fn update_region(&mut self, region_id: &str, new_state: S) -> StateMachineResult<()> {
-        let region = self
-            .regions
-            .get_mut(region_id)
-            .ok_or_else(|| StateMachineError::StateNotFound(format!("Region '{}' not found", region_id)))?;
+        let region = self.regions.get_mut(region_id).ok_or_else(|| {
+            StateMachineError::StateNotFound(format!("Region '{}' not found", region_id))
+        })?;
 
         if !region.contains_state(&new_state) && new_state != region.initial_state {
             return Err(StateMachineError::InvalidConfiguration(format!(

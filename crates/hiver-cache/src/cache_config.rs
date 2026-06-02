@@ -229,8 +229,7 @@ impl Default for CacheProperties {
 ///
 /// Equivalent to Spring Boot's `@EnableCaching` configuration.
 /// 等价于Spring Boot的`@EnableCaching`配置。
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct EnableCaching {
     /// Cache manager to use
     /// 要使用的缓存管理器
@@ -265,7 +264,6 @@ pub(crate) enum CacheErrorHandler {
     /// 错误时返回默认值
     ReturnDefault,
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -98,9 +98,9 @@ impl AuthBackend for TokenAuth {
         if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body = resp.text().await.unwrap_or_default();
-            return Err(VaultError::AuthenticationFailed(
-                format!("Token lookup failed ({status}): {body}"),
-            ));
+            return Err(VaultError::AuthenticationFailed(format!(
+                "Token lookup failed ({status}): {body}"
+            )));
         }
 
         let lookup: serde_json::Value = resp.json().await?;
@@ -203,19 +203,14 @@ impl AuthBackend for AppRoleAuth {
 
         // Don't use client.post() since we may not have a token yet
         // 不使用 client.post() 因为此时可能还没有 token
-        let resp = client
-            .http_client()
-            .post(url)
-            .json(&body)
-            .send()
-            .await?;
+        let resp = client.http_client().post(url).json(&body).send().await?;
 
         if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body_text = resp.text().await.unwrap_or_default();
-            return Err(VaultError::AuthenticationFailed(
-                format!("AppRole login failed ({status}): {body_text}"),
-            ));
+            return Err(VaultError::AuthenticationFailed(format!(
+                "AppRole login failed ({status}): {body_text}"
+            )));
         }
 
         let auth_resp: AuthResponse = resp.json().await?;

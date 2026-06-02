@@ -1,7 +1,7 @@
 //! MongoDB query builders
 //! MongoDB 查询构建器
 
-use mongodb::bson::{doc, Document};
+use mongodb::bson::{Document, doc};
 
 /// MongoDB filter builder / MongoDB 过滤器构建器
 #[derive(Debug, Clone, Default)]
@@ -83,8 +83,7 @@ impl MongoFilter {
 
     /// Add exists filter (field exists or not) / 添加存在性过滤器
     pub fn exists(mut self, field: &str, exists: bool) -> Self {
-        self.filters
-            .push(doc! { field: { "$exists": exists } });
+        self.filters.push(doc! { field: { "$exists": exists } });
         self
     }
 
@@ -97,37 +96,32 @@ impl MongoFilter {
 
     /// Add `$mod` (modulo) filter / 添加 `$mod`（模运算）过滤器
     pub fn mod_(mut self, field: &str, divisor: i64, remainder: i64) -> Self {
-        self.filters.push(
-            doc! { field: { "$mod": [divisor, remainder] } },
-        );
+        self.filters
+            .push(doc! { field: { "$mod": [divisor, remainder] } });
         self
     }
 
     /// Add type filter (by BSON type number) / 添加类型过滤器（按 BSON 类型编号）
     pub fn type_(mut self, field: &str, bson_type: i32) -> Self {
-        self.filters
-            .push(doc! { field: { "$type": bson_type } });
+        self.filters.push(doc! { field: { "$type": bson_type } });
         self
     }
 
     /// Add `$all` filter (array contains all specified values) / 添加 `$all` 过滤器
     pub fn all(mut self, field: &str, values: Vec<mongodb::bson::Bson>) -> Self {
-        self.filters
-            .push(doc! { field: { "$all": values } });
+        self.filters.push(doc! { field: { "$all": values } });
         self
     }
 
     /// Add `$size` filter (array has specified length) / 添加 `$size` 过滤器
     pub fn size(mut self, field: &str, size: i32) -> Self {
-        self.filters
-            .push(doc! { field: { "$size": size } });
+        self.filters.push(doc! { field: { "$size": size } });
         self
     }
 
     /// Add not filter / 添加 not 过滤器
     pub fn not(mut self, field: &str, value: Document) -> Self {
-        self.filters
-            .push(doc! { field: { "$not": value } });
+        self.filters.push(doc! { field: { "$not": value } });
         self
     }
 
@@ -139,8 +133,7 @@ impl MongoFilter {
 
     /// Add where filter (JavaScript expression, use with caution) / 添加 where 过滤器
     pub fn where_(mut self, expression: &str) -> Self {
-        self.filters
-            .push(doc! { "$where": expression });
+        self.filters.push(doc! { "$where": expression });
         self
     }
 
@@ -284,9 +277,7 @@ mod tests {
             mongodb::bson::Bson::String("ssh".to_string()),
             mongodb::bson::Bson::String("ssl".to_string()),
         ];
-        let filter = MongoFilter::new()
-            .all("tags", values)
-            .build();
+        let filter = MongoFilter::new().all("tags", values).build();
         assert!(filter.get_document("tags").unwrap().contains_key("$all"));
     }
 
@@ -309,9 +300,7 @@ mod tests {
 
     #[test]
     fn test_filter_text_search() {
-        let filter = MongoFilter::new()
-            .text_search("coffee", Some("en"))
-            .build();
+        let filter = MongoFilter::new().text_search("coffee", Some("en")).build();
         let inner = filter.get_document("$text").unwrap();
         assert_eq!(inner.get_str("$search").unwrap(), "coffee");
         assert_eq!(inner.get_str("$language").unwrap(), "en");

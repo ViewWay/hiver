@@ -89,14 +89,15 @@ pub fn to_bean_name(type_name: &str) -> String {
 
 /// Topological sort of bean descriptors; detects circular dependencies.
 /// 对 Bean 描述符进行拓扑排序；检测循环依赖。
-pub fn topological_sort<'a>(descriptors: &[&'a BeanDescriptor]) -> Result<Vec<&'a BeanDescriptor>, String> {
+pub fn topological_sort<'a>(
+    descriptors: &[&'a BeanDescriptor],
+) -> Result<Vec<&'a BeanDescriptor>, String> {
     let n = descriptors.len();
     if n == 0 {
         return Ok(Vec::new());
     }
 
-    let mut providers: std::collections::HashMap<TypeId, usize> =
-        std::collections::HashMap::new();
+    let mut providers: std::collections::HashMap<TypeId, usize> = std::collections::HashMap::new();
     for (idx, desc) in descriptors.iter().enumerate() {
         providers.insert((desc.type_id)(), idx);
     }
@@ -116,9 +117,8 @@ pub fn topological_sort<'a>(descriptors: &[&'a BeanDescriptor]) -> Result<Vec<&'
         }
     }
 
-    let mut queue: std::collections::VecDeque<usize> = (0..n)
-        .filter(|&i| in_degree[i] == 0)
-        .collect();
+    let mut queue: std::collections::VecDeque<usize> =
+        (0..n).filter(|&i| in_degree[i] == 0).collect();
 
     let mut sorted = Vec::with_capacity(n);
     while let Some(idx) = queue.pop_front() {

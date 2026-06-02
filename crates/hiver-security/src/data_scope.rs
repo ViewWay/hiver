@@ -295,12 +295,12 @@ impl DataScopeApply for DataScopeRule {
                 } else {
                     format!("({})", scope.custom_conditions.join(" AND "))
                 }
-            }
+            },
 
             DataScopeType::Department => {
                 let col = self.dept_ref();
                 format!("{} = {}", col, dept_id)
-            }
+            },
 
             DataScopeType::DeptAndSub => {
                 let col = self.dept_ref();
@@ -312,12 +312,12 @@ impl DataScopeApply for DataScopeRule {
                     let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();
                     format!("{} IN ({})", col, ids.join(", "))
                 }
-            }
+            },
 
             DataScopeType::SelfOnly => {
                 let col = self.user_ref();
                 format!("{} = {}", col, user_id)
-            }
+            },
         }
     }
 }
@@ -442,7 +442,9 @@ where
     F: FnOnce() -> Fut,
     Fut: Future<Output = R>,
 {
-    CURRENT_DATA_SCOPE.scope(Arc::new(RwLock::new(Some(ctx))), f()).await
+    CURRENT_DATA_SCOPE
+        .scope(Arc::new(RwLock::new(Some(ctx))), f())
+        .await
 }
 
 /// Get the current data scope context from task-local storage.
@@ -498,7 +500,8 @@ pub async fn apply_data_scope(rule: &DataScopeRule) -> String {
 pub struct DataScopeMiddleware {
     /// Function that extracts the data scope from an `Authentication`.
     /// 从 `Authentication` 提取数据范围的函数。
-    scope_resolver: Arc<dyn Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync>,
+    scope_resolver:
+        Arc<dyn Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync>,
 
     /// Optional fallback user ID when authentication is absent.
     /// 当认证不存在时的可选回退用户 ID。
@@ -548,11 +551,7 @@ impl DataScopeMiddleware {
     /// install it as the task-local value, and invoke the handler.
     /// 处理请求：从安全上下文提取数据范围，
     /// 将其安装为任务本地值，并调用处理程序。
-    pub async fn handle<F, Fut, R>(
-        &self,
-        security_context: &SecurityContext,
-        handler: F,
-    ) -> R
+    pub async fn handle<F, Fut, R>(&self, security_context: &SecurityContext, handler: F) -> R
     where
         F: FnOnce() -> Fut,
         Fut: Future<Output = R>,
@@ -598,8 +597,8 @@ impl DataScopeMiddleware {
 ///
 /// let middleware = DataScopeMiddleware::new(default_scope_resolver());
 /// ```
-pub fn default_scope_resolver(
-) -> impl Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync {
+pub fn default_scope_resolver()
+-> impl Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync {
     move |auth: &crate::Authentication| {
         for authority in &auth.authorities {
             if let crate::Authority::Permission(perm) = authority {
@@ -640,10 +639,7 @@ fn parse_data_scope_authority(value: &str) -> Option<(DataScope, u64, u64)> {
     // Parse department IDs if present (4th field).
     // 如果存在（第 4 个字段），则解析部门 ID。
     if parts.len() == 4 && !parts[3].is_empty() {
-        let dept_ids: Vec<u64> = parts[3]
-            .split(',')
-            .filter_map(|s| s.parse().ok())
-            .collect();
+        let dept_ids: Vec<u64> = parts[3].split(',').filter_map(|s| s.parse().ok()).collect();
         scope.dept_ids = dept_ids;
     }
 
@@ -892,7 +888,8 @@ mod tests {
 
     #[test]
     fn test_build_and_parse_authority_dept_and_sub() {
-        let auth_str = build_data_scope_authority(&DataScopeType::DeptAndSub, 1001, 100, &[100, 101, 102]);
+        let auth_str =
+            build_data_scope_authority(&DataScopeType::DeptAndSub, 1001, 100, &[100, 101, 102]);
         assert_eq!(auth_str, "DATASCOPE:DEPT_AND_SUB:1001:100:100,101,102");
 
         let parsed = parse_data_scope_authority("DEPT_AND_SUB:1001:100:100,101,102").unwrap();
@@ -922,7 +919,7 @@ mod tests {
 
     #[test]
     fn test_default_scope_resolver() {
-        use crate::{Authority, Authentication};
+        use crate::{Authentication, Authority};
 
         let resolver = default_scope_resolver();
 
@@ -940,7 +937,8 @@ mod tests {
 
         // With data scope authority → Some.
         // 带有数据范围权限 → Some。
-        let auth_str = build_data_scope_authority(&DataScopeType::DeptAndSub, 1001, 100, &[100, 101]);
+        let auth_str =
+            build_data_scope_authority(&DataScopeType::DeptAndSub, 1001, 100, &[100, 101]);
         let auth = Authentication {
             principal: "test".to_string(),
             credentials: None,

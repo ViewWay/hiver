@@ -20,8 +20,7 @@
 
 /// Match mode for example queries
 /// Example 查询的匹配模式
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum StringMatcher {
     /// Exact match
     /// 精确匹配
@@ -41,11 +40,9 @@ pub enum StringMatcher {
     Containing,
 }
 
-
 /// Null handling mode
 /// NULL 处理模式
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NullHandling {
     /// Skip null values in probe
     /// 跳过探针中的 NULL 值
@@ -58,7 +55,6 @@ pub enum NullHandling {
     #[default]
     Default,
 }
-
 
 /// Configuration for how example matching behaves
 /// Example 匹配行为的配置
@@ -209,15 +205,27 @@ impl<T> Example<T> {
 pub trait QueryByExample<T: Send + Sync>: Send + Sync {
     /// Find all entities matching the example
     /// 查找所有匹配 example 的实体
-    fn find_by_example(&self, example: &Example<T>) -> impl std::future::Future<Output = Result<Vec<T>, crate::OrmError>> + Send;
+    fn find_by_example(
+        &self,
+        example: &Example<T>,
+    ) -> impl std::future::Future<Output = Result<Vec<T>, crate::OrmError>> + Send;
 
     /// Count entities matching the example
     /// 计算匹配 example 的实体数
-    fn count_by_example(&self, example: &Example<T>) -> impl std::future::Future<Output = Result<i64, crate::OrmError>> + Send;
+    fn count_by_example(
+        &self,
+        example: &Example<T>,
+    ) -> impl std::future::Future<Output = Result<i64, crate::OrmError>> + Send;
 
     /// Check if any entity matches the example
     /// 检查是否有实体匹配 example
-    fn exists_by_example(&self, example: &Example<T>) -> impl std::future::Future<Output = Result<bool, crate::OrmError>> + Send where Self: Sync {
+    fn exists_by_example(
+        &self,
+        example: &Example<T>,
+    ) -> impl std::future::Future<Output = Result<bool, crate::OrmError>> + Send
+    where
+        Self: Sync,
+    {
         async move { Ok(self.count_by_example(example).await? > 0) }
     }
 }
@@ -258,8 +266,12 @@ mod tests {
     #[test]
     fn test_example_creation() {
         #[derive(Debug, Clone)]
-        struct User { name: String }
-        let probe = User { name: "Alice".into() };
+        struct User {
+            name: String,
+        }
+        let probe = User {
+            name: "Alice".into(),
+        };
         let example = Example::new(probe);
         assert_eq!(example.probe().name, "Alice");
         assert_eq!(example.matcher().string_matcher, StringMatcher::Exact);
@@ -268,11 +280,14 @@ mod tests {
     #[test]
     fn test_example_with_custom_matcher() {
         #[derive(Debug, Clone)]
-        struct User { name: String }
-        let probe = User { name: "alice".into() };
-        let example = Example::new(probe).with_matcher(
-            ExampleMatcher::new().ignore_case().containing()
-        );
+        struct User {
+            name: String,
+        }
+        let probe = User {
+            name: "alice".into(),
+        };
+        let example =
+            Example::new(probe).with_matcher(ExampleMatcher::new().ignore_case().containing());
         assert_eq!(example.matcher().string_matcher, StringMatcher::Containing);
     }
 

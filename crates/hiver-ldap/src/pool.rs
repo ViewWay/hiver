@@ -5,8 +5,8 @@
 
 use crate::context::LdapContextSource;
 use crate::error::LdapResult;
-use std::sync::{Arc, Mutex};
 use std::collections::VecDeque;
+use std::sync::{Arc, Mutex};
 
 /// Configuration for LDAP connection pool / LDAP连接池配置
 #[derive(Debug, Clone)]

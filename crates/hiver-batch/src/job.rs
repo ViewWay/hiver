@@ -4,7 +4,7 @@
 use crate::context::{JobContext, StepContext};
 use crate::error::{BatchError, BatchResult};
 use crate::execution::{ExitStatus, JobExecution, JobStatus, StepExecution};
-use crate::repository::{JobRepository, InMemoryJobRepository};
+use crate::repository::{InMemoryJobRepository, JobRepository};
 use crate::step::Step;
 use async_trait::async_trait;
 use chrono::Utc;
@@ -136,12 +136,12 @@ impl Job {
             match step_result {
                 Ok(status) => {
                     final_status = status;
-                }
+                },
                 Err(e) => {
                     final_status = ExitStatus::failed();
                     job_execution.failures.push(e.to_string());
                     break;
-                }
+                },
             }
         }
 
@@ -265,14 +265,22 @@ impl JobBuilder {
 pub trait JobListener: Send + Sync {
     /// Called before job execution
     /// 作业执行前调用
-    async fn before_job(&self, job_execution: &JobExecution, context: &JobContext) -> BatchResult<()> {
+    async fn before_job(
+        &self,
+        job_execution: &JobExecution,
+        context: &JobContext,
+    ) -> BatchResult<()> {
         let _ = (job_execution, context);
         Ok(())
     }
 
     /// Called after job execution
     /// 作业执行后调用
-    async fn after_job(&self, job_execution: &JobExecution, context: &JobContext) -> BatchResult<()> {
+    async fn after_job(
+        &self,
+        job_execution: &JobExecution,
+        context: &JobContext,
+    ) -> BatchResult<()> {
         let _ = (job_execution, context);
         Ok(())
     }
@@ -301,16 +309,20 @@ impl LoggingJobListener {
 
 #[async_trait]
 impl JobListener for LoggingJobListener {
-    async fn before_job(&self, job_execution: &JobExecution, _context: &JobContext) -> BatchResult<()> {
-        tracing::info!(
-            "[{}] Starting job: {}",
-            self.log_prefix,
-            job_execution.job_name
-        );
+    async fn before_job(
+        &self,
+        job_execution: &JobExecution,
+        _context: &JobContext,
+    ) -> BatchResult<()> {
+        tracing::info!("[{}] Starting job: {}", self.log_prefix, job_execution.job_name);
         Ok(())
     }
 
-    async fn after_job(&self, job_execution: &JobExecution, _context: &JobContext) -> BatchResult<()> {
+    async fn after_job(
+        &self,
+        job_execution: &JobExecution,
+        _context: &JobContext,
+    ) -> BatchResult<()> {
         tracing::info!(
             "[{}] Completed job: {} - status: {:?}",
             self.log_prefix,
@@ -321,12 +333,7 @@ impl JobListener for LoggingJobListener {
     }
 
     async fn on_error(&self, job_execution: &JobExecution, error: &BatchError) -> BatchResult<()> {
-        tracing::error!(
-            "[{}] Error in job {}: {}",
-            self.log_prefix,
-            job_execution.job_name,
-            error
-        );
+        tracing::error!("[{}] Error in job {}: {}", self.log_prefix, job_execution.job_name, error);
         Ok(())
     }
 }
@@ -348,10 +355,7 @@ mod tests {
             .with_chunk_size(10)
             .build(reader, writer);
 
-        let job = JobBuilder::new("test-job")
-            .add_step(step)
-            .build()
-            .unwrap();
+        let job = JobBuilder::new("test-job").add_step(step).build().unwrap();
 
         assert_eq!(job.name, "test-job");
         assert_eq!(job.steps.len(), 1);
@@ -368,10 +372,7 @@ mod tests {
 
         let repository = InMemoryJobRepository::new();
 
-        let job = JobBuilder::new("test-job")
-            .add_step(step)
-            .build()
-            .unwrap();
+        let job = JobBuilder::new("test-job").add_step(step).build().unwrap();
 
         let execution = job.execute_with_repository(&repository).await.unwrap();
 

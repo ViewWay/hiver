@@ -177,7 +177,13 @@ impl RouteScanner {
     }
 
     /// Add a route to the scanner / 向扫描器添加路由
-    pub fn add_route(&mut self, method: impl Into<String>, path: impl Into<String>, operation_id: impl Into<String>, summary: impl Into<String>) {
+    pub fn add_route(
+        &mut self,
+        method: impl Into<String>,
+        path: impl Into<String>,
+        operation_id: impl Into<String>,
+        summary: impl Into<String>,
+    ) {
         let info = RouteInfo::new(method, path)
             .operation_id(operation_id)
             .summary(summary);
@@ -208,12 +214,22 @@ impl RouteScanner {
 
             let method_upper = route.method.to_uppercase();
             match method_upper.as_str() {
-                "GET" => { path_item.get = Some(operation); }
-                "POST" => { path_item.post = Some(operation); }
-                "PUT" => { path_item.put = Some(operation); }
-                "DELETE" => { path_item.delete = Some(operation); }
-                "PATCH" => { path_item.patch = Some(operation); }
-                _ => {}
+                "GET" => {
+                    path_item.get = Some(operation);
+                },
+                "POST" => {
+                    path_item.post = Some(operation);
+                },
+                "PUT" => {
+                    path_item.put = Some(operation);
+                },
+                "DELETE" => {
+                    path_item.delete = Some(operation);
+                },
+                "PATCH" => {
+                    path_item.patch = Some(operation);
+                },
+                _ => {},
             }
         }
 
@@ -317,9 +333,7 @@ mod tests {
 
     #[test]
     fn test_scanner_default_tags() {
-        let mut scanner = RouteScanner::new()
-            .default_tag("api")
-            .default_tag("v1");
+        let mut scanner = RouteScanner::new().default_tag("api").default_tag("v1");
 
         scanner.add_route("GET", "/health", "health_check", "Health check");
 

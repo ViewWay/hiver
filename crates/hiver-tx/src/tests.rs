@@ -216,7 +216,7 @@ mod tests {
         match err {
             crate::TransactionError::NotFound(msg) => {
                 assert!(msg.contains("nonexistent"));
-            }
+            },
             other => panic!("Expected NotFound, got: {:?}", other),
         }
     }
@@ -259,10 +259,7 @@ mod tests {
             &self,
             definition: &TransactionDefinition,
         ) -> crate::TransactionResult<TransactionStatus> {
-            Ok(TransactionStatus::new(&format!(
-                "{}::{}",
-                self.name, definition.name
-            )))
+            Ok(TransactionStatus::new(&format!("{}::{}", self.name, definition.name)))
         }
 
         async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()> {

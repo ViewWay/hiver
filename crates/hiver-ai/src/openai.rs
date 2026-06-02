@@ -290,13 +290,16 @@ impl OpenAiChatModel {
         let body = response.text().await.unwrap_or_default();
 
         // Try to parse structured OpenAI error / 尝试解析结构化的 OpenAI 错误
-        let message = serde_json::from_str::<OpenAiErrorResponse>(&body).map_or_else(|_| {
+        let message = serde_json::from_str::<OpenAiErrorResponse>(&body).map_or_else(
+            |_| {
                 if body.is_empty() {
                     format!("HTTP {status}")
                 } else {
                     body
                 }
-            }, |e| e.error.message);
+            },
+            |e| e.error.message,
+        );
 
         match status {
             401 | 403 => ModelError::AuthError(message),
@@ -381,7 +384,7 @@ impl ChatModel for OpenAiChatModel {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
-                    }
+                    },
                 };
 
                 buffer.push_str(&String::from_utf8_lossy(&chunk));
@@ -412,10 +415,10 @@ impl ChatModel for OpenAiChatModel {
                                         });
                                     }
                                 }
-                            }
+                            },
                             Err(e) => {
                                 tracing::warn!("Failed to parse stream chunk: {e}");
-                            }
+                            },
                         }
                     }
                 }
@@ -845,7 +848,8 @@ mod tests {
                 .to_string(),
             ))
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "id": "chatcmpl-test",
                 "object": "chat.completion",
                 "created": 1700000000,
@@ -856,7 +860,8 @@ mod tests {
                     "finish_reason": "stop"
                 }],
                 "usage": {"prompt_tokens": 5, "completion_tokens": 3, "total_tokens": 8}
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -864,7 +869,10 @@ mod tests {
         let model = OpenAiChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hello"));
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
 
         assert_eq!(response.content, "Hi there!");
         assert_eq!(response.model, "gpt-4o-mini");
@@ -899,7 +907,10 @@ mod tests {
         let model = OpenAiChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
         assert_eq!(response.content, "OK");
 
         mock.assert_async().await;
@@ -919,7 +930,10 @@ mod tests {
         let model = OpenAiChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with auth error");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with auth error");
 
         match err {
             ModelError::AuthError(msg) => assert!(msg.contains("Invalid API key")),
@@ -944,7 +958,10 @@ mod tests {
         let model = OpenAiChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with rate limit");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with rate limit");
 
         match err {
             ModelError::RateLimited { retry_after_secs } => assert_eq!(retry_after_secs, 30),
@@ -968,13 +985,16 @@ mod tests {
         let model = OpenAiChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with server error");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with server error");
 
         match err {
             ModelError::ApiError { status, message } => {
                 assert_eq!(status, 500);
                 assert!(message.contains("Internal server error"));
-            }
+            },
             _ => panic!("Expected ApiError, got: {err}"),
         }
 
@@ -990,12 +1010,14 @@ mod tests {
             .mock("POST", "/embeddings")
             .match_header("Authorization", "Bearer sk-test")
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "object": "list",
                 "data": [{"object": "embedding", "index": 0, "embedding": [0.1, 0.2, 0.3]}],
                 "model": "text-embedding-3-small",
                 "usage": {"prompt_tokens": 3, "completion_tokens": 0, "total_tokens": 3}
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -1018,7 +1040,8 @@ mod tests {
         let mock = server
             .mock("POST", "/embeddings")
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "object": "list",
                 "data": [
                     {"object": "embedding", "index": 0, "embedding": [0.1, 0.2]},
@@ -1026,7 +1049,8 @@ mod tests {
                 ],
                 "model": "text-embedding-3-small",
                 "usage": {"prompt_tokens": 6, "completion_tokens": 0, "total_tokens": 6}
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 

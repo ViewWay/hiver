@@ -4,8 +4,8 @@
 //! Equivalent to Spring WS WSDL generation
 //! 等价于 Spring WS WSDL生成
 
-use std::fmt::Write;
 use serde::{Deserialize, Serialize};
+use std::fmt::Write;
 
 /// WSDL definition / WSDL定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -75,7 +75,10 @@ impl WsdlGenerator {
     <wsdl:output message="tns:{}"/>
   </wsdl:operation>
 "#,
-                escape_xml(&op.name), escape_xml(&op.soap_action), escape_xml(&op.input_message), escape_xml(&op.output_message)
+                escape_xml(&op.name),
+                escape_xml(&op.soap_action),
+                escape_xml(&op.input_message),
+                escape_xml(&op.output_message)
             );
         }
 
@@ -97,10 +100,15 @@ impl WsdlGenerator {
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>"#,
-            escape_xml(&self.namespace), escape_xml(&self.namespace),
-            escape_xml(&def.port_type_name), ops_xml,
-            escape_xml(&def.port_type_name), escape_xml(&def.port_type_name),
-            escape_xml(&def.service_name), escape_xml(&def.port_type_name), escape_xml(&def.port_type_name),
+            escape_xml(&self.namespace),
+            escape_xml(&self.namespace),
+            escape_xml(&def.port_type_name),
+            ops_xml,
+            escape_xml(&def.port_type_name),
+            escape_xml(&def.port_type_name),
+            escape_xml(&def.service_name),
+            escape_xml(&def.port_type_name),
+            escape_xml(&def.port_type_name),
             escape_xml(&self.location)
         )
     }
@@ -127,7 +135,8 @@ mod tests {
 
     #[test]
     fn test_wsdl_generation() {
-        let generator = WsdlGenerator::new("http://example.com/ws", "User", "http://localhost:8080/ws");
+        let generator =
+            WsdlGenerator::new("http://example.com/ws", "User", "http://localhost:8080/ws");
         let ops = vec![WsdlOperation {
             name: "GetUser".into(),
             input_message: "GetUserRequest".into(),

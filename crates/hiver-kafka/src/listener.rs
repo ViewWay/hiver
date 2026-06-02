@@ -72,7 +72,10 @@ impl KafkaListener {
 
     /// Create a builder-style listener
     /// 创建构建器风格的监听器
-    pub fn builder(brokers: impl Into<String>, group_id: impl Into<String>) -> KafkaListenerBuilder {
+    pub fn builder(
+        brokers: impl Into<String>,
+        group_id: impl Into<String>,
+    ) -> KafkaListenerBuilder {
         KafkaListenerBuilder {
             config: KafkaListenerConfig::new(brokers, group_id),
         }
@@ -89,9 +92,7 @@ impl KafkaListener {
 
         let topics: Vec<&str> = self.config.topics.iter().map(String::as_str).collect();
         if topics.is_empty() {
-            return Err(KafkaError::Config(
-                "No topics configured for listener".to_string(),
-            ));
+            return Err(KafkaError::Config("No topics configured for listener".to_string()));
         }
         consumer.subscribe(&topics)?;
 

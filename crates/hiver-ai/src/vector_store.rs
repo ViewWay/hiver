@@ -9,7 +9,7 @@
 //! 并支持基于相似性的搜索，这是检索增强生成 (RAG) 的基础。
 
 use crate::chat_model::ModelError;
-use crate::embedding::{cosine_similarity, EmbeddingModel};
+use crate::embedding::{EmbeddingModel, cosine_similarity};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -150,7 +150,10 @@ impl std::fmt::Debug for InMemoryVectorStore {
             .field("documents", &"<RwLock>")
             .field(
                 "embedding_model",
-                &self.embedding_model.as_ref().map(|_| "Some(EmbeddingModel)"),
+                &self
+                    .embedding_model
+                    .as_ref()
+                    .map(|_| "Some(EmbeddingModel)"),
             )
             .finish()
     }
@@ -218,11 +221,7 @@ impl VectorStore for InMemoryVectorStore {
         Ok(())
     }
 
-    async fn search(
-        &self,
-        query: &str,
-        k: usize,
-    ) -> Result<Vec<SearchResult>, ModelError> {
+    async fn search(&self, query: &str, k: usize) -> Result<Vec<SearchResult>, ModelError> {
         let guard = self.documents.read().await;
 
         if guard.is_empty() || k == 0 {
@@ -277,7 +276,7 @@ impl VectorStore for InMemoryVectorStore {
                         .filter(|w| content_lower.contains(*w))
                         .count();
                     if query_words.is_empty() {
-#[allow(clippy::cast_precision_loss)]
+                        #[allow(clippy::cast_precision_loss)]
                         0.0
                     } else {
                         (matched as f32) / (query_words.len() as f32) * 0.5
@@ -362,10 +361,8 @@ mod tests {
                 })
                 .collect();
 
-            Ok(
-                crate::embedding::EmbeddingResponse::new(embeddings, "mock-embedding")
-                    .usage(TokenUsage::new(0, 0)),
-            )
+            Ok(crate::embedding::EmbeddingResponse::new(embeddings, "mock-embedding")
+                .usage(TokenUsage::new(0, 0)))
         }
     }
 
@@ -419,24 +416,15 @@ mod tests {
     async fn test_cosine_similarity_with_known_vectors() {
         // Verify cosine similarity directly via embedding module
         // Orthogonal vectors: similarity should be 0
-        let sim_ortho =
-            cosine_similarity(&[1.0, 0.0], &[0.0, 1.0]);
-        assert!(
-            sim_ortho.abs() < 1e-6,
-            "orthogonal should be ~0, got {sim_ortho}"
-        );
+        let sim_ortho = cosine_similarity(&[1.0, 0.0], &[0.0, 1.0]);
+        assert!(sim_ortho.abs() < 1e-6, "orthogonal should be ~0, got {sim_ortho}");
 
         // Same direction: similarity should be 1.0
-        let sim_same =
-            cosine_similarity(&[2.0, 3.0], &[4.0, 6.0]);
-        assert!(
-            (sim_same - 1.0).abs() < 1e-6,
-            "same direction should be ~1.0, got {sim_same}"
-        );
+        let sim_same = cosine_similarity(&[2.0, 3.0], &[4.0, 6.0]);
+        assert!((sim_same - 1.0).abs() < 1e-6, "same direction should be ~1.0, got {sim_same}");
 
         // Opposite: similarity should be -1.0
-        let sim_opposite =
-            cosine_similarity(&[1.0, 0.0], &[-1.0, 0.0]);
+        let sim_opposite = cosine_similarity(&[1.0, 0.0], &[-1.0, 0.0]);
         assert!(
             (sim_opposite - (-1.0)).abs() < 1e-6,
             "opposite should be ~-1.0, got {sim_opposite}"
@@ -465,10 +453,7 @@ mod tests {
             .expect("add should succeed");
 
         // Search for "aaa" - should be most similar to doc1
-        let results = store
-            .search("aaa", 3)
-            .await
-            .expect("search should succeed");
+        let results = store.search("aaa", 3).await.expect("search should succeed");
         assert_eq!(results.len(), 3, "should return all 3 docs");
         // First result should be doc1 (exact same text -> identical embedding -> similarity 1.0)
         assert_eq!(results[0].document.id, "1");
@@ -509,17 +494,10 @@ mod tests {
             .search("hello world", 10)
             .await
             .expect("search should succeed");
-        assert_eq!(
-            results.len(),
-            2,
-            "should match 'hello world' and 'goodbye world'"
-        );
+        assert_eq!(results.len(), 2, "should match 'hello world' and 'goodbye world'");
         // First should be the exact match (score 1.0)
         assert_eq!(results[0].document.id, "1");
-        assert!(
-            (results[0].score - 1.0).abs() < 1e-6,
-            "exact match should score 1.0"
-        );
+        assert!((results[0].score - 1.0).abs() < 1e-6, "exact match should score 1.0");
     }
 
     #[tokio::test]
@@ -536,10 +514,7 @@ mod tests {
             .await
             .expect("search should succeed");
         assert_eq!(results.len(), 1);
-        assert!(
-            (results[0].score - 0.8).abs() < 1e-6,
-            "substring match should score 0.8"
-        );
+        assert!((results[0].score - 0.8).abs() < 1e-6, "substring match should score 0.8");
     }
 
     #[tokio::test]
@@ -595,10 +570,7 @@ mod tests {
 
         // Verify embedding was auto-generated
         let guard = store.documents.read().await;
-        assert!(
-            guard[0].embedding.is_some(),
-            "embedding should be auto-generated"
-        );
+        assert!(guard[0].embedding.is_some(), "embedding should be auto-generated");
         assert_eq!(guard[0].embedding.as_ref().unwrap().len(), 3);
     }
 
@@ -608,17 +580,13 @@ mod tests {
         let store = InMemoryVectorStore::with_embedding_model(model);
 
         // Add document with a pre-computed embedding
-        let doc =
-            Document::new("1", "test content").embedding(vec![0.5, 0.5, 0.5]);
+        let doc = Document::new("1", "test content").embedding(vec![0.5, 0.5, 0.5]);
         store.add(vec![doc]).await.expect("add should succeed");
 
         // Verify the original embedding is preserved (not overwritten)
         let guard = store.documents.read().await;
         let embedding = guard[0].embedding.as_ref().expect("should have embedding");
-        assert!(
-            (embedding[0] - 0.5).abs() < 1e-6,
-            "pre-computed embedding should be preserved"
-        );
+        assert!((embedding[0] - 0.5).abs() < 1e-6, "pre-computed embedding should be preserved");
     }
 
     // --- Delete and re-search ---
@@ -717,11 +685,7 @@ mod tests {
             .search("Content", 3)
             .await
             .expect("search should succeed");
-        assert!(
-            results.len() <= 3,
-            "should return at most k results, got {}",
-            results.len()
-        );
+        assert!(results.len() <= 3, "should return at most k results, got {}", results.len());
     }
 
     // --- Update ---
@@ -770,8 +734,7 @@ mod tests {
             .embedding(vec![0.1, 0.2]);
 
         let json = serde_json::to_string(&doc).expect("serialize");
-        let deserialized: Document =
-            serde_json::from_str(&json).expect("deserialize");
+        let deserialized: Document = serde_json::from_str(&json).expect("deserialize");
         assert_eq!(deserialized.id, "1");
         assert_eq!(deserialized.content, "test content");
         assert_eq!(deserialized.metadata.get("key").unwrap(), "value");
@@ -803,10 +766,7 @@ mod tests {
             .expect("search should succeed");
         assert_eq!(results.len(), 3);
         assert_eq!(results[0].document.id, "1");
-        assert!(
-            (results[0].score - 1.0).abs() < 1e-4,
-            "self-similarity should be ~1.0"
-        );
+        assert!((results[0].score - 1.0).abs() < 1e-4, "self-similarity should be ~1.0");
 
         // Delete
         store.delete(&["3"]).await.expect("delete should succeed");

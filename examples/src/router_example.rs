@@ -1,4 +1,14 @@
-#![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
+#![allow(
+    dead_code,
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::items_after_statements,
+    clippy::format_push_string
+)]
 
 //! Hiver Router Example / Hiver路由器示例
 //!
@@ -14,10 +24,10 @@
 //! - `Router::route()` → `@RequestMapping`
 //! - `Path` → `@PathVariable`
 
-use hiver_router::Router;
-use hiver_http::{Response, StatusCode, Body};
-use hiver_http::header;
 use hiver_http::content_type;
+use hiver_http::header;
+use hiver_http::{Body, Response, StatusCode};
+use hiver_router::Router;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -191,10 +201,7 @@ fn list_users_response() -> Response {
 ///
 /// Spring: @GetMapping("/users/{id}")
 fn get_user_response(id: u64) -> Response {
-    let user = format!(
-        r#"{{"id":{},"name":"Alice","email":"alice@example.com"}}"#,
-        id
-    );
+    let user = format!(r#"{{"id":{},"name":"Alice","email":"alice@example.com"}}"#, id);
 
     Response::builder()
         .status(StatusCode::OK)
@@ -221,10 +228,7 @@ fn create_user_response() -> Response {
 ///
 /// Spring: @PutMapping("/users/{id}")
 fn update_user_response(id: u64) -> Response {
-    let user = format!(
-        r#"{{"id":{},"name":"Updated User","email":"updated@example.com"}}"#,
-        id
-    );
+    let user = format!(r#"{{"id":{},"name":"Updated User","email":"updated@example.com"}}"#, id);
 
     Response::builder()
         .status(StatusCode::OK)

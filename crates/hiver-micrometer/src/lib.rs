@@ -40,17 +40,20 @@
 #[cfg(test)]
 mod tests;
 
-pub mod error;
-pub mod metric;
 pub mod counter;
+pub mod error;
 pub mod gauge;
-pub mod timer;
-pub mod registry;
+pub mod metric;
 pub mod prometheus;
+pub mod registry;
+pub mod timer;
 
-pub use error::{MicrometerError, Result};
-pub use metric::{MetricId, MetricName, MetricType, Tag, Tags};
 pub use counter::{Counter, CounterBuilder};
+pub use error::{MicrometerError, Result};
 pub use gauge::{FunctionGauge, Gauge, GaugeBuilder};
+pub use metric::{MetricId, MetricName, MetricType, Tag, Tags};
+pub use registry::{
+    MetricRegistry, counter as global_counter, gauge as global_gauge, global_registry,
+    timer as global_timer,
+};
 pub use timer::{LongTaskTimer, LongTaskTimerContext, Timer, TimerBuilder, TimerContext};
-pub use registry::{global_registry, counter as global_counter, gauge as global_gauge, timer as global_timer, MetricRegistry};

@@ -179,10 +179,7 @@ impl DerivationPath {
     /// Format as a BIP-44 string path.
     /// 格式化为BIP-44字符串路径。
     pub fn to_path_string(&self) -> String {
-        format!(
-            "m/{}'/{}'/{}'/{}",
-            self.purpose, self.coin_type, self.account, self.index
-        )
+        format!("m/{}'/{}'/{}'/{}", self.purpose, self.coin_type, self.account, self.index)
     }
 }
 
@@ -238,8 +235,7 @@ impl HdWallet {
         let mut entropy = vec![0u8; entropy_bytes];
 
         // Use getrandom for cryptographic-quality randomness
-        getrandom::fill(&mut entropy)
-            .map_err(|e| HdWalletError::EntropyError(e.to_string()))?;
+        getrandom::fill(&mut entropy).map_err(|e| HdWalletError::EntropyError(e.to_string()))?;
 
         let mnemonic = entropy_to_mnemonic(&entropy)?;
         let seed = mnemonic_to_seed(&mnemonic, "");
@@ -565,11 +561,7 @@ impl MultiSigWallet {
 
     /// Confirm a proposal.
     /// 确认提案。
-    pub fn confirm(
-        &mut self,
-        proposal_id: u64,
-        confirmer: &Address,
-    ) -> Result<(), MultiSigError> {
+    pub fn confirm(&mut self, proposal_id: u64, confirmer: &Address) -> Result<(), MultiSigError> {
         if !self.is_owner(confirmer) {
             return Err(MultiSigError::NotOwner);
         }
@@ -618,11 +610,7 @@ impl MultiSigWallet {
 
     /// Revoke a confirmation.
     /// 撤销确认。
-    pub fn revoke(
-        &mut self,
-        proposal_id: u64,
-        revoker: &Address,
-    ) -> Result<(), MultiSigError> {
+    pub fn revoke(&mut self, proposal_id: u64, revoker: &Address) -> Result<(), MultiSigError> {
         if !self.is_owner(revoker) {
             return Err(MultiSigError::NotOwner);
         }
@@ -638,9 +626,7 @@ impl MultiSigWallet {
         }
 
         let original_len = proposal.confirmations.len();
-        proposal
-            .confirmations
-            .retain(|a| a != revoker);
+        proposal.confirmations.retain(|a| a != revoker);
 
         if proposal.confirmations.len() == original_len {
             return Err(MultiSigError::NotConfirmed(proposal_id));
@@ -735,22 +721,19 @@ impl fmt::Display for MultiSigError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::NoOwners => write!(f, "No owners provided"),
-            Self::InvalidThreshold { threshold, owner_count } => write!(
-                f,
-                "Invalid threshold {} for {} owners",
-                threshold, owner_count
-            ),
+            Self::InvalidThreshold {
+                threshold,
+                owner_count,
+            } => write!(f, "Invalid threshold {} for {} owners", threshold, owner_count),
             Self::DuplicateOwner => write!(f, "Duplicate owner address"),
             Self::NotOwner => write!(f, "Address is not an owner"),
             Self::ProposalNotFound(id) => write!(f, "Proposal {} not found", id),
             Self::AlreadyExecuted(id) => write!(f, "Proposal {} already executed", id),
             Self::AlreadyConfirmed(id) => write!(f, "Proposal {} already confirmed", id),
             Self::NotConfirmed(id) => write!(f, "Proposal {} not confirmed by this address", id),
-            Self::InsufficientConfirmations { required, current } => write!(
-                f,
-                "Insufficient confirmations: {} of {} required",
-                current, required
-            ),
+            Self::InsufficientConfirmations { required, current } => {
+                write!(f, "Insufficient confirmations: {} of {} required", current, required)
+            },
         }
     }
 }
@@ -784,7 +767,7 @@ impl fmt::Display for HdWalletError {
         match self {
             Self::InvalidWordCount(count) => {
                 write!(f, "Invalid word count: {} (expected 12/15/18/21/24)", count)
-            }
+            },
             Self::InvalidMnemonic(msg) => write!(f, "Invalid mnemonic: {}", msg),
             Self::EntropyError(msg) => write!(f, "Entropy error: {}", msg),
             Self::DerivationError(msg) => write!(f, "Key derivation error: {}", msg),
@@ -797,7 +780,9 @@ impl std::error::Error for HdWalletError {}
 impl From<WalletError> for HdWalletError {
     fn from(err: WalletError) -> Self {
         match err {
-            WalletError::InvalidMnemonic => HdWalletError::InvalidMnemonic("Invalid mnemonic".into()),
+            WalletError::InvalidMnemonic => {
+                HdWalletError::InvalidMnemonic("Invalid mnemonic".into())
+            },
             other => HdWalletError::DerivationError(other.to_string()),
         }
     }
@@ -819,76 +804,558 @@ impl From<WalletError> for HdWalletError {
 /// 完整词表是正确编码/解码助记词所必需的。
 /// 这里使用简化的方法，通过哈希熵字节并映射到词来生成有效的助记词。
 const BIP39_WORDS: &[&str] = &[
-    "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract",
-    "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid",
-    "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual",
-    "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance",
-    "advice", "aerobic", "affair", "afford", "afraid", "again", "age", "agent",
-    "agree", "ahead", "aim", "air", "airport", "aisle", "alarm", "album",
-    "alcohol", "alert", "alien", "all", "alley", "allow", "almost", "alone",
-    "alpha", "already", "also", "alter", "always", "amateur", "amazing", "among",
-    "amount", "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry",
-    "animal", "ankle", "announce", "annual", "another", "answer", "antenna", "antique",
-    "anxiety", "any", "apart", "apology", "appear", "apple", "approve", "april",
-    "arch", "arctic", "area", "arena", "argue", "arm", "armed", "armor",
-    "army", "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact",
-    "artist", "artwork", "ask", "aspect", "assault", "asset", "assist", "assume",
-    "asthma", "athlete", "atom", "attack", "attend", "attitude", "attract", "auction",
+    "abandon",
+    "ability",
+    "able",
+    "about",
+    "above",
+    "absent",
+    "absorb",
+    "abstract",
+    "absurd",
+    "abuse",
+    "access",
+    "accident",
+    "account",
+    "accuse",
+    "achieve",
+    "acid",
+    "acoustic",
+    "acquire",
+    "across",
+    "act",
+    "action",
+    "actor",
+    "actress",
+    "actual",
+    "adapt",
+    "add",
+    "addict",
+    "address",
+    "adjust",
+    "admit",
+    "adult",
+    "advance",
+    "advice",
+    "aerobic",
+    "affair",
+    "afford",
+    "afraid",
+    "again",
+    "age",
+    "agent",
+    "agree",
+    "ahead",
+    "aim",
+    "air",
+    "airport",
+    "aisle",
+    "alarm",
+    "album",
+    "alcohol",
+    "alert",
+    "alien",
+    "all",
+    "alley",
+    "allow",
+    "almost",
+    "alone",
+    "alpha",
+    "already",
+    "also",
+    "alter",
+    "always",
+    "amateur",
+    "amazing",
+    "among",
+    "amount",
+    "amused",
+    "analyst",
+    "anchor",
+    "ancient",
+    "anger",
+    "angle",
+    "angry",
+    "animal",
+    "ankle",
+    "announce",
+    "annual",
+    "another",
+    "answer",
+    "antenna",
+    "antique",
+    "anxiety",
+    "any",
+    "apart",
+    "apology",
+    "appear",
+    "apple",
+    "approve",
+    "april",
+    "arch",
+    "arctic",
+    "area",
+    "arena",
+    "argue",
+    "arm",
+    "armed",
+    "armor",
+    "army",
+    "around",
+    "arrange",
+    "arrest",
+    "arrive",
+    "arrow",
+    "art",
+    "artefact",
+    "artist",
+    "artwork",
+    "ask",
+    "aspect",
+    "assault",
+    "asset",
+    "assist",
+    "assume",
+    "asthma",
+    "athlete",
+    "atom",
+    "attack",
+    "attend",
+    "attitude",
+    "attract",
+    "auction",
     // ... truncated for size; in production use the full 2048-word list
-    "balance", "banana", "bank", "bar", "base", "basket", "batch", "beach",
-    "beard", "beauty", "become", "beef", "begin", "behind", "believe", "below",
-    "bench", "benefit", "best", "betray", "better", "between", "beyond", "bicycle",
-    "bitter", "black", "blade", "blame", "blanket", "blast", "bleak", "bless",
-    "blind", "blood", "blossom", "blow", "blue", "blur", "blush", "board",
-    "boat", "body", "boil", "bomb", "bone", "bonus", "book", "boost",
-    "border", "boring", "borrow", "boss", "bottom", "bounce", "box", "boy",
-    "bracket", "brain", "brand", "brave", "bread", "breeze", "brick", "bridge",
-    "brief", "bright", "bring", "brisk", "broccoli", "broken", "bronze", "broom",
-    "brother", "brown", "brush", "bubble", "buddy", "budget", "buffalo", "build",
-    "bulb", "bulk", "bullet", "bundle", "bunny", "burden", "burger", "burst",
-    "bus", "business", "busy", "butter", "buyer", "buzz", "cabbage", "cabin",
-    "cable", "cactus", "cage", "cake", "call", "calm", "camera", "camp",
-    "canal", "cancel", "candy", "cannon", "canoe", "canvas", "canyon", "capable",
-    "capital", "captain", "car", "carbon", "card", "cargo", "carpet", "carry",
-    "cart", "case", "cash", "casino", "castle", "casual", "cat", "catalog",
-    "catch", "category", "cattle", "caught", "cause", "caution", "cave", "ceiling",
-    "celery", "cement", "census", "century", "cereal", "certain", "chair", "chalk",
-    "champion", "change", "chaos", "chapter", "charge", "chase", "cheap", "check",
-    "cheese", "chef", "cherry", "chest", "chicken", "chief", "child", "chimney",
-    "choice", "choose", "chronic", "chuckle", "chunk", "churn", "citizen", "city",
-    "civil", "claim", "clap", "clarify", "claw", "clay", "clean", "clerk",
-    "clever", "click", "client", "cliff", "climb", "clinic", "clip", "clock",
-    "clog", "close", "cloth", "cloud", "clown", "club", "clump", "cluster",
-    "clutch", "coach", "coast", "coconut", "code", "coffee", "coil", "coin",
-    "collect", "color", "column", "combine", "come", "comfort", "comic", "common",
-    "company", "concert", "conduct", "confirm", "congress", "connect", "consider",
-    "control", "convince", "cook", "cool", "copper", "copy", "coral", "core",
-    "corn", "correct", "cost", "cotton", "couch", "country", "couple", "course",
-    "cousin", "cover", "coyote", "crack", "cradle", "craft", "cram", "crane",
-    "crash", "crater", "crawl", "crazy", "cream", "credit", "creek", "crew",
-    "cricket", "crime", "crisp", "critic", "crop", "cross", "crouch", "crowd",
-    "crucial", "cruel", "cruise", "crumble", "crush", "cry", "crystal", "cube",
-    "culture", "cup", "cupboard", "curious", "current", "curtain", "curve", "cushion",
-    "custom", "cute", "cycle", "dad", "damage", "damp", "dance", "danger",
-    "daring", "dash", "daughter", "dawn", "day", "deal", "debate", "debris",
-    "decade", "december", "decide", "decline", "decorate", "decrease", "deer", "defense",
-    "define", "defy", "degree", "delay", "deliver", "demand", "demise", "denial",
-    "dentist", "deny", "depart", "depend", "deposit", "depth", "deputy", "derive",
-    "describe", "desert", "design", "desk", "despair", "destroy", "detail", "detect",
-    "develop", "device", "devote", "diagram", "dial", "diamond", "diary", "dice",
-    "diesel", "diet", "differ", "digital", "dignity", "dilemma", "dinner", "dinosaur",
-    "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss", "disorder",
-    "display", "distance", "divert", "divide", "divorce", "dizzy", "doctor", "document",
-    "dog", "doll", "dolphin", "domain", "donate", "donkey", "donor", "door",
-    "dose", "double", "dove", "draft", "dragon", "drama", "drastic", "dream",
-    "dress", "drift", "drill", "drink", "drip", "drive", "drop", "drum",
-    "dry", "duck", "dumb", "dune", "during", "dust", "dutch", "duty",
-    "dwarf", "dynamic", "eager", "eagle", "early", "earn", "earth", "easily",
-    "east", "easy", "echo", "ecology", "economy", "edge", "edit", "educate",
-    "effort", "egg", "eight", "either", "elbow", "elder", "electric", "elegant",
-    "element", "elephant", "elevator", "elite", "else", "embark", "embody", "embrace",
-    "emerge", "emotion", "employ", "empower", "empty", "enable", "encourage", "end",
-    "endless", "endorse", "enemy", "energy", "enforce", "engage", "engine", "enhance",
+    "balance",
+    "banana",
+    "bank",
+    "bar",
+    "base",
+    "basket",
+    "batch",
+    "beach",
+    "beard",
+    "beauty",
+    "become",
+    "beef",
+    "begin",
+    "behind",
+    "believe",
+    "below",
+    "bench",
+    "benefit",
+    "best",
+    "betray",
+    "better",
+    "between",
+    "beyond",
+    "bicycle",
+    "bitter",
+    "black",
+    "blade",
+    "blame",
+    "blanket",
+    "blast",
+    "bleak",
+    "bless",
+    "blind",
+    "blood",
+    "blossom",
+    "blow",
+    "blue",
+    "blur",
+    "blush",
+    "board",
+    "boat",
+    "body",
+    "boil",
+    "bomb",
+    "bone",
+    "bonus",
+    "book",
+    "boost",
+    "border",
+    "boring",
+    "borrow",
+    "boss",
+    "bottom",
+    "bounce",
+    "box",
+    "boy",
+    "bracket",
+    "brain",
+    "brand",
+    "brave",
+    "bread",
+    "breeze",
+    "brick",
+    "bridge",
+    "brief",
+    "bright",
+    "bring",
+    "brisk",
+    "broccoli",
+    "broken",
+    "bronze",
+    "broom",
+    "brother",
+    "brown",
+    "brush",
+    "bubble",
+    "buddy",
+    "budget",
+    "buffalo",
+    "build",
+    "bulb",
+    "bulk",
+    "bullet",
+    "bundle",
+    "bunny",
+    "burden",
+    "burger",
+    "burst",
+    "bus",
+    "business",
+    "busy",
+    "butter",
+    "buyer",
+    "buzz",
+    "cabbage",
+    "cabin",
+    "cable",
+    "cactus",
+    "cage",
+    "cake",
+    "call",
+    "calm",
+    "camera",
+    "camp",
+    "canal",
+    "cancel",
+    "candy",
+    "cannon",
+    "canoe",
+    "canvas",
+    "canyon",
+    "capable",
+    "capital",
+    "captain",
+    "car",
+    "carbon",
+    "card",
+    "cargo",
+    "carpet",
+    "carry",
+    "cart",
+    "case",
+    "cash",
+    "casino",
+    "castle",
+    "casual",
+    "cat",
+    "catalog",
+    "catch",
+    "category",
+    "cattle",
+    "caught",
+    "cause",
+    "caution",
+    "cave",
+    "ceiling",
+    "celery",
+    "cement",
+    "census",
+    "century",
+    "cereal",
+    "certain",
+    "chair",
+    "chalk",
+    "champion",
+    "change",
+    "chaos",
+    "chapter",
+    "charge",
+    "chase",
+    "cheap",
+    "check",
+    "cheese",
+    "chef",
+    "cherry",
+    "chest",
+    "chicken",
+    "chief",
+    "child",
+    "chimney",
+    "choice",
+    "choose",
+    "chronic",
+    "chuckle",
+    "chunk",
+    "churn",
+    "citizen",
+    "city",
+    "civil",
+    "claim",
+    "clap",
+    "clarify",
+    "claw",
+    "clay",
+    "clean",
+    "clerk",
+    "clever",
+    "click",
+    "client",
+    "cliff",
+    "climb",
+    "clinic",
+    "clip",
+    "clock",
+    "clog",
+    "close",
+    "cloth",
+    "cloud",
+    "clown",
+    "club",
+    "clump",
+    "cluster",
+    "clutch",
+    "coach",
+    "coast",
+    "coconut",
+    "code",
+    "coffee",
+    "coil",
+    "coin",
+    "collect",
+    "color",
+    "column",
+    "combine",
+    "come",
+    "comfort",
+    "comic",
+    "common",
+    "company",
+    "concert",
+    "conduct",
+    "confirm",
+    "congress",
+    "connect",
+    "consider",
+    "control",
+    "convince",
+    "cook",
+    "cool",
+    "copper",
+    "copy",
+    "coral",
+    "core",
+    "corn",
+    "correct",
+    "cost",
+    "cotton",
+    "couch",
+    "country",
+    "couple",
+    "course",
+    "cousin",
+    "cover",
+    "coyote",
+    "crack",
+    "cradle",
+    "craft",
+    "cram",
+    "crane",
+    "crash",
+    "crater",
+    "crawl",
+    "crazy",
+    "cream",
+    "credit",
+    "creek",
+    "crew",
+    "cricket",
+    "crime",
+    "crisp",
+    "critic",
+    "crop",
+    "cross",
+    "crouch",
+    "crowd",
+    "crucial",
+    "cruel",
+    "cruise",
+    "crumble",
+    "crush",
+    "cry",
+    "crystal",
+    "cube",
+    "culture",
+    "cup",
+    "cupboard",
+    "curious",
+    "current",
+    "curtain",
+    "curve",
+    "cushion",
+    "custom",
+    "cute",
+    "cycle",
+    "dad",
+    "damage",
+    "damp",
+    "dance",
+    "danger",
+    "daring",
+    "dash",
+    "daughter",
+    "dawn",
+    "day",
+    "deal",
+    "debate",
+    "debris",
+    "decade",
+    "december",
+    "decide",
+    "decline",
+    "decorate",
+    "decrease",
+    "deer",
+    "defense",
+    "define",
+    "defy",
+    "degree",
+    "delay",
+    "deliver",
+    "demand",
+    "demise",
+    "denial",
+    "dentist",
+    "deny",
+    "depart",
+    "depend",
+    "deposit",
+    "depth",
+    "deputy",
+    "derive",
+    "describe",
+    "desert",
+    "design",
+    "desk",
+    "despair",
+    "destroy",
+    "detail",
+    "detect",
+    "develop",
+    "device",
+    "devote",
+    "diagram",
+    "dial",
+    "diamond",
+    "diary",
+    "dice",
+    "diesel",
+    "diet",
+    "differ",
+    "digital",
+    "dignity",
+    "dilemma",
+    "dinner",
+    "dinosaur",
+    "direct",
+    "dirt",
+    "disagree",
+    "discover",
+    "disease",
+    "dish",
+    "dismiss",
+    "disorder",
+    "display",
+    "distance",
+    "divert",
+    "divide",
+    "divorce",
+    "dizzy",
+    "doctor",
+    "document",
+    "dog",
+    "doll",
+    "dolphin",
+    "domain",
+    "donate",
+    "donkey",
+    "donor",
+    "door",
+    "dose",
+    "double",
+    "dove",
+    "draft",
+    "dragon",
+    "drama",
+    "drastic",
+    "dream",
+    "dress",
+    "drift",
+    "drill",
+    "drink",
+    "drip",
+    "drive",
+    "drop",
+    "drum",
+    "dry",
+    "duck",
+    "dumb",
+    "dune",
+    "during",
+    "dust",
+    "dutch",
+    "duty",
+    "dwarf",
+    "dynamic",
+    "eager",
+    "eagle",
+    "early",
+    "earn",
+    "earth",
+    "easily",
+    "east",
+    "easy",
+    "echo",
+    "ecology",
+    "economy",
+    "edge",
+    "edit",
+    "educate",
+    "effort",
+    "egg",
+    "eight",
+    "either",
+    "elbow",
+    "elder",
+    "electric",
+    "elegant",
+    "element",
+    "elephant",
+    "elevator",
+    "elite",
+    "else",
+    "embark",
+    "embody",
+    "embrace",
+    "emerge",
+    "emotion",
+    "employ",
+    "empower",
+    "empty",
+    "enable",
+    "encourage",
+    "end",
+    "endless",
+    "endorse",
+    "enemy",
+    "energy",
+    "enforce",
+    "engage",
+    "engine",
+    "enhance",
 ];
 
 /// Convert entropy bytes to a BIP-39 mnemonic phrase.
@@ -951,8 +1418,8 @@ fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
     let salt = format!("mnemonic{}", passphrase);
 
     // Use HMAC-based derivation as a deterministic seed source
-    let mut mac = HmacSha512::new_from_slice(salt.as_bytes())
-        .expect("HMAC can accept any key length");
+    let mut mac =
+        HmacSha512::new_from_slice(salt.as_bytes()).expect("HMAC can accept any key length");
     mac.update(mnemonic.as_bytes());
     let result = mac.finalize().into_bytes();
 
@@ -971,10 +1438,7 @@ fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
 /// 强化派生使用 `0x80000000 + index` 作为密钥。
 #[allow(clippy::expect_used)]
 #[allow(clippy::indexing_slicing)]
-fn derive_key_from_seed(
-    seed: &[u8; 64],
-    path: &DerivationPath,
-) -> Result<[u8; 32], HdWalletError> {
+fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 32], HdWalletError> {
     use hmac::{Hmac, Mac};
 
     type HmacSha512 = Hmac<sha3::Keccak512>;
@@ -992,8 +1456,8 @@ fn derive_key_from_seed(
     let mut key = seed.to_vec();
 
     for index in &indices {
-        let mut mac = HmacSha512::new_from_slice(&key[..32])
-            .expect("HMAC can accept any key length");
+        let mut mac =
+            HmacSha512::new_from_slice(&key[..32]).expect("HMAC can accept any key length");
 
         // Hardened: 0x00 + ser32(index)
         if *index >= hardened {
@@ -1105,7 +1569,8 @@ mod tests {
 
     #[test]
     fn test_hd_wallet_import_mnemonic() {
-        let phrase = "abandon ability able about above absent absorb abstract absurd abuse access accident";
+        let phrase =
+            "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet = HdWallet::import_mnemonic(phrase).unwrap();
         assert_eq!(wallet.word_count(), 12);
         assert_eq!(wallet.mnemonic(), phrase);
@@ -1121,7 +1586,8 @@ mod tests {
 
     #[test]
     fn test_hd_wallet_import_with_passphrase() {
-        let phrase = "abandon ability able about above absent absorb abstract absurd abuse access accident";
+        let phrase =
+            "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet = HdWallet::import_mnemonic_with_passphrase(phrase, "mypassword").unwrap();
         assert!(wallet.has_passphrase());
 
@@ -1154,7 +1620,8 @@ mod tests {
 
     #[test]
     fn test_hd_wallet_derive_deterministic() {
-        let phrase = "abandon ability able about above absent absorb abstract absurd abuse access accident";
+        let phrase =
+            "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet1 = HdWallet::import_mnemonic(phrase).unwrap();
         let wallet2 = HdWallet::import_mnemonic(phrase).unwrap();
 
@@ -1257,11 +1724,23 @@ mod tests {
 
         // Confirm by owner1
         wallet.confirm(proposal_id, &owner1).unwrap();
-        assert_eq!(wallet.get_proposal(proposal_id).unwrap().confirmation_count(), 1);
+        assert_eq!(
+            wallet
+                .get_proposal(proposal_id)
+                .unwrap()
+                .confirmation_count(),
+            1
+        );
 
         // Confirm by owner2
         wallet.confirm(proposal_id, &owner2).unwrap();
-        assert_eq!(wallet.get_proposal(proposal_id).unwrap().confirmation_count(), 2);
+        assert_eq!(
+            wallet
+                .get_proposal(proposal_id)
+                .unwrap()
+                .confirmation_count(),
+            2
+        );
 
         // Should be ready
         assert!(wallet.is_ready(proposal_id));
@@ -1298,7 +1777,10 @@ mod tests {
         let result = wallet.execute(proposal_id);
         assert!(matches!(
             result.unwrap_err(),
-            MultiSigError::InsufficientConfirmations { required: 2, current: 1 }
+            MultiSigError::InsufficientConfirmations {
+                required: 2,
+                current: 1
+            }
         ));
     }
 
@@ -1353,7 +1835,13 @@ mod tests {
         wallet.confirm(proposal_id, &owner1).unwrap();
 
         wallet.revoke(proposal_id, &owner1).unwrap();
-        assert_eq!(wallet.get_proposal(proposal_id).unwrap().confirmation_count(), 0);
+        assert_eq!(
+            wallet
+                .get_proposal(proposal_id)
+                .unwrap()
+                .confirmation_count(),
+            0
+        );
     }
 
     #[test]
@@ -1401,7 +1889,10 @@ mod tests {
         let err = MultiSigError::NoOwners;
         assert_eq!(err.to_string(), "No owners provided");
 
-        let err = MultiSigError::InvalidThreshold { threshold: 5, owner_count: 3 };
+        let err = MultiSigError::InvalidThreshold {
+            threshold: 5,
+            owner_count: 3,
+        };
         assert!(err.to_string().contains("Invalid threshold"));
 
         let err = MultiSigError::DuplicateOwner;

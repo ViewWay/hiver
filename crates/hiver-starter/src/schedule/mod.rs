@@ -22,14 +22,13 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
-use crate::core::{AutoConfiguration, ApplicationContext};
+use crate::core::{ApplicationContext, AutoConfiguration};
 
 // Re-export schedule types
 // 重新导出调度类型
 pub use hiver_schedule::{
-    ScheduleType, ScheduledTask, TaskScheduler,
-    schedule_fixed_rate, schedule_fixed_delay,
-    DEFAULT_SCHEDULED_POOL_SIZE, DEFAULT_FIXED_RATE_MS, DEFAULT_INITIAL_DELAY_MS,
+    DEFAULT_FIXED_RATE_MS, DEFAULT_INITIAL_DELAY_MS, DEFAULT_SCHEDULED_POOL_SIZE, ScheduleType,
+    ScheduledTask, TaskScheduler, schedule_fixed_delay, schedule_fixed_rate,
 };
 
 // ============================================================================
@@ -126,13 +125,17 @@ impl ParsedDuration {
     /// Create a new parsed duration from seconds.
     /// 从秒创建解析后的时长。
     pub fn from_secs(secs: u64) -> Self {
-        Self { millis: secs * 1000 }
+        Self {
+            millis: secs * 1000,
+        }
     }
 
     /// Create a new parsed duration from minutes.
     /// 从分钟创建解析后的时长。
     pub fn from_mins(mins: u64) -> Self {
-        Self { millis: mins * 60 * 1000 }
+        Self {
+            millis: mins * 60 * 1000,
+        }
     }
 }
 
@@ -165,41 +168,51 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
     // 首先尝试带单位后缀的解析。
     if input.ends_with("ms") {
         let num_str = &input[..input.len() - 2];
-        let num: u64 = num_str.parse().map_err(|_| ScheduleScanError::InvalidConfig {
-            detail: format!("invalid milliseconds value: '{}'", num_str),
-        })?;
+        let num: u64 = num_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidConfig {
+                detail: format!("invalid milliseconds value: '{}'", num_str),
+            })?;
         return Ok(ParsedDuration::from_millis(num));
     }
 
     if input.ends_with('s') {
         let num_str = &input[..input.len() - 1];
-        let num: u64 = num_str.parse().map_err(|_| ScheduleScanError::InvalidConfig {
-            detail: format!("invalid seconds value: '{}'", num_str),
-        })?;
+        let num: u64 = num_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidConfig {
+                detail: format!("invalid seconds value: '{}'", num_str),
+            })?;
         return Ok(ParsedDuration::from_secs(num));
     }
 
     if input.ends_with('m') {
         let num_str = &input[..input.len() - 1];
-        let num: u64 = num_str.parse().map_err(|_| ScheduleScanError::InvalidConfig {
-            detail: format!("invalid minutes value: '{}'", num_str),
-        })?;
+        let num: u64 = num_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidConfig {
+                detail: format!("invalid minutes value: '{}'", num_str),
+            })?;
         return Ok(ParsedDuration::from_mins(num));
     }
 
     if input.ends_with('h') {
         let num_str = &input[..input.len() - 1];
-        let num: u64 = num_str.parse().map_err(|_| ScheduleScanError::InvalidConfig {
-            detail: format!("invalid hours value: '{}'", num_str),
-        })?;
+        let num: u64 = num_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidConfig {
+                detail: format!("invalid hours value: '{}'", num_str),
+            })?;
         return Ok(ParsedDuration::from_millis(num * 3600 * 1000));
     }
 
     // Bare number: treat as milliseconds.
     // 纯数字：当作毫秒处理。
-    let num: u64 = input.parse().map_err(|_| ScheduleScanError::InvalidConfig {
-        detail: format!("invalid duration value: '{}'", input),
-    })?;
+    let num: u64 = input
+        .parse()
+        .map_err(|_| ScheduleScanError::InvalidConfig {
+            detail: format!("invalid duration value: '{}'", input),
+        })?;
     Ok(ParsedDuration::from_millis(num))
 }
 
@@ -293,12 +306,14 @@ impl CronField {
                 match base.as_ref() {
                     CronField::All => value % step == 0,
                     CronField::Range(start, _end) => {
-                        if value < *start { return false; }
+                        if value < *start {
+                            return false;
+                        }
                         (value - start) % step == 0
-                    }
+                    },
                     _ => true,
                 }
-            }
+            },
         }
     }
 
@@ -346,13 +361,13 @@ impl std::fmt::Display for ScheduleScanError {
         match self {
             Self::InvalidCron { detail } => {
                 write!(f, "invalid cron expression: {}", detail)
-            }
+            },
             Self::InvalidConfig { detail } => {
                 write!(f, "invalid schedule config: {}", detail)
-            }
+            },
             Self::ConflictingModes { modes } => {
                 write!(f, "conflicting schedule modes: {}", modes.join(", "))
-            }
+            },
         }
     }
 }
@@ -378,11 +393,7 @@ impl FromStr for CronExpression {
 
         if fields.len() != 5 {
             return Err(ScheduleScanError::InvalidCron {
-                detail: format!(
-                    "expected 5 fields, got {}; expression: '{}'",
-                    fields.len(),
-                    input
-                ),
+                detail: format!("expected 5 fields, got {}; expression: '{}'", fields.len(), input),
             });
         }
 
@@ -412,12 +423,11 @@ fn parse_cron_field(
         let base_str = &input[..slash_pos];
         let step_str = &input[slash_pos + 1..];
 
-        let step: u32 = step_str.parse().map_err(|_| ScheduleScanError::InvalidCron {
-            detail: format!(
-                "invalid step value '{}' in field '{}'",
-                step_str, field_name
-            ),
-        })?;
+        let step: u32 = step_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidCron {
+                detail: format!("invalid step value '{}' in field '{}'", step_str, field_name),
+            })?;
 
         if step == 0 {
             return Err(ScheduleScanError::InvalidCron {
@@ -467,19 +477,17 @@ fn parse_cron_atom(
         let start_str = &input[..dash_pos];
         let end_str = &input[dash_pos + 1..];
 
-        let start: u32 = start_str.parse().map_err(|_| ScheduleScanError::InvalidCron {
-            detail: format!(
-                "invalid range start '{}' in field '{}'",
-                start_str, field_name
-            ),
-        })?;
+        let start: u32 = start_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidCron {
+                detail: format!("invalid range start '{}' in field '{}'", start_str, field_name),
+            })?;
 
-        let end: u32 = end_str.parse().map_err(|_| ScheduleScanError::InvalidCron {
-            detail: format!(
-                "invalid range end '{}' in field '{}'",
-                end_str, field_name
-            ),
-        })?;
+        let end: u32 = end_str
+            .parse()
+            .map_err(|_| ScheduleScanError::InvalidCron {
+                detail: format!("invalid range end '{}' in field '{}'", end_str, field_name),
+            })?;
 
         validate_range(start, end, min_val, max_val, field_name)?;
         return Ok(CronField::Range(start, end));
@@ -524,10 +532,7 @@ fn validate_range(
 ) -> Result<(), ScheduleScanError> {
     if start > end {
         return Err(ScheduleScanError::InvalidCron {
-            detail: format!(
-                "range start {} > end {} in field '{}'",
-                start, end, field_name
-            ),
+            detail: format!("range start {} > end {} in field '{}'", start, end, field_name),
         });
     }
 
@@ -608,17 +613,17 @@ impl ScheduledMethodScanner {
             ScheduleConfig::FixedRate(rate_str) => {
                 let duration = parse_duration(rate_str)?;
                 Ok(ScheduledTask::fixed_rate(descriptor.name, duration.millis))
-            }
+            },
             ScheduleConfig::FixedDelay(delay_str) => {
                 let duration = parse_duration(delay_str)?;
                 Ok(ScheduledTask::fixed_delay(descriptor.name, duration.millis))
-            }
+            },
             ScheduleConfig::Cron(cron_str) => {
                 // Validate the cron expression.
                 // 验证 cron 表达式。
                 let _expr: CronExpression = cron_str.parse()?;
                 Ok(ScheduledTask::cron(descriptor.name, *cron_str))
-            }
+            },
         }
     }
 }
@@ -731,13 +736,11 @@ impl AutoConfiguration for ScheduleAutoConfiguration {
                         method.task,
                     );
                 }
-            }
+            },
             Err(e) => {
                 tracing::error!("Failed to scan @Scheduled methods: {}", e);
-                return Err(anyhow::anyhow!(
-                    "Scheduled method scanning failed: {}", e
-                ));
-            }
+                return Err(anyhow::anyhow!("Scheduled method scanning failed: {}", e));
+            },
         }
 
         Ok(())
@@ -1042,30 +1045,15 @@ mod tests {
 
     #[test]
     fn test_schedule_config_equality() {
-        assert_eq!(
-            ScheduleConfig::FixedRate("5s"),
-            ScheduleConfig::FixedRate("5s")
-        );
-        assert_eq!(
-            ScheduleConfig::FixedDelay("10s"),
-            ScheduleConfig::FixedDelay("10s")
-        );
-        assert_eq!(
-            ScheduleConfig::Cron("0 0 * * *"),
-            ScheduleConfig::Cron("0 0 * * *")
-        );
+        assert_eq!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedRate("5s"));
+        assert_eq!(ScheduleConfig::FixedDelay("10s"), ScheduleConfig::FixedDelay("10s"));
+        assert_eq!(ScheduleConfig::Cron("0 0 * * *"), ScheduleConfig::Cron("0 0 * * *"));
     }
 
     #[test]
     fn test_schedule_config_inequality() {
-        assert_ne!(
-            ScheduleConfig::FixedRate("5s"),
-            ScheduleConfig::FixedRate("10s")
-        );
-        assert_ne!(
-            ScheduleConfig::FixedRate("5s"),
-            ScheduleConfig::FixedDelay("5s")
-        );
+        assert_ne!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedRate("10s"));
+        assert_ne!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedDelay("5s"));
     }
 
     // ========================================================================

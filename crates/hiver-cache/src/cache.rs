@@ -288,9 +288,8 @@ where
         // to match CacheEntry::expires_at semantics which uses absolute expiration from creation time
         // 使用 time_to_live（从插入开始的绝对TTL）而不是 time_to_idle（滑动窗口）
         // 以匹配 CacheEntry::expires_at 语义，后者使用从创建时间开始的绝对过期
-        let builder = moka::future::CacheBuilder::new(config.max_capacity as u64).time_to_live(
-            Duration::from_secs(config.ttl_secs.unwrap_or(crate::DEFAULT_TTL_SECS)),
-        );
+        let builder = moka::future::CacheBuilder::new(config.max_capacity as u64)
+            .time_to_live(Duration::from_secs(config.ttl_secs.unwrap_or(crate::DEFAULT_TTL_SECS)));
 
         Self {
             inner: builder.build(),

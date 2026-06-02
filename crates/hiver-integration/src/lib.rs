@@ -67,35 +67,41 @@ pub use channel::{
 };
 
 pub use transformer::{
-    ChainTransformer, ContentTypeTransformer, GenericTransformer, HeaderTransformer, JsonTransformer, PayloadTransformer,
-    Transformer,
+    ChainTransformer, ContentTypeTransformer, GenericTransformer, HeaderTransformer,
+    JsonTransformer, PayloadTransformer, Transformer,
 };
 
-pub use router::{BuiltRouter, ContentBasedRouter, RecipientListRouter, Router, RouterBuilder, StaticRouter};
+pub use router::{
+    BuiltRouter, ContentBasedRouter, RecipientListRouter, Router, RouterBuilder, StaticRouter,
+};
 
 pub use filter::{
     AndFilter, HeaderFilter, MessageFilter, NotFilter, OrFilter, PredicateFilter, ThresholdFilter,
 };
 
-pub use splitter::{DelimiterSplitter, IteratorSplitter, JsonArraySplitter, LineSplitter, MessageSplitter, SizeSplitter};
+pub use splitter::{
+    DelimiterSplitter, IteratorSplitter, JsonArraySplitter, LineSplitter, MessageSplitter,
+    SizeSplitter,
+};
 
 pub use aggregator::{
-    CorrelationAggregator, CountAggregator, ExpressionAggregator, GroupAggregator, MessageAggregator, TimeoutAggregator,
+    CorrelationAggregator, CountAggregator, ExpressionAggregator, GroupAggregator,
+    MessageAggregator, TimeoutAggregator,
 };
 
 /// Prelude module for common imports
 /// Prelude 模块用于常用导入
 pub mod prelude {
-    pub use crate::error::{IntegrationError, Result};
-    pub use crate::message::{Message, MessageBuilder, Headers};
+    pub use crate::aggregator::{CorrelationAggregator, CountAggregator, MessageAggregator};
     pub use crate::channel::{
-        MessageChannel, PointToPointChannel, PublishSubscribeChannel, DirectChannel,
+        DirectChannel, MessageChannel, PointToPointChannel, PublishSubscribeChannel,
     };
-    pub use crate::transformer::{Transformer, HeaderTransformer, ChainTransformer};
-    pub use crate::router::{Router, ContentBasedRouter, RouterBuilder};
-    pub use crate::filter::{MessageFilter, PredicateFilter, HeaderFilter};
-    pub use crate::splitter::{MessageSplitter, IteratorSplitter, DelimiterSplitter};
-    pub use crate::aggregator::{MessageAggregator, CountAggregator, CorrelationAggregator};
+    pub use crate::error::{IntegrationError, Result};
+    pub use crate::filter::{HeaderFilter, MessageFilter, PredicateFilter};
+    pub use crate::message::{Headers, Message, MessageBuilder};
+    pub use crate::router::{ContentBasedRouter, Router, RouterBuilder};
+    pub use crate::splitter::{DelimiterSplitter, IteratorSplitter, MessageSplitter};
+    pub use crate::transformer::{ChainTransformer, HeaderTransformer, Transformer};
 }
 
 /// Integration flow builder
@@ -109,9 +115,11 @@ enum FlowStep {
     Channel(String),
     Transform(std::sync::Arc<dyn transformer::Transformer>),
     Filter(std::sync::Arc<dyn filter::MessageFilter>),
-    #[allow(dead_code)] // no builder method yet; match arm in BuiltFlow::process ready for when added
+    #[allow(dead_code)]
+    // no builder method yet; match arm in BuiltFlow::process ready for when added
     Split(std::sync::Arc<dyn splitter::MessageSplitter>),
-    #[allow(dead_code)] // no builder method yet; match arm in BuiltFlow::process ready for when added
+    #[allow(dead_code)]
+    // no builder method yet; match arm in BuiltFlow::process ready for when added
     Aggregate(std::sync::Arc<dyn aggregator::MessageAggregator>),
 }
 
@@ -181,15 +189,15 @@ impl BuiltFlow {
                     let registry = channel::global_registry();
                     let ch = registry.get(name).await?;
                     ch.send(current.clone()).await?;
-                }
+                },
                 FlowStep::Transform(transformer) => {
                     current = transformer.transform(current).await?;
-                }
+                },
                 FlowStep::Filter(filter) => {
                     if !filter.test(&current).await {
                         return Err(IntegrationError::Message("Message filtered out".to_string()));
                     }
-                }
+                },
                 FlowStep::Split(splitter) => {
                     let messages = splitter.split(current.clone()).await?;
                     // For now, just return the first message
@@ -197,7 +205,7 @@ impl BuiltFlow {
                     if let Some(first) = messages.first() {
                         current = first.clone();
                     }
-                }
+                },
                 FlowStep::Aggregate(aggregator) => {
                     aggregator.add(current.clone()).await?;
                     if aggregator.is_complete().await {
@@ -207,7 +215,7 @@ impl BuiltFlow {
                             "Aggregation not complete".to_string(),
                         ));
                     }
-                }
+                },
             }
         }
 
@@ -246,7 +254,9 @@ mod tests {
         // 构建流
         let flow = Flow::from("test_flow")
             .channel("test")
-            .transform(std::sync::Arc::new(HeaderTransformer::new().add_header("processed", "true")))
+            .transform(std::sync::Arc::new(
+                HeaderTransformer::new().add_header("processed", "true"),
+            ))
             .build()
             .unwrap();
 

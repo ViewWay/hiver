@@ -191,7 +191,10 @@ impl<'a> KvV2Engine<'a> {
     /// Read a specific version of a secret (convenience method).
     /// 读取密钥的指定版本（便捷方法）。
     pub async fn get_secret(&self, path: &str, version: i64) -> VaultResult<crate::kv::KvV2Secret> {
-        self.client.kv_v2(&self.mount).read_version(path, version).await
+        self.client
+            .kv_v2(&self.mount)
+            .read_version(path, version)
+            .await
     }
 
     // ── Write Operations ────────────────────────────────────────────────
@@ -267,11 +270,7 @@ impl<'a> KvV2Engine<'a> {
     ///
     /// Soft-deleted versions can be recovered with `undelete_secret_versions`.
     /// 软删除的版本可以通过 `undelete_secret_versions` 恢复。
-    pub async fn delete_secret_versions(
-        &self,
-        path: &str,
-        versions: &[i64],
-    ) -> VaultResult<()> {
+    pub async fn delete_secret_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         self.client
             .kv_v2(&self.mount)
             .delete_versions(path, versions)
@@ -280,11 +279,7 @@ impl<'a> KvV2Engine<'a> {
 
     /// Undelete (recover) previously soft-deleted versions.
     /// 恢复（取消删除）之前软删除的版本。
-    pub async fn undelete_secret_versions(
-        &self,
-        path: &str,
-        versions: &[i64],
-    ) -> VaultResult<()> {
+    pub async fn undelete_secret_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         self.client
             .kv_v2(&self.mount)
             .undelete_versions(path, versions)
@@ -313,10 +308,7 @@ impl<'a> KvV2Engine<'a> {
 
     /// Read the full metadata for a secret path.
     /// 读取密钥路径的完整元数据。
-    pub async fn read_full_metadata(
-        &self,
-        path: &str,
-    ) -> VaultResult<KvV2FullMetadata> {
+    pub async fn read_full_metadata(&self, path: &str) -> VaultResult<KvV2FullMetadata> {
         let full_path = format!("{}/metadata/{}", self.mount, path);
         let resp = self.client.get(&full_path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -329,8 +321,8 @@ impl<'a> KvV2Engine<'a> {
         let mut versions = std::collections::HashMap::new();
         if let Some(v) = data.get("versions").and_then(|v| v.as_object()) {
             for (key, val) in v {
-                let info: KvV2VersionInfo = serde_json::from_value(val.clone())
-                    .unwrap_or(KvV2VersionInfo {
+                let info: KvV2VersionInfo =
+                    serde_json::from_value(val.clone()).unwrap_or(KvV2VersionInfo {
                         version: key.parse().unwrap_or(0),
                         created_time: None,
                         deletion_time: None,
@@ -342,8 +334,12 @@ impl<'a> KvV2Engine<'a> {
 
         Ok(KvV2FullMetadata {
             max_version: data.get("max_version").and_then(serde_json::Value::as_i64),
-            oldest_version: data.get("oldest_version").and_then(serde_json::Value::as_i64),
-            cas_required: data.get("cas_required").and_then(serde_json::Value::as_bool),
+            oldest_version: data
+                .get("oldest_version")
+                .and_then(serde_json::Value::as_i64),
+            cas_required: data
+                .get("cas_required")
+                .and_then(serde_json::Value::as_bool),
             custom_metadata: data.get("custom_metadata").cloned(),
             versions,
         })
@@ -386,13 +382,8 @@ impl KvV2GetRequest<'_> {
                     .kv_v2(&self.mount)
                     .read_version(&self.path, v)
                     .await
-            }
-            None => {
-                self.client
-                    .kv_v2(&self.mount)
-                    .read(&self.path)
-                    .await
-            }
+            },
+            None => self.client.kv_v2(&self.mount).read(&self.path).await,
         }
     }
 }

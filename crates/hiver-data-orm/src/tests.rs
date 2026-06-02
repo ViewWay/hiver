@@ -4,9 +4,8 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        mock_connection::Connection,
+        ColumnType as OrmColumnType, Model, ModelMeta, mock_connection::Connection,
         query::QueryBuilder,
-        ColumnType as OrmColumnType, Model, ModelMeta,
     };
     use hiver_data_rdbc::DatabaseClient;
     use serde::Deserialize;
@@ -33,9 +32,9 @@ mod tests {
         }
 
         fn set_primary_key(&mut self, value: String) -> crate::Result<()> {
-            self.id = value.parse().map_err(|_| {
-                crate::Error::validation("Invalid primary key")
-            })?;
+            self.id = value
+                .parse()
+                .map_err(|_| crate::Error::validation("Invalid primary key"))?;
             Ok(())
         }
     }
@@ -48,7 +47,9 @@ mod tests {
     impl MockDbClient {
         fn new() -> Self {
             let conn = Connection::new("mock://test").unwrap();
-            Self { conn: Arc::new(std::sync::Mutex::new(conn)) }
+            Self {
+                conn: Arc::new(std::sync::Mutex::new(conn)),
+            }
         }
 
         fn ensure_table(&self, ddl: &str) {
@@ -58,8 +59,14 @@ mod tests {
 
         fn insert_test_data(&self) {
             let conn = self.conn.lock().unwrap();
-            conn.execute("INSERT INTO test_users (id, name, email) VALUES (1, 'Alice', 'alice@example.com')").unwrap();
-            conn.execute("INSERT INTO test_users (id, name, email) VALUES (2, 'Bob', 'bob@example.com')").unwrap();
+            conn.execute(
+                "INSERT INTO test_users (id, name, email) VALUES (1, 'Alice', 'alice@example.com')",
+            )
+            .unwrap();
+            conn.execute(
+                "INSERT INTO test_users (id, name, email) VALUES (2, 'Bob', 'bob@example.com')",
+            )
+            .unwrap();
             conn.execute("INSERT INTO test_users (id, name, email) VALUES (3, 'Charlie', 'charlie@example.com')").unwrap();
         }
     }
@@ -68,39 +75,48 @@ mod tests {
     impl hiver_data_rdbc::DatabaseClient for MockDbClient {
         async fn fetch_all(&self, sql: &str) -> hiver_data_rdbc::Result<Vec<hiver_data_rdbc::Row>> {
             let conn = self.conn.lock().unwrap();
-            let results = conn.query(sql).map_err(|e| hiver_data_rdbc::Error::Sql(e.to_string()))?;
-            let rows: Vec<hiver_data_rdbc::Row> = results.into_iter().map(|map| {
-                let mut row = hiver_data_rdbc::Row::new();
-                for (k, v) in map {
-                    let cv = match v {
-                        serde_json::Value::Number(n) => {
-                            if let Some(i) = n.as_i64() {
-                                hiver_data_rdbc::ColumnValue::I64(i)
-                            } else if let Some(f) = n.as_f64() {
-                                hiver_data_rdbc::ColumnValue::F64(f)
-                            } else {
-                                hiver_data_rdbc::ColumnValue::Null
-                            }
-                        }
-                        serde_json::Value::String(s) => hiver_data_rdbc::ColumnValue::String(s),
-                        serde_json::Value::Bool(b) => hiver_data_rdbc::ColumnValue::Bool(b),
-                        _ => hiver_data_rdbc::ColumnValue::Null,
-                    };
-                    row = row.with_column(k, cv);
-                }
-                row
-            }).collect();
+            let results = conn
+                .query(sql)
+                .map_err(|e| hiver_data_rdbc::Error::Sql(e.to_string()))?;
+            let rows: Vec<hiver_data_rdbc::Row> = results
+                .into_iter()
+                .map(|map| {
+                    let mut row = hiver_data_rdbc::Row::new();
+                    for (k, v) in map {
+                        let cv = match v {
+                            serde_json::Value::Number(n) => {
+                                if let Some(i) = n.as_i64() {
+                                    hiver_data_rdbc::ColumnValue::I64(i)
+                                } else if let Some(f) = n.as_f64() {
+                                    hiver_data_rdbc::ColumnValue::F64(f)
+                                } else {
+                                    hiver_data_rdbc::ColumnValue::Null
+                                }
+                            },
+                            serde_json::Value::String(s) => hiver_data_rdbc::ColumnValue::String(s),
+                            serde_json::Value::Bool(b) => hiver_data_rdbc::ColumnValue::Bool(b),
+                            _ => hiver_data_rdbc::ColumnValue::Null,
+                        };
+                        row = row.with_column(k, cv);
+                    }
+                    row
+                })
+                .collect();
             Ok(rows)
         }
 
-        async fn fetch_one(&self, sql: &str) -> hiver_data_rdbc::Result<Option<hiver_data_rdbc::Row>> {
+        async fn fetch_one(
+            &self,
+            sql: &str,
+        ) -> hiver_data_rdbc::Result<Option<hiver_data_rdbc::Row>> {
             let rows = self.fetch_all(sql).await?;
             Ok(rows.into_iter().next())
         }
 
         async fn execute_cmd(&self, sql: &str) -> hiver_data_rdbc::Result<u64> {
             let conn = self.conn.lock().unwrap();
-            conn.execute(sql).map_err(|e| hiver_data_rdbc::Error::Sql(e.to_string()))?;
+            conn.execute(sql)
+                .map_err(|e| hiver_data_rdbc::Error::Sql(e.to_string()))?;
             Ok(1)
         }
 
@@ -124,15 +140,24 @@ mod tests {
         client.insert_test_data();
 
         // Basic fetch_all works with the mock
-        let rows = client.fetch_all("SELECT * FROM test_users").await.expect("fetch failed");
+        let rows = client
+            .fetch_all("SELECT * FROM test_users")
+            .await
+            .expect("fetch failed");
         assert_eq!(rows.len(), 3);
 
         // fetch_one returns first row
-        let row = client.fetch_one("SELECT * FROM test_users").await.expect("fetch failed");
+        let row = client
+            .fetch_one("SELECT * FROM test_users")
+            .await
+            .expect("fetch failed");
         assert!(row.is_some());
 
         // execute_cmd is a no-op that succeeds
-        client.execute_cmd("DELETE FROM test_users WHERE id = 1").await.expect("execute failed");
+        client
+            .execute_cmd("DELETE FROM test_users WHERE id = 1")
+            .await
+            .expect("execute failed");
     }
 
     #[tokio::test]
@@ -269,8 +294,7 @@ mod tests {
     /// Column name correction with custom column mapping.
     #[test]
     fn test_column_custom_name() {
-        let col = crate::Column::new("user_id", OrmColumnType::I64)
-            .primary_key();
+        let col = crate::Column::new("user_id", OrmColumnType::I64).primary_key();
         // Custom column name: the struct field maps to a DB column
         assert_eq!(col.name, "user_id");
         assert!(col.is_primary_key);
@@ -329,5 +353,4 @@ mod tests {
         assert_eq!(crate::Error::not_found("x").category(), "not_found");
         assert_eq!(crate::Error::duplicate("x").category(), "duplicate");
     }
-
 }

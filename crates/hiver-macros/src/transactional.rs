@@ -184,7 +184,8 @@ fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsP
                         "NESTED" => quote! { .propagation(Propagation::Nested) },
                         _ => quote! {},
                     };
-                    options.propagation = Some(syn::parse2(prop_expr).unwrap_or_else(|e| panic!("{}", e)));
+                    options.propagation =
+                        Some(syn::parse2(prop_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
                 "isolation" => {
                     let iso_expr = match value {
@@ -196,12 +197,14 @@ fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsP
                         "SERIALIZABLE" => quote! { .isolation(IsolationLevel::Serializable) },
                         _ => quote! {},
                     };
-                    options.isolation = Some(syn::parse2(iso_expr).unwrap_or_else(|e| panic!("{}", e)));
+                    options.isolation =
+                        Some(syn::parse2(iso_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
                 "timeout" | "timeout_secs" => {
                     if let Ok(timeout_val) = value.parse::<u64>() {
                         let timeout_expr = quote! { .timeout_secs(#timeout_val) };
-                        options.timeout_secs = Some(syn::parse2(timeout_expr).unwrap_or_else(|e| panic!("{}", e)));
+                        options.timeout_secs =
+                            Some(syn::parse2(timeout_expr).unwrap_or_else(|e| panic!("{}", e)));
                     }
                 },
                 "read_only" => {

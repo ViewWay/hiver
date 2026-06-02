@@ -119,7 +119,10 @@ fn error_conversion_example() {
 
     // Simulating validation error / 模拟验证错误
     let validation_error = "Email is required";
-    let http_error = Error::with_message(ErrorKind::BadRequest, format!("Validation failed: {}", validation_error));
+    let http_error = Error::with_message(
+        ErrorKind::BadRequest,
+        format!("Validation failed: {}", validation_error),
+    );
     println!("  Validation → HTTP: {}", http_error);
 
     // Creating error from ErrorKind / 从 ErrorKind 创建错误

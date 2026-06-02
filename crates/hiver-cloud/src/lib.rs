@@ -42,8 +42,8 @@ pub use async_trait;
 pub use circuit_breaker::{CircuitBreaker, CircuitState};
 pub use config::{ConfigClient, ConfigServerClient, RemoteConfigSource};
 pub use config_client::{
-    CompositeConfigSource, ConfigClientError, ConfigProvider, ConfigServerClient as EnhancedConfigClient,
-    ConfigSource, PollingConfigRefresher,
+    CompositeConfigSource, ConfigClientError, ConfigProvider,
+    ConfigServerClient as EnhancedConfigClient, ConfigSource, PollingConfigRefresher,
 };
 pub use discovery::{
     AlwaysHealthyChecker, HealthCheckResult, HealthChecker, HeartbeatConfig, HttpHealthChecker,
@@ -53,14 +53,14 @@ pub use discovery::{
 
 #[cfg(feature = "consul")]
 pub use discovery::consul::{ConsulConfig, ConsulServiceRegistry};
-pub use gateway::{
-    Filter as GatewayFilterDef, Gateway, GatewayCircuitBreaker, GatewayCbState, GatewayConfig,
-    GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
-    InMemoryRouteLocator, Predicate, Route, RouteLocator, TokenBucketRateLimiter,
-};
 pub use feign::{
     BearerTokenInterceptor, DefaultFallback, FeignClientConfig, FeignError, FeignFallback,
     FeignRequestInterceptor, FeignResult, HeaderInterceptor, RetryConfig,
+};
+pub use gateway::{
+    Filter as GatewayFilterDef, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayConfig,
+    GatewayFilter, GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter,
+    InMemoryRouteLocator, Predicate, Route, RouteLocator, TokenBucketRateLimiter,
 };
 pub use load_balancer::{
     ConsistentHashLoadBalancer, LoadBalancer, ReactiveLoadBalancer, RoundRobinLoadBalancer,
@@ -76,14 +76,13 @@ pub use load_balancer_ext::{
 pub mod prelude {
     pub use super::{
         AlwaysHealthyChecker, CircuitBreaker, CircuitState, CompositeConfigSource, ConfigClient,
-        ConfigClientError, ConfigProvider, ConfigServerClient, ConfigSource,
-        EnhancedConfigClient, Gateway, GatewayConfig, GatewayFilter, GatewayFilterDef,
-        GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter, HealthCheckResult,
-        HealthChecker, HeartbeatConfig, HttpHealthChecker, InMemoryRouteLocator,
-        InMemoryServiceRegistry, InstanceStatus, LoadBalancer, PollingConfigRefresher,
-        Predicate, RemoteConfigSource, Route, RouteLocator, RoundRobinLoadBalancer,
-        ServiceDiscovery, ServiceDiscoveryClient, ServiceInstance, ServiceRegistry,
-        SimpleDiscoveryClient,
+        ConfigClientError, ConfigProvider, ConfigServerClient, ConfigSource, EnhancedConfigClient,
+        Gateway, GatewayConfig, GatewayFilter, GatewayFilterDef, GatewayRequest, GatewayResponse,
+        GatewayRoute, GatewayRouter, HealthCheckResult, HealthChecker, HeartbeatConfig,
+        HttpHealthChecker, InMemoryRouteLocator, InMemoryServiceRegistry, InstanceStatus,
+        LoadBalancer, PollingConfigRefresher, Predicate, RemoteConfigSource,
+        RoundRobinLoadBalancer, Route, RouteLocator, ServiceDiscovery, ServiceDiscoveryClient,
+        ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
     };
 
     #[cfg(feature = "consul")]

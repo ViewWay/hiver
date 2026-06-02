@@ -1,4 +1,14 @@
-#![allow(dead_code, clippy::expect_used, clippy::unwrap_used, clippy::indexing_slicing, clippy::cast_precision_loss, clippy::needless_pass_by_value, clippy::option_option, clippy::items_after_statements, clippy::format_push_string)]
+#![allow(
+    dead_code,
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::indexing_slicing,
+    clippy::cast_precision_loss,
+    clippy::needless_pass_by_value,
+    clippy::option_option,
+    clippy::items_after_statements,
+    clippy::format_push_string
+)]
 
 //! Hiver Validation Example / Hiver验证示例
 //!
@@ -104,10 +114,10 @@ fn user_input_validation_example() {
     println!();
     println!("  Invalid user:");
     let invalid_user = UserInput {
-        username: "a".to_string(),      // Too short
+        username: "a".to_string(),         // Too short
         email: "not-an-email".to_string(), // Invalid format
-        age: 15,                       // Below minimum
-        password: "123".to_string(),    // Too weak
+        age: 15,                           // Below minimum
+        password: "123".to_string(),       // Too weak
     };
     match invalid_user.validate() {
         Ok(()) => println!("    Validation passed!"),
@@ -120,7 +130,7 @@ fn user_input_validation_example() {
                     }
                 }
             }
-        }
+        },
     }
 }
 
@@ -229,7 +239,7 @@ fn error_handling_example() {
             );
             println!("    HTTP 400 Response:");
             println!("    {}", error_response);
-        }
+        },
     }
 }
 
@@ -417,7 +427,10 @@ fn example_create_user_endpoint(request: UserInput) -> Result<String, String> {
 }
 
 /// Example: Conditional validation / 示例：条件验证
-fn example_conditional_validation(user: UserInput, require_password: bool) -> Result<(), ValidationErrors> {
+fn example_conditional_validation(
+    user: UserInput,
+    require_password: bool,
+) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
 
     // Always validate username and email / 始终验证用户名和邮箱

@@ -283,9 +283,16 @@ impl Future for ConnectFuture {
                     // Socket is writable — check for connection error via SO_ERROR
                     // Socket 可写 — 通过 SO_ERROR 检查连接错误
                     let mut err_val: libc::c_int = 0;
-                    let mut err_len: libc::socklen_t = std::mem::size_of::<libc::c_int>() as libc::socklen_t;
+                    let mut err_len: libc::socklen_t =
+                        std::mem::size_of::<libc::c_int>() as libc::socklen_t;
                     unsafe {
-                        libc::getsockopt(fd, libc::SOL_SOCKET, libc::SO_ERROR, &mut err_val as *mut _ as *mut _, &mut err_len);
+                        libc::getsockopt(
+                            fd,
+                            libc::SOL_SOCKET,
+                            libc::SO_ERROR,
+                            &mut err_val as *mut _ as *mut _,
+                            &mut err_len,
+                        );
                     }
                     if err_val != 0 {
                         let fd = state.fd.take().unwrap();
@@ -1196,10 +1203,7 @@ impl Future for RecvFromFuture<'_, '_> {
 
             // Parse peer address (simplified)
             // 解析对端地址（简化版）
-            let peer_addr = SocketAddr::V4(std::net::SocketAddrV4::new(
-                Ipv4Addr::LOCALHOST,
-                0,
-            ));
+            let peer_addr = SocketAddr::V4(std::net::SocketAddrV4::new(Ipv4Addr::LOCALHOST, 0));
 
             Poll::Ready(Ok((n, peer_addr)))
         }
@@ -1254,7 +1258,7 @@ impl Future for SendToFuture<'_, '_> {
                             size_of::<libc::sockaddr_in>() as libc::socklen_t,
                         )
                     }
-                }
+                },
                 SocketAddr::V6(v6) => {
                     let sockaddr = libc::sockaddr_in6 {
                         sin6_family: libc::AF_INET6 as _,
@@ -1279,7 +1283,7 @@ impl Future for SendToFuture<'_, '_> {
                             size_of::<libc::sockaddr_in6>() as libc::socklen_t,
                         )
                     }
-                }
+                },
             };
 
             if result < 0 {

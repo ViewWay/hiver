@@ -42,20 +42,10 @@ impl Producer {
 
     /// Send record
     /// 发送记录
-    pub fn send(
-        &self,
-        topic: &str,
-        key: Option<&str>,
-        value: &[u8],
-    ) -> Result<i64, String> {
+    pub fn send(&self, topic: &str, key: Option<&str>, value: &[u8]) -> Result<i64, String> {
         // Mock implementation
         // 模拟实现
-        tracing::debug!(
-            "Sending to topic '{}' with key {:?}: {} bytes",
-            topic,
-            key,
-            value.len()
-        );
+        tracing::debug!("Sending to topic '{}' with key {:?}: {} bytes", topic, key, value.len());
         Ok(0)
     }
 
@@ -66,11 +56,7 @@ impl Producer {
         record: &Record,
         _options: &ProduceOptions,
     ) -> Result<i64, String> {
-        tracing::debug!(
-            "Sending to topic '{}': {} bytes",
-            record.topic,
-            record.payload.len()
-        );
+        tracing::debug!("Sending to topic '{}': {} bytes", record.topic, record.payload.len());
         Ok(0)
     }
 
@@ -82,8 +68,8 @@ impl Producer {
         key: Option<&str>,
         value: &T,
     ) -> Result<i64, String> {
-        let json = serde_json::to_vec(value)
-            .map_err(|e| format!("Failed to serialize JSON: {}", e))?;
+        let json =
+            serde_json::to_vec(value).map_err(|e| format!("Failed to serialize JSON: {}", e))?;
         self.send(topic, key, &json)
     }
 

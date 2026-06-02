@@ -5,8 +5,7 @@ use super::{MAX_BUFFER_SIZE, MAX_HEADER_SIZE};
 
 /// HTTP version
 /// HTTP 版本
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum HttpVersion {
     /// HTTP/1.0
     Http10,
@@ -31,7 +30,6 @@ impl HttpVersion {
         matches!(self, HttpVersion::Http11)
     }
 }
-
 
 /// Connection context for HTTP parsing/encoding
 /// HTTP 解析/编码的连接上下文

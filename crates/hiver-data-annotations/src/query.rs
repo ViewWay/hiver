@@ -4,7 +4,7 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, LitStr, parse_macro_input};
-use syn::{parse::ParseStream, Result as SynResult, parse::Parse};
+use syn::{Result as SynResult, parse::Parse, parse::ParseStream};
 
 /// Parses arguments from @Query annotation
 /// 解析 @Query 注解的参数

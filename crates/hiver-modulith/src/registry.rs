@@ -20,7 +20,10 @@ impl ModuleRegistry {
     /// Register a module.
     pub fn register<M: Module>(&self, module: &M) {
         let meta = ModuleMetadata::from_module(module);
-        self.modules.write().unwrap().insert(meta.name.clone(), meta);
+        self.modules
+            .write()
+            .unwrap()
+            .insert(meta.name.clone(), meta);
     }
 
     /// Get a module by name.
@@ -61,14 +64,22 @@ mod tests {
 
     struct CustomerModule;
     impl Module for CustomerModule {
-        fn name(&self) -> &str { "customer" }
-        fn description(&self) -> &'static str { "Customer management" }
+        fn name(&self) -> &str {
+            "customer"
+        }
+        fn description(&self) -> &'static str {
+            "Customer management"
+        }
     }
 
     struct OrderModule;
     impl Module for OrderModule {
-        fn name(&self) -> &str { "order" }
-        fn dependencies(&self) -> Vec<&str> { vec!["customer"] }
+        fn name(&self) -> &str {
+            "order"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["customer"]
+        }
     }
 
     #[test]

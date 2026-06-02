@@ -2,10 +2,10 @@
 //! Flyway - 数据库迁移执行器
 
 use crate::{
+    Config, MigratedVersion, Result,
     dialect::DatabaseType,
     info::{BaselineInfo, Info, MigrationEntry, MigrationResult},
     migration::{Migration, MigrationType, SqlMigration},
-    Config, MigratedVersion, Result,
 };
 use chrono::Utc;
 use sqlx::{Any, Pool, Row};
@@ -72,7 +72,11 @@ impl Flyway {
             .await
             .map_err(crate::FlywayError::ConnectionError)?;
 
-        Ok(Self { config, pool, db_type })
+        Ok(Self {
+            config,
+            pool,
+            db_type,
+        })
     }
 
     /// Create from environment variables
@@ -131,9 +135,13 @@ impl Flyway {
             let migration = &migrations[idx];
             match self.execute_migration(migration).await {
                 Ok(version) => {
-                    info!("Applied migration: {} - {}", migration.version(), migration.description());
+                    info!(
+                        "Applied migration: {} - {}",
+                        migration.version(),
+                        migration.description()
+                    );
                     executed.push(version);
-                }
+                },
                 Err(e) => {
                     warn!("Migration failed: {} - {}", migration.version(), e);
                     return Ok(MigrationResult::failed(format!(
@@ -141,7 +149,7 @@ impl Flyway {
                         migration.version(),
                         e
                     )));
-                }
+                },
             }
         }
 
@@ -193,11 +201,7 @@ impl Flyway {
             })
             .collect();
 
-        let all: Vec<MigrationEntry> = applied
-            .values()
-            .cloned()
-            .chain(pending.clone())
-            .collect();
+        let all: Vec<MigrationEntry> = applied.values().cloned().chain(pending.clone()).collect();
 
         Ok(Info {
             schema_exists,
@@ -232,13 +236,14 @@ impl Flyway {
                 let migrations = self.load_migrations()?;
                 if let Some(migration) = migrations.iter().find(|m| m.version() == &entry.version)
                     && let Some(file_checksum) = migration.checksum()
-                        && stored_checksum != file_checksum {
-                            return Err(crate::FlywayError::ChecksumMismatch {
-                                version: entry.version.clone(),
-                                expected: stored_checksum,
-                                actual: file_checksum,
-                            });
-                        }
+                    && stored_checksum != file_checksum
+                {
+                    return Err(crate::FlywayError::ChecksumMismatch {
+                        version: entry.version.clone(),
+                        expected: stored_checksum,
+                        actual: file_checksum,
+                    });
+                }
             }
         }
 
@@ -267,10 +272,7 @@ impl Flyway {
 
         self.insert_baseline(&baseline_info).await?;
 
-        info!(
-            "Baseline set to version {}",
-            baseline_info.version
-        );
+        info!("Baseline set to version {}", baseline_info.version);
 
         Ok(baseline_info)
     }
@@ -382,12 +384,13 @@ impl Flyway {
             let file_name = path.file_name().unwrap().to_string_lossy().to_string();
             if let Some((base_name, _desc)) = parse_migration_filename_with_dialect(&file_name)
                 && let Some(dialect) = extract_dialect_suffix(&base_name)
-                    && dialect == target_suffix {
-                        // This dialect-specific file matches our DB
-                        // 此方言特定文件匹配我们的数据库
-                        let base_version = strip_dialect_suffix(&base_name);
-                        dialect_overrides.insert(base_version);
-                    }
+                && dialect == target_suffix
+            {
+                // This dialect-specific file matches our DB
+                // 此方言特定文件匹配我们的数据库
+                let base_version = strip_dialect_suffix(&base_name);
+                dialect_overrides.insert(base_version);
+            }
         }
 
         // Second pass: collect applicable migrations
@@ -400,33 +403,35 @@ impl Flyway {
 
             let file_name = path.file_name().unwrap().to_string_lossy().to_string();
 
-            if let Some((base_name, description)) = parse_migration_filename_with_dialect(&file_name) {
-                let (effective_name, applicable) = if let Some(dialect) = extract_dialect_suffix(&base_name) {
-                    // Dialect-specific file: only applicable if dialect matches
-                    // 方言特定文件：仅当方言匹配时适用
-                    let applicable = dialect == target_suffix;
-                    let effective_name = strip_dialect_suffix(&base_name);
-                    (effective_name, applicable)
-                } else {
-                    // Generic file: applicable unless overridden by a dialect-specific file
-                    // 通用文件：除非被方言特定文件覆盖，否则适用
-                    let overridden = dialect_overrides.contains(&base_name);
-                    (base_name, !overridden)
-                };
+            if let Some((base_name, description)) =
+                parse_migration_filename_with_dialect(&file_name)
+            {
+                let (effective_name, applicable) =
+                    if let Some(dialect) = extract_dialect_suffix(&base_name) {
+                        // Dialect-specific file: only applicable if dialect matches
+                        // 方言特定文件：仅当方言匹配时适用
+                        let applicable = dialect == target_suffix;
+                        let effective_name = strip_dialect_suffix(&base_name);
+                        (effective_name, applicable)
+                    } else {
+                        // Generic file: applicable unless overridden by a dialect-specific file
+                        // 通用文件：除非被方言特定文件覆盖，否则适用
+                        let overridden = dialect_overrides.contains(&base_name);
+                        (base_name, !overridden)
+                    };
 
                 if !applicable {
-                    debug!("Skipping migration {} (not applicable for {})", file_name, self.db_type);
+                    debug!(
+                        "Skipping migration {} (not applicable for {})",
+                        file_name, self.db_type
+                    );
                     continue;
                 }
 
-                let sql = std::fs::read_to_string(&path)
-                    .map_err(crate::FlywayError::Io)?;
+                let sql = std::fs::read_to_string(&path).map_err(crate::FlywayError::Io)?;
 
-                let migration: Migration = SqlMigration::new(
-                    effective_name,
-                    description,
-                    sql,
-                ).into();
+                let migration: Migration =
+                    SqlMigration::new(effective_name, description, sql).into();
                 migrations.push(migration);
             }
         }
@@ -439,7 +444,9 @@ impl Flyway {
 
     /// Get applied migrations from database
     /// 从数据库获取已应用的迁移
-    async fn get_applied_migrations(&self) -> Result<std::collections::HashMap<String, MigrationEntry>> {
+    async fn get_applied_migrations(
+        &self,
+    ) -> Result<std::collections::HashMap<String, MigrationEntry>> {
         let query = format!(
             "SELECT installed_rank, version, description, type, checksum,
                     installed_by, installed_on, execution_time, success
@@ -475,7 +482,11 @@ impl Flyway {
                 },
                 checksum: row.get("checksum"),
                 installed_by: row.get("installed_by"),
-                installed_on: row.get::<Option<String>, _>("installed_on").and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok().map(|d| d.with_timezone(&chrono::Utc))),
+                installed_on: row.get::<Option<String>, _>("installed_on").and_then(|s| {
+                    chrono::DateTime::parse_from_rfc3339(&s)
+                        .ok()
+                        .map(|d| d.with_timezone(&chrono::Utc))
+                }),
                 execution_time: row.get("execution_time"),
                 success: success_val,
             };
@@ -519,9 +530,7 @@ impl Flyway {
         let mut tx = self.pool.begin().await?;
 
         // Execute migration SQL
-        migration
-            .execute_on(&mut tx)
-            .await?;
+        migration.execute_on(&mut tx).await?;
 
         // Record migration in history
         self.record_migration(&mut tx, migration, start.elapsed().as_millis() as i64)
@@ -573,7 +582,7 @@ impl Flyway {
                     .execute(&mut **tx)
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
-            }
+            },
             DatabaseType::Postgres | DatabaseType::Mysql => {
                 sqlx::query(&insert_query)
                     .bind(next_rank)
@@ -582,13 +591,13 @@ impl Flyway {
                     .bind(migration.migration_type().to_string())
                     .bind(migration.checksum())
                     .bind("hiver-flyway")
-                                        .bind(now.to_rfc3339())
+                    .bind(now.to_rfc3339())
                     .bind(execution_time)
                     .bind(true)
                     .execute(&mut **tx)
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
-            }
+            },
         }
 
         Ok(())
@@ -611,18 +620,18 @@ impl Flyway {
                     .execute(&self.pool)
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
-            }
+            },
             DatabaseType::Postgres | DatabaseType::Mysql => {
                 sqlx::query(&query)
                     .bind(&baseline.version)
                     .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
                     .bind("<< Flyway Baseline >>")
                     .bind("hiver-flyway")
-                                        .bind(now.to_rfc3339())
+                    .bind(now.to_rfc3339())
                     .execute(&self.pool)
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
-            }
+            },
         }
 
         Ok(())
@@ -671,7 +680,13 @@ fn extract_dialect_suffix(base_name: &str) -> Option<&str> {
     // 已知的方言后缀
     let suffixes = ["postgresql", "mysql", "sqlite"];
 
-    suffixes.into_iter().find(|&suffix| base_name.ends_with(suffix) && base_name.as_bytes().get(base_name.len() - suffix.len() - 1) == Some(&b'.')).map(|v| v as _)
+    suffixes
+        .into_iter()
+        .find(|&suffix| {
+            base_name.ends_with(suffix)
+                && base_name.as_bytes().get(base_name.len() - suffix.len() - 1) == Some(&b'.')
+        })
+        .map(|v| v as _)
 }
 
 /// Strip the dialect suffix from a base name: "V1.postgresql" -> "V1"

@@ -4,7 +4,7 @@
 use serde_json::Value;
 
 use crate::context::SpelContext;
-use crate::parser::{self, CmpOp, SpelExpr, SpelError};
+use crate::parser::{self, CmpOp, SpelError, SpelExpr};
 
 /// Compiles and evaluates a SpEL expression against a context.
 /// 编译并针对上下文求值 SpEL 表达式。
@@ -24,7 +24,10 @@ impl SpelEvaluator {
     /// Evaluates the expression against the given context.
     /// 针对给定上下文求值表达式。
     pub fn evaluate(&self, ctx: &SpelContext) -> Result<bool, SpelError> {
-        let expr = self.expr.as_ref().map_err(|e| SpelError::Parse(e.to_string()))?;
+        let expr = self
+            .expr
+            .as_ref()
+            .map_err(|e| SpelError::Parse(e.to_string()))?;
         eval_bool(expr, ctx)
     }
 }
@@ -43,11 +46,9 @@ fn eval_bool(expr: &SpelExpr, ctx: &SpelContext) -> Result<bool, SpelError> {
             let lv = eval_value(left, ctx)?;
             let rv = eval_value(right, ctx)?;
             compare(&lv, &rv, *op)
-        }
+        },
         SpelExpr::LiteralBool(b) => Ok(*b),
-        _ => Err(SpelError::Evaluation(
-            "expression does not evaluate to bool".into(),
-        )),
+        _ => Err(SpelError::Evaluation("expression does not evaluate to bool".into())),
     }
 }
 
@@ -59,9 +60,7 @@ fn eval_value(expr: &SpelExpr, ctx: &SpelContext) -> Result<Value, SpelError> {
             .ok_or_else(|| SpelError::Evaluation(format!("undefined variable: '{name}'"))),
         SpelExpr::LiteralNumber(n) => Ok(Value::from(*n)),
         SpelExpr::LiteralString(s) => Ok(Value::from(s.as_str())),
-        _ => Err(SpelError::Evaluation(
-            "expected a value expression".into(),
-        )),
+        _ => Err(SpelError::Evaluation("expected a value expression".into())),
     }
 }
 
@@ -88,8 +87,8 @@ fn compare(l: &Value, r: &Value, op: CmpOp) -> Result<bool, SpelError> {
             _ => {
                 return Err(SpelError::Evaluation(
                     "ordered comparison not supported for strings".into(),
-                ))
-            }
+                ));
+            },
         });
     }
     Ok(l == r)

@@ -6,9 +6,9 @@
 //! 通过 `ldap3` 提供可选的真实LDAP连接管理。
 //! 等价于 Spring LDAP 的 `ContextSource` 接口。
 
+use crate::error::{LdapError, LdapResult};
 use async_trait::async_trait;
 use std::time::Duration;
-use crate::error::{LdapError, LdapResult};
 
 /// Represents an LDAP connection / LDAP连接
 ///
@@ -48,12 +48,15 @@ impl LdapConnection {
     pub async fn simple_bind(&mut self, user: &str, pass: &str) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         if let Some(ref mut ldap) = self.inner {
-            let result = ldap.simple_bind(user, pass).await
+            let result = ldap
+                .simple_bind(user, pass)
+                .await
                 .map_err(|e| LdapError::Authentication(e.to_string()))?;
             if !result.success() {
-                return Err(LdapError::Authentication(
-                    format!("Bind failed: {:?}", result.result_code())
-                ));
+                return Err(LdapError::Authentication(format!(
+                    "Bind failed: {:?}",
+                    result.result_code()
+                )));
             }
             return Ok(());
         }
@@ -79,10 +82,13 @@ impl LdapConnection {
         attrs: &[&str],
     ) -> LdapResult<Vec<(String, Vec<(String, Vec<String>)>)>> {
         use ldap3::SearchEntry;
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
 
-        let (rs, _result) = ldap.search(base, scope, filter, attrs)
+        let (rs, _result) = ldap
+            .search(base, scope, filter, attrs)
             .await
             .map_err(|e| LdapError::Operation(e.to_string()))?;
 
@@ -102,7 +108,9 @@ impl LdapConnection {
         dn: &str,
         attrs: Vec<(String, std::collections::HashSet<String>)>,
     ) -> LdapResult<()> {
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
         ldap.add(dn, attrs)
             .await
@@ -113,7 +121,9 @@ impl LdapConnection {
     /// Delete an LDAP entry / 删除LDAP条目
     #[cfg(feature = "ldap")]
     pub(crate) async fn delete(&mut self, dn: &str) -> LdapResult<()> {
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
         ldap.delete(dn)
             .await
@@ -123,12 +133,10 @@ impl LdapConnection {
 
     /// Modify an existing LDAP entry / 修改现有LDAP条目
     #[cfg(feature = "ldap")]
-    pub(crate) async fn modify(
-        &mut self,
-        dn: &str,
-        mods: Vec<ldap3::Mod>,
-    ) -> LdapResult<()> {
-        let ldap = self.inner.as_mut()
+    pub(crate) async fn modify(&mut self, dn: &str, mods: Vec<ldap3::Mod>) -> LdapResult<()> {
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
         ldap.modify(dn, mods)
             .await
@@ -145,7 +153,9 @@ impl LdapConnection {
         delete_old_rdn: bool,
         new_superior: Option<&str>,
     ) -> LdapResult<()> {
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
         ldap.modifydn(dn, new_rdn, delete_old_rdn, new_superior)
             .await
@@ -161,9 +171,12 @@ impl LdapConnection {
         attribute: &str,
         value: &str,
     ) -> LdapResult<bool> {
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
-        let result = ldap.compare(dn, attribute, value)
+        let result = ldap
+            .compare(dn, attribute, value)
             .await
             .map_err(|e| LdapError::Operation(e.to_string()))?;
         Ok(result.0)
@@ -172,7 +185,9 @@ impl LdapConnection {
     /// Abandon an ongoing operation / 放弃正在进行的操作
     #[cfg(feature = "ldap")]
     pub(crate) async fn abandon(&mut self, message_id: i32) -> LdapResult<()> {
-        let ldap = self.inner.as_mut()
+        let ldap = self
+            .inner
+            .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
         ldap.abandon(message_id)
             .await
@@ -230,9 +245,13 @@ impl LdapContextSource {
     }
 
     /// Get the server URL / 获取服务器URL
-    pub fn url(&self) -> &str { &self.url }
+    pub fn url(&self) -> &str {
+        &self.url
+    }
     /// Get the base DN / 获取基础DN
-    pub fn base_dn(&self) -> &str { &self.base_dn }
+    pub fn base_dn(&self) -> &str {
+        &self.base_dn
+    }
 
     /// Set authentication credentials / 设置认证凭据
     pub fn with_credentials(mut self, user: &str, pass: &str) -> Self {
@@ -251,13 +270,15 @@ impl LdapContextSource {
 
         if authenticate {
             if let (Some(user), Some(pass)) = (&self.username, &self.password) {
-                let result = ldap_conn.simple_bind(user, pass)
+                let result = ldap_conn
+                    .simple_bind(user, pass)
                     .await
                     .map_err(|e| LdapError::Authentication(e.to_string()))?;
                 if !result.success() {
-                    return Err(LdapError::Authentication(
-                        format!("Bind failed: {:?}", result.result_code())
-                    ));
+                    return Err(LdapError::Authentication(format!(
+                        "Bind failed: {:?}",
+                        result.result_code()
+                    )));
                 }
             }
         }
@@ -290,8 +311,12 @@ impl ContextSource for LdapContextSource {
         self.create_connection(false).await
     }
 
-    fn base_dn(&self) -> &str { &self.base_dn }
-    fn url(&self) -> &str { &self.url }
+    fn base_dn(&self) -> &str {
+        &self.base_dn
+    }
+    fn url(&self) -> &str {
+        &self.url
+    }
 }
 
 /// Builder for `LdapContextSource` / `LdapContextSource构建器`
@@ -306,22 +331,42 @@ pub struct LdapContextSourceBuilder {
 
 impl LdapContextSourceBuilder {
     /// Set the LDAP server URL / 设置LDAP服务器URL
-    pub fn url(mut self, url: impl Into<String>) -> Self { self.url = Some(url.into()); self }
+    pub fn url(mut self, url: impl Into<String>) -> Self {
+        self.url = Some(url.into());
+        self
+    }
     /// Set the base DN / 设置基础DN
-    pub fn base_dn(mut self, base_dn: impl Into<String>) -> Self { self.base_dn = Some(base_dn.into()); self }
+    pub fn base_dn(mut self, base_dn: impl Into<String>) -> Self {
+        self.base_dn = Some(base_dn.into());
+        self
+    }
     /// Set the bind username / 设置绑定用户名
-    pub fn username(mut self, username: impl Into<String>) -> Self { self.username = Some(username.into()); self }
+    pub fn username(mut self, username: impl Into<String>) -> Self {
+        self.username = Some(username.into());
+        self
+    }
     /// Set the bind password / 设置绑定密码
-    pub fn password(mut self, password: impl Into<String>) -> Self { self.password = Some(password.into()); self }
+    pub fn password(mut self, password: impl Into<String>) -> Self {
+        self.password = Some(password.into());
+        self
+    }
     /// Set the connection timeout / 设置连接超时
-    pub fn connect_timeout(mut self, timeout: Duration) -> Self { self.connect_timeout = Some(timeout); self }
+    pub fn connect_timeout(mut self, timeout: Duration) -> Self {
+        self.connect_timeout = Some(timeout);
+        self
+    }
 
     /// Build the context source / 构建上下文源
     pub fn build(self) -> LdapResult<LdapContextSource> {
-        let url = self.url.ok_or_else(|| LdapError::Connection("URL required".into()))?;
-        let base_dn = self.base_dn.ok_or_else(|| LdapError::Connection("Base DN required".into()))?;
+        let url = self
+            .url
+            .ok_or_else(|| LdapError::Connection("URL required".into()))?;
+        let base_dn = self
+            .base_dn
+            .ok_or_else(|| LdapError::Connection("Base DN required".into()))?;
         Ok(LdapContextSource {
-            url, base_dn,
+            url,
+            base_dn,
             username: self.username,
             password: self.password,
             connect_timeout: self.connect_timeout.unwrap_or(Duration::from_secs(30)),

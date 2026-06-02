@@ -20,9 +20,11 @@
 //! 3. **观察**：代理处理工具的结果。
 //! 4. 重复直到得出最终答案或超过最大迭代次数。
 
-use crate::agent::{Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream, AgentToolCall};
-use hiver_ai::prompt::PromptTemplate;
+use crate::agent::{
+    Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream, AgentToolCall,
+};
 use hiver_ai::chat_model::{ChatMessage, ChatModel, ChatRequest};
+use hiver_ai::prompt::PromptTemplate;
 use hiver_ai::tool::{ToolCall, ToolExecutor, ToolRegistry};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -252,17 +254,13 @@ impl ReActAgent {
 
         // Check for Final Answer first
         if let Some(answer) = self.extract_final_answer(response) {
-            return ReActStep::FinalAnswer {
-                answer,
-                thought,
-            };
+            return ReActStep::FinalAnswer { answer, thought };
         }
 
         // Check for Action
-        if let (Some(tool_name), Some(tool_input)) = (
-            self.extract_action_name(response),
-            self.extract_action_input(response),
-        ) {
+        if let (Some(tool_name), Some(tool_input)) =
+            (self.extract_action_name(response), self.extract_action_input(response))
+        {
             let parsed_input = serde_json::from_str(&tool_input)
                 .unwrap_or(serde_json::Value::String(tool_input.clone()));
             return ReActStep::Action {
@@ -285,7 +283,13 @@ impl ReActAgent {
         response
             .lines()
             .find(|l| l.trim().starts_with("Thought:"))
-            .map(|l| l.trim().strip_prefix("Thought:").unwrap_or(l).trim().to_string())
+            .map(|l| {
+                l.trim()
+                    .strip_prefix("Thought:")
+                    .unwrap_or(l)
+                    .trim()
+                    .to_string()
+            })
             .unwrap_or_default()
     }
 
@@ -295,7 +299,13 @@ impl ReActAgent {
         response
             .lines()
             .find(|l| l.trim().starts_with("Final Answer:"))
-            .map(|l| l.trim().strip_prefix("Final Answer:").unwrap_or(l).trim().to_string())
+            .map(|l| {
+                l.trim()
+                    .strip_prefix("Final Answer:")
+                    .unwrap_or(l)
+                    .trim()
+                    .to_string()
+            })
     }
 
     /// Extracts the Action tool name from the response.
@@ -357,7 +367,11 @@ impl ReActAgent {
                 req = req.message(msg.clone());
             }
 
-            let response = self.chat_model.complete(req).await.map_err(AgentError::ModelError)?;
+            let response = self
+                .chat_model
+                .complete(req)
+                .await
+                .map_err(AgentError::ModelError)?;
             total_tokens += response.usage.total_tokens;
 
             let response_text = response.content;
@@ -372,11 +386,12 @@ impl ReActAgent {
                         tool_calls,
                         state: AgentState::Done,
                         total_tokens,
-                        metadata: HashMap::from([
-                            ("iterations".to_string(), (iteration + 1).to_string()),
-                        ]),
+                        metadata: HashMap::from([(
+                            "iterations".to_string(),
+                            (iteration + 1).to_string(),
+                        )]),
                     });
-                }
+                },
                 ReActStep::Action {
                     tool_name,
                     tool_input,
@@ -389,11 +404,8 @@ impl ReActAgent {
                     }
 
                     // Execute the tool
-                    let tool_call = ToolCall::new(
-                        format!("call-{iteration}"),
-                        &tool_name,
-                        tool_input.clone(),
-                    );
+                    let tool_call =
+                        ToolCall::new(format!("call-{iteration}"), &tool_name, tool_input.clone());
 
                     let result = self.tool_executor.execute(tool_call).await;
 
@@ -421,7 +433,7 @@ impl ReActAgent {
                     };
                     messages.push(ChatMessage::assistant(&response_text));
                     messages.push(ChatMessage::user(&observation));
-                }
+                },
             }
         }
 
@@ -487,13 +499,14 @@ mod tests {
     #[test]
     fn test_parse_final_answer() {
         let agent = create_test_agent();
-        let response = "Thought: I have enough information.\nFinal Answer: The capital of France is Paris.";
+        let response =
+            "Thought: I have enough information.\nFinal Answer: The capital of France is Paris.";
         let step = agent.parse_response(response);
         match step {
             ReActStep::FinalAnswer { answer, thought } => {
                 assert_eq!(answer, "The capital of France is Paris.");
                 assert_eq!(thought, "I have enough information.");
-            }
+            },
             ReActStep::Action { .. } => panic!("Expected FinalAnswer, got Action"),
         }
     }
@@ -501,14 +514,19 @@ mod tests {
     #[test]
     fn test_parse_action() {
         let agent = create_test_agent();
-        let response = "Thought: I need to search.\nAction: search\nAction Input: {\"query\": \"rust\"}";
+        let response =
+            "Thought: I need to search.\nAction: search\nAction Input: {\"query\": \"rust\"}";
         let step = agent.parse_response(response);
         match step {
-            ReActStep::Action { tool_name, tool_input, thought } => {
+            ReActStep::Action {
+                tool_name,
+                tool_input,
+                thought,
+            } => {
                 assert_eq!(tool_name, "search");
                 assert_eq!(thought, "I need to search.");
                 assert_eq!(tool_input["query"], "rust");
-            }
+            },
             ReActStep::FinalAnswer { .. } => panic!("Expected Action, got FinalAnswer"),
         }
     }
@@ -521,7 +539,7 @@ mod tests {
         match step {
             ReActStep::FinalAnswer { answer, .. } => {
                 assert_eq!(answer, response);
-            }
+            },
             ReActStep::Action { .. } => panic!("Expected FinalAnswer, got Action"),
         }
     }
@@ -536,20 +554,14 @@ mod tests {
     #[test]
     fn test_extract_final_answer() {
         let agent = create_test_agent();
-        assert_eq!(
-            agent.extract_final_answer("Final Answer: 42"),
-            Some("42".to_string())
-        );
+        assert_eq!(agent.extract_final_answer("Final Answer: 42"), Some("42".to_string()));
         assert_eq!(agent.extract_final_answer("No answer"), None);
     }
 
     #[test]
     fn test_extract_action_name() {
         let agent = create_test_agent();
-        assert_eq!(
-            agent.extract_action_name("Action: search"),
-            Some("search".to_string())
-        );
+        assert_eq!(agent.extract_action_name("Action: search"), Some("search".to_string()));
         assert_eq!(agent.extract_action_name("No action"), None);
     }
 

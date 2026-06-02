@@ -7,8 +7,8 @@ use crate::{
     template::MongoTemplate,
 };
 use futures_util::stream::StreamExt;
-use mongodb::bson::{doc, Document, Bson};
-use serde::{de::DeserializeOwned, Serialize};
+use mongodb::bson::{Bson, Document, doc};
+use serde::{Serialize, de::DeserializeOwned};
 use std::marker::PhantomData;
 use std::sync::Arc;
 
@@ -65,7 +65,10 @@ where
 
     /// Find documents by filter / 根据过滤器查找文档
     pub async fn find(&self, filter: Document) -> MongoResult<Vec<T>> {
-        let collection = self.template.client().collection::<T>(&self.collection_name);
+        let collection = self
+            .template
+            .client()
+            .collection::<T>(&self.collection_name);
         let mut cursor = collection.find(filter).await?;
 
         let mut results = Vec::new();
@@ -78,7 +81,10 @@ where
 
     /// Find one document by filter / 根据过滤器查找单个文档
     pub async fn find_one(&self, filter: Document) -> MongoResult<Option<T>> {
-        let collection = self.template.client().collection::<T>(&self.collection_name);
+        let collection = self
+            .template
+            .client()
+            .collection::<T>(&self.collection_name);
         let result = collection.find_one(filter).await?;
         Ok(result)
     }
@@ -101,21 +107,30 @@ where
 
     /// Update documents by filter / 根据过滤器更新文档
     pub async fn update(&self, filter: Document, update: Document) -> MongoResult<u64> {
-        let collection = self.template.client().collection::<Document>(&self.collection_name);
+        let collection = self
+            .template
+            .client()
+            .collection::<Document>(&self.collection_name);
         let result = collection.update_many(filter, update).await?;
         Ok(result.modified_count)
     }
 
     /// Delete documents by filter / 根据过滤器删除文档
     pub async fn delete(&self, filter: Document) -> MongoResult<u64> {
-        let collection = self.template.client().collection::<Document>(&self.collection_name);
+        let collection = self
+            .template
+            .client()
+            .collection::<Document>(&self.collection_name);
         let result = collection.delete_many(filter).await?;
         Ok(result.deleted_count)
     }
 
     /// Count documents by filter / 根据过滤器统计文档
     pub async fn count(&self, filter: Document) -> MongoResult<u64> {
-        let collection = self.template.client().collection::<Document>(&self.collection_name);
+        let collection = self
+            .template
+            .client()
+            .collection::<Document>(&self.collection_name);
         let count = collection.count_documents(filter).await?;
         Ok(count)
     }
@@ -184,7 +199,8 @@ where
 
     /// Build the repository / 构建仓储
     pub fn build(self) -> MongoResult<MongoRepository<T, ID>> {
-        let collection_name = self.collection_name
+        let collection_name = self
+            .collection_name
             .ok_or_else(|| MongoError::validation("Collection name is required"))?;
 
         if let Some(template) = self.template {

@@ -15,11 +15,12 @@ use hiver_data_commons::{Condition, PageRequest, QueryOrder, QueryWrapper, Updat
 
 /// Build a SELECT query from a QueryWrapper and table name.
 /// 从 QueryWrapper 和表名构建 SELECT 查询。
-pub fn build_select_query(
-    wrapper: &QueryWrapper,
-    table: &str,
-) -> (String, Vec<QueryParam>) {
-    let cols = wrapper.select.as_ref().map(|v| v.join(", ")).unwrap_or_else(|| "*".to_string());
+pub fn build_select_query(wrapper: &QueryWrapper, table: &str) -> (String, Vec<QueryParam>) {
+    let cols = wrapper
+        .select
+        .as_ref()
+        .map(|v| v.join(", "))
+        .unwrap_or_else(|| "*".to_string());
 
     let mut sql = format!("SELECT {} FROM {}", cols, table);
 
@@ -51,10 +52,7 @@ pub fn build_select_query(
 
 /// Build a COUNT query from a QueryWrapper and table name.
 /// 从 QueryWrapper 和表名构建 COUNT 查询。
-pub fn build_count_query(
-    wrapper: &QueryWrapper,
-    table: &str,
-) -> (String, Vec<QueryParam>) {
+pub fn build_count_query(wrapper: &QueryWrapper, table: &str) -> (String, Vec<QueryParam>) {
     let mut sql = format!("SELECT COUNT(*) AS cnt FROM {}", table);
 
     let (where_clause, params) = build_where_clause(&wrapper.conditions);
@@ -73,7 +71,11 @@ pub fn build_page_query(
     wrapper: &QueryWrapper,
     table: &str,
 ) -> (String, Vec<QueryParam>) {
-    let cols = wrapper.select.as_ref().map(|v| v.join(", ")).unwrap_or_else(|| "*".to_string());
+    let cols = wrapper
+        .select
+        .as_ref()
+        .map(|v| v.join(", "))
+        .unwrap_or_else(|| "*".to_string());
     let mut sql = format!("SELECT {} FROM {}", cols, table);
 
     let (where_clause, params) = build_where_clause(&wrapper.conditions);
@@ -103,10 +105,7 @@ pub fn build_page_query(
 
 /// Build an UPDATE query from an UpdateWrapper and table name.
 /// 从 UpdateWrapper 和表名构建 UPDATE 查询。
-pub fn build_update_query(
-    wrapper: &UpdateWrapper,
-    table: &str,
-) -> (String, Vec<QueryParam>) {
+pub fn build_update_query(wrapper: &UpdateWrapper, table: &str) -> (String, Vec<QueryParam>) {
     let mut set_parts = Vec::new();
     let mut params = Vec::new();
 
@@ -131,10 +130,7 @@ pub fn build_update_query(
 
 /// Build a DELETE query from a QueryWrapper and table name.
 /// 从 QueryWrapper 和表名构建 DELETE 查询。
-pub fn build_delete_query(
-    wrapper: &QueryWrapper,
-    table: &str,
-) -> (String, Vec<QueryParam>) {
+pub fn build_delete_query(wrapper: &QueryWrapper, table: &str) -> (String, Vec<QueryParam>) {
     let mut sql = format!("DELETE FROM {}", table);
 
     let (where_clause, params) = build_where_clause(&wrapper.conditions);
@@ -154,7 +150,10 @@ pub fn build_where_clause(conditions: &[Condition]) -> (String, Vec<QueryParam>)
 
 /// Build a WHERE clause from conditions with a parameter offset.
 /// 从条件构建带参数偏移量的 WHERE 子句。
-pub fn build_where_clause_offset(conditions: &[Condition], start_idx: usize) -> (String, Vec<QueryParam>) {
+pub fn build_where_clause_offset(
+    conditions: &[Condition],
+    start_idx: usize,
+) -> (String, Vec<QueryParam>) {
     if conditions.is_empty() {
         return (String::new(), Vec::new());
     }
@@ -173,42 +172,42 @@ pub fn build_where_clause_offset(conditions: &[Condition], start_idx: usize) -> 
                 sql.push_str(&format!("{} = ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Ne { field, value } => {
                 sql.push_str(&format!("{} != ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Gt { field, value } => {
                 sql.push_str(&format!("{} > ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Ge { field, value } => {
                 sql.push_str(&format!("{} >= ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Lt { field, value } => {
                 sql.push_str(&format!("{} < ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Le { field, value } => {
                 sql.push_str(&format!("{} <= ${}", field, idx));
                 params.push(QueryParam::from(value.clone()));
                 idx += 1;
-            }
+            },
             Condition::Like { field, pattern } => {
                 sql.push_str(&format!("{} LIKE ${}", field, idx));
                 params.push(QueryParam::Text(pattern.clone()));
                 idx += 1;
-            }
+            },
             Condition::NotLike { field, pattern } => {
                 sql.push_str(&format!("{} NOT LIKE ${}", field, idx));
                 params.push(QueryParam::Text(pattern.clone()));
                 idx += 1;
-            }
+            },
             Condition::In { field, values } => {
                 let placeholders: Vec<String> = values
                     .iter()
@@ -220,7 +219,7 @@ pub fn build_where_clause_offset(conditions: &[Condition], start_idx: usize) -> 
                     })
                     .collect();
                 sql.push_str(&format!("{} IN ({})", field, placeholders.join(", ")));
-            }
+            },
             Condition::NotIn { field, values } => {
                 let placeholders: Vec<String> = values
                     .iter()
@@ -232,37 +231,39 @@ pub fn build_where_clause_offset(conditions: &[Condition], start_idx: usize) -> 
                     })
                     .collect();
                 sql.push_str(&format!("{} NOT IN ({})", field, placeholders.join(", ")));
-            }
+            },
             Condition::IsNull { field } => {
                 sql.push_str(&format!("{} IS NULL", field));
-            }
+            },
             Condition::IsNotNull { field } => {
                 sql.push_str(&format!("{} IS NOT NULL", field));
-            }
+            },
             Condition::Between { field, low, high } => {
                 sql.push_str(&format!("{} BETWEEN ${} AND ${}", field, idx, idx + 1));
                 params.push(QueryParam::from(low.clone()));
                 params.push(QueryParam::from(high.clone()));
                 idx += 2;
-            }
+            },
             Condition::NotBetween { field, low, high } => {
                 sql.push_str(&format!("{} NOT BETWEEN ${} AND ${}", field, idx, idx + 1));
                 params.push(QueryParam::from(low.clone()));
                 params.push(QueryParam::from(high.clone()));
                 idx += 2;
-            }
+            },
             Condition::And(inner) => {
-                let (inner_sql, inner_params) = build_where_clause_offset(inner, (idx - 1) as usize);
+                let (inner_sql, inner_params) =
+                    build_where_clause_offset(inner, (idx - 1) as usize);
                 idx += inner_params.len() as u32;
                 sql.push_str(&format!("({})", inner_sql));
                 params.extend(inner_params);
-            }
+            },
             Condition::Or(inner) => {
-                let (inner_sql, inner_params) = build_where_clause_offset(inner, (idx - 1) as usize);
+                let (inner_sql, inner_params) =
+                    build_where_clause_offset(inner, (idx - 1) as usize);
                 idx += inner_params.len() as u32;
                 sql.push_str(&format!("({})", inner_sql));
                 params.extend(inner_params);
-            }
+            },
         }
     }
 

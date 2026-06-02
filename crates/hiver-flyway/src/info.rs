@@ -1,7 +1,7 @@
 //! Migration information and history
 //! 迁移信息和历史
 
-use crate::{Checksum, Description, MigrationType, MigratedVersion, Version};
+use crate::{Checksum, Description, MigratedVersion, MigrationType, Version};
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
 
@@ -184,7 +184,11 @@ pub struct MigrationResult {
 impl MigrationResult {
     /// Create a new successful result
     /// 创建新的成功结果
-    pub fn success(migrations: Vec<MigratedVersion>, target: Option<Version>, time_ms: i64) -> Self {
+    pub fn success(
+        migrations: Vec<MigratedVersion>,
+        target: Option<Version>,
+        time_ms: i64,
+    ) -> Self {
         Self {
             migrations_executed: migrations,
             target_version: target,

@@ -15,8 +15,7 @@ use serde::{Deserialize, Serialize};
 /// @Transactional(isolation = Isolation.SERIALIZABLE)
 /// public void transferMoney() { ... }
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub enum IsolationLevel {
     /// Read uncommitted
     /// 读未提交
@@ -95,7 +94,6 @@ impl IsolationLevel {
         }
     }
 }
-
 
 impl std::fmt::Display for IsolationLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

@@ -13,7 +13,9 @@
 //! - `MapReduceAgent`：将工作分配给多个输入并合并结果。
 //! - `RouterAgent`：对输入分类并路由到专门的代理。
 
-use crate::agent::{Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream};
+use crate::agent::{
+    Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream,
+};
 use hiver_ai::chat_model::{ChatModel, ChatRequest};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -127,9 +129,7 @@ impl Agent for AgentChain {
                     tool_calls: all_tool_calls,
                     state: AgentState::Error,
                     total_tokens,
-                    metadata: HashMap::from([
-                        ("failed_at_step".to_string(), i.to_string()),
-                    ]),
+                    metadata: HashMap::from([("failed_at_step".to_string(), i.to_string())]),
                 });
             }
         }
@@ -139,9 +139,7 @@ impl Agent for AgentChain {
             tool_calls: all_tool_calls,
             state: AgentState::Done,
             total_tokens,
-            metadata: HashMap::from([
-                ("chain_length".to_string(), self.agents.len().to_string()),
-            ]),
+            metadata: HashMap::from([("chain_length".to_string(), self.agents.len().to_string())]),
         })
     }
 
@@ -202,18 +200,14 @@ pub struct MapReduceAgent {
 
 impl std::fmt::Debug for MapReduceAgent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("MapReduceAgent")
-            .finish_non_exhaustive()
+        f.debug_struct("MapReduceAgent").finish_non_exhaustive()
     }
 }
 
 impl MapReduceAgent {
     /// Creates a new map-reduce agent with the given mapper and reducer.
     /// 使用给定的 mapper 和 reducer 创建新的 MapReduce 代理。
-    pub fn new(
-        mapper: impl Agent + 'static,
-        reducer: impl Agent + 'static,
-    ) -> Self {
+    pub fn new(mapper: impl Agent + 'static, reducer: impl Agent + 'static) -> Self {
         Self {
             mapper: Arc::new(mapper),
             reducer: Arc::new(reducer),
@@ -256,9 +250,7 @@ impl MapReduceAgent {
             tool_calls: reduce_output.tool_calls,
             state: AgentState::Done,
             total_tokens,
-            metadata: HashMap::from([
-                ("input_count".to_string(), inputs.len().to_string()),
-            ]),
+            metadata: HashMap::from([("input_count".to_string(), inputs.len().to_string())]),
         })
     }
 }
@@ -361,7 +353,8 @@ impl RouterAgent {
         description: impl Into<String>,
         agent: impl Agent + 'static,
     ) -> Self {
-        self.routes.push((name.into(), description.into(), Arc::new(agent)));
+        self.routes
+            .push((name.into(), description.into(), Arc::new(agent)));
         self
     }
 
@@ -408,7 +401,11 @@ impl RouterAgent {
             .temperature(0.0)
             .max_tokens(50);
 
-        let response = self.chat_model.complete(request).await.map_err(AgentError::ModelError)?;
+        let response = self
+            .chat_model
+            .complete(request)
+            .await
+            .map_err(AgentError::ModelError)?;
 
         let classification = response.content.trim().to_string();
 
@@ -441,10 +438,8 @@ impl Agent for RouterAgent {
                 let mut output = agent.run(input).await?;
                 output.metadata.insert("route".to_string(), route_name);
                 Ok(output)
-            }
-            None => Err(AgentError::ConfigError(format!(
-                "No agent found for route: {route_name}"
-            ))),
+            },
+            None => Err(AgentError::ConfigError(format!("No agent found for route: {route_name}"))),
         }
     }
 
@@ -499,10 +494,16 @@ mod tests {
         struct MockModel;
         #[async_trait::async_trait]
         impl ChatModel for MockModel {
-            async fn complete(&self, _request: ChatRequest) -> Result<hiver_ai::chat_model::ChatResponse, ModelError> {
+            async fn complete(
+                &self,
+                _request: ChatRequest,
+            ) -> Result<hiver_ai::chat_model::ChatResponse, ModelError> {
                 Ok(hiver_ai::chat_model::ChatResponse::new("general", "mock"))
             }
-            async fn stream(&self, _request: ChatRequest) -> Result<hiver_ai::chat_model::ChatStream, ModelError> {
+            async fn stream(
+                &self,
+                _request: ChatRequest,
+            ) -> Result<hiver_ai::chat_model::ChatStream, ModelError> {
                 Err(ModelError::Custom("not implemented".to_string()))
             }
         }

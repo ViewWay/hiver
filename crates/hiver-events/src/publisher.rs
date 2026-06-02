@@ -118,7 +118,8 @@ impl ApplicationEventPublisher {
     where
         E: ApplicationEvent + Clone + Send + Sync + 'static,
     {
-        self.publish_with_strategy(event, self.default_strategy).await
+        self.publish_with_strategy(event, self.default_strategy)
+            .await
     }
 
     /// Publish event with custom strategy
@@ -138,7 +139,7 @@ impl ApplicationEventPublisher {
                 // For now, treat transactional as sync
                 // In a full implementation, this would integrate with a transaction manager
                 self.publish_sync(event).await
-            }
+            },
         }
     }
 
@@ -157,7 +158,10 @@ impl ApplicationEventPublisher {
         }
 
         for consumer in consumers {
-            if let Err(e) = consumer.call_event(&event as &(dyn std::any::Any + Send + Sync)).await {
+            if let Err(e) = consumer
+                .call_event(&event as &(dyn std::any::Any + Send + Sync))
+                .await
+            {
                 tracing::error!("Event listener error: {}", e);
                 return Err(EventError::ListenerFailed(e));
             }
@@ -194,13 +198,15 @@ impl ApplicationEventPublisher {
                     .map_err(|e| EventError::ProcessingFailed(format!("No runtime: {}", e)))?;
 
                 // Block on the async call
-                runtime.block_on(async {
-                    // Convert Arc<E> to reference to Any
-                    // This is safe because we own the Arc and ensure it lives long enough
-                    let event_ref: &E = &event_arc_clone;
-                    let any_ref: &(dyn std::any::Any + Send + Sync) = event_ref;
-                    consumer_clone.call_event(any_ref).await
-                }).map_err(|e| EventError::ListenerFailed(e))
+                runtime
+                    .block_on(async {
+                        // Convert Arc<E> to reference to Any
+                        // This is safe because we own the Arc and ensure it lives long enough
+                        let event_ref: &E = &event_arc_clone;
+                        let any_ref: &(dyn std::any::Any + Send + Sync) = event_ref;
+                        consumer_clone.call_event(any_ref).await
+                    })
+                    .map_err(|e| EventError::ListenerFailed(e))
             });
             tasks.push(handle);
         }
@@ -208,15 +214,15 @@ impl ApplicationEventPublisher {
         // Wait for all consumers
         for handle in tasks {
             match handle.await {
-                Ok(Ok(())) => {}
+                Ok(Ok(())) => {},
                 Ok(Err(e)) => {
                     tracing::error!("Event listener error: {:?}", e);
                     return Err(EventError::ListenerFailed("Listener failed".to_string()));
-                }
+                },
                 Err(e) => {
                     tracing::error!("Event listener task failed: {}", e);
                     return Err(EventError::ListenerFailed("Task failed".to_string()));
-                }
+                },
             }
         }
 
@@ -397,7 +403,8 @@ mod tests {
     #[async_trait::async_trait]
     impl crate::listener::AsyncEventListener<TestEvent> for TestListener {
         async fn on_event(&self, event: &TestEvent) -> Result<(), String> {
-            self.call_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            self.call_count
+                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             println!("Received event: {}", event.data);
             Ok(())
         }
@@ -503,7 +510,8 @@ mod tests {
         #[async_trait::async_trait]
         impl crate::listener::AsyncEventListener<ContextRefreshedEvent> for ContextListener {
             async fn on_event(&self, _event: &ContextRefreshedEvent) -> Result<(), String> {
-                self.count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                self.count
+                    .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                 Ok(())
             }
         }
@@ -520,9 +528,6 @@ mod tests {
 
         tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
 
-        assert_eq!(
-            call_count.load(std::sync::atomic::Ordering::Relaxed),
-            1
-        );
+        assert_eq!(call_count.load(std::sync::atomic::Ordering::Relaxed), 1);
     }
 }

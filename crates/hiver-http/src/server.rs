@@ -248,7 +248,9 @@ async fn handle_connection<S>(
                                     Response::builder()
                                         .status(status)
                                         .body(crate::Body::from(e.to_string()))
-                                        .unwrap_or_else(|_| Response::new(crate::StatusCode::INTERNAL_SERVER_ERROR))
+                                        .unwrap_or_else(|_| {
+                                            Response::new(crate::StatusCode::INTERNAL_SERVER_ERROR)
+                                        })
                                 },
                             };
 

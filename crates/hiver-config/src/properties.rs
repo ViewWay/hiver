@@ -130,7 +130,10 @@ impl PropertiesConfigRegistry {
     where
         T: PropertiesConfig + 'static,
     {
-        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut configs = self
+            .configs
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.insert(TypeId::of::<T>(), Box::new(config));
     }
 
@@ -152,7 +155,10 @@ impl PropertiesConfigRegistry {
     where
         T: PropertiesConfig + Clone + 'static,
     {
-        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let configs = self
+            .configs
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs
             .get(&TypeId::of::<T>())
             .and_then(|v| v.downcast_ref::<T>())
@@ -181,7 +187,10 @@ impl PropertiesConfigRegistry {
     where
         T: 'static,
     {
-        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let configs = self
+            .configs
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.contains_key(&TypeId::of::<T>())
     }
 
@@ -191,21 +200,30 @@ impl PropertiesConfigRegistry {
     where
         T: 'static,
     {
-        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut configs = self
+            .configs
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.remove(&TypeId::of::<T>()).is_some()
     }
 
     /// Clear all registered configs
     /// 清除所有已注册的配置
     pub fn clear(&self) {
-        let mut configs = self.configs.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut configs = self
+            .configs
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.clear();
     }
 
     /// Get count of registered configs
     /// 获取已注册配置的数量
     pub fn len(&self) -> usize {
-        let configs = self.configs.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let configs = self
+            .configs
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         configs.len()
     }
 
@@ -434,11 +452,15 @@ mod tests {
         assert!(registry.is_empty());
         assert_eq!(registry.len(), 0);
 
-        registry.register(TestConfig { value: "a".to_string() });
+        registry.register(TestConfig {
+            value: "a".to_string(),
+        });
         assert!(!registry.is_empty());
         assert_eq!(registry.len(), 1);
 
-        registry.register(TestConfig { value: "b".to_string() });
+        registry.register(TestConfig {
+            value: "b".to_string(),
+        });
         // Same TypeId, so overwrites
         assert_eq!(registry.len(), 1);
     }
@@ -471,18 +493,9 @@ mod tests {
     /// 测试NestedProperties对深层嵌套键的处理
     #[test]
     fn test_nested_properties_deep() {
-        assert_eq!(
-            NestedProperties::extract_prefix("a.b.c"),
-            Some("a.b".to_string())
-        );
-        assert_eq!(
-            NestedProperties::extract_suffix("a.b.c"),
-            Some("c".to_string())
-        );
-        assert_eq!(
-            NestedProperties::flatten_key("a.b.c"),
-            "a_b_c".to_string()
-        );
+        assert_eq!(NestedProperties::extract_prefix("a.b.c"), Some("a.b".to_string()));
+        assert_eq!(NestedProperties::extract_suffix("a.b.c"), Some("c".to_string()));
+        assert_eq!(NestedProperties::flatten_key("a.b.c"), "a_b_c".to_string());
     }
 
     /// Test PropertiesConfigBuilder::new and default
@@ -491,7 +504,9 @@ mod tests {
     fn test_properties_config_builder_new() {
         let builder: PropertiesConfigBuilder<TestConfig> = PropertiesConfigBuilder::new();
         // Just verify construction succeeds
-        assert!(format!("{:?}", std::any::type_name::<PropertiesConfigBuilder<TestConfig>>()).len() > 0);
+        assert!(
+            format!("{:?}", std::any::type_name::<PropertiesConfigBuilder<TestConfig>>()).len() > 0
+        );
     }
 
     /// Test PropertiesConfig load_from_config returns error for empty config
@@ -527,7 +542,9 @@ mod tests {
     /// 测试PropertiesConfig validate默认实现返回Ok
     #[test]
     fn test_properties_config_validate() {
-        let tc = TestConfig { value: "test".to_string() };
+        let tc = TestConfig {
+            value: "test".to_string(),
+        };
         assert!(tc.validate().is_ok());
     }
 }

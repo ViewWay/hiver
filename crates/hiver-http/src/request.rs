@@ -96,9 +96,7 @@ impl Request {
             .method(http_method)
             .uri(uri)
             .body(Body::empty())
-            .unwrap_or_else(|e| {
-                panic!("Failed to build request for {method:?} {uri}: {e}")
-            });
+            .unwrap_or_else(|e| panic!("Failed to build request for {method:?} {uri}: {e}"));
 
         Self::new(inner)
     }

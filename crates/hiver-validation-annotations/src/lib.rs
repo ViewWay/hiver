@@ -100,20 +100,23 @@ pub fn derive_not_null(input: TokenStream) -> TokenStream {
     // 提取字段并生成验证代码
     let fields = extract_fields_with_validation(&input);
 
-    let validation_methods = fields.iter().map(|(field_name, _field_type)| {
-        // Generate function name using format_ident for stable Rust compatibility
-        // 使用 format_ident 生成函数名以确保稳定版 Rust 兼容性
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                if self.#field_name.is_empty() {
-                    Err(concat!(stringify!(#field_name), " cannot be null"))
-                } else {
-                    Ok(())
+    let validation_methods = fields
+        .iter()
+        .map(|(field_name, _field_type)| {
+            // Generate function name using format_ident for stable Rust compatibility
+            // 使用 format_ident 生成函数名以确保稳定版 Rust 兼容性
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    if self.#field_name.is_empty() {
+                        Err(concat!(stringify!(#field_name), " cannot be null"))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -154,24 +157,27 @@ pub fn derive_email(input: TokenStream) -> TokenStream {
     // 提取带有 #[email] 属性的字段
     let fields = extract_email_fields(&input);
 
-    let validation_methods = fields.iter().map(|(field_name, _)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                // Simple email validation regex
-                // 简单的 email 验证正则
-                let email_regex = regex::Regex::new(
-                    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                ).unwrap();
+    let validation_methods = fields
+        .iter()
+        .map(|(field_name, _)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    // Simple email validation regex
+                    // 简单的 email 验证正则
+                    let email_regex = regex::Regex::new(
+                        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    ).unwrap();
 
-                if !email_regex.is_match(&self.#field_name) {
-                    Err(concat!(stringify!(#field_name), " is not a valid email"))
-                } else {
-                    Ok(())
+                    if !email_regex.is_match(&self.#field_name) {
+                        Err(concat!(stringify!(#field_name), " is not a valid email"))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -219,30 +225,33 @@ pub fn derive_size(input: TokenStream) -> TokenStream {
     // 提取带有 size 验证的字段
     let fields_with_size = extract_fields_with_size(&input);
 
-    let validation_methods = fields_with_size.iter().map(|(field_name, min, max)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                let len = self.#field_name.len();
-                let min = #min;
-                let max = #max;
+    let validation_methods = fields_with_size
+        .iter()
+        .map(|(field_name, min, max)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    let len = self.#field_name.len();
+                    let min = #min;
+                    let max = #max;
 
-                if len < min {
-                    Err(format!(
-                        "{} length must be at least {} characters, but got {}",
-                        stringify!(#field_name), min, len
-                    ))
-                } else if len > max {
-                    Err(format!(
-                        "{} length must be at most {} characters, but got {}",
-                        stringify!(#field_name), max, len
-                    ))
-                } else {
-                    Ok(())
+                    if len < min {
+                        Err(format!(
+                            "{} length must be at least {} characters, but got {}",
+                            stringify!(#field_name), min, len
+                        ))
+                    } else if len > max {
+                        Err(format!(
+                            "{} length must be at most {} characters, but got {}",
+                            stringify!(#field_name), max, len
+                        ))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -288,21 +297,24 @@ pub fn derive_min(input: TokenStream) -> TokenStream {
     // 提取带有 #[min] 属性的字段
     let fields_with_min = extract_fields_with_min(&input);
 
-    let validation_methods = fields_with_min.iter().map(|(field_name, min_value)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                if self.#field_name < #min_value {
-                    Err(format!(
-                        "{} must be at least {}, but got {}",
-                        stringify!(#field_name), #min_value, self.#field_name
-                    ))
-                } else {
-                    Ok(())
+    let validation_methods = fields_with_min
+        .iter()
+        .map(|(field_name, min_value)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    if self.#field_name < #min_value {
+                        Err(format!(
+                            "{} must be at least {}, but got {}",
+                            stringify!(#field_name), #min_value, self.#field_name
+                        ))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -348,21 +360,24 @@ pub fn derive_max(input: TokenStream) -> TokenStream {
     // 提取带有 #[max] 属性的字段
     let fields_with_max = extract_fields_with_max(&input);
 
-    let validation_methods = fields_with_max.iter().map(|(field_name, max_value)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                if self.#field_name > #max_value {
-                    Err(format!(
-                        "{} must be at most {}, but got {}",
-                        stringify!(#field_name), #max_value, self.#field_name
-                    ))
-                } else {
-                    Ok(())
+    let validation_methods = fields_with_max
+        .iter()
+        .map(|(field_name, max_value)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    if self.#field_name > #max_value {
+                        Err(format!(
+                            "{} must be at most {}, but got {}",
+                            stringify!(#field_name), #max_value, self.#field_name
+                        ))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -408,23 +423,26 @@ pub fn derive_pattern(input: TokenStream) -> TokenStream {
     // 提取带有 #[pattern] 属性的字段
     let fields_with_pattern = extract_fields_with_pattern(&input);
 
-    let validation_methods = fields_with_pattern.iter().map(|(field_name, regex_pattern)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                use regex::Regex;
-                let re = Regex::new(#regex_pattern).unwrap();
-                if !re.is_match(&self.#field_name) {
-                    Err(format!(
-                        "{} does not match pattern {}",
-                        stringify!(#field_name), #regex_pattern
-                    ))
-                } else {
-                    Ok(())
+    let validation_methods = fields_with_pattern
+        .iter()
+        .map(|(field_name, regex_pattern)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    use regex::Regex;
+                    let re = Regex::new(#regex_pattern).unwrap();
+                    if !re.is_match(&self.#field_name) {
+                        Err(format!(
+                            "{} does not match pattern {}",
+                            stringify!(#field_name), #regex_pattern
+                        ))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -472,30 +490,33 @@ pub fn derive_length(input: TokenStream) -> TokenStream {
     // 提取带有 #[length] 属性的字段
     let fields_with_length = extract_fields_with_length(&input);
 
-    let validation_methods = fields_with_length.iter().map(|(field_name, min, max)| {
-        let validate_fn_name = format_ident!("validate_{}", field_name);
-        quote! {
-            pub fn #validate_fn_name(&self) -> Result<(), String> {
-                let len = self.#field_name.len();
-                let min = #min;
-                let max = #max;
+    let validation_methods = fields_with_length
+        .iter()
+        .map(|(field_name, min, max)| {
+            let validate_fn_name = format_ident!("validate_{}", field_name);
+            quote! {
+                pub fn #validate_fn_name(&self) -> Result<(), String> {
+                    let len = self.#field_name.len();
+                    let min = #min;
+                    let max = #max;
 
-                if len < min {
-                    Err(format!(
-                        "{} length must be at least {}, but got {}",
-                        stringify!(#field_name), min, len
-                    ))
-                } else if len > max {
-                    Err(format!(
-                        "{} length must be at most {}, but got {}",
-                        stringify!(#field_name), max, len
-                    ))
-                } else {
-                    Ok(())
+                    if len < min {
+                        Err(format!(
+                            "{} length must be at least {}, but got {}",
+                            stringify!(#field_name), min, len
+                        ))
+                    } else if len > max {
+                        Err(format!(
+                            "{} length must be at most {}, but got {}",
+                            stringify!(#field_name), max, len
+                        ))
+                    } else {
+                        Ok(())
+                    }
                 }
             }
-        }
-    }).collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
 
     let expanded = quote! {
         #input
@@ -517,11 +538,13 @@ pub fn derive_length(input: TokenStream) -> TokenStream {
 // Helper Functions / 辅助函数
 // ========================================================================
 
-use syn::{Data, DataStruct, Fields, Attribute};
+use syn::{Attribute, Data, DataStruct, Fields};
 
 /// Extract fields with validation attributes
 /// 提取带有验证属性的字段
-fn extract_fields_with_validation(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, &syn::Type)> {
+fn extract_fields_with_validation(
+    input: &syn::DeriveInput,
+) -> Vec<(proc_macro2::Ident, &syn::Type)> {
     let fields = match &input.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
@@ -558,7 +581,10 @@ fn extract_email_fields(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, &s
                     .unwrap_or(false)
             });
 
-            f.ident.as_ref().map(|id| (id.clone(), &f.ty)).filter(|_| has_email_attr)
+            f.ident
+                .as_ref()
+                .map(|id| (id.clone(), &f.ty))
+                .filter(|_| has_email_attr)
         })
         .collect()
 }
@@ -829,9 +855,8 @@ macro_rules! concat {
         #[allow(unused_imports)]
         use proc_macro2::Ident;
         Ident::new($str).to_string()
-    }
+    };
 }
-
 
 #[cfg(test)]
 mod tests;

@@ -12,7 +12,7 @@
 
 use crate::{RedisError, RedisResult};
 use redis::AsyncCommands;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use std::collections::HashMap;
 
 // ── Hash Operations ──
@@ -55,8 +55,8 @@ impl HashOps {
         field: &str,
         value: &T,
     ) -> RedisResult<bool> {
-        let json = serde_json::to_string(value)
-            .map_err(|e| RedisError::serialization(e.to_string()))?;
+        let json =
+            serde_json::to_string(value).map_err(|e| RedisError::serialization(e.to_string()))?;
         Self::hset(conn, key, field, &json).await
     }
 
@@ -83,7 +83,7 @@ impl HashOps {
                 let value = serde_json::from_str(&json)
                     .map_err(|e| RedisError::deserialization(e.to_string()))?;
                 Ok(Some(value))
-            }
+            },
             None => Ok(None),
         }
     }
@@ -122,30 +122,21 @@ impl HashOps {
 
     /// Get the number of fields in a hash.
     /// 获取 hash 中的字段数量。
-    pub async fn hlen<C: AsyncCommands>(
-        conn: &mut C,
-        key: &str,
-    ) -> RedisResult<u64> {
+    pub async fn hlen<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<u64> {
         let result: u64 = conn.hlen(key).await?;
         Ok(result)
     }
 
     /// Get all field names in a hash.
     /// 获取 hash 中所有字段名。
-    pub async fn hkeys<C: AsyncCommands>(
-        conn: &mut C,
-        key: &str,
-    ) -> RedisResult<Vec<String>> {
+    pub async fn hkeys<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>> {
         let result: Vec<String> = conn.hkeys(key).await?;
         Ok(result)
     }
 
     /// Get all values in a hash.
     /// 获取 hash 中所有值。
-    pub async fn hvals<C: AsyncCommands>(
-        conn: &mut C,
-        key: &str,
-    ) -> RedisResult<Vec<String>> {
+    pub async fn hvals<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>> {
         let result: Vec<String> = conn.hvals(key).await?;
         Ok(result)
     }
@@ -337,8 +328,9 @@ impl LuaScript {
             redis::Value::BulkString(data) => {
                 let s = String::from_utf8(data)
                     .map_err(|e| RedisError::type_mismatch(e.to_string()))?;
-                s.parse::<i64>().map_err(|e| RedisError::type_mismatch(e.to_string()))
-            }
+                s.parse::<i64>()
+                    .map_err(|e| RedisError::type_mismatch(e.to_string()))
+            },
             _ => Err(RedisError::type_mismatch("Expected integer result".to_string())),
         }
     }
@@ -355,7 +347,7 @@ impl LuaScript {
         match result {
             redis::Value::BulkString(data) => {
                 String::from_utf8(data).map_err(|e| RedisError::type_mismatch(e.to_string()))
-            }
+            },
             redis::Value::SimpleString(s) => Ok(s),
             _ => Err(RedisError::type_mismatch("Expected string result".to_string())),
         }

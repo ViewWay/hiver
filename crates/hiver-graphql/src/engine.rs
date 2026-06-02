@@ -39,8 +39,8 @@ pub use engine_impl::*;
 #[cfg(feature = "engine")]
 mod engine_impl {
     use async_graphql::{
-        BatchRequest, BatchResponse, ObjectType, Request as AGRequest,
-        Response as AGResponse, Schema, SubscriptionType,
+        BatchRequest, BatchResponse, ObjectType, Request as AGRequest, Response as AGResponse,
+        Schema, SubscriptionType,
     };
     use serde::{Deserialize, Serialize};
     use std::sync::Arc;
@@ -70,7 +70,12 @@ mod engine_impl {
         /// Create a new request with the given query.
         /// 创建带有指定查询的新请求。
         pub fn new(query: impl Into<String>) -> Self {
-            Self { query: query.into(), variables: None, operation_name: None, extensions: None }
+            Self {
+                query: query.into(),
+                variables: None,
+                operation_name: None,
+                extensions: None,
+            }
         }
 
         /// Attach named variables.
@@ -114,7 +119,9 @@ mod engine_impl {
     impl GraphQLResponse {
         /// Returns `true` if the response contains any errors.
         /// 若响应包含错误则返回 true。
-        pub fn has_errors(&self) -> bool { !self.errors.is_empty() }
+        pub fn has_errors(&self) -> bool {
+            !self.errors.is_empty()
+        }
 
         fn from_ag(resp: &AGResponse) -> Self {
             let json = serde_json::to_value(resp).unwrap_or(serde_json::json!({}));
@@ -156,7 +163,9 @@ mod engine_impl {
         /// Wrap a pre-built `async-graphql` schema.
         /// 包装一个预构建的 async-graphql Schema。
         pub fn new(schema: Schema<Q, M, S>) -> Self {
-            Self { schema: Arc::new(schema) }
+            Self {
+                schema: Arc::new(schema),
+            }
         }
 
         /// Execute a single GraphQL request and return the response.
@@ -170,13 +179,17 @@ mod engine_impl {
         /// 执行一批 GraphQL 请求。
         pub async fn execute_batch(&self, requests: Vec<GraphQLRequest>) -> Vec<GraphQLResponse> {
             let ag_batch = BatchRequest::Batch(
-                requests.into_iter().map(GraphQLRequest::into_ag_request).collect(),
+                requests
+                    .into_iter()
+                    .map(GraphQLRequest::into_ag_request)
+                    .collect(),
             );
             let batch_resp = self.schema.execute_batch(ag_batch).await;
             match batch_resp {
-                BatchResponse::Batch(resps) => {
-                    resps.into_iter().map(|r| GraphQLResponse::from_ag(&r)).collect()
-                }
+                BatchResponse::Batch(resps) => resps
+                    .into_iter()
+                    .map(|r| GraphQLResponse::from_ag(&r))
+                    .collect(),
                 BatchResponse::Single(resp) => vec![GraphQLResponse::from_ag(&resp)],
             }
         }
@@ -232,7 +245,9 @@ mod engine_impl {
         /// Create a new builder with the given root types.
         /// 使用给定的根类型创建新构建器。
         pub fn new(query: Q, mutation: M, subscription: S) -> Self {
-            Self { inner: Schema::build(query, mutation, subscription) }
+            Self {
+                inner: Schema::build(query, mutation, subscription),
+            }
         }
 
         /// Set the maximum query depth.
@@ -298,8 +313,7 @@ mod engine_impl {
                 "ReactDOM.render(React.createElement(GraphiQL,{{fetcher}}),document.getElementById('graphiql'));",
                 "</script></body></html>"
             ),
-            graphql_endpoint,
-            sub_endpoint,
+            graphql_endpoint, sub_endpoint,
         )
     }
 
@@ -310,9 +324,9 @@ mod engine_impl {
     /// Re-exported from `async-graphql` for convenience.
     /// 从 async-graphql 重新导出，方便使用。
     pub use async_graphql::{
-        Context, EmptyMutation, EmptySubscription, Enum, FieldResult, InputObject, Interface,
+        Context, EmptyMutation, EmptySubscription, Enum, FieldResult, ID, InputObject, Interface,
         MergedObject, MergedSubscription, Object, OneofObject, OutputType, Scalar, ScalarType,
-        SimpleObject, Subscription, Union, ID,
+        SimpleObject, Subscription, Union,
     };
 
     #[cfg(test)]
@@ -323,8 +337,12 @@ mod engine_impl {
         struct QueryRoot;
         #[Object]
         impl QueryRoot {
-            async fn hello(&self) -> &str { "world" }
-            async fn add(&self, a: i32, b: i32) -> i32 { a + b }
+            async fn hello(&self) -> &str {
+                "world"
+            }
+            async fn add(&self, a: i32, b: i32) -> i32 {
+                a + b
+            }
         }
 
         fn make_engine() -> HiverGraphQL<QueryRoot, EmptyMutation, EmptySubscription> {
@@ -340,7 +358,10 @@ mod engine_impl {
             let resp = engine.query("{ hello }").await;
             assert!(!resp.has_errors(), "errors: {:?}", resp.errors);
             assert_eq!(
-                resp.data.as_ref().and_then(|d| d.get("hello")).and_then(|v| v.as_str()),
+                resp.data
+                    .as_ref()
+                    .and_then(|d| d.get("hello"))
+                    .and_then(|v| v.as_str()),
                 Some("world")
             );
         }
@@ -351,7 +372,10 @@ mod engine_impl {
             let resp = engine.query("{ add(a: 3, b: 4) }").await;
             assert!(!resp.has_errors());
             assert_eq!(
-                resp.data.as_ref().and_then(|d| d.get("add")).and_then(|v| v.as_i64()),
+                resp.data
+                    .as_ref()
+                    .and_then(|d| d.get("add"))
+                    .and_then(|v| v.as_i64()),
                 Some(7)
             );
         }
@@ -389,7 +413,10 @@ mod engine_impl {
                 .await;
             assert!(!resp.has_errors());
             assert_eq!(
-                resp.data.as_ref().and_then(|d| d.get("add")).and_then(|v| v.as_i64()),
+                resp.data
+                    .as_ref()
+                    .and_then(|d| d.get("add"))
+                    .and_then(|v| v.as_i64()),
                 Some(30)
             );
         }

@@ -333,13 +333,14 @@ impl Container {
         // Call post-construct callback if available (without holding lock)
         // 如果有回调，调用它（不持有锁）
         if let Some(post_construct) = post_construct_callback
-            && let Err(e) = post_construct(&bean_arc) {
-                return Err(Error::internal(format!(
-                    "Post-construct callback failed for {}: {}",
-                    std::any::type_name::<T>(),
-                    e
-                )));
-            }
+            && let Err(e) = post_construct(&bean_arc)
+        {
+            return Err(Error::internal(format!(
+                "Post-construct callback failed for {}: {}",
+                std::any::type_name::<T>(),
+                e
+            )));
+        }
 
         // Now insert the bean (with write lock)
         // 现在插入bean（使用写锁）
@@ -462,9 +463,10 @@ impl Container {
                 .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
             if let Some(bean) = beans.singletons.get(&type_id)
-                && let Ok(typed) = Arc::clone(bean).downcast::<T>() {
-                    return Ok(typed);
-                }
+                && let Ok(typed) = Arc::clone(bean).downcast::<T>()
+            {
+                return Ok(typed);
+            }
 
             // Check for circular dependency: if we're currently creating this bean,
             // try to return the early-exposed Weak reference
@@ -472,9 +474,10 @@ impl Container {
             if beans.creating.borrow().contains(&type_id) {
                 if let Some(weak) = beans.early_exposed.get(&type_id)
                     && let Some(arc) = weak.upgrade()
-                        && let Ok(typed) = arc.downcast::<T>() {
-                            return Ok(typed);
-                        }
+                    && let Ok(typed) = arc.downcast::<T>()
+                {
+                    return Ok(typed);
+                }
                 // Circular dependency detected but no early-exposed reference
                 // 检测到循环依赖但没有提前暴露的引用
                 return Err(Error::internal(format!(
@@ -554,9 +557,10 @@ impl Container {
                     .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
                 if let Some(reg) = beans.registrations.get(&type_id)
                     && let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
-                        && let Some(post_construct) = &reg_t.post_construct {
-                            post_construct(&placeholder)?;
-                        }
+                    && let Some(post_construct) = &reg_t.post_construct
+                {
+                    post_construct(&placeholder)?;
+                }
             }
 
             Ok(placeholder)
@@ -593,9 +597,10 @@ impl Container {
                 .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
             if let Some(bean) = beans.singletons.get(&type_id)
-                && let Ok(typed) = Arc::clone(bean).downcast::<T>() {
-                    return Ok(typed);
-                }
+                && let Ok(typed) = Arc::clone(bean).downcast::<T>()
+            {
+                return Ok(typed);
+            }
         }
 
         // Check if we have a registration with factory and create the bean
@@ -640,10 +645,11 @@ impl Container {
         let type_id = TypeId::of::<T>();
 
         if let Ok(beans) = self.beans.try_read()
-            && (beans.singletons.contains_key(&type_id) || beans.registrations.contains_key(&type_id))
-            {
-                return true;
-            }
+            && (beans.singletons.contains_key(&type_id)
+                || beans.registrations.contains_key(&type_id))
+        {
+            return true;
+        }
 
         false
     }
@@ -1057,9 +1063,7 @@ pub trait PreDestroy {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::conditional::{
-        ConditionalOnBean, ConditionalOnMissingBean, ConditionalOnProperty,
-    };
+    use crate::conditional::{ConditionalOnBean, ConditionalOnMissingBean, ConditionalOnProperty};
 
     // ── Test fixtures / 测试夹具 ────────────────────────────────────────
 
@@ -1188,9 +1192,7 @@ mod tests {
     fn test_register_bean_direct() {
         let mut container = Container::new();
         container
-            .register_bean(UserRepository {
-                initialized: true,
-            })
+            .register_bean(UserRepository { initialized: true })
             .unwrap();
         let bean = container.get_bean::<UserRepository>().unwrap();
         assert!(bean.initialized);
@@ -1216,9 +1218,7 @@ mod tests {
     #[test]
     fn test_has_bean_true_after_register_bean() {
         let mut container = Container::new();
-        container
-            .register_bean(EmailService::default())
-            .unwrap();
+        container.register_bean(EmailService::default()).unwrap();
         assert!(container.has_bean::<EmailService>());
     }
 
@@ -1240,7 +1240,9 @@ mod tests {
             .register(|_| Ok(UserService { user_count: 7 }))
             .unwrap();
         let type_name = std::any::type_name::<UserService>();
-        let bean = container.get_bean_by_name::<UserService>(type_name).unwrap();
+        let bean = container
+            .get_bean_by_name::<UserService>(type_name)
+            .unwrap();
         assert_eq!(bean.user_count, 7);
     }
 
@@ -1386,11 +1388,10 @@ mod tests {
         let created_clone = created.clone();
 
         let mut container = Container::new();
-        let reg = BeanRegistration::new("svc")
-            .factory(Arc::new(move |_| {
-                created_clone.store(true, Ordering::SeqCst);
-                Ok(UserService { user_count: 42 })
-            }));
+        let reg = BeanRegistration::new("svc").factory(Arc::new(move |_| {
+            created_clone.store(true, Ordering::SeqCst);
+            Ok(UserService { user_count: 42 })
+        }));
         container.register_with(reg).unwrap();
 
         assert!(!created.load(Ordering::SeqCst));
@@ -1435,11 +1436,10 @@ mod tests {
         let eager_clone = eager_created.clone();
 
         let mut container = Container::new();
-        let reg_eager = BeanRegistration::new("eager")
-            .factory(Arc::new(move |_| {
-                eager_clone.store(true, Ordering::SeqCst);
-                Ok(UserService { user_count: 1 })
-            }));
+        let reg_eager = BeanRegistration::new("eager").factory(Arc::new(move |_| {
+            eager_clone.store(true, Ordering::SeqCst);
+            Ok(UserService { user_count: 1 })
+        }));
         container.register_with(reg_eager).unwrap();
 
         container.initialize().unwrap();
@@ -1480,10 +1480,7 @@ mod tests {
         let mut container = Container::new();
         let cond = ConditionalOnMissingBean::of::<CacheService>();
         container
-            .register_conditional(
-                |_| Ok(CacheService { hits: 0 }),
-                &cond,
-            )
+            .register_conditional(|_| Ok(CacheService { hits: 0 }), &cond)
             .unwrap();
         assert!(container.has_bean::<CacheService>());
     }
@@ -1500,10 +1497,7 @@ mod tests {
         // 第二次条件注册仍会注册（注册是独立的）
         let cond = ConditionalOnMissingBean::of::<CacheService>();
         container
-            .register_conditional(
-                |_| Ok(CacheService { hits: 20 }),
-                &cond,
-            )
+            .register_conditional(|_| Ok(CacheService { hits: 20 }), &cond)
             .unwrap();
     }
 
@@ -1515,10 +1509,7 @@ mod tests {
             .unwrap();
         let cond = ConditionalOnBean::of::<UserRepository>();
         container
-            .register_conditional(
-                |_| Ok(UserService { user_count: 0 }),
-                &cond,
-            )
+            .register_conditional(|_| Ok(UserService { user_count: 0 }), &cond)
             .unwrap();
         assert!(container.has_bean::<UserService>());
     }
@@ -1664,9 +1655,7 @@ mod tests {
     fn test_component_scanner_register_component() {
         let scanner = ComponentScanner::new();
         let mut ctx = ApplicationContext::new();
-        scanner
-            .register_component::<UserService>(&mut ctx)
-            .unwrap();
+        scanner.register_component::<UserService>(&mut ctx).unwrap();
     }
 
     // ── PostConstruct / PreDestroy traits ──────────────────────────────
@@ -1840,10 +1829,14 @@ mod tests {
             .unwrap();
         // First get by name triggers creation / 首次按名称获取触发创建
         let type_name = std::any::type_name::<CacheService>();
-        let bean1 = container.get_bean_by_name::<CacheService>(type_name).unwrap();
+        let bean1 = container
+            .get_bean_by_name::<CacheService>(type_name)
+            .unwrap();
         assert_eq!(bean1.hits, 42);
         // Second get returns same singleton / 第二次获取返回同一单例
-        let bean2 = container.get_bean_by_name::<CacheService>(type_name).unwrap();
+        let bean2 = container
+            .get_bean_by_name::<CacheService>(type_name)
+            .unwrap();
         assert!(Arc::ptr_eq(&bean1, &bean2));
     }
 
@@ -1862,10 +1855,7 @@ mod tests {
         // UserService not registered, so conditional should skip / UserService未注册，条件应跳过
         let cond = ConditionalOnBean::of::<UserService>();
         container
-            .register_conditional(
-                |_| Ok(EmailService { sent_count: 0 }),
-                &cond,
-            )
+            .register_conditional(|_| Ok(EmailService { sent_count: 0 }), &cond)
             .unwrap();
         // EmailService should NOT be registered since UserService is absent
         // EmailService不应被注册，因为UserService不存在
@@ -1882,7 +1872,11 @@ mod tests {
                     .register(move |_| Ok(UserService { user_count: count }))
                     .unwrap(),
                 1 => container
-                    .register(move |_| Ok(EmailService { sent_count: count as u32 }))
+                    .register(move |_| {
+                        Ok(EmailService {
+                            sent_count: count as u32,
+                        })
+                    })
                     .unwrap(),
                 _ => container
                     .register(move |_| Ok(CacheService { hits: count as u64 }))

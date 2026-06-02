@@ -15,9 +15,8 @@ use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, 
 use std::time::Duration as StdDuration;
 
 use hiver_security::{
-    Authority, Role,
-    JwtAlgorithm, JwtClaims, JwtTokenProvider, JwtUtil,
-    PasswordEncoder, BcryptPasswordEncoder, Pbkdf2PasswordEncoder,
+    Authority, BcryptPasswordEncoder, JwtAlgorithm, JwtClaims, JwtTokenProvider, JwtUtil,
+    PasswordEncoder, Pbkdf2PasswordEncoder, Role,
 };
 
 // ============================================================================
@@ -74,11 +73,7 @@ fn bench_jwt_create(c: &mut Criterion) {
         let authorities = vec![Authority::Role(Role::User)];
         b.iter(|| {
             let token = provider
-                .generate_token(
-                    black_box("user-123"),
-                    black_box("alice"),
-                    black_box(&authorities),
-                )
+                .generate_token(black_box("user-123"), black_box("alice"), black_box(&authorities))
                 .unwrap();
             black_box(token)
         });
@@ -155,7 +150,9 @@ fn bench_jwt_verify(c: &mut Criterion) {
 
     group.bench_function("decode_and_validate_full", |b| {
         b.iter(|| {
-            let claims = provider_full.decode_and_validate(black_box(&full_token)).unwrap();
+            let claims = provider_full
+                .decode_and_validate(black_box(&full_token))
+                .unwrap();
             black_box(claims)
         });
     });
@@ -182,28 +179,24 @@ fn bench_jwt_verify_scale(c: &mut Criterion) {
 
     for count in [10usize, 50, 100].iter() {
         group.throughput(Throughput::Elements(*count as u64));
-        group.bench_with_input(
-            BenchmarkId::new("batch_verify", count),
-            count,
-            |b, &count| {
-                let tokens: Vec<String> = (0..count)
-                    .map(|i| {
-                        provider
-                            .generate_token(
-                                &format!("user-{}", i),
-                                &format!("name-{}", i),
-                                &authorities,
-                            )
-                            .unwrap()
-                    })
-                    .collect();
-                b.iter(|| {
-                    for token in &tokens {
-                        let _ = provider.validate_token(black_box(token)).unwrap();
-                    }
-                });
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("batch_verify", count), count, |b, &count| {
+            let tokens: Vec<String> = (0..count)
+                .map(|i| {
+                    provider
+                        .generate_token(
+                            &format!("user-{}", i),
+                            &format!("name-{}", i),
+                            &authorities,
+                        )
+                        .unwrap()
+                })
+                .collect();
+            b.iter(|| {
+                for token in &tokens {
+                    let _ = provider.validate_token(black_box(token)).unwrap();
+                }
+            });
+        });
     }
 
     group.finish();
@@ -220,11 +213,14 @@ fn bench_jwt_algorithms(c: &mut Criterion) {
 
     let authorities = vec![Authority::Role(Role::User)];
 
-    for algo in [JwtAlgorithm::Hs256, JwtAlgorithm::Hs384, JwtAlgorithm::Hs512] {
+    for algo in [
+        JwtAlgorithm::Hs256,
+        JwtAlgorithm::Hs384,
+        JwtAlgorithm::Hs512,
+    ] {
         let algo_name = format!("{:?}", algo).to_lowercase();
 
-        let provider = JwtTokenProvider::with_settings("bench-secret-key", 24)
-            .with_algorithm(algo);
+        let provider = JwtTokenProvider::with_settings("bench-secret-key", 24).with_algorithm(algo);
 
         group.bench_function(&format!("create_{}", algo_name), |b| {
             b.iter(|| {
@@ -400,7 +396,8 @@ fn bench_claims_inspection(c: &mut Criterion) {
 
     group.bench_function("has_authority", |b| {
         b.iter(|| {
-            let has = claims.has_authority(black_box(&Authority::Permission("user:read".to_string())));
+            let has =
+                claims.has_authority(black_box(&Authority::Permission("user:read".to_string())));
             black_box(has)
         });
     });

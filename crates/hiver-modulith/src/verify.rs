@@ -52,28 +52,22 @@ pub fn verify_modules(registry: &ModuleRegistry) -> VerificationResult {
     let mut in_stack = std::collections::HashSet::<String>::new();
 
     for module in &modules {
-        if let Some(cycle) = detect_cycle(
-            &module.name,
-            &module_map,
-            &mut visited,
-            &mut in_stack,
-            &mut Vec::new(),
-        ) {
+        if let Some(cycle) =
+            detect_cycle(&module.name, &module_map, &mut visited, &mut in_stack, &mut Vec::new())
+        {
             result.valid = false;
-            result.errors.push(format!(
-                "Circular dependency detected: {}",
-                cycle.join(" -> ")
-            ));
+            result
+                .errors
+                .push(format!("Circular dependency detected: {}", cycle.join(" -> ")));
         }
     }
 
     // 3. Warn about self-dependencies
     for module in &modules {
         if module.dependencies.contains(&module.name) {
-            result.warnings.push(format!(
-                "Module '{}' has a self-dependency",
-                module.name
-            ));
+            result
+                .warnings
+                .push(format!("Module '{}' has a self-dependency", module.name));
         }
     }
 
@@ -122,19 +116,29 @@ mod tests {
 
     struct ModA;
     impl Module for ModA {
-        fn name(&self) -> &str { "a" }
+        fn name(&self) -> &str {
+            "a"
+        }
     }
 
     struct ModB;
     impl Module for ModB {
-        fn name(&self) -> &str { "b" }
-        fn dependencies(&self) -> Vec<&str> { vec!["a"] }
+        fn name(&self) -> &str {
+            "b"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["a"]
+        }
     }
 
     struct ModC;
     impl Module for ModC {
-        fn name(&self) -> &str { "c" }
-        fn dependencies(&self) -> Vec<&str> { vec!["b"] }
+        fn name(&self) -> &str {
+            "c"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["b"]
+        }
     }
 
     #[test]
@@ -161,14 +165,22 @@ mod tests {
 
     struct ModX;
     impl Module for ModX {
-        fn name(&self) -> &str { "x" }
-        fn dependencies(&self) -> Vec<&str> { vec!["y"] }
+        fn name(&self) -> &str {
+            "x"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["y"]
+        }
     }
 
     struct ModY;
     impl Module for ModY {
-        fn name(&self) -> &str { "y" }
-        fn dependencies(&self) -> Vec<&str> { vec!["x"] }
+        fn name(&self) -> &str {
+            "y"
+        }
+        fn dependencies(&self) -> Vec<&str> {
+            vec!["x"]
+        }
     }
 
     #[test]

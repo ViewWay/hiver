@@ -44,16 +44,16 @@ mod tests;
 
 pub mod error;
 pub mod frame;
-pub mod session;
 pub mod handler;
+pub mod session;
 
 pub use error::{Result, StompError};
 pub use frame::{StompCommand, StompFrame};
-pub use session::{
-    AckMode, AckId, HeartbeatConfig, MemoryBroker, PendingAck, StompBroker, StompSession,
-    Subscription, SubscriptionId, TransactionState,
-};
 pub use handler::{
     DeadLetterHandler, LogDeadLetterHandler, NoOpAuthenticator, SimpleAuthenticator,
     StompAuthenticator, StompConfig, StompHandler,
+};
+pub use session::{
+    AckId, AckMode, HeartbeatConfig, MemoryBroker, PendingAck, StompBroker, StompSession,
+    Subscription, SubscriptionId, TransactionState,
 };

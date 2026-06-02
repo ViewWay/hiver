@@ -58,9 +58,7 @@ impl GrpcError {
     pub fn into_status(self) -> tonic::Status {
         match self {
             GrpcError::Status(s) => *s,
-            GrpcError::Transport(e) => {
-                tonic::Status::unavailable(format!("transport: {e}"))
-            }
+            GrpcError::Transport(e) => tonic::Status::unavailable(format!("transport: {e}")),
             GrpcError::Config(msg) => tonic::Status::invalid_argument(msg),
             GrpcError::Serialization(msg) => tonic::Status::internal(msg),
         }

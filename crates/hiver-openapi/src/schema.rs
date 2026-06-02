@@ -95,8 +95,7 @@ pub enum SchemaFormat {
 ///     private Long id;
 /// }
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Schema {
     /// Schema type
     /// 模式类型
@@ -216,11 +215,7 @@ impl Schema {
 
     /// Add property
     /// 添加属性
-    pub fn add_property(
-        mut self,
-        name: impl Into<String>,
-        property: SchemaProperty,
-    ) -> Self {
+    pub fn add_property(mut self, name: impl Into<String>, property: SchemaProperty) -> Self {
         self.properties
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), property);
@@ -335,7 +330,6 @@ impl Schema {
         }
     }
 }
-
 
 /// Schema property
 /// 模式属性

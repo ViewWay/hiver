@@ -537,21 +537,48 @@ impl Condition {
     /// 验证字段/标识符仅包含安全字符。
     fn validate_field(field: &str) {
         assert!(
-            !field.is_empty() && field.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.'),
+            !field.is_empty()
+                && field
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.'),
             "Invalid SQL identifier: {field}"
         );
     }
 
     pub fn to_sql(&self) -> String {
         match self {
-            Self::Eq { field, value } => { Self::validate_field(field); format!("{} = {}", field, value.to_sql()) }
-            Self::Ne { field, value } => { Self::validate_field(field); format!("{} != {}", field, value.to_sql()) }
-            Self::Gt { field, value } => { Self::validate_field(field); format!("{} > {}", field, value.to_sql()) }
-            Self::Ge { field, value } => { Self::validate_field(field); format!("{} >= {}", field, value.to_sql()) }
-            Self::Lt { field, value } => { Self::validate_field(field); format!("{} < {}", field, value.to_sql()) }
-            Self::Le { field, value } => { Self::validate_field(field); format!("{} <= {}", field, value.to_sql()) }
-            Self::Like { field, pattern } => { Self::validate_field(field); format!("{} LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', "")) }
-            Self::NotLike { field, pattern } => { Self::validate_field(field); format!("{} NOT LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', "")) }
+            Self::Eq { field, value } => {
+                Self::validate_field(field);
+                format!("{} = {}", field, value.to_sql())
+            },
+            Self::Ne { field, value } => {
+                Self::validate_field(field);
+                format!("{} != {}", field, value.to_sql())
+            },
+            Self::Gt { field, value } => {
+                Self::validate_field(field);
+                format!("{} > {}", field, value.to_sql())
+            },
+            Self::Ge { field, value } => {
+                Self::validate_field(field);
+                format!("{} >= {}", field, value.to_sql())
+            },
+            Self::Lt { field, value } => {
+                Self::validate_field(field);
+                format!("{} < {}", field, value.to_sql())
+            },
+            Self::Le { field, value } => {
+                Self::validate_field(field);
+                format!("{} <= {}", field, value.to_sql())
+            },
+            Self::Like { field, pattern } => {
+                Self::validate_field(field);
+                format!("{} LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', ""))
+            },
+            Self::NotLike { field, pattern } => {
+                Self::validate_field(field);
+                format!("{} NOT LIKE '{}'", field, pattern.replace('\'', "''").replace('\0', ""))
+            },
             Self::In { field, values } => {
                 Self::validate_field(field);
                 let vals: Vec<String> = values.iter().map(|v| v.to_sql()).collect();
@@ -570,8 +597,14 @@ impl Condition {
                 Self::validate_field(field);
                 format!("{} NOT BETWEEN {} AND {}", field, low.to_sql(), high.to_sql())
             },
-            Self::IsNull { field } => { Self::validate_field(field); format!("{} IS NULL", field) }
-            Self::IsNotNull { field } => { Self::validate_field(field); format!("{} IS NOT NULL", field) }
+            Self::IsNull { field } => {
+                Self::validate_field(field);
+                format!("{} IS NULL", field)
+            },
+            Self::IsNotNull { field } => {
+                Self::validate_field(field);
+                format!("{} IS NOT NULL", field)
+            },
             Self::And(conditions) => {
                 let conds: Vec<String> = conditions.iter().map(|c| c.to_sql()).collect();
                 format!("({})", conds.join(" AND "))

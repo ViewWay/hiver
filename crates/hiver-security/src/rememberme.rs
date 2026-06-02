@@ -234,10 +234,8 @@ impl RememberMeServices {
     /// Generate a token-based signature (HMAC-SHA256).
     /// 生成基于令牌的签名 (HMAC-SHA256)。
     pub fn hash_token(&self, token: &RememberMeToken) -> String {
-        let data = format!(
-            "{}:{}:{}:{}",
-            token.username, token.series, token.value, self.config.key
-        );
+        let data =
+            format!("{}:{}:{}:{}", token.username, token.series, token.value, self.config.key);
         let mut mac = HmacSha256::new_from_slice(self.config.key.as_bytes())
             .expect("HMAC key length is valid");
         mac.update(data.as_bytes());

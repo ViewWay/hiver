@@ -86,9 +86,18 @@ impl StompCommand {
     pub fn is_client_command(&self) -> bool {
         matches!(
             self,
-            Self::Connect | Self::Stomp | Self::Send | Self::Subscribe | Self::Unsubscribe |
-            Self::Ack | Self::Nack | Self::Begin | Self::Commit | Self::Abort |
-            Self::Disconnect | Self::Custom(_)
+            Self::Connect
+                | Self::Stomp
+                | Self::Send
+                | Self::Subscribe
+                | Self::Unsubscribe
+                | Self::Ack
+                | Self::Nack
+                | Self::Begin
+                | Self::Commit
+                | Self::Abort
+                | Self::Disconnect
+                | Self::Custom(_)
         )
     }
 
@@ -250,7 +259,10 @@ impl StompFrame {
         // Parse body
         let body = if body_start < lines.len() {
             // Calculate body byte offset
-            let header_offset = lines[..body_start].iter().map(|l| l.len() + 1).sum::<usize>();
+            let header_offset = lines[..body_start]
+                .iter()
+                .map(|l| l.len() + 1)
+                .sum::<usize>();
             let body_bytes = &data.as_bytes()[header_offset..frame_end];
             if !body_bytes.is_empty() {
                 Some(Bytes::copy_from_slice(body_bytes))
@@ -369,7 +381,7 @@ fn unescape_header(value: &str) -> String {
                 Some(other) => {
                     result.push('\\');
                     result.push(other);
-                }
+                },
                 None => result.push('\\'),
             }
         } else {
@@ -388,7 +400,10 @@ mod tests {
     fn test_command_from_str() {
         assert_eq!(StompCommand::from_str("CONNECT").unwrap(), StompCommand::Connect);
         assert_eq!(StompCommand::from_str("SEND").unwrap(), StompCommand::Send);
-        assert_eq!(StompCommand::from_str("CUSTOM").unwrap(), StompCommand::Custom("CUSTOM".to_string()));
+        assert_eq!(
+            StompCommand::from_str("CUSTOM").unwrap(),
+            StompCommand::Custom("CUSTOM".to_string())
+        );
     }
 
     #[test]

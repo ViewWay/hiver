@@ -84,9 +84,7 @@ mod tests {
         assert_eq!(meta.columns.len(), 4);
 
         // Check column names
-        let column_names: Vec<&str> = meta.columns.iter()
-            .map(|c| c.name.as_str())
-            .collect();
+        let column_names: Vec<&str> = meta.columns.iter().map(|c| c.name.as_str()).collect();
         assert!(column_names.contains(&"id"));
         assert!(column_names.contains(&"email"));
         assert!(column_names.contains(&"name"));
@@ -97,7 +95,9 @@ mod tests {
     fn test_model_primary_key_column() {
         let meta = UserModel::meta();
 
-        let id_column = meta.columns.iter()
+        let id_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "id")
             .expect("id column not found");
 
@@ -108,7 +108,9 @@ mod tests {
     fn test_model_unique_column() {
         let meta = UserModel::meta();
 
-        let email_column = meta.columns.iter()
+        let email_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "email")
             .expect("email column not found");
 
@@ -119,7 +121,9 @@ mod tests {
     fn test_model_nullable_column() {
         let meta = UserModel::meta();
 
-        let name_column = meta.columns.iter()
+        let name_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "name")
             .expect("name column not found");
 
@@ -130,7 +134,9 @@ mod tests {
     fn test_model_default_value() {
         let meta = UserModel::meta();
 
-        let created_at_column = meta.columns.iter()
+        let created_at_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "created_at")
             .expect("created_at column not found");
 
@@ -142,7 +148,9 @@ mod tests {
         let meta = PostModel::meta();
 
         // Check that user_id column exists with custom name
-        let user_id_column = meta.columns.iter()
+        let user_id_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "user_id")
             .expect("user_id column not found");
 
@@ -162,7 +170,9 @@ mod tests {
     fn test_model_max_length() {
         let meta = ProductModel::meta();
 
-        let sku_column = meta.columns.iter()
+        let sku_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "sku")
             .expect("sku column not found");
 
@@ -175,22 +185,25 @@ mod tests {
         assert_eq!(meta.columns.len(), 7);
 
         // Verify stock column has default
-        let stock_column = meta.columns.iter()
+        let stock_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "stock")
             .expect("stock column not found");
 
         assert_eq!(stock_column.default.as_ref().unwrap(), "0");
 
         // Verify price column has default
-        let price_column = meta.columns.iter()
+        let price_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "price")
             .expect("price column not found");
 
         assert_eq!(price_column.default.as_ref().unwrap(), "0.0");
 
         // Verify active column with custom name
-        let active_column = meta.columns.iter()
-            .find(|c| c.name == "is_active");
+        let active_column = meta.columns.iter().find(|c| c.name == "is_active");
 
         assert!(active_column.is_some());
     }
@@ -255,14 +268,18 @@ mod tests {
         assert_eq!(meta.table_name(), "test_posts");
 
         // Check title has max_length
-        let title_column = meta.columns.iter()
+        let title_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "title")
             .expect("title column not found");
 
         assert!(!title_column.is_nullable);
 
         // Check content is nullable
-        let content_column = meta.columns.iter()
+        let content_column = meta
+            .columns
+            .iter()
             .find(|c| c.name == "content")
             .expect("content column not found");
 

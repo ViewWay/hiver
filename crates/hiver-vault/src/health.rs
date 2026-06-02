@@ -72,15 +72,12 @@ pub struct SealStatus {
 /// 调用 `sys/health` 端点。注意 Vault 对健康状态返回 200，
 /// 待机返回 429，未初始化返回 501，已封印返回 503。
 pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus> {
-    let url = client.base_url().join("v1/sys/health").map_err(|e| {
-        VaultError::InvalidAddress(format!("Failed to build health URL: {e}"))
-    })?;
+    let url = client
+        .base_url()
+        .join("v1/sys/health")
+        .map_err(|e| VaultError::InvalidAddress(format!("Failed to build health URL: {e}")))?;
 
-    let resp = client
-        .http_client()
-        .get(url)
-        .send()
-        .await?;
+    let resp = client.http_client().get(url).send().await?;
 
     let status = resp.status();
     // Vault health returns non-200 for some non-error states
@@ -89,14 +86,14 @@ pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus> {
         200 | 429 | 501 | 503 => {
             let health: HealthStatus = resp.json().await?;
             Ok(health)
-        }
+        },
         _ => {
             let body = resp.text().await.unwrap_or_default();
             Err(VaultError::ServerError {
                 status: status.as_u16(),
                 message: body,
             })
-        }
+        },
     }
 }
 

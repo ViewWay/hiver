@@ -332,7 +332,11 @@ impl QueryCriteria {
     }
 
     /// 添加参数绑定 / Add parameter binding
-    pub(crate) fn bind(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub(crate) fn bind(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.bindings.push((key.into(), value.into()));
         self
     }

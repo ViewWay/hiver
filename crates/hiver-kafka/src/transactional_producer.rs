@@ -188,10 +188,7 @@ impl TransactionalProducer {
                 self.state
             ));
         }
-        tracing::info!(
-            "Beginning transaction: transactional_id={}",
-            self.transactional_id
-        );
+        tracing::info!("Beginning transaction: transactional_id={}", self.transactional_id);
         self.state = TransactionState::Active;
         self.pending_records.clear();
         self.pending_offsets.clear();
@@ -315,11 +312,7 @@ impl TransactionalProducer {
             headers: Vec::new(),
             timestamp: None,
         };
-        tracing::debug!(
-            "Buffering transactional record: topic={}, {} bytes",
-            topic,
-            value.len()
-        );
+        tracing::debug!("Buffering transactional record: topic={}, {} bytes", topic, value.len());
         self.pending_records.push(record);
         Ok(())
     }
@@ -356,11 +349,7 @@ impl TransactionalProducer {
                 self.state
             ));
         }
-        tracing::debug!(
-            "Adding {} offsets for group '{}' to transaction",
-            offsets.len(),
-            group_id
-        );
+        tracing::debug!("Adding {} offsets for group '{}' to transaction", offsets.len(), group_id);
         self.pending_offsets.extend(offsets);
         if !self.pending_group_ids.contains(&group_id.to_string()) {
             self.pending_group_ids.push(group_id.to_string());
@@ -509,8 +498,7 @@ mod tests {
     #[test]
     fn test_send_offsets_to_transaction_when_idle() {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
-        let result =
-            producer.send_offsets_to_transaction(vec![], "group");
+        let result = producer.send_offsets_to_transaction(vec![], "group");
         assert!(result.is_err());
     }
 
@@ -525,10 +513,7 @@ mod tests {
             .send_in_transaction("topic", Some("key"), b"value")
             .unwrap();
         producer
-            .send_offsets_to_transaction(
-                vec![TransactionOffset::new("src", 0, 50)],
-                "group-1",
-            )
+            .send_offsets_to_transaction(vec![TransactionOffset::new("src", 0, 50)], "group-1")
             .unwrap();
         producer.commit_transaction().unwrap();
 
@@ -561,16 +546,12 @@ mod tests {
 
         // Transaction 1
         producer.begin_transaction().unwrap();
-        producer
-            .send_in_transaction("t1", None, b"v1")
-            .unwrap();
+        producer.send_in_transaction("t1", None, b"v1").unwrap();
         producer.commit_transaction().unwrap();
 
         // Transaction 2
         producer.begin_transaction().unwrap();
-        producer
-            .send_in_transaction("t2", None, b"v2")
-            .unwrap();
+        producer.send_in_transaction("t2", None, b"v2").unwrap();
         producer.commit_transaction().unwrap();
 
         assert_eq!(producer.state(), &TransactionState::Idle);

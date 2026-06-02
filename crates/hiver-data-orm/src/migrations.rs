@@ -107,9 +107,10 @@ impl Migration {
     /// Extract version from migration name / 从迁移名称提取版本
     fn extract_version(name: &str) -> String {
         if let Some(stripped) = name.strip_prefix('V')
-            && let Some(end) = stripped.find("__") {
-                return format!("V{}", &stripped[..end]);
-            }
+            && let Some(end) = stripped.find("__")
+        {
+            return format!("V{}", &stripped[..end]);
+        }
         if let Some(end) = name.find('_') {
             let prefix = &name[..end];
             if prefix.chars().all(|c| c.is_ascii_digit()) {
@@ -122,14 +123,10 @@ impl Migration {
     /// Validate the migration / 验证迁移
     pub fn validate(&self) -> Result<()> {
         if self.up_sql.is_empty() {
-            return Err(Error::validation(format!(
-                "Migration {} has no up_sql", self.name
-            )));
+            return Err(Error::validation(format!("Migration {} has no up_sql", self.name)));
         }
         if self.down_sql.is_empty() {
-            return Err(Error::validation(format!(
-                "Migration {} has no down_sql", self.name
-            )));
+            return Err(Error::validation(format!("Migration {} has no down_sql", self.name)));
         }
         Ok(())
     }
@@ -219,15 +216,9 @@ impl Migrator {
             }
             migration.validate()?;
 
-            client
-                .execute_cmd(&migration.up_sql)
-                .await
-                .map_err(|e| {
-                    Error::migration(format!(
-                        "Migration {} failed: {}",
-                        migration.name, e
-                    ))
-                })?;
+            client.execute_cmd(&migration.up_sql).await.map_err(|e| {
+                Error::migration(format!("Migration {} failed: {}", migration.name, e))
+            })?;
 
             // Record the migration as applied
             let record_sql = format!(
@@ -247,29 +238,16 @@ impl Migrator {
     /// Rollback the last applied migration.
     /// 回滚最后的迁移。
     pub async fn down<C: DatabaseClient>(&mut self, client: &C) -> Result<bool> {
-        if let Some(last) = self
-            .migrations
-            .iter_mut()
-            .rev()
-            .find(|m| m.applied)
-        {
+        if let Some(last) = self.migrations.iter_mut().rev().find(|m| m.applied) {
             last.validate()?;
 
-            client
-                .execute_cmd(&last.down_sql)
-                .await
-                .map_err(|e| {
-                    Error::migration(format!(
-                        "Rollback of {} failed: {}",
-                        last.name, e
-                    ))
-                })?;
+            client.execute_cmd(&last.down_sql).await.map_err(|e| {
+                Error::migration(format!("Rollback of {} failed: {}", last.name, e))
+            })?;
 
             // Remove migration record
-            let delete_sql = format!(
-                "DELETE FROM {} WHERE version = '{}'",
-                self.migration_table, last.version,
-            );
+            let delete_sql =
+                format!("DELETE FROM {} WHERE version = '{}'", self.migration_table, last.version,);
             client.execute_cmd(&delete_sql).await.map_err(|e| {
                 Error::migration(format!("Failed to unrecord migration {}: {}", last.name, e))
             })?;
@@ -445,7 +423,11 @@ fn schema_op_to_sql(op: &SchemaOperation) -> String {
             let col_defs: Vec<String> = columns
                 .iter()
                 .map(|c| {
-                    let mut def = format!("{} {}", c.name, c.type_.as_sql(crate::model::SqlDialect::PostgreSQL));
+                    let mut def = format!(
+                        "{} {}",
+                        c.name,
+                        c.type_.as_sql(crate::model::SqlDialect::PostgreSQL)
+                    );
                     if c.is_primary_key {
                         def.push_str(" PRIMARY KEY");
                     }
@@ -462,7 +444,7 @@ fn schema_op_to_sql(op: &SchemaOperation) -> String {
                 })
                 .collect();
             format!("CREATE TABLE {} ({})", name, col_defs.join(", "))
-        }
+        },
         SchemaOperation::DropTable { name } => format!("DROP TABLE IF EXISTS {}", name),
         SchemaOperation::AddColumn { table, column } => {
             format!(
@@ -471,26 +453,25 @@ fn schema_op_to_sql(op: &SchemaOperation) -> String {
                 column.name,
                 column.type_.as_sql(crate::model::SqlDialect::PostgreSQL),
             )
-        }
+        },
         SchemaOperation::DropColumn { table, name } => {
             format!("ALTER TABLE {} DROP COLUMN {}", table, name)
-        }
+        },
         SchemaOperation::RenameTable { from, to } => {
             format!("ALTER TABLE {} RENAME TO {}", from, to)
-        }
-        SchemaOperation::AddIndex { table, name, columns, unique } => {
+        },
+        SchemaOperation::AddIndex {
+            table,
+            name,
+            columns,
+            unique,
+        } => {
             let unique_str = if *unique { "UNIQUE " } else { "" };
-            format!(
-                "CREATE {}INDEX {} ON {} ({})",
-                unique_str,
-                name,
-                table,
-                columns.join(", "),
-            )
-        }
+            format!("CREATE {}INDEX {} ON {} ({})", unique_str, name, table, columns.join(", "),)
+        },
         SchemaOperation::DropIndex { table, name } => {
             format!("DROP INDEX IF EXISTS {}.{}", table, name)
-        }
+        },
     }
 }
 
@@ -541,8 +522,7 @@ mod tests {
 
     #[test]
     fn test_schema_create_table_sql() {
-        let schema = Schema::create_table("users")
-            .column("id", crate::ColumnType::I64);
+        let schema = Schema::create_table("users").column("id", crate::ColumnType::I64);
         let sql = schema_op_to_sql(&schema.operations[0]);
         assert!(sql.contains("CREATE TABLE users"));
         assert!(sql.contains("id"));

@@ -165,7 +165,7 @@ impl RetryPolicy {
                     if !delay.is_zero() {
                         tokio::time::sleep(delay).await;
                     }
-                }
+                },
             }
         }
         Err(last_err.expect("retry loop should always produce an error"))
@@ -225,17 +225,18 @@ mod tests {
     async fn test_retry_succeeds_on_second_attempt() {
         let p = RetryPolicy::fixed(2).with_initial_delay(Duration::from_millis(1));
         let mut attempts = 0;
-        let result = p.execute(|| {
-            attempts += 1;
-            async move {
-                if attempts <= 1 {
-                    Err(tonic::Status::unavailable("not ready"))
-                } else {
-                    Ok(42)
+        let result = p
+            .execute(|| {
+                attempts += 1;
+                async move {
+                    if attempts <= 1 {
+                        Err(tonic::Status::unavailable("not ready"))
+                    } else {
+                        Ok(42)
+                    }
                 }
-            }
-        })
-        .await;
+            })
+            .await;
         assert_eq!(result.unwrap(), 42);
     }
 
@@ -265,9 +266,7 @@ mod tests {
 
     #[test]
     fn test_custom_retryable_codes() {
-        let p = RetryPolicy::fixed(3).with_retryable_codes(vec![
-            tonic::Code::NotFound,
-        ]);
+        let p = RetryPolicy::fixed(3).with_retryable_codes(vec![tonic::Code::NotFound]);
         assert!(p.is_retryable(tonic::Code::NotFound));
         assert!(!p.is_retryable(tonic::Code::Unavailable));
     }

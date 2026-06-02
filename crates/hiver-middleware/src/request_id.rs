@@ -22,8 +22,8 @@
 
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use hiver_http::{Request, Response, Result};
 use hiver_router::{Middleware, Next};
@@ -160,10 +160,7 @@ fn generate_uuid() -> String {
     let d = (0x8000 | ((a >> 16) & 0x3FFF)) as u16; // variant 1
     let e = (a ^ b as u64 ^ nanos as u64) & 0xFFFFFFFFFFFF;
 
-    format!(
-        "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
-        a, b, c, d, e
-    )
+    format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", a, b, c, d, e)
 }
 
 /// Counter for Counter strategy.
@@ -188,7 +185,7 @@ fn generate_id(strategy: RequestIdStrategy, prefix: &str) -> String {
         RequestIdStrategy::Counter => {
             let n = REQUEST_COUNTER.fetch_add(1, Ordering::Relaxed);
             format!("{}", n)
-        }
+        },
         RequestIdStrategy::Timestamp => generate_timestamp(),
     };
 

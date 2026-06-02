@@ -21,23 +21,33 @@ fn parse_cache_attr(attr: TokenStream) -> CacheAttr {
             cache_name = part.trim_matches('"').to_string();
         }
     }
-    CacheAttr { cache_name, key_template }
+    CacheAttr {
+        cache_name,
+        key_template,
+    }
 }
 
-fn param_idents(inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>) -> Vec<syn::Ident> {
+fn param_idents(
+    inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>,
+) -> Vec<syn::Ident> {
     inputs
         .iter()
         .filter_map(|arg| {
             if let syn::FnArg::Typed(pat_type) = arg
-                && let Pat::Ident(pat_ident) = &*pat_type.pat {
-                    return Some(pat_ident.ident.clone());
-                }
+                && let Pat::Ident(pat_ident) = &*pat_type.pat
+            {
+                return Some(pat_ident.ident.clone());
+            }
             None
         })
         .collect()
 }
 
-fn build_key_expr(fn_name: &syn::Ident, params: &[syn::Ident], template: Option<&str>) -> proc_macro2::TokenStream {
+fn build_key_expr(
+    fn_name: &syn::Ident,
+    params: &[syn::Ident],
+    template: Option<&str>,
+) -> proc_macro2::TokenStream {
     if let Some(tpl) = template {
         let mut fmt = tpl.to_string();
         for p in params {

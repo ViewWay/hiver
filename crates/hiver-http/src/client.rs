@@ -176,8 +176,7 @@ impl ClientResponse {
     /// Deserialize the response body as JSON.
     /// 将响应体反序列化为 JSON。
     pub fn json<T: serde::de::DeserializeOwned>(&self) -> ClientResult<T> {
-        serde_json::from_slice(&self.body)
-            .map_err(|e| ClientError::Deserialization(e.to_string()))
+        serde_json::from_slice(&self.body).map_err(|e| ClientError::Deserialization(e.to_string()))
     }
 
     /// Ensure the response status is successful, returning an error otherwise.
@@ -264,10 +263,10 @@ impl RequestBuilder {
                     http::HeaderValue::from_static("application/json"),
                 );
                 self.body = Some(Bytes::from(bytes));
-            }
+            },
             Err(e) => {
                 tracing::warn!("Failed to serialize JSON body: {}", e);
-            }
+            },
         }
         self
     }
@@ -282,10 +281,10 @@ impl RequestBuilder {
                     http::HeaderValue::from_static("application/x-www-form-urlencoded"),
                 );
                 self.body = Some(Bytes::from(encoded));
-            }
+            },
             Err(e) => {
                 tracing::warn!("Failed to serialize form body: {}", e);
-            }
+            },
         }
         self
     }
@@ -312,9 +311,7 @@ impl RequestBuilder {
     /// Build the request into a standard `http::Request`.
     /// 将请求构建为标准 `http::Request`。
     pub fn build(self) -> ClientResult<http::Request<Bytes>> {
-        let mut builder = http::Request::builder()
-            .method(self.method)
-            .uri(&self.url);
+        let mut builder = http::Request::builder().method(self.method).uri(&self.url);
 
         for (k, v) in &self.headers {
             builder = builder.header(k.as_str(), v.to_str().unwrap_or(""));
@@ -483,10 +480,7 @@ impl WebClient {
 
         let response = self.execute(built).await?;
 
-        tracing::debug!(
-            status = response.status,
-            "Received HTTP response"
-        );
+        tracing::debug!(status = response.status, "Received HTTP response");
 
         Ok(response)
     }
@@ -498,19 +492,26 @@ impl WebClient {
 
         let uri = req.uri();
         let host = uri.host().unwrap_or("localhost");
-        let port = uri.port_u16().unwrap_or(if uri.scheme_str() == Some("https") { 443 } else { 80 });
+        let port = uri
+            .port_u16()
+            .unwrap_or(if uri.scheme_str() == Some("https") {
+                443
+            } else {
+                80
+            });
         let path = uri.path_and_query().map(|pq| pq.as_str()).unwrap_or("/");
 
         // Connect with timeout
         // 带超时连接
-        let connect_timeout = self.config.connect_timeout.unwrap_or(Duration::from_secs(10));
-        let stream = tokio::time::timeout(
-            connect_timeout,
-            tokio::net::TcpStream::connect((host, port)),
-        )
-        .await
-        .map_err(|_| ClientError::Timeout(format!("Connect timeout to {}:{}", host, port)))?
-        .map_err(|e| ClientError::Connection(e.to_string()))?;
+        let connect_timeout = self
+            .config
+            .connect_timeout
+            .unwrap_or(Duration::from_secs(10));
+        let stream =
+            tokio::time::timeout(connect_timeout, tokio::net::TcpStream::connect((host, port)))
+                .await
+                .map_err(|_| ClientError::Timeout(format!("Connect timeout to {}:{}", host, port)))?
+                .map_err(|e| ClientError::Connection(e.to_string()))?;
 
         // Build raw HTTP request
         // 构建原始 HTTP 请求
@@ -542,26 +543,23 @@ impl WebClient {
         request_bytes.extend_from_slice(&body);
 
         let request_timeout = self.config.timeout.unwrap_or(Duration::from_secs(30));
-        tokio::time::timeout(
-            request_timeout,
-            writer.write_all(&request_bytes),
-        )
-        .await
-        .map_err(|_| ClientError::Timeout("Request write timeout".into()))?
-        .map_err(|e| ClientError::Connection(e.to_string()))?;
+        tokio::time::timeout(request_timeout, writer.write_all(&request_bytes))
+            .await
+            .map_err(|_| ClientError::Timeout("Request write timeout".into()))?
+            .map_err(|e| ClientError::Connection(e.to_string()))?;
 
-        writer.flush().await.map_err(|e| ClientError::Connection(e.to_string()))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| ClientError::Connection(e.to_string()))?;
 
         // Read response
         // 读取响应
         let mut response_buf = vec![0u8; 65536];
-        let n = tokio::time::timeout(
-            request_timeout,
-            reader.read(&mut response_buf),
-        )
-        .await
-        .map_err(|_| ClientError::Timeout("Response read timeout".into()))?
-        .map_err(|e| ClientError::Connection(e.to_string()))?;
+        let n = tokio::time::timeout(request_timeout, reader.read(&mut response_buf))
+            .await
+            .map_err(|_| ClientError::Timeout("Response read timeout".into()))?
+            .map_err(|e| ClientError::Connection(e.to_string()))?;
 
         if n == 0 {
             return Err(ClientError::Connection("Empty response from server".into()));
@@ -577,9 +575,9 @@ fn parse_http_response(buf: &[u8]) -> ClientResult<ClientResponse> {
     let text = String::from_utf8_lossy(buf);
     let mut lines = text.split("\r\n");
 
-    let status_line = lines.next().ok_or_else(|| {
-        ClientError::Deserialization("Empty HTTP response".into())
-    })?;
+    let status_line = lines
+        .next()
+        .ok_or_else(|| ClientError::Deserialization("Empty HTTP response".into()))?;
 
     let status: u16 = status_line
         .split_whitespace()
@@ -699,7 +697,9 @@ impl WebClientBuilder {
     /// Build the WebClient.
     /// 构建 WebClient。
     pub fn build(self) -> WebClient {
-        WebClient { config: self.config }
+        WebClient {
+            config: self.config,
+        }
     }
 }
 
@@ -779,7 +779,8 @@ mod tests {
     #[test]
     fn test_request_builder_header() {
         let client = WebClient::new("https://api.example.com");
-        let req = client.get("/test")
+        let req = client
+            .get("/test")
             .header("X-Custom", "value")
             .header("Accept", "application/json");
 
@@ -795,11 +796,20 @@ mod tests {
         }
 
         let client = WebClient::new("https://api.example.com");
-        let req = client.post("/users")
-            .json(&User { name: "Alice".into() });
+        let req = client.post("/users").json(&User {
+            name: "Alice".into(),
+        });
 
         let built = req.build().unwrap();
-        assert!(built.headers().get("content-type").unwrap().to_str().unwrap().contains("json"));
+        assert!(
+            built
+                .headers()
+                .get("content-type")
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .contains("json")
+        );
         let body = String::from_utf8(built.into_body().to_vec()).unwrap();
         assert!(body.contains("Alice"));
     }
@@ -813,14 +823,21 @@ mod tests {
         }
 
         let client = WebClient::new("https://api.example.com");
-        let req = client.post("/login")
-            .form(&Login {
-                username: "admin".into(),
-                password: "secret".into(),
-            });
+        let req = client.post("/login").form(&Login {
+            username: "admin".into(),
+            password: "secret".into(),
+        });
 
         let built = req.build().unwrap();
-        assert!(built.headers().get("content-type").unwrap().to_str().unwrap().contains("form"));
+        assert!(
+            built
+                .headers()
+                .get("content-type")
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .contains("form")
+        );
         let body = String::from_utf8(built.into_body().to_vec()).unwrap();
         assert!(body.contains("username=admin"));
     }
@@ -928,8 +945,8 @@ mod tests {
 
     #[test]
     fn test_client_default_headers() {
-        let client = WebClient::new("https://api.example.com")
-            .header("Authorization", "Bearer token");
+        let client =
+            WebClient::new("https://api.example.com").header("Authorization", "Bearer token");
 
         let req = client.get("/test");
         let built = req.build().unwrap();

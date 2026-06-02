@@ -24,7 +24,9 @@ pub trait MessageHandler: Send + Sync {
 pub struct FnMessageHandler<F: Fn(Message) -> Result<Option<Message>> + Send + Sync>(pub F);
 
 #[async_trait]
-impl<F: Fn(Message) -> Result<Option<Message>> + Send + Sync> MessageHandler for FnMessageHandler<F> {
+impl<F: Fn(Message) -> Result<Option<Message>> + Send + Sync> MessageHandler
+    for FnMessageHandler<F>
+{
     async fn handle(&self, message: Message) -> Result<Option<Message>> {
         (self.0)(message)
     }
@@ -101,7 +103,7 @@ impl ServiceActivator {
                     output.send(reply).await?;
                 }
                 Ok(())
-            }
+            },
             None => Ok(()),
         }
     }
@@ -138,7 +140,10 @@ impl Default for ServiceActivatorBuilder {
 impl ServiceActivatorBuilder {
     /// Create a new builder.
     pub fn new() -> Self {
-        Self { config: None, handler: None }
+        Self {
+            config: None,
+            handler: None,
+        }
     }
 
     /// Set configuration.
@@ -159,12 +164,12 @@ impl ServiceActivatorBuilder {
         _input_channel: Arc<dyn MessageChannel>,
         output_channel: Option<Arc<dyn MessageChannel>>,
     ) -> Result<ServiceActivator> {
-        let config = self.config.ok_or_else(|| {
-            IntegrationError::Message("ServiceActivator config not set".into())
-        })?;
-        let handler = self.handler.ok_or_else(|| {
-            IntegrationError::Message("ServiceActivator handler not set".into())
-        })?;
+        let config = self
+            .config
+            .ok_or_else(|| IntegrationError::Message("ServiceActivator config not set".into()))?;
+        let handler = self
+            .handler
+            .ok_or_else(|| IntegrationError::Message("ServiceActivator handler not set".into()))?;
         Ok(ServiceActivator {
             config,
             handler,
@@ -212,7 +217,10 @@ mod tests {
             input,
             None,
         );
-        activator.process_one(Message::new("hello".to_string())).await.unwrap();
+        activator
+            .process_one(Message::new("hello".to_string()))
+            .await
+            .unwrap();
     }
 
     #[tokio::test]
@@ -225,7 +233,10 @@ mod tests {
             input,
             Some(output.clone()),
         );
-        activator.process_one(Message::new("hello".to_string())).await.unwrap();
+        activator
+            .process_one(Message::new("hello".to_string()))
+            .await
+            .unwrap();
         let reply = output.receive().await.unwrap();
         assert_eq!(reply.get_payload::<String>(), Some("echo: hello".to_string()));
     }
@@ -256,7 +267,10 @@ mod tests {
     async fn test_gateway_send() {
         let channel = Arc::new(PointToPointChannel::new("gw", 10));
         let gateway = Gateway::new(channel.clone());
-        gateway.send(Message::new("test".to_string())).await.unwrap();
+        gateway
+            .send(Message::new("test".to_string()))
+            .await
+            .unwrap();
         let received = channel.receive().await.unwrap();
         assert_eq!(received.get_payload::<String>(), Some("test".to_string()));
     }

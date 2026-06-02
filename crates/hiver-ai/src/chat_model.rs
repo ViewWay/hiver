@@ -455,7 +455,9 @@ mod tests {
         };
         assert!(err.to_string().contains("429"));
 
-        let err = ModelError::RateLimited { retry_after_secs: 30 };
+        let err = ModelError::RateLimited {
+            retry_after_secs: 30,
+        };
         assert!(err.to_string().contains("30s"));
     }
 

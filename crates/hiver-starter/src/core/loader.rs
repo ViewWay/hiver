@@ -19,8 +19,8 @@
 //! let configs = loader.load_configurations()?;
 //! ```
 
-use std::path::Path;
 use anyhow::{Context, Result};
+use std::path::Path;
 
 // ============================================================================
 // AutoConfigurationLoader / 自动配置加载器
@@ -198,11 +198,7 @@ impl AutoConfigurationLoader {
             configs.push(line.to_string());
         }
 
-        tracing::debug!(
-            "Loaded {} auto-configuration classes from {:?}",
-            configs.len(),
-            path
-        );
+        tracing::debug!("Loaded {} auto-configuration classes from {:?}", configs.len(), path);
 
         Ok(configs)
     }
@@ -466,11 +462,7 @@ impl AutoConfigurationRegistry {
             }
         }
 
-        if found_digit {
-            Some(result)
-        } else {
-            None
-        }
+        if found_digit { Some(result) } else { None }
     }
 
     /// 提取括号内的数字
@@ -584,10 +576,7 @@ mod tests {
     #[test]
     fn test_registry_register_all() {
         let mut registry = AutoConfigurationRegistry::new();
-        let configs = vec![
-            "module::Config1".to_string(),
-            "module::Config2".to_string(),
-        ];
+        let configs = vec!["module::Config1".to_string(), "module::Config2".to_string()];
         let count = registry.register_all(configs).unwrap();
         assert_eq!(count, 2);
         assert_eq!(registry.len(), 2);
@@ -638,7 +627,10 @@ mod tests {
         assert_eq!(AutoConfigurationRegistry::extract_priority("@Order(200)"), Some(200));
 
         // @Order("order", 100)
-        assert_eq!(AutoConfigurationRegistry::extract_priority("@Order(\"order\", 100)"), Some(100));
+        assert_eq!(
+            AutoConfigurationRegistry::extract_priority("@Order(\"order\", 100)"),
+            Some(100)
+        );
     }
 
     #[test]
@@ -653,8 +645,14 @@ mod tests {
     #[test]
     fn test_extract_priority_combined() {
         // Class name with priority annotation
-        assert_eq!(AutoConfigurationRegistry::extract_priority("MyConfig #priority:100"), Some(100));
-        assert_eq!(AutoConfigurationRegistry::extract_priority("MyConfig # order: 50 // comment"), Some(50));
+        assert_eq!(
+            AutoConfigurationRegistry::extract_priority("MyConfig #priority:100"),
+            Some(100)
+        );
+        assert_eq!(
+            AutoConfigurationRegistry::extract_priority("MyConfig # order: 50 // comment"),
+            Some(50)
+        );
         assert_eq!(AutoConfigurationRegistry::extract_priority("MyConfig @Order(200)"), Some(200));
     }
 
@@ -672,8 +670,12 @@ mod tests {
         let mut registry = AutoConfigurationRegistry::new();
 
         // Register with different priorities
-        registry.register("HighPriorityConfig #priority:100".to_string()).unwrap();
-        registry.register("LowPriorityConfig #priority:-50".to_string()).unwrap();
+        registry
+            .register("HighPriorityConfig #priority:100".to_string())
+            .unwrap();
+        registry
+            .register("LowPriorityConfig #priority:-50".to_string())
+            .unwrap();
         registry.register("DefaultConfig".to_string()).unwrap();
 
         assert_eq!(registry.len(), 3);
@@ -685,15 +687,27 @@ mod tests {
 
     #[test]
     fn test_extract_number_after() {
-        assert_eq!(AutoConfigurationRegistry::extract_number_after("priority: 100", 9), Some("100".to_string()));
-        assert_eq!(AutoConfigurationRegistry::extract_number_after("value: -50 end", 7), Some("-50".to_string()));
+        assert_eq!(
+            AutoConfigurationRegistry::extract_number_after("priority: 100", 9),
+            Some("100".to_string())
+        );
+        assert_eq!(
+            AutoConfigurationRegistry::extract_number_after("value: -50 end", 7),
+            Some("-50".to_string())
+        );
         assert_eq!(AutoConfigurationRegistry::extract_number_after("no number", 0), None);
     }
 
     #[test]
     fn test_extract_number_in_parens() {
-        assert_eq!(AutoConfigurationRegistry::extract_number_in_parens("Order(100)", 5), Some("100".to_string()));
-        assert_eq!(AutoConfigurationRegistry::extract_number_in_parens("Order( -50 )", 5), Some("-50".to_string()));
+        assert_eq!(
+            AutoConfigurationRegistry::extract_number_in_parens("Order(100)", 5),
+            Some("100".to_string())
+        );
+        assert_eq!(
+            AutoConfigurationRegistry::extract_number_in_parens("Order( -50 )", 5),
+            Some("-50".to_string())
+        );
         assert_eq!(AutoConfigurationRegistry::extract_number_in_parens("Order()", 5), None);
     }
 }

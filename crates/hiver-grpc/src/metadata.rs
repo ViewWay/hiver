@@ -25,7 +25,9 @@ pub struct MetadataBuilder {
 impl MetadataBuilder {
     /// Create a new builder.
     /// 创建新的构建器。
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Insert a key-value pair.
     /// 插入键值对。
@@ -60,7 +62,8 @@ pub trait MetadataMapExt {
     /// Get the `authorization` header (Bearer token).
     /// 获取 authorization 头（Bearer token）。
     fn bearer_token(&self) -> Option<&str> {
-        self.get_str("authorization").and_then(|v| v.strip_prefix("Bearer "))
+        self.get_str("authorization")
+            .and_then(|v| v.strip_prefix("Bearer "))
     }
 
     /// Get the `x-request-id` header.
@@ -108,8 +111,10 @@ impl DeadlinePropagator {
             .unwrap_or_default()
             .as_millis() as u64
             + remaining.as_millis() as u64;
-        let value: MetadataValue<tonic::metadata::Ascii> =
-            deadline_ms.to_string().parse().unwrap_or_else(|_| MetadataValue::from_static("0"));
+        let value: MetadataValue<tonic::metadata::Ascii> = deadline_ms
+            .to_string()
+            .parse()
+            .unwrap_or_else(|_| MetadataValue::from_static("0"));
         request.metadata_mut().insert(DEADLINE_KEY, value);
     }
 

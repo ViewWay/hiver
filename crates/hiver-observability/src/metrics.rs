@@ -464,7 +464,7 @@ impl HistogramData {
             if upper_bound.is_none_or(|ub| value <= ub)
                 && let Some(count) = self.bucket_counts.get_mut(i)
             {
-                    *count += 1;
+                *count += 1;
             }
         }
     }
@@ -693,7 +693,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut metrics = self
+            .metrics
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Counter(counter)) = metrics.get(&id) {
             return counter.clone();
         }
@@ -722,7 +725,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut metrics = self
+            .metrics
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Gauge(gauge)) = metrics.get(&id) {
             return gauge.clone();
         }
@@ -751,7 +757,10 @@ impl MetricsRegistry {
 
         let id = MetricId::new_from_ref(&name).with_labels(all_labels.clone());
 
-        let mut metrics = self.metrics.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut metrics = self
+            .metrics
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(Metric::Histogram(histogram)) = metrics.get(&id) {
             return histogram.clone();
         }
@@ -905,7 +914,8 @@ fn export_metric_line(id: &MetricId, value: u64) -> String {
 
 /// Global metrics registry
 /// 全局指标注册表
-static GLOBAL_REGISTRY: std::sync::LazyLock<MetricsRegistry> = std::sync::LazyLock::new(|| MetricsRegistry::new());
+static GLOBAL_REGISTRY: std::sync::LazyLock<MetricsRegistry> =
+    std::sync::LazyLock::new(|| MetricsRegistry::new());
 
 /// Get the global metrics registry
 /// 获取全局指标注册表

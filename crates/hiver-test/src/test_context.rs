@@ -43,11 +43,7 @@ impl TestApplicationContext {
 
     /// Register a bean
     /// 注册bean
-    pub async fn register_bean<T: 'static + Send + Sync>(
-        &self,
-        name: impl Into<String>,
-        bean: T,
-    ) {
+    pub async fn register_bean<T: 'static + Send + Sync>(&self, name: impl Into<String>, bean: T) {
         let name = name.into();
         let mut beans = self.beans.write().await;
         beans.insert(name, Arc::new(bean));
@@ -137,7 +133,10 @@ impl TestApplicationContext {
 
     /// Get mutable access to the beans map
     /// 获取bean映射的可变访问
-    pub async fn beans_mut(&self) -> tokio::sync::RwLockWriteGuard<'_, HashMap<String, Arc<dyn std::any::Any + Send + Sync>>> {
+    pub async fn beans_mut(
+        &self,
+    ) -> tokio::sync::RwLockWriteGuard<'_, HashMap<String, Arc<dyn std::any::Any + Send + Sync>>>
+    {
         self.beans.write().await
     }
 
@@ -302,7 +301,7 @@ impl Default for TestContextRegistry {
 /// Global test context instance
 /// 全局测试上下文实例
 pub fn global_test_registry() -> &'static TestContextRegistry {
-    
-    static REGISTRY: std::sync::LazyLock<TestContextRegistry> = std::sync::LazyLock::new(TestContextRegistry::new);
+    static REGISTRY: std::sync::LazyLock<TestContextRegistry> =
+        std::sync::LazyLock::new(TestContextRegistry::new);
     &REGISTRY
 }

@@ -290,10 +290,7 @@ impl Router {
 fn extract_param_names(pattern: &str) -> Vec<String> {
     pattern
         .split('/')
-        .filter_map(|s| {
-            s.strip_prefix('{')
-                .and_then(|s| s.strip_suffix('}'))
-        })
+        .filter_map(|s| s.strip_prefix('{').and_then(|s| s.strip_suffix('}')))
         .map(ToString::to_string)
         .collect()
 }
@@ -310,7 +307,10 @@ fn match_path_pattern(pattern: &str, path: &str) -> Option<HashMap<String, Strin
 
     let mut params = HashMap::new();
     for (pattern_part, path_part) in pattern_parts.iter().zip(path_parts.iter()) {
-        if let Some(param_name) = pattern_part.strip_prefix('{').and_then(|s| s.strip_suffix('}')) {
+        if let Some(param_name) = pattern_part
+            .strip_prefix('{')
+            .and_then(|s| s.strip_suffix('}'))
+        {
             params.insert(param_name.to_string(), path_part.to_string());
         } else if pattern_part != path_part {
             return None;

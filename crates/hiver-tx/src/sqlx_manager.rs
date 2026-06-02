@@ -224,7 +224,9 @@ mod imp {
         /// Connect to a PostgreSQL database.
         /// 连接 PostgreSQL 数据库。
         pub async fn connect_postgres(url: &str) -> TransactionResult<Self> {
-            Self::connect(url).await.map(|m| m.with_name("sqlx-postgres"))
+            Self::connect(url)
+                .await
+                .map(|m| m.with_name("sqlx-postgres"))
         }
     }
 

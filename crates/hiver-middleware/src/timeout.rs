@@ -81,12 +81,11 @@ where
         Box::pin(async move {
             // Use tokio::time::timeout for the timeout functionality
             // 使用tokio::time::timeout实现超时功能
-            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await { response } else {
+            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await {
+                response
+            } else {
                 tracing::warn!("Request timed out after {:?}", timeout);
-                Err(hiver_http::Error::Timeout(format!(
-                    "Request timed out after {:?}",
-                    timeout
-                )))
+                Err(hiver_http::Error::Timeout(format!("Request timed out after {:?}", timeout)))
             }
         })
     }

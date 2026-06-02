@@ -1,4 +1,9 @@
-#![allow(clippy::expect_used, clippy::indexing_slicing, clippy::doc_overindented_list_items, clippy::missing_fields_in_debug)]
+#![allow(
+    clippy::expect_used,
+    clippy::indexing_slicing,
+    clippy::doc_overindented_list_items,
+    clippy::missing_fields_in_debug
+)]
 //! Hiver Test - Testing framework module
 //! Hiver测试 - 测试框架模块
 //!
@@ -37,34 +42,42 @@
 #[cfg(test)]
 mod tests;
 
-mod test_client;
-mod test_context;
-mod mock_bean;
-mod mockito_ext;
-mod test_application;
-mod test_config;
-mod web_test_client;
 pub mod containers;
 mod listener;
+mod mock_bean;
+mod mockito_ext;
 mod property_source;
+mod test_application;
+mod test_client;
+mod test_config;
+mod test_context;
+mod web_test_client;
 
-pub use test_client::{TestClient, TestRequest, TestResponse};
-pub use test_context::{TestContext, TestApplicationContext, TestContextRegistry, global_test_registry};
+pub use containers::{ContainerSet, KafkaContainer, PostgresContainer, RedisContainer};
+pub use listener::{
+    LoggingTestListener, TestExecutionListener, TestLifecycleContext, TestListenerRegistry,
+};
 pub use mock_bean::{MockBean, MockRegistry, global_mock_registry};
 pub use mockito_ext::{MockBeanWrapper, MockInteraction, MockitoHelper};
-pub use test_application::{TestApplication, TestApplicationBuilder, TestApplicationError, TestAppResult};
-pub use test_config::{TestConfig, TestConfigHolder, TestMode, ServerConfig, DatabaseConfig, global_test_config};
-pub use web_test_client::{WebTestClient, RequestSpec, ResponseSpec};
-pub use containers::{ContainerSet, KafkaContainer, PostgresContainer, RedisContainer};
-pub use listener::{TestExecutionListener, TestLifecycleContext, TestListenerRegistry, LoggingTestListener};
 pub use property_source::TestPropertySource;
+pub use test_application::{
+    TestAppResult, TestApplication, TestApplicationBuilder, TestApplicationError,
+};
+pub use test_client::{TestClient, TestRequest, TestResponse};
+pub use test_config::{
+    DatabaseConfig, ServerConfig, TestConfig, TestConfigHolder, TestMode, global_test_config,
+};
+pub use test_context::{
+    TestApplicationContext, TestContext, TestContextRegistry, global_test_registry,
+};
+pub use web_test_client::{RequestSpec, ResponseSpec, WebTestClient};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        MockBeanWrapper, MockitoHelper, TestApplicationBuilder, TestApplicationError,
-        TestClient, TestConfig, TestContext, MockRegistry, TestApplication, WebTestClient,
+        MockBeanWrapper, MockRegistry, MockitoHelper, TestApplication, TestApplicationBuilder,
+        TestApplicationError, TestClient, TestConfig, TestContext, WebTestClient,
     };
 }
 

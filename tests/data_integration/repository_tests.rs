@@ -1,9 +1,9 @@
 //! Repository integration tests
 //! 仓储集成测试
 
-use async_trait::async_trait;
-use hiver_data_commons::{Repository, CrudRepository, Error};
 use crate::data_integration::helpers::*;
+use async_trait::async_trait;
+use hiver_data_commons::{CrudRepository, Error, Repository};
 
 /// Mock repository for testing
 /// 用于测试的模拟仓储
@@ -73,24 +73,20 @@ impl Repository<User, i64> for TestUserRepository {
 
         if entity.id > 0 {
             // Update
-            sqlx::query(
-                "UPDATE users SET email = ?, name = ? WHERE id = ?"
-            )
-            .bind(&entity.email)
-            .bind(&entity.name)
-            .bind(entity.id)
-            .execute(pool)
-            .await?;
+            sqlx::query("UPDATE users SET email = ?, name = ? WHERE id = ?")
+                .bind(&entity.email)
+                .bind(&entity.name)
+                .bind(entity.id)
+                .execute(pool)
+                .await?;
             Ok(entity)
         } else {
             // Insert
-            let result = sqlx::query(
-                "INSERT INTO users (email, name) VALUES (?, ?)"
-            )
-            .bind(&entity.email)
-            .bind(&entity.name)
-            .execute(pool)
-            .await?;
+            let result = sqlx::query("INSERT INTO users (email, name) VALUES (?, ?)")
+                .bind(&entity.email)
+                .bind(&entity.name)
+                .execute(pool)
+                .await?;
 
             Ok(User {
                 id: result.last_insert_rowid(),
@@ -102,12 +98,10 @@ impl Repository<User, i64> for TestUserRepository {
     async fn find_by_id(&self, id: i64) -> Result<Option<User>, Self::Error> {
         let pool = get_test_pool().await;
 
-        let row = sqlx::query_as::<_, User>(
-            "SELECT id, email, name FROM users WHERE id = ?"
-        )
-        .bind(id)
-        .fetch_optional(pool)
-        .await?;
+        let row = sqlx::query_as::<_, User>("SELECT id, email, name FROM users WHERE id = ?")
+            .bind(id)
+            .fetch_optional(pool)
+            .await?;
 
         Ok(row)
     }
@@ -115,11 +109,9 @@ impl Repository<User, i64> for TestUserRepository {
     async fn find_all(&self) -> Result<Vec<User>, Self::Error> {
         let pool = get_test_pool().await;
 
-        let rows = sqlx::query_as::<_, User>(
-            "SELECT id, email, name FROM users ORDER BY id"
-        )
-        .fetch_all(pool)
-        .await?;
+        let rows = sqlx::query_as::<_, User>("SELECT id, email, name FROM users ORDER BY id")
+            .fetch_all(pool)
+            .await?;
 
         Ok(rows)
     }

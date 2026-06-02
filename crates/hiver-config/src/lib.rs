@@ -63,9 +63,9 @@ pub use environment::{ActiveProfiles, Environment, Profile};
 pub use error::{ConfigError, ConfigResult};
 pub use loader::{ConfigLoader, ConfigLoaderBuilder, Watcher};
 pub use properties::{PropertiesConfig, PropertiesConfigRegistry};
+pub use refresh::{ConfigChangeEvent, ConfigWatcher, RefreshScope, Refreshable};
 pub use source::{PropertySource, PropertySourceBuilder, PropertySourceType};
 pub use value::{Value, ValueExtractor};
-pub use refresh::{RefreshScope, ConfigChangeEvent, ConfigWatcher, Refreshable};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出

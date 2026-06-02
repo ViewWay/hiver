@@ -105,21 +105,20 @@ pub use validators::*;
 
 // Re-export validation annotations / 重新导出验证注解
 pub use annotations::{
-    AssertFalse, AssertTrue, CreditCardNumber, DecimalMax, DecimalMin, Digits, Email,
-    Future, FutureOrPresent, Length, Max, Min, Negative, NegativeOrZero, NotBlank,
-    NotEmpty, NotNull, Past, PastOrPresent, Pattern, Positive, PositiveOrZero, Size,
-    Url,
+    AssertFalse, AssertTrue, CreditCardNumber, DecimalMax, DecimalMin, Digits, Email, Future,
+    FutureOrPresent, Length, Max, Min, Negative, NegativeOrZero, NotBlank, NotEmpty, NotNull, Past,
+    PastOrPresent, Pattern, Positive, PositiveOrZero, Size, Url,
 };
 
 // Re-export nested validation / 重新导出嵌套验证
 pub use nested::{Nested, ValidateNested};
 
 // Re-export custom validators / 重新导出自定义验证器
-pub use custom::{
-    CompositeValidator, ConditionalValidator, CustomValidator, FieldMatchValidator,
-    FieldProvider, ValidationReport, ValidationErrorExt, ValidatorRegistry,
-};
 pub use custom::field_match;
+pub use custom::{
+    CompositeValidator, ConditionalValidator, CustomValidator, FieldMatchValidator, FieldProvider,
+    ValidationErrorExt, ValidationReport, ValidatorRegistry,
+};
 
 use std::fmt;
 
@@ -187,7 +186,7 @@ pub enum ValidationRule {
         min: Option<i64>,
         /// Maximum value
         /// 最大值
-        max: Option<i64>
+        max: Option<i64>,
     },
     /// 邮箱 / Email
     Email,

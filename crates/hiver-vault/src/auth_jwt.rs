@@ -24,9 +24,9 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::auth::AuthBackend;
 use crate::client::VaultClient;
 use crate::error::{VaultError, VaultResult};
-use crate::auth::AuthBackend;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // JWT Login
@@ -233,19 +233,14 @@ impl AuthBackend for JwtAuth {
 
         // Don't use client.post() since we may not have a token yet
         // 不使用 client.post() 因为此时可能还没有 token
-        let resp = client
-            .http_client()
-            .post(url)
-            .json(&body)
-            .send()
-            .await?;
+        let resp = client.http_client().post(url).json(&body).send().await?;
 
         if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body_text = resp.text().await.unwrap_or_default();
-            return Err(VaultError::AuthenticationFailed(
-                format!("JWT login failed ({status}): {body_text}"),
-            ));
+            return Err(VaultError::AuthenticationFailed(format!(
+                "JWT login failed ({status}): {body_text}"
+            )));
         }
 
         let auth_resp: crate::auth::AuthResponse = resp.json().await?;
@@ -351,16 +346,15 @@ impl<'a> JwtAuthManager<'a> {
             body.insert(
                 "jwt_validation_pubkeys".to_string(),
                 serde_json::Value::Array(
-                    keys.iter().map(|k| serde_json::Value::String(k.clone())).collect(),
+                    keys.iter()
+                        .map(|k| serde_json::Value::String(k.clone()))
+                        .collect(),
                 ),
             );
         }
 
         if let Some(role) = default_role {
-            body.insert(
-                "default_role".to_string(),
-                serde_json::Value::String(role.to_string()),
-            );
+            body.insert("default_role".to_string(), serde_json::Value::String(role.to_string()));
         }
 
         self.client
@@ -400,16 +394,10 @@ mod tests {
 
         assert_eq!(config.name, "my-app");
         assert_eq!(config.role_type, Some("oidc".to_string()));
-        assert_eq!(
-            config.bound_audiences,
-            Some(vec!["my-app".to_string()])
-        );
+        assert_eq!(config.bound_audiences, Some(vec!["my-app".to_string()]));
         assert_eq!(config.user_claim, Some("email".to_string()));
         assert_eq!(config.groups_claim, Some("groups".to_string()));
-        assert_eq!(
-            config.policies,
-            Some(vec!["default".to_string(), "admin".to_string()])
-        );
+        assert_eq!(config.policies, Some(vec!["default".to_string(), "admin".to_string()]));
         assert_eq!(config.ttl, Some("1h".to_string()));
     }
 

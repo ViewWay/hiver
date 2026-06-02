@@ -58,7 +58,10 @@ pub use chat_memory::{
     ConversationSummaryMemory,
 };
 pub use chat_model::{ChatMessage, ChatRequest, ChatResponse, ChatStream, Role, TokenUsage};
-pub use embedding::{cosine_similarity, euclidean_distance, normalize, EmbeddingModel, EmbeddingRequest, EmbeddingResponse};
+pub use embedding::{
+    EmbeddingModel, EmbeddingRequest, EmbeddingResponse, cosine_similarity, euclidean_distance,
+    normalize,
+};
 pub use memory::{ChatMemory, InMemoryChatMemory};
 pub use ollama::{OllamaChatModel, OllamaConfig, OllamaEmbeddingModel};
 pub use openai::{OpenAiChatModel, OpenAiConfig, OpenAiEmbeddingModel};
@@ -66,5 +69,8 @@ pub use prompt::PromptTemplate;
 pub use rag::{
     ChunkStrategy, ContextBuilder, DocumentChunker, RagConfig, RagPipeline, RagResponse,
 };
-pub use tool::{FunctionTool, ToolCallback, ToolCall, ToolExecutor, ToolExecutorConfig, ToolRegistry, ToolResult};
+pub use tool::{
+    FunctionTool, ToolCall, ToolCallback, ToolExecutor, ToolExecutorConfig, ToolRegistry,
+    ToolResult,
+};
 pub use vector_store::{Document, InMemoryVectorStore, SearchResult, VectorStore};

@@ -43,7 +43,6 @@ impl AutoConfiguration for DummyAutoConfig {
     }
 }
 
-
 // ============================================================================
 // Request-scoped beans / 请求作用域 Bean
 // ============================================================================
@@ -59,9 +58,7 @@ where
     F: FnOnce() -> Fut,
     Fut: std::future::Future<Output = R>,
 {
-    REQUEST_BEANS
-        .scope(RwLock::new(HashMap::new()), f())
-        .await
+    REQUEST_BEANS.scope(RwLock::new(HashMap::new()), f()).await
 }
 
 fn request_scope_get<T: 'static + Send + Sync>(type_id: TypeId) -> Option<Arc<T>> {
@@ -85,7 +82,6 @@ pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>) {
         }
     });
 }
-
 
 // ============================================================================
 // ApplicationContext / 应用上下文
@@ -147,9 +143,8 @@ pub struct ApplicationContext {
 
     /// Prototype-scope factory functions keyed by `TypeId`.
     /// 按 `TypeId` 索引的原型作用域工厂函数。
-    prototype_factories: RwLock<
-        HashMap<TypeId, fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>>,
-    >,
+    prototype_factories:
+        RwLock<HashMap<TypeId, fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>>>,
 }
 
 impl Debug for ApplicationContext {
@@ -225,11 +220,7 @@ impl ApplicationContext {
     /// ```rust,ignore
     /// ctx.register_named_bean("primaryDataSource".to_string(), dataSource);
     /// ```
-    pub fn register_named_bean<T: 'static + Send + Sync>(
-        &self,
-        name: String,
-        bean: T,
-    ) {
+    pub fn register_named_bean<T: 'static + Send + Sync>(&self, name: String, bean: T) {
         let type_id = TypeId::of::<T>();
         let mut named_beans = self.named_beans.write().expect("lock poisoned");
         let mut bean_names = self.bean_names.write().expect("lock poisoned");
@@ -290,7 +281,9 @@ impl ApplicationContext {
         singletons.get(&type_id).and_then(|b| {
             if let Some(arc) = b.downcast_ref::<Arc<T>>() {
                 Some(arc.clone())
-            } else { b.downcast_ref::<T>().map(|val| Arc::new(val.clone())) }
+            } else {
+                b.downcast_ref::<T>().map(|val| Arc::new(val.clone()))
+            }
         })
     }
 
@@ -313,21 +306,14 @@ impl ApplicationContext {
     /// 如果 Bean 不存在，返回错误。
     /// Returns an error if the bean doesn't exist.
     pub fn get_required_bean<T: 'static + Clone + Send + Sync>(&self) -> AnyhowResult<Arc<T>> {
-        self.get_bean::<T>()
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "Required bean of type {} not found",
-                    std::any::type_name::<T>()
-                )
-            })
+        self.get_bean::<T>().ok_or_else(|| {
+            anyhow::anyhow!("Required bean of type {} not found", std::any::type_name::<T>())
+        })
     }
 
     /// 获取 Bean（按名称）
     /// Get bean (by name)
-    pub fn get_bean_by_name<T: 'static + Clone + Send + Sync>(
-        &self,
-        name: &str,
-    ) -> Option<Arc<T>> {
+    pub fn get_bean_by_name<T: 'static + Clone + Send + Sync>(&self, name: &str) -> Option<Arc<T>> {
         let named_beans = self.named_beans.read().expect("lock poisoned");
         named_beans
             .get(name)
@@ -379,7 +365,8 @@ impl ApplicationContext {
     /// 获取配置属性（带默认值）
     /// Get configuration property (with default)
     pub fn get_property_or_default(&self, key: &str, default: &str) -> String {
-        self.get_property(key).unwrap_or_else(|| default.to_string())
+        self.get_property(key)
+            .unwrap_or_else(|| default.to_string())
     }
 
     /// 获取配置属性（带默认值）- 简化版本
@@ -397,12 +384,7 @@ impl ApplicationContext {
 
     /// Register a raw bean box by type id and optional name.
     /// 按类型 ID 和可选名称注册原始 Bean 容器。
-    pub fn register_raw(
-        &self,
-        type_id: TypeId,
-        name: &str,
-        bean: Box<dyn Any + Send + Sync>,
-    ) {
+    pub fn register_raw(&self, type_id: TypeId, name: &str, bean: Box<dyn Any + Send + Sync>) {
         let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(type_id, bean);
         if !name.is_empty() {
@@ -440,11 +422,11 @@ impl ApplicationContext {
             match desc.scope {
                 BeanScope::Prototype => {
                     self.register_prototype_factory((desc.type_id)(), desc.factory);
-                }
+                },
                 BeanScope::Singleton | BeanScope::Request => {
                     let bean = (desc.factory)(self);
                     self.register_raw((desc.type_id)(), desc.name, bean);
-                }
+                },
             }
         }
         Ok(())
@@ -510,10 +492,7 @@ impl ApplicationContext {
         *self.started.write().expect("lock poisoned") = true;
         let elapsed = start.elapsed();
 
-        tracing::info!(
-            "Hiver ApplicationContext started in {}ms",
-            elapsed.as_millis()
-        );
+        tracing::info!("Hiver ApplicationContext started in {}ms", elapsed.as_millis());
 
         Ok(())
     }
@@ -590,11 +569,7 @@ impl ApplicationContext {
 
                 if let Err(e) = result {
                     if is_optional {
-                        tracing::warn!(
-                            "Optional auto-configuration {} failed: {}",
-                            config_name,
-                            e
-                        );
+                        tracing::warn!("Optional auto-configuration {} failed: {}", config_name, e);
                     } else {
                         return Err(anyhow::anyhow!(
                             "Auto-configuration {} failed: {}",

@@ -62,8 +62,7 @@ pub(crate) struct TransactionalConfig {
 
 /// Transaction isolation level
 /// 事务隔离级别
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) enum IsolationLevel {
     /// Use the default isolation level
     /// 使用默认隔离级别
@@ -87,7 +86,6 @@ pub(crate) enum IsolationLevel {
     Serializable,
 }
 
-
 /// Transaction propagation behavior
 /// 事务传播行为
 ///
@@ -96,8 +94,7 @@ pub(crate) enum IsolationLevel {
 ///
 /// 定义当一个 @Transactional 方法从另一个 @Transactional 方法调用时
 /// 事务应该如何传播。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) enum Propagation {
     /// Support a current transaction, create a new one if none exists
     /// 支持当前事务，如果没有则创建新事务
@@ -128,7 +125,6 @@ pub(crate) enum Propagation {
     /// 如果存在当前事务，则在嵌套事务中执行
     Nested,
 }
-
 
 impl Default for TransactionalConfig {
     fn default() -> Self {
@@ -266,8 +262,16 @@ impl TransactionalExecutor {
         // 处理传播
         let context = self.current_context.read().await;
         let should_create_new = match (&*context, config.propagation) {
-            (None, Propagation::Required | Propagation::RequiresNew) | (Some(_), Propagation::RequiresNew) => true,
-            (None, Propagation::Supports | Propagation::NotSupported | Propagation::Never) | (Some(_), Propagation::Required | Propagation::Supports | Propagation::Mandatory | Propagation::Nested) => false,
+            (None, Propagation::Required | Propagation::RequiresNew)
+            | (Some(_), Propagation::RequiresNew) => true,
+            (None, Propagation::Supports | Propagation::NotSupported | Propagation::Never)
+            | (
+                Some(_),
+                Propagation::Required
+                | Propagation::Supports
+                | Propagation::Mandatory
+                | Propagation::Nested,
+            ) => false,
             (None, Propagation::Mandatory | Propagation::Nested) => {
                 return Err(TransactionError::NoExistingTransaction);
             },
@@ -347,7 +351,10 @@ impl TransactionalExecutor {
 
     /// Execute in existing transaction
     /// 在现有事务中执行
-    async fn execute_in_existing_transaction<F, T, E>(&self, f: &mut F) -> Result<T, TransactionError<E>>
+    async fn execute_in_existing_transaction<F, T, E>(
+        &self,
+        f: &mut F,
+    ) -> Result<T, TransactionError<E>>
     where
         F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,
         E: std::error::Error + Send + Sync + 'static,
@@ -382,7 +389,6 @@ impl TransactionalExecutor {
                     // Retry
                     // 重试
                     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-
                 },
                 _ => {
                     return result.map_err(TransactionError::ExecutionFailed);

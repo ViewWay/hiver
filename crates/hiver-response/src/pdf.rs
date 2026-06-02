@@ -527,7 +527,11 @@ impl PdfBuilder {
             let _ = write!(
                 buf,
                 "{} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {} {}] /Contents {} 0 R /Resources << /Font << {} >> >> >>\nendobj\n",
-                page_obj, page.width, page.height, content_obj, font_refs.join(" ")
+                page_obj,
+                page.width,
+                page.height,
+                content_obj,
+                font_refs.join(" ")
             );
 
             // Content stream
@@ -604,10 +608,7 @@ fn collect_fonts(pages: &[PdfPage]) -> Vec<PdfFont> {
 /// 在唯一字体列表中查找字体索引。
 fn font_index<'a>(font: &PdfFont, unique_fonts: &[&'a str]) -> usize {
     let name = font.pdf_name();
-    unique_fonts
-        .iter()
-        .position(|f| *f == name)
-        .unwrap_or(0)
+    unique_fonts.iter().position(|f| *f == name).unwrap_or(0)
 }
 
 /// Build the content stream for a page.
@@ -617,11 +618,8 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
 
     // Render lines
     for line in &page.lines {
-        let _ = write!(
-            stream,
-            "{} {} 0 0 {} {} re S\n",
-            line.width / 2.0, line.x, line.length, line.y
-        );
+        let _ =
+            write!(stream, "{} {} 0 0 {} {} re S\n", line.width / 2.0, line.x, line.length, line.y);
     }
 
     // Render text elements
@@ -748,7 +746,7 @@ fn escape_pdf_string(s: &str) -> String {
             '\t' => out.push_str("\\t"),
             c if c as u32 > 127 => {
                 let _ = write!(out, "\\{:03o}", c as u32);
-            }
+            },
             c => out.push(c),
         }
     }
@@ -768,10 +766,7 @@ impl crate::IntoResponse for Pdf {
         match self.0.to_bytes() {
             Ok(bytes) => crate::Response::builder()
                 .header("content-type", "application/pdf")
-                .header(
-                    "content-disposition",
-                    "attachment; filename=\"export.pdf\"",
-                )
+                .header("content-disposition", "attachment; filename=\"export.pdf\"")
                 .body(bytes)
                 .unwrap_or_else(|_| crate::Response::new()),
             Err(_) => crate::Response::builder()

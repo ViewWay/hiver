@@ -3,7 +3,7 @@
 
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Data] derive macro
 /// 实现 #[Data] 派生宏
@@ -31,16 +31,13 @@ pub fn impl_data(input: DeriveInput) -> TokenStream {
                 "#[Data] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Get field names and types
     // 获取字段名和类型
-    let field_names: Vec<&Ident> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<&Ident> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
@@ -75,17 +72,21 @@ pub fn impl_data(input: DeriveInput) -> TokenStream {
 
     // Generate getters
     // 生成 getters
-    let getters: Vec<TokenStream> = field_names.iter().zip(field_types.iter()).map(|(name, ty)| {
-        quote! {
-            #[inline]
-            pub fn #name(&self) -> #ty
-            where
-                #ty: ::std::clone::Clone,
-            {
-                self.#name.clone()
+    let getters: Vec<TokenStream> = field_names
+        .iter()
+        .zip(field_types.iter())
+        .map(|(name, ty)| {
+            quote! {
+                #[inline]
+                pub fn #name(&self) -> #ty
+                where
+                    #ty: ::std::clone::Clone,
+                {
+                    self.#name.clone()
+                }
             }
-        }
-    }).collect();
+        })
+        .collect();
 
     // Generate setters
     // 生成 setters

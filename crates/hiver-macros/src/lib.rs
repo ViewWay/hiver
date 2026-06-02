@@ -1,4 +1,8 @@
-#![allow(clippy::expect_used, clippy::unwrap_used, clippy::needless_pass_by_value)]
+#![allow(
+    clippy::expect_used,
+    clippy::unwrap_used,
+    clippy::needless_pass_by_value
+)]
 //! Hiver Macros - Spring Boot Style Procedural Macros
 //! Hiver宏 - Spring Boot风格的过程宏
 //!
@@ -36,17 +40,17 @@
 mod tests;
 
 mod bean_register;
-mod pre_authorize;
-mod transactional;
-mod handler;
+mod cache;
 mod derive;
-mod spring_stereotype;
+mod exception;
+mod handler;
+mod pre_authorize;
 mod routes;
 mod scheduled;
-mod cache;
-mod spring_di;
 mod spring_cloud;
-mod exception;
+mod spring_di;
+mod spring_stereotype;
+mod transactional;
 
 use proc_macro::TokenStream;
 

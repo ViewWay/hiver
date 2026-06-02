@@ -37,7 +37,6 @@ pub fn elasticsearch_repository(_attr: TokenStream, item: TokenStream) -> TokenS
 }
 
 pub fn configuration_properties(attr: TokenStream, item: TokenStream) -> TokenStream {
-    
     use quote::quote;
     use syn::{Fields, ItemStruct, parse_macro_input};
 
@@ -56,21 +55,25 @@ pub fn configuration_properties(attr: TokenStream, item: TokenStream) -> TokenSt
     let name = &input.ident;
 
     let field_bindings = if let Fields::Named(fields) = &input.fields {
-        fields.named.iter().map(|f| {
-            let fname = f.ident.as_ref().unwrap();
-            let key_snake = fname.to_string();
-            let key_kebab = key_snake.replace('_', "-");
-            let full_key = if prefix.is_empty() {
-                key_kebab.clone()
-            } else {
-                format!("{prefix}.{key_kebab}")
-            };
-            quote! {
-                #fname: loader.get(#full_key)
-                    .and_then(|v| v.parse().ok())
-                    .unwrap_or_default()
-            }
-        }).collect::<Vec<_>>()
+        fields
+            .named
+            .iter()
+            .map(|f| {
+                let fname = f.ident.as_ref().unwrap();
+                let key_snake = fname.to_string();
+                let key_kebab = key_snake.replace('_', "-");
+                let full_key = if prefix.is_empty() {
+                    key_kebab.clone()
+                } else {
+                    format!("{prefix}.{key_kebab}")
+                };
+                quote! {
+                    #fname: loader.get(#full_key)
+                        .and_then(|v| v.parse().ok())
+                        .unwrap_or_default()
+                }
+            })
+            .collect::<Vec<_>>()
     } else {
         vec![]
     };
@@ -151,7 +154,9 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut method_impls = Vec::<TokenStream2>::new();
 
     for trait_item in &trait_def.items {
-        let TraitItem::Fn(method) = trait_item else { continue };
+        let TraitItem::Fn(method) = trait_item else {
+            continue;
+        };
         let method_name = &method.sig.ident;
 
         let mut http_meth_tok: Option<TokenStream2> = None;
@@ -161,36 +166,47 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
         for a in &method.attrs {
             let nm = a.path().get_ident().map(ToString::to_string);
             match nm.as_deref() {
-                Some(n @ ("feign_get" | "feign_post" | "feign_put" | "feign_delete" | "feign_patch")) => {
+                Some(
+                    n @ ("feign_get" | "feign_post" | "feign_put" | "feign_delete" | "feign_patch"),
+                ) => {
                     if let Ok(lit) = a.parse_args::<LitStr>() {
                         path_tpl = lit.value();
                     }
                     http_meth_tok = Some(match n {
-                        "feign_get"    => quote! { ::reqwest::Method::GET },
-                        "feign_post"   => quote! { ::reqwest::Method::POST },
-                        "feign_put"    => quote! { ::reqwest::Method::PUT },
+                        "feign_get" => quote! { ::reqwest::Method::GET },
+                        "feign_post" => quote! { ::reqwest::Method::POST },
+                        "feign_put" => quote! { ::reqwest::Method::PUT },
                         "feign_delete" => quote! { ::reqwest::Method::DELETE },
-                        _              => quote! { ::reqwest::Method::PATCH },
+                        _ => quote! { ::reqwest::Method::PATCH },
                     });
-                }
-                Some("feign_body") => { has_body_attr = true; }
-                _ => {}
+                },
+                Some("feign_body") => {
+                    has_body_attr = true;
+                },
+                _ => {},
             }
         }
 
-        let Some(http_meth) = http_meth_tok else { continue };
+        let Some(http_meth) = http_meth_tok else {
+            continue;
+        };
 
         let mut path_params: Vec<syn::Ident> = Vec::new();
-        let mut body_param:  Option<syn::Ident> = None;
+        let mut body_param: Option<syn::Ident> = None;
         let mut query_params: Vec<(String, syn::Ident)> = Vec::new();
 
         for arg in &method.sig.inputs {
             let FnArg::Typed(pt) = arg else { continue };
-            let Pat::Ident(pi) = pt.pat.as_ref() else { continue };
+            let Pat::Ident(pi) = pt.pat.as_ref() else {
+                continue;
+            };
             let ident = pi.ident.clone();
 
             let is_body = has_body_attr
-                || pt.attrs.iter().any(|a| a.path().get_ident().is_some_and(|i| i == "feign_body"));
+                || pt
+                    .attrs
+                    .iter()
+                    .any(|a| a.path().get_ident().is_some_and(|i| i == "feign_body"));
             let q = pt.attrs.iter().find_map(|a| {
                 if a.path().get_ident().is_some_and(|i| i == "feign_query") {
                     a.parse_args::<LitStr>().ok().map(|l| l.value())
@@ -213,8 +229,8 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
         let query_code = if query_params.is_empty() {
             quote! {}
         } else {
-            let ks: Vec<_> = query_params.iter().map(|(k,_)| k.clone()).collect();
-            let vs: Vec<_> = query_params.iter().map(|(_,v)| v.clone()).collect();
+            let ks: Vec<_> = query_params.iter().map(|(k, _)| k.clone()).collect();
+            let vs: Vec<_> = query_params.iter().map(|(_, v)| v.clone()).collect();
             quote! {
                 let url = {
                     let mut qp: Vec<(&str, String)> = Vec::new();
@@ -241,16 +257,28 @@ pub fn feign_client(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         };
 
-        let clean_inputs: Vec<TokenStream2> = method.sig.inputs.iter().map(|arg| match arg {
-            FnArg::Receiver(r) => quote! { #r },
-            FnArg::Typed(pt) => {
-                let clean_attrs: Vec<_> = pt.attrs.iter()
-                    .filter(|a| !a.path().get_ident().is_some_and(|i| i.to_string().starts_with("feign_")))
-                    .collect();
-                let p = &pt.pat; let t = &pt.ty;
-                quote! { #(#clean_attrs)* #p: #t }
-            }
-        }).collect();
+        let clean_inputs: Vec<TokenStream2> = method
+            .sig
+            .inputs
+            .iter()
+            .map(|arg| match arg {
+                FnArg::Receiver(r) => quote! { #r },
+                FnArg::Typed(pt) => {
+                    let clean_attrs: Vec<_> = pt
+                        .attrs
+                        .iter()
+                        .filter(|a| {
+                            !a.path()
+                                .get_ident()
+                                .is_some_and(|i| i.to_string().starts_with("feign_"))
+                        })
+                        .collect();
+                    let p = &pt.pat;
+                    let t = &pt.ty;
+                    quote! { #(#clean_attrs)* #p: #t }
+                },
+            })
+            .collect();
 
         method_impls.push(quote! {
             async fn #method_name(#(#clean_inputs),*) #ret { #body }
@@ -318,10 +346,22 @@ fn feign_clean_trait(trait_def: &syn::ItemTrait) -> proc_macro2::TokenStream {
     use quote::quote;
     use syn::{FnArg, TraitItem};
 
-    let feign_attrs = ["feign_get","feign_post","feign_put","feign_delete","feign_patch",
-                       "feign_body","feign_query","feign_path","feign_header"];
-    let is_feign = |a: &syn::Attribute| a.path().get_ident()
-        .is_some_and(|i| feign_attrs.contains(&i.to_string().as_str()));
+    let feign_attrs = [
+        "feign_get",
+        "feign_post",
+        "feign_put",
+        "feign_delete",
+        "feign_patch",
+        "feign_body",
+        "feign_query",
+        "feign_path",
+        "feign_header",
+    ];
+    let is_feign = |a: &syn::Attribute| {
+        a.path()
+            .get_ident()
+            .is_some_and(|i| feign_attrs.contains(&i.to_string().as_str()))
+    };
 
     let vis = &trait_def.vis;
     let ident = &trait_def.ident;
@@ -352,21 +392,41 @@ fn feign_clean_trait(trait_def: &syn::ItemTrait) -> proc_macro2::TokenStream {
         }
     }).collect();
 
-    let st = if supertraits.is_empty() { quote!{} } else { quote!{ : #supertraits } };
+    let st = if supertraits.is_empty() {
+        quote! {}
+    } else {
+        quote! { : #supertraits }
+    };
     quote! {
         #[::async_trait::async_trait]
         #vis trait #ident #generics #st { #(#items)* }
     }
 }
 
-pub fn feign_get(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_post(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_put(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_delete(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_path(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_query(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_header(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
-pub fn feign_body(_attr: TokenStream, item: TokenStream) -> TokenStream { item }
+pub fn feign_get(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_post(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_put(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_delete(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_path(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_query(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_header(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
+pub fn feign_body(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
 
 pub fn circuit_breaker_name(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item

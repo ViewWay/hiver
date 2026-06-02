@@ -91,10 +91,7 @@ impl<T: Serialize> ApiResponse<T> {
     /// Create an error response from a `StatusCode`.
     /// 从 `StatusCode` 创建错误响应。
     pub fn from_status(status: StatusCode) -> ApiResponse<()> {
-        Self::error(
-            status.as_u16(),
-            status.canonical_reason().unwrap_or("Unknown"),
-        )
+        Self::error(status.as_u16(), status.canonical_reason().unwrap_or("Unknown"))
     }
 
     /// Override the message on this response.
@@ -350,8 +347,7 @@ mod tests {
 
     #[test]
     fn test_response_result_ok() {
-        let result: ResponseResult<User> =
-            ResponseResult::ok(User { name: "Bob".into() });
+        let result: ResponseResult<User> = ResponseResult::ok(User { name: "Bob".into() });
         let resp = result.into_response();
         assert_eq!(resp.status(), StatusCode::OK);
 

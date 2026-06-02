@@ -4,11 +4,11 @@
 //! Equivalent to Spring WS `MessageDispatcher`
 //! 等价于 Spring WS `MessageDispatcher`
 
-use std::collections::HashMap;
-use std::sync::Arc;
 use crate::endpoint::Endpoint;
 use crate::soap::SoapMessage;
 use crate::transport::SoapRequest;
+use std::collections::HashMap;
+use std::sync::Arc;
 
 /// Central dispatcher for SOAP messages
 /// SOAP消息的中央调度器
@@ -71,7 +71,10 @@ mod tests {
         fn handles(&self, action: &str) -> bool {
             action == "urn:Test"
         }
-        async fn invoke(&self, _body: &str) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>> {
+        async fn invoke(
+            &self,
+            _body: &str,
+        ) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>> {
             Ok(SoapMessage::new(serde_json::json!({"result": "ok"})))
         }
     }

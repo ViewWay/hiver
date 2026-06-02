@@ -101,12 +101,7 @@ mod tests {
     fn test_beans_builder() {
         let resp = BeansBuilder::new()
             .bean("userController", "UserController", "singleton")
-            .bean_with_deps(
-                "userService",
-                "UserService",
-                "singleton",
-                vec!["userRepo".into()],
-            )
+            .bean_with_deps("userService", "UserService", "singleton", vec!["userRepo".into()])
             .build();
 
         assert_eq!(resp.beans.len(), 2);

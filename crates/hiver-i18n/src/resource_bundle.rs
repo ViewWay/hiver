@@ -127,15 +127,16 @@ impl ResourceBundleMessageSource {
     /// 检查缓存是否需要重载。
     pub async fn needs_reload(&self) -> bool {
         let last = *self.last_reload.read().await;
-        tokio::time::Instant::now()
-            .duration_since(last)
-            .as_secs()
-            > self.cache_seconds
+        tokio::time::Instant::now().duration_since(last).as_secs() > self.cache_seconds
     }
 
     /// Load properties file
     /// 加载属性文件
-    async fn load_properties(&self, basename: &str, locale: &str) -> I18nResult<HashMap<String, String>> {
+    async fn load_properties(
+        &self,
+        basename: &str,
+        locale: &str,
+    ) -> I18nResult<HashMap<String, String>> {
         let locale = Locale::parse(locale)?;
 
         // Try locale-specific files first, then fall back to default
@@ -171,10 +172,7 @@ impl ResourceBundleMessageSource {
 
         // Try language_country (e.g., messages_en_US.properties)
         if let Some(country) = &locale.country {
-            names.push(format!(
-                "{}_{}_{}.properties",
-                basename, locale.language, country
-            ));
+            names.push(format!("{}_{}_{}.properties", basename, locale.language, country));
         }
 
         // Try language only (e.g., messages_en.properties)
@@ -228,16 +226,18 @@ impl ResourceBundleMessageSource {
                 let mut hex = String::new();
                 for _ in 0..4 {
                     if let Some(&c) = chars.peek()
-                        && c.is_ascii_hexdigit() {
-                            hex.push(c);
-                            chars.next();
-                        }
+                        && c.is_ascii_hexdigit()
+                    {
+                        hex.push(c);
+                        chars.next();
+                    }
                 }
 
                 if let Ok(code) = u32::from_str_radix(&hex, 16)
-                    && let Some(c) = char::from_u32(code) {
-                        result.push(c);
-                    }
+                    && let Some(c) = char::from_u32(code)
+                {
+                    result.push(c);
+                }
             } else {
                 result.push(c);
             }
@@ -265,7 +265,7 @@ impl ResourceBundleMessageSource {
                 let mut cache = self.cache.write().await;
                 cache.insert(cache_key, messages.clone());
                 messages
-            }
+            },
             Err(_) => HashMap::new(),
         }
     }
@@ -407,12 +407,12 @@ mod tests {
         let source = ResourceBundleMessageSource::new();
 
         // Chinese characters unicode escaped
-        let encoded = "\\u6b22\\u8fce";  // 欢迎
+        let encoded = "\\u6b22\\u8fce"; // 欢迎
         let decoded = source.decode_unicode(encoded);
         assert_eq!(decoded, "欢迎");
 
         // Longer test
-        let encoded2 = "\\u6b22\\u8fce\\u4f7f\\u7528";  // 欢迎
+        let encoded2 = "\\u6b22\\u8fce\\u4f7f\\u7528"; // 欢迎
         let decoded2 = source.decode_unicode(encoded2);
         assert_eq!(decoded2, "欢迎使用");
     }
@@ -428,7 +428,9 @@ greeting=Hello, {0}!
 error.not.found=Resource not found: {0}
 "#;
 
-        let messages = source.parse_properties(content).expect("parse_properties should succeed");
+        let messages = source
+            .parse_properties(content)
+            .expect("parse_properties should succeed");
         assert_eq!(messages.get("welcome"), Some(&"Welcome to our application!".to_string()));
         assert_eq!(messages.get("greeting"), Some(&"Hello, {0}!".to_string()));
     }
@@ -438,7 +440,8 @@ error.not.found=Resource not found: {0}
         let source = ResourceBundleMessageSource::new();
 
         let template = "Hello, {0}! Today is {1}.";
-        let formatted = source.format_message(template, &["Alice".to_string(), "Monday".to_string()]);
+        let formatted =
+            source.format_message(template, &["Alice".to_string(), "Monday".to_string()]);
         assert_eq!(formatted, "Hello, Alice! Today is Monday.");
     }
 
@@ -455,8 +458,7 @@ error.not.found=Resource not found: {0}
 
     #[tokio::test]
     async fn test_static_messages_fallback() {
-        let source = ResourceBundleMessageSource::new()
-            .with_basenames(&["test"]);
+        let source = ResourceBundleMessageSource::new().with_basenames(&["test"]);
 
         // With no files, should use default message
         let result = source

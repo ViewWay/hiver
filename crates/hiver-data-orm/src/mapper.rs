@@ -41,11 +41,15 @@ pub struct BeanRowMapper<T>(std::marker::PhantomData<T>);
 impl<T> BeanRowMapper<T> {
     /// Create a new bean row mapper.
     /// 创建新的 bean 行映射器。
-    pub fn new() -> Self { Self(std::marker::PhantomData) }
+    pub fn new() -> Self {
+        Self(std::marker::PhantomData)
+    }
 }
 
 impl<T> Default for BeanRowMapper<T> {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<T: serde::de::DeserializeOwned> RowMapper<T> for BeanRowMapper<T> {
@@ -57,12 +61,20 @@ impl<T: serde::de::DeserializeOwned> RowMapper<T> for BeanRowMapper<T> {
 
 /// A `ResultSetExtractor` that maps all rows using a `RowMapper`.
 /// 使用 `RowMapper` 映射所有行的 `ResultSetExtractor`。
-pub struct MappingResultSetExtractor<'a, M, T> { mapper: &'a M, _p: std::marker::PhantomData<T> }
+pub struct MappingResultSetExtractor<'a, M, T> {
+    mapper: &'a M,
+    _p: std::marker::PhantomData<T>,
+}
 
 impl<'a, M, T> MappingResultSetExtractor<'a, M, T> {
     /// Create new.
     /// 创建新实例。
-    pub fn new(mapper: &'a M) -> Self { Self { mapper, _p: std::marker::PhantomData } }
+    pub fn new(mapper: &'a M) -> Self {
+        Self {
+            mapper,
+            _p: std::marker::PhantomData,
+        }
+    }
 }
 
 impl<'a, M: RowMapper<T>, T> ResultSetExtractor<Vec<T>> for MappingResultSetExtractor<'a, M, T> {
@@ -73,12 +85,20 @@ impl<'a, M: RowMapper<T>, T> ResultSetExtractor<Vec<T>> for MappingResultSetExtr
 
 /// A `ResultSetExtractor` that maps the first row.
 /// 映射第一行的 `ResultSetExtractor`。
-pub struct FirstRowExtractor<'a, M, T> { mapper: &'a M, _p: std::marker::PhantomData<T> }
+pub struct FirstRowExtractor<'a, M, T> {
+    mapper: &'a M,
+    _p: std::marker::PhantomData<T>,
+}
 
 impl<'a, M, T> FirstRowExtractor<'a, M, T> {
     /// Create new.
     /// 创建新实例。
-    pub fn new(mapper: &'a M) -> Self { Self { mapper, _p: std::marker::PhantomData } }
+    pub fn new(mapper: &'a M) -> Self {
+        Self {
+            mapper,
+            _p: std::marker::PhantomData,
+        }
+    }
 }
 
 impl<'a, M: RowMapper<T>, T> ResultSetExtractor<Option<T>> for FirstRowExtractor<'a, M, T> {
@@ -94,9 +114,18 @@ impl<'a, M: RowMapper<T>, T> ResultSetExtractor<Option<T>> for FirstRowExtractor
 mod tests {
     use super::*;
 
-    #[test] fn test_bean_mapper_new() { let _: BeanRowMapper<String> = BeanRowMapper::new(); }
-    #[test] fn test_mapping_extractor() { let m = BeanRowMapper::<String>::new(); let _: MappingResultSetExtractor<'_, BeanRowMapper<String>, String> = MappingResultSetExtractor::new(&m); }
-    #[test] fn test_first_row_extractor_empty() {
+    #[test]
+    fn test_bean_mapper_new() {
+        let _: BeanRowMapper<String> = BeanRowMapper::new();
+    }
+    #[test]
+    fn test_mapping_extractor() {
+        let m = BeanRowMapper::<String>::new();
+        let _: MappingResultSetExtractor<'_, BeanRowMapper<String>, String> =
+            MappingResultSetExtractor::new(&m);
+    }
+    #[test]
+    fn test_first_row_extractor_empty() {
         let m = BeanRowMapper::<String>::new();
         let e = FirstRowExtractor::new(&m);
         assert!(e.extract(&[]).unwrap().is_none());

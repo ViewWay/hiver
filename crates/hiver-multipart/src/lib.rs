@@ -1,4 +1,7 @@
-#![allow(clippy::empty_line_after_doc_comments, clippy::doc_overindented_list_items)]
+#![allow(
+    clippy::empty_line_after_doc_comments,
+    clippy::doc_overindented_list_items
+)]
 //! Hiver Multipart - Spring `MultipartFile` equivalent features
 //! Hiver Multipart - Spring `MultipartFile` 等价功能
 //!

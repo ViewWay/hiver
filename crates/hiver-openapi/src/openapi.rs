@@ -216,15 +216,15 @@ impl OpenApiBuilder {
     /// `构建OpenAPI规范`
     pub fn build(self) -> OpenApi {
         let mut openapi = OpenApi::new(self.config);
-        
+
         for (path, item) in self.paths {
             openapi = openapi.add_path(path, item);
         }
-        
+
         for (name, schema) in self.schemas {
             openapi = openapi.add_schema(name, schema);
         }
-        
+
         openapi
     }
 }
@@ -248,7 +248,7 @@ mod tests {
             .description("Test API description")
             .add_path(
                 "/users",
-                PathItem::new().get(Operation::new().add_response("200", Response::ok("Success")))
+                PathItem::new().get(Operation::new().add_response("200", Response::ok("Success"))),
             )
             .add_schema("User", Schema::object())
             .build();
@@ -260,9 +260,7 @@ mod tests {
 
     #[test]
     fn test_openapi_to_json() {
-        let openapi = OpenApiBuilder::new()
-            .title("Test API")
-            .build();
+        let openapi = OpenApiBuilder::new().title("Test API").build();
 
         let json = openapi.to_json().unwrap();
         assert!(json.contains("\"openapi\""));

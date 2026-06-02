@@ -4,8 +4,8 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use uuid::Uuid;
 
 /// Batch execution status
@@ -58,19 +58,13 @@ impl BatchStatus {
     /// Check if status is terminal (no further transitions)
     /// 检查状态是否为终止状态（无法再转换）
     pub fn is_terminal(self) -> bool {
-        matches!(
-            self,
-            BatchStatus::Completed | BatchStatus::Failed | BatchStatus::Abandoned
-        )
+        matches!(self, BatchStatus::Completed | BatchStatus::Failed | BatchStatus::Abandoned)
     }
 
     /// Check if status is running
     /// 检查状态是否为运行中
     pub fn is_running(self) -> bool {
-        matches!(
-            self,
-            BatchStatus::Starting | BatchStatus::Started | BatchStatus::Executing
-        )
+        matches!(self, BatchStatus::Starting | BatchStatus::Started | BatchStatus::Executing)
     }
 
     /// Check if status is unsuccessful

@@ -4,7 +4,6 @@
 //! Equivalent to Spring LDAP's `AttributesMapper` and `ContextMapper`
 //! 等价于 Spring LDAP 的 `AttributesMapper` 和 `ContextMapper`
 
-
 /// Maps LDAP attributes to a Rust type / `将LDAP属性映射到Rust类型`
 pub trait AttributesMapper<T>: Send + Sync {
     /// Map raw attribute pairs to a Rust type / 将原始属性对映射到Rust类型
@@ -35,16 +34,22 @@ impl Default for AttrMap {
 
 impl AttrMap {
     /// Create an empty attribute map / 创建空的属性映射
-    pub fn new() -> Self { Self { attrs: Vec::new() } }
+    pub fn new() -> Self {
+        Self { attrs: Vec::new() }
+    }
 
     /// Add a key-value pair to the map / 向映射中添加键值对
     pub fn add(&mut self, key: &str, values: &[&str]) {
-        self.attrs.push((key.to_string(), values.iter().map(ToString::to_string).collect()));
+        self.attrs
+            .push((key.to_string(), values.iter().map(ToString::to_string).collect()));
     }
 
     /// Get all values for a key / 获取某个键的所有值
     pub fn get(&self, key: &str) -> Option<&[String]> {
-        self.attrs.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_slice())
+        self.attrs
+            .iter()
+            .find(|(k, _)| k == key)
+            .map(|(_, v)| v.as_slice())
     }
 
     /// Get the first value for a key / 获取某个键的第一个值

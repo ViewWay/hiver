@@ -47,24 +47,31 @@
 #[cfg(test)]
 mod tests;
 
-pub mod events;
 mod error;
+pub mod events;
 mod isolation;
 mod manager;
-pub mod synchronization;
-#[cfg(feature = "sqlx")]
-mod sqlx_manager;
 mod propagation;
 mod registry;
 mod request_ext;
+#[cfg(feature = "sqlx")]
+mod sqlx_manager;
 mod status;
+pub mod synchronization;
 mod template;
 mod transaction;
 mod transactional;
 
 pub use error::{TransactionError, TransactionResult};
+pub use events::{
+    LoggingSynchronization, PhaseListener, SynchronizationRegistry, TransactionPhase,
+    TransactionSynchronization,
+};
 pub use isolation::IsolationLevel;
-pub use manager::{NoopTransactionManager, TransactionDefinition, TransactionManager, TransactionManagerBuilder, global_tx_manager, set_global_tx_manager};
+pub use manager::{
+    NoopTransactionManager, TransactionDefinition, TransactionManager, TransactionManagerBuilder,
+    global_tx_manager, set_global_tx_manager,
+};
 pub use propagation::Propagation;
 pub use registry::{DelegatingTransactionManager, TransactionManagerRegistry};
 pub use request_ext::{
@@ -74,18 +81,14 @@ pub use status::TransactionStatus;
 pub use template::TransactionTemplate;
 pub use transaction::Transaction;
 pub use transactional::{Transactional, TransactionalOptions};
-pub use events::{
-    LoggingSynchronization, PhaseListener, SynchronizationRegistry, TransactionPhase,
-    TransactionSynchronization,
-};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        DelegatingTransactionManager, IsolationLevel, Propagation, Transaction,
-        TransactionError, TransactionManager, TransactionManagerRegistry, TransactionResult,
-        TransactionStatus, TransactionTemplate, Transactional,
+        DelegatingTransactionManager, IsolationLevel, Propagation, Transaction, TransactionError,
+        TransactionManager, TransactionManagerRegistry, TransactionResult, TransactionStatus,
+        TransactionTemplate, Transactional,
     };
 }
 

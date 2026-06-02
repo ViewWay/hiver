@@ -193,11 +193,7 @@ impl Predicate {
 
     /// Create a BETWEEN predicate.
     /// 创建 BETWEEN 谓词。
-    pub fn between(
-        field: impl Into<String>,
-        low: SpecValue,
-        high: SpecValue,
-    ) -> Self {
+    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self {
         Self::Between(field.into(), low, high)
     }
 
@@ -459,12 +455,7 @@ impl Specifications {
 
     /// Add a BETWEEN condition.
     /// 添加 BETWEEN 条件。
-    pub fn between(
-        mut self,
-        field: impl Into<String>,
-        low: SpecValue,
-        high: SpecValue,
-    ) -> Self {
+    pub fn between(mut self, field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self {
         let pred = Predicate::between(field, low, high);
         self.predicate = Some(match self.predicate.take() {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
@@ -628,11 +619,7 @@ impl SpecFactories {
 
     /// Create a BETWEEN specification.
     /// 创建 BETWEEN specification。
-    pub fn between(
-        field: impl Into<String>,
-        low: SpecValue,
-        high: SpecValue,
-    ) -> SimpleSpec {
+    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> SimpleSpec {
         SimpleSpec(Predicate::between(field, low, high))
     }
 
@@ -770,17 +757,11 @@ pub trait JpaSpecificationExecutor<T: Send + 'static, ID: Send + Sync + 'static>
     ///
     /// Returns `Ok(None)` if no match is found.
     /// 如果没有找到匹配项，返回 `Ok(None)`。
-    async fn find_one(
-        &self,
-        spec: impl Specification,
-    ) -> Result<Option<T>, Self::Error>;
+    async fn find_one(&self, spec: impl Specification) -> Result<Option<T>, Self::Error>;
 
     /// Find all entities matching the specification.
     /// 查找所有匹配 specification 的实体。
-    async fn find_all_spec(
-        &self,
-        spec: impl Specification,
-    ) -> Result<Vec<T>, Self::Error>;
+    async fn find_all_spec(&self, spec: impl Specification) -> Result<Vec<T>, Self::Error>;
 
     /// Count entities matching the specification.
     /// 统计匹配 specification 的实体数量。
@@ -879,18 +860,13 @@ mod tests {
             Box::new(Predicate::eq("role", SpecValue::String("admin".into()))),
             Box::new(Predicate::eq("role", SpecValue::String("superadmin".into()))),
         );
-        assert_eq!(
-            pred.to_sql(),
-            "(role = 'admin' OR role = 'superadmin')"
-        );
+        assert_eq!(pred.to_sql(), "(role = 'admin' OR role = 'superadmin')");
     }
 
     #[test]
     fn test_predicate_not() {
-        let pred = Predicate::not(Box::new(Predicate::eq(
-            "status",
-            SpecValue::String("deleted".into()),
-        )));
+        let pred =
+            Predicate::not(Box::new(Predicate::eq("status", SpecValue::String("deleted".into()))));
         assert_eq!(pred.to_sql(), "NOT (status = 'deleted')");
     }
 
@@ -922,10 +898,7 @@ mod tests {
         let s2 = SpecFactories::eq("role", SpecValue::String("superadmin".into()));
         let combined = SpecFactories::or_spec(s1, s2);
         let pred = combined.to_predicate().unwrap();
-        assert_eq!(
-            pred.to_sql(),
-            "(role = 'admin' OR role = 'superadmin')"
-        );
+        assert_eq!(pred.to_sql(), "(role = 'admin' OR role = 'superadmin')");
     }
 
     #[test]
@@ -976,10 +949,7 @@ mod tests {
             .build();
         let combined = Specifications::where_clause().or(s1).or(s2).build();
         let pred = combined.to_predicate().unwrap();
-        assert_eq!(
-            pred.to_sql(),
-            "(role = 'admin' OR role = 'superadmin')"
-        );
+        assert_eq!(pred.to_sql(), "(role = 'admin' OR role = 'superadmin')");
     }
 
     #[test]
@@ -1027,18 +997,14 @@ mod tests {
 
     #[test]
     fn test_specifications_builder_is_null() {
-        let spec = Specifications::where_clause()
-            .is_null("deleted_at")
-            .build();
+        let spec = Specifications::where_clause().is_null("deleted_at").build();
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "deleted_at IS NULL");
     }
 
     #[test]
     fn test_specifications_builder_is_not_null() {
-        let spec = Specifications::where_clause()
-            .is_not_null("email")
-            .build();
+        let spec = Specifications::where_clause().is_not_null("email").build();
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "email IS NOT NULL");
     }

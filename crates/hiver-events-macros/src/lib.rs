@@ -4,7 +4,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::quote;
-use syn::{parse_macro_input, FnArg, ItemFn, Type};
+use syn::{FnArg, ItemFn, Type, parse_macro_input};
 
 /// Event listener attribute macro
 /// 事件监听器属性宏
@@ -45,9 +45,10 @@ pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
             let key = key.trim();
             let value = value.trim();
             if key == "order"
-                && let Ok(val) = value.parse::<i32>() {
-                    order = val;
-                }
+                && let Ok(val) = value.parse::<i32>()
+            {
+                order = val;
+            }
         }
     }
 
@@ -105,9 +106,10 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
             if key == "phase" {
                 phase = value.to_string();
             } else if key == "order"
-                && let Ok(val) = value.parse::<i32>() {
-                    order = val;
-                }
+                && let Ok(val) = value.parse::<i32>()
+            {
+                order = val;
+            }
         }
     }
 
@@ -124,9 +126,13 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
 
     // Generate the implementation with transactional support
     let expanded = if is_async {
-        generate_transactional_listener_async(&input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase)
+        generate_transactional_listener_async(
+            &input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase,
+        )
     } else {
-        generate_transactional_listener_sync(&input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase)
+        generate_transactional_listener_sync(
+            &input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase,
+        )
     };
 
     TokenStream::from(expanded)
@@ -138,10 +144,12 @@ fn find_event_type(inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma
     for arg in inputs {
         if let FnArg::Typed(pat) = arg
             && let Type::Path(type_path) = &*pat.ty
-                && let Some(segment) = type_path.path.segments.first()
-                    && segment.ident != "Self" && segment.ident != "self" {
-                        return Some(Type::Path(type_path.clone()));
-                    }
+            && let Some(segment) = type_path.path.segments.first()
+            && segment.ident != "Self"
+            && segment.ident != "self"
+        {
+            return Some(Type::Path(type_path.clone()));
+        }
     }
     None
 }
@@ -264,7 +272,6 @@ fn generate_transactional_listener_sync(
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests;

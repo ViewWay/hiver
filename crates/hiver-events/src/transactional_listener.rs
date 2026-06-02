@@ -61,8 +61,7 @@ use tokio::sync::RwLock;
 ///     AFTER_COMPLETION
 /// }
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum TransactionPhase {
     /// Execute before the transaction commits
     /// 在事务提交之前执行
@@ -119,7 +118,6 @@ impl fmt::Display for TransactionPhase {
         f.write_str(self.as_str())
     }
 }
-
 
 /// A transactional event listener bound to a specific phase
 /// 绑定到特定阶段的事务事件监听器
@@ -430,9 +428,10 @@ impl TransactionalEventPublisher {
 
         // Sort by order within the phase+type group
         if let Some(phase_map) = listeners.get_mut(&phase)
-            && let Some(type_list) = phase_map.get_mut(&type_id) {
-                type_list.sort_by_key(|l| l.order());
-            }
+            && let Some(type_list) = phase_map.get_mut(&type_id)
+        {
+            type_list.sort_by_key(|l| l.order());
+        }
     }
 
     /// Register a listener using a convenience builder pattern
@@ -455,10 +454,7 @@ impl TransactionalEventPublisher {
                 handler(typed)
             } else {
                 Box::pin(async {
-                    Err(format!(
-                        "Type mismatch: expected {}",
-                        std::any::type_name::<E>()
-                    ))
+                    Err(format!("Type mismatch: expected {}", std::any::type_name::<E>()))
                 })
             }
         });
@@ -471,7 +467,8 @@ impl TransactionalEventPublisher {
     where
         E: ApplicationEvent + Send + Sync + 'static,
     {
-        self.publish_at_phase(event, TransactionPhase::BeforeCommit).await
+        self.publish_at_phase(event, TransactionPhase::BeforeCommit)
+            .await
     }
 
     /// Publish event to all `AfterCommit` listeners
@@ -480,7 +477,8 @@ impl TransactionalEventPublisher {
     where
         E: ApplicationEvent + Send + Sync + 'static,
     {
-        self.publish_at_phase(event, TransactionPhase::AfterCommit).await
+        self.publish_at_phase(event, TransactionPhase::AfterCommit)
+            .await
     }
 
     /// Publish event to all `AfterRollback` listeners
@@ -489,7 +487,8 @@ impl TransactionalEventPublisher {
     where
         E: ApplicationEvent + Send + Sync + 'static,
     {
-        self.publish_at_phase(event, TransactionPhase::AfterRollback).await
+        self.publish_at_phase(event, TransactionPhase::AfterRollback)
+            .await
     }
 
     /// Publish event to all `AfterCompletion` listeners
@@ -498,7 +497,8 @@ impl TransactionalEventPublisher {
     where
         E: ApplicationEvent + Send + Sync + 'static,
     {
-        self.publish_at_phase(event, TransactionPhase::AfterCompletion).await
+        self.publish_at_phase(event, TransactionPhase::AfterCompletion)
+            .await
     }
 
     /// Internal: publish a type-erased event to listeners at a given phase
@@ -531,7 +531,8 @@ impl TransactionalEventPublisher {
     /// Internal: publish a type-erased event to all `AfterCompletion` listeners
     /// 内部：将类型擦除的事件发布到所有 `AfterCompletion` 监听器
     async fn publish_after_completion_dynamic(&self, event: &dyn Any) -> Vec<Result<(), String>> {
-        self.publish_dynamic(event, TransactionPhase::AfterCompletion).await
+        self.publish_dynamic(event, TransactionPhase::AfterCompletion)
+            .await
     }
 
     /// Internal: publish event to listeners registered for a specific phase
@@ -550,12 +551,13 @@ impl TransactionalEventPublisher {
         let mut results = Vec::new();
 
         if let Some(phase_map) = listeners.get(&phase)
-            && let Some(listener_list) = phase_map.get(&type_id) {
-                for listener in listener_list {
-                    let result = listener.call(event as &dyn Any).await;
-                    results.push(result);
-                }
+            && let Some(listener_list) = phase_map.get(&type_id)
+        {
+            for listener in listener_list {
+                let result = listener.call(event as &dyn Any).await;
+                results.push(result);
             }
+        }
 
         results
     }
@@ -892,10 +894,7 @@ mod tests {
         assert_eq!(TransactionPhase::BeforeCommit.to_string(), "before_commit");
         assert_eq!(TransactionPhase::AfterCommit.to_string(), "after_commit");
         assert_eq!(TransactionPhase::AfterRollback.to_string(), "after_rollback");
-        assert_eq!(
-            TransactionPhase::AfterCompletion.to_string(),
-            "after_completion"
-        );
+        assert_eq!(TransactionPhase::AfterCompletion.to_string(), "after_completion");
     }
 
     #[test]

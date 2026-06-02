@@ -3,7 +3,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemFn};
+use syn::{ItemFn, parse_macro_input};
 
 /// Retry attribute macro for automatic retry logic
 /// 重试属性宏，用于自动重试逻辑
@@ -202,33 +202,32 @@ fn parse_retry_config_string(args_str: &str) -> RetryConfig {
                     if let Ok(val) = value.parse::<usize>() {
                         config.max_attempts = val;
                     }
-                }
+                },
                 "initial_delay" => {
                     if let Ok(val) = value.parse::<u64>() {
                         config.initial_delay = val;
                     }
-                }
+                },
                 "backoff" => {
                     config.backoff = value.to_string();
-                }
+                },
                 "multiplier" => {
                     if let Ok(val) = value.parse::<f64>() {
                         config.multiplier = val;
                     }
-                }
+                },
                 "max_delay" => {
                     if let Ok(val) = value.parse::<u64>() {
                         config.max_delay = Some(val);
                     }
-                }
-                _ => {}
+                },
+                _ => {},
             }
         }
     }
 
     config
 }
-
 
 #[cfg(test)]
 mod tests;

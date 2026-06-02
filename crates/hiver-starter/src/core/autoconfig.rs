@@ -6,9 +6,9 @@
 //! 参考 Spring Boot 的 @`AutoConfiguration` 注解设计。
 //! Based on Spring Boot's @`AutoConfiguration` annotation design.
 
-use std::fmt::{self, Debug};
-use std::any::TypeId;
 use anyhow::Result;
+use std::any::TypeId;
+use std::fmt::{self, Debug};
 
 use super::container::ApplicationContext;
 

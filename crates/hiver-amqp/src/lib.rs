@@ -35,45 +35,46 @@
 #[cfg(test)]
 mod tests;
 
+mod ack;
+mod binding;
 mod config;
 mod connection;
-mod publisher;
-mod listener;
-mod queue;
-mod exchange;
-mod binding;
-mod message;
 mod converter;
 mod dead_letter;
-mod ack;
+mod exchange;
+mod listener;
+mod message;
+mod publisher;
+mod queue;
 pub mod rabbit_client;
 
+pub use ack::{AckMode, AckState, AcknowledgableMessage, ChannelExt};
+pub use binding::{Binding, BindingBuilder};
 pub use config::{AmqpConfig, ConnectionConfig};
 pub use connection::{AmqpConnection, ConnectionManager};
-pub use publisher::{Publisher, PublishingOptions};
-pub use listener::{Listener, ListenerContainer, MessageHandler};
-pub use queue::{Queue, QueueBuilder, QueueType};
+pub use converter::{
+    BytesMessageConverter, JsonMessageConverter, MessageConverter, XmlMessageConverter,
+};
+pub use dead_letter::{DeadLetterQueue, DeathRecord, DlqReason};
 pub use exchange::{Exchange, ExchangeBuilder, ExchangeType};
-pub use binding::{Binding, BindingBuilder};
-pub use message::{AmqpMessage, Message, MessageProperties, DeliveryMode};
-pub use converter::{MessageConverter, JsonMessageConverter, XmlMessageConverter, BytesMessageConverter};
-pub use dead_letter::{DeadLetterQueue, DlqReason, DeathRecord};
-pub use ack::{AckMode, AckState, AcknowledgableMessage, ChannelExt};
-pub use rabbit_client::RabbitMqClient;
+pub use listener::{Listener, ListenerContainer, MessageHandler};
+pub use message::{AmqpMessage, DeliveryMode, Message, MessageProperties};
+pub use publisher::{Publisher, PublishingOptions};
+pub use queue::{Queue, QueueBuilder, QueueType};
 #[cfg(feature = "lapin")]
 pub use rabbit_client::RabbitError;
+pub use rabbit_client::RabbitMqClient;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        AmqpConfig, AmqpConnection, ConnectionManager, Publisher, PublishingOptions,
-        Listener, ListenerContainer, MessageHandler, Queue, QueueBuilder, QueueType,
-        Exchange, ExchangeBuilder, ExchangeType, Binding, BindingBuilder,
-        AmqpMessage, Message, MessageProperties, DeliveryMode,
-        MessageConverter, JsonMessageConverter, XmlMessageConverter, BytesMessageConverter,
-        DeadLetterQueue, DlqReason, DeathRecord,
-        AckMode, AckState, AcknowledgableMessage, ChannelExt,
+        AckMode, AckState, AcknowledgableMessage, AmqpConfig, AmqpConnection, AmqpMessage, Binding,
+        BindingBuilder, BytesMessageConverter, ChannelExt, ConnectionManager, DeadLetterQueue,
+        DeathRecord, DeliveryMode, DlqReason, Exchange, ExchangeBuilder, ExchangeType,
+        JsonMessageConverter, Listener, ListenerContainer, Message, MessageConverter,
+        MessageHandler, MessageProperties, Publisher, PublishingOptions, Queue, QueueBuilder,
+        QueueType, XmlMessageConverter,
     };
 }
 

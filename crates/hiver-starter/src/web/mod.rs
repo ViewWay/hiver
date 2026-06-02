@@ -20,7 +20,7 @@
 //!     .with_host("0.0.0.0");
 //! ```
 
-use crate::core::{AutoConfiguration, ApplicationContext};
+use crate::core::{ApplicationContext, AutoConfiguration};
 use anyhow::Result as AnyhowResult;
 use std::net::SocketAddr;
 
@@ -32,7 +32,9 @@ fn available_parallelism() -> usize {
 
 // Re-export HTTP server types
 // 重新导出 HTTP 服务器类型
-pub use hiver_http::{Server, Response, StatusCode, Request, Body, HttpService, IntoResponse, Json};
+pub use hiver_http::{
+    Body, HttpService, IntoResponse, Json, Request, Response, Server, StatusCode,
+};
 
 // ============================================================================
 // WebServerAutoConfiguration / Web 服务器自动配置
@@ -312,9 +314,9 @@ impl WebServerAutoConfiguration {
         // Validate the bind address
         // 验证绑定地址
         let bind_addr = self.bind_address();
-        bind_addr.parse::<SocketAddr>().map_err(|e| {
-            anyhow::anyhow!("Invalid bind address '{}': {}", bind_addr, e)
-        })?;
+        bind_addr
+            .parse::<SocketAddr>()
+            .map_err(|e| anyhow::anyhow!("Invalid bind address '{}': {}", bind_addr, e))?;
 
         // Create the server with the configuration
         // 使用配置创建服务器
@@ -324,9 +326,10 @@ impl WebServerAutoConfiguration {
 
         // Run the server
         // 运行服务器
-        server.run(service).await.map_err(|e| {
-            anyhow::anyhow!("Server error: {}", e)
-        })
+        server
+            .run(service)
+            .await
+            .map_err(|e| anyhow::anyhow!("Server error: {}", e))
     }
 
     /// Create a Server instance without running it
@@ -340,9 +343,9 @@ impl WebServerAutoConfiguration {
         let bind_addr = self.bind_address();
         // Validate the address format, fall back to default if invalid
         // 验证地址格式，如果无效则使用默认值
-        let _ = bind_addr.parse::<SocketAddr>().unwrap_or_else(|_| {
-            SocketAddr::from(([127, 0, 0, 1], 8080))
-        });
+        let _ = bind_addr
+            .parse::<SocketAddr>()
+            .unwrap_or_else(|_| SocketAddr::from(([127, 0, 0, 1], 8080)));
 
         Server::bind(bind_addr)
             .max_connections(self.max_connections)
@@ -423,7 +426,7 @@ impl AutoConfiguration for RouterAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        10  // 在服务器配置（0）之后
+        10 // 在服务器配置（0）之后
     }
 
     fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {
@@ -536,7 +539,7 @@ impl AutoConfiguration for MiddlewareAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        20  // 在路由配置（10）之后
+        20 // 在路由配置（10）之后
     }
 
     fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {

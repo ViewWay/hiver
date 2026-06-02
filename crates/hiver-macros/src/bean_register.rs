@@ -24,10 +24,7 @@ fn extract_arc_inner(ty: &Type) -> Option<&Type> {
 
 fn field_is_autowired(field: &Field) -> bool {
     field.attrs.iter().any(|a| {
-        a.path().is_ident("autowired")
-            || a.path()
-                .get_ident()
-                .is_some_and(|i| i == "Autowired")
+        a.path().is_ident("autowired") || a.path().get_ident().is_some_and(|i| i == "Autowired")
     })
 }
 
@@ -55,14 +52,16 @@ fn extract_condition_fn(
             let _ = attr.parse_nested_meta(|meta| {
                 if (meta.path.is_ident("name") || meta.path.is_ident("key"))
                     && let Ok(lit) = meta.value()
-                        && let Ok(s) = lit.parse::<syn::LitStr>() {
-                            key = s.value();
-                        }
+                    && let Ok(s) = lit.parse::<syn::LitStr>()
+                {
+                    key = s.value();
+                }
                 if (meta.path.is_ident("having_value") || meta.path.is_ident("value"))
                     && let Ok(lit) = meta.value()
-                        && let Ok(s) = lit.parse::<syn::LitStr>() {
-                            value = Some(s.value());
-                        }
+                    && let Ok(s) = lit.parse::<syn::LitStr>()
+                {
+                    value = Some(s.value());
+                }
                 Ok(())
             });
             if !key.is_empty() {
@@ -90,10 +89,7 @@ fn extract_condition_fn(
             let mut target_type: Option<Type> = None;
             let _ = attr.parse_nested_meta(|meta| {
                 let path = meta.path.clone();
-                target_type = Some(Type::Path(syn::TypePath {
-                    qself: None,
-                    path,
-                }));
+                target_type = Some(Type::Path(syn::TypePath { qself: None, path }));
                 Ok(())
             });
             if let Some(ty) = target_type {
@@ -115,16 +111,10 @@ fn extract_condition_fn(
         }
     }
 
-    (
-        quote! {},
-        quote! { ::hiver_starter::core::registry::always_true },
-    )
+    (quote! {}, quote! { ::hiver_starter::core::registry::always_true })
 }
 
-pub fn generate_bean_registration(
-    input: &ItemStruct,
-    scope: TokenStream2,
-) -> TokenStream2 {
+pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> TokenStream2 {
     let struct_name = &input.ident;
     let factory_fn = format_ident!("__hiver_factory_{}", struct_name);
     let deps_static = format_ident!("__HIVER_DEPS_{}", struct_name.to_string().to_uppercase());
@@ -140,7 +130,10 @@ pub fn generate_bean_registration(
     let mut field_inits: Vec<TokenStream2> = Vec::new();
 
     for field in &fields.named {
-        let field_name = field.ident.as_ref().expect("Fields::Named always have idents");
+        let field_name = field
+            .ident
+            .as_ref()
+            .expect("Fields::Named always have idents");
         let field_ty = &field.ty;
 
         if let Some(dep_ty) = inject_type_for_field(field) {

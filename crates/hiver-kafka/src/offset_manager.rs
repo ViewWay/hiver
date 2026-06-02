@@ -89,11 +89,14 @@ impl OffsetManager {
             topic: topic.to_string(),
             partition,
         };
-        let state = self.offsets.entry(key).or_insert_with(|| PartitionOffsetState {
-            committed: 0,
-            position: 0,
-            end_offset: 0,
-        });
+        let state = self
+            .offsets
+            .entry(key)
+            .or_insert_with(|| PartitionOffsetState {
+                committed: 0,
+                position: 0,
+                end_offset: 0,
+            });
         state.committed = offset;
         Ok(())
     }
@@ -107,11 +110,7 @@ impl OffsetManager {
     /// 如果该分区没有提交过偏移则返回 `None`。
     /// 否则返回已提交的偏移值。
     pub fn committed_offset(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
-        tracing::debug!(
-            "Querying committed offset: topic={}, partition={}",
-            topic,
-            partition
-        );
+        tracing::debug!("Querying committed offset: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
@@ -126,20 +125,19 @@ impl OffsetManager {
     ///
     /// 调用后，下一次 `poll` 将从偏移 0 开始。
     pub fn seek_to_beginning(&mut self, topic: &str, partition: i32) -> Result<(), String> {
-        tracing::debug!(
-            "Seeking to beginning: topic={}, partition={}",
-            topic,
-            partition
-        );
+        tracing::debug!("Seeking to beginning: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
         };
-        let state = self.offsets.entry(key).or_insert_with(|| PartitionOffsetState {
-            committed: 0,
-            position: 0,
-            end_offset: 0,
-        });
+        let state = self
+            .offsets
+            .entry(key)
+            .or_insert_with(|| PartitionOffsetState {
+                committed: 0,
+                position: 0,
+                end_offset: 0,
+            });
         state.position = 0;
         Ok(())
     }
@@ -151,20 +149,19 @@ impl OffsetManager {
     ///
     /// 调用后，下一次 `poll` 只会接收新产生的消息。
     pub fn seek_to_end(&mut self, topic: &str, partition: i32) -> Result<(), String> {
-        tracing::debug!(
-            "Seeking to end: topic={}, partition={}",
-            topic,
-            partition
-        );
+        tracing::debug!("Seeking to end: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
         };
-        let state = self.offsets.entry(key).or_insert_with(|| PartitionOffsetState {
-            committed: 0,
-            position: 0,
-            end_offset: 0,
-        });
+        let state = self
+            .offsets
+            .entry(key)
+            .or_insert_with(|| PartitionOffsetState {
+                committed: 0,
+                position: 0,
+                end_offset: 0,
+            });
         state.position = state.end_offset;
         Ok(())
     }
@@ -198,11 +195,14 @@ impl OffsetManager {
             topic: topic.to_string(),
             partition,
         };
-        let state = self.offsets.entry(key).or_insert_with(|| PartitionOffsetState {
-            committed: 0,
-            position: 0,
-            end_offset: 0,
-        });
+        let state = self
+            .offsets
+            .entry(key)
+            .or_insert_with(|| PartitionOffsetState {
+                committed: 0,
+                position: 0,
+                end_offset: 0,
+            });
         state.position = state.end_offset;
         Ok(())
     }
@@ -216,11 +216,7 @@ impl OffsetManager {
     /// 位置是下一个要拉取的消息的偏移。
     /// 如果该分区不存在状态则返回 `None`。
     pub fn position(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
-        tracing::debug!(
-            "Querying position: topic={}, partition={}",
-            topic,
-            partition
-        );
+        tracing::debug!("Querying position: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
@@ -230,21 +226,19 @@ impl OffsetManager {
 
     /// Set the end offset for a topic-partition (for testing / initialization).
     /// 设置主题分区的结束偏移（用于测试/初始化）。
-    pub fn set_end_offset(
-        &mut self,
-        topic: &str,
-        partition: i32,
-        end_offset: i64,
-    ) {
+    pub fn set_end_offset(&mut self, topic: &str, partition: i32, end_offset: i64) {
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
         };
-        let state = self.offsets.entry(key).or_insert_with(|| PartitionOffsetState {
-            committed: 0,
-            position: 0,
-            end_offset: 0,
-        });
+        let state = self
+            .offsets
+            .entry(key)
+            .or_insert_with(|| PartitionOffsetState {
+                committed: 0,
+                position: 0,
+                end_offset: 0,
+            });
         state.end_offset = end_offset;
     }
 

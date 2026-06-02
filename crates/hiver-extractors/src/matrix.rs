@@ -160,10 +160,7 @@ impl MatrixVariables {
     /// Get a specific matrix variable by name, returning a default if not found
     /// 通过名称获取特定的矩阵变量，如果未找到则返回默认值
     pub fn get_or(&self, key: &str, default: &str) -> String {
-        self.0
-            .get(key)
-            .map_or(default, String::as_str)
-            .to_string()
+        self.0.get(key).map_or(default, String::as_str).to_string()
     }
 }
 

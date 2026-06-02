@@ -210,10 +210,7 @@ impl ObjectDirectoryMapper {
     ///
     /// 从字段值映射构建 `(ldap_name, values)` 对的列表。
     /// 输入键是Rust字段名。
-    pub fn map_to_attrs(
-        &self,
-        fields: &HashMap<String, String>,
-    ) -> Vec<(String, Vec<String>)> {
+    pub fn map_to_attrs(&self, fields: &HashMap<String, String>) -> Vec<(String, Vec<String>)> {
         let mut result = Vec::new();
         for mapping in &self.mappings {
             if mapping.is_readonly {
@@ -258,12 +255,10 @@ pub fn build_dn(rdn_attr: &str, rdn_value: &str, base_dn: &str) -> String {
 /// ```
 pub fn parse_rdn_value(dn: &str, attr: &str) -> Option<String> {
     let prefix = format!("{}=", attr);
-    dn.split(',')
-        .next()
-        .and_then(|rdn| {
-            let rdn = rdn.trim();
-            rdn.strip_prefix(&prefix).map(|v| v.trim().to_string())
-        })
+    dn.split(',').next().and_then(|rdn| {
+        let rdn = rdn.trim();
+        rdn.strip_prefix(&prefix).map(|v| v.trim().to_string())
+    })
 }
 
 #[cfg(test)]
@@ -339,7 +334,10 @@ mod tests {
 
     #[test]
     fn test_attribute_mapping_builder() {
-        let mapping = AttributeMapping::new("uid", "id").id().readonly().syntax("1.3.6.1.4.1");
+        let mapping = AttributeMapping::new("uid", "id")
+            .id()
+            .readonly()
+            .syntax("1.3.6.1.4.1");
         assert!(mapping.is_id);
         assert!(mapping.is_readonly);
         assert_eq!(mapping.syntax.as_deref(), Some("1.3.6.1.4.1"));

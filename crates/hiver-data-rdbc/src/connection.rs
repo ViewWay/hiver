@@ -22,7 +22,10 @@ pub use crate::config::PoolConfig;
 ///
 /// Represents a single database connection.
 /// 表示单个数据库连接。
-#[deprecated(since = "0.9.0", note = "Use DatabaseClient implementations (SqlxPoolClient) directly. Connection will be removed in a future release.")]
+#[deprecated(
+    since = "0.9.0",
+    note = "Use DatabaseClient implementations (SqlxPoolClient) directly. Connection will be removed in a future release."
+)]
 pub struct Connection {
     inner: Arc<dyn ConnectionInner>,
     database_type: DatabaseType,
@@ -42,21 +45,30 @@ impl Clone for Connection {
 pub(crate) trait ConnectionInner: Send + Sync {
     /// Execute a query and return the first row
     /// 执行查询并返回第一行
-    fn fetch_one(&self, sql: &str)
-    -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
+    fn fetch_one(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a query and return all rows
     /// 执行查询并返回所有行
-    fn fetch_all(&self, sql: &str)
-    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
+    fn fetch_all(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
-    fn execute(&self, sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    fn execute(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Begin a transaction
     /// 开始事务
-    fn begin(&self) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>;
+    fn begin(
+        &self,
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Clone this connection
     /// 克隆此连接
@@ -139,7 +151,10 @@ impl Connection {
 /// let conn = pool.acquire().await?;
 /// ```
 #[derive(Clone)]
-#[deprecated(since = "0.9.0", note = "Use SqlxPoolClient for real pool functionality. ConnectionPool will be removed in a future release.")]
+#[deprecated(
+    since = "0.9.0",
+    note = "Use SqlxPoolClient for real pool functionality. ConnectionPool will be removed in a future release."
+)]
 pub struct ConnectionPool {
     inner: Arc<dyn PoolInner>,
     database_type: DatabaseType,
@@ -154,21 +169,30 @@ pub(crate) trait PoolInner: Send + Sync {
 
     /// Execute a query using a connection from the pool and return the first row
     /// 使用池中的连接执行查询并返回第一行
-    fn fetch_one(&self, sql: &str)
-    -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
+    fn fetch_one(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a query and return all rows
     /// 执行查询并返回所有行
-    fn fetch_all(&self, sql: &str)
-    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
+    fn fetch_all(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
-    fn execute(&self, sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
+    fn execute(
+        &self,
+        sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Begin a transaction
     /// 开始事务
-    fn begin(&self) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>;
+    fn begin(
+        &self,
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Close the pool
     /// 关闭连接池
@@ -389,16 +413,23 @@ impl PoolInner for PostgresPoolWrapper {
         Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str)
-    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+    fn fetch_all(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
-    fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
+    fn execute(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
-    fn begin(&self) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
+    fn begin(
+        &self,
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
@@ -420,16 +451,23 @@ impl PoolInner for MySqlPoolWrapper {
         Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str)
-    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+    fn fetch_all(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
-    fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
+    fn execute(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
-    fn begin(&self) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
+    fn begin(
+        &self,
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
@@ -451,16 +489,23 @@ impl PoolInner for SqlitePoolWrapper {
         Ok(None)
     }
 
-    fn fetch_all(&self, _sql: &str)
-    -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
+    fn fetch_all(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
-    fn execute(&self, _sql: &str) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
+    fn execute(
+        &self,
+        _sql: &str,
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
-    fn begin(&self) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
+    fn begin(
+        &self,
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 

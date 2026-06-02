@@ -294,9 +294,6 @@ mod tests {
         if let Some(s) = holder.extensions_mut().get_mut::<String>() {
             s.push_str("-modified");
         }
-        assert_eq!(
-            holder.extensions().get::<String>().unwrap(),
-            "initial-modified"
-        );
+        assert_eq!(holder.extensions().get::<String>().unwrap(), "initial-modified");
     }
 }

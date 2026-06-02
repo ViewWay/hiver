@@ -76,8 +76,6 @@ impl Locale {
         }
     }
 
-
-
     /// Parse locale from string
     /// 从字符串解析语言环境
     ///
@@ -334,9 +332,7 @@ impl LocaleResolver for FixedLocaleResolver {
 
     async fn set_locale(&self, _locale: Locale) -> I18nResult<()> {
         // Fixed locale cannot be changed
-        Err(I18nError::Other(
-            "Cannot change fixed locale".to_string(),
-        ))
+        Err(I18nError::Other("Cannot change fixed locale".to_string()))
     }
 }
 
@@ -365,7 +361,9 @@ impl AcceptHeaderLocaleResolver {
     /// Create new accept header locale resolver
     /// 创建新Accept头语言环境解析器
     pub fn new(default: Locale) -> Self {
-        Self { default_locale: default }
+        Self {
+            default_locale: default,
+        }
     }
 
     /// Parse locale from Accept-Language header value
@@ -496,7 +494,9 @@ impl SessionLocaleResolver {
     /// Create new session locale resolver
     /// 创建新Session语言环境解析器
     pub fn new(default: Locale) -> Self {
-        Self { default_locale: default }
+        Self {
+            default_locale: default,
+        }
     }
 }
 
@@ -585,11 +585,13 @@ mod tests {
     #[test]
     fn test_parse_accept_language() {
         let header = "en-US,en;q=0.9,zh-CN;q=0.8";
-        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).expect("parse en-US header should succeed");
+        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header)
+            .expect("parse en-US header should succeed");
         assert_eq!(locale.to_string(), "en_US");
 
         let header = "zh-CN,zh;q=0.9";
-        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header).expect("parse zh-CN header should succeed");
+        let locale = AcceptHeaderLocaleResolver::parse_accept_language(header)
+            .expect("parse zh-CN header should succeed");
         assert_eq!(locale.to_string(), "zh_CN");
     }
 }

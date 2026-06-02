@@ -256,9 +256,8 @@ mod tests {
 
     #[test]
     fn test_gauge_set() {
-        let gauge = Gauge::new(MetricId::from_name(
-            crate::metric::MetricName::new("test_gauge").unwrap(),
-        ));
+        let gauge =
+            Gauge::new(MetricId::from_name(crate::metric::MetricName::new("test_gauge").unwrap()));
 
         gauge.set(42.0);
         assert_eq!(gauge.value(), 42.0);

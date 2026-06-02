@@ -142,7 +142,6 @@ pub enum TokenEndpointAuthMethod {
     None,
 }
 
-
 impl OAuth2Config {
     /// Create a new `OAuth2` configuration
     /// 创建新的 `OAuth2` 配置
@@ -473,11 +472,7 @@ impl StateManager {
     /// Uses constant-time comparison to prevent timing attacks.
     /// 使用常量时间比较以防止时序攻击。
     pub fn validate(&self, received_state: &str) -> bool {
-        subtle::ConstantTimeEq::ct_eq(
-            self.state.as_bytes(),
-            received_state.as_bytes(),
-        )
-        .into()
+        subtle::ConstantTimeEq::ct_eq(self.state.as_bytes(), received_state.as_bytes()).into()
     }
 }
 
@@ -550,11 +545,8 @@ impl OAuth2Client {
     ) -> (String, StateManager, PkceParams) {
         let state_mgr = StateManager::generate();
         let pkce = PkceParams::generate();
-        let url = self.build_authorization_url(
-            scopes,
-            state_mgr.value(),
-            Some(&pkce.code_challenge),
-        );
+        let url =
+            self.build_authorization_url(scopes, state_mgr.value(), Some(&pkce.code_challenge));
         (url, state_mgr, pkce)
     }
 
@@ -629,13 +621,11 @@ impl OAuth2Client {
         code: &str,
         redirect_uri: &str,
     ) -> SecurityResult<TokenResponse> {
-        self.exchange_token(
-            &[
-                ("grant_type", "authorization_code"),
-                ("code", code),
-                ("redirect_uri", redirect_uri),
-            ],
-        )
+        self.exchange_token(&[
+            ("grant_type", "authorization_code"),
+            ("code", code),
+            ("redirect_uri", redirect_uri),
+        ])
         .await
     }
 
@@ -648,14 +638,12 @@ impl OAuth2Client {
         redirect_uri: &str,
         pkce: &PkceParams,
     ) -> SecurityResult<TokenResponse> {
-        self.exchange_token(
-            &[
-                ("grant_type", "authorization_code"),
-                ("code", code),
-                ("redirect_uri", redirect_uri),
-                ("code_verifier", &pkce.code_verifier),
-            ],
-        )
+        self.exchange_token(&[
+            ("grant_type", "authorization_code"),
+            ("code", code),
+            ("redirect_uri", redirect_uri),
+            ("code_verifier", &pkce.code_verifier),
+        ])
         .await
     }
 
@@ -669,9 +657,8 @@ impl OAuth2Client {
     /// ```
     #[cfg(feature = "http-client")]
     pub async fn exchange_client_credentials(&self) -> SecurityResult<TokenResponse> {
-        self.exchange_token(&[
-            ("grant_type", "client_credentials"),
-        ]).await
+        self.exchange_token(&[("grant_type", "client_credentials")])
+            .await
     }
 
     /// Exchange resource owner password credentials
@@ -692,7 +679,8 @@ impl OAuth2Client {
             ("grant_type", "password"),
             ("username", username),
             ("password", password),
-        ]).await
+        ])
+        .await
     }
 
     /// Refresh access token
@@ -708,7 +696,8 @@ impl OAuth2Client {
         self.exchange_token(&[
             ("grant_type", "refresh_token"),
             ("refresh_token", refresh_token),
-        ]).await
+        ])
+        .await
     }
 
     /// Get user info from the OIDC UserInfo endpoint
@@ -724,15 +713,11 @@ impl OAuth2Client {
     /// 如果user_info_endpoint未配置、请求失败或响应无法解析，则返回SecurityError。
     #[cfg(feature = "http-client")]
     pub async fn get_user_info(&self, access_token: &str) -> SecurityResult<UserInfo> {
-        let endpoint = self
-            .config
-            .user_info_endpoint
-            .as_deref()
-            .ok_or_else(|| {
-                SecurityError::authentication_error(
-                    "user_info_endpoint is not configured in OAuth2Config",
-                )
-            })?;
+        let endpoint = self.config.user_info_endpoint.as_deref().ok_or_else(|| {
+            SecurityError::authentication_error(
+                "user_info_endpoint is not configured in OAuth2Config",
+            )
+        })?;
 
         let response = self
             .http_client
@@ -740,9 +725,7 @@ impl OAuth2Client {
             .header("Authorization", format!("Bearer {}", access_token))
             .send()
             .await
-            .map_err(|e| {
-                SecurityError::io_error(format!("Failed to fetch user info: {}", e))
-            })?;
+            .map_err(|e| SecurityError::io_error(format!("Failed to fetch user info: {}", e)))?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -769,7 +752,10 @@ impl OAuth2Client {
     /// Sends a POST request with the token to the configured introspection_endpoint.
     /// 向配置的introspection_endpoint发送包含令牌的POST请求。
     #[cfg(feature = "http-client")]
-    pub async fn validate_token(&self, access_token: &str) -> SecurityResult<IntrospectionResponse> {
+    pub async fn validate_token(
+        &self,
+        access_token: &str,
+    ) -> SecurityResult<IntrospectionResponse> {
         let endpoint = self
             .config
             .introspection_endpoint
@@ -791,8 +777,8 @@ impl OAuth2Client {
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
-            }
-            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {}
+            },
+            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {},
         }
 
         let mut params = vec![("token", access_token.to_string())];
@@ -804,9 +790,11 @@ impl OAuth2Client {
             }
         }
 
-        let response = request.form(&params).send().await.map_err(|e| {
-            SecurityError::io_error(format!("Failed to validate token: {}", e))
-        })?;
+        let response = request
+            .form(&params)
+            .send()
+            .await
+            .map_err(|e| SecurityError::io_error(format!("Failed to validate token: {}", e)))?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -840,15 +828,11 @@ impl OAuth2Client {
         token: &str,
         token_type_hint: Option<&str>,
     ) -> SecurityResult<()> {
-        let endpoint = self
-            .config
-            .revocation_endpoint
-            .as_deref()
-            .ok_or_else(|| {
-                SecurityError::authentication_error(
-                    "revocation_endpoint is not configured in OAuth2Config",
-                )
-            })?;
+        let endpoint = self.config.revocation_endpoint.as_deref().ok_or_else(|| {
+            SecurityError::authentication_error(
+                "revocation_endpoint is not configured in OAuth2Config",
+            )
+        })?;
 
         let mut request = self.http_client.post(endpoint);
 
@@ -861,8 +845,8 @@ impl OAuth2Client {
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
-            }
-            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {}
+            },
+            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {},
         }
 
         let mut params = vec![("token", token.to_string())];
@@ -877,9 +861,11 @@ impl OAuth2Client {
             }
         }
 
-        let response = request.form(&params).send().await.map_err(|e| {
-            SecurityError::io_error(format!("Failed to revoke token: {}", e))
-        })?;
+        let response = request
+            .form(&params)
+            .send()
+            .await
+            .map_err(|e| SecurityError::io_error(format!("Failed to revoke token: {}", e)))?;
 
         // RFC 7009: The revocation endpoint returns 200 OK even for unknown tokens.
         // RFC 7009：撤销端点即使对于未知令牌也返回200 OK。
@@ -911,10 +897,7 @@ impl OAuth2Client {
                 if let Some(ref secret) = self.config.client_secret {
                     let auth = format!("{}:{}", self.config.client_id, secret);
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
-                    request = request.header(
-                        "Authorization",
-                        format!("Basic {}", encoded),
-                    );
+                    request = request.header("Authorization", format!("Basic {}", encoded));
                 }
             },
             TokenEndpointAuthMethod::ClientSecretPost => {
@@ -929,10 +912,8 @@ impl OAuth2Client {
 
         // Build form data with owned strings for flexible lifetimes
         // 使用owned字符串构建表单数据以支持灵活的生命周期
-        let mut form: Vec<(&str, String)> = params
-            .iter()
-            .map(|(k, v)| (*k, (*v).to_string()))
-            .collect();
+        let mut form: Vec<(&str, String)> =
+            params.iter().map(|(k, v)| (*k, (*v).to_string())).collect();
 
         if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost {
             if let Some(ref secret) = self.config.client_secret {
@@ -943,10 +924,7 @@ impl OAuth2Client {
 
         // Convert to references for reqwest
         // 转换为reqwest需要的引用格式
-        let form_refs: Vec<(&str, &str)> = form
-            .iter()
-            .map(|(k, v)| (*k, v.as_str()))
-            .collect();
+        let form_refs: Vec<(&str, &str)> = form.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
         // Send request
         // 发送请求
@@ -968,10 +946,9 @@ impl OAuth2Client {
             )));
         }
 
-        let token_response: TokenResponse = response
-            .json()
-            .await
-            .map_err(|e| SecurityError::io_error(format!("Failed to parse token response: {}", e)))?;
+        let token_response: TokenResponse = response.json().await.map_err(|e| {
+            SecurityError::io_error(format!("Failed to parse token response: {}", e))
+        })?;
 
         Ok(token_response)
     }
@@ -1201,17 +1178,17 @@ impl OIDCDiscovery {
     /// ```
     #[cfg(feature = "http-client")]
     pub async fn fetch(&self) -> SecurityResult<OIDCDiscoveryDocument> {
-        let discovery_url = format!(
-            "{}/.well-known/openid-configuration",
-            self.issuer_url.trim_end_matches('/')
-        );
+        let discovery_url =
+            format!("{}/.well-known/openid-configuration", self.issuer_url.trim_end_matches('/'));
 
         let response = self
             .http_client
             .get(&discovery_url)
             .send()
             .await
-            .map_err(|e| SecurityError::io_error(format!("Failed to fetch discovery document: {}", e)))?;
+            .map_err(|e| {
+                SecurityError::io_error(format!("Failed to fetch discovery document: {}", e))
+            })?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -1225,10 +1202,9 @@ impl OIDCDiscovery {
             )));
         }
 
-        let doc: OIDCDiscoveryDocument = response
-            .json()
-            .await
-            .map_err(|e| SecurityError::io_error(format!("Failed to parse discovery document: {}", e)))?;
+        let doc: OIDCDiscoveryDocument = response.json().await.map_err(|e| {
+            SecurityError::io_error(format!("Failed to parse discovery document: {}", e))
+        })?;
 
         Ok(doc)
     }
@@ -1318,10 +1294,7 @@ mod tests {
             config.introspection_endpoint,
             Some("https://auth.example.com/introspect".to_string())
         );
-        assert_eq!(
-            config.revocation_endpoint,
-            Some("https://auth.example.com/revoke".to_string())
-        );
+        assert_eq!(config.revocation_endpoint, Some("https://auth.example.com/revoke".to_string()));
     }
 
     #[test]
@@ -1384,10 +1357,7 @@ mod tests {
         let auth_url = client.get_authorization_url("custom_scope");
 
         assert!(auth_url.contains("client_id=test-client"));
-        assert!(
-            auth_url
-                .contains("redirect_uri=https%3A%2F%2Fapp.example.com%2Fcallback")
-        );
+        assert!(auth_url.contains("redirect_uri=https%3A%2F%2Fapp.example.com%2Fcallback"));
         assert!(auth_url.contains("response_type=code"));
         assert!(auth_url.contains("state="));
     }
@@ -1605,10 +1575,7 @@ mod tests {
             doc.introspection_endpoint,
             Some("https://auth.example.com/introspect".to_string())
         );
-        assert_eq!(
-            doc.revocation_endpoint,
-            Some("https://auth.example.com/revoke".to_string())
-        );
+        assert_eq!(doc.revocation_endpoint, Some("https://auth.example.com/revoke".to_string()));
 
         // Test conversion to OAuth2Config
         // 测试转换为OAuth2Config
@@ -1630,9 +1597,6 @@ mod tests {
 
     #[test]
     fn test_token_endpoint_auth_method_default() {
-        assert_eq!(
-            TokenEndpointAuthMethod::default(),
-            TokenEndpointAuthMethod::ClientSecretPost
-        );
+        assert_eq!(TokenEndpointAuthMethod::default(), TokenEndpointAuthMethod::ClientSecretPost);
     }
 }

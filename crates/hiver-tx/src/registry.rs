@@ -63,7 +63,6 @@ pub struct TransactionManagerRegistry {
     default_name: Option<String>,
 }
 
-
 impl std::fmt::Debug for TransactionManagerRegistry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("TransactionManagerRegistry")
@@ -97,7 +96,11 @@ impl TransactionManagerRegistry {
 
     /// Register a transaction manager and explicitly mark it as the default.
     /// 注册事务管理器并明确标记为默认。
-    pub fn register_default(&mut self, name: impl Into<String>, manager: Arc<dyn TransactionManager>) {
+    pub fn register_default(
+        &mut self,
+        name: impl Into<String>,
+        manager: Arc<dyn TransactionManager>,
+    ) {
         let key = name.into();
         self.default_name = Some(key.clone());
         self.managers.insert(key, manager);
@@ -167,9 +170,9 @@ impl TransactionManagerRegistry {
     /// Returns an error if no default manager is set.
     /// 如果未设置默认管理器则返回错误。
     pub fn into_delegate(self) -> TransactionResult<DelegatingTransactionManager> {
-        let default = self
-            .default_manager()
-            .ok_or_else(|| TransactionError::InvalidState("No default transaction manager registered".into()))?;
+        let default = self.default_manager().ok_or_else(|| {
+            TransactionError::InvalidState("No default transaction manager registered".into())
+        })?;
         Ok(DelegatingTransactionManager {
             registry: self,
             fallback: default,
@@ -235,7 +238,9 @@ impl DelegatingTransactionManager {
     ) -> TransactionResult<TransactionStatus> {
         self.registry
             .get(name)
-            .ok_or_else(|| TransactionError::NotFound(format!("Transaction manager '{}' not found", name)))?
+            .ok_or_else(|| {
+                TransactionError::NotFound(format!("Transaction manager '{}' not found", name))
+            })?
             .begin(definition)
             .await
     }
@@ -245,17 +250,25 @@ impl DelegatingTransactionManager {
     pub async fn commit_for(&self, name: &str, status: TransactionStatus) -> TransactionResult<()> {
         self.registry
             .get(name)
-            .ok_or_else(|| TransactionError::NotFound(format!("Transaction manager '{}' not found", name)))?
+            .ok_or_else(|| {
+                TransactionError::NotFound(format!("Transaction manager '{}' not found", name))
+            })?
             .commit(status)
             .await
     }
 
     /// Rollback a transaction on a specific named data source.
     /// 在指定名称的数据源上回滚事务。
-    pub async fn rollback_for(&self, name: &str, status: TransactionStatus) -> TransactionResult<()> {
+    pub async fn rollback_for(
+        &self,
+        name: &str,
+        status: TransactionStatus,
+    ) -> TransactionResult<()> {
         self.registry
             .get(name)
-            .ok_or_else(|| TransactionError::NotFound(format!("Transaction manager '{}' not found", name)))?
+            .ok_or_else(|| {
+                TransactionError::NotFound(format!("Transaction manager '{}' not found", name))
+            })?
             .rollback(status)
             .await
     }

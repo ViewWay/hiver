@@ -93,7 +93,9 @@ impl GraphQLContext {
 }
 
 impl Default for GraphQLContext {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl std::fmt::Debug for GraphQLContext {
@@ -112,7 +114,9 @@ pub struct GraphQLContextBuilder {
 impl GraphQLContextBuilder {
     /// Create a new builder. / 创建新的构建器。
     pub fn new() -> Self {
-        Self { values: HashMap::new() }
+        Self {
+            values: HashMap::new(),
+        }
     }
 
     /// Add a string-keyed value. / 添加字符串键值对。
@@ -131,7 +135,9 @@ impl GraphQLContextBuilder {
 }
 
 impl Default for GraphQLContextBuilder {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
@@ -156,7 +162,9 @@ mod tests {
     #[test]
     fn test_merge() {
         let ctx1 = GraphQLContext::new().insert("a", "1");
-        let ctx2 = GraphQLContext::new().insert("b", "2").insert("a", "overridden");
+        let ctx2 = GraphQLContext::new()
+            .insert("b", "2")
+            .insert("a", "overridden");
         let merged = ctx1.merge(&ctx2);
         assert_eq!(merged.get_string("a"), Some("overridden"));
         assert_eq!(merged.get_string("b"), Some("2"));
@@ -164,9 +172,7 @@ mod tests {
 
     #[test]
     fn test_builder() {
-        let ctx = GraphQLContextBuilder::new()
-            .value("role", "admin")
-            .build();
+        let ctx = GraphQLContextBuilder::new().value("role", "admin").build();
         assert_eq!(ctx.get_string("role"), Some("admin"));
     }
 }

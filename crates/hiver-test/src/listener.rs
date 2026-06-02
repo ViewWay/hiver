@@ -189,7 +189,10 @@ mod tests {
         }
 
         let mut reg = TestListenerRegistry::new();
-        reg.register(Box::new(Inner { before_class: bc, after_class: ac }));
+        reg.register(Box::new(Inner {
+            before_class: bc,
+            after_class: ac,
+        }));
 
         let ctx = TestLifecycleContext::new("Test");
         reg.fire_before_class(&ctx);

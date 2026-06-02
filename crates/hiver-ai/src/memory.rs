@@ -178,11 +178,7 @@ impl ChatMemoryManager {
 
     /// Adds a message to a conversation.
     /// 将消息添加到对话中。
-    pub async fn add(
-        &self,
-        conversation_id: &ConversationId,
-        message: ChatMessage,
-    ) {
+    pub async fn add(&self, conversation_id: &ConversationId, message: ChatMessage) {
         self.memory.add(conversation_id, message).await;
     }
 
@@ -250,8 +246,12 @@ mod tests {
     async fn test_separate_conversations() {
         let memory = InMemoryChatMemory::new();
 
-        memory.add(&"conv-1".to_string(), ChatMessage::user("A")).await;
-        memory.add(&"conv-2".to_string(), ChatMessage::user("B")).await;
+        memory
+            .add(&"conv-1".to_string(), ChatMessage::user("A"))
+            .await;
+        memory
+            .add(&"conv-2".to_string(), ChatMessage::user("B"))
+            .await;
 
         assert_eq!(memory.get_messages(&"conv-1".to_string()).await.len(), 1);
         assert_eq!(memory.get_messages(&"conv-2".to_string()).await.len(), 1);
@@ -287,8 +287,12 @@ mod tests {
     async fn test_conversation_ids() {
         let memory = InMemoryChatMemory::new();
 
-        memory.add(&"conv-a".to_string(), ChatMessage::user("A")).await;
-        memory.add(&"conv-b".to_string(), ChatMessage::user("B")).await;
+        memory
+            .add(&"conv-a".to_string(), ChatMessage::user("A"))
+            .await;
+        memory
+            .add(&"conv-b".to_string(), ChatMessage::user("B"))
+            .await;
 
         let ids = memory.conversation_ids().await;
         assert_eq!(ids.len(), 2);
@@ -326,7 +330,6 @@ mod tests {
 // ChatMemoryManager 的手动 Debug 实现，因为 dyn ChatMemory 不实现 Debug
 impl std::fmt::Debug for ChatMemoryManager {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("ChatMemoryManager")
-            .finish_non_exhaustive()
+        f.debug_struct("ChatMemoryManager").finish_non_exhaustive()
     }
 }

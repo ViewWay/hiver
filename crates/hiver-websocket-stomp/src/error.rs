@@ -37,10 +37,7 @@ pub enum StompError {
 
     /// Message size exceeded
     /// 消息大小超限
-    MessageSizeExceeded {
-        max: usize,
-        actual: usize,
-    },
+    MessageSizeExceeded { max: usize, actual: usize },
 
     /// Heartbeat timeout
     /// 心跳超时
@@ -67,7 +64,7 @@ impl fmt::Display for StompError {
             StompError::DestinationNotFound(dest) => write!(f, "Destination not found: {}", dest),
             StompError::MessageSizeExceeded { max, actual } => {
                 write!(f, "Message size exceeded: {} > {}", actual, max)
-            }
+            },
             StompError::HeartbeatTimeout => write!(f, "Heartbeat timeout"),
             StompError::ConnectionClosed => write!(f, "Connection closed"),
             StompError::Io(err) => write!(f, "IO error: {}", err),
@@ -100,10 +97,7 @@ mod tests {
 
     #[test]
     fn test_error_display() {
-        assert_eq!(
-            StompError::InvalidFrame("test".to_string()).to_string(),
-            "Invalid frame: test"
-        );
+        assert_eq!(StompError::InvalidFrame("test".to_string()).to_string(), "Invalid frame: test");
         assert_eq!(
             StompError::MissingHeader("destination".to_string()).to_string(),
             "Missing required header: destination"
@@ -112,7 +106,10 @@ mod tests {
 
     #[test]
     fn test_message_size_exceeded() {
-        let err = StompError::MessageSizeExceeded { max: 1024, actual: 2048 };
+        let err = StompError::MessageSizeExceeded {
+            max: 1024,
+            actual: 2048,
+        };
         assert_eq!(err.to_string(), "Message size exceeded: 2048 > 1024");
     }
 }

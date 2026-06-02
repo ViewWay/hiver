@@ -84,7 +84,11 @@ impl TestClient {
 
     /// Add a default header
     /// 添加默认头
-    pub fn add_default_header(&mut self, name: impl Into<String>, value: impl Into<String>) -> &mut Self {
+    pub fn add_default_header(
+        &mut self,
+        name: impl Into<String>,
+        value: impl Into<String>,
+    ) -> &mut Self {
         self.default_headers.push((name.into(), value.into()));
         self
     }
@@ -221,7 +225,7 @@ impl TestRequest {
                     self = self.json();
                 }
                 self
-            }
+            },
             Err(e) => panic!("Failed to serialize JSON body: {}", e),
         }
     }
@@ -316,29 +320,20 @@ impl TestResponse {
     /// Parse response body as JSON
     /// `解析响应body为JSON`
     pub fn json<T: DeserializeOwned>(&self) -> Result<T, String> {
-        serde_json::from_slice(&self.body)
-            .map_err(|e| format!("Failed to parse JSON: {}", e))
+        serde_json::from_slice(&self.body).map_err(|e| format!("Failed to parse JSON: {}", e))
     }
 
     /// Assert status code
     /// 断言状态码
     pub fn assert_status(&self, expected: u16) -> &Self {
-        assert_eq!(
-            self.status, expected,
-            "Expected status {}, got {}",
-            expected, self.status
-        );
+        assert_eq!(self.status, expected, "Expected status {}, got {}", expected, self.status);
         self
     }
 
     /// Assert success status
     /// 断言成功状态
     pub fn assert_success(&self) -> &Self {
-        assert!(
-            self.is_success(),
-            "Expected success status (2xx), got {}",
-            self.status
-        );
+        assert!(self.is_success(), "Expected success status (2xx), got {}", self.status);
         self
     }
 
@@ -346,11 +341,8 @@ impl TestResponse {
     /// 断言头存在
     pub fn assert_header(&self, name: &str, value: &str) -> &Self {
         match self.header(name) {
-            Some(v) if v == value => {}
-            Some(v) => panic!(
-                "Expected header {} to be {}, got {}",
-                name, value, v
-            ),
+            Some(v) if v == value => {},
+            Some(v) => panic!("Expected header {} to be {}, got {}", name, value, v),
             None => panic!("Expected header {} to be present", name),
         }
         self
@@ -360,11 +352,7 @@ impl TestResponse {
     /// 断言body包含文本
     pub fn assert_contains(&self, text: &str) -> &Self {
         let body = self.text();
-        assert!(
-            body.contains(text),
-            "Expected body to contain '{}', got: {}",
-            text, body
-        );
+        assert!(body.contains(text), "Expected body to contain '{}', got: {}", text, body);
         self
     }
 }

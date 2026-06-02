@@ -56,10 +56,11 @@ impl CompletionProvider {
         // Only complete the first word (command name)
         // 只补全第一个单词（命令名）
         if (trimmed.contains(' ') || trimmed.is_empty() && !line.contains(' '))
-            && let Some(_space_pos) = trimmed.find(' ') {
-                // Already typed a command and space — no subcommand completion
-                return Vec::new();
-            }
+            && let Some(_space_pos) = trimmed.find(' ')
+        {
+            // Already typed a command and space — no subcommand completion
+            return Vec::new();
+        }
 
         let prefix = trimmed.split_whitespace().next().unwrap_or("");
         self.complete(prefix)
@@ -93,7 +94,10 @@ impl ShellCompleter {
 
     /// Get completions for rustyline / 为rustyline获取补全
     pub fn get_completions(&self, input: &str) -> rustyline::Result<Vec<String>> {
-        let provider = self.provider.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let provider = self
+            .provider
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         Ok(provider.complete_line(input))
     }
 }
@@ -108,7 +112,10 @@ impl rustyline::completion::Completer for ShellCompleter {
         _ctx: &rustyline::Context<'_>,
     ) -> rustyline::Result<(usize, Vec<String>)> {
         let input = &line[..pos];
-        let provider = self.provider.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let provider = self
+            .provider
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let completions = provider.complete_line(input);
         let word_start = input.rfind(' ').map_or(0, |p| p + 1);
         Ok((word_start, completions))

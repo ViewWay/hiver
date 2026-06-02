@@ -276,13 +276,16 @@ impl AnthropicChatModel {
         let body = response.text().await.unwrap_or_default();
 
         // Try to parse structured Anthropic error / 尝试解析结构化的 Anthropic 错误
-        let message = serde_json::from_str::<AnthropicErrorResponse>(&body).map_or_else(|_| {
+        let message = serde_json::from_str::<AnthropicErrorResponse>(&body).map_or_else(
+            |_| {
                 if body.is_empty() {
                     format!("HTTP {status}")
                 } else {
                     body
                 }
-            }, |e| e.error.message);
+            },
+            |e| e.error.message,
+        );
 
         match status {
             401 | 403 => ModelError::AuthError(message),
@@ -386,7 +389,7 @@ impl ChatModel for AnthropicChatModel {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
-                    }
+                    },
                 };
 
                 buffer.push_str(&String::from_utf8_lossy(&chunk));
@@ -423,10 +426,10 @@ impl ChatModel for AnthropicChatModel {
                                         }
                                     }
                                 }
-                            }
+                            },
                             Err(e) => {
                                 tracing::warn!("Failed to parse stream event: {e}");
-                            }
+                            },
                         }
                     }
                 }
@@ -667,10 +670,7 @@ mod tests {
         let event: AnthropicStreamEvent = serde_json::from_str(json).expect("deserialize");
         assert_eq!(event.event_type, "message_start");
         assert!(event.message.is_some());
-        assert_eq!(
-            event.message.unwrap().model.as_deref(),
-            Some("claude-sonnet-4-20250514")
-        );
+        assert_eq!(event.message.unwrap().model.as_deref(), Some("claude-sonnet-4-20250514"));
     }
 
     // ---- ChatModel::complete() with mockito / 使用 mockito 的 ChatModel::complete() 测试 ----
@@ -683,7 +683,8 @@ mod tests {
             .match_header("x-api-key", "sk-ant-test")
             .match_header("anthropic-version", "2023-06-01")
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "id": "msg_01",
                 "type": "message",
                 "role": "assistant",
@@ -691,7 +692,8 @@ mod tests {
                 "model": "claude-sonnet-4-20250514",
                 "stop_reason": "end_turn",
                 "usage": {"input_tokens": 8, "output_tokens": 5}
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -699,7 +701,10 @@ mod tests {
         let model = AnthropicChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("What is Rust?"));
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
 
         assert_eq!(response.content, "Rust is fast!");
         assert_eq!(response.model, "claude-sonnet-4-20250514");
@@ -725,7 +730,8 @@ mod tests {
                 .to_string(),
             ))
             .with_status(200)
-            .with_body(r#"{
+            .with_body(
+                r#"{
                 "id": "msg_02",
                 "type": "message",
                 "role": "assistant",
@@ -733,7 +739,8 @@ mod tests {
                 "model": "claude-sonnet-4-20250514",
                 "stop_reason": "end_turn",
                 "usage": {"input_tokens": 5, "output_tokens": 2}
-            }"#)
+            }"#,
+            )
             .create_async()
             .await;
 
@@ -744,7 +751,10 @@ mod tests {
             .message(ChatMessage::system("Be brief."))
             .message(ChatMessage::user("Hi"));
 
-        let response = model.complete(request).await.expect("complete should succeed");
+        let response = model
+            .complete(request)
+            .await
+            .expect("complete should succeed");
         assert_eq!(response.content, "Hi!");
 
         mock.assert_async().await;
@@ -764,7 +774,10 @@ mod tests {
         let model = AnthropicChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with auth error");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with auth error");
 
         match err {
             ModelError::AuthError(msg) => assert!(msg.contains("Invalid API key")),
@@ -781,7 +794,9 @@ mod tests {
             .mock("POST", "/v1/messages")
             .with_status(429)
             .with_header("retry-after", "20")
-            .with_body(r#"{"type": "error", "error": {"type": "rate_limit", "message": "Too many"}}"#)
+            .with_body(
+                r#"{"type": "error", "error": {"type": "rate_limit", "message": "Too many"}}"#,
+            )
             .create_async()
             .await;
 
@@ -789,7 +804,10 @@ mod tests {
         let model = AnthropicChatModel::new(config);
 
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
-        let err = model.complete(request).await.expect_err("should fail with rate limit");
+        let err = model
+            .complete(request)
+            .await
+            .expect_err("should fail with rate limit");
 
         match err {
             ModelError::RateLimited { retry_after_secs } => assert_eq!(retry_after_secs, 20),
@@ -805,7 +823,9 @@ mod tests {
         let mock = server
             .mock("POST", "/v1/messages")
             .with_status(500)
-            .with_body(r#"{"type": "error", "error": {"type": "server_error", "message": "Overloaded"}}"#)
+            .with_body(
+                r#"{"type": "error", "error": {"type": "server_error", "message": "Overloaded"}}"#,
+            )
             .create_async()
             .await;
 
@@ -819,7 +839,7 @@ mod tests {
             ModelError::ApiError { status, message } => {
                 assert_eq!(status, 500);
                 assert!(message.contains("Overloaded"));
-            }
+            },
             _ => panic!("Expected ApiError, got: {err}"),
         }
 

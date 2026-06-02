@@ -380,10 +380,7 @@ impl SseEmitter {
     /// 将此发射器转换为其原始通道部分，用于自定义运行时集成。
     pub fn into_parts(
         self,
-    ) -> (
-        tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
-        bool,
-    ) {
+    ) -> (tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>, bool) {
         (self.rx, self.terminated)
     }
 
@@ -400,7 +397,7 @@ impl SseEmitter {
             Ok(Err(_)) => {
                 self.terminated = true;
                 Ok(None)
-            }
+            },
             Err(e) => Err(e),
         }
     }
@@ -423,7 +420,7 @@ impl SseEmitter {
             Poll::Ready(None) => {
                 self.terminated = true;
                 Poll::Ready(None)
-            }
+            },
             Poll::Pending => Poll::Pending,
         }
     }
@@ -437,10 +434,7 @@ impl SseEmitter {
 /// 当事件来自多个来源时很有用：后台任务、其他请求的响应、共享事件总线等。
 pub fn sse_channel(
     buffer_size: Option<usize>,
-) -> (
-    SseSender,
-    tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
-) {
+) -> (SseSender, tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>) {
     let (tx, rx) = tokio::sync::mpsc::channel(buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE));
     (SseSender { tx }, rx)
 }
@@ -490,7 +484,10 @@ mod tests {
 
     #[test]
     fn test_sse_event_comment() {
-        let event = SseEvent::builder().comment("keepalive").data("ping").build();
+        let event = SseEvent::builder()
+            .comment("keepalive")
+            .data("ping")
+            .build();
 
         let wire = event.to_wire();
         let text = String::from_utf8_lossy(&wire);

@@ -40,19 +40,19 @@
 #[cfg(test)]
 mod tests;
 
+pub mod config;
 pub mod dialect;
 pub mod error;
-pub mod migration;
-pub mod config;
 pub mod flyway;
 pub mod info;
+pub mod migration;
 
 pub use config::{Config, ConfigBuilder};
 pub use dialect::DatabaseType;
 pub use error::{FlywayError, Result};
 pub use flyway::Flyway;
-pub use info::{MigrationEntry, MigrationResult, Info};
-pub use migration::{Migration, MigrationType, MigratedVersion};
+pub use info::{Info, MigrationEntry, MigrationResult};
+pub use migration::{MigratedVersion, Migration, MigrationType};
 
 /// Migration version type
 /// 迁移版本类型

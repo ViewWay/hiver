@@ -26,7 +26,10 @@ pub trait MessageConverter: Send + Sync {
 
     /// Convert from message
     /// 从消息转换
-    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String>;
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(
+        &self,
+        message: &'a Message,
+    ) -> Result<T, String>;
 }
 
 /// JSON message converter
@@ -66,11 +69,10 @@ impl JsonMessageConverter {
 
 impl MessageConverter for JsonMessageConverter {
     fn to_message<T: serde::Serialize>(&self, value: &T) -> Result<Message, String> {
-        let payload = serde_json::to_vec(value)
-            .map_err(|e| format!("Failed to serialize JSON: {}", e))?;
+        let payload =
+            serde_json::to_vec(value).map_err(|e| format!("Failed to serialize JSON: {}", e))?;
 
-        let properties = MessageProperties::new()
-            .with_content_type(&self.content_type);
+        let properties = MessageProperties::new().with_content_type(&self.content_type);
 
         Ok(Message {
             payload,
@@ -78,7 +80,10 @@ impl MessageConverter for JsonMessageConverter {
         })
     }
 
-    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(
+        &self,
+        message: &'a Message,
+    ) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize JSON: {}", e))
     }
@@ -137,8 +142,7 @@ impl MessageConverter for StringMessageConverter {
             .map_err(|e| format!("Failed to serialize: {}", e))?
             .into_bytes();
 
-        let mut properties = MessageProperties::new()
-            .with_content_type(&self.content_type);
+        let mut properties = MessageProperties::new().with_content_type(&self.content_type);
 
         if let Some(encoding) = &self.content_encoding {
             properties = properties.with_content_encoding(encoding);
@@ -150,7 +154,10 @@ impl MessageConverter for StringMessageConverter {
         })
     }
 
-    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(
+        &self,
+        message: &'a Message,
+    ) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize: {}", e))
     }
@@ -185,8 +192,7 @@ impl BytesMessageConverter {
     /// This is a convenience method for when you already have `Vec<u8>` data.
     /// 当你已有 `Vec<u8>` 数据时，这是一个便捷方法。
     pub fn to_message_from_bytes(&self, payload: Vec<u8>) -> Message {
-        let properties = MessageProperties::new()
-            .with_content_type("application/octet-stream");
+        let properties = MessageProperties::new().with_content_type("application/octet-stream");
         Message::new(payload).with_properties(properties)
     }
 
@@ -199,14 +205,16 @@ impl BytesMessageConverter {
 
 impl MessageConverter for BytesMessageConverter {
     fn to_message<T: serde::Serialize>(&self, value: &T) -> Result<Message, String> {
-        let payload = serde_json::to_vec(value)
-            .map_err(|e| format!("Failed to serialize: {}", e))?;
-        let properties = MessageProperties::new()
-            .with_content_type("application/octet-stream");
+        let payload =
+            serde_json::to_vec(value).map_err(|e| format!("Failed to serialize: {}", e))?;
+        let properties = MessageProperties::new().with_content_type("application/octet-stream");
         Ok(Message::new(payload).with_properties(properties))
     }
 
-    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(
+        &self,
+        message: &'a Message,
+    ) -> Result<T, String> {
         serde_json::from_slice(&message.payload)
             .map_err(|e| format!("Failed to deserialize: {}", e))
     }
@@ -292,20 +300,21 @@ impl XmlMessageConverter {
         // Stub: extract content between <message> tags
         // 存根：提取 <message> 标签之间的内容
         let content = extract_xml_content(xml);
-        serde_json::from_str(&content)
-            .map_err(|e| format!("Failed to deserialize from XML: {}", e))
+        serde_json::from_str(&content).map_err(|e| format!("Failed to deserialize from XML: {}", e))
     }
 }
 
 impl MessageConverter for XmlMessageConverter {
     fn to_message<T: serde::Serialize>(&self, value: &T) -> Result<Message, String> {
         let xml = self.to_xml(value)?;
-        let properties = MessageProperties::new()
-            .with_content_type(&self.content_type);
+        let properties = MessageProperties::new().with_content_type(&self.content_type);
         Ok(Message::new(xml.into_bytes()).with_properties(properties))
     }
 
-    fn convert_from_message<'a, T: serde::Deserialize<'a>>(&self, message: &'a Message) -> Result<T, String> {
+    fn convert_from_message<'a, T: serde::Deserialize<'a>>(
+        &self,
+        message: &'a Message,
+    ) -> Result<T, String> {
         let xml = String::from_utf8_lossy(&message.payload).into_owned();
         // For the stub, extract JSON from the XML envelope and deserialize
         // 对于存根，从 XML 信封中提取 JSON 并反序列化
@@ -313,8 +322,7 @@ impl MessageConverter for XmlMessageConverter {
         // Bridge through serde_json::Value to satisfy the 'a lifetime from message
         let value: serde_json::Value = serde_json::from_str(&content)
             .map_err(|e| format!("Failed to parse XML message content: {}", e))?;
-        T::deserialize(value)
-            .map_err(|e| format!("Failed to deserialize from XML message: {}", e))
+        T::deserialize(value).map_err(|e| format!("Failed to deserialize from XML message: {}", e))
     }
 }
 
@@ -334,19 +342,20 @@ fn extract_xml_content(xml: &str) -> String {
     let start_tag = "<message>";
     let end_tag = "</message>";
     if let Some(start) = xml.find(start_tag)
-        && let Some(end) = xml.rfind(end_tag) {
-            let content_start = start + start_tag.len();
-            if content_start < end {
-                let encoded = &xml[content_start..end];
-                // Unescape XML entities
-                return encoded
-                    .replace("&amp;", "&")
-                    .replace("&lt;", "<")
-                    .replace("&gt;", ">")
-                    .replace("&quot;", "\"")
-                    .replace("&apos;", "'");
-            }
+        && let Some(end) = xml.rfind(end_tag)
+    {
+        let content_start = start + start_tag.len();
+        if content_start < end {
+            let encoded = &xml[content_start..end];
+            // Unescape XML entities
+            return encoded
+                .replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&quot;", "\"")
+                .replace("&apos;", "'");
         }
+    }
     // Fallback: return raw content (maybe it's plain JSON)
     xml.to_string()
 }
@@ -360,8 +369,14 @@ mod tests {
     fn test_json_converter_to_message() {
         let converter = JsonMessageConverter::new();
         #[derive(serde::Serialize)]
-        struct User { name: String, age: u32 }
-        let user = User { name: "Alice".to_string(), age: 30 };
+        struct User {
+            name: String,
+            age: u32,
+        }
+        let user = User {
+            name: "Alice".to_string(),
+            age: 30,
+        };
 
         let msg = converter.to_message(&user).unwrap();
         assert_eq!(msg.properties.content_type.as_deref(), Some("application/json"));
@@ -374,8 +389,14 @@ mod tests {
     #[test]
     fn test_json_converter_from_message() {
         #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq)]
-        struct Item { id: u64, name: String }
-        let item = Item { id: 42, name: "widget".to_string() };
+        struct Item {
+            id: u64,
+            name: String,
+        }
+        let item = Item {
+            id: 42,
+            name: "widget".to_string(),
+        };
 
         let converter = JsonMessageConverter::new();
         let msg = converter.to_message(&item).unwrap();
@@ -404,8 +425,7 @@ mod tests {
     /// Test JsonMessageConverter with custom content type / 测试 JsonMessageConverter 自定义内容类型
     #[test]
     fn test_json_converter_custom_content_type() {
-        let converter = JsonMessageConverter::new()
-            .with_content_type("application/vnd.api+json");
+        let converter = JsonMessageConverter::new().with_content_type("application/vnd.api+json");
         let msg = converter.to_message(&"data").unwrap();
         assert_eq!(msg.properties.content_type.as_deref(), Some("application/vnd.api+json"));
     }
@@ -428,10 +448,7 @@ mod tests {
         let converter = BytesMessageConverter::new();
         let data = vec![1u8, 2, 3, 4];
         let msg = converter.to_message(&data).unwrap();
-        assert_eq!(
-            msg.properties.content_type.as_deref(),
-            Some("application/octet-stream")
-        );
+        assert_eq!(msg.properties.content_type.as_deref(), Some("application/octet-stream"));
     }
 
     /// Test BytesMessageConverter round-trip / 测试 BytesMessageConverter 往返
@@ -464,7 +481,9 @@ mod tests {
     fn test_xml_converter_to_message() {
         let converter = XmlMessageConverter::new();
         #[derive(serde::Serialize)]
-        struct Order { id: u32 }
+        struct Order {
+            id: u32,
+        }
         let msg = converter.to_message(&Order { id: 99 }).unwrap();
         assert_eq!(msg.properties.content_type.as_deref(), Some("application/xml"));
         let body = msg.payload_as_string();
@@ -477,8 +496,14 @@ mod tests {
     #[test]
     fn test_xml_converter_roundtrip() {
         #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq)]
-        struct Product { name: String, price: f64 }
-        let product = Product { name: "widget".to_string(), price: 9.99 };
+        struct Product {
+            name: String,
+            price: f64,
+        }
+        let product = Product {
+            name: "widget".to_string(),
+            price: 9.99,
+        };
 
         let converter = XmlMessageConverter::new();
         let msg = converter.to_message(&product).unwrap();
@@ -490,8 +515,7 @@ mod tests {
     /// 测试 XmlMessageConverter 自定义内容类型
     #[test]
     fn test_xml_converter_custom_content_type() {
-        let converter = XmlMessageConverter::new()
-            .with_content_type("text/xml");
+        let converter = XmlMessageConverter::new().with_content_type("text/xml");
         let msg = converter.to_message(&"data").unwrap();
         assert_eq!(msg.properties.content_type.as_deref(), Some("text/xml"));
     }
@@ -502,7 +526,10 @@ mod tests {
     fn test_xml_converter_convenience_methods() {
         let converter = XmlMessageConverter::new();
         #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
-        struct Point { x: i32, y: i32 }
+        struct Point {
+            x: i32,
+            y: i32,
+        }
         let p = Point { x: 1, y: 2 };
 
         let xml = converter.to_xml(&p).unwrap();
@@ -531,7 +558,8 @@ mod tests {
     /// 测试 extract_xml_content 提取并反转义内容
     #[test]
     fn test_extract_xml_content() {
-        let xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message>{&quot;key&quot;:1}</message>";
+        let xml =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message>{&quot;key&quot;:1}</message>";
         let content = extract_xml_content(xml);
         assert_eq!(content, "{\"key\":1}");
     }

@@ -3,7 +3,7 @@
 
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Getter] derive macro
 /// 实现 #[Getter] 派生宏
@@ -23,8 +23,8 @@ pub fn impl_getter(input: DeriveInput) -> TokenStream {
                 "#[Getter] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Generate getter methods for each field

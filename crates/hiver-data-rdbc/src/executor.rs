@@ -116,7 +116,11 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         let sql = format!(
             "INSERT INTO {} ({}) VALUES ({})",
             table,
-            columns.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "),
+            columns
+                .iter()
+                .map(|c| c.as_str())
+                .collect::<Vec<_>>()
+                .join(", "),
             placeholders.join(", ")
         );
 

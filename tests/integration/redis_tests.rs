@@ -15,7 +15,8 @@ use testcontainers_modules::redis::Redis;
 
 /// Helper: start a Redis container and return connection + container.
 /// 辅助函数：启动 Redis 容器并返回连接和容器。
-async fn setup_redis() -> (redis::aio::MultiplexedConnection, testcontainers::ContainerAsync<Redis>) {
+async fn setup_redis() -> (redis::aio::MultiplexedConnection, testcontainers::ContainerAsync<Redis>)
+{
     let container = Redis::default()
         .start()
         .await
@@ -26,9 +27,8 @@ async fn setup_redis() -> (redis::aio::MultiplexedConnection, testcontainers::Co
         .await
         .expect("Failed to get Redis port");
 
-    let client =
-        redis::Client::open(format!("redis://127.0.0.1:{host_port}"))
-            .expect("Failed to create Redis client");
+    let client = redis::Client::open(format!("redis://127.0.0.1:{host_port}"))
+        .expect("Failed to create Redis client");
 
     let con = client
         .get_multiplexed_async_connection()
@@ -89,10 +89,7 @@ async fn test_redis_set_with_expiry() {
         .await
         .expect("Failed to SET key with expiry");
 
-    let ttl: i64 = con
-        .ttl("test:expiring")
-        .await
-        .expect("Failed to get TTL");
+    let ttl: i64 = con.ttl("test:expiring").await.expect("Failed to get TTL");
 
     assert!(ttl > 0 && ttl <= 60, "TTL should be between 1 and 60, got {ttl}");
 }
@@ -110,14 +107,14 @@ async fn test_redis_delete_key() {
         .await
         .expect("Failed to SET key");
 
-    let deleted: i64 = con
-        .del("test:to_delete")
-        .await
-        .expect("Failed to DEL key");
+    let deleted: i64 = con.del("test:to_delete").await.expect("Failed to DEL key");
 
     assert_eq!(deleted, 1, "Should delete exactly 1 key");
 
-    let result: Option<String> = con.get("test:to_delete").await.expect("GET should not fail");
+    let result: Option<String> = con
+        .get("test:to_delete")
+        .await
+        .expect("GET should not fail");
     assert!(result.is_none(), "Deleted key should return None");
 }
 
@@ -160,16 +157,10 @@ async fn test_redis_incr_decr() {
         .await
         .expect("Failed to SET counter");
 
-    let incremented: i64 = con
-        .incr("test:counter", 5)
-        .await
-        .expect("Failed to INCR");
+    let incremented: i64 = con.incr("test:counter", 5).await.expect("Failed to INCR");
     assert_eq!(incremented, 15, "Counter should be 15 after INCR by 5");
 
-    let decremented: i64 = con
-        .decr("test:counter", 3)
-        .await
-        .expect("Failed to DECR");
+    let decremented: i64 = con.decr("test:counter", 3).await.expect("Failed to DECR");
     assert_eq!(decremented, 12, "Counter should be 12 after DECR by 3");
 }
 
@@ -201,10 +192,8 @@ async fn test_redis_hash_operations() {
         .expect("Field should exist");
     assert_eq!(name, "Alice");
 
-    let all_fields: std::collections::HashMap<String, String> = con
-        .hgetall("test:user:1")
-        .await
-        .expect("Failed to HGETALL");
+    let all_fields: std::collections::HashMap<String, String> =
+        con.hgetall("test:user:1").await.expect("Failed to HGETALL");
     assert_eq!(all_fields.len(), 3, "Hash should have 3 fields");
     assert_eq!(all_fields.get("age"), Some(&"30".to_string()));
 }
@@ -230,10 +219,7 @@ async fn test_redis_list_operations() {
         .await
         .expect("Failed to RPUSH");
 
-    let len: i64 = con
-        .llen("test:tasks")
-        .await
-        .expect("Failed to LLEN");
+    let len: i64 = con.llen("test:tasks").await.expect("Failed to LLEN");
     assert_eq!(len, 3, "List should have 3 elements");
 
     let items: Vec<String> = con
@@ -251,25 +237,16 @@ async fn test_redis_list_operations() {
 async fn test_redis_set_operations() {
     let (mut con, _container) = setup_redis().await;
 
-    let added: i64 = con
-        .sadd("test:tags", "rust")
-        .await
-        .expect("Failed to SADD");
+    let added: i64 = con.sadd("test:tags", "rust").await.expect("Failed to SADD");
     assert_eq!(added, 1);
 
     let _: () = con
         .sadd("test:tags", "async")
         .await
         .expect("Failed to SADD");
-    let _: () = con
-        .sadd("test:tags", "web")
-        .await
-        .expect("Failed to SADD");
+    let _: () = con.sadd("test:tags", "web").await.expect("Failed to SADD");
 
-    let card: i64 = con
-        .scard("test:tags")
-        .await
-        .expect("Failed to SCARD");
+    let card: i64 = con.scard("test:tags").await.expect("Failed to SCARD");
     assert_eq!(card, 3);
 
     let is_member: bool = con
@@ -284,10 +261,7 @@ async fn test_redis_set_operations() {
         .expect("Failed to SISMEMBER");
     assert!(!is_not_member);
 
-    let mut members: Vec<String> = con
-        .smembers("test:tags")
-        .await
-        .expect("Failed to SMEMBERS");
+    let mut members: Vec<String> = con.smembers("test:tags").await.expect("Failed to SMEMBERS");
     members.sort();
     assert_eq!(members, vec!["async", "rust", "web"]);
 }
@@ -370,19 +344,19 @@ async fn test_redis_mset_mget() {
 async fn test_redis_keys_pattern() {
     let (mut con, _container) = setup_redis().await;
 
-    let _: () = con.set("test:session:a", "data_a").await.expect("SET failed");
-    let _: () = con.set("test:session:b", "data_b").await.expect("SET failed");
+    let _: () = con
+        .set("test:session:a", "data_a")
+        .await
+        .expect("SET failed");
+    let _: () = con
+        .set("test:session:b", "data_b")
+        .await
+        .expect("SET failed");
     let _: () = con.set("test:cache:c", "data_c").await.expect("SET failed");
 
-    let session_keys: Vec<String> = con
-        .keys("test:session:*")
-        .await
-        .expect("Failed to KEYS");
+    let session_keys: Vec<String> = con.keys("test:session:*").await.expect("Failed to KEYS");
     assert_eq!(session_keys.len(), 2, "Should find 2 session keys");
 
-    let all_test_keys: Vec<String> = con
-        .keys("test:*")
-        .await
-        .expect("Failed to KEYS");
+    let all_test_keys: Vec<String> = con.keys("test:*").await.expect("Failed to KEYS");
     assert_eq!(all_test_keys.len(), 3, "Should find 3 test keys total");
 }

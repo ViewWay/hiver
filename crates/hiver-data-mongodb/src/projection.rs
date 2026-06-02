@@ -109,11 +109,7 @@ impl FieldProjection {
     /// Returns only the first array element matching the condition.
     /// 仅返回匹配条件的第一个数组元素。
     #[must_use]
-    pub fn elem_match(
-        mut self,
-        field: impl Into<String>,
-        condition: Document,
-    ) -> Self {
+    pub fn elem_match(mut self, field: impl Into<String>, condition: Document) -> Self {
         let em = mongodb::bson::doc! { "$elemMatch": condition };
         self.fields.insert(field.into(), em);
         self
@@ -218,10 +214,7 @@ mod tests {
 
     #[test]
     fn test_exclude_id() {
-        let proj = FieldProjection::new()
-            .include("name")
-            .exclude_id()
-            .build();
+        let proj = FieldProjection::new().include("name").exclude_id().build();
 
         assert_eq!(proj.get_i32("name").unwrap(), 1);
         assert_eq!(proj.get_i32("_id").unwrap(), 0);
@@ -229,9 +222,7 @@ mod tests {
 
     #[test]
     fn test_slice_projection() {
-        let proj = FieldProjection::new()
-            .slice("comments", 5, None)
-            .build();
+        let proj = FieldProjection::new().slice("comments", 5, None).build();
 
         assert!(proj.contains_key("comments"));
     }

@@ -29,9 +29,12 @@
 #[cfg(feature = "lapin")]
 mod inner {
     use lapin::{
-        options::{QueueDeclareOptions, ExchangeDeclareOptions, QueueBindOptions, BasicPublishOptions, BasicQosOptions, BasicConsumeOptions, BasicAckOptions, BasicNackOptions},
-        types::FieldTable,
         BasicProperties, Channel, Connection, ConnectionProperties,
+        options::{
+            BasicAckOptions, BasicConsumeOptions, BasicNackOptions, BasicPublishOptions,
+            BasicQosOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions,
+        },
+        types::FieldTable,
     };
     use std::sync::Arc;
     use tokio::sync::Mutex;
@@ -134,7 +137,13 @@ mod inner {
         ) -> Result<()> {
             let channel = self.channel.lock().await;
             channel
-                .queue_bind(queue, exchange, routing_key, QueueBindOptions::default(), FieldTable::default())
+                .queue_bind(
+                    queue,
+                    exchange,
+                    routing_key,
+                    QueueBindOptions::default(),
+                    FieldTable::default(),
+                )
                 .await?;
             debug!("Bound queue={} exchange={} rk={}", queue, exchange, routing_key);
             Ok(())
@@ -142,7 +151,12 @@ mod inner {
 
         /// Publish a message to an exchange with a routing key.
         /// 向交换机发布消息。
-        pub async fn publish(&self, exchange: &str, routing_key: &str, payload: &[u8]) -> Result<()> {
+        pub async fn publish(
+            &self,
+            exchange: &str,
+            routing_key: &str,
+            payload: &[u8],
+        ) -> Result<()> {
             let channel = self.channel.lock().await;
             channel
                 .basic_publish(
@@ -150,8 +164,7 @@ mod inner {
                     routing_key,
                     BasicPublishOptions::default(),
                     payload,
-                    BasicProperties::default()
-                        .with_delivery_mode(2), // persistent
+                    BasicProperties::default().with_delivery_mode(2), // persistent
                 )
                 .await?
                 .await?; // wait for publisher confirm
@@ -191,12 +204,7 @@ mod inner {
         /// The handler receives raw bytes and must return `Ok(())` to acknowledge,
         /// or `Err(...)` to nack.
         /// 处理器接收原始字节，返回 `Ok(())` 表示确认，返回 `Err(...)` 表示拒绝。
-        pub async fn consume<F, Fut>(
-            &self,
-            queue: &str,
-            prefetch: u16,
-            handler: F,
-        ) -> Result<()>
+        pub async fn consume<F, Fut>(&self, queue: &str, prefetch: u16, handler: F) -> Result<()>
         where
             F: Fn(Vec<u8>, String) -> Fut + Send + Sync + 'static,
             Fut: Future<Output = std::result::Result<(), String>> + Send + 'static,
@@ -232,13 +240,12 @@ mod inner {
                             tokio::spawn(async move {
                                 match h(data, routing_key).await {
                                     Ok(()) => {
-                                        if let Err(e) = ch
-                                            .basic_ack(tag, BasicAckOptions::default())
-                                            .await
+                                        if let Err(e) =
+                                            ch.basic_ack(tag, BasicAckOptions::default()).await
                                         {
                                             error!("ack failed: {e}");
                                         }
-                                    }
+                                    },
                                     Err(e) => {
                                         error!("handler error: {e}");
                                         let _ = ch
@@ -250,14 +257,14 @@ mod inner {
                                                 },
                                             )
                                             .await;
-                                    }
+                                    },
                                 }
                             });
-                        }
+                        },
                         Err(e) => {
                             error!("Consumer delivery error: {e}");
                             break;
-                        }
+                        },
                     }
                 }
                 info!("Consumer loop ended for queue");

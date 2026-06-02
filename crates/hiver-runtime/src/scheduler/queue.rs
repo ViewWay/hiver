@@ -86,7 +86,11 @@ impl LocalQueue {
                 self.buffer[pos].get().write(MaybeUninit::new(task));
             }
 
-            if self.tail.compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed).is_ok() {
+            if self
+                .tail
+                .compare_exchange(tail, tail + 1, Ordering::AcqRel, Ordering::Relaxed)
+                .is_ok()
+            {
                 return true;
             }
         }
@@ -114,7 +118,12 @@ impl LocalQueue {
             // 该值由push初始化，因此assume_init是安全的
             let task = unsafe { self.buffer[pos].get().read().assume_init() };
 
-            if let Ok(_) = self.head.compare_exchange(head, head + 1, Ordering::AcqRel, Ordering::Relaxed) { return Some(task) }
+            if let Ok(_) =
+                self.head
+                    .compare_exchange(head, head + 1, Ordering::AcqRel, Ordering::Relaxed)
+            {
+                return Some(task);
+            }
             // Put the task back — another thread claimed this slot
             unsafe {
                 self.buffer[pos].get().write(MaybeUninit::new(task));

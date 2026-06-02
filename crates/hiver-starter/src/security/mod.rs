@@ -3,25 +3,37 @@
 //! 自动配置安全功能（认证、授权、JWT）。
 //! Auto-configures security features (authentication, authorization, JWT).
 
-use crate::core::{AutoConfiguration, ApplicationContext};
+use crate::core::{ApplicationContext, AutoConfiguration};
 
 // Re-export security types
 // 重新导出安全类型
 pub use hiver_security::{
     // Authentication & Authorization
-    Authentication, AuthenticationManager, SecurityContext,
+    Authentication,
+    AuthenticationManager,
     // Authorities & Roles
-    Authority, Role, Permission,
+    Authority,
+    BcryptPasswordEncoder,
+    JwtAuthentication,
+    JwtClaims,
     // JWT
-    JwtTokenProvider, JwtUtil, JwtClaims, JwtAuthentication,
+    JwtTokenProvider,
+    JwtUtil,
     // Password encoding
-    PasswordEncoder, BcryptPasswordEncoder,
-    // Users
-    User, UserDetails, UserService,
+    PasswordEncoder,
+    Permission,
     // Security annotations
-    PreAuthorize, Secured,
+    PreAuthorize,
+    Role,
+    Secured,
+    SecurityContext,
     // Errors
-    SecurityError, SecurityResult,
+    SecurityError,
+    SecurityResult,
+    // Users
+    User,
+    UserDetails,
+    UserService,
 };
 
 // ============================================================================
@@ -83,7 +95,7 @@ impl AutoConfiguration for SecurityAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        50  // 在服务器配置之后
+        50 // 在服务器配置之后
     }
 
     fn condition(&self) -> bool {
@@ -106,10 +118,7 @@ impl AutoConfiguration for SecurityAutoConfiguration {
 
         let provider = JwtTokenProvider::with_settings(secret, expiration_hours);
         ctx.register_bean(provider);
-        tracing::info!(
-            "Registered JwtTokenProvider bean (expiration: {}s)",
-            self.jwt_expiration
-        );
+        tracing::info!("Registered JwtTokenProvider bean (expiration: {}s)", self.jwt_expiration);
 
         Ok(())
     }
@@ -133,7 +142,7 @@ impl AutoConfiguration for JwtAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        60  // 在 SecurityAutoConfiguration 之后
+        60 // 在 SecurityAutoConfiguration 之后
     }
 
     fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {

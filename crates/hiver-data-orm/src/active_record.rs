@@ -36,12 +36,12 @@
 //! let updated = user.update_versioned(&client).await?;
 //! ```
 
-use crate::query::{QueryBuilder, validate_identifier};
-use crate::relationships::{EagerQueryBuilder, enforce_cascade};
 use crate::Model;
 use crate::Result;
-use hiver_data_rdbc::{DatabaseClient, QueryParam, Row};
+use crate::query::{QueryBuilder, validate_identifier};
+use crate::relationships::{EagerQueryBuilder, enforce_cascade};
 use hiver_data_commons::{Page, PageRequest};
+use hiver_data_rdbc::{DatabaseClient, QueryParam, Row};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Save
@@ -50,7 +50,9 @@ use hiver_data_commons::{Page, PageRequest};
 /// Save operation trait.
 /// 保存操作 trait。
 #[async_trait::async_trait]
-pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Serialize + Sized {
+pub trait Save:
+    Send + Sync + Model + serde::de::DeserializeOwned + serde::Serialize + Sized
+{
     /// Insert a new record.
     /// 插入新记录。
     async fn insert<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
@@ -69,10 +71,7 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
             cols.join(", "),
             placeholders.join(", ")
         );
-        match client
-            .fetch_one_params(&sql, &params)
-            .await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -116,10 +115,7 @@ pub trait Save: Send + Sync + Model + serde::de::DeserializeOwned + serde::Seria
             Self::table_name(),
             set_parts.join(", ")
         );
-        match client
-            .fetch_one_params(&sql, &params)
-            .await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -211,10 +207,7 @@ pub trait OptimisticLock: Save {
             version_col,
         );
 
-        match client
-            .fetch_one_params(&sql, &params)
-            .await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -246,9 +239,7 @@ pub trait Delete: Send + Sync + Model + Sized {
 
         let pk = self.primary_key()?;
         let sql = format!("DELETE FROM {} WHERE id = $1", Self::table_name());
-        client
-            .execute_params(&sql, &[QueryParam::Text(pk)])
-            .await?;
+        client.execute_params(&sql, &[QueryParam::Text(pk)]).await?;
         Ok(())
     }
 
@@ -264,9 +255,7 @@ pub trait Delete: Send + Sync + Model + Sized {
     {
         let cond = hiver_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("DELETE FROM {} WHERE {}", Self::table_name(), cond);
-        client
-            .execute_params(&sql, params)
-            .await?;
+        client.execute_params(&sql, params).await?;
         Ok(0)
     }
 }
@@ -283,10 +272,7 @@ pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized {
     /// 从数据库刷新此记录（按主键重新获取）。
     async fn refresh<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key()?;
-        let sql = format!(
-            "SELECT * FROM {} WHERE id = $1 LIMIT 1",
-            Self::table_name()
-        );
+        let sql = format!("SELECT * FROM {} WHERE id = $1 LIMIT 1", Self::table_name());
         match client
             .fetch_one_params(&sql, &[QueryParam::Text(pk.clone())])
             .await?
@@ -317,9 +303,7 @@ pub trait Count: Send + Sync + Model {
         Self: Sized,
     {
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
-        let rows = client
-            .fetch_all(&sql)
-            .await?;
+        let rows = client.fetch_all(&sql).await?;
         let cnt = rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -362,9 +346,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     /// 查找所有记录。
     async fn all<C: DatabaseClient>(client: &C) -> Result<Vec<Self>> {
         let sql = format!("SELECT * FROM {}", Self::table_name());
-        let rows = client
-            .fetch_all(&sql)
-            .await?;
+        let rows = client.fetch_all(&sql).await?;
         collect_rows(rows)
     }
 
@@ -377,9 +359,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     ) -> Result<Vec<Self>> {
         let cond = hiver_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
-        let rows = client
-            .fetch_all_params(&sql, params)
-            .await?;
+        let rows = client.fetch_all_params(&sql, params).await?;
         collect_rows(rows)
     }
 
@@ -391,15 +371,8 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         params: &[QueryParam],
     ) -> Result<Option<Self>> {
         let cond = hiver_data_commons::replace_placeholders(condition, params.len(), 1);
-        let sql = format!(
-            "SELECT * FROM {} WHERE {} LIMIT 1",
-            Self::table_name(),
-            cond
-        );
-        match client
-            .fetch_one_params(&sql, params)
-            .await?
-        {
+        let sql = format!("SELECT * FROM {} WHERE {} LIMIT 1", Self::table_name(), cond);
+        match client.fetch_one_params(&sql, params).await? {
             Some(row) => row
                 .deserialize()
                 .map(Some)
@@ -433,7 +406,11 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
                             format!(
                                 "{} {}",
                                 o.property,
-                                if o.direction == hiver_data_commons::Direction::ASC { "ASC" } else { "DESC" }
+                                if o.direction == hiver_data_commons::Direction::ASC {
+                                    "ASC"
+                                } else {
+                                    "DESC"
+                                }
                             )
                         })
                         .collect::<Vec<_>>()
@@ -448,9 +425,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 
         // Count total
         let count_sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
-        let total_rows = client
-            .fetch_all(&count_sql)
-            .await?;
+        let total_rows = client.fetch_all(&count_sql).await?;
         let total_elements = total_rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -464,26 +439,17 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
             limit,
             offset
         );
-        let rows = client
-            .fetch_all(&data_sql)
-            .await?;
+        let rows = client.fetch_all(&data_sql).await?;
         let content = collect_rows(rows)?;
 
-        Ok(Page::new(
-            content,
-            page_request.page,
-            page_request.size,
-            total_elements,
-        ))
+        Ok(Page::new(content, page_request.page, page_request.size, total_elements))
     }
 
     /// Count all records.
     /// 计数所有记录。
     async fn count<C: DatabaseClient>(client: &C) -> Result<i64> {
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
-        let rows = client
-            .fetch_all(&sql)
-            .await?;
+        let rows = client.fetch_all(&sql).await?;
         let cnt = rows
             .first()
             .and_then(|r| r.get_as::<i64>("cnt").ok())
@@ -498,10 +464,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         client: &C,
     ) -> Result<bool> {
         let id_str = id.into();
-        let sql = format!(
-            "SELECT 1 FROM {} WHERE id = $1 LIMIT 1",
-            Self::table_name()
-        );
+        let sql = format!("SELECT 1 FROM {} WHERE id = $1 LIMIT 1", Self::table_name());
         let rows = client
             .fetch_all_params(&sql, &[QueryParam::Text(id_str)])
             .await?;
@@ -550,9 +513,13 @@ fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
             }
         },
         serde_json::Value::String(s) => QueryParam::Text(s.clone()),
-        serde_json::Value::Array(a) => {
-            QueryParam::Text(format!("[{}]", a.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(",")))
-        },
+        serde_json::Value::Array(a) => QueryParam::Text(format!(
+            "[{}]",
+            a.iter()
+                .map(|v| v.to_string())
+                .collect::<Vec<_>>()
+                .join(",")
+        )),
         serde_json::Value::Object(_) => QueryParam::Text(v.to_string()),
     }
 }
@@ -601,7 +568,10 @@ mod tests {
         assert_eq!(json_value_to_param(&serde_json::json!(true)), QueryParam::Bool(true));
         assert_eq!(json_value_to_param(&serde_json::json!(42i64)), QueryParam::I64(42));
         assert_eq!(json_value_to_param(&serde_json::json!(3.14)), QueryParam::F64(3.14));
-        assert_eq!(json_value_to_param(&serde_json::json!("hello")), QueryParam::Text("hello".into()));
+        assert_eq!(
+            json_value_to_param(&serde_json::json!("hello")),
+            QueryParam::Text("hello".into())
+        );
     }
 
     #[test]

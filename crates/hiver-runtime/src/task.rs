@@ -258,13 +258,15 @@ unsafe fn raw_waker_wake_by_ref(data: *const ()) {
 
     // Try to transition from Waiting to Running
     // 尝试从Waiting转换到Running
-    if inner.state.compare_exchange(
-        TaskState::Waiting as u8,
-        TaskState::Running as u8,
-        Ordering::Release,
-        Ordering::Relaxed,
-    )
-    .is_err()
+    if inner
+        .state
+        .compare_exchange(
+            TaskState::Waiting as u8,
+            TaskState::Running as u8,
+            Ordering::Release,
+            Ordering::Relaxed,
+        )
+        .is_err()
     {
         return; // Not in waiting state
     }
@@ -307,9 +309,10 @@ impl<T> JoinHandle<T> {
     #[must_use]
     pub fn id(&self) -> TaskId {
         if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core() {
-                return core.id();
-            }
+            && let Some(core) = refs.core()
+        {
+            return core.id();
+        }
         self.inner.as_ref().map_or(0, |i| i.id)
     }
 
@@ -318,10 +321,12 @@ impl<T> JoinHandle<T> {
     #[must_use]
     pub fn is_finished(&self) -> bool {
         if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core() {
-                return core.is_completed();
-            }
-        self.inner.as_ref()
+            && let Some(core) = refs.core()
+        {
+            return core.is_completed();
+        }
+        self.inner
+            .as_ref()
             .and_then(|i| TaskState::from_u8(i.state.load(Ordering::Acquire)))
             .is_some_and(TaskState::is_finished)
     }
@@ -330,17 +335,19 @@ impl<T> JoinHandle<T> {
     /// 等待任务完成并获取其结果。
     pub async fn wait(self) -> Result<T, JoinError> {
         if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core() {
-                std::future::poll_fn(|cx| {
-                    if core.is_completed() {
-                        Poll::Ready(())
-                    } else {
-                        cx.waker().wake_by_ref();
-                        Poll::Pending
-                    }
-                }).await;
-                return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
-            }
+            && let Some(core) = refs.core()
+        {
+            std::future::poll_fn(|cx| {
+                if core.is_completed() {
+                    Poll::Ready(())
+                } else {
+                    cx.waker().wake_by_ref();
+                    Poll::Pending
+                }
+            })
+            .await;
+            return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
+        }
         if let Some(inner) = self.inner {
             return WaitForTask::new(inner).await;
         }
@@ -470,8 +477,7 @@ where
     // Try to use the scheduler if a runtime context is available
     // 如果运行时上下文可用，尝试使用调度器
     if let Some(handle) = crate::runtime::Handle::try_current() {
-        let (raw_task, task_ref) =
-            raw_task::allocate_task(future, handle.scheduler().clone());
+        let (raw_task, task_ref) = raw_task::allocate_task(future, handle.scheduler().clone());
 
         let id = task_ref.core().map_or(0, raw_task::TaskCore::id);
         let _ = handle.scheduler().submit(raw_task);
@@ -566,9 +572,7 @@ where
 
     // Create a no-op waker (we poll in a tight loop)
     // 创建一个无操作的waker（我们在紧密循环中轮询）
-    let waker = unsafe {
-        Waker::from_raw(RawWaker::new(ptr::null(), &NOOP_RAW_WAKER_VTABLE))
-    };
+    let waker = unsafe { Waker::from_raw(RawWaker::new(ptr::null(), &NOOP_RAW_WAKER_VTABLE)) };
 
     // Spawn a thread to run the future
     // 生成一个线程来运行future
@@ -669,7 +673,7 @@ mod tests {
 
     #[test]
     fn test_block_on_free_function_unit() {
-        block_on(async { });
+        block_on(async {});
     }
 
     #[test]
@@ -700,7 +704,13 @@ mod tests {
 
     #[test]
     fn test_task_state_from_u8_roundtrip() {
-        let states = [TaskState::Running, TaskState::Waiting, TaskState::Completed, TaskState::Cancelled, TaskState::Panicked];
+        let states = [
+            TaskState::Running,
+            TaskState::Waiting,
+            TaskState::Completed,
+            TaskState::Cancelled,
+            TaskState::Panicked,
+        ];
         for state in states {
             let byte = state as u8;
             let parsed = TaskState::from_u8(byte);

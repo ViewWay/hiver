@@ -90,12 +90,20 @@ pub struct AclEntry {
 impl AclEntry {
     /// Create a granting entry.
     pub fn grant(sid: AclSid, permission: AclPermission) -> Self {
-        Self { sid, permission, granting: true }
+        Self {
+            sid,
+            permission,
+            granting: true,
+        }
     }
 
     /// Create a denying entry.
     pub fn deny(sid: AclSid, permission: AclPermission) -> Self {
-        Self { sid, permission, granting: false }
+        Self {
+            sid,
+            permission,
+            granting: false,
+        }
     }
 
     /// Check if this entry matches the given SID and permission.
@@ -188,21 +196,32 @@ impl AclService {
 
     /// Retrieve the ACL for an object, if it exists.
     pub fn get_acl(&self, oid: &AclObjectIdentity) -> Option<Acl> {
-        self.acls.read().unwrap()
+        self.acls
+            .read()
+            .unwrap()
             .get(&(oid.object_type.clone(), oid.object_id.clone()))
             .cloned()
     }
 
     /// Remove the ACL for an object.
     pub fn delete_acl(&self, oid: &AclObjectIdentity) -> bool {
-        self.acls.write().unwrap()
+        self.acls
+            .write()
+            .unwrap()
             .remove(&(oid.object_type.clone(), oid.object_id.clone()))
             .is_some()
     }
 
     /// Check if a SID is granted the requested permission on an object.
-    pub fn is_granted(&self, oid: &AclObjectIdentity, sid: &AclSid, permission: AclPermission) -> bool {
-        self.acls.read().unwrap()
+    pub fn is_granted(
+        &self,
+        oid: &AclObjectIdentity,
+        sid: &AclSid,
+        permission: AclPermission,
+    ) -> bool {
+        self.acls
+            .read()
+            .unwrap()
             .get(&(oid.object_type.clone(), oid.object_id.clone()))
             .is_some_and(|acl| acl.is_granted(sid, permission))
     }
@@ -250,7 +269,10 @@ mod tests {
         let owner = AclSid::Principal("alice".into());
         let mut acl = Acl::new(oid, owner);
         let bob = AclSid::Principal("bob".into());
-        acl.add_entry(AclEntry::grant(bob.clone(), AclPermission::READ.union(AclPermission::WRITE)));
+        acl.add_entry(AclEntry::grant(
+            bob.clone(),
+            AclPermission::READ.union(AclPermission::WRITE),
+        ));
         acl.add_entry(AclEntry::deny(bob.clone(), AclPermission::WRITE));
         assert!(acl.is_granted(&bob, AclPermission::READ));
         assert!(!acl.is_granted(&bob, AclPermission::WRITE));
@@ -275,7 +297,10 @@ mod tests {
         let owner = AclSid::Principal("admin".into());
         let mut acl = Acl::new(oid.clone(), owner);
         let editors = AclSid::Authority("ROLE_EDITOR".into());
-        acl.add_entry(AclEntry::grant(editors.clone(), AclPermission::READ.union(AclPermission::WRITE)));
+        acl.add_entry(AclEntry::grant(
+            editors.clone(),
+            AclPermission::READ.union(AclPermission::WRITE),
+        ));
         service.save_acl(acl);
         assert!(service.is_granted(&oid, &editors, AclPermission::READ));
         assert!(!service.is_granted(&oid, &editors, AclPermission::DELETE));

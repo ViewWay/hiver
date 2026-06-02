@@ -24,8 +24,8 @@
 
 use crate::{RedisClient, RedisError, RedisResult};
 use redis::AsyncCommands;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 use uuid::Uuid;
 
@@ -148,7 +148,7 @@ impl RedisLock {
                         return Ok(None);
                     }
                     tokio::time::sleep(retry).await;
-                }
+                },
             }
         }
     }
@@ -228,7 +228,8 @@ impl RedisLockGuard {
             let handle = tokio::spawn(async move {
                 loop {
                     tokio::time::sleep(interval).await;
-                    let renewed = Self::renew_static(&wd_client, &wd_key, &wd_token, ttl_secs).await;
+                    let renewed =
+                        Self::renew_static(&wd_client, &wd_key, &wd_token, ttl_secs).await;
                     match renewed {
                         Ok(true) => {
                             tracing::trace!(
@@ -236,7 +237,7 @@ impl RedisLockGuard {
                                 "watchdog: renewed TTL +{}s / 看门狗: 续期 TTL +{}s",
                                 ttl_secs, ttl_secs
                             );
-                        }
+                        },
                         Ok(false) => {
                             tracing::warn!(
                                 key = %wd_key,
@@ -245,7 +246,7 @@ impl RedisLockGuard {
                             );
                             wd_lock_lost.store(true, Ordering::Relaxed);
                             break;
-                        }
+                        },
                         Err(e) => {
                             tracing::error!(
                                 key = %wd_key,
@@ -254,7 +255,7 @@ impl RedisLockGuard {
                             );
                             wd_lock_lost.store(true, Ordering::Relaxed);
                             break;
-                        }
+                        },
                     }
                 }
             });
@@ -451,7 +452,11 @@ impl ReentrantRedisLock {
     /// Create a new reentrant lock.
     /// 创建新的可重入锁。
     pub fn new(client: RedisClient, key: impl Into<String>, ttl_secs: u64) -> Self {
-        Self { client, key: key.into(), ttl_secs }
+        Self {
+            client,
+            key: key.into(),
+            ttl_secs,
+        }
     }
 
     /// Acquire the lock for `holder_id` (non-blocking).
@@ -467,7 +472,11 @@ impl ReentrantRedisLock {
             .arg(self.ttl_secs)
             .invoke_async(&mut conn)
             .await?;
-        if result > 0 { Ok(Some(result as u32)) } else { Ok(None) }
+        if result > 0 {
+            Ok(Some(result as u32))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Acquire with a retry timeout.
@@ -528,10 +537,11 @@ impl ReentrantRedisLock {
         holder_id: &str,
         watchdog_interval: Option<Duration>,
     ) -> RedisResult<Option<WatchdogGuard>> {
-        let Some(count) = self.acquire(holder_id).await? else { return Ok(None) };
-        let interval = watchdog_interval.unwrap_or_else(|| {
-            Duration::from_secs((self.ttl_secs / 3).max(1))
-        });
+        let Some(count) = self.acquire(holder_id).await? else {
+            return Ok(None);
+        };
+        let interval =
+            watchdog_interval.unwrap_or_else(|| Duration::from_secs((self.ttl_secs / 3).max(1)));
         let guard = WatchdogGuard::new(
             self.client.clone(),
             self.key.clone(),
@@ -632,7 +642,8 @@ impl WatchdogGuard {
         let handle = tokio::spawn(async move {
             loop {
                 tokio::time::sleep(interval).await;
-                let renew_lock = ReentrantRedisLock::new(renew_client.clone(), &renew_key, ttl_secs);
+                let renew_lock =
+                    ReentrantRedisLock::new(renew_client.clone(), &renew_key, ttl_secs);
                 if let Ok(renewed) = renew_lock.renew(&renew_holder).await {
                     if !renewed {
                         tracing::warn!(key = %renew_key, "watchdog: lock expired before renewal");
@@ -655,15 +666,21 @@ impl WatchdogGuard {
 
     /// Lock key.
     /// 锁键。
-    pub fn key(&self) -> &str { &self.key }
+    pub fn key(&self) -> &str {
+        &self.key
+    }
 
     /// Holder identifier.
     /// 持有者标识符。
-    pub fn holder_id(&self) -> &str { &self.holder_id }
+    pub fn holder_id(&self) -> &str {
+        &self.holder_id
+    }
 
     /// Current reentry count.
     /// 当前重入计数。
-    pub fn reentry_count(&self) -> u32 { self.reentry_count }
+    pub fn reentry_count(&self) -> u32 {
+        self.reentry_count
+    }
 
     /// Manually renew the TTL.
     /// 手动续期 TTL。
@@ -730,8 +747,7 @@ mod tests {
     fn test_lock_with_auto_renewal_capped_interval() {
         let client = make_client();
         // ttl_secs=30, ttl/2=15, request 10 → stays 10
-        let lock = RedisLock::new(client, "test:lock".to_string(), 30)
-            .with_auto_renewal(10);
+        let lock = RedisLock::new(client, "test:lock".to_string(), 30).with_auto_renewal(10);
         assert_eq!(lock.renew_interval_secs, Some(10));
     }
 
@@ -739,8 +755,7 @@ mod tests {
     fn test_lock_with_auto_renewal_caps_at_half_ttl() {
         let client = make_client();
         // ttl_secs=30, ttl/2=15, request 20 → capped to 15
-        let lock = RedisLock::new(client, "test:lock".to_string(), 30)
-            .with_auto_renewal(20);
+        let lock = RedisLock::new(client, "test:lock".to_string(), 30).with_auto_renewal(20);
         assert_eq!(lock.renew_interval_secs, Some(15));
     }
 
@@ -787,13 +802,8 @@ mod tests {
     #[tokio::test]
     async fn test_guard_no_watchdog_without_interval() {
         let client = make_client();
-        let guard = RedisLockGuard::new(
-            client,
-            "no-wd:key".to_string(),
-            "token-xyz".to_string(),
-            30,
-            None,
-        );
+        let guard =
+            RedisLockGuard::new(client, "no-wd:key".to_string(), "token-xyz".to_string(), 30, None);
         assert!(!guard.has_watchdog());
         assert!(!guard.is_lock_lost());
     }
@@ -983,7 +993,11 @@ mod tests {
         let lock1 = RedisLock::new(client.clone(), key.clone(), 30);
         let lock2 = RedisLock::new(client.clone(), key.clone(), 30);
 
-        let guard1 = lock1.acquire().await.unwrap().expect("first acquire should succeed");
+        let guard1 = lock1
+            .acquire()
+            .await
+            .unwrap()
+            .expect("first acquire should succeed");
         let guard2 = lock2.acquire().await.unwrap();
         assert!(guard2.is_none(), "second acquire should fail while first holds lock");
 
@@ -1017,7 +1031,8 @@ mod tests {
         assert!(
             ttl_after > ttl_before,
             "TTL after renewal ({}) should be greater than before ({})",
-            ttl_after, ttl_before
+            ttl_after,
+            ttl_before
         );
 
         guard.release().await.unwrap();
@@ -1060,11 +1075,19 @@ mod tests {
         let lock = ReentrantRedisLock::new(client.clone(), key.clone(), 30);
 
         // First acquire / 第一次获取
-        let count1 = lock.acquire("holder-1").await.unwrap().expect("should acquire");
+        let count1 = lock
+            .acquire("holder-1")
+            .await
+            .unwrap()
+            .expect("should acquire");
         assert_eq!(count1, 1);
 
         // Reentrant acquire / 重入获取
-        let count2 = lock.acquire("holder-1").await.unwrap().expect("should re-acquire");
+        let count2 = lock
+            .acquire("holder-1")
+            .await
+            .unwrap()
+            .expect("should re-acquire");
         assert_eq!(count2, 2);
 
         // Different holder should fail / 不同的持有者应该失败
@@ -1084,7 +1107,11 @@ mod tests {
         assert_eq!(remaining2, 0);
 
         // Now holder-2 can acquire / 现在 holder-2 可以获取
-        let count5 = lock.acquire("holder-2").await.unwrap().expect("should acquire");
+        let count5 = lock
+            .acquire("holder-2")
+            .await
+            .unwrap()
+            .expect("should acquire");
         assert_eq!(count5, 1);
         lock.release("holder-2").await.unwrap();
     }

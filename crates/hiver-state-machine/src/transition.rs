@@ -1,9 +1,9 @@
 //! Transition, Event, Guard, and Action traits
 //! 转换、事件、守卫和动作特征
 
-use crate::{Event, State};
 use crate::error::{StateMachineError, StateMachineResult};
 use crate::state::StateContext;
+use crate::{Event, State};
 use std::fmt::Debug;
 
 /// Guard predicate for transition conditions
@@ -196,12 +196,12 @@ where
     /// Build the transition
     /// 构建转换
     pub fn build(self) -> StateMachineResult<Transition<S, E>> {
-        let source = self
-            .source
-            .ok_or_else(|| StateMachineError::InvalidConfiguration("Source state not set".to_string()))?;
-        let target = self
-            .target
-            .ok_or_else(|| StateMachineError::InvalidConfiguration("Target state not set".to_string()))?;
+        let source = self.source.ok_or_else(|| {
+            StateMachineError::InvalidConfiguration("Source state not set".to_string())
+        })?;
+        let target = self.target.ok_or_else(|| {
+            StateMachineError::InvalidConfiguration("Target state not set".to_string())
+        })?;
 
         Ok(Transition {
             source,
@@ -297,13 +297,17 @@ mod tests {
 
     #[test]
     fn test_transition_builder_missing_source() {
-        let result = Transition::<TestState, TestEvent>::builder().target(TestState::B).build();
+        let result = Transition::<TestState, TestEvent>::builder()
+            .target(TestState::B)
+            .build();
         assert!(result.is_err());
     }
 
     #[test]
     fn test_transition_builder_missing_target() {
-        let result = Transition::<TestState, TestEvent>::builder().source(TestState::A).build();
+        let result = Transition::<TestState, TestEvent>::builder()
+            .source(TestState::A)
+            .build();
         assert!(result.is_err());
     }
 }

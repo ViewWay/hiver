@@ -25,8 +25,8 @@
 //! assert_eq!(entries[0].dn, "cn=John Doe,dc=example,dc=com");
 //! ```
 
-use std::fmt::Write;
 use std::collections::HashMap;
+use std::fmt::Write;
 
 /// LDIF change type / LDIF 更改类型
 ///
@@ -346,7 +346,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
                         let _ = writeln!(output, "{}: {}", attr, value);
                     }
                 }
-            }
+            },
             LdifChangeType::Modify => {
                 for (i, modification) in entry.modifications.iter().enumerate() {
                     if i > 0 {
@@ -362,8 +362,8 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
                         let _ = writeln!(output, "{}: {}", modification.attribute, value);
                     }
                 }
-            }
-            LdifChangeType::Delete | LdifChangeType::ModDn => {}
+            },
+            LdifChangeType::Delete | LdifChangeType::ModDn => {},
         }
 
         output.push('\n');

@@ -205,7 +205,7 @@ impl RetryTemplate {
                 Ok(value) => {
                     self.callback.on_success(context.attempt);
                     return Ok(value);
-                }
+                },
                 Err(error) => {
                     let error_msg = error.to_string();
                     _last_error = Some(error_msg.clone());
@@ -222,7 +222,7 @@ impl RetryTemplate {
 
                     self.callback.on_retry(context.attempt, delay);
                     sleep(delay).await;
-                }
+                },
             }
         }
 

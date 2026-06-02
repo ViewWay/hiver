@@ -178,18 +178,20 @@ impl Config {
     pub fn get(&self, key: &str) -> Option<Value> {
         // Check cache first
         if let Ok(cache) = self.values.read()
-            && let Some(value) = cache.get(key) {
-                return Some(value.clone());
-            }
+            && let Some(value) = cache.get(key)
+        {
+            return Some(value.clone());
+        }
 
         // Get from environment
         let value = self.environment.get_property(key);
 
         // Cache the value
         if let Some(ref v) = value
-            && let Ok(mut cache) = self.values.write() {
-                cache.insert(key.to_string(), v.clone());
-            }
+            && let Ok(mut cache) = self.values.write()
+        {
+            cache.insert(key.to_string(), v.clone());
+        }
 
         value
     }
@@ -265,7 +267,10 @@ impl Config {
     /// Get loaded files
     /// 获取已加载的文件
     pub fn files(&self) -> Vec<PathBuf> {
-        self.files.read().unwrap_or_else(std::sync::PoisonError::into_inner).clone()
+        self.files
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .clone()
     }
 
     /// Get reload strategy
@@ -366,9 +371,10 @@ impl Config {
                         // Unicode escape \uXXXX
                         let code: String = chars.by_ref().take(4).collect();
                         if let Ok(code_point) = u32::from_str_radix(&code, 16)
-                            && let Some(c) = char::from_u32(code_point) {
-                                result.push(c);
-                            }
+                            && let Some(c) = char::from_u32(code_point)
+                        {
+                            result.push(c);
+                        }
                     },
                     Some(next) => result.push(next),
                     None => result.push('\\'),
@@ -645,10 +651,11 @@ impl ConfigBuilder {
 
         for arg in args.iter().skip(1) {
             if let Some((key, value)) = arg.split_once('=')
-                && key.starts_with("--") {
-                    let key = key[2..].to_string();
-                    source.put(key, Value::string(value));
-                }
+                && key.starts_with("--")
+            {
+                let key = key[2..].to_string();
+                source.put(key, Value::string(value));
+            }
         }
 
         self.config.add_property_source(source);
@@ -732,8 +739,8 @@ impl Default for ConfigBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Write;
     use crate::{PropertySource, Value};
+    use std::io::Write;
 
     // ============================================================
     // FileFormat tests / 文件格式测试
@@ -753,7 +760,10 @@ mod tests {
     /// 测试FileFormat::from_path格式检测
     #[test]
     fn test_file_format_from_path() {
-        assert_eq!(FileFormat::from_path(Path::new("app.properties")), Some(FileFormat::Properties));
+        assert_eq!(
+            FileFormat::from_path(Path::new("app.properties")),
+            Some(FileFormat::Properties)
+        );
         assert_eq!(FileFormat::from_path(Path::new("app.props")), Some(FileFormat::Properties));
         assert_eq!(FileFormat::from_path(Path::new("app.yaml")), Some(FileFormat::Yaml));
         assert_eq!(FileFormat::from_path(Path::new("app.yml")), Some(FileFormat::Yaml));
@@ -958,7 +968,11 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let file_path = dir.path().join("test.toml");
         let mut f = std::fs::File::create(&file_path).unwrap();
-        write!(f, "[server]\nhost = \"localhost\"\nport = 3000\n\n[database]\nurl = \"postgres://db\"\n").unwrap();
+        write!(
+            f,
+            "[server]\nhost = \"localhost\"\nport = 3000\n\n[database]\nurl = \"postgres://db\"\n"
+        )
+        .unwrap();
 
         let config = Config::from_file(&file_path).unwrap();
         assert!(config.get("server").is_some());
@@ -1059,9 +1073,7 @@ mod tests {
     /// 测试ConfigBuilder的Default trait
     #[test]
     fn test_builder_default() {
-        let config = ConfigBuilder::default()
-            .build()
-            .unwrap();
+        let config = ConfigBuilder::default().build().unwrap();
         assert_eq!(config.reload_strategy(), ReloadStrategy::Never);
     }
 

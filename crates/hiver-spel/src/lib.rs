@@ -16,13 +16,13 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-mod parser;
-mod evaluator;
 mod context;
+mod evaluator;
+mod parser;
 
 pub use context::SpelContext;
 pub use evaluator::SpelEvaluator;
-pub use parser::{SpelExpr, SpelError};
+pub use parser::{SpelError, SpelExpr};
 
 #[cfg(test)]
 mod tests {
@@ -32,24 +32,48 @@ mod tests {
     fn test_has_role() {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
-        assert!(SpelEvaluator::new("hasRole('ADMIN')").evaluate(&ctx).unwrap());
-        assert!(!SpelEvaluator::new("hasRole('USER')").evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("hasRole('ADMIN')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
+        assert!(
+            !SpelEvaluator::new("hasRole('USER')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]
     fn test_has_authority() {
         let mut ctx = SpelContext::new();
         ctx.add_authority("WRITE");
-        assert!(SpelEvaluator::new("hasAuthority('WRITE')").evaluate(&ctx).unwrap());
-        assert!(!SpelEvaluator::new("hasAuthority('READ')").evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("hasAuthority('WRITE')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
+        assert!(
+            !SpelEvaluator::new("hasAuthority('READ')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]
     fn test_has_any_role() {
         let mut ctx = SpelContext::new();
         ctx.add_role("EDITOR");
-        assert!(SpelEvaluator::new("hasAnyRole('ADMIN', 'EDITOR')").evaluate(&ctx).unwrap());
-        assert!(!SpelEvaluator::new("hasAnyRole('ADMIN', 'SUPERUSER')").evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("hasAnyRole('ADMIN', 'EDITOR')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
+        assert!(
+            !SpelEvaluator::new("hasAnyRole('ADMIN', 'SUPERUSER')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]
@@ -64,12 +88,21 @@ mod tests {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         ctx.add_authority("WRITE");
-        assert!(SpelEvaluator::new("hasRole('ADMIN') and hasAuthority('WRITE')")
-            .evaluate(&ctx).unwrap());
-        assert!(SpelEvaluator::new("hasRole('USER') or hasRole('ADMIN')")
-            .evaluate(&ctx).unwrap());
-        assert!(!SpelEvaluator::new("hasRole('ADMIN') and hasAuthority('READ')")
-            .evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("hasRole('ADMIN') and hasAuthority('WRITE')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
+        assert!(
+            SpelEvaluator::new("hasRole('USER') or hasRole('ADMIN')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
+        assert!(
+            !SpelEvaluator::new("hasRole('ADMIN') and hasAuthority('READ')")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]
@@ -92,7 +125,11 @@ mod tests {
     fn test_variable_string_eq() {
         let mut ctx = SpelContext::new();
         ctx.set_variable("name", serde_json::json!("alice"));
-        assert!(SpelEvaluator::new("#name == 'alice'").evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("#name == 'alice'")
+                .evaluate(&ctx)
+                .unwrap()
+        );
         assert!(!SpelEvaluator::new("#name == 'bob'").evaluate(&ctx).unwrap());
     }
 
@@ -101,16 +138,22 @@ mod tests {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         ctx.set_variable("userId", serde_json::json!(1));
-        assert!(SpelEvaluator::new("hasRole('ADMIN') or #userId == 1")
-            .evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("hasRole('ADMIN') or #userId == 1")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]
     fn test_parenthesized() {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
-        assert!(SpelEvaluator::new("(hasRole('ADMIN') or hasRole('USER')) and true")
-            .evaluate(&ctx).unwrap());
+        assert!(
+            SpelEvaluator::new("(hasRole('ADMIN') or hasRole('USER')) and true")
+                .evaluate(&ctx)
+                .unwrap()
+        );
     }
 
     #[test]

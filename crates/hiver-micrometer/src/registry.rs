@@ -2,7 +2,7 @@
 //! 指标注册表
 
 use crate::counter::Counter;
-use crate::error::{Result, MicrometerError};
+use crate::error::{MicrometerError, Result};
 use crate::gauge::Gauge;
 use crate::metric::{MetricId, MetricName, Tags};
 use crate::timer::{LongTaskTimer, Timer};
@@ -105,12 +105,7 @@ impl MetricRegistry {
 
     /// Register a function gauge with tags
     /// 注册带标签的函数仪表盘
-    pub fn function_gauge_with_tags<F>(
-        &self,
-        name: &str,
-        tags: Tags,
-        f: F,
-    ) -> Result<Gauge>
+    pub fn function_gauge_with_tags<F>(&self, name: &str, tags: Tags, f: F) -> Result<Gauge>
     where
         F: Fn() -> f64 + Send + Sync + 'static,
     {
@@ -250,7 +245,11 @@ impl MetricRegistry {
         self.inner.counters.write().expect("lock poisoned").clear();
         self.inner.gauges.write().expect("lock poisoned").clear();
         self.inner.timers.write().expect("lock poisoned").clear();
-        self.inner.long_task_timers.write().expect("lock poisoned").clear();
+        self.inner
+            .long_task_timers
+            .write()
+            .expect("lock poisoned")
+            .clear();
     }
 
     /// Get metric count
@@ -259,7 +258,12 @@ impl MetricRegistry {
         self.inner.counters.read().expect("lock poisoned").len()
             + self.inner.gauges.read().expect("lock poisoned").len()
             + self.inner.timers.read().expect("lock poisoned").len()
-            + self.inner.long_task_timers.read().expect("lock poisoned").len()
+            + self
+                .inner
+                .long_task_timers
+                .read()
+                .expect("lock poisoned")
+                .len()
     }
 
     /// Generate metric key from name and tags

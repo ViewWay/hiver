@@ -116,7 +116,11 @@ impl FieldValidation {
     }
 
     /// Validate a value / 验证值
-    pub fn validate(&self, value: &str, active_groups: &HashSet<String>) -> Result<(), ValidationError> {
+    pub fn validate(
+        &self,
+        value: &str,
+        active_groups: &HashSet<String>,
+    ) -> Result<(), ValidationError> {
         // Check if this field should be validated based on groups
         // 检查是否应根据分组验证此字段
         if !self.groups.is_empty() && !active_groups.is_empty() {
@@ -249,19 +253,21 @@ impl ValidationRule {
             ValidationRule::Size { min, max } => {
                 let len = value.len();
                 if let Some(min_val) = min
-                    && len < *min_val {
-                        return Err(ValidationError::new(
-                            field,
-                            format!("Size must be at least {}", min_val),
-                        ));
-                    }
+                    && len < *min_val
+                {
+                    return Err(ValidationError::new(
+                        field,
+                        format!("Size must be at least {}", min_val),
+                    ));
+                }
                 if let Some(max_val) = max
-                    && len > *max_val {
-                        return Err(ValidationError::new(
-                            field,
-                            format!("Size must be at most {}", max_val),
-                        ));
-                    }
+                    && len > *max_val
+                {
+                    return Err(ValidationError::new(
+                        field,
+                        format!("Size must be at most {}", max_val),
+                    ));
+                }
             },
             ValidationRule::Min(min) => {
                 if let Ok(num) = value.parse::<i64>() {
@@ -352,7 +358,7 @@ impl ValidationRule {
                     },
                     _ => {
                         return Err(ValidationError::new(field, "Invalid number format"));
-                    }
+                    },
                 }
             },
             ValidationRule::Email => {
@@ -369,7 +375,8 @@ impl ValidationRule {
             },
             ValidationRule::Pattern { regex } => {
                 use regex::Regex;
-                let re = Regex::new(regex).map_err(|_| ValidationError::new(field, "Invalid regex pattern"))?;
+                let re = Regex::new(regex)
+                    .map_err(|_| ValidationError::new(field, "Invalid regex pattern"))?;
                 if !re.is_match(value) {
                     return Err(ValidationError::pattern_mismatch(field, regex));
                 }
@@ -380,9 +387,10 @@ impl ValidationRule {
                         return Err(ValidationError::new(field, "Must be negative"));
                     }
                 } else if let Ok(num) = value.parse::<f64>()
-                    && num >= 0.0 {
-                        return Err(ValidationError::new(field, "Must be negative"));
-                    }
+                    && num >= 0.0
+                {
+                    return Err(ValidationError::new(field, "Must be negative"));
+                }
             },
             ValidationRule::Positive => {
                 if let Ok(num) = value.parse::<i64>() {
@@ -390,9 +398,10 @@ impl ValidationRule {
                         return Err(ValidationError::new(field, "Must be positive"));
                     }
                 } else if let Ok(num) = value.parse::<f64>()
-                    && num <= 0.0 {
-                        return Err(ValidationError::new(field, "Must be positive"));
-                    }
+                    && num <= 0.0
+                {
+                    return Err(ValidationError::new(field, "Must be positive"));
+                }
             },
             ValidationRule::NegativeOrZero => {
                 if let Ok(num) = value.parse::<i64>() {
@@ -400,9 +409,10 @@ impl ValidationRule {
                         return Err(ValidationError::new(field, "Must be negative or zero"));
                     }
                 } else if let Ok(num) = value.parse::<f64>()
-                    && num > 0.0 {
-                        return Err(ValidationError::new(field, "Must be negative or zero"));
-                    }
+                    && num > 0.0
+                {
+                    return Err(ValidationError::new(field, "Must be negative or zero"));
+                }
             },
             ValidationRule::PositiveOrZero => {
                 if let Ok(num) = value.parse::<i64>() {
@@ -410,9 +420,10 @@ impl ValidationRule {
                         return Err(ValidationError::new(field, "Must be positive or zero"));
                     }
                 } else if let Ok(num) = value.parse::<f64>()
-                    && num < 0.0 {
-                        return Err(ValidationError::new(field, "Must be positive or zero"));
-                    }
+                    && num < 0.0
+                {
+                    return Err(ValidationError::new(field, "Must be positive or zero"));
+                }
             },
             ValidationRule::Past => {
                 if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
@@ -444,7 +455,10 @@ impl ValidationRule {
             ValidationRule::FutureOrPresent => {
                 if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
                     if dt < chrono::Utc::now() {
-                        return Err(ValidationError::new(field, "Must be in the future or present"));
+                        return Err(ValidationError::new(
+                            field,
+                            "Must be in the future or present",
+                        ));
                     }
                 } else {
                     return Err(ValidationError::new(field, "Invalid date format"));
@@ -515,10 +529,7 @@ impl fmt::Debug for ValidationRule {
 /// Check if a credit card number is valid using Luhn algorithm
 /// 使用Luhn算法检查信用卡号是否有效
 fn is_valid_credit_card(number: &str) -> bool {
-    let digits: Vec<u32> = number
-        .chars()
-        .filter_map(|c| c.to_digit(10))
-        .collect();
+    let digits: Vec<u32> = number.chars().filter_map(|c| c.to_digit(10)).collect();
 
     if digits.len() < 13 || digits.len() > 19 {
         return false;

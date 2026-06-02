@@ -8,7 +8,7 @@ use crate::error::{GrpcError, GrpcResult};
 use crate::tls::TlsConfig;
 use std::future::Future;
 use std::net::SocketAddr;
-use tonic::transport::{server::Router, Server};
+use tonic::transport::{Server, server::Router};
 use tracing::{info, warn};
 
 /// Builder for a Hiver gRPC server.
@@ -113,9 +113,9 @@ impl GrpcServerBuilder {
 
         if let Some(tls) = &self.tls {
             let tls_config = tls.server_tls_config()?;
-            tonic = tonic.tls_config(tls_config).map_err(|e| {
-                GrpcError::config(format!("TLS config failed: {e}"))
-            })?;
+            tonic = tonic
+                .tls_config(tls_config)
+                .map_err(|e| GrpcError::config(format!("TLS config failed: {e}")))?;
         }
 
         if let Some(n) = self.max_concurrent_streams {
@@ -173,9 +173,7 @@ impl GrpcServer {
             > + Clone
             + Send
             + 'static,
-        <S as tower::Service<
-            http::Request<tonic::body::BoxBody>,
-        >>::Future: Send + 'static,
+        <S as tower::Service<http::Request<tonic::body::BoxBody>>>::Future: Send + 'static,
     {
         self.router = Some(match self.router.take() {
             None => self.tonic.add_service(service),
@@ -193,7 +191,7 @@ impl GrpcServer {
             Some(router) => router.serve(addr).await?,
             None => {
                 warn!("gRPC server has no registered services — nothing to serve");
-            }
+            },
         }
         Ok(())
     }
@@ -212,10 +210,10 @@ impl GrpcServer {
         match self.router {
             Some(router) => {
                 router.serve_with_shutdown(addr, signal).await?;
-            }
+            },
             None => {
                 warn!("gRPC server has no registered services — nothing to serve");
-            }
+            },
         }
         Ok(())
     }
@@ -242,10 +240,7 @@ mod tests {
 
     #[test]
     fn test_builder_gzip() -> GrpcResult<()> {
-        let server = GrpcServer::builder()
-            .accept_gzip()
-            .send_gzip()
-            .build()?;
+        let server = GrpcServer::builder().accept_gzip().send_gzip().build()?;
         assert_eq!(server.addr().port(), 50051);
         Ok(())
     }

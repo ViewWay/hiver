@@ -179,12 +179,16 @@ fn format_timestamp() -> String {
     let month = (day_of_year / 30) + 1;
     let day = (day_of_year % 30) + 1;
 
-    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02} {:03}",
-        year, month, day,
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02} {:03}",
+        year,
+        month,
+        day,
         (secs % 86400 / 3600) as u32,
         (secs % 3600 / 60) as u32,
         (secs % 60) as u32,
-        millis)
+        millis
+    )
 }
 
 /// 获取进程 ID
@@ -258,7 +262,7 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()> {
     {
         // 使用 hiver-observability 统一日志系统
         // Use hiver-observability unified logging system
-        use hiver_observability::log::{Logger, LoggerConfig, LogMode, LogLevel};
+        use hiver_observability::log::{LogLevel, LogMode, Logger, LoggerConfig};
 
         // 从环境变量或 profile 获取配置
         let level = std::env::var("HIVER_LOG_LEVEL")

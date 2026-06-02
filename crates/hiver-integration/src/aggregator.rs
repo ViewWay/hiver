@@ -218,7 +218,9 @@ impl MessageAggregator for CorrelationAggregator {
 
     async fn is_complete(&self) -> bool {
         let groups = self.groups.read().await;
-        groups.values().any(|msgs| msgs.len() >= self.target_per_group)
+        groups
+            .values()
+            .any(|msgs| msgs.len() >= self.target_per_group)
     }
 
     async fn result(&self) -> Result<Message> {
@@ -291,7 +293,9 @@ where
     /// 检查特定组是否完成
     pub async fn is_group_complete(&self, key: &K) -> bool {
         let groups = self.groups.read().await;
-        groups.get(key).is_some_and(|msgs| msgs.len() >= self.target_size)
+        groups
+            .get(key)
+            .is_some_and(|msgs| msgs.len() >= self.target_size)
     }
 }
 
@@ -408,14 +412,23 @@ mod tests {
 
         assert!(!aggregator.is_complete().await);
 
-        aggregator.add(Message::new("msg1".to_string())).await.unwrap();
+        aggregator
+            .add(Message::new("msg1".to_string()))
+            .await
+            .unwrap();
         assert_eq!(aggregator.count().await, 1);
         assert!(!aggregator.is_complete().await);
 
-        aggregator.add(Message::new("msg2".to_string())).await.unwrap();
+        aggregator
+            .add(Message::new("msg2".to_string()))
+            .await
+            .unwrap();
         assert!(!aggregator.is_complete().await);
 
-        aggregator.add(Message::new("msg3".to_string())).await.unwrap();
+        aggregator
+            .add(Message::new("msg3".to_string()))
+            .await
+            .unwrap();
         assert!(aggregator.is_complete().await);
 
         let result = aggregator.result().await.unwrap();
@@ -447,7 +460,10 @@ mod tests {
     #[tokio::test]
     async fn test_group_aggregator() {
         let aggregator = GroupAggregator::new(
-            |msg| msg.header("category").and_then(|h| h.as_str().map(|s| s.to_string())),
+            |msg| {
+                msg.header("category")
+                    .and_then(|h| h.as_str().map(|s| s.to_string()))
+            },
             2,
         );
 
@@ -497,8 +513,14 @@ mod tests {
     async fn test_aggregator_reset() {
         let aggregator = CountAggregator::new(2);
 
-        aggregator.add(Message::new("msg1".to_string())).await.unwrap();
-        aggregator.add(Message::new("msg2".to_string())).await.unwrap();
+        aggregator
+            .add(Message::new("msg1".to_string()))
+            .await
+            .unwrap();
+        aggregator
+            .add(Message::new("msg2".to_string()))
+            .await
+            .unwrap();
         assert!(aggregator.is_complete().await);
 
         aggregator.reset().await;

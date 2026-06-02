@@ -10,9 +10,9 @@
 //! 否则返回安全的默认值以支持API兼容性测试。
 
 use crate::context::LdapContextSource;
-use crate::error::LdapResult;
 #[cfg(feature = "ldap")]
 use crate::error::LdapError;
+use crate::error::LdapResult;
 use crate::mapper::{AttrMap, AttributesMapper, ContextMapper};
 
 /// Central class for LDAP operations, wrapping a `ContextSource`.
@@ -80,17 +80,20 @@ impl LdapTemplate {
             let scope = ldap3::SearchScope::Subtree;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(base, scope, filter, &["*"]).await?;
-            let mapped = results.into_iter().map(|(_dn, attrs)| {
-                let attr_slices: Vec<(&str, &[String])> = Vec::new();
-                // Convert owned attrs to borrowed for mapper
-                let attr_pairs: Vec<(&str, Vec<&str>)> = attrs.iter().map(|(k, v)| {
-                    (k.as_str(), v.iter().map(String::as_str).collect())
-                }).collect();
-                let attr_ref_pairs: Vec<(&str, &[&str])> = attr_pairs.iter().map(|(k, v)| {
-                    (*k, v.as_slice())
-                }).collect();
-                mapper.map_attributes(&attr_ref_pairs)
-            }).collect();
+            let mapped = results
+                .into_iter()
+                .map(|(_dn, attrs)| {
+                    let attr_slices: Vec<(&str, &[String])> = Vec::new();
+                    // Convert owned attrs to borrowed for mapper
+                    let attr_pairs: Vec<(&str, Vec<&str>)> = attrs
+                        .iter()
+                        .map(|(k, v)| (k.as_str(), v.iter().map(String::as_str).collect()))
+                        .collect();
+                    let attr_ref_pairs: Vec<(&str, &[&str])> =
+                        attr_pairs.iter().map(|(k, v)| (*k, v.as_slice())).collect();
+                    mapper.map_attributes(&attr_ref_pairs)
+                })
+                .collect();
             Ok(mapped)
         }
         #[cfg(not(feature = "ldap"))]
@@ -105,24 +108,23 @@ impl LdapTemplate {
     /// Convenience method that returns attribute maps instead of requiring a mapper.
     /// 便捷方法，返回属性映射而不需要提供mapper。
     #[allow(clippy::unused_async)]
-    pub async fn search_attrs(
-        &self,
-        base: &str,
-        filter: &str,
-    ) -> LdapResult<Vec<AttrMap>> {
+    pub async fn search_attrs(&self, base: &str, filter: &str) -> LdapResult<Vec<AttrMap>> {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Subtree;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(base, scope, filter, &["*"]).await?;
-            let maps = results.into_iter().map(|(_dn, attrs)| {
-                let mut map = AttrMap::new();
-                for (key, values) in attrs {
-                    let refs: Vec<&str> = values.iter().map(String::as_str).collect();
-                    map.add(&key, &refs);
-                }
-                map
-            }).collect();
+            let maps = results
+                .into_iter()
+                .map(|(_dn, attrs)| {
+                    let mut map = AttrMap::new();
+                    for (key, values) in attrs {
+                        let refs: Vec<&str> = values.iter().map(String::as_str).collect();
+                        map.add(&key, &refs);
+                    }
+                    map
+                })
+                .collect();
             Ok(maps)
         }
         #[cfg(not(feature = "ldap"))]
@@ -134,7 +136,11 @@ impl LdapTemplate {
 
     /// Look up a single entry by DN / 通过DN查找单个条目
     #[allow(clippy::unused_async)]
-    pub async fn lookup<T, M: ContextMapper<T>>(&self, dn: &str, mapper: &M) -> LdapResult<Option<T>> {
+    pub async fn lookup<T, M: ContextMapper<T>>(
+        &self,
+        dn: &str,
+        mapper: &M,
+    ) -> LdapResult<Option<T>> {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Base;
@@ -163,9 +169,12 @@ impl LdapTemplate {
         {
             use std::collections::HashSet;
             let mut conn = self.context_source.get_context().await?;
-            let ldap_attrs: Vec<(String, HashSet<String>)> = attrs.iter().map(|(k, v)| {
-                (k.to_string(), v.iter().map(|s| s.to_string()).collect::<HashSet<String>>())
-            }).collect();
+            let ldap_attrs: Vec<(String, HashSet<String>)> = attrs
+                .iter()
+                .map(|(k, v)| {
+                    (k.to_string(), v.iter().map(|s| s.to_string()).collect::<HashSet<String>>())
+                })
+                .collect();
             conn.add(dn, ldap_attrs).await
         }
         #[cfg(not(feature = "ldap"))]
@@ -202,12 +211,15 @@ impl LdapTemplate {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.context_source.get_context().await?;
-            let mods: Vec<ldap3::Mod> = modifications.iter().map(|(attr, values)| {
-                ldap3::Mod::Replace(
-                    attr.to_string(),
-                    values.iter().map(|v| v.to_string()).collect(),
-                )
-            }).collect();
+            let mods: Vec<ldap3::Mod> = modifications
+                .iter()
+                .map(|(attr, values)| {
+                    ldap3::Mod::Replace(
+                        attr.to_string(),
+                        values.iter().map(|v| v.to_string()).collect(),
+                    )
+                })
+                .collect();
             conn.modify(dn, mods).await
         }
         #[cfg(not(feature = "ldap"))]
@@ -268,7 +280,9 @@ mod tests {
     async fn test_authenticate_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let result = template.authenticate("cn=user,dc=example,dc=com", "password").await;
+        let result = template
+            .authenticate("cn=user,dc=example,dc=com", "password")
+            .await;
         assert!(result.is_ok());
         assert!(result.unwrap());
     }
@@ -283,7 +297,9 @@ mod tests {
                 "mapped".to_string()
             }
         }
-        let result = template.search("dc=example,dc=com", "(objectClass=*)", &IdentMapper).await;
+        let result = template
+            .search("dc=example,dc=com", "(objectClass=*)", &IdentMapper)
+            .await;
         assert!(result.is_ok());
         assert!(result.unwrap().is_empty());
     }
@@ -292,7 +308,9 @@ mod tests {
     async fn test_search_attrs_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let result = template.search_attrs("dc=example,dc=com", "(objectClass=*)").await;
+        let result = template
+            .search_attrs("dc=example,dc=com", "(objectClass=*)")
+            .await;
         assert!(result.is_ok());
         assert!(result.unwrap().is_empty());
     }
@@ -303,9 +321,13 @@ mod tests {
         let template = LdapTemplate::new(ctx);
         struct IdentCtxMapper;
         impl ContextMapper<String> for IdentCtxMapper {
-            fn map_from_context(&self, ctx: &str) -> String { ctx.to_string() }
+            fn map_from_context(&self, ctx: &str) -> String {
+                ctx.to_string()
+            }
         }
-        let result = template.lookup("cn=user,dc=example,dc=com", &IdentCtxMapper).await;
+        let result = template
+            .lookup("cn=user,dc=example,dc=com", &IdentCtxMapper)
+            .await;
         assert!(result.is_ok());
         assert!(result.unwrap().is_none());
     }
@@ -314,7 +336,9 @@ mod tests {
     async fn test_bind_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let result = template.bind("cn=new,dc=example,dc=com", &[("objectClass", &["person"] as &[&str])]).await;
+        let result = template
+            .bind("cn=new,dc=example,dc=com", &[("objectClass", &["person"] as &[&str])])
+            .await;
         assert!(result.is_ok());
     }
 
@@ -330,7 +354,9 @@ mod tests {
     async fn test_modify_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
-        let result = template.modify("cn=user,dc=example,dc=com", &[("sn", &["newValue"] as &[&str])]).await;
+        let result = template
+            .modify("cn=user,dc=example,dc=com", &[("sn", &["newValue"] as &[&str])])
+            .await;
         assert!(result.is_ok());
     }
 

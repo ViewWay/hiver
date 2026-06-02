@@ -68,9 +68,7 @@ impl AsyncTaskExecutor {
     pub fn with_config(config: TaskExecutorConfig) -> Self {
         config.validate().expect("Invalid executor configuration");
 
-        let semaphore = Arc::new(Semaphore::new(
-            config.max_pool_size + config.queue_capacity,
-        ));
+        let semaphore = Arc::new(Semaphore::new(config.max_pool_size + config.queue_capacity));
 
         Self {
             config,
@@ -129,7 +127,7 @@ impl AsyncTaskExecutor {
 
                     runnable.execute().await;
                 });
-            }
+            },
             ExecutionMode::Background => {
                 // Run in background with queue management
                 let semaphore = self.semaphore.clone();
@@ -147,7 +145,7 @@ impl AsyncTaskExecutor {
                             let _permit = permit;
                             runnable.execute().await;
                         });
-                    }
+                    },
                     Err(_) => {
                         // Queue is full, apply rejection policy
                         match self.config.rejection_policy {
@@ -155,29 +153,29 @@ impl AsyncTaskExecutor {
                                 return Err(AsyncError::TaskRejected(
                                     "Task queue is full".to_string(),
                                 ));
-                            }
+                            },
                             RejectionPolicy::CallerRuns => {
                                 // Run in current context (spawn a task that runs immediately)
                                 tokio::spawn(async move {
                                     runnable.execute().await;
                                 });
-                            }
+                            },
                             RejectionPolicy::Discard => {
                                 return Err(AsyncError::TaskRejected(
                                     "Task discarded (queue full)".to_string(),
                                 ));
-                            }
+                            },
                             RejectionPolicy::DiscardOldest => {
                                 // Try to find and cancel oldest task
                                 // For simplicity, we'll just run the new one
                                 tokio::spawn(async move {
                                     runnable.execute().await;
                                 });
-                            }
+                            },
                         }
-                    }
+                    },
                 }
-            }
+            },
             ExecutionMode::Prioritized => {
                 // Run with priority (simplified - just spawn)
                 let semaphore = self.semaphore.clone();
@@ -195,7 +193,7 @@ impl AsyncTaskExecutor {
 
                     runnable.execute().await;
                 });
-            }
+            },
             ExecutionMode::Retry => {
                 // Run with retry on failure
                 let semaphore = self.semaphore.clone();
@@ -216,7 +214,7 @@ impl AsyncTaskExecutor {
                     // For now, just execute once
                     runnable.execute().await;
                 });
-            }
+            },
         }
 
         Ok(handle)
@@ -245,7 +243,8 @@ impl AsyncTaskExecutor {
     /// Check if executor is shutdown
     /// 检查执行器是否已关闭
     pub fn is_shutdown(&self) -> bool {
-        self.shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
+        self.shutdown_flag
+            .load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Shutdown the executor gracefully

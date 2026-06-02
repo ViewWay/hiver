@@ -168,10 +168,7 @@ impl AdvancedJobOperator {
 
     /// Get the last execution of a job by name.
     /// 通过名称获取作业的最后一次执行。
-    pub async fn get_last_execution(
-        &self,
-        job_name: &str,
-    ) -> BatchResult<Option<JobExecution>> {
+    pub async fn get_last_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>> {
         self.repository.get_last_job_execution(job_name).await
     }
 
@@ -245,7 +242,7 @@ impl AdvancedJobOperator {
                     resource: "JobExecution".to_string(),
                     id: job_name.to_string(),
                 });
-            }
+            },
         };
 
         if last.status == JobStatus::Completed {
@@ -303,10 +300,7 @@ impl AdvancedJobOperator {
     /// 列出所有当前运行中的作业名称。
     pub async fn running_job_names(&self) -> Vec<String> {
         let running = self.running_jobs.read().await;
-        running
-            .values()
-            .map(|e| e.job_name.clone())
-            .collect()
+        running.values().map(|e| e.job_name.clone()).collect()
     }
 
     /// Count the number of running jobs.

@@ -283,9 +283,10 @@ pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'sta
     if config.wildcard {
         headers.push(("Access-Control-Allow-Origin", "*".to_string()));
     } else if let Some(origin) = origin
-        && config.allowed_origins.contains(&origin.to_string()) {
-            headers.push(("Access-Control-Allow-Origin", origin.to_string()));
-        }
+        && config.allowed_origins.contains(&origin.to_string())
+    {
+        headers.push(("Access-Control-Allow-Origin", origin.to_string()));
+    }
 
     if !config.allowed_methods.is_empty() {
         headers.push(("Access-Control-Allow-Methods", config.allowed_methods.join(", ")));

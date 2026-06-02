@@ -229,8 +229,7 @@ impl Runtime {
 
         // Create the scheduler with the driver
         // 使用driver创建调度器
-        let scheduler =
-            Scheduler::with_config_and_driver(&config.scheduler, driver.clone())?;
+        let scheduler = Scheduler::with_config_and_driver(&config.scheduler, driver.clone())?;
 
         Ok(Self {
             scheduler,
@@ -415,8 +414,7 @@ impl Handle {
     /// 如果在运行时上下文之外调用则恐慌。
     #[allow(clippy::expect_used)]
     pub fn current() -> Self {
-        Self::try_current()
-            .expect("Handle::current() called outside of a runtime context")
+        Self::try_current().expect("Handle::current() called outside of a runtime context")
     }
 
     /// Try to get a handle to the current runtime. Returns None if outside a runtime.
@@ -499,8 +497,8 @@ mod tests {
 
     #[test]
     fn test_spawn_executes_through_scheduler() {
-        use std::sync::atomic::{AtomicI32, Ordering};
         use std::sync::Arc;
+        use std::sync::atomic::{AtomicI32, Ordering};
 
         let mut runtime = Runtime::new().unwrap();
         let counter = Arc::new(AtomicI32::new(0));
@@ -533,8 +531,8 @@ mod tests {
 
     #[test]
     fn test_multiple_spawns() {
-        use std::sync::atomic::{AtomicI32, Ordering};
         use std::sync::Arc;
+        use std::sync::atomic::{AtomicI32, Ordering};
 
         let mut runtime = Runtime::new().unwrap();
         let counter = Arc::new(AtomicI32::new(0));
@@ -567,9 +565,8 @@ mod tests {
                 let h2 = crate::task::spawn(async { 2i32 });
                 let h3 = crate::task::spawn(async { 3i32 });
 
-                let sum = h1.wait().await.unwrap()
-                    + h2.wait().await.unwrap()
-                    + h3.wait().await.unwrap();
+                let sum =
+                    h1.wait().await.unwrap() + h2.wait().await.unwrap() + h3.wait().await.unwrap();
 
                 assert_eq!(sum, 6);
             })
@@ -596,8 +593,8 @@ mod tests {
     #[test]
     fn test_spawn_join_handle_is_finished() {
         let mut runtime = Runtime::new().unwrap();
-        use std::sync::atomic::{AtomicBool, Ordering};
         use std::sync::Arc;
+        use std::sync::atomic::{AtomicBool, Ordering};
 
         let flag = Arc::new(AtomicBool::new(false));
         let flag_clone = flag.clone();
@@ -620,9 +617,7 @@ mod tests {
 
         runtime
             .block_on(async {
-                let handle = crate::task::spawn(async {
-                    String::from("hello")
-                });
+                let handle = crate::task::spawn(async { String::from("hello") });
                 let result = handle.wait().await.unwrap();
                 assert_eq!(result, "hello");
             })
@@ -729,7 +724,7 @@ mod tests {
             ..RuntimeConfig::default()
         };
         let mut runtime = Runtime::with_config(config).unwrap();
-        let result = runtime.block_on(async { });
+        let result = runtime.block_on(async {});
         assert!(result.is_ok());
     }
 }

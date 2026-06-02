@@ -195,9 +195,10 @@ impl LeastConnectionLoadBalancer {
     pub async fn decrement_connection(&self, instance_id: &str) {
         let mut connections = self.connections.write().await;
         if let Some(count) = connections.get_mut(instance_id)
-            && *count > 0 {
-                *count -= 1;
-            }
+            && *count > 0
+        {
+            *count -= 1;
+        }
     }
 }
 
@@ -333,7 +334,10 @@ impl LoadBalancer for WeightedRoundRobinLoadBalancer {
             states
                 .entry(inst.instance_id.clone())
                 .and_modify(|s| s.weight = w)
-                .or_insert(SmoothWeightState { weight: w, current: 0 });
+                .or_insert(SmoothWeightState {
+                    weight: w,
+                    current: 0,
+                });
         }
 
         let total_weight: u32 = instances.iter().map(Self::get_weight).sum();
@@ -476,10 +480,14 @@ mod tests {
         let lb = WeightedRoundRobinLoadBalancer::new();
 
         let mut inst_a = ServiceInstance::new("test", "1", "localhost", 8080);
-        inst_a.metadata.insert("weight".to_string(), "5".to_string());
+        inst_a
+            .metadata
+            .insert("weight".to_string(), "5".to_string());
 
         let mut inst_b = ServiceInstance::new("test", "2", "localhost", 8081);
-        inst_b.metadata.insert("weight".to_string(), "1".to_string());
+        inst_b
+            .metadata
+            .insert("weight".to_string(), "1".to_string());
 
         let instances = vec![inst_a, inst_b];
 

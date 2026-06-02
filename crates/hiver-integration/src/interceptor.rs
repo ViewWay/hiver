@@ -1,8 +1,8 @@
 //! Channel interceptors for pre/post send and receive hooks.
 //! 通道拦截器，用于发送/接收的前后钩子。
 
-use async_trait::async_trait;
 use crate::message::{HeaderValue, Message};
+use async_trait::async_trait;
 
 /// Interceptor hook for channel operations.
 /// 通道操作的拦截器钩子。
@@ -107,7 +107,9 @@ pub struct LoggingInterceptor {
 impl LoggingInterceptor {
     /// Create with a log prefix.
     pub fn new(prefix: impl Into<String>) -> Self {
-        Self { prefix: prefix.into() }
+        Self {
+            prefix: prefix.into(),
+        }
     }
 }
 
@@ -141,7 +143,10 @@ impl HeaderEnricherInterceptor {
     /// Create with header key-value pairs.
     pub fn new(headers: Vec<(impl Into<String>, impl Into<String>)>) -> Self {
         Self {
-            headers: headers.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
+            headers: headers
+                .into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect(),
         }
     }
 }
@@ -169,7 +174,9 @@ pub struct WiretapInterceptor {
 impl WiretapInterceptor {
     /// Create with a target wiretap channel.
     pub fn new(channel: impl crate::channel::MessageChannel + 'static) -> Self {
-        Self { channel: Box::new(channel) }
+        Self {
+            channel: Box::new(channel),
+        }
     }
 }
 
@@ -198,8 +205,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_logging_interceptor() {
-        let chain = InterceptorChain::new()
-            .add(Box::new(LoggingInterceptor::new("test")));
+        let chain = InterceptorChain::new().add(Box::new(LoggingInterceptor::new("test")));
         assert_eq!(chain.len(), 1);
         let msg = Message::new("data");
         assert!(chain.pre_send(msg).await.is_some());
@@ -208,9 +214,7 @@ mod tests {
     #[tokio::test]
     async fn test_header_enricher() {
         let chain = InterceptorChain::new()
-            .add(Box::new(HeaderEnricherInterceptor::new(vec![
-                ("trace_id", "abc-123"),
-            ])));
+            .add(Box::new(HeaderEnricherInterceptor::new(vec![("trace_id", "abc-123")])));
         let msg = Message::new("data");
         let enriched = chain.pre_send(msg).await.unwrap();
         assert_eq!(enriched.header("trace_id").and_then(|v| v.as_str()), Some("abc-123"));

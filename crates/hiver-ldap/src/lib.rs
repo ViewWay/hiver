@@ -34,10 +34,10 @@ mod tests;
 
 pub mod context;
 pub mod error;
+pub mod ldif;
 pub mod mapper;
 pub mod odm;
 pub mod operations;
-pub mod ldif;
 pub mod pool;
 pub mod query;
 pub mod repository;
@@ -46,13 +46,16 @@ pub mod template;
 // Re-exports
 pub use context::{ContextSource, LdapConnection, LdapContextSource};
 pub use error::{LdapError, LdapResult};
+pub use ldif::{LdifChangeType, LdifEntry, LdifModOp, LdifModification, generate_ldif, parse_ldif};
 pub use mapper::{AttrMap, AttributesMapper, ContextMapper};
-pub use odm::{Dn, OdmEntry, ObjectDirectoryMapper, AttributeMapping, DnMapper,
-             build_dn, parse_rdn_value};
+pub use odm::{
+    AttributeMapping, Dn, DnMapper, ObjectDirectoryMapper, OdmEntry, build_dn, parse_rdn_value,
+};
+pub use operations::{AdvancedOperations, Modification};
 pub use pool::{LdapPool, PoolConfig, PoolStats};
 pub use query::LdapQueryBuilder;
-pub use repository::{LdapRepository, SimpleLdapRepository, TypedLdapRepository,
-                     EntryMapper, EntrySerializer, IdExtractor};
+pub use repository::{
+    EntryMapper, EntrySerializer, IdExtractor, LdapRepository, SimpleLdapRepository,
+    TypedLdapRepository,
+};
 pub use template::LdapTemplate;
-pub use operations::{AdvancedOperations, Modification};
-pub use ldif::{parse_ldif, generate_ldif, LdifEntry, LdifChangeType, LdifModification, LdifModOp};

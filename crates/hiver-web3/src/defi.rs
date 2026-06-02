@@ -167,10 +167,7 @@ impl Erc20 {
     /// Build `transfer(address,uint256)` call data.
     /// 构建 `transfer(address,uint256)` 调用数据。
     pub fn transfer_call(to: &Address, amount: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::transfer_selector(),
-            &[encode_address(to), encode_uint256(amount)],
-        )
+        build_call_data(&Self::transfer_selector(), &[encode_address(to), encode_uint256(amount)])
     }
 
     /// Build `approve(address,uint256)` call data.
@@ -365,17 +362,18 @@ impl Erc721 {
     pub fn transfer_from_call(from: &Address, to: &Address, token_id: u64) -> Vec<u8> {
         build_call_data(
             &Self::transfer_from_selector(),
-            &[encode_address(from), encode_address(to), encode_uint256(token_id)],
+            &[
+                encode_address(from),
+                encode_address(to),
+                encode_uint256(token_id),
+            ],
         )
     }
 
     /// Build `approve(address,uint256)` call data.
     /// 构建 `approve(address,uint256)` 调用数据。
     pub fn approve_call(to: &Address, token_id: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::approve_selector(),
-            &[encode_address(to), encode_uint256(token_id)],
-        )
+        build_call_data(&Self::approve_selector(), &[encode_address(to), encode_uint256(token_id)])
     }
 
     /// Build `tokenURI(uint256)` call data.
@@ -387,10 +385,7 @@ impl Erc721 {
     /// Build `mint(address,uint256)` call data.
     /// 构建 `mint(address,uint256)` 调用数据。
     pub fn mint_call(to: &Address, token_id: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::mint_selector(),
-            &[encode_address(to), encode_uint256(token_id)],
-        )
+        build_call_data(&Self::mint_selector(), &[encode_address(to), encode_uint256(token_id)])
     }
 
     // -- Response decoders / 响应解码器 --
@@ -966,7 +961,7 @@ mod tests {
         // Manually ABI-encode "ETH" (offset=32, length=3, data="ETH" + pad)
         let mut raw = Vec::new();
         raw.extend_from_slice(&encode_uint256(32)); // offset
-        raw.extend_from_slice(&encode_uint256(3));  // length
+        raw.extend_from_slice(&encode_uint256(3)); // length
         raw.extend_from_slice(b"ETH");
         raw.extend_from_slice(&[0u8; 29]); // pad to 32
         let s = Erc20::decode_string(&raw).unwrap();

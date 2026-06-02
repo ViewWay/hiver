@@ -154,10 +154,7 @@ impl RecipientListRouter {
             recipients.remove(index);
             Ok(())
         } else {
-            Err(IntegrationError::Routing(format!(
-                "Recipient index {} out of bounds",
-                index
-            )))
+            Err(IntegrationError::Routing(format!("Recipient index {} out of bounds", index)))
         }
     }
 
@@ -422,7 +419,7 @@ impl RouterBuilder {
                     router.set_default_channel(default_channel).await;
                 }
                 Ok(BuiltRouter::ContentBased(router))
-            }
+            },
             RouterType::RecipientList => Ok(BuiltRouter::RecipientList(RecipientListRouter::new())),
             RouterType::Static { extractor } => {
                 let extractor = extractor.ok_or_else(|| {
@@ -432,7 +429,7 @@ impl RouterBuilder {
                 // 需要从 Arc 提取 - 创建一个捕获的新函数
                 let router = StaticRouter::new(move |msg| extractor(msg));
                 Ok(BuiltRouter::Static(router))
-            }
+            },
         }
     }
 }
@@ -457,15 +454,11 @@ mod tests {
         // Add routes
         // 添加路由
         router
-            .add_route("channel1", |msg| {
-                msg.get_payload::<i32>().map_or(false, |v| v < 50)
-            })
+            .add_route("channel1", |msg| msg.get_payload::<i32>().map_or(false, |v| v < 50))
             .await;
 
         router
-            .add_route("channel2", |msg| {
-                msg.get_payload::<i32>().map_or(false, |v| v >= 50)
-            })
+            .add_route("channel2", |msg| msg.get_payload::<i32>().map_or(false, |v| v >= 50))
             .await;
 
         // Route messages
@@ -492,7 +485,10 @@ mod tests {
         router.add_recipient(channel1.clone()).await;
         router.add_recipient(channel2.clone()).await;
 
-        router.route(Message::new("broadcast".to_string())).await.unwrap();
+        router
+            .route(Message::new("broadcast".to_string()))
+            .await
+            .unwrap();
 
         // Both should receive
         // 两者都应该接收

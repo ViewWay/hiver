@@ -224,7 +224,11 @@ impl IndexBuilder {
 
         mongodb::IndexModel::builder()
             .keys(self.keys.clone())
-            .options(if self.has_options() { Some(options) } else { None })
+            .options(if self.has_options() {
+                Some(options)
+            } else {
+                None
+            })
             .build()
     }
 
@@ -313,13 +317,8 @@ impl IndexOperations {
 
     /// Drop all indexes on a collection (except the `_id` index).
     /// 删除集合上的所有索引（`_id` 索引除外）。
-    pub async fn drop_all_indexes(
-        collection: &mongodb::Collection<Document>,
-    ) -> MongoResult<()> {
-        collection
-            .drop_indexes()
-            .await
-            .map_err(MongoError::from)
+    pub async fn drop_all_indexes(collection: &mongodb::Collection<Document>) -> MongoResult<()> {
+        collection.drop_indexes().await.map_err(MongoError::from)
     }
 
     /// List all indexes on a collection.
@@ -329,10 +328,7 @@ impl IndexOperations {
     ) -> MongoResult<Vec<IndexInfo>> {
         use futures_util::stream::StreamExt;
 
-        let mut cursor = collection
-            .list_indexes()
-            .await
-            .map_err(MongoError::from)?;
+        let mut cursor = collection.list_indexes().await.map_err(MongoError::from)?;
 
         let mut indexes = Vec::new();
         while let Some(result) = cursor.next().await {
@@ -527,31 +523,19 @@ mod tests {
     #[test]
     fn test_index_builder_ascending() {
         let idx = IndexBuilder::ascending("name");
-        assert_eq!(
-            idx.keys.get_i32("name").unwrap(),
-            1
-        );
+        assert_eq!(idx.keys.get_i32("name").unwrap(), 1);
     }
 
     #[test]
     fn test_index_builder_descending() {
         let idx = IndexBuilder::descending("createdAt");
-        assert_eq!(
-            idx.keys.get_i32("createdAt").unwrap(),
-            -1
-        );
+        assert_eq!(idx.keys.get_i32("createdAt").unwrap(), -1);
     }
 
     #[test]
     fn test_index_direction_to_bson() {
-        assert_eq!(
-            IndexDirection::Ascending.to_bson_value(),
-            mongodb::bson::Bson::Int32(1)
-        );
-        assert_eq!(
-            IndexDirection::Descending.to_bson_value(),
-            mongodb::bson::Bson::Int32(-1)
-        );
+        assert_eq!(IndexDirection::Ascending.to_bson_value(), mongodb::bson::Bson::Int32(1));
+        assert_eq!(IndexDirection::Descending.to_bson_value(), mongodb::bson::Bson::Int32(-1));
         assert_eq!(
             IndexDirection::Text.to_bson_value(),
             mongodb::bson::Bson::String("text".to_string())

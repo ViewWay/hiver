@@ -5,6 +5,5 @@
 //! 此模块重新导出在locale模块中定义的语言环境解析器。
 
 pub use crate::locale::{
-    FixedLocaleResolver, AcceptHeaderLocaleResolver,
-    CookieLocaleResolver, SessionLocaleResolver,
+    AcceptHeaderLocaleResolver, CookieLocaleResolver, FixedLocaleResolver, SessionLocaleResolver,
 };

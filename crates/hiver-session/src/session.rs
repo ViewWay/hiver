@@ -150,7 +150,9 @@ impl Session {
     /// 获取属性
     pub async fn get<T: Clone + 'static>(&self, name: &str) -> Option<T> {
         let attributes = self.attributes.read().await;
-        attributes.get(name).and_then(|attr| attr.downcast_ref::<T>().cloned())
+        attributes
+            .get(name)
+            .and_then(|attr| attr.downcast_ref::<T>().cloned())
     }
 
     /// Set attribute
@@ -270,9 +272,7 @@ impl SessionAttribute {
 
 impl std::fmt::Debug for SessionAttribute {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("SessionAttribute")
-            .field(&"<any>")
-            .finish()
+        f.debug_tuple("SessionAttribute").field(&"<any>").finish()
     }
 }
 

@@ -686,10 +686,8 @@ mod tests {
 
     #[test]
     fn condition_context_with_profiles() {
-        let ctx = ConditionContext::new().with_profiles(vec![
-            "dev".to_string(),
-            "test".to_string(),
-        ]);
+        let ctx =
+            ConditionContext::new().with_profiles(vec!["dev".to_string(), "test".to_string()]);
         assert!(ctx.is_profile_active("dev"));
         assert!(ctx.is_profile_active("test"));
         assert!(!ctx.is_profile_active("prod"));
@@ -704,8 +702,7 @@ mod tests {
     #[test]
     fn condition_context_has_bean() {
         struct MyService;
-        let ctx = ConditionContext::new()
-            .with_registered_beans(vec![TypeId::of::<MyService>()]);
+        let ctx = ConditionContext::new().with_registered_beans(vec![TypeId::of::<MyService>()]);
         assert!(ctx.has_bean::<MyService>());
 
         struct OtherService;
@@ -714,18 +711,16 @@ mod tests {
 
     #[test]
     fn condition_context_has_bean_by_id() {
-        let ctx = ConditionContext::new().with_bean_names(HashMap::from([
-            ("myService".to_string(), TypeId::of::<i32>()),
-        ]));
+        let ctx = ConditionContext::new()
+            .with_bean_names(HashMap::from([("myService".to_string(), TypeId::of::<i32>())]));
         assert!(ctx.has_bean_by_id("myService"));
         assert!(!ctx.has_bean_by_id("nonexistent"));
     }
 
     #[test]
     fn condition_context_property_equals() {
-        let ctx = ConditionContext::new().with_properties(HashMap::from([
-            ("timeout".to_string(), "30".to_string()),
-        ]));
+        let ctx = ConditionContext::new()
+            .with_properties(HashMap::from([("timeout".to_string(), "30".to_string())]));
         assert!(ctx.property_equals("timeout", "30"));
         assert!(!ctx.property_equals("timeout", "60"));
         assert!(!ctx.property_equals("missing", "30"));
@@ -736,9 +731,8 @@ mod tests {
 
     #[test]
     fn conditional_on_property_exact_value_match() {
-        let ctx = ConditionContext::new().with_properties(HashMap::from([
-            ("cache.enabled".to_string(), "true".to_string()),
-        ]));
+        let ctx = ConditionContext::new()
+            .with_properties(HashMap::from([("cache.enabled".to_string(), "true".to_string())]));
 
         let cond = ConditionalOnProperty::new("cache.enabled").with_value("true");
         assert!(cond.matches(&ctx));
@@ -746,9 +740,8 @@ mod tests {
 
     #[test]
     fn conditional_on_property_exact_value_mismatch() {
-        let ctx = ConditionContext::new().with_properties(HashMap::from([
-            ("cache.enabled".to_string(), "false".to_string()),
-        ]));
+        let ctx = ConditionContext::new()
+            .with_properties(HashMap::from([("cache.enabled".to_string(), "false".to_string())]));
 
         let cond = ConditionalOnProperty::new("cache.enabled").with_value("true");
         assert!(!cond.matches(&ctx));
@@ -756,9 +749,8 @@ mod tests {
 
     #[test]
     fn conditional_on_property_existence_check_present() {
-        let ctx = ConditionContext::new().with_properties(HashMap::from([
-            ("cache.enabled".to_string(), "true".to_string()),
-        ]));
+        let ctx = ConditionContext::new()
+            .with_properties(HashMap::from([("cache.enabled".to_string(), "true".to_string())]));
 
         // No value specified, just check existence
         // 未指定值，仅检查存在性
@@ -813,8 +805,7 @@ mod tests {
     #[test]
     fn conditional_on_missing_bean_rejects_when_present() {
         struct MyService;
-        let ctx = ConditionContext::new()
-            .with_registered_beans(vec![TypeId::of::<MyService>()]);
+        let ctx = ConditionContext::new().with_registered_beans(vec![TypeId::of::<MyService>()]);
 
         let cond = ConditionalOnMissingBean::of::<MyService>();
         assert!(!cond.matches(&ctx));
@@ -836,8 +827,7 @@ mod tests {
     #[test]
     fn conditional_on_bean_matches_when_present() {
         struct MyService;
-        let ctx = ConditionContext::new()
-            .with_registered_beans(vec![TypeId::of::<MyService>()]);
+        let ctx = ConditionContext::new().with_registered_beans(vec![TypeId::of::<MyService>()]);
 
         let cond = ConditionalOnBean::of::<MyService>();
         assert!(cond.matches(&ctx));
@@ -855,8 +845,7 @@ mod tests {
     #[test]
     fn conditional_on_bean_from_type_id() {
         struct MyService;
-        let ctx = ConditionContext::new()
-            .with_registered_beans(vec![TypeId::of::<MyService>()]);
+        let ctx = ConditionContext::new().with_registered_beans(vec![TypeId::of::<MyService>()]);
 
         let cond = ConditionalOnBean::from_type_id(TypeId::of::<MyService>());
         assert!(cond.matches(&ctx));
@@ -868,8 +857,7 @@ mod tests {
 
     #[test]
     fn profile_condition_matches_active_profile() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["production".to_string()]);
 
         let cond = ProfileCondition::new("production");
         assert!(cond.matches(&ctx));
@@ -877,8 +865,7 @@ mod tests {
 
     #[test]
     fn profile_condition_rejects_inactive_profile() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["production".to_string()]);
 
         let cond = ProfileCondition::new("dev");
         assert!(!cond.matches(&ctx));
@@ -922,9 +909,7 @@ mod tests {
     #[test]
     fn all_conditions_rejects_when_any_false() {
         let ctx = ConditionContext::new()
-            .with_properties(HashMap::from([
-                ("a".to_string(), "1".to_string()),
-            ]))
+            .with_properties(HashMap::from([("a".to_string(), "1".to_string())]))
             .with_profiles(vec!["production".to_string()]);
 
         let cond = AllConditions::new(vec![
@@ -948,8 +933,7 @@ mod tests {
 
     #[test]
     fn any_condition_matches_when_any_true() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["staging".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["staging".to_string()]);
 
         let cond = AnyCondition::new(vec![
             Box::new(ProfileCondition::new("production")),
@@ -962,8 +946,7 @@ mod tests {
 
     #[test]
     fn any_condition_rejects_when_all_false() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["production".to_string()]);
 
         let cond = AnyCondition::new(vec![
             Box::new(ProfileCondition::new("dev")),
@@ -985,8 +968,7 @@ mod tests {
 
     #[test]
     fn not_condition_inverts_true() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["production".to_string()]);
 
         let cond = NotCondition::new(Box::new(ProfileCondition::new("production")));
         assert!(!cond.matches(&ctx));
@@ -994,8 +976,7 @@ mod tests {
 
     #[test]
     fn not_condition_inverts_false() {
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["production".to_string()]);
 
         let cond = NotCondition::new(Box::new(ProfileCondition::new("dev")));
         assert!(cond.matches(&ctx));
@@ -1004,9 +985,7 @@ mod tests {
     #[test]
     fn not_condition_nested() {
         let ctx = ConditionContext::new()
-            .with_properties(HashMap::from([
-                ("x".to_string(), "1".to_string()),
-            ]))
+            .with_properties(HashMap::from([("x".to_string(), "1".to_string())]))
             .with_profiles(vec!["prod".to_string()]);
 
         // NOT( x=="1" AND profile=="prod" ) => false
@@ -1034,8 +1013,8 @@ mod tests {
 
         // After registering DataSource, ConditionalOnMissingBean no longer matches
         // 注册DataSource后，ConditionalOnMissingBean不再匹配
-        let ctx_with = ConditionContext::new()
-            .with_registered_beans(vec![TypeId::of::<DataSource>()]);
+        let ctx_with =
+            ConditionContext::new().with_registered_beans(vec![TypeId::of::<DataSource>()]);
         assert!(!cond_missing.matches(&ctx_with));
 
         // ConditionalOnBean now matches
@@ -1051,9 +1030,10 @@ mod tests {
     #[test]
     fn profile_and_property_combined() {
         let ctx_prod = ConditionContext::new()
-            .with_properties(HashMap::from([
-                ("monitoring.enabled".to_string(), "true".to_string()),
-            ]))
+            .with_properties(HashMap::from([(
+                "monitoring.enabled".to_string(),
+                "true".to_string(),
+            )]))
             .with_profiles(vec!["production".to_string()]);
 
         let cond = AllConditions::new(vec![
@@ -1066,16 +1046,16 @@ mod tests {
         // Wrong profile
         // 错误的配置文件
         let ctx_dev = ConditionContext::new()
-            .with_properties(HashMap::from([
-                ("monitoring.enabled".to_string(), "true".to_string()),
-            ]))
+            .with_properties(HashMap::from([(
+                "monitoring.enabled".to_string(),
+                "true".to_string(),
+            )]))
             .with_profiles(vec!["dev".to_string()]);
         assert!(!cond.matches(&ctx_dev));
 
         // Missing property
         // 缺失属性
-        let ctx_no_prop = ConditionContext::new()
-            .with_profiles(vec!["production".to_string()]);
+        let ctx_no_prop = ConditionContext::new().with_profiles(vec!["production".to_string()]);
         assert!(!cond.matches(&ctx_no_prop));
     }
 
@@ -1083,8 +1063,7 @@ mod tests {
     fn fallback_pattern_with_any() {
         // Register prod OR staging OR dev-specific beans
         // 注册prod或staging或dev特定的Bean
-        let ctx = ConditionContext::new()
-            .with_profiles(vec!["staging".to_string()]);
+        let ctx = ConditionContext::new().with_profiles(vec!["staging".to_string()]);
 
         let cond = AnyCondition::new(vec![
             Box::new(ProfileCondition::new("production")),

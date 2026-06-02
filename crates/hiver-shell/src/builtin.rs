@@ -26,15 +26,13 @@ const MAX_HISTORY: usize = 100;
 
 /// Shared state for builtins
 /// 内置命令的共享状态
-#[derive(Debug)]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct BuiltinState {
     /// Command history / 命令历史
     pub history: VecDeque<String>,
     /// Last error stacktrace / 最后一个错误的堆栈跟踪
     pub last_error: Option<String>,
 }
-
 
 impl BuiltinState {
     /// Create new state / 创建新状态
@@ -109,7 +107,10 @@ impl Command for HelpCommand {
         // Help for a specific command
         #[allow(clippy::indexing_slicing)]
         let cmd_name = args[0];
-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let msg = if state.history.is_empty() {
             format!("No additional help available for: {cmd_name}")
         } else {
@@ -190,7 +191,10 @@ impl Command for StacktraceCommand {
     }
 
     fn execute(&self, _args: &[&str]) -> ShellResult<String> {
-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         match &state.last_error {
             Some(trace) => Ok(trace.clone()),
             None => Ok("No error recorded / 没有记录的错误".to_string()),
@@ -229,9 +233,7 @@ impl Command for ScriptCommand {
 
     fn execute(&self, args: &[&str]) -> ShellResult<String> {
         let path = args.first().ok_or_else(|| {
-            ShellError::InvalidArguments(
-                "Usage: script <file> / 用法: script <文件>".to_string(),
-            )
+            ShellError::InvalidArguments("Usage: script <file> / 用法: script <文件>".to_string())
         })?;
 
         let canonical = std::path::Path::new(path).canonicalize().map_err(|e| {
@@ -259,7 +261,10 @@ impl Command for ScriptCommand {
 
             // Record in history / 记录到历史
             {
-                let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+                let mut state = self
+                    .state
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 state.add_history(trimmed);
             }
 
@@ -326,7 +331,10 @@ impl Command for HistoryCommand {
     }
 
     fn execute(&self, _args: &[&str]) -> ShellResult<String> {
-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if state.history.is_empty() {
             return Ok("No history / 没有历史记录".to_string());
         }

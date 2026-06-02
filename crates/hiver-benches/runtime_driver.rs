@@ -12,12 +12,7 @@
 #![warn(unreachable_pub)]
 
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
-use hiver_runtime::{
-    Runtime, RuntimeConfig,
-    bounded, channel, spawn,
-    sleep, Duration,
-    DriverType,
-};
+use hiver_runtime::{DriverType, Duration, Runtime, RuntimeConfig, bounded, channel, sleep, spawn};
 use std::time::Duration as StdDuration;
 
 // ============================================================================
@@ -70,10 +65,7 @@ fn bench_channel_throughput_by_driver(c: &mut Criterion) {
     let items = 1000usize;
     group.throughput(Throughput::Elements(items as u64));
 
-    let driver_types = vec![
-        ("auto", DriverType::Auto),
-        ("poll", DriverType::Poll),
-    ];
+    let driver_types = vec![("auto", DriverType::Auto), ("poll", DriverType::Poll)];
 
     for (name, driver_type) in driver_types {
         group.bench_with_input(
@@ -117,10 +109,7 @@ fn bench_bounded_throughput_by_driver(c: &mut Criterion) {
     let items = 1000usize;
     group.throughput(Throughput::Elements(items as u64));
 
-    let driver_types = vec![
-        ("auto", DriverType::Auto),
-        ("poll", DriverType::Poll),
-    ];
+    let driver_types = vec![("auto", DriverType::Auto), ("poll", DriverType::Poll)];
 
     for (name, driver_type) in driver_types {
         group.bench_with_input(
@@ -168,17 +157,13 @@ fn bench_timer_wheel_advance(c: &mut Criterion) {
 
     for ticks in [100usize, 1000, 10000].iter() {
         group.throughput(Throughput::Elements(*ticks as u64));
-        group.bench_with_input(
-            BenchmarkId::new("advance", ticks),
-            ticks,
-            |b, &ticks| {
-                let wheel = hiver_runtime::time::global_timer();
-                b.iter(|| {
-                    let expired = wheel.advance(ticks as u64);
-                    black_box(expired);
-                });
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("advance", ticks), ticks, |b, &ticks| {
+            let wheel = hiver_runtime::time::global_timer();
+            b.iter(|| {
+                let expired = wheel.advance(ticks as u64);
+                black_box(expired);
+            });
+        });
     }
 
     group.finish();
@@ -191,19 +176,15 @@ fn bench_timer_wheel_insert(c: &mut Criterion) {
 
     for count in [100usize, 1000, 10000].iter() {
         group.throughput(Throughput::Elements(*count as u64));
-        group.bench_with_input(
-            BenchmarkId::new("insert", count),
-            count,
-            |b, &count| {
-                b.iter(|| {
-                    let wheel = hiver_runtime::time::TimerWheel::new();
-                    for i in 0..count {
-                        let handle = wheel.insert_timer(Duration::from_millis((i as u64) % 60000 + 1));
-                        black_box(handle);
-                    }
-                });
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("insert", count), count, |b, &count| {
+            b.iter(|| {
+                let wheel = hiver_runtime::time::TimerWheel::new();
+                for i in 0..count {
+                    let handle = wheel.insert_timer(Duration::from_millis((i as u64) % 60000 + 1));
+                    black_box(handle);
+                }
+            });
+        });
     }
 
     group.finish();
@@ -220,35 +201,31 @@ fn bench_scheduler_scalability(c: &mut Criterion) {
 
     for tasks in [10usize, 100, 500, 1000, 5000].iter() {
         group.throughput(Throughput::Elements(*tasks as u64));
-        group.bench_with_input(
-            BenchmarkId::new("spawn_compute", tasks),
-            tasks,
-            |b, &tasks| {
-                let mut runtime = Runtime::new().unwrap();
-                b.iter(|| {
-                    let _ = runtime.block_on(async {
-                        let mut handles = Vec::with_capacity(tasks);
-                        for i in 0..tasks {
-                            handles.push(spawn(async move {
-                                // Simulate CPU-bound work with varying intensity
-                                // 模拟不同强度的 CPU 密集型工作
-                                let mut acc = 0i64;
-                                for j in 0..50 {
-                                    acc += (i as i64).wrapping_mul(j as i64);
-                                    acc = acc.wrapping_shr(1);
-                                }
-                                acc
-                            }));
-                        }
-                        let mut total = 0i64;
-                        for handle in handles {
-                            total = total.wrapping_add(handle.wait().await.unwrap());
-                        }
-                        black_box(total);
-                    });
+        group.bench_with_input(BenchmarkId::new("spawn_compute", tasks), tasks, |b, &tasks| {
+            let mut runtime = Runtime::new().unwrap();
+            b.iter(|| {
+                let _ = runtime.block_on(async {
+                    let mut handles = Vec::with_capacity(tasks);
+                    for i in 0..tasks {
+                        handles.push(spawn(async move {
+                            // Simulate CPU-bound work with varying intensity
+                            // 模拟不同强度的 CPU 密集型工作
+                            let mut acc = 0i64;
+                            for j in 0..50 {
+                                acc += (i as i64).wrapping_mul(j as i64);
+                                acc = acc.wrapping_shr(1);
+                            }
+                            acc
+                        }));
+                    }
+                    let mut total = 0i64;
+                    for handle in handles {
+                        total = total.wrapping_add(handle.wait().await.unwrap());
+                    }
+                    black_box(total);
                 });
-            },
-        );
+            });
+        });
     }
 
     group.finish();
@@ -262,17 +239,11 @@ fn bench_concurrent_sleep(c: &mut Criterion) {
     for concurrency in [10usize, 50, 100].iter() {
         group.throughput(Throughput::Elements(*concurrency as u64));
 
-        let driver_types = vec![
-            ("auto", DriverType::Auto),
-            ("poll", DriverType::Poll),
-        ];
+        let driver_types = vec![("auto", DriverType::Auto), ("poll", DriverType::Poll)];
 
         for (dname, driver_type) in &driver_types {
             group.bench_with_input(
-                BenchmarkId::new(
-                    &format!("sleep_1ms_{}", dname),
-                    concurrency,
-                ),
+                BenchmarkId::new(&format!("sleep_1ms_{}", dname), concurrency),
                 concurrency,
                 |b, &concurrency| {
                     b.iter(|| {

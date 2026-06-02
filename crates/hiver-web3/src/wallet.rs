@@ -369,7 +369,9 @@ pub fn keccak256(data: &[u8]) -> [u8; 32] {
 /// Address module
 /// 地址模块
 pub mod address {
-    use super::{keccak256, fmt, FromStr, Serialize, Serializer, Deserialize, Deserializer, SerdeError};
+    use super::{
+        Deserialize, Deserializer, FromStr, SerdeError, Serialize, Serializer, fmt, keccak256,
+    };
 
     /// Ethereum address (20 bytes)
     /// 以太坊地址（20字节）
@@ -551,8 +553,8 @@ pub mod address {
 
     #[cfg(test)]
     mod tests {
-        use super::*;
         use super::super::{LocalWallet, Signature, Wallet, WalletError};
+        use super::*;
 
         #[test]
         fn test_address_zero() {

@@ -204,7 +204,13 @@ impl Condition {
     /// Whether this condition requires no parameter value
     /// 此条件是否需要参数值
     pub fn needs_no_value(&self) -> bool {
-        matches!(self, Condition::IsNull { .. } | Condition::IsNotNull { .. } | Condition::True { .. } | Condition::False { .. })
+        matches!(
+            self,
+            Condition::IsNull { .. }
+                | Condition::IsNotNull { .. }
+                | Condition::True { .. }
+                | Condition::False { .. }
+        )
     }
 
     /// Whether this condition requires two parameter values
@@ -352,10 +358,7 @@ impl MethodName {
         let remaining = Self::extract_by_keyword(remaining)?;
 
         if remaining.is_empty() {
-            return Err(format!(
-                "Method name '{}' has no conditions after 'By'",
-                name
-            ));
+            return Err(format!("Method name '{}' has no conditions after 'By'", name));
         }
 
         // Step 5: Split at OrderBy clause
@@ -541,7 +544,9 @@ impl MethodName {
     }
 
     /// Parse conditions from the condition part of the method name
-    fn parse_conditions(condition_part: &str) -> Result<Vec<(Condition, Option<Connector>)>, String> {
+    fn parse_conditions(
+        condition_part: &str,
+    ) -> Result<Vec<(Condition, Option<Connector>)>, String> {
         if condition_part.is_empty() {
             return Ok(Vec::new());
         }
@@ -579,12 +584,8 @@ impl MethodName {
                         let field = current_field.clone();
                         current_field.clear();
                         let field_name = Self::first_char_to_lower(&field);
-                        conditions.push((
-                            Condition::Equals {
-                                field: field_name,
-                            },
-                            current_connector,
-                        ));
+                        conditions
+                            .push((Condition::Equals { field: field_name }, current_connector));
                         current_connector = Some(Connector::And);
                         // Skip "And" (2 chars, 'A' already consumed)
                         for _ in 0..2 {
@@ -600,12 +601,8 @@ impl MethodName {
                         let field = current_field.clone();
                         current_field.clear();
                         let field_name = Self::first_char_to_lower(&field);
-                        conditions.push((
-                            Condition::Equals {
-                                field: field_name,
-                            },
-                            current_connector,
-                        ));
+                        conditions
+                            .push((Condition::Equals { field: field_name }, current_connector));
                         current_connector = Some(Connector::Or);
                         // Skip "Or" (1 chars, 'O' already consumed)
                         for _ in 0..1 {
@@ -638,12 +635,7 @@ impl MethodName {
         // Last field (defaults to Equals)
         if !current_field.is_empty() {
             let field_name = Self::first_char_to_lower(&current_field);
-            conditions.push((
-                Condition::Equals {
-                    field: field_name,
-                },
-                current_connector,
-            ));
+            conditions.push((Condition::Equals { field: field_name }, current_connector));
         }
 
         Ok(conditions)
@@ -765,10 +757,7 @@ impl MethodName {
 
     /// Take leading digits from a string
     fn take_digits(s: &str) -> (&str, &str) {
-        let end = s
-            .chars()
-            .take_while(|c| c.is_ascii_digit())
-            .count();
+        let end = s.chars().take_while(|c| c.is_ascii_digit()).count();
         (&s[..end], &s[end..])
     }
 
@@ -825,7 +814,12 @@ mod tests {
         let result = parse("findByName");
         assert_eq!(result.prefix, QueryPrefix::Find);
         assert_eq!(result.conditions.len(), 1);
-        assert_eq!(result.conditions[0].0, Condition::Equals { field: "name".into() });
+        assert_eq!(
+            result.conditions[0].0,
+            Condition::Equals {
+                field: "name".into()
+            }
+        );
     }
 
     #[test]

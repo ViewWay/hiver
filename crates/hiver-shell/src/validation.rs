@@ -49,9 +49,7 @@ impl InputValidator {
                     args: Vec::new(),
                 });
             }
-            return Err(ShellError::Validation(
-                "Input cannot be empty / 输入不能为空".to_string(),
-            ));
+            return Err(ShellError::Validation("Input cannot be empty / 输入不能为空".to_string()));
         }
 
         if trimmed.len() > self.max_length {

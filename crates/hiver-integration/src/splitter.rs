@@ -158,7 +158,9 @@ impl MessageSplitter for DelimiterSplitter {
             .ok_or_else(|| IntegrationError::Payload("Payload is not a String".to_string()))?;
 
         let parts: Vec<String> = if self.trim {
-            text.split(&self.delimiter).map(|s| s.trim().to_string()).collect()
+            text.split(&self.delimiter)
+                .map(|s| s.trim().to_string())
+                .collect()
         } else {
             text.split(&self.delimiter).map(|s| s.to_string()).collect()
         };
@@ -234,8 +236,9 @@ impl MessageSplitter for JsonArraySplitter {
         Ok(array
             .iter()
             .map(|item| {
-                let json_string = serde_json::to_string(item)
-                    .map_err(|e| IntegrationError::Transformation(format!("JSON serialize error: {}", e)))?;
+                let json_string = serde_json::to_string(item).map_err(|e| {
+                    IntegrationError::Transformation(format!("JSON serialize error: {}", e))
+                })?;
                 Ok::<_, IntegrationError>(Message::clone(&message).clone_with_payload(json_string))
             })
             .collect::<Result<Vec<_>>>()?)
@@ -252,9 +255,7 @@ impl LineSplitter {
     /// Create a new line splitter
     /// 创建新的行拆分器
     pub fn new() -> Self {
-        Self {
-            skip_empty: true,
-        }
+        Self { skip_empty: true }
     }
 
     /// Configure whether to skip empty lines
@@ -330,7 +331,13 @@ mod tests {
     async fn test_size_splitter() {
         let splitter = SizeSplitter::new(2);
 
-        let data = vec!["a".to_string(), "b".to_string(), "c".to_string(), "d".to_string(), "e".to_string()];
+        let data = vec![
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+            "d".to_string(),
+            "e".to_string(),
+        ];
         let message = Message::new(data);
 
         let result = splitter.split(message).await.unwrap();

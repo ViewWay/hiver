@@ -179,10 +179,10 @@ impl DeadLetterQueue {
                 let mut arr = existing.clone();
                 arr.push(serde_json::Value::Object(x_death));
                 arr
-            }
+            },
             _ => {
                 vec![serde_json::Value::Object(x_death)]
-            }
+            },
         };
         props = props.with_header("x-death", serde_json::json!(death_array));
 
@@ -306,13 +306,14 @@ mod tests {
         assert_eq!(result.delivery_tag, 0);
 
         let headers = &result.message.properties.headers;
-        assert_eq!(
-            headers.get("x-dlq-reason").unwrap().as_str().unwrap(),
-            "rejected"
-        );
+        assert_eq!(headers.get("x-dlq-reason").unwrap().as_str().unwrap(), "rejected");
         assert!(headers.get("x-dlq-timestamp").unwrap().as_u64().unwrap() > 0);
         assert_eq!(
-            headers.get("x-dlq-original-routing-key").unwrap().as_str().unwrap(),
+            headers
+                .get("x-dlq-original-routing-key")
+                .unwrap()
+                .as_str()
+                .unwrap(),
             "order.created"
         );
         assert!(headers.get("x-death").unwrap().is_array());
@@ -327,13 +328,27 @@ mod tests {
 
         let result = dlq.send_to_dlq(&msg, DlqReason::Expired, "rk");
         assert_eq!(
-            result.message.properties.headers.get("x-dlq-reason").unwrap().as_str().unwrap(),
+            result
+                .message
+                .properties
+                .headers
+                .get("x-dlq-reason")
+                .unwrap()
+                .as_str()
+                .unwrap(),
             "expired"
         );
 
         let result = dlq.send_to_dlq(&msg, DlqReason::MaxLengthExceeded, "rk");
         assert_eq!(
-            result.message.properties.headers.get("x-dlq-reason").unwrap().as_str().unwrap(),
+            result
+                .message
+                .properties
+                .headers
+                .get("x-dlq-reason")
+                .unwrap()
+                .as_str()
+                .unwrap(),
             "maxlen"
         );
     }
@@ -350,7 +365,12 @@ mod tests {
         // The already-dead-lettered message goes through DLQ again
         let second_dlq = dlq.send_to_dlq(&first_dlq, "rejected", "rk");
 
-        let x_death = second_dlq.message.properties.headers.get("x-death").unwrap();
+        let x_death = second_dlq
+            .message
+            .properties
+            .headers
+            .get("x-death")
+            .unwrap();
         let arr = x_death.as_array().unwrap();
         assert_eq!(arr.len(), 2);
     }
@@ -368,8 +388,22 @@ mod tests {
         assert_eq!(reprocessed.exchange, "orders.exchange");
         assert_eq!(reprocessed.routing_key, "order.created");
         assert!(reprocessed.redelivered);
-        assert!(reprocessed.message.properties.headers.get("x-death").is_none());
-        assert!(reprocessed.message.properties.headers.get("x-dlq-reason").is_none());
+        assert!(
+            reprocessed
+                .message
+                .properties
+                .headers
+                .get("x-death")
+                .is_none()
+        );
+        assert!(
+            reprocessed
+                .message
+                .properties
+                .headers
+                .get("x-dlq-reason")
+                .is_none()
+        );
     }
 
     /// Test reprocess fails when x-dlq-original-routing-key is missing
@@ -414,7 +448,10 @@ mod tests {
         assert_eq!(DlqReason::from("rejected"), DlqReason::Rejected);
         assert_eq!(DlqReason::from("expired"), DlqReason::Expired);
         assert_eq!(DlqReason::from("maxlen"), DlqReason::MaxLengthExceeded);
-        assert_eq!(DlqReason::from("custom_reason"), DlqReason::Custom("custom_reason".to_string()));
+        assert_eq!(
+            DlqReason::from("custom_reason"),
+            DlqReason::Custom("custom_reason".to_string())
+        );
 
         assert_eq!(DlqReason::Rejected.to_string(), "rejected");
         assert_eq!(DlqReason::Expired.to_string(), "expired");

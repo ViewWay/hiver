@@ -3,7 +3,7 @@
 
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Data, DataStruct, Fields};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Builder] derive macro
 /// 实现 #[Builder] 派生宏
@@ -30,16 +30,13 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
                 "#[Builder] can only be used on structs with named fields",
             )
             .to_compile_error()
-            .into()
-        }
+            .into();
+        },
     };
 
     // Get field names and types
     // 获取字段名和类型
-    let field_names: Vec<_> = fields
-        .iter()
-        .filter_map(|f| f.ident.as_ref())
-        .collect();
+    let field_names: Vec<_> = fields.iter().filter_map(|f| f.ident.as_ref()).collect();
 
     let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
 
@@ -49,7 +46,11 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
         .iter()
         .map(|ty| {
             if let syn::Type::Path(type_path) = ty {
-                type_path.path.segments.last().map_or(false, |seg| seg.ident == "Option")
+                type_path
+                    .path
+                    .segments
+                    .last()
+                    .map_or(false, |seg| seg.ident == "Option")
             } else {
                 false
             }
@@ -91,25 +92,29 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
     };
 
     // Generate setter methods on Builder
-    let builder_setters = field_names.iter().zip(field_types.iter()).zip(is_option.iter()).map(|((name, ty), is_opt)| {
-        if *is_opt {
-            quote! {
-                #[inline]
-                pub fn #name(mut self, #name: #ty) -> Self {
-                    self.#name = #name;
-                    self
+    let builder_setters = field_names
+        .iter()
+        .zip(field_types.iter())
+        .zip(is_option.iter())
+        .map(|((name, ty), is_opt)| {
+            if *is_opt {
+                quote! {
+                    #[inline]
+                    pub fn #name(mut self, #name: #ty) -> Self {
+                        self.#name = #name;
+                        self
+                    }
+                }
+            } else {
+                quote! {
+                    #[inline]
+                    pub fn #name(mut self, #name: #ty) -> Self {
+                        self.#name = Some(#name);
+                        self
+                    }
                 }
             }
-        } else {
-            quote! {
-                #[inline]
-                pub fn #name(mut self, #name: #ty) -> Self {
-                    self.#name = Some(#name);
-                    self
-                }
-            }
-        }
-    });
+        });
 
     // Generate build method: Option fields default to None, others are required
     let build_assignments: Vec<_> = field_names

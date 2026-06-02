@@ -255,37 +255,37 @@ where
         match frame.command {
             crate::frame::StompCommand::Connect | crate::frame::StompCommand::Stomp => {
                 self.handle_connect(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Send => {
                 self.handle_send(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Subscribe => {
                 self.handle_subscribe(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Unsubscribe => {
                 self.handle_unsubscribe(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Ack => {
                 self.handle_ack(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Nack => {
                 self.handle_nack(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Begin => {
                 self.handle_begin(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Commit => {
                 self.handle_commit(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Abort => {
                 self.handle_abort(frame).await?;
-            }
+            },
             crate::frame::StompCommand::Disconnect => {
                 self.handle_disconnect(frame).await?;
-            }
+            },
             _ => {
                 return Err(StompError::UnsupportedCommand(frame.command.to_string()));
-            }
+            },
         }
 
         Ok(())
@@ -297,11 +297,14 @@ where
         // Check version
         // 检查版本
         if let Some(version) = frame.header("accept-version")
-            && version != "1.2" && version != "1.1" && version != "1.0" {
-                let error_frame = StompFrame::error(format!("Unsupported version: {}", version));
-                self.send_frame(error_frame).await?;
-                return Err(StompError::InvalidHeader(format!("Unsupported version: {}", version)));
-            }
+            && version != "1.2"
+            && version != "1.1"
+            && version != "1.0"
+        {
+            let error_frame = StompFrame::error(format!("Unsupported version: {}", version));
+            self.send_frame(error_frame).await?;
+            return Err(StompError::InvalidHeader(format!("Unsupported version: {}", version)));
+        }
 
         // Authentication
         // 认证
@@ -320,26 +323,31 @@ where
                 Ok(()) => {
                     tracing::info!(
                         "STOMP authentication successful for user: {} / STOMP认证成功: {}",
-                        login, login
+                        login,
+                        login
                     );
                     self.session.set_authenticated_user(Some(login.to_string()));
-                }
+                },
                 Err(msg) => {
                     tracing::warn!(
                         "STOMP authentication failed for user {}: {} / STOMP认证失败 {}: {}",
-                        login, msg, login, msg
+                        login,
+                        msg,
+                        login,
+                        msg
                     );
                     let error_frame = StompFrame::error(format!("Authentication failed: {}", msg));
                     self.send_frame(error_frame).await?;
                     return Err(StompError::AuthenticationFailed(msg));
-                }
+                },
             }
         } else if let Some(ref login) = login {
             // Not required, but if provided we still record the username.
             // 非必需，但如果提供了我们仍然记录用户名。
             tracing::debug!(
                 "STOMP login provided (not required): {} / STOMP登录已提供（非必需）: {}",
-                login, login
+                login,
+                login
             );
             self.session.set_authenticated_user(Some(login.clone()));
         }
@@ -358,16 +366,24 @@ where
         // Send CONNECTED frame
         // 发送 CONNECTED 帧
         let mut connected = StompFrame::connected(&self.config.server_name);
-        connected.set_header("heart-beat", format!("{},{}",
-            self.config.heartbeat_receive.unwrap_or(0),
-            self.config.heartbeat_send.unwrap_or(0)
-        ));
+        connected.set_header(
+            "heart-beat",
+            format!(
+                "{},{}",
+                self.config.heartbeat_receive.unwrap_or(0),
+                self.config.heartbeat_send.unwrap_or(0)
+            ),
+        );
         if let Some(session_id) = frame.header("session") {
             connected.set_header("session", session_id);
         }
         self.send_frame(connected).await?;
 
-        tracing::info!("Client connected: {} / 客户端已连接: {}", self.session.id(), self.session.id());
+        tracing::info!(
+            "Client connected: {} / 客户端已连接: {}",
+            self.session.id(),
+            self.session.id()
+        );
         Ok(())
     }
 
@@ -400,7 +416,9 @@ where
         } else {
             // Send to broker
             let body_bytes = body.unwrap_or_else(Bytes::new);
-            self.broker.send(&destination, body_bytes, frame.headers).await?;
+            self.broker
+                .send(&destination, body_bytes, frame.headers)
+                .await?;
         }
 
         // Send receipt if requested
@@ -448,11 +466,15 @@ where
     async fn handle_unsubscribe(&self, frame: StompFrame) -> Result<()> {
         let id = frame.require_header("id")?.clone();
 
-        let subscription = self.session.subscription(&id)
+        let subscription = self
+            .session
+            .subscription(&id)
             .ok_or_else(|| StompError::SubscriptionNotFound(id.clone()))?;
 
         self.session.unsubscribe(&id)?;
-        self.broker.unsubscribe(self.session.id(), &subscription.destination).await?;
+        self.broker
+            .unsubscribe(self.session.id(), &subscription.destination)
+            .await?;
 
         // Send receipt if requested
         if let Some(receipt_id) = frame.header("receipt") {
@@ -497,12 +519,13 @@ where
         // Validate subscription if provided.
         // 如果提供了订阅 ID 则验证。
         if let Some(ref sub_id) = subscription_id
-            && pending.subscription_id != *sub_id {
-                return Err(StompError::InvalidHeader(format!(
-                    "ACK subscription mismatch: expected {}, got {} / ACK订阅不匹配: 期望 {}, 得到 {}",
-                    pending.subscription_id, sub_id, pending.subscription_id, sub_id
-                )));
-            }
+            && pending.subscription_id != *sub_id
+        {
+            return Err(StompError::InvalidHeader(format!(
+                "ACK subscription mismatch: expected {}, got {} / ACK订阅不匹配: 期望 {}, 得到 {}",
+                pending.subscription_id, sub_id, pending.subscription_id, sub_id
+            )));
+        }
 
         tracing::debug!(
             ack_id = %ack_id,
@@ -550,12 +573,13 @@ where
         // 如果提供了订阅 ID 则验证。
         if let Some(ref sub_id) = subscription_id
             && let Some(ref pending) = self.session.get_pending_ack(&ack_id)
-                && pending.subscription_id != *sub_id {
-                    return Err(StompError::InvalidHeader(format!(
-                        "NACK subscription mismatch: expected {}, got {} / NACK订阅不匹配: 期望 {}, 得到 {}",
-                        pending.subscription_id, sub_id, pending.subscription_id, sub_id
-                    )));
-                }
+            && pending.subscription_id != *sub_id
+        {
+            return Err(StompError::InvalidHeader(format!(
+                "NACK subscription mismatch: expected {}, got {} / NACK订阅不匹配: 期望 {}, 得到 {}",
+                pending.subscription_id, sub_id, pending.subscription_id, sub_id
+            )));
+        }
 
         // Re-queue for redelivery or dead-letter if exhausted.
         // 重新排队投递，或如果耗尽则进入死信。
@@ -570,7 +594,7 @@ where
                     "Message exhausted delivery attempts, dead-lettering / 消息投递尝试耗尽，进入死信"
                 );
                 self.dead_letter_handler.handle(&pending);
-            }
+            },
             Some(pending) => {
                 // Still has retries left — redeliver.
                 // 仍有重试次数 — 重新投递。
@@ -598,7 +622,7 @@ where
                     "Redelivering NACKed message / 重新投递被 NACK 的消息"
                 );
                 self.send_frame(msg_frame).await?;
-            }
+            },
             None => {
                 // Already removed by another concurrent NACK — treat as error.
                 // 已被另一个并发 NACK 移除 — 视为错误。
@@ -606,7 +630,7 @@ where
                     "Unknown acknowledgment id: {} / 未知的确认 ID: {}",
                     ack_id, ack_id
                 )));
-            }
+            },
         }
 
         // Send receipt if requested
@@ -677,7 +701,11 @@ where
 
         self.session.clear_pending_acks();
         self.session.set_connected(false);
-        tracing::info!("Client disconnected: {} / 客户端已断开: {}", self.session.id(), self.session.id());
+        tracing::info!(
+            "Client disconnected: {} / 客户端已断开: {}",
+            self.session.id(),
+            self.session.id()
+        );
         Ok(())
     }
 
@@ -697,17 +725,15 @@ where
         body: Bytes,
         extra_headers: HashMap<String, String>,
     ) -> Result<()> {
-        let subscription = self.session.subscription(subscription_id)
+        let subscription = self
+            .session
+            .subscription(subscription_id)
             .ok_or_else(|| StompError::SubscriptionNotFound(subscription_id.to_string()))?;
 
         let ack_id = self.session.generate_message_id();
 
-        let mut msg_frame = StompFrame::message(
-            destination,
-            subscription_id,
-            &ack_id,
-            body.clone(),
-        );
+        let mut msg_frame =
+            StompFrame::message(destination, subscription_id, &ack_id, body.clone());
         for (k, v) in &extra_headers {
             msg_frame.set_header(k, v);
         }
@@ -768,10 +794,7 @@ mod tests {
 
     // Helper: build a handler with a bounded channel, capturing outbound frames.
     // 辅助：构建一个带有有界通道的处理器，捕获出站帧。
-    fn setup() -> (
-        StompHandler<MemoryBroker>,
-        mpsc::Receiver<StompFrame>,
-    ) {
+    fn setup() -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>) {
         let config = StompConfig::default();
         let session = StompSession::new("test-session".to_string());
         let broker = Arc::new(MemoryBroker::new());
@@ -783,10 +806,7 @@ mod tests {
     fn setup_with_auth(
         credentials: HashMap<String, String>,
         require_login: bool,
-    ) -> (
-        StompHandler<MemoryBroker>,
-        mpsc::Receiver<StompFrame>,
-    ) {
+    ) -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>) {
         let mut config = StompConfig::default();
         config.require_login = require_login;
         let session = StompSession::new("auth-test-session".to_string());
@@ -918,7 +938,7 @@ mod tests {
         match result.unwrap_err() {
             StompError::AuthenticationFailed(msg) => {
                 assert!(msg.contains("Missing login"));
-            }
+            },
             other => panic!("Expected AuthenticationFailed, got: {:?}", other),
         }
     }
@@ -936,7 +956,7 @@ mod tests {
         match result.unwrap_err() {
             StompError::AuthenticationFailed(msg) => {
                 assert!(msg.contains("Missing passcode"));
-            }
+            },
             other => panic!("Expected AuthenticationFailed, got: {:?}", other),
         }
     }

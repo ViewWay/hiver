@@ -17,12 +17,12 @@
 //! let json = spec.to_json().unwrap();
 //! ```
 
-use crate::{
-    OpenApi, OpenApiConfig, Operation, PathItem, Schema,
-    ServerConfig, TagConfig, SecurityScheme, config::SecuritySchemeConfig,
-};
 #[cfg(test)]
 use crate::SchemaType;
+use crate::{
+    OpenApi, OpenApiConfig, Operation, PathItem, Schema, SecurityScheme, ServerConfig, TagConfig,
+    config::SecuritySchemeConfig,
+};
 use std::collections::HashMap;
 
 /// Root OpenAPI specification builder / OpenAPI 根规范构建器
@@ -323,42 +323,40 @@ impl OpenApiSpecBuilder {
         // Register security schemes from config into OpenAPI components
         // 将配置中的安全方案注册到 OpenAPI 组件中
         if !security_schemes.is_empty()
-            && let Some(ref mut components) = openapi.components {
-                for (name, scheme_config) in security_schemes {
-                    let scheme = match scheme_config {
-                        SecuritySchemeConfig::Http { scheme, bearer_format } => {
-                            SecurityScheme::Http {
-                                scheme,
-                                bearer_format,
-                                description: None,
-                            }
+            && let Some(ref mut components) = openapi.components
+        {
+            for (name, scheme_config) in security_schemes {
+                let scheme = match scheme_config {
+                    SecuritySchemeConfig::Http {
+                        scheme,
+                        bearer_format,
+                    } => SecurityScheme::Http {
+                        scheme,
+                        bearer_format,
+                        description: None,
+                    },
+                    SecuritySchemeConfig::ApiKey { name, location } => SecurityScheme::ApiKey {
+                        name,
+                        location,
+                        description: None,
+                    },
+                    SecuritySchemeConfig::OAuth2 { flows } => SecurityScheme::OAuth2 {
+                        flows,
+                        description: None,
+                    },
+                    SecuritySchemeConfig::OpenIdConnect { connect_url } => {
+                        SecurityScheme::OpenIdConnect {
+                            url: connect_url,
+                            description: None,
                         }
-                        SecuritySchemeConfig::ApiKey { name, location } => {
-                            SecurityScheme::ApiKey {
-                                name,
-                                location,
-                                description: None,
-                            }
-                        }
-                        SecuritySchemeConfig::OAuth2 { flows } => {
-                            SecurityScheme::OAuth2 {
-                                flows,
-                                description: None,
-                            }
-                        }
-                        SecuritySchemeConfig::OpenIdConnect { connect_url } => {
-                            SecurityScheme::OpenIdConnect {
-                                url: connect_url,
-                                description: None,
-                            }
-                        }
-                    };
-                    components
-                        .security_schemes
-                        .get_or_insert_with(HashMap::new)
-                        .insert(name, scheme);
-                }
+                    },
+                };
+                components
+                    .security_schemes
+                    .get_or_insert_with(HashMap::new)
+                    .insert(name, scheme);
             }
+        }
 
         OpenApiSpec::from_openapi(openapi)
     }
@@ -521,7 +519,9 @@ impl SchemaGenerator {
 
     /// Add a property to an object schema / 向对象模式添加属性
     pub fn add_property(mut self, name: impl Into<String>, prop: Schema) -> Self {
-        self.schema = self.schema.add_property(name, crate::SchemaProperty::new(prop));
+        self.schema = self
+            .schema
+            .add_property(name, crate::SchemaProperty::new(prop));
         self
     }
 
@@ -544,37 +544,34 @@ impl SchemaGenerator {
 
 /// Helper to quickly create a GET operation / 快速创建 GET 操作的助手
 pub fn get_operation(path: &str, summary: &str) -> PathItem {
-    PathItem::new().get(
-        Operation::new()
-            .summary(summary)
-            .operation_id(format!("get_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
-    )
+    PathItem::new().get(Operation::new().summary(summary).operation_id(
+        format!("get_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
+    ))
 }
 
 /// Helper to quickly create a POST operation / 快速创建 POST 操作的助手
 pub fn post_operation(path: &str, summary: &str) -> PathItem {
-    PathItem::new().post(
-        Operation::new()
-            .summary(summary)
-            .operation_id(format!("post_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
-    )
+    PathItem::new().post(Operation::new().summary(summary).operation_id(
+        format!("post_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
+    ))
 }
 
 /// Helper to quickly create a PUT operation / 快速创建 PUT 操作的助手
 pub fn put_operation(path: &str, summary: &str) -> PathItem {
-    PathItem::new().put(
-        Operation::new()
-            .summary(summary)
-            .operation_id(format!("put_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
-    )
+    PathItem::new().put(Operation::new().summary(summary).operation_id(
+        format!("put_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
+    ))
 }
 
 /// Helper to quickly create a DELETE operation / 快速创建 DELETE 操作的助手
 pub fn delete_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().delete(
-        Operation::new()
-            .summary(summary)
-            .operation_id(format!("delete_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")))
+        Operation::new().summary(summary).operation_id(format!(
+            "delete_{}",
+            path.trim_start_matches('/')
+                .replace('/', "_")
+                .replace(['{', '}'], "")
+        )),
     )
 }
 
@@ -628,9 +625,7 @@ impl NestedSchemaBuilder {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
-            crate::SchemaProperty::new(
-                Schema::integer().example(serde_json::json!(example)),
-            ),
+            crate::SchemaProperty::new(Schema::integer().example(serde_json::json!(example))),
         );
         self
     }
@@ -640,9 +635,7 @@ impl NestedSchemaBuilder {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
-            crate::SchemaProperty::new(
-                Schema::boolean().example(serde_json::json!(example)),
-            ),
+            crate::SchemaProperty::new(Schema::boolean().example(serde_json::json!(example))),
         );
         self
     }
@@ -650,24 +643,26 @@ impl NestedSchemaBuilder {
     /// Add a nested object property / 添加嵌套对象属性
     pub fn object_property(mut self, name: impl Into<String>, schema: Schema) -> Self {
         let n = name.into();
-        self.schema = self.schema.add_property(&n, crate::SchemaProperty::new(schema));
+        self.schema = self
+            .schema
+            .add_property(&n, crate::SchemaProperty::new(schema));
         self
     }
 
     /// Add an array property / 添加数组属性
     pub fn array_property(mut self, name: impl Into<String>, items: Schema) -> Self {
         let n = name.into();
-        self.schema = self.schema.add_property(
-            &n,
-            crate::SchemaProperty::new(Schema::array(items)),
-        );
+        self.schema = self
+            .schema
+            .add_property(&n, crate::SchemaProperty::new(Schema::array(items)));
         self
     }
 
     /// Add a property with an explicit schema and mark it as required / 添加带显式模式的必需属性
     pub fn required_property(mut self, name: impl Into<String>, schema: Schema) -> Self {
         let n = name.into();
-        self.schema = self.schema
+        self.schema = self
+            .schema
             .add_property(&n, crate::SchemaProperty::new(schema))
             .add_required(&n);
         self
@@ -878,7 +873,9 @@ pub fn api_key_security_scheme(
     let name = name.into();
     let desc = match &location {
         crate::config::ApiKeyLocation::Header => format!("API key passed in header '{}'", name),
-        crate::config::ApiKeyLocation::Query => format!("API key passed as query parameter '{}'", name),
+        crate::config::ApiKeyLocation::Query => {
+            format!("API key passed as query parameter '{}'", name)
+        },
     };
     SecurityScheme::ApiKey {
         name,
@@ -1077,10 +1074,7 @@ mod tests {
 
         let props = schema.properties.as_ref().unwrap();
         let user_prop = props.get("user").unwrap();
-        assert_eq!(
-            user_prop.schema.ref_,
-            Some("#/components/schemas/User".to_string())
-        );
+        assert_eq!(user_prop.schema.ref_, Some("#/components/schemas/User".to_string()));
     }
 
     #[test]
@@ -1132,10 +1126,7 @@ mod tests {
 
         let props = schema.properties.as_ref().unwrap();
         let name_prop = props.get("name").unwrap();
-        assert_eq!(
-            name_prop.schema.example,
-            Some(serde_json::Value::String("Alice".to_string()))
-        );
+        assert_eq!(name_prop.schema.example, Some(serde_json::Value::String("Alice".to_string())));
         let age_prop = props.get("age").unwrap();
         assert_eq!(age_prop.schema.example, Some(serde_json::json!(30)));
         let active_prop = props.get("active").unwrap();
@@ -1164,10 +1155,7 @@ mod tests {
             .build();
 
         assert_eq!(schema.schema_type, Some(SchemaType::Object));
-        assert_eq!(
-            schema.description,
-            Some("String key-value metadata".to_string())
-        );
+        assert_eq!(schema.description, Some("String key-value metadata".to_string()));
     }
 
     #[test]
@@ -1224,11 +1212,15 @@ mod tests {
     fn test_bearer_security_scheme() {
         let scheme = bearer_security_scheme();
         match scheme {
-            SecurityScheme::Http { scheme: s, bearer_format, description } => {
+            SecurityScheme::Http {
+                scheme: s,
+                bearer_format,
+                description,
+            } => {
                 assert_eq!(s, "bearer");
                 assert_eq!(bearer_format, Some("JWT".to_string()));
                 assert!(description.is_some());
-            }
+            },
             _ => panic!("Expected Http security scheme"),
         }
     }
@@ -1237,10 +1229,14 @@ mod tests {
     fn test_basic_security_scheme() {
         let scheme = basic_security_scheme();
         match scheme {
-            SecurityScheme::Http { scheme: s, bearer_format, .. } => {
+            SecurityScheme::Http {
+                scheme: s,
+                bearer_format,
+                ..
+            } => {
                 assert_eq!(s, "basic");
                 assert!(bearer_format.is_none());
-            }
+            },
             _ => panic!("Expected Http security scheme"),
         }
     }
@@ -1249,12 +1245,16 @@ mod tests {
     fn test_api_key_security_scheme_header() {
         let scheme = api_key_security_scheme("X-API-KEY", crate::config::ApiKeyLocation::Header);
         match scheme {
-            SecurityScheme::ApiKey { name, location, description } => {
+            SecurityScheme::ApiKey {
+                name,
+                location,
+                description,
+            } => {
                 assert_eq!(name, "X-API-KEY");
                 assert_eq!(location, crate::config::ApiKeyLocation::Header);
                 assert!(description.is_some());
                 assert!(description.unwrap().contains("header"));
-            }
+            },
             _ => panic!("Expected ApiKey security scheme"),
         }
     }
@@ -1266,7 +1266,7 @@ mod tests {
             SecurityScheme::ApiKey { name, location, .. } => {
                 assert_eq!(name, "api_key");
                 assert_eq!(location, crate::config::ApiKeyLocation::Query);
-            }
+            },
             _ => panic!("Expected ApiKey security scheme"),
         }
     }
@@ -1286,14 +1286,11 @@ mod tests {
             SecurityScheme::OAuth2 { flows, description } => {
                 assert!(flows.authorization_code.is_some());
                 let auth_code = flows.authorization_code.unwrap();
-                assert_eq!(
-                    auth_code.authorization_url,
-                    "https://auth.example.com/authorize"
-                );
+                assert_eq!(auth_code.authorization_url, "https://auth.example.com/authorize");
                 assert_eq!(auth_code.token_url, "https://auth.example.com/token");
                 assert_eq!(auth_code.scopes.len(), 2);
                 assert!(description.is_some());
-            }
+            },
             _ => panic!("Expected OAuth2 security scheme"),
         }
     }
@@ -1312,11 +1309,7 @@ mod tests {
 
     #[test]
     fn test_server_variable_with_enum() {
-        let var = server_variable_with_enum(
-            "https",
-            vec!["http", "https"],
-            "Server protocol",
-        );
+        let var = server_variable_with_enum("https", vec!["http", "https"], "Server protocol");
         assert_eq!(var.default_value, "https");
         let enums = var.enum_values.unwrap();
         assert_eq!(enums, vec!["http".to_string(), "https".to_string()]);
@@ -1413,9 +1406,6 @@ mod tests {
         assert!(prod.variables.is_some());
         let variables = prod.variables.as_ref().unwrap();
         assert_eq!(variables.get("port").unwrap().default_value, "8080");
-        assert_eq!(
-            variables.get("host").unwrap().default_value,
-            "api.example.com"
-        );
+        assert_eq!(variables.get("host").unwrap().default_value, "api.example.com");
     }
 }

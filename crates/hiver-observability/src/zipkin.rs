@@ -191,15 +191,15 @@ impl ZipkinSpan {
             match status {
                 SpanStatus::Ok => {
                     tags.insert("otel.status_code".to_string(), "OK".to_string());
-                }
+                },
                 SpanStatus::UnknownError => {
                     tags.insert("otel.status_code".to_string(), "ERROR".to_string());
                     tags.insert("error".to_string(), "true".to_string());
-                }
+                },
                 SpanStatus::Cancelled => {
                     tags.insert("otel.status_code".to_string(), "ERROR".to_string());
                     tags.insert("error".to_string(), "cancelled".to_string());
-                }
+                },
             }
         }
 

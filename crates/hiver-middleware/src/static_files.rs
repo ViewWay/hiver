@@ -7,8 +7,8 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::fs;
 use std::fmt::Write as FmtWrite;
+use std::fs;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -161,7 +161,9 @@ impl StaticFiles {
             builder = builder.header("cache-control", cache);
         }
 
-        Ok(builder.body(Body::from(contents)).expect("unexpected error"))
+        Ok(builder
+            .body(Body::from(contents))
+            .expect("unexpected error"))
     }
 
     /// Serve directory listing
@@ -206,9 +208,7 @@ impl StaticFiles {
             let entry = entry_result
                 .map_err(|e| Error::internal(format!("Failed to read entry: {}", e)))?;
             let name = entry.file_name().to_string_lossy().to_string();
-            let is_dir = entry
-                .file_type()
-                .is_ok_and(|ft| ft.is_dir());
+            let is_dir = entry.file_type().is_ok_and(|ft| ft.is_dir());
 
             let suffix = if is_dir { "/" } else { "" };
             let _ = write!(
@@ -271,16 +271,13 @@ where
             }
 
             // Check for path traversal attacks
-            if file_path
-                .canonicalize()
-                .is_ok_and(|p| {
-                    !p.starts_with(
-                        base_path
-                            .canonicalize()
-                            .unwrap_or_else(|_| base_path.clone()),
-                    )
-                })
-            {
+            if file_path.canonicalize().is_ok_and(|p| {
+                !p.starts_with(
+                    base_path
+                        .canonicalize()
+                        .unwrap_or_else(|_| base_path.clone()),
+                )
+            }) {
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
                     .body(Body::from("Access denied"))
@@ -290,23 +287,22 @@ where
             // Check if file exists
             if !file_path.exists() {
                 // SPA mode: serve index.html for non-existent files
-                if spa_mode
-                    && let Some(ref index) = index_file {
-                        file_path = base_path.clone();
-                        file_path.push(index);
-                        if file_path.exists() {
-                            return Self {
-                                uri_prefix,
-                                base_path,
-                                index_file,
-                                spa_mode,
-                                allowed_extensions,
-                                show_listing,
-                                cache_control,
-                            }
-                            .serve_file(&file_path);
+                if spa_mode && let Some(ref index) = index_file {
+                    file_path = base_path.clone();
+                    file_path.push(index);
+                    if file_path.exists() {
+                        return Self {
+                            uri_prefix,
+                            base_path,
+                            index_file,
+                            spa_mode,
+                            allowed_extensions,
+                            show_listing,
+                            cache_control,
                         }
+                        .serve_file(&file_path);
                     }
+                }
                 return next.call(req, state).await;
             }
 

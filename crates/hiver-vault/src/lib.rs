@@ -59,9 +59,9 @@ pub mod secret;
 pub mod transit;
 
 // Re-exports / 重导出
+pub use auth_jwt::{JwtAuth, JwtAuthManager, JwtRoleConfig};
 pub use client::{VaultClient, VaultConfig};
 pub use error::VaultError;
-pub use auth_jwt::{JwtAuth, JwtAuthManager, JwtRoleConfig};
 
 #[cfg(test)]
 mod tests;

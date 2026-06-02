@@ -40,7 +40,9 @@ fn mock_client_no_token(mock_url: &Url) -> VaultClient {
 fn config_builder_default_address() {
     // Default address should be https://127.0.0.1:8200
     // 默认地址应为 https://127.0.0.1:8200
-    let config = VaultConfig::builder().build().expect("build default config");
+    let config = VaultConfig::builder()
+        .build()
+        .expect("build default config");
     assert_eq!(config.address.as_str(), "https://127.0.0.1:8200/");
 }
 
@@ -133,7 +135,7 @@ fn error_from_status_server_error() {
         VaultError::ServerError { status, message } => {
             assert_eq!(status, 500);
             assert_eq!(message, "internal error");
-        }
+        },
         _ => panic!("Expected ServerError, got {err:?}"),
     }
 }
@@ -157,7 +159,7 @@ fn error_from_status_not_found() {
     match err {
         VaultError::SecretNotFound { path } => {
             assert_eq!(path, "secret/data/foo");
-        }
+        },
         _ => panic!("Expected SecretNotFound, got {err:?}"),
     }
 }
@@ -171,7 +173,7 @@ fn error_from_status_client_error() {
         VaultError::ClientError { status, message } => {
             assert_eq!(status, 400);
             assert_eq!(message, "bad request");
-        }
+        },
         _ => panic!("Expected ClientError, got {err:?}"),
     }
 }
@@ -189,15 +191,18 @@ async fn token_auth_success() {
         .mock("GET", "/v1/auth/token/lookup-self")
         .match_header("X-Vault-Token", "valid-token")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "accessor": "accessor-123",
-                "policies": ["root", "default"],
-                "token_type": "service",
-                "lease_duration": 86400,
-                "renewable": true
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "accessor": "accessor-123",
+                    "policies": ["root", "default"],
+                    "token_type": "service",
+                    "lease_duration": 86400,
+                    "renewable": true
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -205,7 +210,10 @@ async fn token_auth_success() {
     let client = mock_client_no_token(&base_url);
 
     let auth = TokenAuth::new("valid-token");
-    let result = auth.authenticate(&client).await.expect("auth should succeed");
+    let result = auth
+        .authenticate(&client)
+        .await
+        .expect("auth should succeed");
 
     mock.assert_async().await;
     assert_eq!(result.client_token, "valid-token");
@@ -240,7 +248,7 @@ async fn token_auth_invalid_token() {
     match result.unwrap_err() {
         VaultError::AuthenticationFailed(msg) => {
             assert!(msg.contains("403"));
-        }
+        },
         other => panic!("Expected AuthenticationFailed, got {other:?}"),
     }
 }
@@ -283,21 +291,28 @@ async fn approle_auth_success() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("POST", "/v1/auth/approle/login")
-        .match_body(serde_json::json!({
-            "role_id": "role-abc",
-            "secret_id": "secret-xyz"
-        }).to_string().as_str())
+        .match_body(
+            serde_json::json!({
+                "role_id": "role-abc",
+                "secret_id": "secret-xyz"
+            })
+            .to_string()
+            .as_str(),
+        )
         .with_status(200)
-        .with_body(serde_json::json!({
-            "auth": {
-                "client_token": "generated-token-123",
-                "accessor": "acc-456",
-                "policies": ["app-policy"],
-                "token_type": "batch",
-                "lease_duration": 3600,
-                "renewable": false
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "auth": {
+                    "client_token": "generated-token-123",
+                    "accessor": "acc-456",
+                    "policies": ["app-policy"],
+                    "token_type": "batch",
+                    "lease_duration": 3600,
+                    "renewable": false
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -305,7 +320,10 @@ async fn approle_auth_success() {
     let client = mock_client_no_token(&base_url);
 
     let auth = AppRoleAuth::new("role-abc", "secret-xyz", "approle");
-    let result = auth.authenticate(&client).await.expect("approle auth should succeed");
+    let result = auth
+        .authenticate(&client)
+        .await
+        .expect("approle auth should succeed");
 
     mock.assert_async().await;
     assert_eq!(result.client_token, "generated-token-123");
@@ -338,7 +356,7 @@ async fn approle_auth_invalid_credentials() {
     match result.unwrap_err() {
         VaultError::AuthenticationFailed(msg) => {
             assert!(msg.contains("400"));
-        }
+        },
         other => panic!("Expected AuthenticationFailed, got {other:?}"),
     }
 }
@@ -351,13 +369,16 @@ async fn approle_auth_custom_mount() {
     let mock = server
         .mock("POST", "/v1/auth/my-approle/login")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "auth": {
-                "client_token": "custom-mount-token",
-                "policies": [],
-                "token_type": "service"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "auth": {
+                    "client_token": "custom-mount-token",
+                    "policies": [],
+                    "token_type": "service"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -379,13 +400,16 @@ async fn client_auth_approle_sets_token() {
     let mock = server
         .mock("POST", "/v1/auth/approle/login")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "auth": {
-                "client_token": "via-client-token",
-                "policies": ["default"],
-                "token_type": "service"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "auth": {
+                    "client_token": "via-client-token",
+                    "policies": ["default"],
+                    "token_type": "service"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -415,12 +439,15 @@ async fn kv_v1_read_secret() {
     let mock = server
         .mock("GET", "/v1/secret/myapp/config")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "username": "admin",
-                "password": "s3cret"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "username": "admin",
+                    "password": "s3cret"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -441,7 +468,11 @@ async fn kv_v1_write_secret() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("POST", "/v1/secret/myapp/config")
-        .match_body(serde_json::json!({"data": {"key": "value"}}).to_string().as_str())
+        .match_body(
+            serde_json::json!({"data": {"key": "value"}})
+                .to_string()
+                .as_str(),
+        )
         .with_status(200)
         .with_body("{}")
         .create_async()
@@ -484,11 +515,14 @@ async fn kv_v1_list_secrets() {
     let mock = server
         .mock("LIST", "/v1/secret/myapp")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "keys": ["config", "credentials", "subfolder/"]
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "keys": ["config", "credentials", "subfolder/"]
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -534,17 +568,20 @@ async fn kv_v2_read_secret() {
     let mock = server
         .mock("GET", "/v1/secret/data/myapp/config")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "data": {"db_url": "postgres://localhost"},
-                "metadata": {
-                    "created_time": "2025-01-01T00:00:00Z",
-                    "deletion_time": "",
-                    "destroyed": false,
-                    "version": 3
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "data": {"db_url": "postgres://localhost"},
+                    "metadata": {
+                        "created_time": "2025-01-01T00:00:00Z",
+                        "deletion_time": "",
+                        "destroyed": false,
+                        "version": 3
+                    }
                 }
-            }
-        }).to_string())
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -567,14 +604,17 @@ async fn kv_v2_write_secret() {
     let mock = server
         .mock("POST", "/v1/secret/data/myapp/config")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "created_time": "2025-06-01T00:00:00Z",
-                "deletion_time": "",
-                "destroyed": false,
-                "version": 1
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "created_time": "2025-06-01T00:00:00Z",
+                    "deletion_time": "",
+                    "destroyed": false,
+                    "version": 1
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -660,7 +700,11 @@ async fn kv_v2_destroy_versions() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("POST", "/v1/secret/destroy/myapp/config")
-        .match_body(serde_json::json!({"versions": [1, 2, 3]}).to_string().as_str())
+        .match_body(
+            serde_json::json!({"versions": [1, 2, 3]})
+                .to_string()
+                .as_str(),
+        )
         .with_status(204)
         .create_async()
         .await;
@@ -683,11 +727,14 @@ async fn kv_v2_list_secrets() {
     let mock = server
         .mock("LIST", "/v1/secret/metadata/myapp")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "keys": ["config", "db/", "api-key"]
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "keys": ["config", "db/", "api-key"]
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -708,13 +755,16 @@ async fn kv_v2_read_metadata() {
     let mock = server
         .mock("GET", "/v1/secret/metadata/myapp/config")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "created_time": "2025-01-01T00:00:00Z",
-                "max_version": 5,
-                "cas_required": false
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "created_time": "2025-01-01T00:00:00Z",
+                    "max_version": 5,
+                    "cas_required": false
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -722,7 +772,10 @@ async fn kv_v2_read_metadata() {
     let client = mock_client(&base_url);
     let kv = client.kv_v2("secret");
 
-    let meta = kv.read_metadata("myapp/config").await.expect("kv v2 read metadata");
+    let meta = kv
+        .read_metadata("myapp/config")
+        .await
+        .expect("kv v2 read metadata");
     mock.assert_async().await;
     assert_eq!(meta.version, 5);
 }
@@ -759,7 +812,11 @@ async fn transit_create_key() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("POST", "/v1/transit/keys/my-key")
-        .match_body(serde_json::json!({"type": "aes256-gcm96"}).to_string().as_str())
+        .match_body(
+            serde_json::json!({"type": "aes256-gcm96"})
+                .to_string()
+                .as_str(),
+        )
         .with_status(204)
         .create_async()
         .await;
@@ -783,18 +840,21 @@ async fn transit_read_key() {
     let mock = server
         .mock("GET", "/v1/transit/keys/my-key")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "name": "my-key",
-                "type": "aes256-gcm96",
-                "deletion_allowed": false,
-                "min_decryption_version": 1,
-                "min_encryption_version": 0,
-                "latest_version": 1,
-                "exportable": false,
-                "keys": {"1": {}}
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "name": "my-key",
+                    "type": "aes256-gcm96",
+                    "deletion_allowed": false,
+                    "min_decryption_version": 1,
+                    "min_encryption_version": 0,
+                    "latest_version": 1,
+                    "exportable": false,
+                    "keys": {"1": {}}
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -852,11 +912,14 @@ async fn transit_decrypt() {
                 .as_str(),
         )
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "plaintext": "aGVsbG8="
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "plaintext": "aGVsbG8="
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -904,11 +967,14 @@ async fn transit_rewrap() {
                 .as_str(),
         )
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "ciphertext": "vault:v2:newCT"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "ciphertext": "vault:v2:newCT"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -939,7 +1005,10 @@ async fn transit_delete_key() {
     let client = mock_client(&base_url);
     let transit = client.transit("transit");
 
-    transit.delete_key("my-key").await.expect("transit delete key");
+    transit
+        .delete_key("my-key")
+        .await
+        .expect("transit delete key");
     mock.assert_async().await;
 }
 
@@ -951,9 +1020,12 @@ async fn transit_list_keys() {
     let mock = server
         .mock("LIST", "/v1/transit/keys")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {"keys": ["key-a", "key-b"]}
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {"keys": ["key-a", "key-b"]}
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1028,7 +1100,9 @@ async fn pki_set_role() {
         ttl: Some("24h".into()),
         ..Default::default()
     };
-    pki.set_role("web-server", &role).await.expect("pki set role");
+    pki.set_role("web-server", &role)
+        .await
+        .expect("pki set role");
     mock.assert_async().await;
 }
 
@@ -1040,13 +1114,16 @@ async fn pki_read_role() {
     let mock = server
         .mock("GET", "/v1/pki/roles/web-server")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "allowed_domains": ["example.com"],
-                "allow_subdomains": true,
-                "max_ttl": "72h"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "allowed_domains": ["example.com"],
+                    "allow_subdomains": true,
+                    "max_ttl": "72h"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1074,7 +1151,9 @@ async fn pki_delete_role() {
     let client = mock_client(&base_url);
     let pki = client.pki("pki");
 
-    pki.delete_role("web-server").await.expect("pki delete role");
+    pki.delete_role("web-server")
+        .await
+        .expect("pki delete role");
     mock.assert_async().await;
 }
 
@@ -1111,11 +1190,14 @@ async fn pki_read_ca_certificate() {
     let mock = server
         .mock("GET", "/v1/pki/cert/ca")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "certificate": "-----BEGIN CERTIFICATE-----\nCA-CERT\n-----END CERTIFICATE-----"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "certificate": "-----BEGIN CERTIFICATE-----\nCA-CERT\n-----END CERTIFICATE-----"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1136,11 +1218,14 @@ async fn pki_read_certificate_by_serial() {
     let mock = server
         .mock("GET", "/v1/pki/cert/12-34-56-78")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {
-                "certificate": "-----BEGIN CERTIFICATE-----\nCERT\n-----END CERTIFICATE-----"
-            }
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {
+                    "certificate": "-----BEGIN CERTIFICATE-----\nCERT\n-----END CERTIFICATE-----"
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1206,12 +1291,15 @@ async fn health_check_healthy() {
     let mock = server
         .mock("GET", "/v1/sys/health")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "initialized": true,
-            "sealed": false,
-            "standby": false,
-            "version": "1.18.0"
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "initialized": true,
+                "sealed": false,
+                "standby": false,
+                "version": "1.18.0"
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1234,19 +1322,24 @@ async fn health_check_sealed() {
     let mock = server
         .mock("GET", "/v1/sys/health")
         .with_status(503)
-        .with_body(serde_json::json!({
-            "initialized": true,
-            "sealed": true,
-            "standby": false,
-            "version": "1.18.0"
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "initialized": true,
+                "sealed": true,
+                "standby": false,
+                "version": "1.18.0"
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
     let base_url = Url::parse(&server.url()).expect("parse url");
     let client = mock_client(&base_url);
 
-    let status = health::check_health(&client).await.expect("health check sealed");
+    let status = health::check_health(&client)
+        .await
+        .expect("health check sealed");
     mock.assert_async().await;
     assert!(status.sealed);
 }
@@ -1259,19 +1352,24 @@ async fn health_check_standby() {
     let mock = server
         .mock("GET", "/v1/sys/health")
         .with_status(429)
-        .with_body(serde_json::json!({
-            "initialized": true,
-            "sealed": false,
-            "standby": true,
-            "version": "1.18.0"
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "initialized": true,
+                "sealed": false,
+                "standby": true,
+                "version": "1.18.0"
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
     let base_url = Url::parse(&server.url()).expect("parse url");
     let client = mock_client(&base_url);
 
-    let status = health::check_health(&client).await.expect("health check standby");
+    let status = health::check_health(&client)
+        .await
+        .expect("health check standby");
     mock.assert_async().await;
     assert!(status.standby);
 }
@@ -1284,16 +1382,19 @@ async fn seal_status_unsealed() {
     let mock = server
         .mock("GET", "/v1/sys/seal-status")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "type": "shamir",
-            "sealed": false,
-            "total_shares": 5,
-            "threshold": 3,
-            "progress": 0,
-            "nonce": "",
-            "version": "1.18.0",
-            "initialized": true
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "type": "shamir",
+                "sealed": false,
+                "total_shares": 5,
+                "threshold": 3,
+                "progress": 0,
+                "nonce": "",
+                "version": "1.18.0",
+                "initialized": true
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1324,12 +1425,15 @@ async fn seal_and_unseal() {
     let unseal_mock = server
         .mock("PUT", "/v1/sys/unseal")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "type": "shamir",
-            "sealed": false,
-            "progress": 3,
-            "version": "1.18.0"
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "type": "shamir",
+                "sealed": false,
+                "progress": 3,
+                "version": "1.18.0"
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1341,7 +1445,9 @@ async fn seal_and_unseal() {
     seal_mock.assert_async().await;
 
     // Unseal / 解封
-    let result = health::unseal(&client, "unseal-key-1").await.expect("unseal");
+    let result = health::unseal(&client, "unseal-key-1")
+        .await
+        .expect("unseal");
     unseal_mock.assert_async().await;
     assert!(!result.sealed);
 }
@@ -1358,11 +1464,14 @@ async fn lease_renew() {
     let mock = server
         .mock("PUT", "/v1/sys/leases/renew")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "lease_id": "lease-123",
-            "lease_duration": 7200,
-            "renewable": true
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "lease_id": "lease-123",
+                "lease_duration": 7200,
+                "renewable": true
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1385,7 +1494,11 @@ async fn lease_revoke() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("PUT", "/v1/sys/leases/revoke")
-        .match_body(serde_json::json!({"lease_id": "lease-456"}).to_string().as_str())
+        .match_body(
+            serde_json::json!({"lease_id": "lease-456"})
+                .to_string()
+                .as_str(),
+        )
         .with_status(204)
         .create_async()
         .await;
@@ -1406,13 +1519,20 @@ async fn lease_lookup() {
     let mut server = mockito::Server::new_async().await;
     let mock = server
         .mock("PUT", "/v1/sys/leases/lookup")
-        .match_body(serde_json::json!({"lease_id": "lease-789"}).to_string().as_str())
+        .match_body(
+            serde_json::json!({"lease_id": "lease-789"})
+                .to_string()
+                .as_str(),
+        )
         .with_status(200)
-        .with_body(serde_json::json!({
-            "lease_id": "lease-789",
-            "lease_duration": 3600,
-            "renewable": true
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "lease_id": "lease-789",
+                "lease_duration": 3600,
+                "renewable": true
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1439,12 +1559,15 @@ async fn secret_read() {
     let mock = server
         .mock("GET", "/v1/secret/data/foo")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {"username": "admin"},
-            "lease_id": "lease-abc",
-            "lease_duration": 3600,
-            "renewable": true
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {"username": "admin"},
+                "lease_id": "lease-abc",
+                "lease_duration": 3600,
+                "renewable": true
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1467,9 +1590,12 @@ async fn secret_write() {
     let mock = server
         .mock("POST", "/v1/secret/data/bar")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {"version": 1}
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {"version": 1}
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -1511,9 +1637,12 @@ async fn secret_list() {
     let mock = server
         .mock("LIST", "/v1/secret/metadata/app")
         .with_status(200)
-        .with_body(serde_json::json!({
-            "data": {"keys": ["config", "creds"]}
-        }).to_string())
+        .with_body(
+            serde_json::json!({
+                "data": {"keys": ["config", "creds"]}
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 

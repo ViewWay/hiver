@@ -43,8 +43,7 @@ async fn setup_postgres() -> (PgPool, testcontainers::ContainerAsync<Postgres>) 
         .await
         .expect("Failed to get PostgreSQL port");
 
-    let connection_string =
-        format!("postgres://testuser:testpass@127.0.0.1:{host_port}/testdb");
+    let connection_string = format!("postgres://testuser:testpass@127.0.0.1:{host_port}/testdb");
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -143,16 +142,14 @@ async fn test_postgres_insert_and_select() {
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
-    sqlx::query(
-        "INSERT INTO test_users (username, email, age, is_active) VALUES ($1, $2, $3, $4)",
-    )
-    .bind("testuser")
-    .bind("testuser@example.com")
-    .bind(42)
-    .bind(true)
-    .execute(&pool)
-    .await
-    .expect("Failed to insert user");
+    sqlx::query("INSERT INTO test_users (username, email, age, is_active) VALUES ($1, $2, $3, $4)")
+        .bind("testuser")
+        .bind("testuser@example.com")
+        .bind(42)
+        .bind(true)
+        .execute(&pool)
+        .await
+        .expect("Failed to insert user");
 
     let user: TestUser = sqlx::query_as("SELECT * FROM test_users WHERE username = $1")
         .bind("testuser")
@@ -202,11 +199,10 @@ async fn test_postgres_delete() {
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
 
-    let before_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM test_users")
-            .fetch_one(&pool)
-            .await
-            .expect("Failed to count before delete");
+    let before_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM test_users")
+        .fetch_one(&pool)
+        .await
+        .expect("Failed to count before delete");
     assert_eq!(before_count.0, 3);
 
     sqlx::query("DELETE FROM test_users WHERE username = $1")
@@ -215,11 +211,10 @@ async fn test_postgres_delete() {
         .await
         .expect("Failed to delete user");
 
-    let after_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM test_users")
-            .fetch_one(&pool)
-            .await
-            .expect("Failed to count after delete");
+    let after_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM test_users")
+        .fetch_one(&pool)
+        .await
+        .expect("Failed to count after delete");
     assert_eq!(after_count.0, 2);
 
     // Verify bob is gone
@@ -284,12 +279,11 @@ async fn test_postgres_transaction_rollback() {
 
     tx.rollback().await.expect("Failed to rollback transaction");
 
-    let result =
-        sqlx::query_as::<_, TestUser>("SELECT * FROM test_users WHERE username = $1")
-            .bind("rollback_user")
-            .fetch_optional(&pool)
-            .await
-            .expect("Failed to check rolled-back user");
+    let result = sqlx::query_as::<_, TestUser>("SELECT * FROM test_users WHERE username = $1")
+        .bind("rollback_user")
+        .fetch_optional(&pool)
+        .await
+        .expect("Failed to check rolled-back user");
     assert!(result.is_none(), "Rolled-back row should not exist");
 }
 
@@ -304,21 +298,19 @@ async fn test_postgres_pagination() {
     seed_test_data(&pool).await;
 
     // Page 1: first 2 results
-    let page1: Vec<TestUser> = sqlx::query_as(
-        "SELECT * FROM test_users ORDER BY id ASC LIMIT 2 OFFSET 0",
-    )
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to fetch page 1");
+    let page1: Vec<TestUser> =
+        sqlx::query_as("SELECT * FROM test_users ORDER BY id ASC LIMIT 2 OFFSET 0")
+            .fetch_all(&pool)
+            .await
+            .expect("Failed to fetch page 1");
     assert_eq!(page1.len(), 2);
 
     // Page 2: remaining result
-    let page2: Vec<TestUser> = sqlx::query_as(
-        "SELECT * FROM test_users ORDER BY id ASC LIMIT 2 OFFSET 2",
-    )
-    .fetch_all(&pool)
-    .await
-    .expect("Failed to fetch page 2");
+    let page2: Vec<TestUser> =
+        sqlx::query_as("SELECT * FROM test_users ORDER BY id ASC LIMIT 2 OFFSET 2")
+            .fetch_all(&pool)
+            .await
+            .expect("Failed to fetch page 2");
     assert_eq!(page2.len(), 1);
 }
 
@@ -419,8 +411,10 @@ async fn test_postgres_connection_pool() {
     for i in 0..10 {
         let pool_clone = pool.clone();
         handles.push(tokio::spawn(async move {
-            let row: (i32,) =
-                sqlx::query_as("SELECT $1::int AS val").bind(i).fetch_one(&pool_clone).await;
+            let row: (i32,) = sqlx::query_as("SELECT $1::int AS val")
+                .bind(i)
+                .fetch_one(&pool_clone)
+                .await;
             row
         }));
     }

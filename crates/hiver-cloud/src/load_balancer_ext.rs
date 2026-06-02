@@ -53,22 +53,33 @@ impl InMemoryHealthChecker {
     /// Mark an instance as healthy.
     /// 将实例标记为健康。
     pub fn mark_healthy(&self, instance_id: &str) {
-        let mut s = self.statuses.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut s = self
+            .statuses
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         s.insert(instance_id.to_string(), HealthStatus::Healthy);
     }
 
     /// Mark an instance as unhealthy.
     /// 将实例标记为不健康。
     pub fn mark_unhealthy(&self, instance_id: &str) {
-        let mut s = self.statuses.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut s = self
+            .statuses
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         s.insert(instance_id.to_string(), HealthStatus::Unhealthy);
     }
 }
 
 impl InstanceHealthChecker for InMemoryHealthChecker {
     fn health(&self, instance: &ServiceInstance) -> HealthStatus {
-        let s = self.statuses.read().unwrap_or_else(std::sync::PoisonError::into_inner);
-        s.get(&instance.instance_id).copied().unwrap_or(HealthStatus::Unknown)
+        let s = self
+            .statuses
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        s.get(&instance.instance_id)
+            .copied()
+            .unwrap_or(HealthStatus::Unknown)
     }
 }
 
@@ -195,13 +206,19 @@ mod tests {
         let lb = ZoneAwareLoadBalancer::new(inner, "us-east-1a");
 
         let mut inst_a = ServiceInstance::new("test", "1", "localhost", 8080);
-        inst_a.metadata.insert("zone".to_string(), "us-east-1a".to_string());
+        inst_a
+            .metadata
+            .insert("zone".to_string(), "us-east-1a".to_string());
 
         let mut inst_b = ServiceInstance::new("test", "2", "localhost", 8081);
-        inst_b.metadata.insert("zone".to_string(), "us-west-2a".to_string());
+        inst_b
+            .metadata
+            .insert("zone".to_string(), "us-west-2a".to_string());
 
         let mut inst_c = ServiceInstance::new("test", "3", "localhost", 8082);
-        inst_c.metadata.insert("zone".to_string(), "us-east-1a".to_string());
+        inst_c
+            .metadata
+            .insert("zone".to_string(), "us-east-1a".to_string());
 
         let instances = vec![inst_a, inst_b, inst_c];
 
@@ -217,7 +234,8 @@ mod tests {
         let lb = ZoneAwareLoadBalancer::new(inner, "eu-west-1a");
 
         let mut inst = ServiceInstance::new("test", "1", "localhost", 8080);
-        inst.metadata.insert("zone".to_string(), "us-east-1a".to_string());
+        inst.metadata
+            .insert("zone".to_string(), "us-east-1a".to_string());
 
         let instances = vec![inst];
         let chosen = lb.choose(&instances).await;

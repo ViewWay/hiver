@@ -8,12 +8,10 @@
 //!
 //! 此基准测试套件测量 Hiver 运行时与基线（tokio/async-std）相比的性能。
 
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use hiver_runtime::{
-    Runtime, RuntimeConfig,
-    bounded, channel, select_two, spawn,
-    sleep, Duration,
-    SchedulerConfig, WorkStealingConfig, WorkStealingScheduler,
+    Duration, Runtime, RuntimeConfig, SchedulerConfig, WorkStealingConfig, WorkStealingScheduler,
+    bounded, channel, select_two, sleep, spawn,
 };
 
 // ============================================================================
@@ -114,16 +112,20 @@ fn bench_channel_bounded(c: &mut Criterion) {
     let mut group = c.benchmark_group("channel_bounded");
 
     for buffer in [0usize, 1, 10, 100].iter() {
-        group.bench_with_input(BenchmarkId::new("single_send_recv", buffer), buffer, |b, buffer| {
-            let mut runtime = Runtime::new().unwrap();
-            b.iter(|| {
-                let _ = runtime.block_on(async {
-                    let (tx, mut rx) = bounded::<i32>(*buffer);
-                    tx.send(42).unwrap();
-                    std::hint::black_box(rx.recv().await.unwrap());
+        group.bench_with_input(
+            BenchmarkId::new("single_send_recv", buffer),
+            buffer,
+            |b, buffer| {
+                let mut runtime = Runtime::new().unwrap();
+                b.iter(|| {
+                    let _ = runtime.block_on(async {
+                        let (tx, mut rx) = bounded::<i32>(*buffer);
+                        tx.send(42).unwrap();
+                        std::hint::black_box(rx.recv().await.unwrap());
+                    });
                 });
-            });
-        });
+            },
+        );
     }
 
     group.finish();

@@ -13,9 +13,13 @@ use crate::{Propagation, TransactionError, TransactionResult, TransactionStatus}
 /// 在互斥锁后持有活动的数据库事务。
 pub trait LiveTransaction: Send {
     /// Commit the underlying transaction.
-    fn commit_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
+    fn commit_boxed(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
     /// Roll back the underlying transaction.
-    fn rollback_boxed(self: Box<Self>) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
+    fn rollback_boxed(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>;
 }
 
 tokio::task_local! {
@@ -23,9 +27,9 @@ tokio::task_local! {
 }
 
 fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>> {
-    ACTIVE_TX
-        .try_with(Clone::clone)
-        .expect("No active transaction scope: wrap your transactional code with `with_transaction_scope`")
+    ACTIVE_TX.try_with(Clone::clone).expect(
+        "No active transaction scope: wrap your transactional code with `with_transaction_scope`",
+    )
 }
 
 /// Initialize the task-local transaction map for the duration of `f`.
@@ -42,7 +46,9 @@ pub async fn with_transaction_scope<F, R>(f: F) -> R
 where
     F: Future<Output = R>,
 {
-    ACTIVE_TX.scope(Arc::new(Mutex::new(HashMap::new())), f).await
+    ACTIVE_TX
+        .scope(Arc::new(Mutex::new(HashMap::new())), f)
+        .await
 }
 
 /// Bind a live transaction to a status name in the current task.
@@ -78,19 +84,17 @@ pub async fn resolve_propagation(
         Propagation::Required | Propagation::Supports => Ok(current_status().await),
         Propagation::Mandatory => match current_status().await {
             Some(s) => Ok(Some(s)),
-            None => Err(TransactionError::InvalidState(
-                "No existing transaction for MANDATORY".into(),
-            )),
+            None => {
+                Err(TransactionError::InvalidState("No existing transaction for MANDATORY".into()))
+            },
         },
         Propagation::Never => {
             if current_status().await.is_some() {
-                Err(TransactionError::InvalidState(
-                    "Existing transaction present for NEVER".into(),
-                ))
+                Err(TransactionError::InvalidState("Existing transaction present for NEVER".into()))
             } else {
                 Ok(None)
             }
-        }
+        },
         Propagation::NotSupported | Propagation::RequiresNew | Propagation::Nested => Ok(None),
     }
 }

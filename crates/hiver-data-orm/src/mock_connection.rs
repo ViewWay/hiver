@@ -66,10 +66,11 @@ impl Connection {
                 tables.entry(table).or_default().push(row);
             }
         } else if normalized.starts_with("DROP TABLE")
-            && let Some(table) = extract_table_name(sql_trimmed, "DROP TABLE") {
-                let mut tables = self.tables.lock().unwrap();
-                tables.remove(&table);
-            }
+            && let Some(table) = extract_table_name(sql_trimmed, "DROP TABLE")
+        {
+            let mut tables = self.tables.lock().unwrap();
+            tables.remove(&table);
+        }
         // Other statements are no-ops for the mock
         Ok(())
     }
@@ -82,10 +83,11 @@ impl Connection {
     pub fn query(&self, sql: &str) -> Result<Vec<HashMap<String, Value>>> {
         let normalized = sql.to_uppercase();
         if normalized.starts_with("SELECT")
-            && let Some(table) = extract_table_after_from(sql) {
-                let tables = self.tables.lock().unwrap();
-                return Ok(tables.get(&table).cloned().unwrap_or_default());
-            }
+            && let Some(table) = extract_table_after_from(sql)
+        {
+            let tables = self.tables.lock().unwrap();
+            return Ok(tables.get(&table).cloned().unwrap_or_default());
+        }
         Ok(Vec::new())
     }
 
@@ -119,11 +121,7 @@ fn extract_table_name(sql: &str, prefix: &str) -> Option<String> {
         .chars()
         .take_while(|c| c.is_alphanumeric() || *c == '_')
         .collect();
-    if table.is_empty() {
-        None
-    } else {
-        Some(table)
-    }
+    if table.is_empty() { None } else { Some(table) }
 }
 
 /// Very small parser: extract table name after `FROM` in a SELECT.
@@ -135,11 +133,7 @@ fn extract_table_after_from(sql: &str) -> Option<String> {
         .chars()
         .take_while(|c| c.is_alphanumeric() || *c == '_')
         .collect();
-    if table.is_empty() {
-        None
-    } else {
-        Some(table)
-    }
+    if table.is_empty() { None } else { Some(table) }
 }
 
 /// Best-effort parsing of `INSERT INTO <table> (col1, col2) VALUES ('v1','v2')`.
@@ -172,7 +166,7 @@ fn parse_simple_insert(sql: &str) -> HashMap<String, Value> {
                     .collect()
             } else {
                 return row;
-        }
+            }
         } else {
             return row;
         }
@@ -209,7 +203,8 @@ mod tests {
         let conn = Connection::new("mock://test").unwrap();
         assert_eq!(conn.url(), "mock://test");
 
-        conn.execute("CREATE TABLE users (id INT, name TEXT)").unwrap();
+        conn.execute("CREATE TABLE users (id INT, name TEXT)")
+            .unwrap();
 
         conn.execute("INSERT INTO users (id, name) VALUES (1, 'Alice')")
             .unwrap();

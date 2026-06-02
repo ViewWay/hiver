@@ -171,7 +171,12 @@ impl DieselSchema {
     /// Add a column to the schema.
     /// 向 schema 中添加列。
     #[must_use]
-    pub fn column(mut self, name: impl Into<String>, type_: DieselColumnType, primary_key: bool) -> Self {
+    pub fn column(
+        mut self,
+        name: impl Into<String>,
+        type_: DieselColumnType,
+        primary_key: bool,
+    ) -> Self {
         let col = if primary_key {
             DieselColumn::new(name, type_).primary_key()
         } else {
@@ -205,11 +210,8 @@ impl DieselSchema {
             .map(|c| c.name.as_str())
             .collect();
 
-        let mut sql = format!(
-            "CREATE TABLE IF NOT EXISTS {} ({}",
-            self.table_name,
-            col_defs.join(", ")
-        );
+        let mut sql =
+            format!("CREATE TABLE IF NOT EXISTS {} ({}", self.table_name, col_defs.join(", "));
 
         if !pk_columns.is_empty() {
             sql.push_str(&format!(", PRIMARY KEY ({})", pk_columns.join(", ")));
@@ -327,7 +329,8 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M> {
     /// 添加 ORDER BY 子句。
     #[must_use]
     pub fn order(mut self, column: impl Into<String>, direction: OrderDirection) -> Self {
-        self.orders.push(format!("{} {}", column.into(), direction.to_sql()));
+        self.orders
+            .push(format!("{} {}", column.into(), direction.to_sql()));
         self
     }
 
@@ -409,7 +412,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M> {
                     .deserialize()
                     .map_err(|e| crate::Error::validation(format!("Diesel deserialize: {e}")))?;
                 Ok(Some(model))
-            }
+            },
             None => Ok(None),
         }
     }
@@ -456,10 +459,8 @@ mod tests {
     impl Model for User {
         fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("users");
-            meta.columns
-                .push(Column::new("id", ColumnType::I64));
-            meta.columns
-                .push(Column::new("name", ColumnType::String));
+            meta.columns.push(Column::new("id", ColumnType::I64));
+            meta.columns.push(Column::new("name", ColumnType::String));
             meta
         }
 

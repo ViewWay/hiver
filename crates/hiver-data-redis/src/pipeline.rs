@@ -21,10 +21,8 @@ impl RedisPipeline {
     /// 向管道添加原始命令。
     #[must_use]
     pub fn cmd(mut self, command: impl Into<String>, args: Vec<impl Into<Vec<u8>>>) -> Self {
-        self.commands.push((
-            command.into().to_uppercase(),
-            args.into_iter().map(|a| a.into()).collect(),
-        ));
+        self.commands
+            .push((command.into().to_uppercase(), args.into_iter().map(|a| a.into()).collect()));
         self
     }
 
@@ -32,17 +30,20 @@ impl RedisPipeline {
     /// 添加 SET 命令。
     #[must_use]
     pub fn set(mut self, key: impl Into<String>, value: impl Into<Vec<u8>>) -> Self {
-        self.commands.push((
-            "SET".to_string(),
-            vec![key.into().into_bytes(), value.into()],
-        ));
+        self.commands
+            .push(("SET".to_string(), vec![key.into().into_bytes(), value.into()]));
         self
     }
 
     /// Add a SETEX command (set with expiration).
     /// 添加 SETEX 命令（带过期时间的设置）。
     #[must_use]
-    pub fn set_ex(mut self, key: impl Into<String>, value: impl Into<Vec<u8>>, seconds: u64) -> Self {
+    pub fn set_ex(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<Vec<u8>>,
+        seconds: u64,
+    ) -> Self {
         self.commands.push((
             "SETEX".to_string(),
             vec![
@@ -113,10 +114,19 @@ impl RedisPipeline {
     /// Add an HSET command.
     /// 添加 HSET 命令。
     #[must_use]
-    pub fn hset(mut self, key: impl Into<String>, field: impl Into<String>, value: impl Into<Vec<u8>>) -> Self {
+    pub fn hset(
+        mut self,
+        key: impl Into<String>,
+        field: impl Into<String>,
+        value: impl Into<Vec<u8>>,
+    ) -> Self {
         self.commands.push((
             "HSET".to_string(),
-            vec![key.into().into_bytes(), field.into().into_bytes(), value.into()],
+            vec![
+                key.into().into_bytes(),
+                field.into().into_bytes(),
+                value.into(),
+            ],
         ));
         self
     }
@@ -125,10 +135,8 @@ impl RedisPipeline {
     /// 添加 HGET 命令。
     #[must_use]
     pub fn hget(mut self, key: impl Into<String>, field: impl Into<String>) -> Self {
-        self.commands.push((
-            "HGET".to_string(),
-            vec![key.into().into_bytes(), field.into().into_bytes()],
-        ));
+        self.commands
+            .push(("HGET".to_string(), vec![key.into().into_bytes(), field.into().into_bytes()]));
         self
     }
 
@@ -136,10 +144,8 @@ impl RedisPipeline {
     /// 添加 SADD 命令。
     #[must_use]
     pub fn sadd(mut self, key: impl Into<String>, member: impl Into<String>) -> Self {
-        self.commands.push((
-            "SADD".to_string(),
-            vec![key.into().into_bytes(), member.into().into_bytes()],
-        ));
+        self.commands
+            .push(("SADD".to_string(), vec![key.into().into_bytes(), member.into().into_bytes()]));
         self
     }
 
@@ -190,8 +196,7 @@ impl RedisPipeline {
             pipe.add_command(c);
         }
 
-        let results: Vec<redis::Value> =
-            pipe.query_async(conn).await.map_err(RedisError::from)?;
+        let results: Vec<redis::Value> = pipe.query_async(conn).await.map_err(RedisError::from)?;
 
         Ok(PipelineResult {
             results,
@@ -202,8 +207,7 @@ impl RedisPipeline {
 
 /// Result of a pipeline execution.
 /// 管道执行的结果。
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct PipelineResult {
     /// Raw Redis values returned by each command.
     /// 每个命令返回的原始 Redis 值。
@@ -212,7 +216,6 @@ pub struct PipelineResult {
     /// 已执行的命令数量。
     pub command_count: usize,
 }
-
 
 impl PipelineResult {
     /// Get result as string at index.
@@ -226,9 +229,7 @@ impl PipelineResult {
                 redis::Value::Okay => Some("OK".to_string()),
                 _ => None,
             })
-            .ok_or_else(|| RedisError::type_mismatch(format!(
-                "Expected string at index {index}"
-            )))
+            .ok_or_else(|| RedisError::type_mismatch(format!("Expected string at index {index}")))
     }
 
     /// Get result as i64 at index.
@@ -240,9 +241,7 @@ impl PipelineResult {
                 redis::Value::Int(i) => Some(*i),
                 _ => None,
             })
-            .ok_or_else(|| RedisError::type_mismatch(format!(
-                "Expected integer at index {index}"
-            )))
+            .ok_or_else(|| RedisError::type_mismatch(format!("Expected integer at index {index}")))
     }
 
     /// Get result as optional string at index.
@@ -250,15 +249,14 @@ impl PipelineResult {
     pub fn get_optional_string(&self, index: usize) -> RedisResult<Option<String>> {
         match self.results.get(index) {
             Some(redis::Value::Nil) => Ok(None),
-            Some(redis::Value::BulkString(data)) => {
-                Ok(Some(String::from_utf8(data.clone()).map_err(|e| {
-                    RedisError::type_mismatch(e.to_string())
-                })?))
-            }
+            Some(redis::Value::BulkString(data)) => Ok(Some(
+                String::from_utf8(data.clone())
+                    .map_err(|e| RedisError::type_mismatch(e.to_string()))?,
+            )),
             Some(redis::Value::SimpleString(s)) => Ok(Some(s.clone())),
-            _ => Err(RedisError::type_mismatch(format!(
-                "Expected optional string at index {index}"
-            ))),
+            _ => {
+                Err(RedisError::type_mismatch(format!("Expected optional string at index {index}")))
+            },
         }
     }
 }

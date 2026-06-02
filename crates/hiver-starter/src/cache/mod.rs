@@ -3,15 +3,14 @@
 //! 自动配置缓存功能。
 //! Auto-configures caching functionality.
 
-use crate::core::{AutoConfiguration, ApplicationContext};
+use crate::core::{ApplicationContext, AutoConfiguration};
 
 // Re-export cache types
 // 重新导出缓存类型
 pub use hiver_cache::{
-    Cache, CacheBuilder, CacheConfig, CacheStats, MemoryCache,
-    CacheManager, CacheManagerBuilder, SimpleCacheManager,
-    Cacheable, CachePut, CacheEvict, Cached,
-    DEFAULT_CACHE, DEFAULT_TTL_SECS, DEFAULT_MAX_CAPACITY,
+    Cache, CacheBuilder, CacheConfig, CacheEvict, CacheManager, CacheManagerBuilder, CachePut,
+    CacheStats, Cacheable, Cached, DEFAULT_CACHE, DEFAULT_MAX_CAPACITY, DEFAULT_TTL_SECS,
+    MemoryCache, SimpleCacheManager,
 };
 
 // ============================================================================
@@ -76,7 +75,7 @@ impl AutoConfiguration for CacheAutoConfiguration {
     }
 
     fn order(&self) -> i32 {
-        100  // 在核心配置之后
+        100 // 在核心配置之后
     }
 
     fn condition(&self) -> bool {

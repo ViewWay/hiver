@@ -297,12 +297,9 @@ impl TestApplication {
     /// Returns [`TestApplicationError::BeanNotFound`] if no bean of the
     /// requested type is registered.
     pub async fn get_bean<T: 'static + Send + Sync + Clone>(&self) -> TestAppResult<T> {
-        self.context
-            .get_bean::<T>()
-            .await
-            .ok_or_else(|| {
-                TestApplicationError::BeanNotFound(std::any::type_name::<T>().to_string())
-            })
+        self.context.get_bean::<T>().await.ok_or_else(|| {
+            TestApplicationError::BeanNotFound(std::any::type_name::<T>().to_string())
+        })
     }
 
     /// Retrieve a bean by name and type from the application context.
@@ -403,8 +400,7 @@ pub struct TestApplicationBuilder {
 
     /// Bean factory closures keyed by bean name.
     /// 按bean名称键控的bean工厂闭包。
-    bean_factories:
-        HashMap<String, Arc<dyn Fn() -> Box<dyn Any + Send + Sync> + Send + Sync>>,
+    bean_factories: HashMap<String, Arc<dyn Fn() -> Box<dyn Any + Send + Sync> + Send + Sync>>,
 
     /// Pre-registered bean instances (name, Arc<dyn Any + Send + Sync>).
     /// 预注册的bean实例（名称, Arc<dyn Any + Send + Sync>）。
@@ -579,10 +575,7 @@ mod tests {
             .with_property("custom.key", "custom-value")
             .build()
             .expect("build should succeed");
-        assert_eq!(
-            app.config.properties.get("custom.key"),
-            Some(&"custom-value".to_string())
-        );
+        assert_eq!(app.config.properties.get("custom.key"), Some(&"custom-value".to_string()));
     }
 
     #[tokio::test]
@@ -667,10 +660,7 @@ mod tests {
             .build()
             .expect("build should succeed");
 
-        assert_eq!(
-            app.config.database.url.as_deref(),
-            Some("jdbc:h2:mem:testdb")
-        );
+        assert_eq!(app.config.database.url.as_deref(), Some("jdbc:h2:mem:testdb"));
         assert!(!app.config.database.in_memory);
     }
 

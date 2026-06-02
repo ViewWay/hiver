@@ -99,7 +99,6 @@ pub struct TimeoutConfig {
     on_timeout: Option<TimeoutCallback>,
 }
 
-
 impl fmt::Debug for TimeoutConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TimeoutConfig")
@@ -400,7 +399,8 @@ mod tests {
     fn test_registry() {
         let registry = TimeoutRegistry::new();
         let t1 = Timeout::with_defaults("service-a");
-        let t2 = Timeout::new("service-b", TimeoutConfig::new().with_timeout(Duration::from_secs(1)));
+        let t2 =
+            Timeout::new("service-b", TimeoutConfig::new().with_timeout(Duration::from_secs(1)));
 
         registry.register(t1);
         registry.register(t2);
@@ -461,11 +461,12 @@ mod tests {
         let config = TimeoutConfig::new().with_timeout(Duration::from_millis(10));
         let t = Timeout::new("slow", config);
 
-        let result = t.call(|| async {
-            tokio::time::sleep(Duration::from_secs(10)).await;
-            "never"
-        })
-        .await;
+        let result = t
+            .call(|| async {
+                tokio::time::sleep(Duration::from_secs(10)).await;
+                "never"
+            })
+            .await;
 
         assert!(result.is_err());
         let err = result.unwrap_err();

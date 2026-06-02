@@ -48,9 +48,7 @@ pub fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenSt
     let input = parse_macro_input!(item as ItemFn);
 
     let attr_str = attr.to_string();
-    let expression = attr_str
-        .trim_matches('"')
-        .to_string();
+    let expression = attr_str.trim_matches('"').to_string();
 
     let visibility = &input.vis;
     let sig = &input.sig;

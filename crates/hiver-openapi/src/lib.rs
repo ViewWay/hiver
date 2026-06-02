@@ -74,36 +74,43 @@
 mod tests;
 
 pub mod config;
-pub mod schema;
-pub mod operation;
-pub mod response;
-pub mod path;
-pub mod openapi;
-pub mod swagger;
+pub mod doc_pdf;
+pub mod generator;
 pub mod http;
 pub mod macros;
-pub mod generator;
-pub mod scanner;
+pub mod openapi;
+pub mod operation;
+pub mod path;
 pub mod postman;
-pub mod doc_pdf;
+pub mod response;
+pub mod scanner;
+pub mod schema;
+pub mod swagger;
 
-pub use config::{OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig, InfoConfig, TagConfig, ExternalDocsConfig, ServerVariable};
+pub use config::{
+    ContactConfig, ExternalDocsConfig, InfoConfig, LicenseConfig, OpenApiConfig, ServerConfig,
+    ServerVariable, TagConfig,
+};
+pub use doc_pdf::ApiDocPdf;
 pub use generator::{
-    NestedSchemaBuilder, MapSchemaBuilder, EnumSchemaBuilder,
-    bearer_security_scheme, basic_security_scheme, api_key_security_scheme,
-    oauth2_authorization_code_security_scheme,
+    EnumSchemaBuilder, MapSchemaBuilder, NestedSchemaBuilder, api_key_security_scheme,
+    basic_security_scheme, bearer_security_scheme, oauth2_authorization_code_security_scheme,
     server_variable, server_variable_with_enum,
 };
-pub use schema::{Schema, SchemaType, SchemaFormat, SchemaProperty};
-pub use operation::{Operation, Parameter, ParameterLocation, SecurityScheme, RequestBody};
-pub use response::{Response, ResponseContent, ApiResponse};
-pub use path::{PathItem, PathMethod, PathOperation, Components};
+pub use http::{OpenApiHandler, OpenApiResponse, OpenApiRouter, OpenApiRoutes};
 pub use openapi::OpenApi;
 pub use openapi::OpenApiBuilder;
-pub use swagger::{SwaggerUi, SwaggerConfig, ModelRendering, SyntaxHighlightTheme, swagger_ui_html, redoc_html};
-pub use http::{OpenApiHandler, OpenApiResponse, OpenApiRoutes, OpenApiRouter};
-pub use postman::{PostmanCollection, PostmanGenerator, CollectionInfo, PostmanItem, PostmanRequest, PostmanUrl, PostmanHeader, PostmanBody, PostmanQueryParam, PostmanResponse};
-pub use doc_pdf::ApiDocPdf;
+pub use operation::{Operation, Parameter, ParameterLocation, RequestBody, SecurityScheme};
+pub use path::{Components, PathItem, PathMethod, PathOperation};
+pub use postman::{
+    CollectionInfo, PostmanBody, PostmanCollection, PostmanGenerator, PostmanHeader, PostmanItem,
+    PostmanQueryParam, PostmanRequest, PostmanResponse, PostmanUrl,
+};
+pub use response::{ApiResponse, Response, ResponseContent};
+pub use schema::{Schema, SchemaFormat, SchemaProperty, SchemaType};
+pub use swagger::{
+    ModelRendering, SwaggerConfig, SwaggerUi, SyntaxHighlightTheme, redoc_html, swagger_ui_html,
+};
 
 /// Version of the `OpenAPI` module
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -116,12 +123,10 @@ pub const OPENAPI_VERSION: &str = "3.0.3";
 /// 常用类型的重新导出
 pub mod prelude {
     pub use super::{
-        OpenApi, OpenApiConfig, ServerConfig, ContactConfig, LicenseConfig,
-        Schema, SchemaType, SchemaFormat, SchemaProperty,
-        Operation, Parameter, ParameterLocation, SecurityScheme,
-        Response, ResponseContent, ApiResponse,
-        PathItem, PathMethod, PathOperation,
-        OPENAPI_VERSION,
+        ApiResponse, ContactConfig, LicenseConfig, OPENAPI_VERSION, OpenApi, OpenApiConfig,
+        Operation, Parameter, ParameterLocation, PathItem, PathMethod, PathOperation, Response,
+        ResponseContent, Schema, SchemaFormat, SchemaProperty, SchemaType, SecurityScheme,
+        ServerConfig,
     };
 }
 

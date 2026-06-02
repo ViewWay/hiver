@@ -20,16 +20,17 @@
 //! let json = collection.to_json().unwrap();
 //! ```
 
+use crate::Schema;
 use crate::openapi::OpenApi;
 use crate::operation::{Parameter, ParameterLocation};
 use crate::path::PathItem;
-use crate::Schema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Postman Collection v2.1 schema URL
 /// Postman Collection v2.1 模式 URL
-pub const POSTMAN_SCHEMA: &str = "https://schema.getpostman.com/json/collection/v2.1.0/collection.json";
+pub const POSTMAN_SCHEMA: &str =
+    "https://schema.getpostman.com/json/collection/v2.1.0/collection.json";
 
 // ---------------------------------------------------------------------------
 // Postman data types
@@ -657,7 +658,10 @@ impl PostmanGenerator {
     /// 从 `OpenApi` 规范生成 Postman Collection
     pub fn generate(&self, openapi: &OpenApi) -> PostmanCollection {
         let mut collection = PostmanCollection::new(&openapi.info.title);
-        collection.info.description.clone_from(&openapi.info.description);
+        collection
+            .info
+            .description
+            .clone_from(&openapi.info.description);
 
         // Group routes by tag, fall back to "default" folder
         // 按标签分组路由，默认使用 "default" 文件夹
@@ -679,15 +683,19 @@ impl PostmanGenerator {
             .tags
             .iter()
             .map(|t| t.name.clone())
-            .chain(tag_folders.keys().filter(|k| !openapi.tags.iter().any(|t| &t.name == *k)).cloned())
+            .chain(
+                tag_folders
+                    .keys()
+                    .filter(|k| !openapi.tags.iter().any(|t| &t.name == *k))
+                    .cloned(),
+            )
             .collect();
 
         for tag in ordered_tags {
             if let Some(items) = tag_folders.remove(&tag) {
-                collection.item.push(
-                    PostmanItem::folder(&tag)
-                        .description(format!("{} endpoints", tag)),
-                    );
+                collection
+                    .item
+                    .push(PostmanItem::folder(&tag).description(format!("{} endpoints", tag)));
                 if let Some(folder) = collection.item.last_mut() {
                     folder.item = items;
                 }
@@ -760,9 +768,10 @@ impl PostmanGenerator {
             // Request body
             // 请求体
             if let Some(body) = &op.request_body
-                && let Some(json_body) = self.extract_body_json(body) {
-                    req = req.body(PostmanBody::raw_json(json_body));
-                }
+                && let Some(json_body) = self.extract_body_json(body)
+            {
+                req = req.body(PostmanBody::raw_json(json_body));
+            }
 
             // Bearer auth from security
             // 从安全配置获取 Bearer 认证
@@ -803,35 +812,40 @@ impl PostmanGenerator {
             ParameterLocation::Path => {
                 // Replace {param} with {{param}} in raw URL
                 // 在原始 URL 中将 {param} 替换为 {{param}}
-                req.url.raw = req.url.raw.replace(
-                    &format!("{{{}}}", param.name),
-                    &format!("{{{{{}}}}}", param.name),
-                );
+                req.url.raw = req
+                    .url
+                    .raw
+                    .replace(&format!("{{{}}}", param.name), &format!("{{{{{}}}}}", param.name));
                 // Update path segments similarly
                 // 同样更新路径段
                 req.url.path = req
                     .url
                     .path
                     .iter()
-                    .map(|s| s.replace(&format!("{{{}}}", param.name), &format!("{{{{{}}}}}", param.name)))
+                    .map(|s| {
+                        s.replace(
+                            &format!("{{{}}}", param.name),
+                            &format!("{{{{{}}}}}", param.name),
+                        )
+                    })
                     .collect();
-            }
+            },
             ParameterLocation::Query => {
                 let mut qp = PostmanQueryParam::new(&param.name, "");
                 if let Some(desc) = &param.description {
                     qp.description = Some(desc.clone());
                 }
                 req.url.query.push(qp);
-            }
+            },
             ParameterLocation::Header => {
                 req = req.add_header(&param.name, "");
-            }
+            },
             ParameterLocation::Cookie => {
                 // Postman does not have direct cookie param mapping in collection schema;
                 // add as header for reference
                 // Postman Collection 模式中没有直接的 cookie 参数映射；作为头添加以供参考
                 req = req.add_header("Cookie", "");
-            }
+            },
         }
         req
     }
@@ -842,7 +856,10 @@ impl PostmanGenerator {
 
         // Try to build a representative JSON from the schema
         // 尝试从模式构建代表性 JSON
-        let example = media.example.clone().or_else(|| self.schema_to_example(schema));
+        let example = media
+            .example
+            .clone()
+            .or_else(|| self.schema_to_example(schema));
         example.map(|v| serde_json::to_string_pretty(&v).unwrap_or_default())
     }
 
@@ -874,7 +891,7 @@ impl PostmanGenerator {
                     .and_then(|s| self.schema_to_example(s))
                     .unwrap_or(serde_json::Value::Null);
                 Some(serde_json::Value::Array(vec![item_example]))
-            }
+            },
             crate::SchemaType::Object => {
                 let props = schema.properties.as_ref()?;
                 let mut map = serde_json::Map::new();
@@ -886,7 +903,7 @@ impl PostmanGenerator {
                     );
                 }
                 Some(serde_json::Value::Object(map))
-            }
+            },
         }
     }
 }
@@ -898,8 +915,8 @@ impl PostmanGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{OpenApiBuilder, Operation, PathItem, Response, Schema};
     use crate::operation::MediaType;
+    use crate::{OpenApiBuilder, Operation, PathItem, Response, Schema};
 
     #[test]
     fn test_postman_url_raw() {
@@ -1083,7 +1100,11 @@ mod tests {
         let users_folder = collection.item.iter().find(|i| i.name == "users");
         assert!(users_folder.is_some());
 
-        let create_user = users_folder.unwrap().item.iter().find(|i| i.name == "Create user");
+        let create_user = users_folder
+            .unwrap()
+            .item
+            .iter()
+            .find(|i| i.name == "Create user");
         assert!(create_user.is_some());
 
         let req = create_user.unwrap().request.as_ref().unwrap();
@@ -1102,7 +1123,11 @@ mod tests {
                     Operation::new()
                         .summary("Search items")
                         .add_tag("search")
-                        .add_parameter(Parameter::query("q").description("Search query").required(true))
+                        .add_parameter(
+                            Parameter::query("q")
+                                .description("Search query")
+                                .required(true),
+                        )
                         .add_parameter(Parameter::query("limit").description("Max results"))
                         .add_response("200", Response::ok("Search results")),
                 ),

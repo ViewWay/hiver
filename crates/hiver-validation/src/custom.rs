@@ -49,7 +49,6 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::fmt;
 
-
 // ---------------------------------------------------------------------------
 // CustomValidator trait
 // ---------------------------------------------------------------------------
@@ -488,11 +487,7 @@ impl CustomValidator<dyn FieldProvider> for FieldMatchValidator {
 
 /// Convenience function: validate two raw string values match.
 /// 便捷函数：验证两个原始字符串值匹配。
-pub fn field_match(
-    first: &str,
-    second: &str,
-    field_name: &str,
-) -> Result<(), ValidationError> {
+pub fn field_match(first: &str, second: &str, field_name: &str) -> Result<(), ValidationError> {
     if first != second {
         return Err(ValidationError::new(field_name, "Fields must match")
             .with_code("field_mismatch")
@@ -559,7 +554,8 @@ where
 
 impl<C, V, T> fmt::Debug for ConditionalValidator<C, V, T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("ConditionalValidator").finish_non_exhaustive()
+        f.debug_struct("ConditionalValidator")
+            .finish_non_exhaustive()
     }
 }
 
@@ -896,15 +892,13 @@ mod tests {
 
     #[test]
     fn test_conditional_validator_active() {
-        let cv: ConditionalValidator<_, _, i32> =
-            ConditionalValidator::new(|| true, AlwaysFail);
+        let cv: ConditionalValidator<_, _, i32> = ConditionalValidator::new(|| true, AlwaysFail);
         assert!(cv.validate(&42).is_err());
     }
 
     #[test]
     fn test_conditional_validator_inactive() {
-        let cv: ConditionalValidator<_, _, i32> =
-            ConditionalValidator::new(|| false, AlwaysFail);
+        let cv: ConditionalValidator<_, _, i32> = ConditionalValidator::new(|| false, AlwaysFail);
         assert!(cv.validate(&42).is_ok());
     }
 
@@ -986,8 +980,7 @@ mod tests {
 
     #[test]
     fn test_composite_debug() {
-        let composite: CompositeValidator<i32> = CompositeValidator::new()
-            .add(|_v: &i32| Ok(()));
+        let composite: CompositeValidator<i32> = CompositeValidator::new().add(|_v: &i32| Ok(()));
         let debug_str = format!("{:?}", composite);
         assert!(debug_str.contains("CompositeValidator"));
         assert!(debug_str.contains("validators_count"));

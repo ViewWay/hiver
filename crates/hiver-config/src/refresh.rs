@@ -121,7 +121,10 @@ impl RefreshScope {
 
     /// Register a refreshable value / 注册可刷新值
     pub fn register(&self, key: impl Into<String>, initial_value: impl Into<String>) {
-        let mut map = self.refreshables.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut map = self
+            .refreshables
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         map.insert(
             key.into(),
             Arc::new(RwLock::new(RefreshableValue {
@@ -132,7 +135,10 @@ impl RefreshScope {
 
     /// Get the current value of a refreshable / 获取可刷新值的当前值
     pub fn get(&self, key: &str) -> Option<String> {
-        let map = self.refreshables.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let map = self
+            .refreshables
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         map.get(key).map(|v| {
             let guard = v.read().unwrap_or_else(std::sync::PoisonError::into_inner);
             guard.value.clone()
@@ -154,9 +160,14 @@ impl RefreshScope {
     pub fn fire_event(&self, event: &ConfigChangeEvent) {
         // Update the refreshable value if registered
         // 如果已注册则更新可刷新值
-        let map = self.refreshables.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let map = self
+            .refreshables
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(refreshable) = map.get(&event.key) {
-            let mut guard = refreshable.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let mut guard = refreshable
+                .write()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             guard.value.clone_from(&event.new_value);
         }
 
@@ -174,18 +185,25 @@ impl RefreshScope {
     /// The getter is called for each registered key to obtain the new value.
     /// 对每个已注册的键调用 getter 以获取新值。
     pub fn refresh_all(&self, getter: impl Fn(&str) -> Option<String>) {
-        let map = self.refreshables.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let map = self
+            .refreshables
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         for (key, refreshable) in map.iter() {
             if let Some(new_value) = getter(key) {
                 let old_value = {
-                    let guard = refreshable.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+                    let guard = refreshable
+                        .read()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner);
                     Some(guard.value.clone())
                 };
 
                 let event = ConfigChangeEvent::new(key.as_str(), old_value, &new_value);
 
                 {
-                    let mut guard = refreshable.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+                    let mut guard = refreshable
+                        .write()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner);
                     guard.value = new_value;
                 }
 
@@ -200,7 +218,10 @@ impl RefreshScope {
 
     /// Get the number of registered refreshables / 获取已注册的可刷新值数量
     pub fn len(&self) -> usize {
-        let map = self.refreshables.read().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let map = self
+            .refreshables
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         map.len()
     }
 
@@ -249,9 +270,10 @@ impl ConfigWatcher {
     pub fn watch_file(&mut self, path: impl Into<std::path::PathBuf>) {
         let path = path.into();
         if let Ok(metadata) = std::fs::metadata(&path)
-            && let Ok(modified) = metadata.modified() {
-                self.last_modified.insert(path.clone(), modified);
-            }
+            && let Ok(modified) = metadata.modified()
+        {
+            self.last_modified.insert(path.clone(), modified);
+        }
         self.watched_files.push(path);
     }
 
@@ -264,20 +286,17 @@ impl ConfigWatcher {
 
         for path in &self.watched_files {
             if let Ok(metadata) = std::fs::metadata(path)
-                && let Ok(modified) = metadata.modified() {
-                    let prev = self.last_modified.get(path).copied();
-                    if prev != Some(modified) {
-                        let path_str = path.to_string_lossy().to_string();
-                        let event = ConfigChangeEvent::new(
-                            &path_str,
-                            prev.map(|_| "old"),
-                            "updated",
-                        );
-                        self.scope.fire_event(&event);
-                        self.last_modified.insert(path.clone(), modified);
-                        changed.push(path_str);
-                    }
+                && let Ok(modified) = metadata.modified()
+            {
+                let prev = self.last_modified.get(path).copied();
+                if prev != Some(modified) {
+                    let path_str = path.to_string_lossy().to_string();
+                    let event = ConfigChangeEvent::new(&path_str, prev.map(|_| "old"), "updated");
+                    self.scope.fire_event(&event);
+                    self.last_modified.insert(path.clone(), modified);
+                    changed.push(path_str);
                 }
+            }
         }
 
         changed
@@ -330,12 +349,17 @@ impl<T: Clone> Refreshable<T> {
 
     /// Get the current value / 获取当前值
     pub fn get(&self) -> std::sync::RwLockReadGuard<'_, T> {
-        self.value.read().unwrap_or_else(std::sync::PoisonError::into_inner)
+        self.value
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// Update the value / 更新值
     pub fn update(&self, new_value: T) {
-        let mut guard = self.value.write().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut guard = self
+            .value
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *guard = new_value;
     }
 

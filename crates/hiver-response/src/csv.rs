@@ -321,10 +321,7 @@ pub trait CsvTable {
 /// let data = vec![User { name: "Alice".into(), email: "a@b.com".into() }];
 /// let csv = export_to_csv(&data, CsvExportConfig::new()).unwrap();
 /// ```
-pub fn export_to_csv<T: CsvTable>(
-    data: &[T],
-    config: CsvExportConfig,
-) -> Result<String> {
+pub fn export_to_csv<T: CsvTable>(data: &[T], config: CsvExportConfig) -> Result<String> {
     let mut new_config = config;
     if new_config.headers.is_empty() && !data.is_empty() {
         new_config.headers = T::csv_headers();
@@ -371,10 +368,8 @@ fn needs_quoting(field: &str, config: &CsvExportConfig) -> bool {
 /// Quote a field value, escaping internal quote characters.
 /// 引用字段值，转义内部引号字符。
 fn quote_field(field: &str, config: &CsvExportConfig) -> String {
-    let escaped = field.replace(
-        config.quote_char,
-        &format!("{}{}", config.quote_char, config.quote_char),
-    );
+    let escaped =
+        field.replace(config.quote_char, &format!("{}{}", config.quote_char, config.quote_char));
     format!("{}{}{}", config.quote_char, escaped, config.quote_char)
 }
 
@@ -394,10 +389,7 @@ impl crate::IntoResponse for Csv {
         match self.0.to_bytes() {
             Ok(bytes) => crate::Response::builder()
                 .header("content-type", "text/csv; charset=utf-8")
-                .header(
-                    "content-disposition",
-                    "attachment; filename=\"export.csv\"",
-                )
+                .header("content-disposition", "attachment; filename=\"export.csv\"")
                 .body(bytes)
                 .unwrap_or_else(|_| crate::Response::new()),
             Err(_) => crate::Response::builder()
@@ -433,9 +425,7 @@ mod tests {
 
     #[test]
     fn test_simple_export() {
-        let config = CsvExportConfig::new()
-            .header("ID")
-            .header("Name");
+        let config = CsvExportConfig::new().header("ID").header("Name");
 
         let mut exporter = CsvExporter::new(config);
         exporter.add_row(vec!["1", "Alice"]);
@@ -464,9 +454,7 @@ mod tests {
 
     #[test]
     fn test_always_quote() {
-        let config = CsvExportConfig::new()
-            .header("A")
-            .always_quote(true);
+        let config = CsvExportConfig::new().header("A").always_quote(true);
 
         let mut exporter = CsvExporter::new(config);
         exporter.add_row(vec!["hello"]);
@@ -493,9 +481,7 @@ mod tests {
 
     #[test]
     fn test_bom_output() {
-        let config = CsvExportConfig::new()
-            .header("Col")
-            .include_bom(true);
+        let config = CsvExportConfig::new().header("Col").include_bom(true);
 
         let mut exporter = CsvExporter::new(config);
         exporter.add_row(vec!["val"]);
@@ -575,8 +561,14 @@ mod tests {
         }
 
         let data = vec![
-            Item { name: "Apple".into(), qty: 10 },
-            Item { name: "Banana".into(), qty: 20 },
+            Item {
+                name: "Apple".into(),
+                qty: 10,
+            },
+            Item {
+                name: "Banana".into(),
+                qty: 20,
+            },
         ];
 
         let csv = export_to_csv(&data, CsvExportConfig::new()).unwrap();

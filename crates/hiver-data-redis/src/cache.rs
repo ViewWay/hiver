@@ -51,11 +51,7 @@ where
         if self.key_prefix.is_empty() {
             serde_json::to_string(key).unwrap_or_default()
         } else {
-            format!(
-                "{}{}",
-                self.key_prefix,
-                serde_json::to_string(key).unwrap_or_default()
-            )
+            format!("{}{}", self.key_prefix, serde_json::to_string(key).unwrap_or_default())
         }
     }
 

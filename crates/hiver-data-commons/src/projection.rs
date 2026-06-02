@@ -291,10 +291,7 @@ impl Projection for DtoProjection {
 pub trait ClosedProjection: Sized {
     /// Create a closed projection from an entity using the given fields.
     /// 使用给定字段从实体创建封闭投影。
-    fn from_entity(
-        entity: &impl crate::Entity,
-        fields: &[ProjectionField],
-    ) -> Option<Self>;
+    fn from_entity(entity: &impl crate::Entity, fields: &[ProjectionField]) -> Option<Self>;
 }
 
 #[cfg(test)]

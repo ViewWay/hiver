@@ -180,7 +180,8 @@ impl LdapQueryBuilder {
         let init = initial.unwrap_or("");
         let mid = any.unwrap_or("");
         let fin = final_.unwrap_or("");
-        self.components.push(format!("({}={}*{}*{})", attr, init, mid, fin));
+        self.components
+            .push(format!("({}={}*{}*{})", attr, init, mid, fin));
         self
     }
 
@@ -251,8 +252,7 @@ impl AttributeCondition {
     /// 匹配属性不等于值的条目。
     pub fn is_not(self, value: &str) -> LdapQueryBuilder {
         let mut b = self.builder;
-        b.components
-            .push(format!("(!({}={}))", self.attr, value));
+        b.components.push(format!("(!({}={}))", self.attr, value));
         b
     }
 
@@ -339,18 +339,18 @@ mod query_tests {
 
     #[test]
     fn test_single_eq_condition() {
-        let filter = LdapQueryBuilder::new()
-            .eq("objectClass", "person")
-            .build();
+        let filter = LdapQueryBuilder::new().eq("objectClass", "person").build();
         assert_eq!(filter, "(objectClass=person)");
     }
 
     #[test]
     fn test_and_filter() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("objectClass").is("person")
+            .where_attr("objectClass")
+            .is("person")
             .and()
-            .where_attr("sn").is("Smith")
+            .where_attr("sn")
+            .is("Smith")
             .build();
         assert_eq!(filter, "(&(objectClass=person)(sn=Smith))");
     }
@@ -358,25 +358,26 @@ mod query_tests {
     #[test]
     fn test_or_filter() {
         let filter = LdapQueryBuilder::or_query()
-            .where_attr("cn").is("John")
+            .where_attr("cn")
+            .is("John")
             .or()
-            .where_attr("cn").is("Jane")
+            .where_attr("cn")
+            .is("Jane")
             .build();
         assert_eq!(filter, "(|(cn=John)(cn=Jane))");
     }
 
     #[test]
     fn test_present_filter() {
-        let filter = LdapQueryBuilder::new()
-            .present("mail")
-            .build();
+        let filter = LdapQueryBuilder::new().present("mail").build();
         assert_eq!(filter, "(mail=*)");
     }
 
     #[test]
     fn test_like_filter() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("cn").like("John")
+            .where_attr("cn")
+            .like("John")
             .build();
         assert_eq!(filter, "(cn=*John*)");
     }
@@ -384,7 +385,8 @@ mod query_tests {
     #[test]
     fn test_starts_with_filter() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("cn").starts_with("J")
+            .where_attr("cn")
+            .starts_with("J")
             .build();
         assert_eq!(filter, "(cn=J*)");
     }
@@ -392,7 +394,8 @@ mod query_tests {
     #[test]
     fn test_ends_with_filter() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("mail").ends_with("@example.com")
+            .where_attr("mail")
+            .ends_with("@example.com")
             .build();
         assert_eq!(filter, "(mail=*@example.com)");
     }
@@ -400,7 +403,8 @@ mod query_tests {
     #[test]
     fn test_not_equal() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("status").is_not("inactive")
+            .where_attr("status")
+            .is_not("inactive")
             .build();
         assert_eq!(filter, "(!(status=inactive))");
     }
@@ -428,18 +432,17 @@ mod query_tests {
             .eq("objectClass", "person")
             .raw("(|(cn=John)(cn=Jane))")
             .build();
-        assert_eq!(
-            filter,
-            "(&(objectClass=person)(|(cn=John)(cn=Jane)))"
-        );
+        assert_eq!(filter, "(&(objectClass=person)(|(cn=John)(cn=Jane)))");
     }
 
     #[test]
     fn test_exists_not_exists() {
         let filter = LdapQueryBuilder::new()
-            .where_attr("mail").exists()
+            .where_attr("mail")
+            .exists()
             .and()
-            .where_attr("password").not_exists()
+            .where_attr("password")
+            .not_exists()
             .build();
         assert_eq!(filter, "(&(mail=*)(!(password=*)))");
     }
@@ -448,6 +451,9 @@ mod query_tests {
     fn test_convenience_functions() {
         assert_eq!(object_class("person"), "(objectClass=person)");
         assert_eq!(wildcard(), "(objectClass=*)");
-        assert_eq!(dn_filter("member", "cn=John,dc=example,dc=com"), "(member=cn=John,dc=example,dc=com)");
+        assert_eq!(
+            dn_filter("member", "cn=John,dc=example,dc=com"),
+            "(member=cn=John,dc=example,dc=com)"
+        );
     }
 }

@@ -43,7 +43,7 @@
 //!     .await?;
 //! ```
 
-pub use hiver_retry_macros::{retry, recover};
+pub use hiver_retry_macros::{recover, retry};
 
 #[cfg(test)]
 mod tests;
@@ -51,18 +51,8 @@ mod tests;
 mod template;
 
 pub use template::{
-    RetryTemplate,
-    RetryTemplateBuilder,
-    RetryCallback,
-    RetryContext,
-    NoOpCallback,
+    NoOpCallback, RetryCallback, RetryContext, RetryTemplate, RetryTemplateBuilder,
 };
 
 // Re-export from hiver-resilience
-pub use hiver_resilience::retry::{
-    RetryPolicy,
-    RetryError,
-    ShouldRetry,
-    RetryAll,
-    BackoffType,
-};
+pub use hiver_resilience::retry::{BackoffType, RetryAll, RetryError, RetryPolicy, ShouldRetry};

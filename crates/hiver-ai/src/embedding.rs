@@ -172,7 +172,6 @@ pub fn euclidean_distance(a: &[f32], b: &[f32]) -> f32 {
         .sqrt()
 }
 
-
 /// Normalizes a vector in place to unit length (L2 norm = 1.0).
 /// 原地向量化为单位长度（L2 范数 = 1.0）。
 ///
@@ -222,11 +221,9 @@ mod tests {
 
     #[test]
     fn test_embedding_response() {
-        let resp = EmbeddingResponse::new(
-            vec![vec![0.1, 0.2, 0.3], vec![0.4, 0.5, 0.6]],
-            "embed-model",
-        )
-        .usage(TokenUsage::new(10, 0));
+        let resp =
+            EmbeddingResponse::new(vec![vec![0.1, 0.2, 0.3], vec![0.4, 0.5, 0.6]], "embed-model")
+                .usage(TokenUsage::new(10, 0));
 
         assert_eq!(resp.len(), 2);
         assert!(!resp.is_empty());

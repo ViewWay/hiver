@@ -1,8 +1,8 @@
 //! State traits and context
 //! 状态特征和上下文
 
-use crate::error::StateMachineResult;
 use crate::Event;
+use crate::error::StateMachineResult;
 use std::any::Any;
 use std::fmt::Debug;
 

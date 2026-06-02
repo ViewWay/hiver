@@ -346,34 +346,41 @@ impl Mdc {
     pub fn put(key: impl Into<String>, value: impl Into<String>) {
         let key = key.into();
         let value = value.into();
-        MDC_MAP.try_with(|cell| {
-            cell.borrow_mut().insert(key.clone(), value);
-        }).ok();
+        MDC_MAP
+            .try_with(|cell| {
+                cell.borrow_mut().insert(key.clone(), value);
+            })
+            .ok();
     }
 
     /// Get a value from MDC by key.
     /// Returns `None` if the key does not exist or if called outside a task context.
     /// 按键从MDC中获取值。如果键不存在或在任务上下文之外调用，则返回 `None`。
     pub fn get(key: &str) -> Option<String> {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow().get(key).cloned()
-        }).ok().flatten()
+        MDC_MAP
+            .try_with(|cell| cell.borrow().get(key).cloned())
+            .ok()
+            .flatten()
     }
 
     /// Remove a value from MDC by key.
     /// 按键从MDC中移除值。
     pub fn remove(key: &str) {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow_mut().remove(key);
-        }).ok();
+        MDC_MAP
+            .try_with(|cell| {
+                cell.borrow_mut().remove(key);
+            })
+            .ok();
     }
 
     /// Clear all MDC values for the current async task.
     /// 清除当前异步任务的所有MDC值。
     pub fn clear() {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow_mut().clear();
-        }).ok();
+        MDC_MAP
+            .try_with(|cell| {
+                cell.borrow_mut().clear();
+            })
+            .ok();
     }
 
     /// Initialize the MDC context for the current async task.
@@ -383,10 +390,10 @@ impl Mdc {
     /// 必须在需要使用 MDC 的异步任务开始时调用。
     /// 如果上下文尚不存在，则创建一个空上下文。
     pub async fn init() {
-        MDC_MAP.scope(
-            std::cell::RefCell::new(HashMap::new()),
-            async { /* context is now available */ },
-        ).await;
+        MDC_MAP
+            .scope(std::cell::RefCell::new(HashMap::new()), async { /* context is now available */
+            })
+            .await;
     }
 
     /// Run the given future with an initialized MDC context.
@@ -399,10 +406,9 @@ impl Mdc {
     where
         F: std::future::Future<Output = T>,
     {
-        MDC_MAP.scope(
-            std::cell::RefCell::new(HashMap::new()),
-            f,
-        ).await
+        MDC_MAP
+            .scope(std::cell::RefCell::new(HashMap::new()), f)
+            .await
     }
 
     /// Run the given future with a pre-populated MDC context.
@@ -413,34 +419,34 @@ impl Mdc {
     where
         F: std::future::Future<Output = T>,
     {
-        MDC_MAP.scope(
-            std::cell::RefCell::new(values),
-            f,
-        ).await
+        MDC_MAP.scope(std::cell::RefCell::new(values), f).await
     }
 
     /// Check if the MDC has a value for the given key.
     /// 检查 MDC 是否存在给定键的值。
     pub fn has(key: &str) -> bool {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow().contains_key(key)
-        }).ok().unwrap_or(false)
+        MDC_MAP
+            .try_with(|cell| cell.borrow().contains_key(key))
+            .ok()
+            .unwrap_or(false)
     }
 
     /// Return the number of entries in the current MDC context.
     /// 返回当前 MDC 上下文中的条目数。
     pub fn len() -> usize {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow().len()
-        }).ok().unwrap_or(0)
+        MDC_MAP
+            .try_with(|cell| cell.borrow().len())
+            .ok()
+            .unwrap_or(0)
     }
 
     /// Return all entries as a snapshot HashMap.
     /// 返回所有条目的快照 HashMap。
     pub fn snapshot() -> HashMap<String, String> {
-        MDC_MAP.try_with(|cell| {
-            cell.borrow().clone()
-        }).ok().unwrap_or_default()
+        MDC_MAP
+            .try_with(|cell| cell.borrow().clone())
+            .ok()
+            .unwrap_or_default()
     }
 
     /// Check if the MDC context is empty.
@@ -487,7 +493,8 @@ mod tests {
             assert!(Mdc::has("key1"));
             assert!(!Mdc::is_empty());
             assert_eq!(Mdc::len(), 1);
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -499,7 +506,8 @@ mod tests {
             assert!(!Mdc::has("key1"));
             assert_eq!(Mdc::get("key1"), None);
             assert!(Mdc::is_empty());
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -510,7 +518,8 @@ mod tests {
             assert_eq!(Mdc::len(), 2);
             Mdc::clear();
             assert!(Mdc::is_empty());
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -522,7 +531,8 @@ mod tests {
             assert_eq!(snapshot.get("x"), Some(&"10".to_string()));
             assert_eq!(snapshot.get("y"), Some(&"20".to_string()));
             assert_eq!(snapshot.len(), 2);
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -530,13 +540,15 @@ mod tests {
         Mdc::with_scope(async {
             Mdc::put("scope1_key", "scope1_val");
             assert_eq!(Mdc::get("scope1_key"), Some("scope1_val".to_string()));
-        }).await;
+        })
+        .await;
 
         // Second scope should be empty
         Mdc::with_scope(async {
             assert!(Mdc::get("scope1_key").is_none());
             assert!(Mdc::is_empty());
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -548,7 +560,8 @@ mod tests {
             assert_eq!(Mdc::get("pre_set"), Some("value".to_string()));
             Mdc::put("after_set", "after_value");
             assert_eq!(Mdc::get("after_set"), Some("after_value".to_string()));
-        }).await;
+        })
+        .await;
     }
 
     #[tokio::test]
@@ -558,7 +571,8 @@ mod tests {
             // Simulate an await point
             tokio::time::sleep(std::time::Duration::from_millis(1)).await;
             assert_eq!(Mdc::get("persist_key"), Some("persist_value".to_string()));
-        }).await;
+        })
+        .await;
     }
 
     #[test]

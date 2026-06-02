@@ -214,8 +214,7 @@ impl fmt::Display for InstanceStatus {
 
 /// Load balancing strategy
 /// 负载均衡策略
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LoadBalanceStrategy {
     /// Round-robin selection
     /// 轮询选择
@@ -245,7 +244,6 @@ impl fmt::Display for LoadBalanceStrategy {
         }
     }
 }
-
 
 /// Service discovery error
 /// 服务发现错误
@@ -417,9 +415,7 @@ impl ServiceRegistry for SimpleServiceRegistry {
 
     fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()> {
         let mut services = self.services.write().expect("lock poisoned");
-        let entry = services
-            .entry(service_name.to_string())
-            .or_default();
+        let entry = services.entry(service_name.to_string()).or_default();
 
         // Check if instance already exists
         let exists = entry.iter().any(|i| i.id == instance.id);

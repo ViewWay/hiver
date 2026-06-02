@@ -237,8 +237,7 @@ mod tests {
             .with_prefetch(50)
             .with_publisher_confirms(true);
 
-        let manager = ConnectionManager::new(config)
-            .with_connection_config(conn_config);
+        let manager = ConnectionManager::new(config).with_connection_config(conn_config);
 
         assert_eq!(manager.connection_config().prefetch_count, 50);
         assert!(manager.connection_config().publisher_confirms);

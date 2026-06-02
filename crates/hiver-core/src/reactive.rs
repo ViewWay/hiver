@@ -113,10 +113,7 @@ impl<T: Send + 'static> Mono<T> {
     {
         let inner = self.inner;
         Mono {
-            inner: async move {
-                inner.await.map(f)
-            }
-            .boxed(),
+            inner: async move { inner.await.map(f) }.boxed(),
         }
     }
 
@@ -144,10 +141,7 @@ impl<T: Send + 'static> Mono<T> {
     pub fn into_flux(self) -> Flux<T> {
         let inner = self.inner;
         Flux {
-            inner: Box::pin(
-                stream::once(inner)
-                    .filter_map(|x| async move { x }),
-            ),
+            inner: Box::pin(stream::once(inner).filter_map(|x| async move { x })),
         }
     }
 
@@ -227,9 +221,7 @@ impl<T: Send + 'static> Flux<T> {
     where
         S: Stream<Item = T> + Send + 'static,
     {
-        Self {
-            inner: Box::pin(s),
-        }
+        Self { inner: Box::pin(s) }
     }
 
     // ── Operators / 操作符 ────────────────────────────────────────────────────
@@ -395,9 +387,11 @@ impl<T: Send + 'static> Flux<T> {
     /// 限速：每次只取 `n` 个元素。
     pub fn limit_rate(self, n: usize) -> Flux<T> {
         Flux {
-            inner: Box::pin(self.inner.ready_chunks(n).flat_map(|chunk| {
-                stream::iter(chunk)
-            })),
+            inner: Box::pin(
+                self.inner
+                    .ready_chunks(n)
+                    .flat_map(|chunk| stream::iter(chunk)),
+            ),
         }
     }
 
@@ -496,10 +490,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mono_flat_map() {
-        let result = Mono::just(5)
-            .flat_map(|x| Mono::just(x + 1))
-            .block()
-            .await;
+        let result = Mono::just(5).flat_map(|x| Mono::just(x + 1)).block().await;
         assert_eq!(result, Some(6));
     }
 
@@ -511,9 +502,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_from_iter() {
-        let items = Flux::from_iter(vec![1, 2, 3])
-            .collect::<Vec<_>>()
-            .await;
+        let items = Flux::from_iter(vec![1, 2, 3]).collect::<Vec<_>>().await;
         assert_eq!(items, vec![1, 2, 3]);
     }
 
@@ -537,10 +526,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_take() {
-        let items = Flux::from_iter(0..100)
-            .take(3)
-            .collect::<Vec<_>>()
-            .await;
+        let items = Flux::from_iter(0..100).take(3).collect::<Vec<_>>().await;
         assert_eq!(items, vec![0, 1, 2]);
     }
 
@@ -628,11 +614,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mono_chained_map() {
-        let result = Mono::just(2)
-            .map(|x| x + 3)
-            .map(|x| x * 10)
-            .block()
-            .await;
+        let result = Mono::just(2).map(|x| x + 3).map(|x| x * 10).block().await;
         assert_eq!(result, Some(50));
     }
 
@@ -675,19 +657,28 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_skip_more_than_available() {
-        let items = Flux::from_iter(vec![1, 2]).skip(10).collect::<Vec<_>>().await;
+        let items = Flux::from_iter(vec![1, 2])
+            .skip(10)
+            .collect::<Vec<_>>()
+            .await;
         assert!(items.is_empty());
     }
 
     #[tokio::test]
     async fn test_flux_take_zero() {
-        let items = Flux::from_iter(vec![1, 2, 3]).take(0).collect::<Vec<_>>().await;
+        let items = Flux::from_iter(vec![1, 2, 3])
+            .take(0)
+            .collect::<Vec<_>>()
+            .await;
         assert!(items.is_empty());
     }
 
     #[tokio::test]
     async fn test_flux_take_more_than_available() {
-        let items = Flux::from_iter(vec![1, 2]).take(100).collect::<Vec<_>>().await;
+        let items = Flux::from_iter(vec![1, 2])
+            .take(100)
+            .collect::<Vec<_>>()
+            .await;
         assert_eq!(items, vec![1, 2]);
     }
 
@@ -837,10 +828,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mono_map_changes_type() {
-        let result = Mono::just(42i32)
-            .map(|x| x.to_string())
-            .block()
-            .await;
+        let result = Mono::just(42i32).map(|x| x.to_string()).block().await;
         assert_eq!(result, Some("42".to_string()));
     }
 
@@ -934,7 +922,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_skip_zero() {
-        let items = Flux::from_iter(vec![1, 2, 3]).skip(0).collect::<Vec<_>>().await;
+        let items = Flux::from_iter(vec![1, 2, 3])
+            .skip(0)
+            .collect::<Vec<_>>()
+            .await;
         assert_eq!(items, vec![1, 2, 3]);
     }
 
@@ -992,10 +983,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_flux_buffer_empty() {
-        let batches = Flux::<i32>::empty()
-            .buffer(5)
-            .collect::<Vec<_>>()
-            .await;
+        let batches = Flux::<i32>::empty().buffer(5).collect::<Vec<_>>().await;
         assert!(batches.is_empty());
     }
 

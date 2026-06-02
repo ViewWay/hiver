@@ -55,8 +55,7 @@ pub mod react;
 // Re-export primary types for convenience
 // 重新导出主要类型以方便使用
 pub use agent::{
-    Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream,
-    AgentToolCall,
+    Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream, AgentToolCall,
 };
 pub use chain::{AgentChain, MapReduceAgent, RouterAgent};
 pub use prompt::{AgentPromptTemplate, AgentTemplates};
