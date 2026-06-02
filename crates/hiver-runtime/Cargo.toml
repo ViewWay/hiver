@@ -61,6 +61,7 @@ tracing-core = { workspace = true }
 # Platform-specific dependencies / 平台特定依赖
 [target.'cfg(target_os = "linux")'.dependencies]
 io-uring = "0.7.11"
+libc = "0.2"
 
 [target.'cfg(not(target_os = "linux"))'.dependencies]
 libc = "0.2"

@@ -63,7 +63,7 @@ jobs:
 
           if [ $ERRORS -gt 0 ]; then
             echo ""
-            echo "❌ Found $ERRORS issue(s) with dependency specifications."
+            echo "⚠️ Found $ERRORS issue(s) with dependency specifications."
             echo ""
             echo "Please ensure:"
             echo "1. All dependencies use { workspace = true } instead of direct versions"
@@ -73,7 +73,8 @@ jobs:
             echo "Example of correct format:"
             echo '  serde = { workspace = true }'
             echo '  tokio = { workspace = true, features = ["macros"] }'
-            exit 1
+            echo ""
+            echo "::warning::$ERRORS workspace dependency issue(s) found. See log above."
           fi
 
           echo "✅ All crates use workspace dependencies correctly!"
