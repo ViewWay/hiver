@@ -62,8 +62,12 @@ struct IoUringOffsets {
     dropped: u32,
     /// Array offset / 数组偏移
     array: u32,
+    /// Overflow count / 溢出计数
+    overflow: u32,
+    /// CQEs offset / 完成队列条目偏移
+    cqes: u32,
     /// Reserved fields / 保留字段
-    _resv: [u32; 3],
+    _resv: [u32; 2],
 }
 
 /// io_uring submission queue entry (SQE)
@@ -548,8 +552,8 @@ impl Driver for IoUringDriver {
                         (*sqe).ioprio = 0;
                         (*sqe).fd = entry.fd;
                         (*sqe).offset = entry.offset as u64;
-                        (*sqe).addr = entry.addr as u64;
-                        (*sqe).len = entry.len as u32;
+                        (*sqe).addr = entry.buf_ptr.map_or(0, |p| p.as_ptr() as u64);
+                        (*sqe).len = entry.buf_len;
                         (*sqe).rw_flags = 0;
                         (*sqe).user_data = entry.user_data;
                         (*sqe).buf_index = 0;

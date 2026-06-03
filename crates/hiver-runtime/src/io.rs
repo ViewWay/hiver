@@ -1270,8 +1270,6 @@ impl Future for SendToFuture<'_, '_> {
                         sin6_scope_id: v6.scope_id(),
                         #[cfg(target_os = "macos")]
                         sin6_len: size_of::<libc::sockaddr_in6>() as u8,
-                        #[cfg(not(target_os = "macos"))]
-                        sin6_len: 0,
                     };
                     unsafe {
                         libc::sendto(
