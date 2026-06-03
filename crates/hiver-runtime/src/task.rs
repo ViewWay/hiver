@@ -520,7 +520,7 @@ where
             match Pin::new(&mut future).poll(&mut context) {
                 Poll::Ready(value) => break value,
                 Poll::Pending => {
-                    std::thread::sleep(std::time::Duration::from_millis(1));
+                    thread::sleep(std::time::Duration::from_millis(1));
                 },
             }
         };
@@ -596,7 +596,7 @@ where
                     // responsiveness and CPU usage for a blocking executor.
                     // 让出 CPU 避免忙等烧 CPU。
                     // 1ms 休眠在响应性和 CPU 使用之间是合理的折衷。
-                    std::thread::sleep(std::time::Duration::from_millis(1));
+                    thread::sleep(std::time::Duration::from_millis(1));
                 },
             }
         }

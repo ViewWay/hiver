@@ -260,7 +260,7 @@ impl Scheduler {
             libc::CPU_ZERO(&mut cpu_set);
             libc::CPU_SET(core % libc::CPU_SETSIZE as usize, &mut cpu_set);
 
-            let _ = libc::sched_setaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), &cpu_set);
+            let _ = libc::sched_setaffinity(0, size_of::<libc::cpu_set_t>(), &cpu_set);
         }
     }
 

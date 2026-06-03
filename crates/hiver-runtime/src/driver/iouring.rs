@@ -323,7 +323,7 @@ impl IoUringDriver {
             ((params.cq_off.array as usize) + (params.cq_entries as usize) * 16)
         };
 
-        let sqes_size = (params.sq_entries as usize) * std::mem::size_of::<SubmissionQueueEntry>();
+        let sqes_size = (params.sq_entries as usize) * size_of::<SubmissionQueueEntry>();
 
         // Map memory regions
         // 映射内存区域
@@ -515,7 +515,7 @@ impl Drop for IoUringDriver {
     fn drop(&mut self) {
         // Use the actual mmap sizes stored during setup, not hardcoded values
         // 使用 setup 时存储的实际 mmap 尺寸，而非硬编码值
-        let sqes_size = self.capacity * std::mem::size_of::<SubmissionQueueEntry>();
+        let sqes_size = self.capacity * size_of::<SubmissionQueueEntry>();
 
         unsafe {
             libc::munmap(self.sq_ring, self.sq_ring_mmap_size);
@@ -808,16 +808,16 @@ mod tests {
 
     #[test]
     fn test_iouring_params_size() {
-        assert_eq!(std::mem::size_of::<IoUringParams>(), 40);
+        assert_eq!(size_of::<IoUringParams>(), 40);
     }
 
     #[test]
     fn test_submission_queue_entry_size() {
-        assert_eq!(std::mem::size_of::<SubmissionQueueEntry>(), 64);
+        assert_eq!(size_of::<SubmissionQueueEntry>(), 64);
     }
 
     #[test]
     fn test_completion_queue_entry_size() {
-        assert_eq!(std::mem::size_of::<CompletionQueueEntry>(), 16);
+        assert_eq!(size_of::<CompletionQueueEntry>(), 16);
     }
 }

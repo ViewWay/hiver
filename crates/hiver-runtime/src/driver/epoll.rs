@@ -187,7 +187,7 @@ impl EpollDriver {
             libc::CPU_SET(core % libc::CPU_SETSIZE as usize, &mut cpu_set);
 
             let result =
-                libc::sched_setaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), &cpu_set);
+                libc::sched_setaffinity(0, size_of::<libc::cpu_set_t>(), &cpu_set);
 
             if result < 0 {
                 return Err(std::io::Error::last_os_error());
