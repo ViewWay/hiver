@@ -37,7 +37,8 @@ use crate::AmqpMessage;
 /// // ContainerFactory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum AckMode {
+pub enum AckMode
+{
     /// Auto-ack: the broker automatically acknowledges on delivery.
     /// 自动确认：代理在投递时自动确认。
     ///
@@ -69,9 +70,12 @@ pub enum AckMode {
     None,
 }
 
-impl std::fmt::Display for AckMode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for AckMode
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             Self::Auto => write!(f, "auto"),
             Self::Manual => write!(f, "manual"),
             Self::ManualAck => write!(f, "manual_ack"),
@@ -80,11 +84,14 @@ impl std::fmt::Display for AckMode {
     }
 }
 
-impl std::str::FromStr for AckMode {
+impl std::str::FromStr for AckMode
+{
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
+    fn from_str(s: &str) -> Result<Self, Self::Err>
+    {
+        match s
+        {
             "auto" => Ok(Self::Auto),
             "manual" => Ok(Self::Manual),
             "manual_ack" => Ok(Self::ManualAck),
@@ -97,7 +104,8 @@ impl std::str::FromStr for AckMode {
 /// Tracks the acknowledgment state of a message.
 /// 跟踪消息的确认状态。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum AckState {
+pub enum AckState
+{
     /// Message has not been acknowledged yet.
     /// 消息尚未确认。
     Pending,
@@ -125,7 +133,8 @@ pub enum AckState {
 /// 提供显式的 `.ack()`、`.nack(requeue)`、`.reject(requeue)` 方法，
 /// 这些方法遵循配置的 `AckMode`。在 `Auto` 和 `None` 模式下，
 /// ack 操作为空操作。在 `Manual` 和 `ManualAck` 模式下，执行实际确认。
-pub struct AcknowledgableMessage {
+pub struct AcknowledgableMessage
+{
     /// The underlying AMQP message.
     /// 底层 AMQP 消息。
     pub message: AmqpMessage,
@@ -139,10 +148,12 @@ pub struct AcknowledgableMessage {
     state: AckState,
 }
 
-impl AcknowledgableMessage {
+impl AcknowledgableMessage
+{
     /// Create a new acknowledgable message.
     /// 创建新的可确认消息。
-    pub fn new(message: AmqpMessage, ack_mode: AckMode) -> Self {
+    pub fn new(message: AmqpMessage, ack_mode: AckMode) -> Self
+    {
         Self {
             message,
             ack_mode,
@@ -152,13 +163,15 @@ impl AcknowledgableMessage {
 
     /// Get the current acknowledgment state.
     /// 获取当前确认状态。
-    pub fn state(&self) -> AckState {
+    pub fn state(&self) -> AckState
+    {
         self.state
     }
 
     /// Check if the message has been acknowledged.
     /// 检查消息是否已被确认。
-    pub fn is_acknowledged(&self) -> bool {
+    pub fn is_acknowledged(&self) -> bool
+    {
         self.state == AckState::Acknowledged
     }
 
@@ -171,17 +184,22 @@ impl AcknowledgableMessage {
     /// 在 `Auto` 和 `None` 模式下，这是空操作并返回 `Ok(())`。
     /// 在 `Manual` 和 `ManualAck` 模式下，将消息标记为已确认，
     /// 并委托给底层 `AmqpMessage::ack()`。
-    pub fn ack(&mut self) -> Result<(), String> {
-        if self.state != AckState::Pending {
+    pub fn ack(&mut self) -> Result<(), String>
+    {
+        if self.state != AckState::Pending
+        {
             return Err(format!("Message already in state {:?}, cannot ack", self.state));
         }
 
-        match self.ack_mode {
-            AckMode::Auto | AckMode::None => {
+        match self.ack_mode
+        {
+            AckMode::Auto | AckMode::None =>
+            {
                 self.state = AckState::Acknowledged;
                 Ok(())
             },
-            AckMode::Manual | AckMode::ManualAck => {
+            AckMode::Manual | AckMode::ManualAck =>
+            {
                 self.message.ack()?;
                 self.state = AckState::Acknowledged;
                 Ok(())
@@ -195,17 +213,22 @@ impl AcknowledgableMessage {
     /// # Arguments / 参数
     ///
     /// * `requeue` - Whether to requeue the message for redelivery / 是否将消息重新入队以便重新投递
-    pub fn nack(&mut self, requeue: bool) -> Result<(), String> {
-        if self.state != AckState::Pending {
+    pub fn nack(&mut self, requeue: bool) -> Result<(), String>
+    {
+        if self.state != AckState::Pending
+        {
             return Err(format!("Message already in state {:?}, cannot nack", self.state));
         }
 
-        match self.ack_mode {
-            AckMode::Auto | AckMode::None => {
+        match self.ack_mode
+        {
+            AckMode::Auto | AckMode::None =>
+            {
                 self.state = AckState::Nacked;
                 Ok(())
             },
-            AckMode::Manual | AckMode::ManualAck => {
+            AckMode::Manual | AckMode::ManualAck =>
+            {
                 self.message.nack(requeue)?;
                 self.state = AckState::Nacked;
                 Ok(())
@@ -222,17 +245,22 @@ impl AcknowledgableMessage {
     /// # Arguments / 参数
     ///
     /// * `requeue` - Whether to requeue the message / 是否将消息重新入队
-    pub fn reject(&mut self, requeue: bool) -> Result<(), String> {
-        if self.state != AckState::Pending {
+    pub fn reject(&mut self, requeue: bool) -> Result<(), String>
+    {
+        if self.state != AckState::Pending
+        {
             return Err(format!("Message already in state {:?}, cannot reject", self.state));
         }
 
-        match self.ack_mode {
-            AckMode::Auto | AckMode::None => {
+        match self.ack_mode
+        {
+            AckMode::Auto | AckMode::None =>
+            {
                 self.state = AckState::Rejected;
                 Ok(())
             },
-            AckMode::Manual | AckMode::ManualAck => {
+            AckMode::Manual | AckMode::ManualAck =>
+            {
                 self.message.reject(requeue)?;
                 self.state = AckState::Rejected;
                 Ok(())
@@ -242,13 +270,15 @@ impl AcknowledgableMessage {
 
     /// Get a reference to the underlying message payload.
     /// 获取底层消息 payload 的引用。
-    pub fn payload(&self) -> &[u8] {
+    pub fn payload(&self) -> &[u8]
+    {
         self.message.payload()
     }
 
     /// Get the payload as a string.
     /// 获取 payload 的字符串表示。
-    pub fn payload_as_string(&self) -> String {
+    pub fn payload_as_string(&self) -> String
+    {
         self.message.payload_as_string()
     }
 }
@@ -262,7 +292,8 @@ impl AcknowledgableMessage {
 /// // SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 /// // container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 /// ```
-pub trait ChannelExt {
+pub trait ChannelExt
+{
     /// Consume messages from a queue with the given acknowledgment mode.
     /// 以给定的确认模式消费队列中的消息。
     ///
@@ -282,11 +313,13 @@ pub trait ChannelExt {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{AmqpMessage, Message};
 
-    fn make_test_amqp_message(body: &str) -> AmqpMessage {
+    fn make_test_amqp_message(body: &str) -> AmqpMessage
+    {
         AmqpMessage {
             message: Message::from_string(body),
             exchange: "test.exchange".to_string(),
@@ -301,7 +334,8 @@ mod tests {
     /// Test AckMode Display formatting
     /// 测试 AckMode Display 格式化
     #[test]
-    fn test_ack_mode_display() {
+    fn test_ack_mode_display()
+    {
         assert_eq!(AckMode::Auto.to_string(), "auto");
         assert_eq!(AckMode::Manual.to_string(), "manual");
         assert_eq!(AckMode::ManualAck.to_string(), "manual_ack");
@@ -311,7 +345,8 @@ mod tests {
     /// Test AckMode FromStr round-trip
     /// 测试 AckMode FromStr 往返
     #[test]
-    fn test_ack_mode_from_str() {
+    fn test_ack_mode_from_str()
+    {
         assert_eq!("auto".parse::<AckMode>().unwrap(), AckMode::Auto);
         assert_eq!("manual".parse::<AckMode>().unwrap(), AckMode::Manual);
         assert_eq!("manual_ack".parse::<AckMode>().unwrap(), AckMode::ManualAck);
@@ -324,7 +359,8 @@ mod tests {
     /// Test ack in Manual mode transitions state
     /// 测试 Manual 模式下 ack 转换状态
     #[test]
-    fn test_manual_ack() {
+    fn test_manual_ack()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         assert_eq!(ack_msg.state(), AckState::Pending);
@@ -338,7 +374,8 @@ mod tests {
     /// Test nack in Manual mode transitions state
     /// 测试 Manual 模式下 nack 转换状态
     #[test]
-    fn test_manual_nack() {
+    fn test_manual_nack()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         ack_msg.nack(true).unwrap();
@@ -348,7 +385,8 @@ mod tests {
     /// Test reject in Manual mode transitions state
     /// 测试 Manual 模式下 reject 转换状态
     #[test]
-    fn test_manual_reject() {
+    fn test_manual_reject()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         ack_msg.reject(false).unwrap();
@@ -358,7 +396,8 @@ mod tests {
     /// Test double-ack returns error
     /// 测试重复确认返回错误
     #[test]
-    fn test_double_ack_error() {
+    fn test_double_ack_error()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         ack_msg.ack().unwrap();
@@ -369,7 +408,8 @@ mod tests {
     /// Test nack after ack returns error
     /// 测试 ack 后 nack 返回错误
     #[test]
-    fn test_nack_after_ack_error() {
+    fn test_nack_after_ack_error()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         ack_msg.ack().unwrap();
@@ -382,7 +422,8 @@ mod tests {
     /// Test ack in Auto mode is a no-op but still transitions state
     /// 测试 Auto 模式下 ack 是空操作但仍转换状态
     #[test]
-    fn test_auto_ack() {
+    fn test_auto_ack()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Auto);
         ack_msg.ack().unwrap();
@@ -392,7 +433,8 @@ mod tests {
     /// Test ack in None mode is a no-op but still transitions state
     /// 测试 None 模式下 ack 是空操作但仍转换状态
     #[test]
-    fn test_none_ack() {
+    fn test_none_ack()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::None);
         ack_msg.ack().unwrap();
@@ -402,7 +444,8 @@ mod tests {
     /// Test reject in Auto mode
     /// 测试 Auto 模式下的 reject
     #[test]
-    fn test_auto_reject() {
+    fn test_auto_reject()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::Auto);
         ack_msg.reject(true).unwrap();
@@ -414,7 +457,8 @@ mod tests {
     /// Test payload accessors delegate to inner message
     /// 测试 payload 访问器委托给内部消息
     #[test]
-    fn test_payload_accessors() {
+    fn test_payload_accessors()
+    {
         let msg = make_test_amqp_message("test body");
         let ack_msg = AcknowledgableMessage::new(msg, AckMode::Manual);
         assert_eq!(ack_msg.payload(), b"test body");
@@ -426,7 +470,8 @@ mod tests {
     /// Test ack in ManualAck mode transitions state
     /// 测试 ManualAck 模式下 ack 转换状态
     #[test]
-    fn test_manual_ack_mode() {
+    fn test_manual_ack_mode()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::ManualAck);
         ack_msg.ack().unwrap();
@@ -436,7 +481,8 @@ mod tests {
     /// Test nack in ManualAck mode transitions state
     /// 测试 ManualAck 模式下 nack 转换状态
     #[test]
-    fn test_manual_ack_nack() {
+    fn test_manual_ack_nack()
+    {
         let msg = make_test_amqp_message("hello");
         let mut ack_msg = AcknowledgableMessage::new(msg, AckMode::ManualAck);
         ack_msg.nack(false).unwrap();

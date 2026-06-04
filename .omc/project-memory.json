@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1780160604630,
+  "lastScanned": 1780530912951,
   "projectRoot": "/Users/yimiliya/RustroverProjects/hiver",
   "techStack": {
     "languages": [
       {
         "name": "Rust",
-        "version": "1.93",
+        "version": "1.85",
         "confidence": "high",
         "markers": [
           "Cargo.toml"
@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cat > /Users/yimiliya/RustroverProjects/hiver/crates/hiver-cli/src/commands/run.rs << 'RUSTEOF'\n//! `hiver run`, `build`, `check`, `test` command implementations.\n//! `hiver run`、`build`、`check`、`test` 命令实现。\n\nuse std::process::Command;\n\nuse console::style;\n\nuse crate::cli::{BuildArgs, RunArgs, TestArgs};\n\n/// Run `hiver run` (wraps cargo run).\n/// 执行 `hiver run`（封装 cargo run）。\npub fn run(args: &RunArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"run\");\n\n    if args.release {\n        cmd.arg(\"--release\");\n    }\n\n    if !args.args.is_empty() {\n        cmd.arg(\"--\");\n        cmd.args(&args.args);\n    }\n\n    println!(\"{} Running project / 运行项目\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Build/run failed / 构建或运行失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver build` (wraps cargo build).\n/// 执行 `hiver build`（封装 cargo build）。\npub fn build(args: &BuildArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"build\");\n\n    if args.release {\n        cmd.arg(\"--release\");\n    }\n\n    println!(\"{} Building project / 构建项目\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Build failed / 构建失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver check` (wraps cargo check).\n/// 执行 `hiver check`（封装 cargo check）。\npub fn check() -> Result<(), Box<dyn std::error::Error>> {\n    println!(\"{} Checking project / 检查项目\", style(\">\").cyan());\n    let status = Command::new(\"cargo\").args([\"check\"]).status()?;\n    if !status.success() {\n        return Err(\"Check failed / 检查失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver test` (wraps cargo test).\n/// 执行 `hiver test`（封装 cargo test）。\npub fn test(args: &TestArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"test\");\n\n    if let Some(filter) = &args.filter {\n        cmd.arg(filter);\n    }\n\n    if args.nocapture {\n        cmd.arg(\"--\").arg(\"--nocapture\");\n    }\n\n    println!(\"{} Running tests / 运行测试\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Tests failed / 测试失败\".into());\n    }\n    Ok(())\n}\nRUSTEOF\necho \"run.rs done\"",
-    "testCommand": "cat > /Users/yimiliya/RustroverProjects/hiver/crates/hiver-cli/src/commands/run.rs << 'RUSTEOF'\n//! `hiver run`, `build`, `check`, `test` command implementations.\n//! `hiver run`、`build`、`check`、`test` 命令实现。\n\nuse std::process::Command;\n\nuse console::style;\n\nuse crate::cli::{BuildArgs, RunArgs, TestArgs};\n\n/// Run `hiver run` (wraps cargo run).\n/// 执行 `hiver run`（封装 cargo run）。\npub fn run(args: &RunArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"run\");\n\n    if args.release {\n        cmd.arg(\"--release\");\n    }\n\n    if !args.args.is_empty() {\n        cmd.arg(\"--\");\n        cmd.args(&args.args);\n    }\n\n    println!(\"{} Running project / 运行项目\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Build/run failed / 构建或运行失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver build` (wraps cargo build).\n/// 执行 `hiver build`（封装 cargo build）。\npub fn build(args: &BuildArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"build\");\n\n    if args.release {\n        cmd.arg(\"--release\");\n    }\n\n    println!(\"{} Building project / 构建项目\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Build failed / 构建失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver check` (wraps cargo check).\n/// 执行 `hiver check`（封装 cargo check）。\npub fn check() -> Result<(), Box<dyn std::error::Error>> {\n    println!(\"{} Checking project / 检查项目\", style(\">\").cyan());\n    let status = Command::new(\"cargo\").args([\"check\"]).status()?;\n    if !status.success() {\n        return Err(\"Check failed / 检查失败\".into());\n    }\n    Ok(())\n}\n\n/// Run `hiver test` (wraps cargo test).\n/// 执行 `hiver test`（封装 cargo test）。\npub fn test(args: &TestArgs) -> Result<(), Box<dyn std::error::Error>> {\n    let mut cmd = Command::new(\"cargo\");\n    cmd.arg(\"test\");\n\n    if let Some(filter) = &args.filter {\n        cmd.arg(filter);\n    }\n\n    if args.nocapture {\n        cmd.arg(\"--\").arg(\"--nocapture\");\n    }\n\n    println!(\"{} Running tests / 运行测试\", style(\">\").cyan());\n    let status = cmd.status()?;\n    if !status.success() {\n        return Err(\"Tests failed / 测试失败\".into());\n    }\n    Ok(())\n}\nRUSTEOF\necho \"run.rs done\"",
+    "buildCommand": "cargo build",
+    "testCommand": "cargo test",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -36,6 +36,7 @@
     "mainDirectories": [
       "docs",
       "examples",
+      "src",
       "tests"
     ],
     "gitBranches": {
@@ -45,18 +46,29 @@
   },
   "customNotes": [],
   "directoryMap": {
+    "LICENSES": {
+      "path": "LICENSES",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1780530912945,
+      "keyFiles": [
+        "Apache-2.0.txt",
+        "MIT.txt",
+        "THIRD-PARTY.txt"
+      ]
+    },
     "crates": {
       "path": "crates",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1780160604595,
+      "lastAccessed": 1780530912946,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 9,
-      "lastAccessed": 1780160604605,
+      "fileCount": 13,
+      "lastAccessed": 1780530912946,
       "keyFiles": [
         "CODEMAP.md",
         "DOCS-INDEX.md",
@@ -69,7 +81,7 @@
       "path": "examples",
       "purpose": "Example code",
       "fileCount": 18,
-      "lastAccessed": 1780160604608,
+      "lastAccessed": 1780530912946,
       "keyFiles": [
         "Cargo.toml",
         "EXAMPLES.md",
@@ -82,24 +94,33 @@
       "path": "fuzzers",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1780160604620,
+      "lastAccessed": 1780530912946,
       "keyFiles": [
         "Cargo.toml",
         "README.md"
       ]
     },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1780530912946,
+      "keyFiles": []
+    },
     "target": {
       "path": "target",
       "purpose": null,
-      "fileCount": 1,
-      "lastAccessed": 1780160604625,
-      "keyFiles": []
+      "fileCount": 2,
+      "lastAccessed": 1780530912946,
+      "keyFiles": [
+        "CACHEDIR.TAG"
+      ]
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 3,
-      "lastAccessed": 1780160604626,
+      "lastAccessed": 1780530912946,
       "keyFiles": [
         "Cargo.toml",
         "cross_crate_tests.rs",
@@ -110,25 +131,25 @@
       "path": "~",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1780160604627,
+      "lastAccessed": 1780530912947,
       "keyFiles": []
     },
     "docs/api": {
       "path": "docs/api",
       "purpose": "API routes",
-      "fileCount": 3,
-      "lastAccessed": 1780160604627,
+      "fileCount": 6,
+      "lastAccessed": 1780530912947,
       "keyFiles": [
+        "AGENTS.md",
         "annotations-reference.md",
-        "api-quick-reference.md",
-        "api-spec.md"
+        "api-quick-reference.md"
       ]
     },
     "~/lib": {
       "path": "~/lib",
       "purpose": "Library code",
       "fileCount": 0,
-      "lastAccessed": 1780160604629,
+      "lastAccessed": 1780530912947,
       "keyFiles": []
     }
   },
@@ -147,8 +168,14 @@
     },
     {
       "path": "crates/hiver-data-orm/src/query.rs",
-      "accessCount": 41,
-      "lastAccessed": 1780234954144,
+      "accessCount": 42,
+      "lastAccessed": 1780328556737,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/lib.rs",
+      "accessCount": 40,
+      "lastAccessed": 1780356876297,
       "type": "file"
     },
     {
@@ -158,21 +185,21 @@
       "type": "file"
     },
     {
+      "path": "crates/hiver-runtime/src/task.rs",
+      "accessCount": 34,
+      "lastAccessed": 1780587312069,
+      "type": "file"
+    },
+    {
       "path": "crates/hiver-data-rdbc/src/client.rs",
       "accessCount": 32,
       "lastAccessed": 1780228452276,
       "type": "file"
     },
     {
-      "path": "crates/hiver-runtime/src/task.rs",
-      "accessCount": 31,
-      "lastAccessed": 1780200578035,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/lib.rs",
-      "accessCount": 31,
-      "lastAccessed": 1780214039558,
+      "path": "crates/hiver-data-macros/src/lib.rs",
+      "accessCount": 25,
+      "lastAccessed": 1780325052520,
       "type": "file"
     },
     {
@@ -206,12 +233,6 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-data-macros/src/lib.rs",
-      "accessCount": 17,
-      "lastAccessed": 1780212904229,
-      "type": "file"
-    },
-    {
       "path": "crates/hiver-data-commons/src/method_name.rs",
       "accessCount": 16,
       "lastAccessed": 1780233872499,
@@ -239,6 +260,12 @@
       "path": "crates/hiver-ldap/src/repository.rs",
       "accessCount": 12,
       "lastAccessed": 1780067672827,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-resilience/src/lib.rs",
+      "accessCount": 12,
+      "lastAccessed": 1780323856910,
       "type": "file"
     },
     {
@@ -278,12 +305,6 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-resilience/src/lib.rs",
-      "accessCount": 8,
-      "lastAccessed": 1780242832234,
-      "type": "file"
-    },
-    {
       "path": "crates/hiver-data-orm/src/sqlx.rs",
       "accessCount": 7,
       "lastAccessed": 1780235128353,
@@ -296,6 +317,12 @@
       "type": "file"
     },
     {
+      "path": "crates/hiver-runtime/src/scheduler/work_stealing.rs",
+      "accessCount": 7,
+      "lastAccessed": 1780588123693,
+      "type": "file"
+    },
+    {
       "path": "crates/hiver-runtime/src/scheduler/handle.rs",
       "accessCount": 6,
       "lastAccessed": 1779622112681,
@@ -305,12 +332,6 @@
       "path": "crates/hiver-core/src/extension.rs",
       "accessCount": 6,
       "lastAccessed": 1779631053042,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/scheduler/work_stealing.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780067395804,
       "type": "file"
     },
     {
@@ -380,15 +401,15 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-runtime/src/scheduler/local.rs",
-      "accessCount": 4,
-      "lastAccessed": 1779620543110,
+      "path": "crates/hiver-resilience/src/timeout.rs",
+      "accessCount": 5,
+      "lastAccessed": 1780323601162,
       "type": "file"
     },
     {
-      "path": "crates/hiver-resilience/src/timeout.rs",
-      "accessCount": 4,
-      "lastAccessed": 1779631235179,
+      "path": "crates/hiver-runtime/src/scheduler/local.rs",
+      "accessCount": 5,
+      "lastAccessed": 1780586122102,
       "type": "file"
     },
     {

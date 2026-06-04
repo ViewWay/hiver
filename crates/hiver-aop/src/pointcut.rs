@@ -3,17 +3,23 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ItemFn, LitStr, parse_macro_input};
-use syn::{Result as SynResult, parse::Parse, parse::ParseStream};
+use syn::{
+    ItemFn, LitStr, Result as SynResult,
+    parse::{Parse, ParseStream},
+    parse_macro_input,
+};
 
 /// Parses pointcut expression from @Pointcut annotation
 /// 解析 @Pointcut 注解中的切点表达式
-struct PointcutExpr {
+struct PointcutExpr
+{
     expression: String,
 }
 
-impl Parse for PointcutExpr {
-    fn parse(input: ParseStream) -> SynResult<Self> {
+impl Parse for PointcutExpr
+{
+    fn parse(input: ParseStream) -> SynResult<Self>
+    {
         // Try to parse a string literal
         // 尝试解析字符串字面量
         let expr_lit: LitStr = input.parse()?;
@@ -32,20 +38,13 @@ impl Parse for PointcutExpr {
 ///
 /// # Pointcut Designators / 切点指示符
 ///
-/// - **execution** - Method execution join point
-///   方法执行连接点
-/// - **call** - Method call join point
-///   方法调用连接点
-/// - **within** - Limits to within certain types
-///   限制在特定类型内
-/// - **this** - Limit to match bean reference
-///   限制匹配 bean 引用
-/// - **target** - Limit to match target object
-///   限制匹配目标对象
-/// - **args** - Limit to match arguments
-///   限制匹配参数
-/// - **@annotation** - Limit to join points with subject annotation
-///   限制带有特定注解的连接点
+/// - **execution** - Method execution join point 方法执行连接点
+/// - **call** - Method call join point 方法调用连接点
+/// - **within** - Limits to within certain types 限制在特定类型内
+/// - **this** - Limit to match bean reference 限制匹配 bean 引用
+/// - **target** - Limit to match target object 限制匹配目标对象
+/// - **args** - Limit to match arguments 限制匹配参数
+/// - **@annotation** - Limit to join points with subject annotation 限制带有特定注解的连接点
 ///
 /// # Example / 示例
 ///
@@ -90,7 +89,8 @@ impl Parse for PointcutExpr {
 /// #[Pointcut("execution(* com.example.Service.*(..)) || execution(* com.example.Repository.*(..))")]
 /// fn service_or_repository() -> PointcutExpression {}
 /// ```
-pub(crate) fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

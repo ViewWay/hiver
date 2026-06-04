@@ -17,13 +17,15 @@
 //! dlq.send_to_dlq(&message, "rejected", "original.routing.key");
 //! ```
 
-use crate::AmqpMessage;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use crate::AmqpMessage;
 
 /// Reason codes for dead-lettering, following AMQP x-death conventions.
 /// 死信原因代码，遵循 AMQP x-death 约定。
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum DlqReason {
+pub enum DlqReason
+{
     /// Message was rejected (basic.reject / basic.nack with requeue=false)
     /// 消息被拒绝
     Rejected,
@@ -41,9 +43,12 @@ pub enum DlqReason {
     Custom(String),
 }
 
-impl std::fmt::Display for DlqReason {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for DlqReason
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             Self::Rejected => write!(f, "rejected"),
             Self::Expired => write!(f, "expired"),
             Self::MaxLengthExceeded => write!(f, "maxlen"),
@@ -52,9 +57,12 @@ impl std::fmt::Display for DlqReason {
     }
 }
 
-impl From<&str> for DlqReason {
-    fn from(s: &str) -> Self {
-        match s {
+impl From<&str> for DlqReason
+{
+    fn from(s: &str) -> Self
+    {
+        match s
+        {
             "rejected" => Self::Rejected,
             "expired" => Self::Expired,
             "maxlen" => Self::MaxLengthExceeded,
@@ -66,7 +74,8 @@ impl From<&str> for DlqReason {
 /// Metadata for a single x-death entry.
 /// 单个 x-death 条目的元数据。
 #[derive(Clone, Debug)]
-pub struct DeathRecord {
+pub struct DeathRecord
+{
     /// The exchange the message was originally published to.
     /// 消息最初发布到的交换机。
     pub exchange: String,
@@ -106,7 +115,8 @@ pub struct DeathRecord {
 /// // new Queue("myQueue").withArgument("x-dead-letter-exchange", "dlx");
 /// ```
 #[derive(Clone, Debug)]
-pub struct DeadLetterQueue {
+pub struct DeadLetterQueue
+{
     /// Target exchange for dead-lettered messages.
     /// 死信消息的目标交换机。
     pub exchange: String,
@@ -116,7 +126,8 @@ pub struct DeadLetterQueue {
     pub routing_key: String,
 }
 
-impl DeadLetterQueue {
+impl DeadLetterQueue
+{
     /// Create a new dead letter queue configuration.
     /// 创建新的死信队列配置。
     ///
@@ -124,7 +135,8 @@ impl DeadLetterQueue {
     ///
     /// * `exchange` - Target dead-letter exchange / 目标死信交换机
     /// * `routing_key` - Target dead-letter routing key / 目标死信路由键
-    pub fn new(exchange: impl Into<String>, routing_key: impl Into<String>) -> Self {
+    pub fn new(exchange: impl Into<String>, routing_key: impl Into<String>) -> Self
+    {
         Self {
             exchange: exchange.into(),
             routing_key: routing_key.into(),
@@ -148,7 +160,8 @@ impl DeadLetterQueue {
         message: &AmqpMessage,
         reason: impl Into<DlqReason>,
         original_routing_key: &str,
-    ) -> AmqpMessage {
+    ) -> AmqpMessage
+    {
         let now_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
@@ -174,13 +187,16 @@ impl DeadLetterQueue {
 
         // Append to existing x-death array or create new one
         // 追加到已有的 x-death 数组或创建新数组
-        let death_array = match props.headers.get("x-death") {
-            Some(serde_json::Value::Array(existing)) => {
+        let death_array = match props.headers.get("x-death")
+        {
+            Some(serde_json::Value::Array(existing)) =>
+            {
                 let mut arr = existing.clone();
                 arr.push(serde_json::Value::Object(x_death));
                 arr
             },
-            _ => {
+            _ =>
+            {
                 vec![serde_json::Value::Object(x_death)]
             },
         };
@@ -204,7 +220,8 @@ impl DeadLetterQueue {
     /// and clears the x-death headers, producing a clean message ready for reprocessing.
     /// 从 `x-dlq-original-routing-key` 头中提取原始路由键，并清除 x-death 头，
     /// 生成一个干净的消息以便重新处理。
-    pub fn reprocess(&self, dlq_message: &AmqpMessage) -> Result<AmqpMessage, String> {
+    pub fn reprocess(&self, dlq_message: &AmqpMessage) -> Result<AmqpMessage, String>
+    {
         let original_routing_key = dlq_message
             .message
             .properties
@@ -249,10 +266,12 @@ impl DeadLetterQueue {
 
     /// Extract all death records from a message's x-death header.
     /// 从消息的 x-death 头中提取所有死信记录。
-    pub fn extract_death_records(message: &AmqpMessage) -> Vec<DeathRecord> {
+    pub fn extract_death_records(message: &AmqpMessage) -> Vec<DeathRecord>
+    {
         let Some(serde_json::Value::Array(entries)) =
             message.message.properties.headers.get("x-death")
-        else {
+        else
+        {
             return Vec::new();
         };
 
@@ -278,11 +297,13 @@ impl DeadLetterQueue {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::Message;
 
-    fn make_test_message(exchange: &str, routing_key: &str, body: &str) -> AmqpMessage {
+    fn make_test_message(exchange: &str, routing_key: &str, body: &str) -> AmqpMessage
+    {
         AmqpMessage {
             message: Message::from_string(body),
             exchange: exchange.to_string(),
@@ -295,7 +316,8 @@ mod tests {
     /// Test DeadLetterQueue::send_to_dlq enriches message with x-death headers
     /// 测试 send_to_dlq 为消息添加 x-death 头
     #[test]
-    fn test_send_to_dlq_enriches_headers() {
+    fn test_send_to_dlq_enriches_headers()
+    {
         let dlq = DeadLetterQueue::new("dlx.exchange", "dlq.key");
         let msg = make_test_message("orders.exchange", "order.created", "payload");
 
@@ -322,7 +344,8 @@ mod tests {
     /// Test send_to_dlq with DlqReason enum variants
     /// 测试使用 DlqReason 枚举变体调用 send_to_dlq
     #[test]
-    fn test_send_to_dlq_with_reason_enum() {
+    fn test_send_to_dlq_with_reason_enum()
+    {
         let dlq = DeadLetterQueue::new("dlx", "dlq");
         let msg = make_test_message("ex", "rk", "data");
 
@@ -356,7 +379,8 @@ mod tests {
     /// Test send_to_dlq appends to existing x-death array
     /// 测试 send_to_dlq 追加到已有的 x-death 数组
     #[test]
-    fn test_send_to_dlq_appends_death_array() {
+    fn test_send_to_dlq_appends_death_array()
+    {
         let dlq = DeadLetterQueue::new("dlx", "dlq");
 
         let first_msg = make_test_message("ex", "rk", "data");
@@ -378,7 +402,8 @@ mod tests {
     /// Test DeadLetterQueue::reprocess restores original routing
     /// 测试 reprocess 恢复原始路由
     #[test]
-    fn test_reprocess_restores_original_routing() {
+    fn test_reprocess_restores_original_routing()
+    {
         let dlq = DeadLetterQueue::new("dlx.exchange", "dlq.key");
         let msg = make_test_message("orders.exchange", "order.created", "payload");
 
@@ -409,7 +434,8 @@ mod tests {
     /// Test reprocess fails when x-dlq-original-routing-key is missing
     /// 测试缺少 x-dlq-original-routing-key 时 reprocess 失败
     #[test]
-    fn test_reprocess_fails_without_header() {
+    fn test_reprocess_fails_without_header()
+    {
         let dlq = DeadLetterQueue::new("dlx", "dlq");
         let msg = AmqpMessage::new(Message::from_string("no headers"));
         let result = dlq.reprocess(&msg);
@@ -419,7 +445,8 @@ mod tests {
     /// Test extract_death_records parses x-death entries
     /// 测试 extract_death_records 解析 x-death 条目
     #[test]
-    fn test_extract_death_records() {
+    fn test_extract_death_records()
+    {
         let dlq = DeadLetterQueue::new("dlx", "dlq");
         let msg = make_test_message("orders.exchange", "order.created", "payload");
         let dlq_msg = dlq.send_to_dlq(&msg, "rejected", "order.created");
@@ -435,7 +462,8 @@ mod tests {
     /// Test extract_death_records returns empty when no x-death header
     /// 测试没有 x-death 头时 extract_death_records 返回空
     #[test]
-    fn test_extract_death_records_empty() {
+    fn test_extract_death_records_empty()
+    {
         let msg = AmqpMessage::new(Message::from_string("clean"));
         let records = DeadLetterQueue::extract_death_records(&msg);
         assert!(records.is_empty());
@@ -444,7 +472,8 @@ mod tests {
     /// Test DlqReason Display and From<&str> round-trip
     /// 测试 DlqReason 的 Display 和 From<&str> 往返
     #[test]
-    fn test_dlq_reason_roundtrip() {
+    fn test_dlq_reason_roundtrip()
+    {
         assert_eq!(DlqReason::from("rejected"), DlqReason::Rejected);
         assert_eq!(DlqReason::from("expired"), DlqReason::Expired);
         assert_eq!(DlqReason::from("maxlen"), DlqReason::MaxLengthExceeded);

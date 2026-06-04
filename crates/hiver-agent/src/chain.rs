@@ -13,12 +13,13 @@
 //! - `MapReduceAgent`：将工作分配给多个输入并合并结果。
 //! - `RouterAgent`：对输入分类并路由到专门的代理。
 
+use std::{collections::HashMap, sync::Arc};
+
+use hiver_ai::chat_model::{ChatModel, ChatRequest};
+
 use crate::agent::{
     Agent, AgentChunk, AgentConfig, AgentError, AgentOutput, AgentState, AgentStream,
 };
-use hiver_ai::chat_model::{ChatModel, ChatRequest};
-use std::collections::HashMap;
-use std::sync::Arc;
 
 /// Chains multiple agents in sequence, passing the output of one as input to the next.
 /// 按顺序链接多个代理，将一个的输出作为下一个的输入。
@@ -40,7 +41,8 @@ use std::sync::Arc;
 ///
 /// let output = chain.run("Long text to summarize and translate").await?;
 /// ```
-pub struct AgentChain {
+pub struct AgentChain
+{
     /// The agents in the chain, executed in order.
     /// 链中的代理，按顺序执行。
     agents: Vec<Arc<dyn Agent>>,
@@ -49,25 +51,31 @@ pub struct AgentChain {
     config: AgentConfig,
 }
 
-impl std::fmt::Debug for AgentChain {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for AgentChain
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("AgentChain")
             .field("agent_count", &self.agents.len())
             .finish_non_exhaustive()
     }
 }
 
-impl Default for AgentChain {
-    fn default() -> Self {
+impl Default for AgentChain
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AgentChain {
+impl AgentChain
+{
     /// Creates a new empty agent chain.
     /// 创建新的空代理链。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             agents: Vec::new(),
             config: AgentConfig::default(),
@@ -77,7 +85,8 @@ impl AgentChain {
     /// Adds an agent to the chain.
     /// 向链添加代理。
     #[must_use]
-    pub fn step(mut self, agent: impl Agent + 'static) -> Self {
+    pub fn step(mut self, agent: impl Agent + 'static) -> Self
+    {
         self.agents.push(Arc::new(agent));
         self
     }
@@ -85,7 +94,8 @@ impl AgentChain {
     /// Sets the chain configuration.
     /// 设置链配置。
     #[must_use]
-    pub fn config(mut self, config: AgentConfig) -> Self {
+    pub fn config(mut self, config: AgentConfig) -> Self
+    {
         self.config = config;
         self
     }
@@ -93,22 +103,27 @@ impl AgentChain {
     /// Returns the number of agents in the chain.
     /// 返回链中的代理数量。
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.agents.len()
     }
 
     /// Returns true if the chain is empty.
     /// 如果链为空则返回 true。
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.agents.is_empty()
     }
 }
 
 #[async_trait::async_trait]
-impl Agent for AgentChain {
-    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError> {
-        if self.agents.is_empty() {
+impl Agent for AgentChain
+{
+    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError>
+    {
+        if self.agents.is_empty()
+        {
             return Ok(AgentOutput::text(input));
         }
 
@@ -116,14 +131,16 @@ impl Agent for AgentChain {
         let mut total_tokens = 0u32;
         let mut all_tool_calls = Vec::new();
 
-        for (i, agent) in self.agents.iter().enumerate() {
+        for (i, agent) in self.agents.iter().enumerate()
+        {
             let output = agent.run(&current_input).await?;
             total_tokens += output.total_tokens;
             all_tool_calls.extend(output.tool_calls);
             current_input = output.text;
 
             // If an agent errors, propagate
-            if output.state == AgentState::Error {
+            if output.state == AgentState::Error
+            {
                 return Ok(AgentOutput {
                     text: current_input,
                     tool_calls: all_tool_calls,
@@ -143,7 +160,8 @@ impl Agent for AgentChain {
         })
     }
 
-    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError> {
+    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError>
+    {
         let output = self.run(input).await?;
         let chunk = AgentChunk {
             text: output.text.clone(),
@@ -154,11 +172,13 @@ impl Agent for AgentChain {
         Ok(Box::pin(stream))
     }
 
-    fn state(&self) -> AgentState {
+    fn state(&self) -> AgentState
+    {
         AgentState::Idle
     }
 
-    fn config(&self) -> &AgentConfig {
+    fn config(&self) -> &AgentConfig
+    {
         &self.config
     }
 }
@@ -186,7 +206,8 @@ impl Agent for AgentChain {
 /// let inputs = vec!["Doc 1 text", "Doc 2 text", "Doc 3 text"];
 /// let output = agent.run_map_reduce(&inputs).await?;
 /// ```
-pub struct MapReduceAgent {
+pub struct MapReduceAgent
+{
     /// The agent used for mapping each input.
     /// 用于映射每个输入的代理。
     mapper: Arc<dyn Agent>,
@@ -198,16 +219,20 @@ pub struct MapReduceAgent {
     config: AgentConfig,
 }
 
-impl std::fmt::Debug for MapReduceAgent {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for MapReduceAgent
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("MapReduceAgent").finish_non_exhaustive()
     }
 }
 
-impl MapReduceAgent {
+impl MapReduceAgent
+{
     /// Creates a new map-reduce agent with the given mapper and reducer.
     /// 使用给定的 mapper 和 reducer 创建新的 MapReduce 代理。
-    pub fn new(mapper: impl Agent + 'static, reducer: impl Agent + 'static) -> Self {
+    pub fn new(mapper: impl Agent + 'static, reducer: impl Agent + 'static) -> Self
+    {
         Self {
             mapper: Arc::new(mapper),
             reducer: Arc::new(reducer),
@@ -218,15 +243,18 @@ impl MapReduceAgent {
     /// Sets the configuration.
     /// 设置配置。
     #[must_use]
-    pub fn config(mut self, config: AgentConfig) -> Self {
+    pub fn config(mut self, config: AgentConfig) -> Self
+    {
         self.config = config;
         self
     }
 
     /// Runs the map-reduce pipeline over multiple inputs.
     /// 对多个输入运行 MapReduce 管道。
-    pub async fn run_map_reduce(&self, inputs: &[&str]) -> Result<AgentOutput, AgentError> {
-        if inputs.is_empty() {
+    pub async fn run_map_reduce(&self, inputs: &[&str]) -> Result<AgentOutput, AgentError>
+    {
+        if inputs.is_empty()
+        {
             return Ok(AgentOutput::text("No inputs provided."));
         }
 
@@ -234,7 +262,8 @@ impl MapReduceAgent {
         let mut mapped_results = Vec::with_capacity(inputs.len());
         let mut total_tokens = 0u32;
 
-        for input in inputs {
+        for input in inputs
+        {
             let output = self.mapper.run(input).await?;
             total_tokens += output.total_tokens;
             mapped_results.push(output.text);
@@ -256,13 +285,16 @@ impl MapReduceAgent {
 }
 
 #[async_trait::async_trait]
-impl Agent for MapReduceAgent {
-    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError> {
+impl Agent for MapReduceAgent
+{
+    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError>
+    {
         // Single input: just map and reduce with one item
         self.run_map_reduce(&[input]).await
     }
 
-    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError> {
+    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError>
+    {
         let output = self.run(input).await?;
         let chunk = AgentChunk {
             text: output.text.clone(),
@@ -273,11 +305,13 @@ impl Agent for MapReduceAgent {
         Ok(Box::pin(stream))
     }
 
-    fn state(&self) -> AgentState {
+    fn state(&self) -> AgentState
+    {
         AgentState::Idle
     }
 
-    fn config(&self) -> &AgentConfig {
+    fn config(&self) -> &AgentConfig
+    {
         &self.config
     }
 }
@@ -303,7 +337,8 @@ impl Agent for MapReduceAgent {
 ///
 /// let output = router.run("Write a Python function to sort a list").await?;
 /// ```
-pub struct RouterAgent {
+pub struct RouterAgent
+{
     /// The chat model used for classification.
     /// 用于分类的聊天模型。
     chat_model: Arc<dyn ChatModel>,
@@ -315,18 +350,22 @@ pub struct RouterAgent {
     config: AgentConfig,
 }
 
-impl std::fmt::Debug for RouterAgent {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for RouterAgent
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("RouterAgent")
             .field("route_count", &self.routes.len())
             .finish_non_exhaustive()
     }
 }
 
-impl RouterAgent {
+impl RouterAgent
+{
     /// Creates a new router agent with the given classification model.
     /// 使用给定的分类模型创建新的路由代理。
-    pub fn new(chat_model: impl ChatModel + 'static) -> Self {
+    pub fn new(chat_model: impl ChatModel + 'static) -> Self
+    {
         Self {
             chat_model: Arc::new(chat_model),
             routes: Vec::new(),
@@ -336,7 +375,8 @@ impl RouterAgent {
 
     /// Creates a new router agent from an Arc model.
     /// 从 Arc 模型创建新的路由代理。
-    pub fn from_arc(chat_model: Arc<dyn ChatModel>) -> Self {
+    pub fn from_arc(chat_model: Arc<dyn ChatModel>) -> Self
+    {
         Self {
             chat_model,
             routes: Vec::new(),
@@ -352,7 +392,8 @@ impl RouterAgent {
         name: impl Into<String>,
         description: impl Into<String>,
         agent: impl Agent + 'static,
-    ) -> Self {
+    ) -> Self
+    {
         self.routes
             .push((name.into(), description.into(), Arc::new(agent)));
         self
@@ -361,7 +402,8 @@ impl RouterAgent {
     /// Sets the configuration.
     /// 设置配置。
     #[must_use]
-    pub fn config(mut self, config: AgentConfig) -> Self {
+    pub fn config(mut self, config: AgentConfig) -> Self
+    {
         self.config = config;
         self
     }
@@ -369,14 +411,17 @@ impl RouterAgent {
     /// Returns the number of routes.
     /// 返回路由数量。
     #[must_use]
-    pub fn route_count(&self) -> usize {
+    pub fn route_count(&self) -> usize
+    {
         self.routes.len()
     }
 
     /// Classifies the input and returns the matching route name.
     /// 对输入进行分类并返回匹配的路由名称。
-    async fn classify(&self, input: &str) -> Result<String, AgentError> {
-        if self.routes.is_empty() {
+    async fn classify(&self, input: &str) -> Result<String, AgentError>
+    {
+        if self.routes.is_empty()
+        {
             return Err(AgentError::ConfigError("No routes configured".to_string()));
         }
 
@@ -389,11 +434,9 @@ impl RouterAgent {
             .join("\n");
 
         let prompt = format!(
-            "Classify the following input into exactly one of these categories. \
-             Respond with ONLY the category name, nothing else.\n\n\
-             Categories:\n{route_list}\n\n\
-             Input: {input}\n\n\
-             Category:"
+            "Classify the following input into exactly one of these categories. Respond with ONLY \
+             the category name, nothing else.\n\nCategories:\n{route_list}\n\nInput: \
+             {input}\n\nCategory:"
         );
 
         let request = ChatRequest::new()
@@ -410,8 +453,10 @@ impl RouterAgent {
         let classification = response.content.trim().to_string();
 
         // Find matching route (exact match or contains)
-        for (name, _, _) in &self.routes {
-            if classification.eq_ignore_ascii_case(name) || classification.contains(name.as_str()) {
+        for (name, _, _) in &self.routes
+        {
+            if classification.eq_ignore_ascii_case(name) || classification.contains(name.as_str())
+            {
                 return Ok(name.clone());
             }
         }
@@ -422,8 +467,10 @@ impl RouterAgent {
 }
 
 #[async_trait::async_trait]
-impl Agent for RouterAgent {
-    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError> {
+impl Agent for RouterAgent
+{
+    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError>
+    {
         let route_name = self.classify(input).await?;
 
         // Find the matching route
@@ -433,8 +480,10 @@ impl Agent for RouterAgent {
             .find(|(name, _, _)| name == &route_name)
             .map(|(_, _, agent)| agent.clone());
 
-        match agent {
-            Some(agent) => {
+        match agent
+        {
+            Some(agent) =>
+            {
                 let mut output = agent.run(input).await?;
                 output.metadata.insert("route".to_string(), route_name);
                 Ok(output)
@@ -443,7 +492,8 @@ impl Agent for RouterAgent {
         }
     }
 
-    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError> {
+    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError>
+    {
         let output = self.run(input).await?;
         let chunk = AgentChunk {
             text: output.text.clone(),
@@ -454,28 +504,33 @@ impl Agent for RouterAgent {
         Ok(Box::pin(stream))
     }
 
-    fn state(&self) -> AgentState {
+    fn state(&self) -> AgentState
+    {
         AgentState::Idle
     }
 
-    fn config(&self) -> &AgentConfig {
+    fn config(&self) -> &AgentConfig
+    {
         &self.config
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_agent_chain_new() {
+    fn test_agent_chain_new()
+    {
         let chain = AgentChain::new();
         assert!(chain.is_empty());
         assert_eq!(chain.len(), 0);
     }
 
     #[tokio::test]
-    async fn test_agent_chain_empty() {
+    async fn test_agent_chain_empty()
+    {
         let chain = AgentChain::new();
         let output = chain.run("test input").await.unwrap();
         assert_eq!(output.text, "test input");
@@ -483,27 +538,33 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_chain_default() {
+    fn test_agent_chain_default()
+    {
         let chain = AgentChain::default();
         assert!(chain.is_empty());
     }
 
     #[test]
-    fn test_router_agent_new() {
+    fn test_router_agent_new()
+    {
         use hiver_ai::chat_model::ModelError;
         struct MockModel;
         #[async_trait::async_trait]
-        impl ChatModel for MockModel {
+        impl ChatModel for MockModel
+        {
             async fn complete(
                 &self,
                 _request: ChatRequest,
-            ) -> Result<hiver_ai::chat_model::ChatResponse, ModelError> {
+            ) -> Result<hiver_ai::chat_model::ChatResponse, ModelError>
+            {
                 Ok(hiver_ai::chat_model::ChatResponse::new("general", "mock"))
             }
+
             async fn stream(
                 &self,
                 _request: ChatRequest,
-            ) -> Result<hiver_ai::chat_model::ChatStream, ModelError> {
+            ) -> Result<hiver_ai::chat_model::ChatStream, ModelError>
+            {
                 Err(ModelError::Custom("not implemented".to_string()))
             }
         }

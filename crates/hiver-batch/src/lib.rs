@@ -9,20 +9,14 @@
 //! This module provides a comprehensive batch processing framework with:
 //! 本模块提供完整的批处理框架，具有：
 //!
-//! - **Job**: Batch job container containing multiple steps
-//!   **Job**: 包含多个步骤的批处理作业容器
-//! - **Step**: Independent phase of execution within a job
-//!   **Step**: 作业中独立的执行阶段
-//! - **ItemReader**: Reads items for processing
-//!   **ItemReader**: 读取待处理项目
-//! - **ItemProcessor**: Transforms items (optional)
-//!   **ItemProcessor**: 转换项目（可选）
-//! - **ItemWriter**: Writes processed items
-//!   **ItemWriter**: 写入处理后的项目
-//! - **JobRepository**: Stores job metadata and execution history
-//!   **JobRepository**: 存储作业元数据和执行历史
-//! - **JobLauncher**: Launches and manages job execution
-//!   **JobLauncher**: 启动和管理作业执行
+//! - **Job**: Batch job container containing multiple steps **Job**: 包含多个步骤的批处理作业容器
+//! - **Step**: Independent phase of execution within a job **Step**: 作业中独立的执行阶段
+//! - **ItemReader**: Reads items for processing **ItemReader**: 读取待处理项目
+//! - **ItemProcessor**: Transforms items (optional) **ItemProcessor**: 转换项目（可选）
+//! - **ItemWriter**: Writes processed items **ItemWriter**: 写入处理后的项目
+//! - **JobRepository**: Stores job metadata and execution history **JobRepository**:
+//!   存储作业元数据和执行历史
+//! - **JobLauncher**: Launches and manages job execution **JobLauncher**: 启动和管理作业执行
 //!
 //! # Spring Equivalent / Spring等价物
 //!
@@ -117,18 +111,21 @@ pub mod step;
 pub mod writer;
 
 // Prelude module for convenient imports
-pub mod prelude {
-    pub use crate::context::{JobContext, StepContext};
-    pub use crate::error::{BatchError, BatchResult};
-    pub use crate::execution::{BatchStatus, JobExecution, JobStatus, StepExecution};
-    pub use crate::job::{Job, JobBuilder};
-    pub use crate::launcher::JobLauncher;
-    pub use crate::operator::{AdvancedJobOperator, FaultTolerantStep, JobExecutionSummary};
-    pub use crate::processor::{ItemProcessor, PassThroughProcessor};
-    pub use crate::reader::{ItemReader, ItemStreamReader};
-    pub use crate::repository::JobRepository;
-    pub use crate::step::{Step, StepBuilder};
-    pub use crate::writer::{ItemStreamWriter, ItemWriter};
+pub mod prelude
+{
+    pub use crate::{
+        context::{JobContext, StepContext},
+        error::{BatchError, BatchResult},
+        execution::{BatchStatus, JobExecution, JobStatus, StepExecution},
+        job::{Job, JobBuilder},
+        launcher::JobLauncher,
+        operator::{AdvancedJobOperator, FaultTolerantStep, JobExecutionSummary},
+        processor::{ItemProcessor, PassThroughProcessor},
+        reader::{ItemReader, ItemStreamReader},
+        repository::JobRepository,
+        step::{Step, StepBuilder},
+        writer::{ItemStreamWriter, ItemWriter},
+    };
 }
 
 pub use context::{JobContext, StepContext};

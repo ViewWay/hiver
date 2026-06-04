@@ -1,13 +1,16 @@
 //! Job repository for storing job metadata and execution history
 //! 作业存储库，用于存储作业元数据和执行历史
 
-use crate::error::{BatchError, BatchResult};
-use crate::execution::{JobExecution, JobStatus, StepExecution};
+use std::{collections::HashMap, sync::Arc};
+
 use async_trait::async_trait;
-use std::collections::HashMap;
-use std::sync::Arc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
+
+use crate::{
+    error::{BatchError, BatchResult},
+    execution::{JobExecution, JobStatus, StepExecution},
+};
 
 /// Job instance
 /// 作业实例
@@ -21,7 +24,8 @@ use uuid::Uuid;
 /// JobInstance jobInstance = new JobInstance(jobName, jobParameters);
 /// ```
 #[derive(Debug, Clone)]
-pub struct JobInstance {
+pub struct JobInstance
+{
     /// Unique instance ID
     /// 唯一实例ID
     pub id: Uuid,
@@ -35,10 +39,12 @@ pub struct JobInstance {
     pub parameters: HashMap<String, String>,
 }
 
-impl JobInstance {
+impl JobInstance
+{
     /// Create new job instance
     /// 创建新作业实例
-    pub fn new(job_name: impl Into<String>, parameters: HashMap<String, String>) -> Self {
+    pub fn new(job_name: impl Into<String>, parameters: HashMap<String, String>) -> Self
+    {
         Self {
             id: Uuid::new_v4(),
             job_name: job_name.into(),
@@ -79,7 +85,8 @@ impl JobInstance {
 /// let last = repository.get_last_job_execution("my-job").await?;
 /// ```
 #[async_trait]
-pub trait JobRepository: Send + Sync {
+pub trait JobRepository: Send + Sync
+{
     /// Create new job execution
     /// 创建新作业执行
     async fn create_job_execution(
@@ -152,7 +159,8 @@ pub trait JobRepository: Send + Sync {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct InMemoryJobRepository {
+pub struct InMemoryJobRepository
+{
     job_instances: Arc<RwLock<HashMap<Uuid, JobInstance>>>,
     job_executions: Arc<RwLock<HashMap<Uuid, JobExecution>>>,
     step_executions: Arc<RwLock<HashMap<Uuid, StepExecution>>>,
@@ -160,16 +168,20 @@ pub struct InMemoryJobRepository {
     running_jobs: Arc<RwLock<HashMap<String, Uuid>>>,
 }
 
-impl Default for InMemoryJobRepository {
-    fn default() -> Self {
+impl Default for InMemoryJobRepository
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl InMemoryJobRepository {
+impl InMemoryJobRepository
+{
     /// Create new in-memory repository
     /// 创建新内存存储库
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             job_instances: Arc::new(RwLock::new(HashMap::new())),
             job_executions: Arc::new(RwLock::new(HashMap::new())),
@@ -181,7 +193,8 @@ impl InMemoryJobRepository {
 
     /// Clear all data
     /// 清除所有数据
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         self.job_instances.write().await.clear();
         self.job_executions.write().await.clear();
         self.step_executions.write().await.clear();
@@ -191,13 +204,15 @@ impl InMemoryJobRepository {
 
     /// Get all job executions
     /// 获取所有作业执行
-    pub async fn get_all_job_executions(&self) -> Vec<JobExecution> {
+    pub async fn get_all_job_executions(&self) -> Vec<JobExecution>
+    {
         self.job_executions.read().await.values().cloned().collect()
     }
 
     /// Get all step executions
     /// 获取所有步骤执行
-    pub async fn get_all_step_executions(&self) -> Vec<StepExecution> {
+    pub async fn get_all_step_executions(&self) -> Vec<StepExecution>
+    {
         self.step_executions
             .read()
             .await
@@ -208,14 +223,17 @@ impl InMemoryJobRepository {
 }
 
 #[async_trait::async_trait]
-impl JobRepository for InMemoryJobRepository {
+impl JobRepository for InMemoryJobRepository
+{
     async fn create_job_execution(
         &self,
         job_name: String,
         parameters: HashMap<String, String>,
-    ) -> BatchResult<JobExecution> {
+    ) -> BatchResult<JobExecution>
+    {
         // Check if already running
-        if self.is_job_running(&job_name).await? {
+        if self.is_job_running(&job_name).await?
+        {
             return Err(BatchError::JobAlreadyRunning { job_name });
         }
 
@@ -223,9 +241,12 @@ impl JobRepository for InMemoryJobRepository {
         let mut name_to_instance = self.job_name_to_instance.write().await;
         let mut instances = self.job_instances.write().await;
 
-        let instance_id = if let Some(id) = name_to_instance.get(&job_name) {
+        let instance_id = if let Some(id) = name_to_instance.get(&job_name)
+        {
             *id
-        } else {
+        }
+        else
+        {
             let instance = JobInstance::new(job_name.clone(), parameters);
             let id = instance.id;
             instances.insert(id, instance);
@@ -244,7 +265,8 @@ impl JobRepository for InMemoryJobRepository {
         Ok(execution)
     }
 
-    async fn save_job_execution(&self, execution: &JobExecution) -> BatchResult<()> {
+    async fn save_job_execution(&self, execution: &JobExecution) -> BatchResult<()>
+    {
         self.job_executions
             .write()
             .await
@@ -252,21 +274,24 @@ impl JobRepository for InMemoryJobRepository {
         Ok(())
     }
 
-    async fn update_job_execution(&self, execution: &JobExecution) -> BatchResult<()> {
+    async fn update_job_execution(&self, execution: &JobExecution) -> BatchResult<()>
+    {
         self.job_executions
             .write()
             .await
             .insert(execution.id, execution.clone());
 
         // Clear from running if terminal
-        if execution.status.is_terminal() {
+        if execution.status.is_terminal()
+        {
             self.running_jobs.write().await.remove(&execution.job_name);
         }
 
         Ok(())
     }
 
-    async fn get_job_execution(&self, id: Uuid) -> BatchResult<JobExecution> {
+    async fn get_job_execution(&self, id: Uuid) -> BatchResult<JobExecution>
+    {
         self.job_executions
             .read()
             .await
@@ -278,7 +303,8 @@ impl JobRepository for InMemoryJobRepository {
             })
     }
 
-    async fn get_last_job_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>> {
+    async fn get_last_job_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>>
+    {
         let executions = self.job_executions.read().await;
 
         let last = executions
@@ -289,7 +315,8 @@ impl JobRepository for InMemoryJobRepository {
         Ok(last.cloned())
     }
 
-    async fn get_job_executions(&self, job_instance_id: Uuid) -> BatchResult<Vec<JobExecution>> {
+    async fn get_job_executions(&self, job_instance_id: Uuid) -> BatchResult<Vec<JobExecution>>
+    {
         let executions = self.job_executions.read().await;
 
         let filtered = executions
@@ -305,11 +332,13 @@ impl JobRepository for InMemoryJobRepository {
         &self,
         step_name: String,
         job_execution_id: Uuid,
-    ) -> BatchResult<StepExecution> {
+    ) -> BatchResult<StepExecution>
+    {
         Ok(StepExecution::new(step_name, job_execution_id))
     }
 
-    async fn save_step_execution(&self, execution: &StepExecution) -> BatchResult<()> {
+    async fn save_step_execution(&self, execution: &StepExecution) -> BatchResult<()>
+    {
         self.step_executions
             .write()
             .await
@@ -317,7 +346,8 @@ impl JobRepository for InMemoryJobRepository {
         Ok(())
     }
 
-    async fn update_step_execution(&self, execution: &StepExecution) -> BatchResult<()> {
+    async fn update_step_execution(&self, execution: &StepExecution) -> BatchResult<()>
+    {
         self.step_executions
             .write()
             .await
@@ -325,7 +355,8 @@ impl JobRepository for InMemoryJobRepository {
         Ok(())
     }
 
-    async fn get_step_execution(&self, id: Uuid) -> BatchResult<StepExecution> {
+    async fn get_step_execution(&self, id: Uuid) -> BatchResult<StepExecution>
+    {
         self.step_executions
             .read()
             .await
@@ -337,12 +368,14 @@ impl JobRepository for InMemoryJobRepository {
             })
     }
 
-    async fn is_job_running(&self, job_name: &str) -> BatchResult<bool> {
+    async fn is_job_running(&self, job_name: &str) -> BatchResult<bool>
+    {
         let running = self.running_jobs.read().await;
         Ok(running.contains_key(job_name))
     }
 
-    async fn is_job_complete(&self, job_instance_id: Uuid) -> BatchResult<bool> {
+    async fn is_job_complete(&self, job_instance_id: Uuid) -> BatchResult<bool>
+    {
         let executions = self.get_job_executions(job_instance_id).await?;
 
         // Check if any execution completed successfully
@@ -351,12 +384,14 @@ impl JobRepository for InMemoryJobRepository {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::execution::ExitStatus;
 
     #[tokio::test]
-    async fn test_create_job_execution() {
+    async fn test_create_job_execution()
+    {
         let repository = InMemoryJobRepository::new();
         let params = HashMap::new();
 
@@ -370,7 +405,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_job_already_running() {
+    async fn test_job_already_running()
+    {
         let repository = InMemoryJobRepository::new();
         let params = HashMap::new();
 
@@ -388,7 +424,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_save_and_get_job_execution() {
+    async fn test_save_and_get_job_execution()
+    {
         let repository = InMemoryJobRepository::new();
 
         let execution = JobExecution::new("test-job", Uuid::new_v4());
@@ -402,7 +439,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_update_job_execution() {
+    async fn test_update_job_execution()
+    {
         let repository = InMemoryJobRepository::new();
 
         let execution = repository
@@ -422,7 +460,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_step_execution() {
+    async fn test_step_execution()
+    {
         let repository = InMemoryJobRepository::new();
 
         let step = repository
@@ -437,7 +476,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_clear_repository() {
+    async fn test_clear_repository()
+    {
         let repository = InMemoryJobRepository::new();
 
         repository
@@ -452,7 +492,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_last_job_execution() {
+    async fn test_get_last_job_execution()
+    {
         let repository = InMemoryJobRepository::new();
 
         let execution = repository

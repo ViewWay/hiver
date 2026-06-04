@@ -1,8 +1,0 @@
-{"t":0,"agent":"a16eec9","agent_type":"Explore","event":"agent_start","parent_mode":"none"}
-{"t":0,"agent":"a16eec9","agent_type":"Explore","event":"agent_stop","success":true,"duration_ms":30875}
-{"t":0,"agent":"a73da38","agent_type":"Explore","event":"agent_start","parent_mode":"none"}
-{"t":0,"agent":"a73da38","agent_type":"Explore","event":"agent_stop","success":true,"duration_ms":45152}
-{"t":0,"agent":"a82eb85","agent_type":"frontend-developer","event":"agent_start","parent_mode":"none"}
-{"t":0,"agent":"a82eb85","agent_type":"frontend-developer","event":"agent_stop","success":true,"duration_ms":122877}
-{"t":0,"agent":"aaa02d7","agent_type":"unknown","event":"agent_stop","success":true}
-{"t":0,"agent":"ad9c79f","agent_type":"unknown","event":"agent_stop","success":true}

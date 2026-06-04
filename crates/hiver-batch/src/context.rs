@@ -1,9 +1,8 @@
 //! Job and step context for sharing data during execution
 //! 作业和步骤上下文，用于执行期间共享数据
 
-use std::any::Any;
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{any::Any, collections::HashMap, sync::Arc};
+
 use tokio::sync::RwLock;
 
 /// Type-erased context storage
@@ -22,20 +21,25 @@ type ContextStore = HashMap<String, Box<dyn Any + Send + Sync>>;
 /// Object value = context.get("key");
 /// ```
 #[derive(Clone)]
-pub struct JobContext {
+pub struct JobContext
+{
     inner: Arc<RwLock<ContextStore>>,
 }
 
-impl Default for JobContext {
-    fn default() -> Self {
+impl Default for JobContext
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl JobContext {
+impl JobContext
+{
     /// Create new job context
     /// 创建新作业上下文
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             inner: Arc::new(RwLock::new(HashMap::new())),
         }
@@ -43,7 +47,8 @@ impl JobContext {
 
     /// Put value into context
     /// 将值放入上下文
-    pub async fn put<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T) {
+    pub async fn put<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T)
+    {
         let key = key.into();
         let mut store = self.inner.write().await;
         store.insert(key, Box::new(value));
@@ -51,7 +56,8 @@ impl JobContext {
 
     /// Get value from context
     /// 从上下文获取值
-    pub async fn get<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T> {
+    pub async fn get<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T>
+    {
         let store = self.inner.read().await;
         store
             .get(key)
@@ -61,7 +67,8 @@ impl JobContext {
 
     /// Remove value from context
     /// 从上下文移除值
-    pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T> {
+    pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T>
+    {
         let mut store = self.inner.write().await;
         store
             .remove(key)
@@ -70,35 +77,40 @@ impl JobContext {
 
     /// Check if key exists
     /// 检查键是否存在
-    pub async fn contains_key(&self, key: &str) -> bool {
+    pub async fn contains_key(&self, key: &str) -> bool
+    {
         let store = self.inner.read().await;
         store.contains_key(key)
     }
 
     /// Get all keys
     /// 获取所有键
-    pub async fn keys(&self) -> Vec<String> {
+    pub async fn keys(&self) -> Vec<String>
+    {
         let store = self.inner.read().await;
         store.keys().cloned().collect()
     }
 
     /// Clear all context data
     /// 清除所有上下文数据
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         let mut store = self.inner.write().await;
         store.clear();
     }
 
     /// Get context size
     /// 获取上下文大小
-    pub async fn len(&self) -> usize {
+    pub async fn len(&self) -> usize
+    {
         let store = self.inner.read().await;
         store.len()
     }
 
     /// Check if context is empty
     /// 检查上下文是否为空
-    pub async fn is_empty(&self) -> bool {
+    pub async fn is_empty(&self) -> bool
+    {
         let store = self.inner.read().await;
         store.is_empty()
     }
@@ -116,17 +128,20 @@ impl JobContext {
 /// int count = context.getInt("readCount");
 /// ```
 #[derive(Clone)]
-pub struct StepContext {
+pub struct StepContext
+{
     inner: Arc<RwLock<ContextStore>>,
     /// Reference to parent job context
     /// 父作业上下文的引用
     pub job_context: JobContext,
 }
 
-impl StepContext {
+impl StepContext
+{
     /// Create new step context with parent job context
     /// 使用父作业上下文创建新步骤上下文
-    pub fn new(job_context: JobContext) -> Self {
+    pub fn new(job_context: JobContext) -> Self
+    {
         Self {
             inner: Arc::new(RwLock::new(HashMap::new())),
             job_context,
@@ -135,7 +150,8 @@ impl StepContext {
 
     /// Create new step context without parent
     /// 创建没有父级的新步骤上下文
-    pub fn standalone() -> Self {
+    pub fn standalone() -> Self
+    {
         Self {
             inner: Arc::new(RwLock::new(HashMap::new())),
             job_context: JobContext::new(),
@@ -144,7 +160,8 @@ impl StepContext {
 
     /// Put value into step context
     /// 将值放入步骤上下文
-    pub async fn put<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T) {
+    pub async fn put<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T)
+    {
         let key = key.into();
         let mut store = self.inner.write().await;
         store.insert(key, Box::new(value));
@@ -152,7 +169,8 @@ impl StepContext {
 
     /// Get value from step context
     /// 从步骤上下文获取值
-    pub async fn get<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T> {
+    pub async fn get<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T>
+    {
         let store = self.inner.read().await;
         store
             .get(key)
@@ -162,7 +180,8 @@ impl StepContext {
 
     /// Remove value from step context
     /// 从步骤上下文移除值
-    pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T> {
+    pub async fn remove<T: Any + Send + Sync>(&self, key: &str) -> Option<T>
+    {
         let mut store = self.inner.write().await;
         store
             .remove(key)
@@ -171,8 +190,10 @@ impl StepContext {
 
     /// Get value from step context, fallback to job context
     /// 从步骤上下文获取值，回退到作业上下文
-    pub async fn get_or_from_job<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T> {
-        match self.get(key).await {
+    pub async fn get_or_from_job<T: Any + Send + Sync + Clone>(&self, key: &str) -> Option<T>
+    {
+        match self.get(key).await
+        {
             Some(value) => Some(value),
             None => self.job_context.get(key).await,
         }
@@ -180,52 +201,60 @@ impl StepContext {
 
     /// Put value into both step and job context
     /// 将值放入步骤和作业上下文
-    pub async fn put_to_job<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T) {
+    pub async fn put_to_job<T: Any + Send + Sync>(&self, key: impl Into<String>, value: T)
+    {
         self.job_context.put(key, value).await;
     }
 
     /// Check if key exists in step context
     /// 检查键是否存在于步骤上下文
-    pub async fn contains_key(&self, key: &str) -> bool {
+    pub async fn contains_key(&self, key: &str) -> bool
+    {
         let store = self.inner.read().await;
         store.contains_key(key)
     }
 
     /// Get all keys from step context
     /// 从步骤上下文获取所有键
-    pub async fn keys(&self) -> Vec<String> {
+    pub async fn keys(&self) -> Vec<String>
+    {
         let store = self.inner.read().await;
         store.keys().cloned().collect()
     }
 
     /// Clear all step context data
     /// 清除所有步骤上下文数据
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         let mut store = self.inner.write().await;
         store.clear();
     }
 
     /// Get step context size
     /// 获取步骤上下文大小
-    pub async fn len(&self) -> usize {
+    pub async fn len(&self) -> usize
+    {
         let store = self.inner.read().await;
         store.len()
     }
 
     /// Check if step context is empty
     /// 检查步骤上下文是否为空
-    pub async fn is_empty(&self) -> bool {
+    pub async fn is_empty(&self) -> bool
+    {
         let store = self.inner.read().await;
         store.is_empty()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_job_context() {
+    async fn test_job_context()
+    {
         let context = JobContext::new();
 
         context.put("user_id", 42u32).await;
@@ -239,7 +268,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_step_context() {
+    async fn test_step_context()
+    {
         let job_context = JobContext::new();
         job_context.put("job_level", 123).await;
 
@@ -254,7 +284,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_context_remove() {
+    async fn test_context_remove()
+    {
         let context = JobContext::new();
 
         context.put("temp", "value").await;
@@ -266,7 +297,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_context_clear() {
+    async fn test_context_clear()
+    {
         let context = JobContext::new();
 
         context.put("a", 1).await;
@@ -279,7 +311,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_standalone_step_context() {
+    async fn test_standalone_step_context()
+    {
         let step_context = StepContext::standalone();
 
         step_context.put("value", 100).await;

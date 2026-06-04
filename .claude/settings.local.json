@@ -202,7 +202,23 @@
       "Bash(mv docs/book/src/theme/hiver.css docs/book/src/theme/hiver.css)",
       "Bash(mv docs/book/book/theme/hiver.css docs/book/book/theme/hiver.css)",
       "Bash(mv crates/hiver-observability/src/hiver_format.rs crates/hiver-observability/src/hiver_format.rs)",
-      "Bash(git grep *)"
+      "Bash(git grep *)",
+      "Bash(node *)",
+      "Bash(codegraph --help)",
+      "Bash(codegraph mark-dirty *)",
+      "Bash(awk '/^name = \"jsonwebtoken\"/{found=NR} found && NR==found+3{print; found=0}' Cargo.lock)",
+      "Bash(gh run *)",
+      "Bash(sed -n '300,330p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '405,425p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '510,555p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '280,295p' crates/hiver-runtime/src/io.rs)",
+      "Bash(sed -n '1270,1280p' crates/hiver-runtime/src/io.rs)",
+      "Bash(sed -n '188,192p' crates/hiver-runtime/src/driver/epoll.rs)",
+      "Bash(sed -n '316,328p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '420,427p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '516,524p' crates/hiver-runtime/src/driver/iouring.rs)",
+      "Bash(sed -n '261,265p' crates/hiver-runtime/src/scheduler/local.rs)",
+      "Bash(xargs -I{} gh run view {} --log-failed)"
     ]
   }
 }

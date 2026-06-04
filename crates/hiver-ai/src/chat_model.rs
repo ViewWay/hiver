@@ -7,14 +7,16 @@
 //! 本模块定义了与基于聊天的 AI 模型交互的核心类型：
 //! 消息、请求、响应、流式传输和 token 使用量跟踪。
 
+use std::pin::Pin;
+
 use futures::Stream;
 use serde::{Deserialize, Serialize};
-use std::pin::Pin;
 
 /// The role of a participant in a chat conversation.
 /// 聊天对话中参与者的角色。
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Role {
+pub enum Role
+{
     /// System message providing instructions to the AI.
     /// 系统消息，为 AI 提供指令。
     System,
@@ -29,12 +31,15 @@ pub enum Role {
     Tool,
 }
 
-impl Role {
+impl Role
+{
     /// Returns the string representation of the role.
     /// 返回角色的字符串表示。
     #[must_use]
-    pub fn as_str(&self) -> &'static str {
-        match self {
+    pub fn as_str(&self) -> &'static str
+    {
+        match self
+        {
             Role::System => "system",
             Role::User => "user",
             Role::Assistant => "assistant",
@@ -43,8 +48,10 @@ impl Role {
     }
 }
 
-impl std::fmt::Display for Role {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Display for Role
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.write_str(self.as_str())
     }
 }
@@ -52,7 +59,8 @@ impl std::fmt::Display for Role {
 /// A single message in a chat conversation.
 /// 聊天对话中的单条消息。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ChatMessage {
+pub struct ChatMessage
+{
     /// The role of the message sender.
     /// 消息发送者的角色。
     pub role: Role,
@@ -65,7 +73,8 @@ pub struct ChatMessage {
     pub name: Option<String>,
 }
 
-impl ChatMessage {
+impl ChatMessage
+{
     /// Creates a new chat message with the given role and content.
     /// 使用给定角色和内容创建新的聊天消息。
     ///
@@ -79,7 +88,8 @@ impl ChatMessage {
     /// assert_eq!(msg.content, "Hello!");
     /// ```
     #[must_use]
-    pub fn new(role: Role, content: impl Into<String>) -> Self {
+    pub fn new(role: Role, content: impl Into<String>) -> Self
+    {
         Self {
             role,
             content: content.into(),
@@ -90,28 +100,32 @@ impl ChatMessage {
     /// Creates a new system message.
     /// 创建新的系统消息。
     #[must_use]
-    pub fn system(content: impl Into<String>) -> Self {
+    pub fn system(content: impl Into<String>) -> Self
+    {
         Self::new(Role::System, content)
     }
 
     /// Creates a new user message.
     /// 创建新的用户消息。
     #[must_use]
-    pub fn user(content: impl Into<String>) -> Self {
+    pub fn user(content: impl Into<String>) -> Self
+    {
         Self::new(Role::User, content)
     }
 
     /// Creates a new assistant message.
     /// 创建新的助手消息。
     #[must_use]
-    pub fn assistant(content: impl Into<String>) -> Self {
+    pub fn assistant(content: impl Into<String>) -> Self
+    {
         Self::new(Role::Assistant, content)
     }
 
     /// Creates a new tool message.
     /// 创建新的工具消息。
     #[must_use]
-    pub fn tool(content: impl Into<String>, name: impl Into<String>) -> Self {
+    pub fn tool(content: impl Into<String>, name: impl Into<String>) -> Self
+    {
         Self {
             role: Role::Tool,
             content: content.into(),
@@ -122,7 +136,8 @@ impl ChatMessage {
     /// Sets the optional name of the message sender.
     /// 设置消息发送者的可选名称。
     #[must_use]
-    pub fn with_name(mut self, name: impl Into<String>) -> Self {
+    pub fn with_name(mut self, name: impl Into<String>) -> Self
+    {
         self.name = Some(name.into());
         self
     }
@@ -131,7 +146,8 @@ impl ChatMessage {
 /// Token usage statistics for an AI model response.
 /// AI 模型响应的 token 使用统计。
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct TokenUsage {
+pub struct TokenUsage
+{
     /// Number of tokens in the prompt / 提示中的 token 数量。
     pub prompt_tokens: u32,
     /// Number of tokens in the completion / 补全中的 token 数量。
@@ -140,11 +156,13 @@ pub struct TokenUsage {
     pub total_tokens: u32,
 }
 
-impl TokenUsage {
+impl TokenUsage
+{
     /// Creates a new token usage with the given values.
     /// 使用给定值创建新的 token 使用统计。
     #[must_use]
-    pub fn new(prompt_tokens: u32, completion_tokens: u32) -> Self {
+    pub fn new(prompt_tokens: u32, completion_tokens: u32) -> Self
+    {
         Self {
             prompt_tokens,
             completion_tokens,
@@ -156,7 +174,8 @@ impl TokenUsage {
 /// A request to a chat model.
 /// 对聊天模型的请求。
 #[derive(Debug, Clone)]
-pub struct ChatRequest {
+pub struct ChatRequest
+{
     /// The messages to send to the model.
     /// 发送给模型的消息列表。
     pub messages: Vec<ChatMessage>,
@@ -171,11 +190,13 @@ pub struct ChatRequest {
     pub model: Option<String>,
 }
 
-impl ChatRequest {
+impl ChatRequest
+{
     /// Creates a new empty chat request.
     /// 创建新的空聊天请求。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             messages: Vec::new(),
             temperature: None,
@@ -187,7 +208,8 @@ impl ChatRequest {
     /// Adds a message to the request.
     /// 向请求添加消息。
     #[must_use]
-    pub fn message(mut self, message: ChatMessage) -> Self {
+    pub fn message(mut self, message: ChatMessage) -> Self
+    {
         self.messages.push(message);
         self
     }
@@ -195,7 +217,8 @@ impl ChatRequest {
     /// Sets the sampling temperature.
     /// 设置采样温度。
     #[must_use]
-    pub fn temperature(mut self, temperature: f64) -> Self {
+    pub fn temperature(mut self, temperature: f64) -> Self
+    {
         self.temperature = Some(temperature);
         self
     }
@@ -203,7 +226,8 @@ impl ChatRequest {
     /// Sets the maximum number of tokens.
     /// 设置最大 token 数量。
     #[must_use]
-    pub fn max_tokens(mut self, max_tokens: u32) -> Self {
+    pub fn max_tokens(mut self, max_tokens: u32) -> Self
+    {
         self.max_tokens = Some(max_tokens);
         self
     }
@@ -211,14 +235,17 @@ impl ChatRequest {
     /// Sets the model identifier.
     /// 设置模型标识符。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self {
+    pub fn model(mut self, model: impl Into<String>) -> Self
+    {
         self.model = Some(model.into());
         self
     }
 }
 
-impl Default for ChatRequest {
-    fn default() -> Self {
+impl Default for ChatRequest
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -226,7 +253,8 @@ impl Default for ChatRequest {
 /// A response from a chat model.
 /// 聊天模型的响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ChatResponse {
+pub struct ChatResponse
+{
     /// The generated content of the response.
     /// 响应的生成内容。
     pub content: String,
@@ -242,11 +270,13 @@ pub struct ChatResponse {
     pub finish_reason: Option<String>,
 }
 
-impl ChatResponse {
+impl ChatResponse
+{
     /// Creates a new chat response.
     /// 创建新的聊天响应。
     #[must_use]
-    pub fn new(content: impl Into<String>, model: impl Into<String>) -> Self {
+    pub fn new(content: impl Into<String>, model: impl Into<String>) -> Self
+    {
         Self {
             content: content.into(),
             model: model.into(),
@@ -258,7 +288,8 @@ impl ChatResponse {
     /// Sets the token usage for this response.
     /// 设置此响应的 token 使用统计。
     #[must_use]
-    pub fn usage(mut self, usage: TokenUsage) -> Self {
+    pub fn usage(mut self, usage: TokenUsage) -> Self
+    {
         self.usage = usage;
         self
     }
@@ -266,7 +297,8 @@ impl ChatResponse {
     /// Sets the finish reason for this response.
     /// 设置此响应的完成原因。
     #[must_use]
-    pub fn finish_reason(mut self, reason: impl Into<String>) -> Self {
+    pub fn finish_reason(mut self, reason: impl Into<String>) -> Self
+    {
         self.finish_reason = Some(reason.into());
         self
     }
@@ -275,7 +307,8 @@ impl ChatResponse {
 /// A streamed chunk from a chat model.
 /// 聊天模型的流式传输块。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ChatChunk {
+pub struct ChatChunk
+{
     /// The incremental content of this chunk.
     /// 此块的增量内容。
     pub content: String,
@@ -295,7 +328,8 @@ pub type ChatStream = Pin<Box<dyn Stream<Item = Result<ChatChunk, ModelError>> +
 /// Errors that can occur when interacting with AI models.
 /// 与 AI 模型交互时可能发生的错误。
 #[derive(Debug, thiserror::Error)]
-pub enum ModelError {
+pub enum ModelError
+{
     /// An error occurred during the HTTP request to the model API.
     /// 向模型 API 发送 HTTP 请求时发生错误。
     #[error("Request failed: {0}")]
@@ -304,7 +338,8 @@ pub enum ModelError {
     /// The model API returned an error response.
     /// 模型 API 返回错误响应。
     #[error("API error (status {status}): {message}")]
-    ApiError {
+    ApiError
+    {
         /// HTTP status code / HTTP 状态码。
         status: u16,
         /// Error message from the API / API 返回的错误消息。
@@ -319,7 +354,8 @@ pub enum ModelError {
     /// Rate limit exceeded for the model API.
     /// 超过模型 API 的速率限制。
     #[error("Rate limit exceeded, retry after {retry_after_secs}s")]
-    RateLimited {
+    RateLimited
+    {
         /// Suggested retry delay in seconds / 建议的重试延迟（秒）。
         retry_after_secs: u64,
     },
@@ -332,7 +368,8 @@ pub enum ModelError {
     /// The request timed out.
     /// 请求超时。
     #[error("Request timed out after {timeout_secs}s")]
-    Timeout {
+    Timeout
+    {
         /// Timeout duration in seconds / 超时时间（秒）。
         timeout_secs: u64,
     },
@@ -352,7 +389,8 @@ pub enum ModelError {
 /// 此 trait 定义了所有基于聊天的 AI 模型的接口，
 /// 支持可插拔的后端（OpenAI、Anthropic、本地模型等）。
 #[async_trait::async_trait]
-pub trait ChatModel: Send + Sync {
+pub trait ChatModel: Send + Sync
+{
     /// Sends a chat request and returns a complete response.
     /// 发送聊天请求并返回完整响应。
     async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError>;
@@ -363,11 +401,13 @@ pub trait ChatModel: Send + Sync {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_role_as_str() {
+    fn test_role_as_str()
+    {
         assert_eq!(Role::System.as_str(), "system");
         assert_eq!(Role::User.as_str(), "user");
         assert_eq!(Role::Assistant.as_str(), "assistant");
@@ -375,12 +415,14 @@ mod tests {
     }
 
     #[test]
-    fn test_role_display() {
+    fn test_role_display()
+    {
         assert_eq!(Role::User.to_string(), "user");
     }
 
     #[test]
-    fn test_chat_message_constructors() {
+    fn test_chat_message_constructors()
+    {
         let sys = ChatMessage::system("You are helpful.");
         assert_eq!(sys.role, Role::System);
         assert_eq!(sys.content, "You are helpful.");
@@ -397,13 +439,15 @@ mod tests {
     }
 
     #[test]
-    fn test_chat_message_with_name() {
+    fn test_chat_message_with_name()
+    {
         let msg = ChatMessage::user("Hello").with_name("Alice");
         assert_eq!(msg.name.as_deref(), Some("Alice"));
     }
 
     #[test]
-    fn test_token_usage() {
+    fn test_token_usage()
+    {
         let usage = TokenUsage::new(10, 20);
         assert_eq!(usage.prompt_tokens, 10);
         assert_eq!(usage.completion_tokens, 20);
@@ -411,7 +455,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chat_request_builder() {
+    fn test_chat_request_builder()
+    {
         let req = ChatRequest::new()
             .message(ChatMessage::system("Be brief."))
             .message(ChatMessage::user("What is 2+2?"))
@@ -426,14 +471,16 @@ mod tests {
     }
 
     #[test]
-    fn test_chat_request_default() {
+    fn test_chat_request_default()
+    {
         let req = ChatRequest::default();
         assert!(req.messages.is_empty());
         assert!(req.temperature.is_none());
     }
 
     #[test]
-    fn test_chat_response() {
+    fn test_chat_response()
+    {
         let resp = ChatResponse::new("Hello!", "gpt-4")
             .usage(TokenUsage::new(5, 2))
             .finish_reason("stop");
@@ -445,7 +492,8 @@ mod tests {
     }
 
     #[test]
-    fn test_model_error_display() {
+    fn test_model_error_display()
+    {
         let err = ModelError::RequestFailed("network error".to_string());
         assert!(err.to_string().contains("network error"));
 
@@ -462,7 +510,8 @@ mod tests {
     }
 
     #[test]
-    fn test_role_serde_roundtrip() {
+    fn test_role_serde_roundtrip()
+    {
         let msg = ChatMessage::user("test");
         let json = serde_json::to_string(&msg).expect("serialize");
         let deserialized: ChatMessage = serde_json::from_str(&json).expect("deserialize");

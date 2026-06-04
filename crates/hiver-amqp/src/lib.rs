@@ -67,7 +67,8 @@ pub use rabbit_client::RabbitMqClient;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         AckMode, AckState, AcknowledgableMessage, AmqpConfig, AmqpConnection, AmqpMessage, Binding,
         BindingBuilder, BytesMessageConverter, ChannelExt, ConnectionManager, DeadLetterQueue,

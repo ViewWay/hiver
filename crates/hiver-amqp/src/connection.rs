@@ -1,9 +1,11 @@
 //! AMQP connection management
 //! AMQP连接管理
 
-use crate::{AmqpConfig, ConnectionConfig};
 use std::sync::Arc;
+
 use tokio::sync::RwLock;
+
+use crate::{AmqpConfig, ConnectionConfig};
 
 /// AMQP connection
 /// AMQP连接
@@ -17,7 +19,8 @@ use tokio::sync::RwLock;
 /// Connection connection = connectionFactory.createConnection();
 /// ```
 #[derive(Clone)]
-pub struct AmqpConnection {
+pub struct AmqpConnection
+{
     /// Connection configuration
     /// 连接配置
     config: AmqpConfig,
@@ -30,7 +33,8 @@ pub struct AmqpConnection {
 /// Connection state
 /// 连接状态
 #[derive(Clone, Debug)]
-pub enum ConnectionState {
+pub enum ConnectionState
+{
     /// Not connected
     /// 未连接
     Disconnected,
@@ -41,7 +45,8 @@ pub enum ConnectionState {
 
     /// Connected
     /// 已连接
-    Connected {
+    Connected
+    {
         /// Connection ID
         /// 连接ID
         id: String,
@@ -53,17 +58,20 @@ pub enum ConnectionState {
 
     /// Connection failed
     /// 连接失败
-    Failed {
+    Failed
+    {
         /// Error message
         /// 错误消息
         error: String,
     },
 }
 
-impl AmqpConnection {
+impl AmqpConnection
+{
     /// Create new AMQP connection
     /// 创建新的AMQP连接
-    pub fn new(config: AmqpConfig) -> Self {
+    pub fn new(config: AmqpConfig) -> Self
+    {
         Self {
             config,
             state: Arc::new(RwLock::new(ConnectionState::Disconnected)),
@@ -72,19 +80,22 @@ impl AmqpConnection {
 
     /// Get connection state
     /// 获取连接状态
-    pub async fn state(&self) -> ConnectionState {
+    pub async fn state(&self) -> ConnectionState
+    {
         self.state.read().await.clone()
     }
 
     /// Check if connected
     /// 检查是否已连接
-    pub async fn is_connected(&self) -> bool {
+    pub async fn is_connected(&self) -> bool
+    {
         matches!(*self.state.read().await, ConnectionState::Connected { .. })
     }
 
     /// Get connection URL
     /// 获取连接URL
-    pub fn url(&self) -> String {
+    pub fn url(&self) -> String
+    {
         self.config.build_url()
     }
 }
@@ -104,7 +115,8 @@ impl AmqpConnection {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct ConnectionManager {
+pub struct ConnectionManager
+{
     /// Connection configuration
     /// 连接配置
     config: AmqpConfig,
@@ -118,10 +130,12 @@ pub struct ConnectionManager {
     connections: Arc<RwLock<Vec<AmqpConnection>>>,
 }
 
-impl ConnectionManager {
+impl ConnectionManager
+{
     /// Create new connection manager
     /// 创建新的连接管理器
-    pub fn new(config: AmqpConfig) -> Self {
+    pub fn new(config: AmqpConfig) -> Self
+    {
         Self {
             config,
             conn_config: ConnectionConfig::default(),
@@ -131,26 +145,30 @@ impl ConnectionManager {
 
     /// Create with connection configuration
     /// 使用连接配置创建
-    pub fn with_connection_config(mut self, conn_config: ConnectionConfig) -> Self {
+    pub fn with_connection_config(mut self, conn_config: ConnectionConfig) -> Self
+    {
         self.conn_config = conn_config;
         self
     }
 
     /// Get configuration
     /// 获取配置
-    pub fn config(&self) -> &AmqpConfig {
+    pub fn config(&self) -> &AmqpConfig
+    {
         &self.config
     }
 
     /// Get connection configuration
     /// 获取连接配置
-    pub fn connection_config(&self) -> &ConnectionConfig {
+    pub fn connection_config(&self) -> &ConnectionConfig
+    {
         &self.conn_config
     }
 
     /// Create a new connection
     /// 创建新连接
-    pub async fn create_connection(&self) -> Result<AmqpConnection, String> {
+    pub async fn create_connection(&self) -> Result<AmqpConnection, String>
+    {
         let conn = AmqpConnection::new(self.config.clone());
         {
             let mut connections = self.connections.write().await;
@@ -161,31 +179,38 @@ impl ConnectionManager {
 
     /// Close all connections
     /// 关闭所有连接
-    pub async fn close_all(&self) {
+    pub async fn close_all(&self)
+    {
         let mut connections = self.connections.write().await;
         connections.clear();
     }
 
     /// Get active connection count
     /// 获取活动连接数
-    pub async fn connection_count(&self) -> usize {
+    pub async fn connection_count(&self) -> usize
+    {
         self.connections.read().await.len()
     }
 }
 
-impl From<AmqpConfig> for ConnectionManager {
-    fn from(config: AmqpConfig) -> Self {
+impl From<AmqpConfig> for ConnectionManager
+{
+    fn from(config: AmqpConfig) -> Self
+    {
         Self::new(config)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
-    /// Test AmqpConnection initial state is Disconnected / 测试 AmqpConnection 初始状态为 Disconnected
+    /// Test AmqpConnection initial state is Disconnected / 测试 AmqpConnection 初始状态为
+    /// Disconnected
     #[tokio::test]
-    async fn test_amqp_connection_initial_state() {
+    async fn test_amqp_connection_initial_state()
+    {
         let config = AmqpConfig::default();
         let conn = AmqpConnection::new(config);
         assert!(matches!(conn.state().await, ConnectionState::Disconnected));
@@ -194,7 +219,8 @@ mod tests {
 
     /// Test AmqpConnection::url delegates to config / 测试 AmqpConnection::url 委托给 config
     #[tokio::test]
-    async fn test_amqp_connection_url() {
+    async fn test_amqp_connection_url()
+    {
         let config = AmqpConfig::new()
             .with_host("rabbit.local", 5672)
             .with_credentials("user", "pass");
@@ -206,7 +232,8 @@ mod tests {
 
     /// Test ConnectionManager::create_connection / 测试 ConnectionManager::create_connection
     #[tokio::test]
-    async fn test_connection_manager_create_connection() {
+    async fn test_connection_manager_create_connection()
+    {
         let config = AmqpConfig::default();
         let manager = ConnectionManager::new(config);
         assert_eq!(manager.connection_count().await, 0);
@@ -218,7 +245,8 @@ mod tests {
 
     /// Test ConnectionManager::close_all / 测试 ConnectionManager::close_all
     #[tokio::test]
-    async fn test_connection_manager_close_all() {
+    async fn test_connection_manager_close_all()
+    {
         let config = AmqpConfig::default();
         let manager = ConnectionManager::new(config);
         manager.create_connection().await.unwrap();
@@ -229,9 +257,11 @@ mod tests {
         assert_eq!(manager.connection_count().await, 0);
     }
 
-    /// Test ConnectionManager::with_connection_config / 测试 ConnectionManager::with_connection_config
+    /// Test ConnectionManager::with_connection_config / 测试
+    /// ConnectionManager::with_connection_config
     #[tokio::test]
-    async fn test_connection_manager_with_connection_config() {
+    async fn test_connection_manager_with_connection_config()
+    {
         let config = AmqpConfig::default();
         let conn_config = ConnectionConfig::new()
             .with_prefetch(50)
@@ -245,7 +275,8 @@ mod tests {
 
     /// Test ConnectionManager::config accessor / 测试 ConnectionManager::config 访问器
     #[tokio::test]
-    async fn test_connection_manager_config_accessor() {
+    async fn test_connection_manager_config_accessor()
+    {
         let config = AmqpConfig::new().with_host("broker.test", 5673);
         let manager = ConnectionManager::new(config);
         assert_eq!(manager.config().host, "broker.test");
@@ -254,7 +285,8 @@ mod tests {
 
     /// Test ConnectionManager From<AmqpConfig> / 测试 ConnectionManager 的 From<AmqpConfig> 转换
     #[tokio::test]
-    async fn test_connection_manager_from_config() {
+    async fn test_connection_manager_from_config()
+    {
         let config = AmqpConfig::new().with_host("from-config.test", 5672);
         let manager = ConnectionManager::from(config);
         assert_eq!(manager.config().host, "from-config.test");
@@ -262,7 +294,8 @@ mod tests {
 
     /// Test ConnectionState debug output / 测试 ConnectionState debug 输出
     #[test]
-    fn test_connection_state_debug() {
+    fn test_connection_state_debug()
+    {
         let disconnected = ConnectionState::Disconnected;
         assert!(format!("{:?}", disconnected).contains("Disconnected"));
 

@@ -28,8 +28,9 @@ use std::collections::HashMap;
 /// # Example / 示例
 ///
 /// ```
-/// use hiver_agent::prompt::AgentPromptTemplate;
 /// use std::collections::HashMap;
+///
+/// use hiver_agent::prompt::AgentPromptTemplate;
 ///
 /// let template = AgentPromptTemplate::new("Hello, {name}! Your role is {role}.");
 ///
@@ -41,17 +42,20 @@ use std::collections::HashMap;
 /// assert_eq!(rendered, "Hello, Alice! Your role is assistant.");
 /// ```
 #[derive(Debug, Clone)]
-pub struct AgentPromptTemplate {
+pub struct AgentPromptTemplate
+{
     /// The template string with `{variable}` placeholders.
     /// 带有 `{variable}` 占位符的模板字符串。
     template: String,
 }
 
-impl AgentPromptTemplate {
+impl AgentPromptTemplate
+{
     /// Creates a new prompt template.
     /// 创建新的提示模板。
     #[must_use]
-    pub fn new(template: impl Into<String>) -> Self {
+    pub fn new(template: impl Into<String>) -> Self
+    {
         Self {
             template: template.into(),
         }
@@ -59,9 +63,11 @@ impl AgentPromptTemplate {
 
     /// Renders the template by replacing `{variable}` placeholders.
     /// 通过替换 `{variable}` 占位符渲染模板。
-    pub fn render(&self, variables: &HashMap<&str, &str>) -> String {
+    pub fn render(&self, variables: &HashMap<&str, &str>) -> String
+    {
         let mut result = self.template.clone();
-        for (key, value) in variables {
+        for (key, value) in variables
+        {
             let placeholder = format!("{{{key}}}");
             result = result.replace(&placeholder, value);
         }
@@ -71,30 +77,39 @@ impl AgentPromptTemplate {
     /// Returns the raw template string.
     /// 返回原始模板字符串。
     #[must_use]
-    pub fn template(&self) -> &str {
+    pub fn template(&self) -> &str
+    {
         &self.template
     }
 
     /// Extracts variable names from the template.
     /// 从模板中提取变量名。
     #[must_use]
-    pub fn extract_variables(&self) -> Vec<String> {
+    pub fn extract_variables(&self) -> Vec<String>
+    {
         let mut vars = Vec::new();
         let chars = self.template.chars().peekable();
         let mut in_brace = false;
         let mut current_var = String::new();
 
-        for ch in chars {
-            if ch == '{' {
+        for ch in chars
+        {
+            if ch == '{'
+            {
                 in_brace = true;
                 current_var.clear();
-            } else if ch == '}' && in_brace {
+            }
+            else if ch == '}' && in_brace
+            {
                 in_brace = false;
                 let trimmed = current_var.trim().to_string();
-                if !trimmed.is_empty() && !vars.contains(&trimmed) {
+                if !trimmed.is_empty() && !vars.contains(&trimmed)
+                {
                     vars.push(trimmed);
                 }
-            } else if in_brace {
+            }
+            else if in_brace
+            {
                 current_var.push(ch);
             }
         }
@@ -103,8 +118,10 @@ impl AgentPromptTemplate {
     }
 }
 
-impl std::fmt::Display for AgentPromptTemplate {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Display for AgentPromptTemplate
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         write!(f, "{}", self.template)
     }
 }
@@ -113,111 +130,86 @@ impl std::fmt::Display for AgentPromptTemplate {
 /// 常见代理模式的预构建提示模板。
 pub struct AgentTemplates;
 
-impl AgentTemplates {
+impl AgentTemplates
+{
     /// Returns the default ReAct system prompt template.
     /// 返回默认的 ReAct 系统提示模板。
     #[must_use]
-    pub fn react_system() -> AgentPromptTemplate {
+    pub fn react_system() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "You are a helpful AI assistant that can reason and use tools.\n\
-             \n\
-             Follow this format:\n\
-             Thought: [your reasoning]\n\
-             Action: [tool_name]\n\
-             Action Input: [JSON arguments]\n\
-             \n\
-             When you have the final answer:\n\
-             Thought: [final reasoning]\n\
-             Final Answer: [your answer]\n\
-             \n\
-             Available tools:\n\
-             {tools}",
+            "You are a helpful AI assistant that can reason and use tools.\n\nFollow this \
+             format:\nThought: [your reasoning]\nAction: [tool_name]\nAction Input: [JSON \
+             arguments]\n\nWhen you have the final answer:\nThought: [final reasoning]\nFinal \
+             Answer: [your answer]\n\nAvailable tools:\n{tools}",
         )
     }
 
     /// Returns a summarization prompt template.
     /// 返回摘要提示模板。
     #[must_use]
-    pub fn summarization() -> AgentPromptTemplate {
+    pub fn summarization() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "Please provide a concise summary of the following text. \
-             Focus on the key points and main ideas.\n\
-             \n\
-             Text to summarize:\n\
-             {text}",
+            "Please provide a concise summary of the following text. Focus on the key points and \
+             main ideas.\n\nText to summarize:\n{text}",
         )
     }
 
     /// Returns a classification prompt template.
     /// 返回分类提示模板。
     #[must_use]
-    pub fn classification() -> AgentPromptTemplate {
+    pub fn classification() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "Classify the following input into exactly one of these categories.\n\
-             Respond with ONLY the category name.\n\
-             \n\
-             Categories:\n\
-             {categories}\n\
-             \n\
-             Input: {input}\n\
-             \n\
-             Category:",
+            "Classify the following input into exactly one of these categories.\nRespond with \
+             ONLY the category name.\n\nCategories:\n{categories}\n\nInput: {input}\n\nCategory:",
         )
     }
 
     /// Returns a question-answering prompt template with context.
     /// 返回带上下文的问答提示模板。
     #[must_use]
-    pub fn qa_with_context() -> AgentPromptTemplate {
+    pub fn qa_with_context() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "Answer the following question based on the provided context. \
-             If the context does not contain enough information, say so.\n\
-             \n\
-             Context:\n\
-             {context}\n\
-             \n\
-             Question: {question}\n\
-             \n\
-             Answer:",
+            "Answer the following question based on the provided context. If the context does not \
+             contain enough information, say so.\n\nContext:\n{context}\n\nQuestion: \
+             {question}\n\nAnswer:",
         )
     }
 
     /// Returns a code generation prompt template.
     /// 返回代码生成提示模板。
     #[must_use]
-    pub fn code_generation() -> AgentPromptTemplate {
+    pub fn code_generation() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "Generate {language} code for the following task:\n\
-             \n\
-             Task: {task}\n\
-             \n\
-             Requirements:\n\
-             {requirements}\n\
-             \n\
-             Code:",
+            "Generate {language} code for the following task:\n\nTask: \
+             {task}\n\nRequirements:\n{requirements}\n\nCode:",
         )
     }
 
     /// Returns a translation prompt template.
     /// 返回翻译提示模板。
     #[must_use]
-    pub fn translation() -> AgentPromptTemplate {
+    pub fn translation() -> AgentPromptTemplate
+    {
         AgentPromptTemplate::new(
-            "Translate the following text from {source_language} to {target_language}.\n\
-             Preserve the tone and style of the original text.\n\
-             \n\
-             Text:\n\
-             {text}",
+            "Translate the following text from {source_language} to {target_language}.\nPreserve \
+             the tone and style of the original text.\n\nText:\n{text}",
         )
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_basic_render() {
+    fn test_basic_render()
+    {
         let template = AgentPromptTemplate::new("Hello, {name}!");
         let mut vars = HashMap::new();
         vars.insert("name", "World");
@@ -225,7 +217,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multiple_variables() {
+    fn test_multiple_variables()
+    {
         let template = AgentPromptTemplate::new("{greeting}, {name}! Today is {day}.");
         let mut vars = HashMap::new();
         vars.insert("greeting", "Hi");
@@ -235,7 +228,8 @@ mod tests {
     }
 
     #[test]
-    fn test_missing_variable_left_as_is() {
+    fn test_missing_variable_left_as_is()
+    {
         let template = AgentPromptTemplate::new("Hello, {name}! {unknown}");
         let mut vars = HashMap::new();
         vars.insert("name", "World");
@@ -243,14 +237,16 @@ mod tests {
     }
 
     #[test]
-    fn test_no_variables() {
+    fn test_no_variables()
+    {
         let template = AgentPromptTemplate::new("No variables here!");
         let vars = HashMap::new();
         assert_eq!(template.render(&vars), "No variables here!");
     }
 
     #[test]
-    fn test_extract_variables() {
+    fn test_extract_variables()
+    {
         let template = AgentPromptTemplate::new("{greeting}, {name}! {name} again.");
         let vars = template.extract_variables();
         assert_eq!(vars.len(), 2);
@@ -259,32 +255,37 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_variables_empty() {
+    fn test_extract_variables_empty()
+    {
         let template = AgentPromptTemplate::new("No variables!");
         assert!(template.extract_variables().is_empty());
     }
 
     #[test]
-    fn test_template_display() {
+    fn test_template_display()
+    {
         let template = AgentPromptTemplate::new("Hello, {name}!");
         assert_eq!(format!("{template}"), "Hello, {name}!");
     }
 
     #[test]
-    fn test_template_returns_str() {
+    fn test_template_returns_str()
+    {
         let template = AgentPromptTemplate::new("test {var}");
         assert_eq!(template.template(), "test {var}");
     }
 
     #[test]
-    fn test_react_system_template() {
+    fn test_react_system_template()
+    {
         let template = AgentTemplates::react_system();
         let vars = template.extract_variables();
         assert!(vars.contains(&"tools".to_string()));
     }
 
     #[test]
-    fn test_summarization_template() {
+    fn test_summarization_template()
+    {
         let template = AgentTemplates::summarization();
         let mut vars = HashMap::new();
         vars.insert("text", "Some long text here");
@@ -293,7 +294,8 @@ mod tests {
     }
 
     #[test]
-    fn test_classification_template() {
+    fn test_classification_template()
+    {
         let template = AgentTemplates::classification();
         let vars = template.extract_variables();
         assert!(vars.contains(&"categories".to_string()));
@@ -301,7 +303,8 @@ mod tests {
     }
 
     #[test]
-    fn test_qa_template() {
+    fn test_qa_template()
+    {
         let template = AgentTemplates::qa_with_context();
         let mut vars = HashMap::new();
         vars.insert("context", "Paris is the capital of France.");
@@ -311,7 +314,8 @@ mod tests {
     }
 
     #[test]
-    fn test_code_generation_template() {
+    fn test_code_generation_template()
+    {
         let template = AgentTemplates::code_generation();
         let vars = template.extract_variables();
         assert!(vars.contains(&"language".to_string()));
@@ -320,7 +324,8 @@ mod tests {
     }
 
     #[test]
-    fn test_translation_template() {
+    fn test_translation_template()
+    {
         let template = AgentTemplates::translation();
         let vars = template.extract_variables();
         assert!(vars.contains(&"source_language".to_string()));

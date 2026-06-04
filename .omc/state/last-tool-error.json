@@ -1,7 +1,7 @@
 {
-  "tool_name": "mcp__codegraph__codegraph_search",
-  "tool_input_preview": "{\"query\":\"generate\",\"projectPath\":\"/Users/yimiliya/RustroverProjects/hiver\"}",
-  "error": "Error: Tool execution failed: Failed to load any SQLite backend.\n  Native (better-sqlite3): Cannot find module 'better-sqlite3'\nRequire stack:\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/db/sqlite-adapter.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/db/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegraph/dist/mcp/index.js\n- /opt/homebrew/lib/node_modules/@colbymchenry/codegra...",
-  "timestamp": "2026-06-01T00:03:30.503Z",
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"grep -n \\\"msrv\\\\|MSRV\\\" /Users/yimiliya/RustroverProjects/hiver/.clippy.toml /Users/yimiliya/RustroverProjects/hiver/crates/hiver-runtime/.clippy.toml /Users/yimiliya/RustroverProjects/hiv...",
+  "error": "Exit code 2",
+  "timestamp": "2026-06-04T15:47:25.975Z",
   "retry_count": 1
 }

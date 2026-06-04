@@ -15,15 +15,16 @@
 //! - `AgentState`：代理的执行状态。
 //! - `AgentOutput`：代理执行的结构化输出。
 
+use std::{collections::HashMap, pin::Pin};
+
 use futures::Stream;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::pin::Pin;
 
 /// The execution state of an agent.
 /// 代理的执行状态。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum AgentState {
+pub enum AgentState
+{
     /// The agent is idle and ready to accept input.
     /// 代理空闲，准备接受输入。
     Idle,
@@ -44,9 +45,12 @@ pub enum AgentState {
     Error,
 }
 
-impl std::fmt::Display for AgentState {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for AgentState
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             AgentState::Idle => write!(f, "idle"),
             AgentState::Thinking => write!(f, "thinking"),
             AgentState::Acting => write!(f, "acting"),
@@ -60,7 +64,8 @@ impl std::fmt::Display for AgentState {
 /// Configuration for an agent's behavior.
 /// 代理行为的配置。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentConfig {
+pub struct AgentConfig
+{
     /// The model identifier to use.
     /// 使用的模型标识符。
     pub model: String,
@@ -78,8 +83,10 @@ pub struct AgentConfig {
     pub metadata: HashMap<String, String>,
 }
 
-impl Default for AgentConfig {
-    fn default() -> Self {
+impl Default for AgentConfig
+{
+    fn default() -> Self
+    {
         Self {
             model: "gpt-4".to_string(),
             temperature: 0.7,
@@ -90,18 +97,21 @@ impl Default for AgentConfig {
     }
 }
 
-impl AgentConfig {
+impl AgentConfig
+{
     /// Creates a new agent configuration with default values.
     /// 使用默认值创建新的代理配置。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Sets the model identifier.
     /// 设置模型标识符。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self {
+    pub fn model(mut self, model: impl Into<String>) -> Self
+    {
         self.model = model.into();
         self
     }
@@ -109,7 +119,8 @@ impl AgentConfig {
     /// Sets the sampling temperature.
     /// 设置采样温度。
     #[must_use]
-    pub fn temperature(mut self, temperature: f64) -> Self {
+    pub fn temperature(mut self, temperature: f64) -> Self
+    {
         self.temperature = temperature;
         self
     }
@@ -117,7 +128,8 @@ impl AgentConfig {
     /// Sets the maximum tokens per response.
     /// 设置每次响应的最大 token 数。
     #[must_use]
-    pub fn max_tokens(mut self, max_tokens: u32) -> Self {
+    pub fn max_tokens(mut self, max_tokens: u32) -> Self
+    {
         self.max_tokens = max_tokens;
         self
     }
@@ -125,7 +137,8 @@ impl AgentConfig {
     /// Sets the system prompt.
     /// 设置系统提示。
     #[must_use]
-    pub fn system_prompt(mut self, prompt: impl Into<String>) -> Self {
+    pub fn system_prompt(mut self, prompt: impl Into<String>) -> Self
+    {
         self.system_prompt = prompt.into();
         self
     }
@@ -133,7 +146,8 @@ impl AgentConfig {
     /// Adds a metadata key-value pair.
     /// 添加元数据键值对。
     #[must_use]
-    pub fn metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.metadata.insert(key.into(), value.into());
         self
     }
@@ -142,7 +156,8 @@ impl AgentConfig {
 /// A tool call made by an agent during execution.
 /// 代理执行期间发出的工具调用。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentToolCall {
+pub struct AgentToolCall
+{
     /// The name of the tool called.
     /// 调用的工具名称。
     pub name: String,
@@ -157,7 +172,8 @@ pub struct AgentToolCall {
 /// Structured output from an agent execution.
 /// 代理执行的结构化输出。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentOutput {
+pub struct AgentOutput
+{
     /// The text output from the agent.
     /// 代理的文本输出。
     pub text: String,
@@ -175,11 +191,13 @@ pub struct AgentOutput {
     pub metadata: HashMap<String, String>,
 }
 
-impl AgentOutput {
+impl AgentOutput
+{
     /// Creates a new agent output with text only.
     /// 创建仅包含文本的代理输出。
     #[must_use]
-    pub fn text(content: impl Into<String>) -> Self {
+    pub fn text(content: impl Into<String>) -> Self
+    {
         Self {
             text: content.into(),
             tool_calls: Vec::new(),
@@ -192,7 +210,8 @@ impl AgentOutput {
     /// Creates a new agent output in an error state.
     /// 创建错误状态的代理输出。
     #[must_use]
-    pub fn error(message: impl Into<String>) -> Self {
+    pub fn error(message: impl Into<String>) -> Self
+    {
         Self {
             text: message.into(),
             tool_calls: Vec::new(),
@@ -205,7 +224,8 @@ impl AgentOutput {
     /// Adds a tool call to the output.
     /// 向输出添加工具调用。
     #[must_use]
-    pub fn with_tool_call(mut self, call: AgentToolCall) -> Self {
+    pub fn with_tool_call(mut self, call: AgentToolCall) -> Self
+    {
         self.tool_calls.push(call);
         self
     }
@@ -213,7 +233,8 @@ impl AgentOutput {
     /// Sets the total token count.
     /// 设置总 token 计数。
     #[must_use]
-    pub fn total_tokens(mut self, tokens: u32) -> Self {
+    pub fn total_tokens(mut self, tokens: u32) -> Self
+    {
         self.total_tokens = tokens;
         self
     }
@@ -221,7 +242,8 @@ impl AgentOutput {
     /// Adds a metadata entry.
     /// 添加元数据条目。
     #[must_use]
-    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.metadata.insert(key.into(), value.into());
         self
     }
@@ -229,14 +251,16 @@ impl AgentOutput {
     /// Returns true if the agent finished successfully.
     /// 如果代理成功完成则返回 true。
     #[must_use]
-    pub fn is_success(&self) -> bool {
+    pub fn is_success(&self) -> bool
+    {
         self.state == AgentState::Done
     }
 
     /// Returns true if the agent made any tool calls.
     /// 如果代理进行了任何工具调用则返回 true。
     #[must_use]
-    pub fn has_tool_calls(&self) -> bool {
+    pub fn has_tool_calls(&self) -> bool
+    {
         !self.tool_calls.is_empty()
     }
 }
@@ -244,7 +268,8 @@ impl AgentOutput {
 /// A streaming chunk from an agent execution.
 /// 代理执行的流式块。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentChunk {
+pub struct AgentChunk
+{
     /// The incremental text content.
     /// 增量文本内容。
     pub text: String,
@@ -263,7 +288,8 @@ pub type AgentStream = Pin<Box<dyn Stream<Item = Result<AgentChunk, AgentError>>
 /// Errors that can occur during agent execution.
 /// 代理执行期间可能发生的错误。
 #[derive(Debug, thiserror::Error)]
-pub enum AgentError {
+pub enum AgentError
+{
     /// An error from the underlying chat model.
     /// 来自底层聊天模型的错误。
     #[error("Model error: {0}")]
@@ -300,7 +326,8 @@ pub enum AgentError {
 /// 代理接收输入，处理它（可能使用工具和多次 LLM 调用），并产生结构化输出。
 /// 实现可以从简单的单次代理到复杂的多步推理代理。
 #[async_trait::async_trait]
-pub trait Agent: Send + Sync {
+pub trait Agent: Send + Sync
+{
     /// Runs the agent with the given input and returns the complete output.
     /// 使用给定输入运行代理并返回完整输出。
     async fn run(&self, input: &str) -> Result<AgentOutput, AgentError>;
@@ -319,11 +346,13 @@ pub trait Agent: Send + Sync {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_agent_state_display() {
+    fn test_agent_state_display()
+    {
         assert_eq!(AgentState::Idle.to_string(), "idle");
         assert_eq!(AgentState::Thinking.to_string(), "thinking");
         assert_eq!(AgentState::Acting.to_string(), "acting");
@@ -333,7 +362,8 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_config_default() {
+    fn test_agent_config_default()
+    {
         let config = AgentConfig::default();
         assert_eq!(config.model, "gpt-4");
         assert!((config.temperature - 0.7).abs() < f64::EPSILON);
@@ -341,7 +371,8 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_config_builder() {
+    fn test_agent_config_builder()
+    {
         let config = AgentConfig::new()
             .model("gpt-3.5-turbo")
             .temperature(0.5)
@@ -357,7 +388,8 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_output_text() {
+    fn test_agent_output_text()
+    {
         let output = AgentOutput::text("Hello!");
         assert!(output.is_success());
         assert!(!output.has_tool_calls());
@@ -365,14 +397,16 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_output_error() {
+    fn test_agent_output_error()
+    {
         let output = AgentOutput::error("Something went wrong");
         assert!(!output.is_success());
         assert_eq!(output.state, AgentState::Error);
     }
 
     #[test]
-    fn test_agent_output_with_tool_call() {
+    fn test_agent_output_with_tool_call()
+    {
         let output = AgentOutput::text("Result")
             .with_tool_call(AgentToolCall {
                 name: "search".to_string(),
@@ -387,7 +421,8 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_error_display() {
+    fn test_agent_error_display()
+    {
         let err = AgentError::MaxIterationsExceeded(10);
         assert!(err.to_string().contains("10"));
 
@@ -396,7 +431,8 @@ mod tests {
     }
 
     #[test]
-    fn test_agent_config_serde() {
+    fn test_agent_config_serde()
+    {
         let config = AgentConfig::new().model("test-model").temperature(0.3);
         let json = serde_json::to_string(&config).expect("serialize");
         let deserialized: AgentConfig = serde_json::from_str(&json).expect("deserialize");
