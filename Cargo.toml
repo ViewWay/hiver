@@ -76,7 +76,7 @@ homepage = "https://viewway.github.io/hiver"
 license = "MIT OR Apache-2.0"
 edition = "2024"
 rust-version = "1.87"
-keywords = ["http", "async", "web", "framework", "server", "spring", "ioc", "aop"]
+keywords = ["http", "async", "web", "framework", "hiver"]
 categories = [
     "web-programming::http-server",
     "web-programming::websocket",
