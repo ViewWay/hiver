@@ -5,7 +5,7 @@
 //! 本模块为Linux系统提供基于epoll的I/O驱动。
 
 #![cfg(target_os = "linux")]
-#![allow(clippy::all)]
+#![allow(warnings)]
 
 use std::cell::UnsafeCell;
 use std::os::fd::{AsRawFd, RawFd};
