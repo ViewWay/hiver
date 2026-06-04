@@ -8,6 +8,11 @@ homepage.workspace = true
 license.workspace = true
 keywords.workspace = true
 categories.workspace = true
+description = """
+STOMP protocol over WebSocket for Hiver Framework.
+Hiver框架基于 WebSocket 的 STOMP 协议支持。
+Equivalent to: Spring WebSocket, Spring STOMP
+"""
 
 [dependencies]
 hiver-http = { path = "../hiver-http" }

@@ -1,9 +1,19 @@
 [package]
 name = "hiver-agent"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
-description = "AI Agent framework for Hiver - ReAct, chaining, routing, and tool-using agents"
-# 中文描述: Hiver 的 AI 代理框架 - ReAct、链式、路由和工具使用代理
+rust-version.workspace = true
+description = """
+AI Agent framework for Hiver - ReAct, chaining, routing, and tool-using agents.
+Hiver的AI代理框架 - ReAct、链式、路由和工具使用代理。
+Equivalent to: Spring AI Agents, LangChain Agents
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 hiver-ai = { path = "../hiver-ai" }

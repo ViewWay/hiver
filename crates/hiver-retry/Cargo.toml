@@ -1,7 +1,19 @@
 [package]
 name = "hiver-retry"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
+rust-version.workspace = true
+description = """
+Declarative retry with annotations and macros for Hiver Framework.
+Hiver框架的声明式重试支持，支持注解和宏。
+Equivalent to: Spring Retry, @Retryable
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 hiver-resilience = { path = "../hiver-resilience" }

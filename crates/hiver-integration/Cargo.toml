@@ -8,6 +8,11 @@ homepage.workspace = true
 license.workspace = true
 keywords.workspace = true
 categories.workspace = true
+description = """
+Integration testing utilities for Hiver Framework.
+Hiver框架的集成测试工具。
+Equivalent to: Spring Test, Spring Integration Test
+"""
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }

@@ -1,7 +1,19 @@
 [package]
 name = "hiver-flyway"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
+rust-version.workspace = true
+description = """
+Database migration framework inspired by Flyway for Hiver Framework.
+Hiver框架的数据库迁移工具，灵感来自 Flyway。
+Equivalent to: Flyway, Spring Boot Migrations
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 tokio = { workspace = true, features = ["full"] }

@@ -1,7 +1,18 @@
 [package]
 name = "hiver-retry-macros"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
+rust-version.workspace = true
+description = """
+Procedural macros for hiver-retry - @Retryable annotation support.
+hiver-retry 的过程宏 - @Retryable 注解支持。
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [lib]
 proc-macro = true

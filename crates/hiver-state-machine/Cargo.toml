@@ -1,7 +1,19 @@
 [package]
 name = "hiver-state-machine"
 version.workspace = true
+authors.workspace = true
 edition.workspace = true
+rust-version.workspace = true
+description = """
+State machine implementation for Hiver Framework with hierarchical states and transitions.
+Hiver框架的状态机实现，支持分层状态和转换。
+Equivalent to: Spring State Machine
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }

@@ -8,6 +8,11 @@ homepage.workspace = true
 license.workspace = true
 keywords.workspace = true
 categories.workspace = true
+description = """
+Metrics collection and monitoring inspired by Micrometer for Hiver Framework.
+Hiver框架的指标收集与监控，灵感来自 Micrometer。
+Equivalent to: Spring Boot Actuator Metrics, Micrometer
+"""
 
 [dependencies]
 hiver-core = { path = "../hiver-core" }
