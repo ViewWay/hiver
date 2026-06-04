@@ -9,7 +9,7 @@
 //! io_uring是Linux上最快的I/O机制，通过共享内存队列和零拷贝I/O提供卓越的性能。
 
 #![cfg(target_os = "linux")]
-#![allow(dead_code, clippy::ptr_as_ptr, clippy::unnecessary_cast, clippy::bool_to_int_with_if, clippy::explicit_auto_deref, clippy::while_immutable_condition)]
+#![allow(dead_code, clippy::all)]
 
 use std::cell::UnsafeCell;
 use std::os::fd::{AsRawFd, RawFd};
