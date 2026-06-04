@@ -441,7 +441,7 @@ impl EpollDriver {
         // Process events into completion queue
         // 将事件处理到完成队列
         for i in 0..count {
-            let event = unsafe { &event_buffer[i] };
+            let event = &event_buffer[i];
             let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
             let pos = self.completion_pos(tail);
 

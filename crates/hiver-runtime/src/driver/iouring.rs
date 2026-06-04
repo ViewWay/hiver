@@ -315,12 +315,12 @@ impl IoUringDriver {
         // 计算环形缓冲区大小
         let sq_ring_size = unsafe {
             // Size = sq_off.array + sq_entries * sizeof(u32)
-            ((params.sq_off.array as usize) + (params.sq_entries as usize) * 4)
+            (params.sq_off.array as usize) + (params.sq_entries as usize) * 4
         };
 
         let cq_ring_size = unsafe {
             // Size = cq_off.cqes + cq_entries * sizeof(cqe)
-            ((params.cq_off.array as usize) + (params.cq_entries as usize) * 16)
+            (params.cq_off.array as usize) + (params.cq_entries as usize) * 16
         };
 
         let sqes_size = (params.sq_entries as usize) * size_of::<SubmissionQueueEntry>();
@@ -335,10 +335,10 @@ impl IoUringDriver {
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
                 0, // Submission queue ring is at offset 0
-            )
+            ) as *mut u8
         };
 
-        if sq_ring == libc::MAP_FAILED {
+        if sq_ring as *mut libc::c_void == libc::MAP_FAILED {
             unsafe { libc::close(ring_fd) };
             return Err(std::io::Error::last_os_error());
         }
@@ -369,7 +369,7 @@ impl IoUringDriver {
                 libc::PROT_READ | libc::PROT_WRITE,
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
-                0x8000000_usize as libc::off_t, // SQEs are at this offset (IORING_OFF_SQES)
+                0x8000_0000_usize as libc::off_t, // SQEs are at this offset (IORING_OFF_SQES)
             ) as *mut SubmissionQueueEntry
         };
 
