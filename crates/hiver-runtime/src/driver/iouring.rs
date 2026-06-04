@@ -351,12 +351,12 @@ impl IoUringDriver {
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
                 sq_ring_size as libc::off_t, // Completion queue ring is after submission queue
-            )
+            ) as *mut u8
         };
 
-        if cq_ring == libc::MAP_FAILED {
+        if cq_ring as *mut libc::c_void == libc::MAP_FAILED {
             unsafe {
-                libc::munmap(sq_ring, sq_ring_size);
+                libc::munmap(sq_ring as *mut libc::c_void, sq_ring_size);
                 libc::close(ring_fd);
             }
             return Err(std::io::Error::last_os_error());
@@ -370,13 +370,13 @@ impl IoUringDriver {
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
                 0x8000000_usize as libc::off_t, // SQEs are at this offset (IORING_OFF_SQES)
-            )
+            ) as *mut SubmissionQueueEntry
         };
 
-        if sqes == libc::MAP_FAILED {
+        if sqes as *mut libc::c_void == libc::MAP_FAILED {
             unsafe {
-                libc::munmap(sq_ring, sq_ring_size);
-                libc::munmap(cq_ring, cq_ring_size);
+                libc::munmap(sq_ring as *mut libc::c_void, sq_ring_size);
+                libc::munmap(cq_ring as *mut libc::c_void, cq_ring_size);
                 libc::close(ring_fd);
             }
             return Err(std::io::Error::last_os_error());
@@ -518,9 +518,9 @@ impl Drop for IoUringDriver {
         let sqes_size = self.capacity * size_of::<SubmissionQueueEntry>();
 
         unsafe {
-            libc::munmap(self.sq_ring, self.sq_ring_mmap_size);
-            libc::munmap(self.cq_ring, self.cq_ring_mmap_size);
-            libc::munmap(self.sqes as *mut _, sqes_size);
+            libc::munmap(self.sq_ring as *mut libc::c_void, self.sq_ring_mmap_size);
+            libc::munmap(self.cq_ring as *mut libc::c_void, self.cq_ring_mmap_size);
+            libc::munmap(self.sqes as *mut libc::c_void, sqes_size);
             libc::close(self.ring_fd);
         }
     }
@@ -581,7 +581,7 @@ impl Driver for IoUringDriver {
 
         // Submit to kernel
         // 提交到内核
-        let kernel_submitted = self.submit_to_kernel()?;
+        let _kernel_submitted = self.submit_to_kernel()?;
 
         Ok(submitted)
     }
