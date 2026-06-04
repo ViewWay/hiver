@@ -36,7 +36,7 @@ serde_yaml = { workspace = true }
 dotenvy = { workspace = true }
 
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Error handling / 错误处理
 thiserror = { workspace = true }

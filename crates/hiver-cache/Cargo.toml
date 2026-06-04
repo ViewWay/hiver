@@ -37,7 +37,7 @@ workspace = true
 
 [dependencies]
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Caching implementations / 缓存实现
 moka = { workspace = true }
@@ -72,7 +72,7 @@ once_cell = { workspace = true }
 
 # Redis cache backend (optional) / Redis 缓存后端（可选）
 redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"], optional = true }
-hiver-data-redis = { path = "../hiver-data-redis", optional = true }
+hiver-data-redis = { path = "../hiver-data-redis", version = "0.1.0-alpha.6", optional = true }
 
 # MessagePack serialization (optional) / MessagePack 序列化（可选）
 rmp-serde = { version = "1.3", optional = true }

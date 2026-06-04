@@ -37,7 +37,7 @@ http = { workspace = true }
 http-body = { workspace = true }
 
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 # Serialization / 序列化 (Spring Jackson JSON)
 serde = { workspace = true }

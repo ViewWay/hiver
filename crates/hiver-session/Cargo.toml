@@ -28,7 +28,7 @@ mongodb = ["dep:hiver-data-mongodb"]
 
 [dependencies]
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
@@ -46,10 +46,10 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 thiserror = { workspace = true }
 
 # Redis support / Redis支持
-hiver-data-redis = { path = "../hiver-data-redis", optional = true }
+hiver-data-redis = { path = "../hiver-data-redis", version = "0.1.0-alpha.6", optional = true }
 
 # MongoDB support / MongoDB支持
-hiver-data-mongodb = { path = "../hiver-data-mongodb", optional = true }
+hiver-data-mongodb = { path = "../hiver-data-mongodb", version = "0.1.0-alpha.6", optional = true }
 
 [lints]
 workspace = true

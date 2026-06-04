@@ -27,13 +27,13 @@ all = ["runtime", "pool", "cluster"]
 
 [dependencies]
 # Data commons
-hiver-data-commons = { path = "../hiver-data-commons" }
+hiver-data-commons = { path = "../hiver-data-commons", version = "0.1.0-alpha.6" }
 
 # Data macros for Model derive
-hiver-data-macros = { path = "../hiver-data-macros" }
+hiver-data-macros = { path = "../hiver-data-macros", version = "0.1.0-alpha.6" }
 
 # Async runtime (optional)
-hiver-runtime = { path = "../hiver-runtime", optional = true }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6", optional = true }
 
 # Redis driver
 redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"] }

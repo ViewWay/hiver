@@ -28,14 +28,14 @@ workspace = true
 http = { workspace = true }
 
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
-hiver-http = { path = "../hiver-http" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6" }
 
 # Runtime / 运行时 (Spring Task Executor)
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Observability / 可观测性 (Spring Cloud Sleuth, Micrometer)
-hiver-observability = { path = "../hiver-observability" }
+hiver-observability = { path = "../hiver-observability", version = "0.1.0-alpha.6" }
 
 # Core container (IoC) / 核心容器 (Spring ApplicationContext)
 arc-swap = { workspace = true }

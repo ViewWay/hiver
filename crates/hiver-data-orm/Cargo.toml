@@ -27,19 +27,19 @@ all = ["sea-orm", "diesel", "sqlx"]
 
 [dependencies]
 # Data commons
-hiver-data-commons = { path = "../hiver-data-commons" }
+hiver-data-commons = { path = "../hiver-data-commons", version = "0.1.0-alpha.6" }
 
 # Data RDBC for reactive database access
-hiver-data-rdbc = { path = "../hiver-data-rdbc" }
+hiver-data-rdbc = { path = "../hiver-data-rdbc", version = "0.1.0-alpha.6" }
 
 # Transaction support
-hiver-tx = { path = "../hiver-tx" }
+hiver-tx = { path = "../hiver-tx", version = "0.1.0-alpha.6" }
 
 # Data macros for Model derive
-hiver-data-macros = { path = "../hiver-data-macros" }
+hiver-data-macros = { path = "../hiver-data-macros", version = "0.1.0-alpha.6" }
 
 # Async runtime
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Sea ORM 2.0 RC with sqlx 0.8 support
 sea-orm = { version = "2.0.0-rc", optional = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql", "macros"] }
@@ -75,5 +75,5 @@ futures-util = "0.3"
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-hiver-data-rdbc = { path = "../hiver-data-rdbc" }
+hiver-data-rdbc = { path = "../hiver-data-rdbc", version = "0.1.0-alpha.6" }
 

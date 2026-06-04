@@ -10,7 +10,7 @@ repository.workspace = true
 description = "Internationalization (i18n) support for Hiver (equivalent to Spring MessageSource and ResourceBundle)"
 
 [dependencies]
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["sync", "fs", "io-util", "time"] }
 async-trait = { workspace = true }
 tracing = { workspace = true }

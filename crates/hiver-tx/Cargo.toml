@@ -32,7 +32,7 @@ workspace = true
 
 [dependencies]
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Database / 数据库
 sqlx = { workspace = true, optional = true }
@@ -54,7 +54,7 @@ serde = { workspace = true }
 tokio = { workspace = true, features = ["sync"] }
 
 # HTTP / HTTP (for Request extensions)
-hiver-http = { path = "../hiver-http" }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6" }
 
 # Utilities / 工具
 once_cell = { workspace = true }

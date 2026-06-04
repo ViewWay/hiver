@@ -30,13 +30,13 @@ tx-bridge = ["dep:hiver-tx"]
 
 [dependencies]
 # Data commons
-hiver-data-commons = { path = "../hiver-data-commons", features = ["query"] }
+hiver-data-commons = { path = "../hiver-data-commons", version = "0.1.0-alpha.6", features = ["query"] }
 
 # Optional transaction management bridge
-hiver-tx = { path = "../hiver-tx", optional = true }
+hiver-tx = { path = "../hiver-tx", version = "0.1.0-alpha.6", optional = true }
 
 # Async runtime
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Tokio async mutex for transaction handling
 tokio = { version = "1", features = ["sync"] }

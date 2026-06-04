@@ -41,13 +41,13 @@ full = ["compression", "cors", "csrf", "limit", "timeout", "trace", "static", "s
 http = { workspace = true }
 
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
-hiver-http = { path = "../hiver-http" }
-hiver-router = { path = "../hiver-router" }
-hiver-security = { path = "../hiver-security" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6" }
+hiver-router = { path = "../hiver-router", version = "0.1.0-alpha.6" }
+hiver-security = { path = "../hiver-security", version = "0.1.0-alpha.6" }
 
 # Runtime / 运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["rt", "time"] }
 
 # Compression / 压缩 (Spring Content-Encoding, GzipFilter)

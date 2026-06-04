@@ -25,7 +25,7 @@ workspace = true
 
 [dependencies]
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["sync", "time", "fs", "macros", "rt-multi-thread"] }
 
 # HTTP client / HTTP客户端
@@ -65,7 +65,7 @@ etcd-rs = { workspace = true, optional = true }
 
 # Service discovery registration / 服务发现注册
 # Use existing resilience crate
-hiver-resilience = { path = "../hiver-resilience" }
+hiver-resilience = { path = "../hiver-resilience", version = "0.1.0-alpha.6" }
 hex.workspace = true
 
 [features]

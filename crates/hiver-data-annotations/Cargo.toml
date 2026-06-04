@@ -50,7 +50,7 @@ rand = { workspace = true }
 
 # Optional security dependency (for @PreAuthorize macro)
 # 安全依赖（用于 @PreAuthorize 宏）
-hiver-security = { path = "../hiver-security", optional = true }
+hiver-security = { path = "../hiver-security", version = "0.1.0-alpha.6", optional = true }
 
 [features]
 default = []

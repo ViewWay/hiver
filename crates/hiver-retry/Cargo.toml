@@ -16,8 +16,8 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-hiver-resilience = { path = "../hiver-resilience" }
-hiver-retry-macros = { path = "../hiver-retry-macros" }
+hiver-resilience = { path = "../hiver-resilience", version = "0.1.0-alpha.6" }
+hiver-retry-macros = { path = "../hiver-retry-macros", version = "0.1.0-alpha.6" }
 tokio = { workspace = true }
 async-trait = { workspace = true }
 

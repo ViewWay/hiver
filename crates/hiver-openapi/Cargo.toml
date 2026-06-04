@@ -41,8 +41,8 @@ utoipa = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
 
 # Core types / 核心类型
-hiver-http = { path = "../hiver-http", optional = true }
-hiver-core = { path = "../hiver-core" }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6", optional = true }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 # YAML support / YAML支持
 serde_yaml = { workspace = true }

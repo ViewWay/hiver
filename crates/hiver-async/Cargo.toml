@@ -10,7 +10,7 @@ repository.workspace = true
 description = "Async task execution framework for Hiver (equivalent to Spring @Async and TaskExecutor)"
 
 [dependencies]
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["rt", "rt-multi-thread", "sync", "time", "macros"] }
 async-trait = { workspace = true }
 tracing = { workspace = true }

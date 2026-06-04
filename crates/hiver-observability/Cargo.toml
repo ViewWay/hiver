@@ -70,8 +70,8 @@ time = { workspace = true }
 chrono = { workspace = true }
 
 # Runtime / 运行时
-hiver-runtime = { path = "../hiver-runtime" }
-hiver-config = { path = "../hiver-config", optional = true }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
+hiver-config = { path = "../hiver-config", version = "0.1.0-alpha.6", optional = true }
 
 # HTTP types / HTTP类型
 http = { workspace = true }

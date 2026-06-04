@@ -21,7 +21,7 @@ full = ["query"]
 
 [dependencies]
 # Async runtime
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Error handling
 thiserror = { workspace = true }

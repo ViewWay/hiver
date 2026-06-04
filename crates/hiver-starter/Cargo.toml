@@ -82,27 +82,27 @@ dev = ["full"]
 
 [dependencies]
 # 框架核心
-hiver-macros = { path = "../hiver-macros", optional = true }
-hiver-config = { path = "../hiver-config", optional = true }
-hiver-runtime = { path = "../hiver-runtime", optional = true }
-hiver-observability = { path = "../hiver-observability", optional = true, features = ["hiver-format"] }
+hiver-macros = { path = "../hiver-macros", version = "0.1.0-alpha.6", optional = true }
+hiver-config = { path = "../hiver-config", version = "0.1.0-alpha.6", optional = true }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6", optional = true }
+hiver-observability = { path = "../hiver-observability", version = "0.1.0-alpha.6", optional = true, features = ["hiver-format"] }
 
 # Web
-hiver-http = { path = "../hiver-http", optional = true }
-hiver-router = { path = "../hiver-router", optional = true }
-hiver-middleware = { path = "../hiver-middleware", optional = true }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6", optional = true }
+hiver-router = { path = "../hiver-router", version = "0.1.0-alpha.6", optional = true }
+hiver-middleware = { path = "../hiver-middleware", version = "0.1.0-alpha.6", optional = true }
 
 # 其他模块
-hiver-security = { path = "../hiver-security", optional = true }
-hiver-data-rdbc = { path = "../hiver-data-rdbc", optional = true }
-hiver-tx = { path = "../hiver-tx", optional = true }
+hiver-security = { path = "../hiver-security", version = "0.1.0-alpha.6", optional = true }
+hiver-data-rdbc = { path = "../hiver-data-rdbc", version = "0.1.0-alpha.6", optional = true }
+hiver-tx = { path = "../hiver-tx", version = "0.1.0-alpha.6", optional = true }
 sqlx = { workspace = true, optional = true, features = ["runtime-tokio", "postgres"] }
-hiver-cache = { path = "../hiver-cache", optional = true }
-hiver-schedule = { path = "../hiver-schedule", optional = true }
-hiver-ws = { path = "../hiver-ws", optional = true }
-hiver-batch = { path = "../hiver-batch", optional = true }
-hiver-validation = { path = "../hiver-validation", optional = true }
-hiver-actuator = { path = "../hiver-actuator", optional = true }
+hiver-cache = { path = "../hiver-cache", version = "0.1.0-alpha.6", optional = true }
+hiver-schedule = { path = "../hiver-schedule", version = "0.1.0-alpha.6", optional = true }
+hiver-ws = { path = "../hiver-ws", version = "0.1.0-alpha.6", optional = true }
+hiver-batch = { path = "../hiver-batch", version = "0.1.0-alpha.6", optional = true }
+hiver-validation = { path = "../hiver-validation", version = "0.1.0-alpha.6", optional = true }
+hiver-actuator = { path = "../hiver-actuator", version = "0.1.0-alpha.6", optional = true }
 
 # 外部依赖
 serde = { workspace = true }

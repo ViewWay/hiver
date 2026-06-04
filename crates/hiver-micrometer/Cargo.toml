@@ -15,7 +15,7 @@ Equivalent to: Spring Boot Actuator Metrics, Micrometer
 """
 
 [dependencies]
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 tokio = { workspace = true, features = ["full"] }
 

@@ -16,7 +16,7 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 async-trait = "0.1"

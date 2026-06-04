@@ -25,7 +25,7 @@ workspace = true
 
 [dependencies]
 # Core framework / 核心框架
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 # Error handling / 错误处理
 thiserror = { workspace = true }

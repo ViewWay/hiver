@@ -28,7 +28,7 @@ workspace = true
 
 [dependencies]
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Serialization / 序列化
 serde = { workspace = true }

@@ -22,7 +22,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 serde = { workspace = true, features = ["derive"] }
 
 # Async runtime / 异步运行时
@@ -48,7 +48,7 @@ dashmap = "6.1"
 tracing = { workspace = true }
 
 # Macros / 宏
-hiver-events-macros = { path = "../hiver-events-macros" }
+hiver-events-macros = { path = "../hiver-events-macros", version = "0.1.0-alpha.6" }
 
 [lints]
 workspace = true

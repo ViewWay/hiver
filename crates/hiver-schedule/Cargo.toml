@@ -26,12 +26,12 @@ workspace = true
 [dependencies]
 # Async runtime / 异步运行时
 # Equivalent to: Spring TaskExecutor, @Async
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["sync", "time", "rt"] }
 
 # Macros / 宏
 # Equivalent to: Spring @Scheduled annotation processing
-hiver-macros = { path = "../hiver-macros" }
+hiver-macros = { path = "../hiver-macros", version = "0.1.0-alpha.6" }
 
 # Async traits / 异步trait
 # Equivalent to: Spring @Async method support

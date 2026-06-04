@@ -48,7 +48,7 @@ alloy-network = { workspace = true, optional = true }
 alloy-rpc-types = { workspace = true, optional = true }
 
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # HTTP / HTTP (Spring RestTemplate, WebClient)
 http = { workspace = true }

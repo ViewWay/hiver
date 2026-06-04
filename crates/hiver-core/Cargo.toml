@@ -50,7 +50,7 @@ anyhow = { workspace = true }
 error-stack = { workspace = true }
 
 # Async runtime / 异步运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Async traits / 异步trait
 async-trait = { workspace = true }

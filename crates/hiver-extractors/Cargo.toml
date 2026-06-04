@@ -37,8 +37,8 @@ full = ["json", "form", "query", "path", "header", "cookie", "multipart", "valid
 http = { workspace = true }
 
 # Core types / 核心类型
-hiver-core = { path = "../hiver-core" }
-hiver-http = { path = "../hiver-http" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
+hiver-http = { path = "../hiver-http", version = "0.1.0-alpha.6" }
 
 # Serialization / 序列化 (Spring Jackson, @RequestBody)
 serde = { workspace = true }

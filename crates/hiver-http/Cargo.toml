@@ -50,8 +50,8 @@ tokio = { workspace = true, features = ["net", "io-util", "time"], optional = tr
 bytes = { workspace = true }
 
 # Runtime / 运行时
-hiver-runtime = { path = "../hiver-runtime" }
-hiver-core = { path = "../hiver-core" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 # Serialization / 序列化 (Spring Jackson JSON)
 serde = { workspace = true }

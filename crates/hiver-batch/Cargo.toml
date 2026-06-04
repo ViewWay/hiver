@@ -10,7 +10,7 @@ repository.workspace = true
 description = "Batch processing framework for Hiver (equivalent to Spring Batch)"
 
 [dependencies]
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["sync", "fs", "time", "rt"] }
 async-trait = { workspace = true }
 tracing = { workspace = true }

@@ -56,7 +56,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 
 # Runtime / 运行时
-hiver-runtime = { path = "../hiver-runtime" }
+hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 inventory = { workspace = true }
 
 [lints]
@@ -64,6 +64,6 @@ workspace = true
 
 [dev-dependencies]
 # Testing / 测试 (Spring Test)
-hiver-core = { path = "../hiver-core" }
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 trybuild = { workspace = true }
