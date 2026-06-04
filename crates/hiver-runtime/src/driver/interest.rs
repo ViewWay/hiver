@@ -1,6 +1,7 @@
 //! Interest types for file descriptor registration
 //! 文件描述符注册的兴趣类型
 
+#[allow(unused_imports)]
 use std::os::fd::RawFd;
 
 /// Interest types for file descriptor registration

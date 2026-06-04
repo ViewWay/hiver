@@ -180,7 +180,7 @@ impl WorkStealingScheduler {
     /// Get the number of workers
     /// 获取工作器数量
     #[must_use]
-    pub const fn num_workers(&self) -> usize {
+    pub fn num_workers(&self) -> usize {
         self.workers.len()
     }
 }
