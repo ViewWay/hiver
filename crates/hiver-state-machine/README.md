@@ -177,6 +177,14 @@ cargo test -p hiver-state-machine
 - `thiserror`: 错误处理
 - `async-trait`: 异步特征
 
+
+## Installation / 安装
+
+```toml
+[dependencies]
+hiver-state-machine = "0.1"
+```
+
 ## 许可证
 
 MIT OR Apache-2.0

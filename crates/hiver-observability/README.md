@@ -486,3 +486,5 @@ Hiver Observability is inspired by:
 **Built with ❤️ for observability**
 
 **为可观测性构建 ❤️**
+
+**Spring Equivalence**: Spring Boot Actuator, Micrometer, Spring Cloud Sleuth

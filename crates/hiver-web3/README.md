@@ -127,3 +127,5 @@ let tx_hash = rpc.send_transaction(signed).await?;
 **Built with ❤️ for Web3**
 
 **为Web3构建 ❤️**
+
+**Spring Equivalence**: There is no direct Spring equivalent - native Web3 support / 无直接 Spring 等价物 - 原生 Web3 支持

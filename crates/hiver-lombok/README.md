@@ -585,3 +585,5 @@ at your option. / 由您选择。
 **Built with ❤️ for Rust developers transitioning from Java**
 
 **为从 Java 转向 Rust 的开发者构建 ❤️**
+
+**Spring Equivalence**: Lombok
