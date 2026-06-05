@@ -9,26 +9,8 @@ on:
       - "v*"
 
 jobs:
-  version-info:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - name: Get releasing version
-        working-directory: .
-        run: echo NEXT_VERSION=$(sed -nE 's/^\s*version = "(.*?)"/\1/p' Cargo.toml) >> $GITHUB_ENV
-
-      - name: Check published version
-        run: echo PREV_VERSION=$(cargo search hiver-runtime --limit 1 | sed -nE 's/^[^"]*"//; s/".*//p') >> $GITHUB_ENV
-
   publish:
     runs-on: ubuntu-latest
-    needs: [version-info]
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -36,12 +18,32 @@ jobs:
         package:
           # Publish order follows dependency tiers (dependencies first).
           # 发布顺序遵循依赖层级（被依赖的先发布）。
+          # NOTE: max-parallel: 1 ensures strict sequential publishing.
+          # 注意：max-parallel: 1 确保严格顺序发布。
 
-          # Tier 0: No internal dependencies / 无内部依赖
+          # Tier 0: No internal hiver deps / 无内部 hiver 依赖
           - crate: hiver-runtime
             path: crates/hiver-runtime
+          - crate: hiver-exceptions
+            path: crates/hiver-exceptions
+          - crate: hiver-response
+            path: crates/hiver-response
+          - crate: hiver-cloud
+            path: crates/hiver-cloud
+          - crate: hiver-state-machine
+            path: crates/hiver-state-machine
+          - crate: hiver-vault
+            path: crates/hiver-vault
+          - crate: hiver-spel
+            path: crates/hiver-spel
+          - crate: hiver-ai
+            path: crates/hiver-ai
+          - crate: hiver-aop
+            path: crates/hiver-aop
+          - crate: hiver-grpc
+            path: crates/hiver-grpc
 
-          # Tier 1: Depend on runtime only / 仅依赖 runtime
+          # Tier 1: Depend on Tier 0 or already-published crates / 依赖 Tier 0 或已发布
           - crate: hiver-core
             path: crates/hiver-core
           - crate: hiver-config
@@ -62,38 +64,44 @@ jobs:
             path: crates/hiver-amqp
           - crate: hiver-modulith
             path: crates/hiver-modulith
-          - crate: hiver-cache
-            path: crates/hiver-cache
-          - crate: hiver-state-machine
-            path: crates/hiver-state-machine
           - crate: hiver-observability
             path: crates/hiver-observability
-          - crate: hiver-ai
-            path: crates/hiver-ai
-          - crate: hiver-grpc
-            path: crates/hiver-grpc
           - crate: hiver-ws
             path: crates/hiver-ws
+          - crate: hiver-async
+            path: crates/hiver-async
+          - crate: hiver-batch
+            path: crates/hiver-batch
+          - crate: hiver-micrometer
+            path: crates/hiver-micrometer
+          - crate: hiver-i18n
+            path: crates/hiver-i18n
+          - crate: hiver-ldap
+            path: crates/hiver-ldap
+          - crate: hiver-integration
+            path: crates/hiver-integration
+          - crate: hiver-flyway
+            path: crates/hiver-flyway
+          - crate: hiver-data-redis
+            path: crates/hiver-data-redis
+          - crate: hiver-data-mongodb
+            path: crates/hiver-data-mongodb
 
-          # Tier 2: Depend on core + others / 依赖 core 及其他
+          # Tier 2: Depend on Tier 0-1 / 依赖 Tier 0-1
           - crate: hiver-http
             path: crates/hiver-http
           - crate: hiver-router
             path: crates/hiver-router
           - crate: hiver-extractors
             path: crates/hiver-extractors
-          - crate: hiver-response
-            path: crates/hiver-response
           - crate: hiver-middleware
             path: crates/hiver-middleware
-          - crate: hiver-resilience
-            path: crates/hiver-resilience
-          - crate: hiver-exceptions
-            path: crates/hiver-exceptions
-          - crate: hiver-validation
-            path: crates/hiver-validation
           - crate: hiver-multipart
             path: crates/hiver-multipart
+          - crate: hiver-resilience
+            path: crates/hiver-resilience
+          - crate: hiver-validation
+            path: crates/hiver-validation
           - crate: hiver-events
             path: crates/hiver-events
           - crate: hiver-actuator
@@ -104,52 +112,22 @@ jobs:
             path: crates/hiver-hateoas
           - crate: hiver-websocket-stomp
             path: crates/hiver-websocket-stomp
-          - crate: hiver-i18n
-            path: crates/hiver-i18n
-          - crate: hiver-async
-            path: crates/hiver-async
-          - crate: hiver-batch
-            path: crates/hiver-batch
-          - crate: hiver-micrometer
-            path: crates/hiver-micrometer
-          - crate: hiver-integration
-            path: crates/hiver-integration
-          - crate: hiver-ldap
-            path: crates/hiver-ldap
-          - crate: hiver-vault
-            path: crates/hiver-vault
-          - crate: hiver-data-rdbc
-            path: crates/hiver-data-rdbc
-          - crate: hiver-data-redis
-            path: crates/hiver-data-redis
-          - crate: hiver-data-mongodb
-            path: crates/hiver-data-mongodb
           - crate: hiver-retry
             path: crates/hiver-retry
           - crate: hiver-agent
             path: crates/hiver-agent
           - crate: hiver-shell
             path: crates/hiver-shell
-          - crate: hiver-spel
-            path: crates/hiver-spel
-
-          # Tier 3: Depend on multiple layers / 依赖多层
-          - crate: hiver-data-orm
-            path: crates/hiver-data-orm
-          - crate: hiver-openapi
-            path: crates/hiver-openapi
-          - crate: hiver-session
-            path: crates/hiver-session
-          - crate: hiver-cloud
-            path: crates/hiver-cloud
+          - crate: hiver-data-rdbc
+            path: crates/hiver-data-rdbc
+          - crate: hiver-cache
+            path: crates/hiver-cache
           - crate: hiver-data-annotations
             path: crates/hiver-data-annotations
-          - crate: hiver-aop
-            path: crates/hiver-aop
-          - crate: hiver-flyway
-            path: crates/hiver-flyway
+          - crate: hiver-openapi
+            path: crates/hiver-openapi
 
-          # Tier 3 (proc-macro crates): Published after their runtime deps.
+          # Tier 2 (proc-macro crates): Published after their runtime deps.
           # proc-macro crate 在运行时依赖之后发布。
           - crate: hiver-macros
             path: crates/hiver-macros
@@ -166,12 +144,18 @@ jobs:
           - crate: hiver-lombok
             path: crates/hiver-lombok
 
+          # Tier 3: Depend on multiple layers / 依赖多层
+          - crate: hiver-session
+            path: crates/hiver-session
+          - crate: hiver-data-orm
+            path: crates/hiver-data-orm
+          - crate: hiver-cli
+            path: crates/hiver-cli
+
           # Tier 4: Aggregation crates (depend on many others).
           # 聚合 crate（依赖大量其他 crate）。
           - crate: hiver-test
-          - hiver-cli
             path: crates/hiver-test
-          - hiver-cli
           - crate: hiver-starter
             path: crates/hiver-starter
 
@@ -194,19 +178,10 @@ jobs:
         if: env.NEXT_VERSION != env.PREV_VERSION
         run: cargo login ${{ secrets.CRATES_TOKEN }}
 
-      - name: Cargo package
-        if: env.NEXT_VERSION != env.PREV_VERSION
-        working-directory: ${{ matrix.package.path }}
-        run: |
-          echo "Releasing version: $NEXT_VERSION"
-          echo "Published version: $PREV_VERSION"
-          echo "Cargo Packaging..."
-          cargo package
-
       - name: Publish ${{ matrix.package.crate }}
         if: env.NEXT_VERSION != env.PREV_VERSION
         working-directory: ${{ matrix.package.path }}
         run: |
-          echo "Cargo Publishing..."
+          echo "Publishing ${{ matrix.package.crate }} $NEXT_VERSION (was: $PREV_VERSION)"
           cargo publish --no-verify
-          echo "New version $NEXT_VERSION has been published"
+          echo "Published ${{ matrix.package.crate }} $NEXT_VERSION"
