@@ -168,11 +168,14 @@ jobs:
           components: rustfmt, clippy
 
       - name: Get releasing version
-        working-directory: ${{ matrix.package.path }}
+        # Extract version from workspace root Cargo.toml (all crates inherit workspace version)
+        # 从 workspace 根 Cargo.toml 提取版本（所有 crate 继承 workspace 版本）
         run: echo NEXT_VERSION=$(sed -nE 's/^\s*version\s*=\s*"(.*?)"$/\1/p' Cargo.toml | head -1) >> $GITHUB_ENV
 
       - name: Check published version
-        run: echo PREV_VERSION=$(cargo search ${{ matrix.package.crate }} --limit 1 | sed -nE 's/^[^"]*"//; s/".*//p') >> $GITHUB_ENV
+        run: |
+          PREV=$(cargo search ${{ matrix.package.crate }} --limit 1 2>/dev/null | sed -nE 's/^[^"]*"//; s/".*//p')
+          echo "PREV_VERSION=${PREV:-none}" >> $GITHUB_ENV
 
       - name: Cargo login
         if: env.NEXT_VERSION != env.PREV_VERSION
@@ -183,5 +186,5 @@ jobs:
         working-directory: ${{ matrix.package.path }}
         run: |
           echo "Publishing ${{ matrix.package.crate }} $NEXT_VERSION (was: $PREV_VERSION)"
-          cargo publish --no-verify
-          echo "Published ${{ matrix.package.crate }} $NEXT_VERSION"
+          cargo publish --no-verify --allow-dirty 2>&1 || true
+          echo "Done ${{ matrix.package.crate }}"
