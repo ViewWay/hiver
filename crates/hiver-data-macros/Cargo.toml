@@ -30,6 +30,5 @@ proc-macro-error = { workspace = true }
 async-trait = { workspace = true }
 
 [dev-dependencies]
-hiver-data-orm = { path = "../hiver-data-orm", version = "0.1.0-alpha.6" }
 hiver-data-commons = { path = "../hiver-data-commons", version = "0.1.0-alpha.6" }
 hiver-data-rdbc = { path = "../hiver-data-rdbc", version = "0.1.0-alpha.6" }
