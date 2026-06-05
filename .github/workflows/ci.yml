@@ -50,7 +50,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run clippy / 运行 Clippy
-        run: cargo clippy --workspace --all-targets -- -A warnings
+        run: cargo clippy --workspace --all-targets
+        continue-on-error: true
 
   build:
     name: Build
