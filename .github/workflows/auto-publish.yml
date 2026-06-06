@@ -13,10 +13,10 @@ permissions:
   contents: read
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [main]
+  # Disabled: conflicts with release.yml tag-based publishing.
+  # Use release.yml (push v* tag) for crate publishing.
+  # 已禁用：与 release.yml 的 tag 发布冲突。使用 release.yml 推送 v* tag 发布。
+  workflow_dispatch:
 
 jobs:
   version-check:
