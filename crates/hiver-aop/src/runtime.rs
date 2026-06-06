@@ -366,8 +366,21 @@ impl Default for AdviceChain
 /// 表示切点表达式
 ///
 /// Pointcut expressions define join points where advice should be applied.
+/// Supports: `execution()`, `within()`, `@annotation()`, `&&`, `||`
 ///
 /// 切点表达式定义应该应用通知的连接点。
+/// 支持：`execution()`、`within()`、`@annotation()`、`&&`、`||`
+///
+/// # Syntax / 语法
+///
+/// ```text
+/// execution(RET_TYPE PACKAGE..CLASS.METHOD(PARAMS))
+/// within(FULLY_QUALIFIED_CLASS)
+/// @annotation(FULLY_QUALIFIED_ANNOTATION)
+/// ```
+///
+/// Wildcards: `*` matches any single segment, `..` matches zero or more segments.
+/// 通配符：`*` 匹配单个段，`..` 匹配零或多个段。
 #[derive(Debug, Clone)]
 pub struct PointcutExpression
 {
@@ -378,6 +391,10 @@ pub struct PointcutExpression
     /// Parsed expression components
     /// 解析后的表达式组件
     components: Vec<ExpressionComponent>,
+
+    /// Whether this expression uses AND semantics (all must match)
+    /// 此表达式是否使用 AND 语义（所有组件必须匹配）
+    is_conjunction: bool,
 }
 
 /// Components of a pointcut expression
@@ -385,38 +402,29 @@ pub struct PointcutExpression
 #[derive(Debug, Clone, PartialEq)]
 enum ExpressionComponent
 {
-    /// Execution pointcut
-    /// 执行切点
+    /// Execution pointcut: matches method execution
+    /// 执行切点：匹配方法执行
     Execution
     {
-        /// Package pattern
-        /// 包模式
+        /// Package pattern (may contain `..` and `*`)
+        /// 包模式（可包含 `..` 和 `*`）
         package: String,
-        /// Class pattern
-        /// 类模式
+        /// Class pattern (may be `*`)
+        /// 类模式（可为 `*`）
         class: String,
-        /// Method pattern
-        /// 方法模式
+        /// Method pattern (may be `*`)
+        /// 方法模式（可为 `*`）
         method: String,
         /// Parameter pattern
         /// 参数模式
         params: String,
     },
-    /// Within pointcut
-    /// Within 切点
+    /// Within pointcut: matches type boundary
+    /// Within 切点：匹配类型边界
     Within(String),
-    /// Annotation pointcut
-    /// 注解切点
+    /// Annotation pointcut: matches annotated elements
+    /// 注解切点：匹配带注解的元素
     Annotation(String),
-    /// AND operation
-    /// AND 操作
-    And,
-    /// OR operation
-    /// OR 操作
-    Or,
-    /// NOT operation
-    /// NOT 操作
-    Not,
 }
 
 impl PointcutExpression
@@ -425,73 +433,12 @@ impl PointcutExpression
     /// 创建新的切点表达式
     pub fn new(expression: String) -> Self
     {
-        let components = Self::parse_expression(&expression);
+        let (components, is_conjunction) = Self::parse_expression(&expression);
         Self {
             expression,
             components,
+            is_conjunction,
         }
-    }
-
-    /// Parse a pointcut expression
-    /// 解析切点表达式
-    fn parse_expression(expr: &str) -> Vec<ExpressionComponent>
-    {
-        let mut components = Vec::new();
-
-        // Parse execution expressions
-        // 解析 execution 表达式
-        if let Some(start) = expr.find("execution(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
-                let full_expr = &expr[start..=(start + end)];
-                let _inner = &full_expr[11..full_expr.len() - 1]; // Remove "execution(" and ")"
-
-                // Parse: package..class.method(params)
-                // 简化的解析逻辑
-                components.push(ExpressionComponent::Execution {
-                    package: "*".to_string(),
-                    class: "*".to_string(),
-                    method: "*".to_string(),
-                    params: "..".to_string(),
-                });
-            }
-        }
-
-        // Parse within expressions
-        // 解析 within 表达式
-        if let Some(start) = expr.find("within(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
-                let inner = &expr[start + 7..start + end];
-                components.push(ExpressionComponent::Within(inner.to_string()));
-            }
-        }
-
-        // Parse @annotation expressions
-        // 解析 @annotation 表达式
-        if let Some(start) = expr.find("@annotation(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
-                let inner = &expr[start + 13..start + end];
-                components.push(ExpressionComponent::Annotation(inner.to_string()));
-            }
-        }
-
-        // Parse logical operators
-        // 解析逻辑运算符
-        if expr.contains(" && ")
-        {
-            components.push(ExpressionComponent::And);
-        }
-        else if expr.contains(" || ")
-        {
-            components.push(ExpressionComponent::Or);
-        }
-
-        components
     }
 
     /// Get the expression string
@@ -501,42 +448,280 @@ impl PointcutExpression
         &self.expression
     }
 
-    /// Check if this pointcut matches a join point
-    /// 检查此切点是否匹配连接点
+    /// Parse a pointcut expression into components.
+    /// 解析切点表达式为组件。
+    fn parse_expression(expr: &str) -> (Vec<ExpressionComponent>, bool)
+    {
+        let expr = expr.trim();
+
+        // Handle OR: split and parse each branch independently
+        if expr.contains(" || ")
+        {
+            let components: Vec<ExpressionComponent> = expr
+                .split(" || ")
+                .flat_map(|part| Self::parse_single(part.trim()))
+                .collect();
+            return (components, false); // OR: any match is sufficient
+        }
+
+        // Handle AND: parse each branch, all must match
+        if expr.contains(" && ")
+        {
+            let mut components = Vec::new();
+            for part in expr.split(" && ")
+            {
+                components.extend(Self::parse_single(part.trim()));
+            }
+            return (components, true); // AND: all must match
+        }
+
+        // Single expression
+        (Self::parse_single(expr), false)
+    }
+
+    /// Parse a single pointcut designator (no logical operators).
+    /// 解析单个切点指示符（无逻辑运算符）。
+    fn parse_single(expr: &str) -> Vec<ExpressionComponent>
+    {
+        let mut components = Vec::new();
+
+        if let Some(inner) = Self::extract_parens(expr, "execution(")
+        {
+            components.push(Self::parse_execution(&inner));
+        }
+
+        if let Some(inner) = Self::extract_parens(expr, "within(")
+        {
+            components.push(ExpressionComponent::Within(inner.to_string()));
+        }
+
+        if let Some(inner) = Self::extract_parens(expr, "@annotation(")
+        {
+            components.push(ExpressionComponent::Annotation(inner.to_string()));
+        }
+
+        components
+    }
+
+    /// Parse execution() inner content: `RET_TYPE QUALIFIED_NAME(PARAMS)`
+    /// 解析 execution() 内部内容：`返回类型 全限定名(参数)`
+    fn parse_execution(inner: &str) -> ExpressionComponent
+    {
+        // Split at '(' to separate pattern from params
+        let (pattern_part, params) = if let Some(pos) = inner.find('(')
+        {
+            (&inner[..pos], inner[pos + 1..].trim_end_matches(')').to_string())
+        }
+        else
+        {
+            (inner, String::new())
+        };
+
+        // Split into ret_type and qualified_name
+        let mut parts = pattern_part.splitn(2, ' ');
+        let _ret_type = parts.next().unwrap_or("*");
+        let qualified = parts.next().unwrap_or("").trim();
+
+        // Split qualified name: last segment is method, second-to-last is class, rest is package
+        let segments: Vec<&str> = qualified.split('.').collect();
+        let (package, class, method) = match segments.len()
+        {
+            0 => (String::new(), String::new(), String::new()),
+            1 => (String::new(), String::new(), segments[0].to_string()),
+            2 =>
+            {
+                let (first, second) = (segments[0], segments[1]);
+                // Check if first segment is a package wildcard (ends with ..)
+                if first == "*" || first.is_empty()
+                {
+                    (String::new(), first.to_string(), second.to_string())
+                }
+                else
+                {
+                    (first.to_string(), String::new(), second.to_string())
+                }
+            },
+            _ =>
+            {
+                let method = segments[segments.len() - 1].to_string();
+                let class = segments[segments.len() - 2].to_string();
+                let pkg = segments[..segments.len() - 2].join(".");
+                (pkg, class, method)
+            },
+        };
+
+        ExpressionComponent::Execution {
+            package,
+            class,
+            method,
+            params,
+        }
+    }
+
+    /// Extract content between `prefix(` and `)`.
+    /// 提取 `prefix(` 和 `)` 之间的内容。
+    fn extract_parens<'a>(expr: &'a str, prefix: &str) -> Option<&'a str>
+    {
+        let start = expr.find(prefix)?;
+        let content_start = start + prefix.len();
+        let end = expr[content_start..].find(')')?;
+        Some(&expr[content_start..content_start + end])
+    }
+
+    /// Check if this pointcut matches a join point.
+    /// 检查此切点是否匹配连接点。
     pub fn matches(&self, join_point: &JoinPoint) -> bool
     {
-        for component in &self.components
+        if self.components.is_empty()
         {
-            match component
+            return false;
+        }
+
+        if self.is_conjunction
+        {
+            // AND: every component must match
+            self.components.iter().all(|c| Self::matches_component(c, join_point))
+        }
+        else
+        {
+            // OR / single: any component matching is sufficient
+            self.components.iter().any(|c| Self::matches_component(c, join_point))
+        }
+    }
+
+    /// Check if a single component matches a join point.
+    /// 检查单个组件是否匹配连接点。
+    fn matches_component(component: &ExpressionComponent, join_point: &JoinPoint) -> bool
+    {
+        match component
+        {
+            ExpressionComponent::Execution {
+                package,
+                class,
+                method,
+                params: _,
+            } =>
             {
-                ExpressionComponent::Execution { method, .. } =>
+                // Method matching
+                if *method != "*" && method != join_point.method_name()
                 {
-                    // Simple wildcard matching
-                    // 简单的通配符匹配
-                    if *method == "*" || *method == join_point.method_name()
-                    {
-                        return true;
-                    }
-                },
-                ExpressionComponent::Within(class) =>
+                    return false;
+                }
+
+                let target = join_point.target_class();
+
+                // Class matching
+                if *class != "*"
+                    && !class.is_empty()
+                    && !Self::matches_segment(class, target)
                 {
-                    if *class == "*" || *class == join_point.target_class()
-                    {
-                        return true;
-                    }
-                },
-                ExpressionComponent::And | ExpressionComponent::Or | ExpressionComponent::Not =>
+                    return false;
+                }
+
+                // Package matching: skip if target has no package prefix
+                // 包匹配：如果 target 没有包前缀则跳过
+                if package.is_empty() || *package == "*"
                 {
-                    // Logical operators would need more complex evaluation
-                    // 逻辑运算符需要更复杂的评估
-                },
-                _ =>
-                {},
+                    return true;
+                }
+                if !target.contains('.')
+                {
+                    // Target is a simple class name (no package), skip package check
+                    // target 是简单类名（无包名），跳过包检查
+                    return true;
+                }
+
+                // Handle .. wildcard in package pattern
+                // 处理包模式中的 .. 通配符
+                let pkg_normalized = package.trim_end_matches('.');
+                if pkg_normalized.is_empty() || pkg_normalized == "*"
+                {
+                    true
+                }
+                else if pkg_normalized.contains("..")
+                {
+                    // "com.example.." means com.example and any sub-packages
+                    let prefix = pkg_normalized.replace("..", ".");
+                    let prefix = prefix.trim_end_matches('.');
+                    target.starts_with(prefix)
+                }
+                else
+                {
+                    target.starts_with(pkg_normalized)
+                        || target.starts_with(&format!("{}.", pkg_normalized))
+                }
+            },
+            ExpressionComponent::Within(pattern) =>
+            {
+                if *pattern == "*"
+                {
+                    return true;
+                }
+                let target = join_point.target_class();
+                target == *pattern
+                    || target.ends_with(&format!(".{}", pattern))
+                    || Self::matches_wildcard(pattern, target)
+            },
+            ExpressionComponent::Annotation(_ann) =>
+            {
+                // Cannot check annotations at runtime without metadata
+                // 无法在没有元数据的情况下在运行时检查注解
+                false
+            },
+        }
+    }
+
+    /// Check if a pattern segment matches a target string.
+    /// `*` matches any single name segment.
+    fn matches_segment(pattern: &str, target: &str) -> bool
+    {
+        if pattern == target
+        {
+            return true;
+        }
+        // Check if target ends with ".Class" where Class matches the pattern
+        if let Some(dot_pos) = target.rfind('.')
+        {
+            &target[dot_pos + 1..] == pattern
+        }
+        else
+        {
+            false
+        }
+    }
+
+    /// Check if a wildcard pattern (with `*`) matches a target.
+    fn matches_wildcard(pattern: &str, target: &str) -> bool
+    {
+        if !pattern.contains('*')
+        {
+            return false;
+        }
+        let parts: Vec<&str> = pattern.split('*').collect();
+        let mut idx = 0;
+        for (i, part) in parts.iter().enumerate()
+        {
+            if part.is_empty()
+            {
+                continue;
+            }
+            if let Some(pos) = target[idx..].find(part)
+            {
+                idx += pos + part.len();
+            }
+            else
+            {
+                return false;
+            }
+            if i == 0 && !pattern.starts_with('*') && target[idx..].find(part) != Some(0)
+            {
+                return false;
             }
         }
-        false
+        true
     }
 }
+
 
 // ============================================================================
 // Advice Types / 通知类型
