@@ -1115,6 +1115,8 @@ mod tests
         initialized: bool,
     }
 
+    impl Bean for UserRepository {}
+
     impl PostConstruct for UserRepository
     {
         fn post_construct(&self) -> Result<()>
@@ -1137,11 +1139,15 @@ mod tests
         user_count: u32,
     }
 
+    impl Bean for UserService {}
+
     #[derive(Debug, Default)]
     struct EmailService
     {
         sent_count: u32,
     }
+
+    impl Bean for EmailService {}
 
     #[derive(Debug)]
     struct CacheService
@@ -1149,8 +1155,12 @@ mod tests
         hits: u64,
     }
 
+    impl Bean for CacheService {}
+
     #[derive(Debug, Default)]
     struct AuditService;
+
+    impl Bean for AuditService {}
 
     // ── Container::new / Container::default ────────────────────────────
 

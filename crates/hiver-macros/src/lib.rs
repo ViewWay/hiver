@@ -91,6 +91,12 @@ pub fn into_response_derive(input: TokenStream) -> TokenStream
     derive::into_response(input)
 }
 
+#[proc_macro_derive(Bean)]
+pub fn bean_derive(input: TokenStream) -> TokenStream
+{
+    derive::bean_derive(input)
+}
+
 // ============================================================================
 // Spring stereotype macros (hiver_main, main, controller, service, etc.)
 // ============================================================================

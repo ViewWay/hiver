@@ -71,6 +71,35 @@ pub fn from_request(input: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
+/// Derive macro for Bean trait
+/// Bean trait 的派生宏
+///
+/// Marks a type as a Spring-managed component (equivalent to `@Component`).
+/// 标记类型为 Spring 管理的组件（等价于 `@Component`）。
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use hiver_macros::Bean;
+///
+/// #[derive(Bean)]
+/// struct UserService {
+///     name: String,
+/// }
+/// ```
+pub fn bean_derive(input: TokenStream) -> TokenStream
+{
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+
+    let expanded = quote! {
+        #[automatically_derived]
+        impl ::hiver_core::Bean for #name {}
+    };
+
+    TokenStream::from(expanded)
+}
+
 /// Derive macro for IntoResponse trait
 /// IntoResponse trait的派生宏
 ///
