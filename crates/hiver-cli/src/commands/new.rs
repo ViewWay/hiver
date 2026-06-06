@@ -7,7 +7,7 @@ use console::style;
 use dialoguer::MultiSelect;
 use indicatif::{ProgressBar, ProgressStyle};
 
-use crate::{cli::NewArgs, templates::project};
+use crate::{cli::NewArgs, templates::{arch::Architecture, project}};
 
 /// Module definitions with display names and feature mappings.
 /// 模块定义，包含显示名称和 feature 映射。
@@ -28,6 +28,16 @@ const MODULES: &[(&str, &str, &str)] = &[
 /// 执行 `hiver new` 命令。
 pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
 {
+    // Validate architecture.
+    // 验证架构。
+    let arch = Architecture::from_str_opt(&args.arch).ok_or_else(|| {
+        format!(
+            "Unknown architecture '{}'. Valid: {}",
+            args.arch,
+            Architecture::valid_names()
+        )
+    })?;
+
     let project_dir = args.path.as_deref().unwrap_or(&args.name);
     let project_path = Path::new(project_dir);
 
@@ -61,46 +71,16 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
         || args.ai
     {
         let mut selected = Vec::new();
-        if args.web
-        {
-            selected.push("web");
-        }
-        if args.security
-        {
-            selected.push("security");
-        }
-        if args.data
-        {
-            selected.push("data");
-        }
-        if args.cache
-        {
-            selected.push("cache");
-        }
-        if args.schedule
-        {
-            selected.push("schedule");
-        }
-        if args.actuator
-        {
-            selected.push("actuator");
-        }
-        if args.web3
-        {
-            selected.push("web3");
-        }
-        if args.graphql
-        {
-            selected.push("graphql");
-        }
-        if args.grpc
-        {
-            selected.push("grpc");
-        }
-        if args.ai
-        {
-            selected.push("ai");
-        }
+        if args.web { selected.push("web"); }
+        if args.security { selected.push("security"); }
+        if args.data { selected.push("data"); }
+        if args.cache { selected.push("cache"); }
+        if args.schedule { selected.push("schedule"); }
+        if args.actuator { selected.push("actuator"); }
+        if args.web3 { selected.push("web3"); }
+        if args.graphql { selected.push("graphql"); }
+        if args.grpc { selected.push("grpc"); }
+        if args.ai { selected.push("ai"); }
         selected.iter().map(|s| s.to_string()).collect()
     }
     else if !args.no_interactive
@@ -109,16 +89,16 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
     }
     else
     {
-        // Default: web only.
-        // 默认：仅 web。
         vec!["web".to_string()]
     };
 
     println!(
-        "{} Creating Hiver project '{}' / 创建 Hiver 项目 '{}'",
+        "{} Creating Hiver project '{}' [{}] / 创建 Hiver 项目 '{}' [{}]",
         style(">").cyan(),
         style(&args.name).green().bold(),
+        style(&args.arch).yellow(),
         style(&args.name).green().bold(),
+        style(&args.arch).yellow(),
     );
 
     let pb = ProgressBar::new(5);
@@ -128,35 +108,30 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
             .progress_chars("##-"),
     );
 
-    // Step 1: Create directory structure.
-    // 步骤 1：创建目录结构。
+    // Step 1: Create architecture-specific directory structure.
     pb.set_message("Creating directories / 创建目录");
-    create_directory_structure(project_path)?;
+    crate::templates::arch::create_arch_dirs(project_path, arch, &modules)?;
     pb.inc(1);
 
     // Step 2: Generate Cargo.toml.
-    // 步骤 2：生成 Cargo.toml。
     pb.set_message("Generating Cargo.toml / 生成 Cargo.toml");
     let cargo_toml = project::generate_cargo_toml(&args.name, &modules);
     fs::write(project_path.join("Cargo.toml"), cargo_toml)?;
     pb.inc(1);
 
-    // Step 3: Generate source files.
-    // 步骤 3：生成源代码。
+    // Step 3: Generate architecture-specific main.rs.
     pb.set_message("Generating source files / 生成源代码");
-    let main_rs = project::generate_main_rs(&modules);
+    let main_rs = crate::templates::arch::generate_arch_main_rs(arch, &modules);
     fs::write(project_path.join("src").join("main.rs"), main_rs)?;
     pb.inc(1);
 
     // Step 4: Generate config.
-    // 步骤 4：生成配置。
     pb.set_message("Generating config / 生成配置");
     let app_toml = project::generate_application_toml(&modules);
     fs::write(project_path.join("resources").join("application.toml"), app_toml)?;
     pb.inc(1);
 
     // Step 5: Initialize git.
-    // 步骤 5：初始化 git。
     pb.set_message("Initializing git / 初始化 git");
     let _ = std::process::Command::new("git")
         .args(["init", project_dir])
@@ -167,10 +142,12 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
 
     println!();
     println!(
-        "{} Project '{}' created successfully! / 项目 '{}' 创建成功！",
+        "{} Project '{}' [{}] created successfully! / 项目 '{}' [{}] 创建成功！",
         style("✓").green().bold(),
         style(&args.name).green(),
+        style(&args.arch).yellow(),
         style(&args.name).green(),
+        style(&args.arch).yellow(),
     );
     println!();
     println!("  cd {}", args.name);
@@ -209,17 +186,4 @@ fn select_modules_interactive() -> Result<Vec<String>, Box<dyn std::error::Error
         .iter()
         .map(|&i| MODULES[i].0.to_string())
         .collect())
-}
-
-/// Create project directory structure.
-/// 创建项目目录结构。
-fn create_directory_structure(path: &Path) -> Result<(), std::io::Error>
-{
-    fs::create_dir_all(path.join("src").join("controller"))?;
-    fs::create_dir_all(path.join("src").join("service"))?;
-    fs::create_dir_all(path.join("src").join("repository"))?;
-    fs::create_dir_all(path.join("src").join("entity"))?;
-    fs::create_dir_all(path.join("src").join("config"))?;
-    fs::create_dir_all(path.join("resources"))?;
-    Ok(())
 }

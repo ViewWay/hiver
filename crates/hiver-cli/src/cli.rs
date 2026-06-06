@@ -91,6 +91,10 @@ pub struct NewArgs
     #[arg(short, long)]
     pub path: Option<String>,
 
+    /// Project architecture (layered, hexagonal, clean, ddd) / 项目架构
+    #[arg(short, long, default_value = "layered")]
+    pub arch: String,
+
     /// Web module / Web 模块
     #[arg(long)]
     pub web: bool,
