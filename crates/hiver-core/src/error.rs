@@ -19,6 +19,7 @@ pub struct Error
 {
     kind: ErrorKind,
     message: String,
+    source: Option<Box<dyn std::error::Error + Send + Sync>>,
 }
 
 impl Error
@@ -30,6 +31,7 @@ impl Error
         Self {
             kind,
             message: String::new(),
+            source: None,
         }
     }
 
@@ -40,6 +42,7 @@ impl Error
         Self {
             kind,
             message: message.into(),
+            source: None,
         }
     }
 
@@ -58,6 +61,7 @@ impl Error
         Self {
             kind,
             message: message.unwrap_or_default(),
+            source: None,
         }
     }
 
@@ -68,6 +72,7 @@ impl Error
         Self {
             kind: ErrorKind::Internal(String::new()),
             message: msg.into(),
+            source: None,
         }
     }
 
@@ -78,6 +83,7 @@ impl Error
         Self {
             kind: ErrorKind::NotFound(String::new()),
             message: msg.into(),
+            source: None,
         }
     }
 
@@ -93,6 +99,39 @@ impl Error
     pub fn message(&self) -> &str
     {
         &self.message
+    }
+
+    /// Attach a source error (error chain).
+    /// 附加源错误（错误链）。
+    ///
+    /// # Example / 示例
+    /// 
+    pub fn caused_by(mut self, source: impl std::error::Error + Send + Sync + 'static) -> Self
+    {
+        self.source = Some(Box::new(source));
+        self
+    }
+
+    /// Get the source error in the chain.
+    /// 获取错误链中的源错误。
+    pub fn source_error(&self) -> Option<&(dyn std::error::Error + Send + Sync)>
+    {
+        self.source.as_ref().map(|b| b.as_ref())
+    }
+
+    /// Get the full error chain as a vector of messages.
+    /// 获取完整错误链作为消息向量。
+    pub fn chain(&self) -> Vec<String>
+    {
+        let mut chain = vec![self.to_string()];
+        let mut source: Option<&(dyn std::error::Error + 'static)> =
+            self.source.as_ref().map(|b| b.as_ref() as _);
+        while let Some(err) = source
+        {
+            chain.push(err.to_string());
+            source = err.source();
+        }
+        chain
     }
 }
 
@@ -111,7 +150,13 @@ impl fmt::Display for Error
     }
 }
 
-impl std::error::Error for Error {}
+impl std::error::Error for Error
+{
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+    {
+        self.source.as_ref().map(|b| b.as_ref() as &(dyn std::error::Error + 'static))
+    }
+}
 
 /// Error kind
 /// 错误类型
