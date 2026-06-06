@@ -29,6 +29,7 @@
 #[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests;
 
+pub mod aware;
 pub mod bean;
 pub mod conditional;
 pub mod container;
@@ -41,6 +42,7 @@ pub mod reactive;
 pub mod reflect;
 
 // Re-exports / 重新导出
+pub use aware::{ApplicationContextAware, BeanFactoryAware, BeanNameAware};
 pub use bean::{Bean, BeanDefinition, BeanState, Scope};
 pub use conditional::{
     AllConditions, AnyCondition, Condition, ConditionContext, ConditionalOnBean,

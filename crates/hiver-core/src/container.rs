@@ -23,6 +23,7 @@ use super::{
     conditional::{Condition, ConditionContext},
     error::{Error, Result},
     extension::Extensions,
+    lifecycle::BeanPostProcessor,
     reflect::ReflectContainer,
 };
 
@@ -262,6 +263,9 @@ pub struct Container
     /// Reflection container for dynamic bean operations
     /// 用于动态Bean操作的反射容器
     reflect: Arc<ReflectContainer>,
+    /// Registered BeanPostProcessors (Spring BeanPostProcessor)
+    /// 注册的BeanPostProcessors（Spring BeanPostProcessor）
+    post_processors: Arc<RwLock<Vec<Box<dyn BeanPostProcessor>>>>,
 }
 
 impl Container
@@ -275,6 +279,7 @@ impl Container
             beans: Arc::new(RwLock::new(BeanStore::new())),
             extensions: Extensions::new(),
             reflect: Arc::new(ReflectContainer::new()),
+            post_processors: Arc::new(RwLock::new(Vec::new())),
         }
     }
 
@@ -294,6 +299,57 @@ impl Container
         self.beans
             .write()
             .map_err(|e| Error::internal(format!("Lock error: {}", e)))
+    }
+
+    // ── BeanPostProcessor support ──────────────────────────────────────
+
+    /// Add a `BeanPostProcessor` to the container.
+    /// 向容器添加 `BeanPostProcessor`。
+    ///
+    /// Equivalent to Spring's `beanFactory.addBeanPostProcessor()`.
+    /// 等价于 Spring 的 `beanFactory.addBeanPostProcessor()`。
+    ///
+    /// Post-processors are applied during bean creation in
+    /// `get_bean_by_name`.
+    /// 后处理器在 `get_bean_by_name` 中的bean创建期间应用。
+    pub fn add_bean_post_processor<P>(&self, processor: P)
+    where
+        P: BeanPostProcessor + 'static,
+    {
+        if let Ok(mut pps) = self.post_processors.write()
+        {
+            pps.push(Box::new(processor));
+        }
+    }
+
+    /// Apply all registered `BeanPostProcessor`s to a bean — before init.
+    /// 将所有注册的 `BeanPostProcessor` 应用于bean —— 初始化之前。
+    fn apply_post_processors_before(&self, bean: &mut dyn Any, bean_name: &str) -> Result<()>
+    {
+        if let Ok(pps) = self.post_processors.read()
+        {
+            for pp in pps.iter()
+            {
+                pp.post_process_before_initialization(bean, bean_name)
+                    .map_err(|e| Error::internal(format!("BeanPostProcessor before error: {}", e)))?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Apply all registered `BeanPostProcessor`s to a bean — after init.
+    /// 将所有注册的 `BeanPostProcessor` 应用于bean —— 初始化之后。
+    fn apply_post_processors_after(&self, bean: &mut dyn Any, bean_name: &str) -> Result<()>
+    {
+        if let Ok(pps) = self.post_processors.read()
+        {
+            for pp in pps.iter()
+            {
+                pp.post_process_after_initialization(bean, bean_name)
+                    .map_err(|e| Error::internal(format!("BeanPostProcessor after error: {}", e)))?;
+            }
+        }
+        Ok(())
     }
 
     // ── Helper: resolve TypeId → bean name ──────────────────────────────
@@ -688,10 +744,39 @@ impl Container
                 }
             }
 
-            let placeholder: Arc<T> = {
-                let bean = factory(self)?;
-                Arc::new(bean)
-            };
+            let mut bean: T = factory(self)?;
+
+            // Phase 1: BeanPostProcessor before initialization
+            // 第一阶段：初始化前的BeanPostProcessor
+            {
+                let mut dyn_bean: &mut dyn Any = &mut bean;
+                self.apply_post_processors_before(&mut *dyn_bean, name)?;
+            }
+
+            // Phase 2: post-construct callback (@PostConstruct equivalent)
+            // 第二阶段：post-construct 回调（等价于 @PostConstruct）
+            {
+                let beans = self.read_beans()?;
+                if let Some(entry) = beans.beans.get(name)
+                {
+                    if let Some(reg_t) = entry.registration.downcast_ref::<BeanRegistration<T>>()
+                    {
+                        if let Some(post_construct) = &reg_t.post_construct
+                        {
+                            post_construct(&bean)?;
+                        }
+                    }
+                }
+            }
+
+            // Phase 3: BeanPostProcessor after initialization
+            // 第三阶段：初始化后的BeanPostProcessor
+            {
+                let mut dyn_bean: &mut dyn Any = &mut bean;
+                self.apply_post_processors_after(&mut *dyn_bean, name)?;
+            }
+
+            let placeholder: Arc<T> = Arc::new(bean);
 
             // Update entry: store instance + early exposed (skip for Prototype)
             {
@@ -711,21 +796,6 @@ impl Container
                         );
                         entry.instance = Some(placeholder.clone());
                         entry.state = BeanState::Created;
-                    }
-                }
-            }
-
-            // Call post-construct if available
-            {
-                let beans = self.read_beans()?;
-                if let Some(entry) = beans.beans.get(name)
-                {
-                    if let Some(reg_t) = entry.registration.downcast_ref::<BeanRegistration<T>>()
-                    {
-                        if let Some(post_construct) = &reg_t.post_construct
-                        {
-                            post_construct(&placeholder)?;
-                        }
                     }
                 }
             }
