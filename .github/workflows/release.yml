@@ -186,5 +186,16 @@ jobs:
         working-directory: ${{ matrix.package.path }}
         run: |
           echo "Publishing ${{ matrix.package.crate }} $NEXT_VERSION (was: $PREV_VERSION)"
-          cargo publish --no-verify --allow-dirty 2>&1 || true
-          echo "Done ${{ matrix.package.crate }}"
+          if cargo publish --no-verify --allow-dirty 2>&1; then
+            echo "✓ Published ${{ matrix.package.crate }} $NEXT_VERSION"
+          else
+            EXIT_CODE=$?
+            # Exit code 101 = already published (not an error)
+            # 退出码 101 = 已发布（不是错误）
+            if [ "$EXIT_CODE" -eq 101 ]; then
+              echo "⊘ ${{ matrix.package.crate }} already published, skipping"
+            else
+              echo "✗ Failed to publish ${{ matrix.package.crate }} (exit: $EXIT_CODE)"
+              exit $EXIT_CODE
+            fi
+          fi
