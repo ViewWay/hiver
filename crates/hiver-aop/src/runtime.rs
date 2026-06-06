@@ -729,6 +729,266 @@ pub fn global_registry() -> &'static AspectRegistry
     &GLOBAL_REGISTRY
 }
 
+
+// ============================================================================
+// Intercept Result / 拦截结果
+// ============================================================================
+
+/// Result of intercepting a method call through the advice chain.
+/// 通过通知链拦截方法调用的结果。
+pub struct InterceptResult
+{
+    return_value: Option<Arc<dyn Any + Send + Sync>>,
+}
+
+impl InterceptResult
+{
+    /// Create a new intercept result with a return value.
+    /// 创建带返回值的拦截结果。
+    pub fn new(return_value: Option<Arc<dyn Any + Send + Sync>>) -> Self
+    {
+        Self { return_value }
+    }
+
+    /// Create an empty result (void method).
+    /// 创建空结果（无返回值方法）。
+    pub fn empty() -> Self
+    {
+        Self { return_value: None }
+    }
+
+    /// Get the return value.
+    /// 获取返回值。
+    pub fn return_value(&self) -> Option<&Arc<dyn Any + Send + Sync>>
+    {
+        self.return_value.as_ref()
+    }
+
+    /// Check if this result has a return value.
+    /// 检查此结果是否有返回值。
+    pub fn has_return_value(&self) -> bool
+    {
+        self.return_value.is_some()
+    }
+
+    /// Get a typed reference to the return value.
+    /// 获取返回值的类型化引用。
+    pub fn value<T: 'static>(&self) -> Option<&T>
+    {
+        self.return_value.as_ref().and_then(|v| v.downcast_ref::<T>())
+    }
+}
+
+impl fmt::Debug for InterceptResult
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        f.debug_struct("InterceptResult")
+            .field("has_return_value", &self.return_value.is_some())
+            .finish()
+    }
+}
+
+// ============================================================================
+// Intercept Chain / 拦截链
+// ============================================================================
+
+/// Runtime interception chain that applies ordered advice around a target method.
+/// 在目标方法周围应用有序通知的运行时拦截链。
+///
+/// Execution order: Before → Around → Target → After → AfterReturning
+/// 执行顺序：Before → Around → 目标 → After → AfterReturning
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use hiver_aop::runtime::{InterceptChain, JoinPoint};
+///
+/// let mut chain = InterceptChain::new();
+/// chain.before(|jp| println!("Before: {}", jp.method_name()));
+/// chain.after(|jp| println!("After: {}", jp.method_name()));
+///
+/// let jp = JoinPoint::new(/* ... */);
+/// let result = chain.invoke(jp, || Some(Arc::new(42)));
+/// ```
+pub struct InterceptChain
+{
+    /// @Before advice callbacks
+    /// @Before 通知回调
+    before: Vec<Arc<dyn Fn(&JoinPoint) + Send + Sync>>,
+
+    /// @After advice callbacks (always executed)
+    /// @After 通知回调（始终执行）
+    after: Vec<Arc<dyn Fn(&JoinPoint) + Send + Sync>>,
+
+    /// @Around advice callbacks
+    /// @Around 通知回调
+    around: Vec<Arc<dyn Fn(&mut ProceedingJoinPoint) + Send + Sync>>,
+
+    /// @AfterReturning advice callbacks (executed on success)
+    /// @AfterReturning 通知回调（成功时执行）
+    after_returning: Vec<Arc<dyn Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync>>,
+}
+
+impl InterceptChain
+{
+    /// Create an empty intercept chain.
+    /// 创建空拦截链。
+    pub fn new() -> Self
+    {
+        Self {
+            before: Vec::new(),
+            after: Vec::new(),
+            around: Vec::new(),
+            after_returning: Vec::new(),
+        }
+    }
+
+    /// Add @Before advice.
+    /// 添加 @Before 通知。
+    pub fn before(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static)
+    {
+        self.before.push(Arc::new(advice));
+    }
+
+    /// Add @After advice (always executed, like finally).
+    /// 添加 @After 通知（始终执行，类似 finally）。
+    pub fn after(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static)
+    {
+        self.after.push(Arc::new(advice));
+    }
+
+    /// Add @Around advice.
+    /// 添加 @Around 通知。
+    pub fn around(&mut self, advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static)
+    {
+        self.around.push(Arc::new(advice));
+    }
+
+    /// Add @AfterReturning advice (executed when target returns successfully).
+    /// 添加 @AfterReturning 通知（目标成功返回时执行）。
+    pub fn after_returning(
+        &mut self,
+        advice: impl Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync + 'static,
+    )
+    {
+        self.after_returning.push(Arc::new(advice));
+    }
+
+    /// Total number of advice in the chain.
+    /// 链中通知总数。
+    pub fn total(&self) -> usize
+    {
+        self.before.len() + self.after.len() + self.around.len() + self.after_returning.len()
+    }
+
+    /// Check if the chain has no advice.
+    /// 检查链是否没有通知。
+    pub fn is_empty(&self) -> bool
+    {
+        self.total() == 0
+    }
+
+    /// Execute the chain around a target method.
+    /// 在目标方法周围执行拦截链。
+    ///
+    /// Execution order:
+    /// 1. All @Before advice (in registration order)
+    /// 2. @Around advice (if any, controls whether target runs)
+    /// 3. Target method (if @Around allows or no @Around)
+    /// 4. All @After advice (always, in registration order)
+    /// 5. @AfterReturning advice (if target succeeded and returned a value)
+    ///
+    /// 执行顺序：
+    /// 1. 所有 @Before 通知（按注册顺序）
+    /// 2. @Around 通知（如果有的话，控制目标是否执行）
+    /// 3. 目标方法（如果 @Around 允许或没有 @Around）
+    /// 4. 所有 @After 通知（始终执行，按注册顺序）
+    /// 5. @AfterReturning 通知（如果目标成功并返回了值）
+    pub fn invoke<F>(
+        &self,
+        join_point: JoinPoint,
+        target: F,
+    ) -> InterceptResult
+    where
+        F: FnOnce() -> Option<Arc<dyn Any + Send + Sync>>,
+    {
+        // 1. Execute @Before advice
+        // 执行 @Before 通知
+        for advice in &self.before
+        {
+            advice(&join_point);
+        }
+
+        // 2. Execute @Around advice (if any)
+        // 执行 @Around 通知（如果有的话）
+        let should_proceed = if self.around.is_empty()
+        {
+            true
+        }
+        else
+        {
+            let mut pjp = ProceedingJoinPoint::new(join_point.clone());
+            for advice in &self.around
+            {
+                advice(&mut pjp);
+            }
+            pjp.is_proceeded()
+        };
+
+        // 3. Execute target if @Around allows
+        // 如果 @Around 允许，执行目标
+        let result = if should_proceed
+        {
+            target()
+        }
+        else
+        {
+            None
+        };
+
+        // 4. Execute @After advice (always)
+        // 执行 @After 通知（始终执行）
+        for advice in &self.after
+        {
+            advice(&join_point);
+        }
+
+        // 5. Execute @AfterReturning advice (on success with value)
+        // 执行 @AfterReturning 通知（成功返回时）
+        if let Some(ref value) = result
+        {
+            for advice in &self.after_returning
+            {
+                advice(&join_point, value);
+            }
+        }
+
+        InterceptResult::new(result)
+    }
+}
+
+impl Default for InterceptChain
+{
+    fn default() -> Self
+    {
+        Self::new()
+    }
+}
+
+impl fmt::Debug for InterceptChain
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        f.debug_struct("InterceptChain")
+            .field("before_count", &self.before.len())
+            .field("after_count", &self.after.len())
+            .field("around_count", &self.around.len())
+            .field("after_returning_count", &self.after_returning.len())
+            .finish()
+    }
+}
+
 // ============================================================================
 // Tests / 测试
 // ============================================================================
@@ -1413,4 +1673,292 @@ mod tests
         assert_eq!(jp.arg::<i32>(99), Some(&99));
         assert!(jp.arg::<i32>(100).is_none());
     }
+
+    // ========================================================================
+    // InterceptChain & InterceptResult Tests / 拦截链测试
+    // ========================================================================
+
+    /// Test empty intercept chain passes through to target.
+    /// 测试空拦截链直接传递到目标。
+    #[test]
+    fn test_intercept_chain_empty()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let target_called = Arc::new(AtomicBool::new(false));
+        let target_called_clone = target_called.clone();
+
+        let chain = InterceptChain::new();
+        let jp = make_join_point("work", "Svc");
+        let result = chain.invoke(jp, move || {
+            target_called_clone.store(true, Ordering::SeqCst);
+            None
+        });
+
+        assert!(target_called.load(Ordering::SeqCst));
+        assert!(!result.has_return_value());
+    }
+
+    /// Test @Before advice executes before the target.
+    /// 测试 @Before 通知在目标之前执行。
+    #[test]
+    fn test_intercept_chain_before()
+    {
+        use std::sync::atomic::{AtomicI32, Ordering};
+        let order = Arc::new(AtomicI32::new(0));
+        let before_order = order.clone();
+        let target_order = order.clone();
+
+        let mut chain = InterceptChain::new();
+        chain.before(move |_jp| {
+            before_order.store(1, Ordering::SeqCst);
+        });
+
+        let jp = make_join_point("work", "Svc");
+        chain.invoke(jp, move || {
+            // Target runs after before (order should be 1 already)
+            // 目标在 before 之后运行（order 应该已经是 1）
+            assert_eq!(target_order.load(Ordering::SeqCst), 1);
+            None
+        });
+    }
+
+    /// Test @After advice always executes after the target.
+    /// 测试 @After 通知始终在目标之后执行。
+    #[test]
+    fn test_intercept_chain_after_always_runs()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let after_called = Arc::new(AtomicBool::new(false));
+        let after_clone = after_called.clone();
+
+        let mut chain = InterceptChain::new();
+        chain.after(move |_jp| {
+            after_clone.store(true, Ordering::SeqCst);
+        });
+
+        let jp = make_join_point("work", "Svc");
+        chain.invoke(jp, || None);
+
+        assert!(after_called.load(Ordering::SeqCst));
+    }
+
+    /// Test @Around advice with proceed allows target to run.
+    /// 测试 @Around 通知调用 proceed 后目标执行。
+    #[test]
+    fn test_intercept_chain_around_proceed()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let target_called = Arc::new(AtomicBool::new(false));
+        let target_clone = target_called.clone();
+
+        let mut chain = InterceptChain::new();
+        chain.around(|pjp| {
+            pjp.proceed();
+        });
+
+        let jp = make_join_point("work", "Svc");
+        chain.invoke(jp, move || {
+            target_clone.store(true, Ordering::SeqCst);
+            None
+        });
+
+        assert!(target_called.load(Ordering::SeqCst));
+    }
+
+    /// Test @Around advice without proceed blocks target.
+    /// 测试 @Around 通知不调用 proceed 时目标被阻止。
+    #[test]
+    fn test_intercept_chain_around_block()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let target_called = Arc::new(AtomicBool::new(false));
+        let target_clone = target_called.clone();
+
+        let mut chain = InterceptChain::new();
+        // @Around that does NOT call proceed
+        // @Around 不调用 proceed
+        chain.around(|_pjp| {
+            // intentionally not calling proceed
+        });
+
+        let jp = make_join_point("work", "Svc");
+        chain.invoke(jp, move || {
+            target_clone.store(true, Ordering::SeqCst);
+            None
+        });
+
+        assert!(!target_called.load(Ordering::SeqCst));
+    }
+
+    /// Test full lifecycle: Before -> Around(proceed) -> Target -> After -> AfterReturning.
+    /// 测试完整生命周期：Before -> Around(proceed) -> 目标 -> After -> AfterReturning。
+    #[test]
+    fn test_intercept_chain_full_lifecycle()
+    {
+        use std::sync::atomic::{AtomicI32, Ordering};
+        let order = Arc::new(AtomicI32::new(0));
+        let log: Arc<std::sync::Mutex<Vec<i32>>> = Arc::new(std::sync::Mutex::new(Vec::new()));
+
+        let mut chain = InterceptChain::new();
+
+        {
+            let log = log.clone();
+            chain.before(move |_jp| {
+                log.lock().unwrap().push(1);
+            });
+        }
+        {
+            let log = log.clone();
+            chain.around(move |pjp| {
+                log.lock().unwrap().push(2);
+                pjp.proceed();
+            });
+        }
+        {
+            let log = log.clone();
+            chain.after(move |_jp| {
+                log.lock().unwrap().push(4);
+            });
+        }
+        {
+            let log = log.clone();
+            chain.after_returning(move |_jp, _val| {
+                log.lock().unwrap().push(5);
+            });
+        }
+
+        let log_target = log.clone();
+        let jp = make_join_point("save", "Repo");
+        let result = chain.invoke(jp, move || {
+            log_target.lock().unwrap().push(3);
+            Some(Arc::new(42_i32) as Arc<dyn Any + Send + Sync>)
+        });
+
+        let entries = log.lock().unwrap().clone();
+        assert_eq!(entries, vec![1, 2, 3, 4, 5]);
+        assert_eq!(*result.value::<i32>().unwrap(), 42);
+    }
+
+    /// Test @AfterReturning receives the return value.
+    /// 测试 @AfterReturning 接收返回值。
+    #[test]
+    fn test_intercept_chain_after_returning()
+    {
+        use std::sync::atomic::{AtomicI32, Ordering};
+        let received = Arc::new(AtomicI32::new(0));
+        let received_clone = received.clone();
+
+        let mut chain = InterceptChain::new();
+        chain.after_returning(move |_jp, val| {
+            if let Some(n) = val.downcast_ref::<i32>() {
+                received_clone.store(*n, Ordering::SeqCst);
+            }
+        });
+
+        let jp = make_join_point("calc", "Svc");
+        chain.invoke(jp, || Some(Arc::new(99_i32) as Arc<dyn Any + Send + Sync>));
+
+        assert_eq!(received.load(Ordering::SeqCst), 99);
+    }
+
+    /// Test InterceptResult typed value access.
+    /// 测试 InterceptResult 类型化值访问。
+    #[test]
+    fn test_intercept_result_typed_access()
+    {
+        let result = InterceptResult::new(Some(Arc::new("hello".to_string()) as Arc<dyn Any + Send + Sync>));
+
+        assert!(result.has_return_value());
+        assert_eq!(result.value::<String>(), Some(&String::from("hello")));
+        assert_eq!(result.value::<i32>(), None); // wrong type
+    }
+
+    /// Test InterceptResult empty.
+    /// 测试 InterceptResult 空。
+    #[test]
+    fn test_intercept_result_empty()
+    {
+        let result = InterceptResult::empty();
+        assert!(!result.has_return_value());
+        assert!(result.return_value().is_none());
+    }
+
+    /// Test InterceptResult Debug output.
+    /// 测试 InterceptResult Debug 输出。
+    #[test]
+    fn test_intercept_result_debug()
+    {
+        let result = InterceptResult::new(Some(Arc::new(42_i32) as Arc<dyn Any + Send + Sync>));
+        let debug = format!("{:?}", result);
+        assert!(debug.contains("InterceptResult"));
+        assert!(debug.contains("true"));
+    }
+
+    /// Test InterceptChain Debug output.
+    /// 测试 InterceptChain Debug 输出。
+    #[test]
+    fn test_intercept_chain_debug()
+    {
+        let chain = InterceptChain::new();
+        let debug = format!("{:?}", chain);
+        assert!(debug.contains("InterceptChain"));
+        assert!(debug.contains("before_count"));
+    }
+
+    /// Test InterceptChain default.
+    /// 测试 InterceptChain default。
+    #[test]
+    fn test_intercept_chain_default()
+    {
+        let chain = InterceptChain::default();
+        assert!(chain.is_empty());
+        assert_eq!(chain.total(), 0);
+    }
+
+    /// Test multiple @Before advice execute in registration order.
+    /// 测试多个 @Before 通知按注册顺序执行。
+    #[test]
+    fn test_intercept_chain_multiple_before_order()
+    {
+        use std::sync::Mutex;
+        let log: Arc<Mutex<Vec<i32>>> = Arc::new(Mutex::new(Vec::new()));
+
+        let mut chain = InterceptChain::new();
+        {
+            let log = log.clone();
+            chain.before(move |_| { log.lock().unwrap().push(1); });
+        }
+        {
+            let log = log.clone();
+            chain.before(move |_| { log.lock().unwrap().push(2); });
+        }
+        {
+            let log = log.clone();
+            chain.before(move |_| { log.lock().unwrap().push(3); });
+        }
+
+        let jp = make_join_point("ordered", "Svc");
+        chain.invoke(jp, || None);
+
+        assert_eq!(*log.lock().unwrap(), vec![1, 2, 3]);
+    }
+
+    /// Test @After runs even when no @Around and target returns None.
+    /// 测试即使没有 @Around 且目标返回 None，@After 仍执行。
+    #[test]
+    fn test_after_runs_on_void_target()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let after_called = Arc::new(AtomicBool::new(false));
+        let after_clone = after_called.clone();
+
+        let mut chain = InterceptChain::new();
+        chain.after(move |_| { after_clone.store(true, Ordering::SeqCst); });
+
+        let jp = make_join_point("void_method", "Svc");
+        chain.invoke(jp, || None);
+
+        assert!(after_called.load(Ordering::SeqCst));
+    }
+
 }

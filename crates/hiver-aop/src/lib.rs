@@ -52,6 +52,6 @@ mod tests;
 
 // Re-export runtime types at crate root for convenience
 pub use runtime::{
-    AdviceChain, AdviceType, AspectRegistry, JoinPoint, PointcutExpression, ProceedingJoinPoint,
-    global_registry,
+    AdviceChain, AdviceType, AspectRegistry, InterceptChain, InterceptResult, JoinPoint,
+    PointcutExpression, ProceedingJoinPoint, global_registry,
 };
