@@ -122,6 +122,7 @@ pub mod ext;
 pub mod http2;
 pub mod method;
 pub mod multipart;
+pub mod negotiation;
 pub mod proto;
 pub mod request;
 pub mod response;
@@ -160,6 +161,7 @@ pub use multipart::{
     FileSizeLimits, FromMultipart, MultipartData, MultipartFile, MultipartForm,
     media_type_for_extension, validate_content_type, validate_extension,
 };
+pub use negotiation::{ContentNegotiationManager, MediaType};
 pub use request::Request;
 pub use response::{BodyBuilder, Response};
 pub use server::Server;
