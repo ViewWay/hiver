@@ -145,74 +145,71 @@ impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T>
         }
     }
 }
-
-/// Internal bean storage
-/// 内部bean存储
+/// Internal bean storage — unified by bean name.
+/// 内部bean存储 — 以bean名称统一管理。
+///
+/// Root cause fix: eliminates dual TypeId/name storage by using a single
+/// `HashMap<String, BeanEntry>` for ALL beans, with `type_index` for reverse lookup.
+/// 根本修复：通过使用单个 `HashMap<String, BeanEntry>` 存储所有 bean，
+/// 并用 `type_index` 做反向查找，消除了 TypeId/名称 双重存储。
 struct BeanStore
 {
-    /// Singleton beans (created once and reused)
-    /// 单例bean（创建一次并重用）
-    singletons: HashMap<TypeId, Arc<dyn Any + Send + Sync>>,
+    /// All beans keyed by unique name.
+    /// 所有bean以唯一名称为键。
+    beans: HashMap<String, BeanEntry>,
 
-    /// Bean registrations (metadata and factories)
-    /// Bean注册（元数据和工厂）
-    registrations: HashMap<TypeId, Box<dyn Any + Send + Sync>>,
+    /// TypeId → default bean name (for `get_bean::<T>()` fast path).
+    /// TypeId → 默认bean名称（用于 `get_bean::<T>()` 快速路径）。
+    type_index: HashMap<TypeId, String>,
 
-    /// Named bean lookups
-    /// 命名bean查找
-    by_name: HashMap<String, TypeId>,
-
-    /// Early exposed beans (Weak references for circular dependency resolution)
-    /// 提前暴露的Bean（Weak引用，用于循环依赖解析）
-    early_exposed: HashMap<TypeId, std::sync::Weak<dyn Any + Send + Sync>>,
-
-    /// Currently creating beans (for cycle detection)
-    /// 正在创建的Bean（用于循环检测）
-    creating: std::cell::RefCell<std::collections::HashSet<TypeId>>,
-
-    /// Type-erased pre-destroy hooks keyed by TypeId
-    /// 按TypeId键控的类型擦除销毁前回调
-    pre_destroy_hooks: HashMap<TypeId, Box<dyn PreDestroyHook>>,
-
-    /// Type-erased eager init functions (for `initialize()`)
-    /// 类型擦除的急切初始化函数（用于 `initialize()`）
-    eager_init_fns: HashMap<TypeId, Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
-
-    /// Whether each registration is lazy
-    /// 每个注册是否延迟初始化
-    lazy_flags: HashMap<TypeId, bool>,
-
-    /// Bean lifecycle states
-    /// Bean生命周期状态
-    states: HashMap<TypeId, BeanState>,
-
-    /// Named bean registrations for @Qualifier support: name -> (TypeId, registration)
-    /// 命名bean注册，用于@Qualifier支持：名称 -> (TypeId, 注册)
-    named_registrations: HashMap<String, (TypeId, Box<dyn Any + Send + Sync>)>,
-
-    /// Named singleton instances: name -> instance
-    /// 命名单例实例：名称 -> 实例
-    named_singletons: HashMap<String, Arc<dyn Any + Send + Sync>>,
-
-    /// Type -> list of bean names for reverse lookup
-    /// 类型 -> bean名称列表，用于反向查找
+    /// TypeId → all bean names of this type (for multi-bean resolution).
+    /// TypeId → 此类型的所有bean名称（用于多bean解析）。
     type_to_names: HashMap<TypeId, Vec<String>>,
 
-    /// Named bean lifecycle states
-    /// 命名bean生命周期状态
-    named_states: HashMap<String, BeanState>,
+    /// Currently creating beans (for cycle detection).
+    /// 正在创建的bean（用于循环检测）。
+    creating: std::cell::RefCell<std::collections::HashSet<String>>,
+}
 
-    /// Named bean lazy flags
-    /// 命名bean延迟标志
-    named_lazy_flags: HashMap<String, bool>,
+/// A single bean's full lifecycle data.
+/// 单个bean的完整生命周期数据。
+struct BeanEntry
+{
+    /// The bean's concrete TypeId.
+    /// bean的具体TypeId。
+    type_id: TypeId,
 
-    /// Named bean eager init functions
-    /// 命名bean急切初始化函数
-    named_eager_init_fns: HashMap<String, Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
+    /// The type-erased registration (`BeanRegistration<T>`).
+    /// 类型擦除的注册（`BeanRegistration<T>`）。
+    registration: Box<dyn Any + Send + Sync>,
 
-    /// Named bean pre-destroy hooks
-    /// 命名bean销毁前回调
-    named_pre_destroy_hooks: HashMap<String, Box<dyn PreDestroyHook>>,
+    /// Cached singleton instance (None before first creation).
+    /// 缓存的单例实例（首次创建前为None）。
+    instance: Option<Arc<dyn Any + Send + Sync>>,
+
+    /// Early exposed Weak ref for circular dependency resolution.
+    /// 提前暴露的Weak引用，用于循环依赖解析。
+    early_exposed: Option<std::sync::Weak<dyn Any + Send + Sync>>,
+
+    /// Lifecycle state.
+    /// 生命周期状态。
+    state: BeanState,
+
+    /// Whether this bean is lazily initialized.
+    /// 是否延迟初始化。
+    lazy: bool,
+
+    /// Bean scope (Singleton or Prototype).
+    /// Bean作用域（Singleton或Prototype）。
+    scope: Scope,
+
+    /// Type-erased pre-destroy hook.
+    /// 类型擦除的销毁前回调。
+    pre_destroy_hook: Option<Box<dyn PreDestroyHook>>,
+
+    /// Eager init function (used by `initialize()`).
+    /// 急切初始化函数（由 `initialize()` 使用）。
+    eager_init_fn: Option<Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
 }
 
 impl BeanStore
@@ -220,22 +217,10 @@ impl BeanStore
     fn new() -> Self
     {
         Self {
-            singletons: HashMap::new(),
-            registrations: HashMap::new(),
-            by_name: HashMap::new(),
-            early_exposed: HashMap::new(),
-            creating: std::cell::RefCell::new(std::collections::HashSet::new()),
-            pre_destroy_hooks: HashMap::new(),
-            eager_init_fns: HashMap::new(),
-            lazy_flags: HashMap::new(),
-            states: HashMap::new(),
-            named_registrations: HashMap::new(),
-            named_singletons: HashMap::new(),
+            beans: HashMap::new(),
+            type_index: HashMap::new(),
             type_to_names: HashMap::new(),
-            named_states: HashMap::new(),
-            named_lazy_flags: HashMap::new(),
-            named_eager_init_fns: HashMap::new(),
-            named_pre_destroy_hooks: HashMap::new(),
+            creating: std::cell::RefCell::new(std::collections::HashSet::new()),
         }
     }
 }
@@ -307,131 +292,210 @@ impl Container
             .map_err(|e| Error::internal(format!("Lock error: {}", e)))
     }
 
-    /// Register a bean with a factory function
-    /// 使用工厂函数注册bean
+    // ── Helper: resolve TypeId → bean name ──────────────────────────────
+
+    /// Resolve a TypeId to its bean name via type_index, falling back to type_to_names.
+    /// 通过 type_index 将 TypeId 解析为 bean 名称，回退到 type_to_names。
+    fn resolve_type_to_name(&self, type_id: TypeId) -> Result<String>
+    {
+        let beans = self.read_beans()?;
+
+        // Fast path: single default bean for this type
+        if let Some(name) = beans.type_index.get(&type_id)
+        {
+            return Ok(name.clone());
+        }
+
+        // Multi-bean: check type_to_names
+        let names = beans
+            .type_to_names
+            .get(&type_id)
+            .map(|n| n.as_slice())
+            .unwrap_or(&[]);
+
+        match names.len()
+        {
+            0 => Err(Error::not_found(format!(
+                "Bean not found: {:?}",
+                type_id
+            ))),
+            1 => Ok(names[0].clone()),
+            _ =>
+            {
+                // Multiple candidates: look for @Primary
+                let primary_name = names.iter().find(|name| {
+                    beans
+                        .beans
+                        .get(*name)
+                        .map_or(false, |e| {
+                            // Check if primary by looking at the registration
+                            e.registration
+                                .downcast_ref::<BeanRegistration<()>>()
+                                .map_or(false, |r| r.definition.primary)
+                                // Since we can't downcast to arbitrary T,
+                                // also check if any registration has primary set
+                                || e.registration
+                                    .downcast_ref::<BeanRegistration<u8>>()
+                                    .map_or(false, |r| r.definition.primary)
+                                || e.registration
+                                    .downcast_ref::<BeanRegistration<String>>()
+                                    .map_or(false, |r| r.definition.primary)
+                        })
+                });
+
+                if let Some(name) = primary_name
+                {
+                    Ok(name.clone())
+                }
+                else
+                {
+                    Err(Error::internal(format!(
+                        "Multiple beans of type {:?} found. \
+                         Use get_qualified_bean() or get_bean_by_name() to specify. \
+                         Candidates: {:?}",
+                        type_id, names
+                    )))
+                }
+            },
+        }
+    }
+
+    // ── Registration ───────────────────────────────────────────────────
+
+    /// Register a bean with a factory function.
+    /// 使用工厂函数注册bean。
     ///
     /// Equivalent to Spring's `@Bean` method in `@Configuration` class.
     /// 等价于Spring中`@Configuration`类里的`@Bean`方法。
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// container.register::<UserService>(|c| {
-    ///     let repo = c.get_bean::<UserRepository>()?;
-    ///     Ok(UserService::new(repo))
-    /// })?;
-    /// ```
     pub fn register<T, F>(&mut self, factory: F) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
         F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
     {
         let type_id = TypeId::of::<T>();
-        let type_name = std::any::type_name::<T>();
+        let name = std::any::type_name::<T>().to_string();
+        let registration = BeanRegistration::new(&name).factory(Arc::new(factory));
 
         let mut beans = self.write_beans()?;
-
-        let registration = BeanRegistration::new(type_name).factory(Arc::new(factory));
-
-        beans
-            .by_name
-            .insert(registration.definition.name.clone(), type_id);
-        beans.registrations.insert(type_id, Box::new(registration));
-        beans.states.insert(type_id, BeanState::Defined);
+        beans.type_index.insert(type_id, name.clone());
+        beans.type_to_names.entry(type_id).or_default().push(name.clone());
+        beans.beans.insert(name, BeanEntry {
+            type_id,
+            registration: Box::new(registration),
+            instance: None,
+            early_exposed: None,
+            state: BeanState::Defined,
+            lazy: false,
+            scope: Scope::Singleton,
+            pre_destroy_hook: None,
+            eager_init_fn: None,
+        });
 
         Ok(())
     }
 
-    /// Register a bean with full configuration
-    /// 使用完整配置注册bean
+    /// Register a bean with full configuration.
+    /// 使用完整配置注册bean。
     pub fn register_with<T>(&mut self, registration: BeanRegistration<T>) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
     {
         let type_id = TypeId::of::<T>();
+        let name = registration.definition.name.clone();
 
-        if let Some(pre_destroy) = &registration.pre_destroy
-        {
-            let hook = PreDestroyHookImpl {
-                callback: pre_destroy.clone(),
-            };
-            let mut beans = self.write_beans()?;
-            beans.pre_destroy_hooks.insert(type_id, Box::new(hook));
-        }
-
-        let mut beans = self.write_beans()?;
-
-        beans
-            .by_name
-            .insert(registration.definition.name.clone(), type_id);
+        let hook = registration.pre_destroy.as_ref().map(|pd| {
+            Box::new(PreDestroyHookImpl { callback: pd.clone() }) as Box<dyn PreDestroyHook>
+        });
 
         let is_lazy = registration.definition.lazy;
-        beans.lazy_flags.insert(type_id, is_lazy);
+        let entry_scope = registration.definition.scope;
+        let name_clone = name.clone();
 
-        beans.eager_init_fns.insert(
+        let eager_fn = Arc::new(move |c: &Container| {
+            c.get_bean_by_name::<T>(&name_clone)?;
+            Ok(())
+        }) as Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>;
+
+        let mut beans = self.write_beans()?;
+        beans.type_index.insert(type_id, name.clone());
+        beans.type_to_names.entry(type_id).or_default().push(name.clone());
+        beans.beans.insert(name, BeanEntry {
             type_id,
-            Arc::new(|c: &Container| {
-                c.get_bean::<T>()?;
-                Ok(())
-            }),
-        );
-
-        beans.registrations.insert(type_id, Box::new(registration));
-        beans.states.insert(type_id, BeanState::Defined);
+            registration: Box::new(registration),
+            instance: None,
+            early_exposed: None,
+            state: BeanState::Defined,
+            lazy: is_lazy,
+            scope: entry_scope,
+            pre_destroy_hook: hook,
+            eager_init_fn: Some(eager_fn),
+        });
 
         Ok(())
     }
 
-    /// Register a bean instance directly
-    /// 直接注册bean实例
-    ///
-    /// Equivalent to Spring's `@Component` scanning.
-    /// 等价于Spring的`@Component`扫描。
+    /// Register a bean instance directly.
+    /// 直接注册bean实例。
     pub fn register_bean<T: Bean + Send + Sync + 'static>(&mut self, bean: T) -> Result<()>
     {
         let type_id = TypeId::of::<T>();
-        let bean_arc = Arc::new(bean);
+        let name = std::any::type_name::<T>().to_string();
+        let bean_arc: Arc<dyn Any + Send + Sync> = Arc::new(bean);
 
-        // First, check if there's a post-construct callback
-        // 首先检查是否有初始化后回调
+        // Check for post-construct callback
         let post_construct_callback = {
             let beans = self.read_beans()?;
-            beans
-                .registrations
-                .get(&type_id)
-                .and_then(|reg| reg.downcast_ref::<BeanRegistration<T>>())
-                .and_then(|reg_t| reg_t.post_construct.clone())
+            beans.beans.get(&name).and_then(|entry| {
+                entry.registration
+                    .downcast_ref::<BeanRegistration<T>>()
+                    .and_then(|reg_t| reg_t.post_construct.clone())
+            })
         };
 
-        // Call post-construct callback if available (without holding lock)
-        // 如果有回调，调用它（不持有锁）
         if let Some(post_construct) = post_construct_callback
-            && let Err(e) = post_construct(&bean_arc)
         {
-            return Err(Error::internal(format!(
-                "Post-construct callback failed for {}: {}",
-                std::any::type_name::<T>(),
-                e
-            )));
+            let bean_ref: &T = bean_arc.downcast_ref::<T>().ok_or_else(|| {
+                Error::internal("Failed to downcast bean for post-construct")
+            })?;
+            if let Err(e) = post_construct(bean_ref)
+            {
+                return Err(Error::internal(format!(
+                    "Post-construct callback failed for {}: {}",
+                    name, e
+                )));
+            }
         }
 
-        // Now insert the bean (with write lock)
-        // 现在插入bean（使用写锁）
         let mut beans = self.write_beans()?;
-        beans.singletons.insert(type_id, bean_arc);
+        // Update existing entry or create new one
+        if let Some(entry) = beans.beans.get_mut(&name)
+        {
+            entry.instance = Some(bean_arc);
+            entry.state = BeanState::Created;
+        }
+        else
+        {
+            beans.type_index.insert(type_id, name.clone());
+            beans.type_to_names.entry(type_id).or_default().push(name.clone());
+            let reg_name = name.clone();
+            beans.beans.insert(name, BeanEntry {
+                type_id,
+                registration: Box::new(BeanRegistration::<T>::new(&reg_name)),
+                instance: Some(bean_arc),
+                early_exposed: None,
+                state: BeanState::Created,
+                lazy: false,
+                scope: Scope::Singleton,
+                pre_destroy_hook: None,
+                eager_init_fn: None,
+            });
+        }
+
         Ok(())
     }
 
-    /// Register a bean factory for lazy initialization
-    /// 注册bean工厂以延迟初始化
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// container.register_factory(|| {
-    ///     UserService::new()
-    /// }).unwrap();
-    /// ```
+    /// Register a bean factory for lazy initialization.
+    /// 注册bean工厂以延迟初始化。
     pub fn register_factory<T, F>(&mut self, factory: F) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
@@ -442,53 +506,20 @@ impl Container
 
     /// Register a bean conditionally based on a [`Condition`].
     /// 根据条件 [`Condition`] 有条件地注册Bean。
-    ///
-    /// Evaluates the condition against the current container state (registered
-    /// beans, bean names). If the condition matches, the bean is registered
-    /// with the provided factory function; otherwise, the registration is
-    /// silently skipped.
-    ///
-    /// 根据当前容器状态（已注册的Bean、Bean名称）评估条件。如果条件匹配，
-    /// 则使用提供的工厂函数注册Bean；否则，注册将被静默跳过。
-    ///
-    /// Equivalent to Spring Boot's `@Conditional` annotations.
-    /// 等价于Spring Boot的 `@Conditional` 注解。
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// use hiver_core::Container;
-    /// use hiver_core::ConditionalOnMissingBean;
-    ///
-    /// let mut container = Container::new();
-    ///
-    /// // Only register InMemoryCache if no Cache bean is already present
-    /// // 仅在尚未存在Cache Bean时注册InMemoryCache
-    /// container.register_conditional::<InMemoryCache, _>(
-    ///     |c| Ok(InMemoryCache::new()),
-    ///     ConditionalOnMissingBean::of::<dyn Cache>(),
-    /// )?;
-    /// ```
     pub fn register_conditional<T, F, C>(&mut self, factory: F, condition: &C) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
         F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
         C: Condition + 'static,
     {
-        // Build a ConditionContext from the current container state
-        // 从当前容器状态构建ConditionContext
         let context = {
             let beans = self.read_beans()?;
-
-            let registered_beans: Vec<TypeId> = beans
-                .registrations
-                .keys()
-                .chain(beans.singletons.keys())
-                .copied()
+            let registered_beans: Vec<TypeId> = beans.beans.values()
+                .map(|e| e.type_id)
                 .collect();
-
-            let bean_names: HashMap<String, TypeId> = beans.by_name.clone();
-
+            let bean_names: HashMap<String, TypeId> = beans.type_index.iter()
+                .map(|(tid, name)| (name.clone(), *tid))
+                .collect();
             ConditionContext::new()
                 .with_registered_beans(registered_beans)
                 .with_bean_names(bean_names)
@@ -504,299 +535,8 @@ impl Container
         }
     }
 
-    /// Get a bean by type (resolving dependencies)
-    /// 按类型获取bean（解析依赖）
-    ///
-    /// Equivalent to Spring's `ApplicationContext.getBean(Class)`.
-    /// 等价于Spring的`ApplicationContext.getBean(Class)`。
-    ///
-    /// This method supports:
-    /// - Constructor injection (via registered factory functions)
-    /// - Lazy initialization
-    /// - Singleton scope (default)
-    /// - Circular dependency detection and resolution
-    ///
-    /// 此方法支持：
-    /// - 构造函数注入（通过注册的工厂函数）
-    /// - 延迟初始化
-    /// - 单例作用域（默认）
-    /// - 循环依赖检测和解析
-    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
-    {
-        let type_id = TypeId::of::<T>();
-
-        // Check if container is shut down
-        // 检查容器是否已关闭
-        {
-            let beans = self.read_beans()?;
-            if let Some(state) = beans.states.get(&type_id)
-                && *state == BeanState::Destroyed
-            {
-                return Err(Error::internal(format!(
-                    "Bean {} has been destroyed",
-                    std::any::type_name::<T>()
-                )));
-            }
-        }
-
-        // First, check if we already have a singleton
-        // 首先检查是否已有单例
-        {
-            let beans = self.read_beans()?;
-
-            if let Some(bean) = beans.singletons.get(&type_id)
-                && let Ok(typed) = Arc::clone(bean).downcast::<T>()
-            {
-                return Ok(typed);
-            }
-
-            // Check for circular dependency
-            // 检查循环依赖
-            if beans.creating.borrow().contains(&type_id)
-            {
-                if let Some(weak) = beans.early_exposed.get(&type_id)
-                    && let Some(arc) = weak.upgrade()
-                    && let Ok(typed) = arc.downcast::<T>()
-                {
-                    return Ok(typed);
-                }
-                return Err(Error::internal(format!(
-                    "Circular dependency detected while creating bean: {}",
-                    std::any::type_name::<T>()
-                )));
-            }
-        }
-
-        // Check if we have a registration with factory
-        // 检查是否有带工厂的注册
-        let (factory_opt, is_prototype) = {
-            let beans = self.read_beans()?;
-
-            let reg = beans
-                .registrations
-                .get(&type_id)
-                .and_then(|r| r.downcast_ref::<BeanRegistration<T>>());
-
-            let factory = reg.and_then(|reg| reg.factory.clone());
-            let prototype = reg.is_some_and(|reg| reg.definition.scope == Scope::Prototype);
-            (factory, prototype)
-        };
-
-        if let Some(factory) = factory_opt
-        {
-            // --- Prototype scope: always create new instance ---
-            // --- Prototype 作用域：每次创建新实例 ---
-            if is_prototype
-            {
-                let bean = factory(self)?;
-                return Ok(Arc::new(bean));
-            }
-
-            // --- Singleton scope: cache + state tracking ---
-            // --- Singleton 作用域：缓存 + 状态追踪 ---
-            {
-                let beans = self.read_beans()?;
-                beans.creating.borrow_mut().insert(type_id);
-            }
-            // State: Defined → Creating
-            {
-                let mut beans = self.write_beans()?;
-                beans.states.insert(type_id, BeanState::Creating);
-            }
-
-            let placeholder: Arc<T> = {
-                let bean = factory(self)?;
-                Arc::new(bean)
-            };
-
-            // Store Weak reference early (for circular dependencies)
-            // 提前存储Weak引用（用于循环依赖）
-            {
-                let mut beans = self.write_beans()?;
-                beans.early_exposed.insert(
-                    type_id,
-                    Arc::downgrade(&placeholder) as std::sync::Weak<dyn Any + Send + Sync>,
-                );
-            }
-
-            // State: Creating → Created
-            {
-                let mut beans = self.write_beans()?;
-                beans.singletons.insert(type_id, placeholder.clone());
-                beans.creating.borrow_mut().remove(&type_id);
-                beans.states.insert(type_id, BeanState::Created);
-            }
-
-            // Call post_construct callback if available
-            // 调用初始化后回调（如果有）
-            {
-                let beans = self.read_beans()?;
-                if let Some(reg) = beans.registrations.get(&type_id)
-                    && let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
-                    && let Some(post_construct) = &reg_t.post_construct
-                {
-                    post_construct(&placeholder)?;
-                }
-            }
-
-            Ok(placeholder)
-        }
-        else
-        {
-            // Fall back to named bean resolution (@Qualifier support)
-            // 回退到命名bean解析（@Qualifier支持）
-            self.resolve_named_bean()
-        }
-    }
-
-    /// Get a bean by name
-    /// 按名称获取bean
-    ///
-    /// Equivalent to Spring's `ApplicationContext.getBean(String)`.
-    /// 等价于Spring的`ApplicationContext.getBean(String)`。
-    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
-    {
-        let type_id = {
-            let beans = self.read_beans()?;
-
-            beans
-                .by_name
-                .get(name)
-                .copied()
-                .ok_or_else(|| Error::not_found(format!("Bean not found: {}", name)))?
-        };
-
-        // First check if we already have a singleton
-        // 首先检查是否已有单例
-        {
-            let beans = self.read_beans()?;
-
-            if let Some(bean) = beans.singletons.get(&type_id)
-                && let Ok(typed) = Arc::clone(bean).downcast::<T>()
-            {
-                return Ok(typed);
-            }
-        }
-
-        // Check if we have a registration with factory and create the bean
-        // 检查是否有带工厂的注册并创建bean
-        let factory_opt = {
-            let beans = self.read_beans()?;
-
-            beans
-                .registrations
-                .get(&type_id)
-                .and_then(|r| r.downcast_ref::<BeanRegistration<T>>())
-                .and_then(|reg| reg.factory.clone())
-        };
-
-        if let Some(factory) = factory_opt
-        {
-            // Create the bean using the factory (resolving dependencies)
-            // 使用工厂创建bean（解析依赖）
-            let bean = factory(self)?;
-            let bean_arc = Arc::new(bean);
-
-            // Store as singleton
-            // 存储为单例
-            let mut beans = self.write_beans()?;
-
-            beans.singletons.insert(type_id, bean_arc.clone());
-
-            Ok(bean_arc)
-        }
-        else
-        {
-            Err(Error::not_found(format!("Bean not found: {}", name)))
-        }
-    }
-
-
-    /// Resolve a named bean when the default TypeId-keyed lookup fails.
-    /// 当默认TypeId键查找失败时，解析命名bean。
-    fn resolve_named_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
-    {
-        let type_id = TypeId::of::<T>();
-        let beans = self.read_beans()?;
-
-        let names = beans
-            .type_to_names
-            .get(&type_id)
-            .map(Vec::as_slice)
-            .unwrap_or(&[]);
-
-        match names.len()
-        {
-            0 => Err(Error::not_found(format!(
-                "Bean not found: {}",
-                std::any::type_name::<T>()
-            ))),
-            1 =>
-            {
-                let name = names[0].clone();
-                drop(beans);
-                self.get_qualified_bean(&name)
-            }
-            _ =>
-            {
-                // Multiple candidates: look for @Primary
-                // 多个候选者：查找@Primary
-                let primary_name = names.iter().find(|name| {
-                    beans
-                        .named_registrations
-                        .get(*name)
-                        .and_then(|(_, reg)| reg.downcast_ref::<BeanRegistration<T>>())
-                        .is_some_and(|reg| reg.definition.primary)
-                });
-
-                if let Some(name) = primary_name
-                {
-                    let name = name.clone();
-                    drop(beans);
-                    self.get_qualified_bean(&name)
-                }
-                else
-                {
-                    Err(Error::internal(format!(
-                        "Multiple beans of type {} found. \
-                         Use get_qualified_bean() with a qualifier to specify. \
-                         Candidates: {:?}",
-                        std::any::type_name::<T>(),
-                        names
-                    )))
-                }
-            }
-        }
-    }
-
     /// Register a bean with an explicit qualifier name.
     /// 使用显式限定符名称注册bean。
-    ///
-    /// Equivalent to Spring's `@Bean("beanName")` or `@Qualifier("beanName")`.
-    /// 等价于Spring的 `@Bean("beanName")` 或 `@Qualifier("beanName")`。
-    ///
-    /// Multiple beans of the same type can be registered with different names.
-    /// When retrieving, use `get_qualified_bean` to select by name, or
-    /// `get_bean` which will use `@Primary` as the default.
-    ///
-    /// 同一类型的多个bean可以使用不同的名称注册。
-    /// 检索时，使用 `get_qualified_bean` 按名称选择，或
-    /// 使用 `get_bean` 将默认使用 `@Primary`。
-    ///
-    /// # Example / 示例
-    ///
-    /// ```rust,no_run,ignore
-    /// container.register_named("redisCache", |c| {
-    ///     Ok(RedisCache::new())
-    /// })?;
-    /// container.register_named("memCache", |c| {
-    ///     Ok(MemCache::new())
-    /// })?;
-    ///
-    /// // Resolve by qualifier
-    /// // 按限定符解析
-    /// let cache = container.get_qualified_bean::<CacheService>("redisCache")?;
-    /// ```
     pub fn register_named<T, F>(&mut self, name: &str, factory: F) -> Result<()>
     where
         T: Bean + Send + Sync + 'static,
@@ -806,95 +546,219 @@ impl Container
         let registration = BeanRegistration::new(name).factory(Arc::new(factory));
 
         let mut beans = self.write_beans()?;
-        beans
-            .named_registrations
-            .insert(name.to_string(), (type_id, Box::new(registration)));
-        beans
-            .type_to_names
-            .entry(type_id)
-            .or_default()
-            .push(name.to_string());
+        beans.type_to_names.entry(type_id).or_default().push(name.to_string());
+        beans.beans.insert(name.to_string(), BeanEntry {
+            type_id,
+            registration: Box::new(registration),
+            instance: None,
+            early_exposed: None,
+            state: BeanState::Defined,
+            lazy: false,
+            scope: Scope::Singleton,
+            pre_destroy_hook: None,
+            eager_init_fn: None,
+        });
 
         Ok(())
     }
 
-    /// Get a bean by qualifier name.
-    /// 通过限定符名称获取bean。
-    ///
-    /// Equivalent to Spring's `@Qualifier("beanName")` injection.
-    /// 等价于Spring的 `@Qualifier("beanName")` 注入。
-    pub fn get_qualified_bean<T: Bean + Send + Sync + 'static>(
-        &self,
-        qualifier: &str,
-    ) -> Result<Arc<T>>
+    /// Register a named bean with full lifecycle configuration.
+    /// 使用完整生命周期配置注册命名bean。
+    pub fn register_named_with<T>(&mut self, registration: BeanRegistration<T>) -> Result<()>
+    where
+        T: Bean + Send + Sync + 'static,
     {
         let type_id = TypeId::of::<T>();
+        let name = registration.definition.name.clone();
+        let is_lazy = registration.definition.lazy;
+        let entry_scope = registration.definition.scope;
 
-        // Check named singletons cache
-        // 检查命名单例缓存
+        let hook = registration.pre_destroy.as_ref().map(|pd| {
+            Box::new(PreDestroyHookImpl { callback: pd.clone() }) as Box<dyn PreDestroyHook>
+        });
+
+        let name_clone = name.clone();
+        let eager_fn = Arc::new(move |c: &Container| {
+            c.get_qualified_bean::<T>(&name_clone)?;
+            Ok(())
+        }) as Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>;
+
+        let mut beans = self.write_beans()?;
+        beans.type_to_names.entry(type_id).or_default().push(name.clone());
+        beans.beans.insert(name, BeanEntry {
+            type_id,
+            registration: Box::new(registration),
+            instance: None,
+            early_exposed: None,
+            state: BeanState::Defined,
+            lazy: is_lazy,
+            scope: entry_scope,
+            pre_destroy_hook: hook,
+            eager_init_fn: Some(eager_fn),
+        });
+
+        Ok(())
+    }
+
+    // ── Retrieval ─────────────────────────────────────────────────────
+
+    /// Get a bean by type (resolving dependencies).
+    /// 按类型获取bean（解析依赖）。
+    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
+    {
+        let type_id = TypeId::of::<T>();
+        let name = self.resolve_type_to_name(type_id)?;
+        self.get_bean_by_name::<T>(&name)
+    }
+
+    /// Get a bean by name.
+    /// 按名称获取bean。
+    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
+    {
+        // Check if destroyed
         {
             let beans = self.read_beans()?;
-            if let Some(bean) = beans.named_singletons.get(qualifier)
+            if let Some(entry) = beans.beans.get(name)
             {
-                if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                if entry.state == BeanState::Destroyed
                 {
-                    return Ok(typed);
+                    return Err(Error::internal(format!(
+                        "Bean {} has been destroyed", name
+                    )));
                 }
+
+                // Check cached singleton (skip for Prototype scope)
+                // 检查缓存的单例（Prototype作用域跳过）
+                if entry.scope == Scope::Singleton
+                {
+                    if let Some(ref instance) = entry.instance
+                    {
+                        if let Ok(typed) = Arc::clone(instance).downcast::<T>()
+                        {
+                            return Ok(typed);
+                        }
+                    }
+                }
+
+                // Check circular dependency via early exposed
+                if beans.creating.borrow().contains(name)
+                {
+                    if let Some(entry) = beans.beans.get(name)
+                    {
+                        if let Some(ref weak) = entry.early_exposed
+                        {
+                            if let Some(arc) = weak.upgrade()
+                            {
+                                if let Ok(typed) = arc.downcast::<T>()
+                                {
+                                    return Ok(typed);
+                                }
+                            }
+                        }
+                    }
+                    return Err(Error::internal(format!(
+                        "Circular dependency detected while creating bean: {}", name
+                    )));
+                }
+            }
+            else
+            {
+                return Err(Error::not_found(format!("Bean not found: {}", name)));
             }
         }
 
-        // Look up named registration and create bean
-        // 查找命名注册并创建bean
+        // Look up factory and create
         let factory = {
             let beans = self.read_beans()?;
-            beans
-                .named_registrations
-                .get(qualifier)
-                .filter(|(tid, _)| *tid == type_id)
-                .and_then(|(_, reg)| reg.downcast_ref::<BeanRegistration<T>>())
+            beans.beans.get(name)
+                .and_then(|entry| entry.registration.downcast_ref::<BeanRegistration<T>>())
                 .and_then(|reg| reg.factory.clone())
         };
 
         if let Some(factory) = factory
         {
-            let bean = factory(self)?;
-            let bean_arc: Arc<T> = Arc::new(bean);
+            // Mark as creating
+            {
+                let mut beans = self.write_beans()?;
+                beans.creating.borrow_mut().insert(name.to_string());
+                if let Some(entry) = beans.beans.get_mut(name)
+                {
+                    entry.state = BeanState::Creating;
+                }
+            }
+
+            let placeholder: Arc<T> = {
+                let bean = factory(self)?;
+                Arc::new(bean)
+            };
+
+            // Update entry: store instance + early exposed
+            {
+                let mut beans = self.write_beans()?;
+                beans.creating.borrow_mut().remove(name);
+                if let Some(entry) = beans.beans.get_mut(name)
+                {
+                    entry.early_exposed = Some(
+                        Arc::downgrade(&placeholder) as std::sync::Weak<dyn Any + Send + Sync>
+                    );
+                    entry.instance = Some(placeholder.clone());
+                    entry.state = BeanState::Created;
+                }
+            }
 
             // Call post-construct if available
-            // 调用初始化后回调（如果有）
             {
                 let beans = self.read_beans()?;
-                if let Some((_, reg)) = beans.named_registrations.get(qualifier)
+                if let Some(entry) = beans.beans.get(name)
                 {
-                    if let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
+                    if let Some(reg_t) = entry.registration.downcast_ref::<BeanRegistration<T>>()
                     {
                         if let Some(post_construct) = &reg_t.post_construct
                         {
-                            post_construct(&bean_arc)?;
+                            post_construct(&placeholder)?;
                         }
                     }
                 }
             }
 
-            let mut beans = self.write_beans()?;
-            beans
-                .named_singletons
-                .insert(qualifier.to_string(), bean_arc.clone());
-
-            Ok(bean_arc)
+            Ok(placeholder)
         }
         else
         {
             Err(Error::not_found(format!(
-                "Qualified bean '{}' not found for type {}",
-                qualifier,
-                std::any::type_name::<T>()
+                "Bean not found: {}", name
             )))
         }
     }
 
-    /// Get all beans of a given type (from both default and named storage).
-    /// 获取指定类型的所有bean（包括默认和命名存储）。
+    /// Get a bean by qualifier name.
+    /// 通过限定符名称获取bean。
+    pub fn get_qualified_bean<T: Bean + Send + Sync + 'static>(
+        &self,
+        qualifier: &str,
+    ) -> Result<Arc<T>>
+    {
+        // Check cache first
+        {
+            let beans = self.read_beans()?;
+            if let Some(entry) = beans.beans.get(qualifier)
+            {
+                if let Some(ref instance) = entry.instance
+                {
+                    if let Ok(typed) = Arc::clone(instance).downcast::<T>()
+                    {
+                        return Ok(typed);
+                    }
+                }
+            }
+        }
+
+        // Delegate to get_bean_by_name which handles creation
+        self.get_bean_by_name(qualifier)
+    }
+
+    /// Get all beans of a given type.
+    /// 获取指定类型的所有bean。
     pub fn get_beans_of_type<T: Bean + Send + Sync + 'static>(&self) -> Vec<(String, Arc<T>)>
     {
         let type_id = TypeId::of::<T>();
@@ -902,25 +766,13 @@ impl Container
 
         if let Ok(beans) = self.read_beans()
         {
-            // Check default singletons
-            // 检查默认单例
-            if let Some(bean) = beans.singletons.get(&type_id)
+            for (name, entry) in &beans.beans
             {
-                if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                if entry.type_id == type_id
                 {
-                    results.push(("default".to_string(), typed));
-                }
-            }
-
-            // Check named singletons
-            // 检查命名单例
-            if let Some(names) = beans.type_to_names.get(&type_id)
-            {
-                for name in names
-                {
-                    if let Some(bean) = beans.named_singletons.get(name)
+                    if let Some(ref instance) = entry.instance
                     {
-                        if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                        if let Ok(typed) = Arc::clone(instance).downcast::<T>()
                         {
                             results.push((name.clone(), typed));
                         }
@@ -932,184 +784,130 @@ impl Container
         results
     }
 
-    /// Register a named bean with full lifecycle configuration.
-    /// 使用完整生命周期配置注册命名bean。
-    ///
-    /// Unlike `register_named`, this supports post-construct, pre-destroy,
-    /// lazy init, and eager initialization — the same lifecycle features
-    /// available to TypeId-keyed beans via `register_with`.
-    ///
-    /// 与 `register_named` 不同，此方法支持 post-construct、pre-destroy、
-    /// 延迟初始化和急切初始化 — 与通过 `register_with` 注册的 TypeId bean 相同。
-    pub fn register_named_with<T>(&mut self, registration: BeanRegistration<T>) -> Result<()>
-    where
-        T: Bean + Send + Sync + 'static,
-    {
-        let type_id = TypeId::of::<T>();
-        let name = registration.definition.name.clone();
-        let is_lazy = registration.definition.lazy;
-
-        // Store pre-destroy hook
-        if let Some(pre_destroy) = &registration.pre_destroy
-        {
-            let hook = PreDestroyHookImpl {
-                callback: pre_destroy.clone(),
-            };
-            let mut beans = self.write_beans()?;
-            beans.named_pre_destroy_hooks.insert(name.clone(), Box::new(hook));
-        }
-
-        let name_clone = name.clone();
-        {
-            let mut beans = self.write_beans()?;
-            beans.named_registrations.insert(
-                name.clone(),
-                (type_id, Box::new(registration)),
-            );
-            beans.type_to_names.entry(type_id).or_default().push(name.clone());
-            beans.named_lazy_flags.insert(name.clone(), is_lazy);
-            beans.named_eager_init_fns.insert(
-                name.clone(),
-                Arc::new(move |c: &Container| {
-                    c.get_qualified_bean::<T>(&name_clone)?;
-                    Ok(())
-                }),
-            );
-            beans.named_states.insert(name, BeanState::Defined);
-        }
-
-        Ok(())
-    }
-
-    /// Check if a bean is registered
-    /// 检查bean是否已注册
+    /// Check if a bean is registered and available (not destroyed).
+    /// 检查bean是否已注册且可用（未销毁）。
     pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool
     {
         let type_id = TypeId::of::<T>();
-
         if let Ok(beans) = self.beans.try_read()
-            && (beans.singletons.contains_key(&type_id)
-                || beans.registrations.contains_key(&type_id)
-                || beans.type_to_names.contains_key(&type_id))
         {
-            return true;
+            let name = beans.type_index.get(&type_id)
+                .or_else(|| beans.type_to_names.get(&type_id).and_then(|n| n.first()));
+            match name
+            {
+                Some(n) => beans.beans.get(n).map_or(false, |e| e.state != BeanState::Destroyed),
+                None => false,
+            }
         }
-
-        false
+        else
+        {
+            false
+        }
     }
 
-    /// Get the extensions
-    /// 获取扩展
+    /// Get the extensions.
+    /// 获取扩展。
     pub fn extensions(&self) -> &Extensions
     {
         &self.extensions
     }
 
-    /// Get a mutable reference to extensions
-    /// 获取扩展的可变引用
+    /// Get a mutable reference to extensions.
+    /// 获取扩展的可变引用。
     pub fn extensions_mut(&mut self) -> &mut Extensions
     {
         &mut self.extensions
     }
 
-    /// Get the reflection container
-    /// 获取反射容器
+    /// Get the reflection container.
+    /// 获取反射容器。
     pub fn reflect(&self) -> &Arc<ReflectContainer>
     {
         &self.reflect
     }
 
-    /// Get the lifecycle state of a bean
-    /// 获取bean的生命周期状态
+    /// Get the lifecycle state of a bean.
+    /// 获取bean的生命周期状态。
     pub fn bean_state<T: Bean + Send + Sync + 'static>(&self) -> Option<BeanState>
     {
         let type_id = TypeId::of::<T>();
         let beans = self.read_beans().ok()?;
-        beans.states.get(&type_id).copied()
+
+        // Try default name first
+        if let Some(name) = beans.type_index.get(&type_id)
+        {
+            return beans.beans.get(name).map(|e| e.state);
+        }
+
+        // Try first named bean
+        beans.type_to_names.get(&type_id)
+            .and_then(|names| names.first())
+            .and_then(|name| beans.beans.get(name))
+            .map(|e| e.state)
     }
 
-    /// Initialize all registered beans (eager initialization)
-    /// 初始化所有注册的bean（急切初始化）
-    ///
-    /// Equivalent to calling `getBean()` on all non-lazy registered beans.
-    /// 等价于在所有非延迟注册的bean上调用`getBean()`。
-    /// Lazy beans are skipped and will be initialized on first access.
-    /// 延迟bean被跳过，将在首次访问时初始化。
+    /// Initialize all registered beans (eager initialization).
+    /// 初始化所有注册的bean（急切初始化）。
     pub fn initialize(&self) -> Result<()>
     {
-        let to_init: Vec<TypeId> = {
+        let to_init: Vec<(String, Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>)> = {
             let beans = self.read_beans()?;
-            beans
-                .registrations
-                .keys()
-                .filter(|tid| !beans.lazy_flags.get(tid).copied().unwrap_or(false))
-                .copied()
+            beans.beans.iter()
+                .filter(|(_, entry)| !entry.lazy)
+                .filter_map(|(name, entry)| {
+                    entry.eager_init_fn.as_ref().map(|f| (name.clone(), f.clone()))
+                })
                 .collect()
         };
 
-        for type_id in to_init
+        for (_, init_fn) in to_init
         {
-            let init_fn = {
-                let beans = self.read_beans()?;
-                beans.eager_init_fns.get(&type_id).cloned()
-            };
-            if let Some(init_fn) = init_fn
-            {
-                init_fn(self)?;
-            }
+            init_fn(self)?;
         }
 
         Ok(())
     }
 
-    /// Shutdown the container, calling pre-destroy callbacks
-    /// 关闭容器，调用销毁前回调
+    /// Shutdown the container, calling pre-destroy callbacks.
+    /// 关闭容器，调用销毁前回调。
     pub fn shutdown(&self) -> Result<()>
     {
         let mut beans = self.write_beans()?;
 
-        // Transition all Created beans to Destroying
-        // 将所有 Created 状态的 bean 转为 Destroying
-        let type_ids: Vec<TypeId> = beans.states.keys().copied().collect();
-        for tid in &type_ids
-        {
-            if let Some(state) = beans.states.get_mut(tid)
-            {
-                if *state == BeanState::Created
+        // Transition all Created beans to Destroying and collect hooks
+        let hooks: Vec<(String, Box<dyn PreDestroyHook>)> = beans.beans.iter_mut()
+            .filter_map(|(name, entry)| {
+                if entry.state == BeanState::Created
                 {
-                    *state = BeanState::Destroying;
+                    entry.state = BeanState::Destroying;
+                    entry.pre_destroy_hook.take().map(|h| (name.clone(), h))
+                }
+                else
+                {
+                    None
+                }
+            })
+            .collect();
+
+        // Invoke hooks
+        for (name, hook) in hooks
+        {
+            if let Some(entry) = beans.beans.get(&name)
+            {
+                if let Some(ref instance) = entry.instance
+                {
+                    let _ = hook.invoke(instance.as_ref());
                 }
             }
         }
 
-        let hooks: Vec<_> = beans.pre_destroy_hooks.drain().collect();
-        for (type_id, hook) in hooks
+        // Transition to Destroyed and release instances
+        // 转为Destroyed状态并释放实例
+        for entry in beans.beans.values_mut()
         {
-            if let Some(bean) = beans.singletons.get(&type_id)
-            {
-                let _ = hook.invoke(bean.as_ref());
-            }
-        }
-
-        beans.singletons.clear();
-        beans.registrations.clear();
-        beans.by_name.clear();
-        beans.named_registrations.clear();
-        beans.named_singletons.clear();
-        beans.type_to_names.clear();
-        beans.named_states.clear();
-        beans.named_lazy_flags.clear();
-        beans.named_eager_init_fns.clear();
-        beans.named_pre_destroy_hooks.clear();
-
-        // Transition all to Destroyed
-        // 将所有状态转为 Destroyed
-        for tid in &type_ids
-        {
-            if let Some(state) = beans.states.get_mut(tid)
-            {
-                *state = BeanState::Destroyed;
-            }
+            entry.instance = None;
+            entry.early_exposed = None;
+            entry.state = BeanState::Destroyed;
         }
 
         Ok(())
@@ -1123,6 +921,7 @@ impl Default for Container
         Self::new()
     }
 }
+
 
 /// Application Context (Spring Boot equivalent)
 /// 应用上下文（Spring Boot等价物）
@@ -1262,42 +1061,39 @@ impl ApplicationContext
     /// - 从注册中重新初始化所有非延迟bean
     pub fn refresh(&mut self) -> Result<()>
     {
-        // Step 1: Collect all singletons to destroy
-        // 步骤1：收集要销毁的所有单例
-        let singletons_to_destroy: Vec<_> = {
-            let beans = self
-                .container
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
-            beans.singletons.keys().copied().collect()
-        };
-
-        // Step 2: Call pre-destroy callbacks (for beans that implement PreDestroy trait)
-        // 步骤2：调用销毁前回调（对于实现PreDestroy trait的bean）
-        // Note: In a full implementation, we'd check registrations for pre_destroy callbacks
-        // and call them. For now, we rely on the PreDestroy trait implementation.
-        // 注意：在完整实现中，我们会检查注册中的销毁前回调并调用它们
-        // 目前，我们依赖PreDestroy trait实现
-        for _type_id in singletons_to_destroy
+        // Step 1: Invoke pre-destroy callbacks on created beans
+        // 步骤1：在已创建的bean上调用销毁前回调
         {
-            // The bean will be dropped when cleared from the map
-            // bean从映射清除时将被丢弃
+            let beans = self.container.read_beans()?;
+            for (_name, entry) in &beans.beans
+            {
+                if entry.state == BeanState::Created
+                {
+                    if let Some(ref hook) = entry.pre_destroy_hook
+                    {
+                        if let Some(ref instance) = entry.instance
+                        {
+                            let _ = hook.invoke(instance.as_ref());
+                        }
+                    }
+                }
+            }
         }
 
-        // Step 3: Clear all singletons
-        // 步骤3：清除所有单例
+        // Step 2: Reset instances but keep registrations
+        // 步骤2：重置实例但保留注册
         {
-            let mut beans = self
-                .container
-                .beans
-                .write()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
-            beans.singletons.clear();
+            let mut beans = self.container.write_beans()?;
+            for entry in beans.beans.values_mut()
+            {
+                entry.instance = None;
+                entry.early_exposed = None;
+                entry.state = BeanState::Defined;
+            }
         }
 
-        // Step 4: Re-initialize the context
-        // 步骤4：重新初始化上下文
+        // Step 3: Re-initialize eager beans
+        // 步骤3：重新初始化急切bean
         self.active = false;
         self.start()?;
 
