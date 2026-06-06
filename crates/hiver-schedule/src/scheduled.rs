@@ -241,10 +241,7 @@ impl TaskScheduler
         {
             ScheduleType::FixedRate(duration) => self.spawn_fixed_rate_task(task, duration),
             ScheduleType::FixedDelay(duration) => self.spawn_fixed_delay_task(task, duration),
-            ScheduleType::Cron(_) =>
-            {
-                return Err("Cron scheduling not yet implemented".to_string());
-            },
+            ScheduleType::Cron(expression) => self.spawn_cron_task(task, &expression),
         };
 
         let mut handles = self.handles.write().await;
@@ -302,6 +299,81 @@ impl TaskScheduler
             }
 
             info!("Stopping fixed delay task: {}", task_name);
+        })
+    }
+
+    /// Spawn a cron task using `tokio-cron-scheduler`.
+    /// 使用 `tokio-cron-scheduler` 生成 cron 任务。
+    ///
+    /// Equivalent to Spring's `@Scheduled(cron = "...")`.
+    /// 等价于 Spring 的 `@Scheduled(cron = "...")`。
+    fn spawn_cron_task(&self, task: ScheduledTask, expression: &str) -> JoinHandle<()>
+    {
+        let task_name = task.name.clone();
+        let running = self.running.clone();
+        let async_fn = task.async_task_fn.clone();
+        let initial_delay = task.initial_delay;
+        let expression_owned = expression.to_string();
+
+        tokio::spawn(async move {
+            if async_fn.is_none()
+            {
+                tracing::warn!("Cron task {} has no async fn set — nothing to execute", task_name);
+                return;
+            }
+
+            let scheduler = match tokio_cron_scheduler::JobScheduler::new().await
+            {
+                Ok(s) => s,
+                Err(e) =>
+                {
+                    tracing::error!("Failed to create cron scheduler for {}: {}", task_name, e);
+                    return;
+                },
+            };
+
+            let name_clone = task_name.clone();
+            let job = match tokio_cron_scheduler::Job::new_async(
+                &expression_owned,
+                move |_uuid, _lock| {
+                    let inner_fn = async_fn.clone().unwrap();
+                    Box::pin(async move { inner_fn().await })
+                },
+            )
+            {
+                Ok(j) => j,
+                Err(e) =>
+                {
+                    tracing::error!("Failed to create cron job for {}: {}", task_name, e);
+                    return;
+                },
+            };
+
+            if let Err(e) = scheduler.add(job).await
+            {
+                tracing::error!("Failed to add cron job for {}: {}", task_name, e);
+                return;
+            }
+
+            // Initial delay
+            if !initial_delay.is_zero()
+            {
+                sleep(initial_delay).await;
+            }
+
+            if let Err(e) = scheduler.start().await
+            {
+                tracing::error!("Failed to start cron scheduler for {}: {}", task_name, e);
+                return;
+            }
+
+            tracing::info!("Cron task started: {} ({})", name_clone, expression_owned);
+
+            // Wait until shutdown
+            while *running.read().await
+            {
+                sleep(Duration::from_secs(1)).await;
+            }
         })
     }
 
