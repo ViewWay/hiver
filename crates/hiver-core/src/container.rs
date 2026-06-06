@@ -197,6 +197,22 @@ struct BeanStore
     /// Type -> list of bean names for reverse lookup
     /// 类型 -> bean名称列表，用于反向查找
     type_to_names: HashMap<TypeId, Vec<String>>,
+
+    /// Named bean lifecycle states
+    /// 命名bean生命周期状态
+    named_states: HashMap<String, BeanState>,
+
+    /// Named bean lazy flags
+    /// 命名bean延迟标志
+    named_lazy_flags: HashMap<String, bool>,
+
+    /// Named bean eager init functions
+    /// 命名bean急切初始化函数
+    named_eager_init_fns: HashMap<String, Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
+
+    /// Named bean pre-destroy hooks
+    /// 命名bean销毁前回调
+    named_pre_destroy_hooks: HashMap<String, Box<dyn PreDestroyHook>>,
 }
 
 impl BeanStore
@@ -216,6 +232,10 @@ impl BeanStore
             named_registrations: HashMap::new(),
             named_singletons: HashMap::new(),
             type_to_names: HashMap::new(),
+            named_states: HashMap::new(),
+            named_lazy_flags: HashMap::new(),
+            named_eager_init_fns: HashMap::new(),
+            named_pre_destroy_hooks: HashMap::new(),
         }
     }
 }
@@ -912,6 +932,55 @@ impl Container
         results
     }
 
+    /// Register a named bean with full lifecycle configuration.
+    /// 使用完整生命周期配置注册命名bean。
+    ///
+    /// Unlike `register_named`, this supports post-construct, pre-destroy,
+    /// lazy init, and eager initialization — the same lifecycle features
+    /// available to TypeId-keyed beans via `register_with`.
+    ///
+    /// 与 `register_named` 不同，此方法支持 post-construct、pre-destroy、
+    /// 延迟初始化和急切初始化 — 与通过 `register_with` 注册的 TypeId bean 相同。
+    pub fn register_named_with<T>(&mut self, registration: BeanRegistration<T>) -> Result<()>
+    where
+        T: Bean + Send + Sync + 'static,
+    {
+        let type_id = TypeId::of::<T>();
+        let name = registration.definition.name.clone();
+        let is_lazy = registration.definition.lazy;
+
+        // Store pre-destroy hook
+        if let Some(pre_destroy) = &registration.pre_destroy
+        {
+            let hook = PreDestroyHookImpl {
+                callback: pre_destroy.clone(),
+            };
+            let mut beans = self.write_beans()?;
+            beans.named_pre_destroy_hooks.insert(name.clone(), Box::new(hook));
+        }
+
+        let name_clone = name.clone();
+        {
+            let mut beans = self.write_beans()?;
+            beans.named_registrations.insert(
+                name.clone(),
+                (type_id, Box::new(registration)),
+            );
+            beans.type_to_names.entry(type_id).or_default().push(name.clone());
+            beans.named_lazy_flags.insert(name.clone(), is_lazy);
+            beans.named_eager_init_fns.insert(
+                name.clone(),
+                Arc::new(move |c: &Container| {
+                    c.get_qualified_bean::<T>(&name_clone)?;
+                    Ok(())
+                }),
+            );
+            beans.named_states.insert(name, BeanState::Defined);
+        }
+
+        Ok(())
+    }
+
     /// Check if a bean is registered
     /// 检查bean是否已注册
     pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool
@@ -1028,6 +1097,10 @@ impl Container
         beans.named_registrations.clear();
         beans.named_singletons.clear();
         beans.type_to_names.clear();
+        beans.named_states.clear();
+        beans.named_lazy_flags.clear();
+        beans.named_eager_init_fns.clear();
+        beans.named_pre_destroy_hooks.clear();
 
         // Transition all to Destroyed
         // 将所有状态转为 Destroyed
