@@ -199,6 +199,10 @@ struct BeanEntry
     /// 是否延迟初始化。
     lazy: bool,
 
+    /// Whether this bean is the primary candidate for its type.
+    /// 是否为其类型的主候选bean。
+    primary: bool,
+
     /// Bean scope (Singleton or Prototype).
     /// Bean作用域（Singleton或Prototype）。
     scope: Scope,
@@ -327,20 +331,7 @@ impl Container
                     beans
                         .beans
                         .get(*name)
-                        .map_or(false, |e| {
-                            // Check if primary by looking at the registration
-                            e.registration
-                                .downcast_ref::<BeanRegistration<()>>()
-                                .map_or(false, |r| r.definition.primary)
-                                // Since we can't downcast to arbitrary T,
-                                // also check if any registration has primary set
-                                || e.registration
-                                    .downcast_ref::<BeanRegistration<u8>>()
-                                    .map_or(false, |r| r.definition.primary)
-                                || e.registration
-                                    .downcast_ref::<BeanRegistration<String>>()
-                                    .map_or(false, |r| r.definition.primary)
-                        })
+                        .map_or(false, |e| e.primary)
                 });
 
                 if let Some(name) = primary_name
@@ -386,6 +377,7 @@ impl Container
             early_exposed: None,
             state: BeanState::Defined,
             lazy: false,
+            primary: false,
             scope: Scope::Singleton,
             pre_destroy_hook: None,
             eager_init_fn: None,
@@ -409,6 +401,7 @@ impl Container
 
         let is_lazy = registration.definition.lazy;
         let entry_scope = registration.definition.scope;
+        let entry_primary = registration.definition.primary;
         let name_clone = name.clone();
 
         let eager_fn = Arc::new(move |c: &Container| {
@@ -426,6 +419,7 @@ impl Container
             early_exposed: None,
             state: BeanState::Defined,
             lazy: is_lazy,
+            primary: entry_primary,
             scope: entry_scope,
             pre_destroy_hook: hook,
             eager_init_fn: Some(eager_fn),
@@ -485,6 +479,7 @@ impl Container
                 early_exposed: None,
                 state: BeanState::Created,
                 lazy: false,
+            primary: false,
                 scope: Scope::Singleton,
                 pre_destroy_hook: None,
                 eager_init_fn: None,
@@ -554,6 +549,7 @@ impl Container
             early_exposed: None,
             state: BeanState::Defined,
             lazy: false,
+            primary: false,
             scope: Scope::Singleton,
             pre_destroy_hook: None,
             eager_init_fn: None,
@@ -572,6 +568,7 @@ impl Container
         let name = registration.definition.name.clone();
         let is_lazy = registration.definition.lazy;
         let entry_scope = registration.definition.scope;
+        let entry_primary = registration.definition.primary;
 
         let hook = registration.pre_destroy.as_ref().map(|pd| {
             Box::new(PreDestroyHookImpl { callback: pd.clone() }) as Box<dyn PreDestroyHook>
@@ -592,6 +589,7 @@ impl Container
             early_exposed: None,
             state: BeanState::Defined,
             lazy: is_lazy,
+            primary: entry_primary,
             scope: entry_scope,
             pre_destroy_hook: hook,
             eager_init_fn: Some(eager_fn),
@@ -692,17 +690,25 @@ impl Container
                 Arc::new(bean)
             };
 
-            // Update entry: store instance + early exposed
+            // Update entry: store instance + early exposed (skip for Prototype)
             {
                 let mut beans = self.write_beans()?;
                 beans.creating.borrow_mut().remove(name);
                 if let Some(entry) = beans.beans.get_mut(name)
                 {
-                    entry.early_exposed = Some(
-                        Arc::downgrade(&placeholder) as std::sync::Weak<dyn Any + Send + Sync>
-                    );
-                    entry.instance = Some(placeholder.clone());
-                    entry.state = BeanState::Created;
+                    if entry.scope == Scope::Prototype
+                    {
+                        // Prototype: don't cache, just mark state
+                        entry.state = BeanState::Created;
+                    }
+                    else
+                    {
+                        entry.early_exposed = Some(
+                            Arc::downgrade(&placeholder) as std::sync::Weak<dyn Any + Send + Sync>
+                        );
+                        entry.instance = Some(placeholder.clone());
+                        entry.state = BeanState::Created;
+                    }
                 }
             }
 
