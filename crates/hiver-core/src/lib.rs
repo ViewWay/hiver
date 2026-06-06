@@ -40,7 +40,7 @@ pub mod reactive;
 pub mod reflect;
 
 // Re-exports / 重新导出
-pub use bean::{Bean, BeanDefinition, BeanFactory, Scope};
+pub use bean::{Bean, BeanDefinition, BeanFactory, BeanState, Scope};
 pub use conditional::{
     AllConditions, AnyCondition, Condition, ConditionContext, ConditionalOnBean,
     ConditionalOnMissingBean, ConditionalOnProperty, NotCondition, ProfileCondition,

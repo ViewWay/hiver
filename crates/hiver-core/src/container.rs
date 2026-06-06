@@ -19,7 +19,7 @@ use std::{
 };
 
 use super::{
-    bean::{Bean, BeanDefinition, Scope},
+    bean::{Bean, BeanDefinition, BeanState, Scope},
     conditional::{Condition, ConditionContext},
     error::{Error, Result},
     extension::Extensions,
@@ -181,6 +181,10 @@ struct BeanStore
     /// Whether each registration is lazy
     /// 每个注册是否延迟初始化
     lazy_flags: HashMap<TypeId, bool>,
+
+    /// Bean lifecycle states
+    /// Bean生命周期状态
+    states: HashMap<TypeId, BeanState>,
 }
 
 impl BeanStore
@@ -196,6 +200,7 @@ impl BeanStore
             pre_destroy_hooks: HashMap::new(),
             eager_init_fns: HashMap::new(),
             lazy_flags: HashMap::new(),
+            states: HashMap::new(),
         }
     }
 }
@@ -297,6 +302,7 @@ impl Container
             .by_name
             .insert(registration.definition.name.clone(), type_id);
         beans.registrations.insert(type_id, Box::new(registration));
+        beans.states.insert(type_id, BeanState::Defined);
 
         Ok(())
     }
@@ -336,6 +342,7 @@ impl Container
         );
 
         beans.registrations.insert(type_id, Box::new(registration));
+        beans.states.insert(type_id, BeanState::Defined);
 
         Ok(())
     }
@@ -483,6 +490,20 @@ impl Container
     {
         let type_id = TypeId::of::<T>();
 
+        // Check if container is shut down
+        // 检查容器是否已关闭
+        {
+            let beans = self.read_beans()?;
+            if let Some(state) = beans.states.get(&type_id)
+                && *state == BeanState::Destroyed
+            {
+                return Err(Error::internal(format!(
+                    "Bean {} has been destroyed",
+                    std::any::type_name::<T>()
+                )));
+            }
+        }
+
         // First, check if we already have a singleton
         // 首先检查是否已有单例
         {
@@ -494,9 +515,8 @@ impl Container
                 return Ok(typed);
             }
 
-            // Check for circular dependency: if we're currently creating this bean,
-            // try to return the early-exposed Weak reference
-            // 检查循环依赖：如果正在创建此bean，尝试返回提前暴露的Weak引用
+            // Check for circular dependency
+            // 检查循环依赖
             if beans.creating.borrow().contains(&type_id)
             {
                 if let Some(weak) = beans.early_exposed.get(&type_id)
@@ -505,8 +525,6 @@ impl Container
                 {
                     return Ok(typed);
                 }
-                // Circular dependency detected but no early-exposed reference
-                // 检测到循环依赖但没有提前暴露的引用
                 return Err(Error::internal(format!(
                     "Circular dependency detected while creating bean: {}",
                     std::any::type_name::<T>()
@@ -516,30 +534,42 @@ impl Container
 
         // Check if we have a registration with factory
         // 检查是否有带工厂的注册
-        let factory_opt = {
+        let (factory_opt, is_prototype) = {
             let beans = self.read_beans()?;
 
-            beans
+            let reg = beans
                 .registrations
                 .get(&type_id)
-                .and_then(|r| r.downcast_ref::<BeanRegistration<T>>())
-                .and_then(|reg| reg.factory.clone())
+                .and_then(|r| r.downcast_ref::<BeanRegistration<T>>());
+
+            let factory = reg.and_then(|reg| reg.factory.clone());
+            let prototype = reg.map_or(false, |reg| reg.definition.scope == Scope::Prototype);
+            (factory, prototype)
         };
 
         if let Some(factory) = factory_opt
         {
-            // Mark as creating (for cycle detection)
-            // 标记为正在创建（用于循环检测）
+            // --- Prototype scope: always create new instance ---
+            // --- Prototype 作用域：每次创建新实例 ---
+            if is_prototype
+            {
+                let bean = factory(self)?;
+                return Ok(Arc::new(bean));
+            }
+
+            // --- Singleton scope: cache + state tracking ---
+            // --- Singleton 作用域：缓存 + 状态追踪 ---
             {
                 let beans = self.read_beans()?;
                 beans.creating.borrow_mut().insert(type_id);
             }
+            // State: Defined → Creating
+            {
+                let mut beans = self.write_beans()?;
+                beans.states.insert(type_id, BeanState::Creating);
+            }
 
-            // Create a placeholder Arc with Weak reference for early exposure
-            // 创建占位符Arc和Weak引用用于提前暴露
             let placeholder: Arc<T> = {
-                // Try to create the bean
-                // 尝试创建bean
                 let bean = factory(self)?;
                 Arc::new(bean)
             };
@@ -554,14 +584,12 @@ impl Container
                 );
             }
 
-            // Store as singleton
-            // 存储为单例
+            // State: Creating → Created
             {
                 let mut beans = self.write_beans()?;
                 beans.singletons.insert(type_id, placeholder.clone());
-                // Remove from creating set
-                // 从创建集合中移除
                 beans.creating.borrow_mut().remove(&type_id);
+                beans.states.insert(type_id, BeanState::Created);
             }
 
             // Call post_construct callback if available
@@ -683,6 +711,15 @@ impl Container
         &self.reflect
     }
 
+    /// Get the lifecycle state of a bean
+    /// 获取bean的生命周期状态
+    pub fn bean_state<T: Bean + Send + Sync + 'static>(&self) -> Option<BeanState>
+    {
+        let type_id = TypeId::of::<T>();
+        let beans = self.read_beans().ok()?;
+        beans.states.get(&type_id).copied()
+    }
+
     /// Initialize all registered beans (eager initialization)
     /// 初始化所有注册的bean（急切初始化）
     ///
@@ -723,6 +760,20 @@ impl Container
     {
         let mut beans = self.write_beans()?;
 
+        // Transition all Created beans to Destroying
+        // 将所有 Created 状态的 bean 转为 Destroying
+        let type_ids: Vec<TypeId> = beans.states.keys().copied().collect();
+        for tid in &type_ids
+        {
+            if let Some(state) = beans.states.get_mut(tid)
+            {
+                if *state == BeanState::Created
+                {
+                    *state = BeanState::Destroying;
+                }
+            }
+        }
+
         let hooks: Vec<_> = beans.pre_destroy_hooks.drain().collect();
         for (type_id, hook) in hooks
         {
@@ -735,6 +786,16 @@ impl Container
         beans.singletons.clear();
         beans.registrations.clear();
         beans.by_name.clear();
+
+        // Transition all to Destroyed
+        // 将所有状态转为 Destroyed
+        for tid in &type_ids
+        {
+            if let Some(state) = beans.states.get_mut(tid)
+            {
+                *state = BeanState::Destroyed;
+            }
+        }
 
         Ok(())
     }
@@ -1976,14 +2037,94 @@ mod tests
     fn test_register_conditional_on_bean_skips_when_absent()
     {
         let mut container = Container::new();
-        // UserService not registered, so conditional should skip / UserService未注册，条件应跳过
         let cond = ConditionalOnBean::of::<UserService>();
         container
             .register_conditional(|_| Ok(EmailService { sent_count: 0 }), &cond)
             .unwrap();
-        // EmailService should NOT be registered since UserService is absent
-        // EmailService不应被注册，因为UserService不存在
         assert!(!container.has_bean::<EmailService>());
+    }
+
+    // ── BeanState lifecycle tests / BeanState 生命周期测试 ──────────────
+
+    #[test]
+    fn test_bean_state_defined_after_register()
+    {
+        let mut container = Container::new();
+        container
+            .register(|_| Ok(UserService { user_count: 0 }))
+            .unwrap();
+        assert_eq!(container.bean_state::<UserService>(), Some(BeanState::Defined));
+    }
+
+    #[test]
+    fn test_bean_state_created_after_get()
+    {
+        let mut container = Container::new();
+        container
+            .register(|_| Ok(UserService { user_count: 0 }))
+            .unwrap();
+        container.get_bean::<UserService>().unwrap();
+        assert_eq!(container.bean_state::<UserService>(), Some(BeanState::Created));
+    }
+
+    #[test]
+    fn test_bean_state_destroyed_after_shutdown()
+    {
+        let mut container = Container::new();
+        container
+            .register(|_| Ok(UserService { user_count: 0 }))
+            .unwrap();
+        container.get_bean::<UserService>().unwrap();
+        container.shutdown().unwrap();
+        assert_eq!(container.bean_state::<UserService>(), Some(BeanState::Destroyed));
+    }
+
+    // ── Prototype scope tests / Prototype 作用域测试 ──────────────────
+
+    #[test]
+    fn test_prototype_creates_new_instance_each_time()
+    {
+        let mut container = Container::new();
+        let reg = BeanRegistration::new("svc")
+            .factory(Arc::new(|_| Ok(UserService { user_count: 0 })))
+            .scope(Scope::Prototype);
+        container.register_with(reg).unwrap();
+
+        let bean1 = container.get_bean::<UserService>().unwrap();
+        let bean2 = container.get_bean::<UserService>().unwrap();
+        // Prototype: each call creates a new instance
+        // Prototype: 每次调用创建新实例
+        assert!(!Arc::ptr_eq(&bean1, &bean2));
+    }
+
+    #[test]
+    fn test_singleton_returns_same_instance()
+    {
+        let mut container = Container::new();
+        container
+            .register(|_| Ok(UserService { user_count: 0 }))
+            .unwrap();
+        let bean1 = container.get_bean::<UserService>().unwrap();
+        let bean2 = container.get_bean::<UserService>().unwrap();
+        assert!(Arc::ptr_eq(&bean1, &bean2));
+    }
+
+    #[test]
+    fn test_prototype_not_cached_in_singletons()
+    {
+        let mut container = Container::new();
+        let reg = BeanRegistration::new("svc")
+            .factory(Arc::new(|_| Ok(UserService { user_count: 42 })))
+            .scope(Scope::Prototype);
+        container.register_with(reg).unwrap();
+
+        let bean = container.get_bean::<UserService>().unwrap();
+        assert_eq!(bean.user_count, 42);
+        // Each call creates fresh instance
+        // 每次调用创建新实例
+        drop(bean);
+        let bean2 = container.get_bean::<UserService>().unwrap();
+        assert_eq!(bean2.user_count, 42);
     }
 
     #[test]

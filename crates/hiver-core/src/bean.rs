@@ -45,6 +45,40 @@ pub trait Bean: Any
 // 使用 `#[derive(Bean)]` 标记意图并启用未来的自定义功能。
 impl<T: Any> Bean for T {}
 
+/// Bean lifecycle state
+/// Bean生命周期状态
+///
+/// Tracks the current state of a bean in the container lifecycle.
+/// 跟踪容器生命周期中bean的当前状态。
+///
+/// State transitions:
+/// 状态转换：
+/// ```text
+/// Defined → Creating → Created → Destroying → Destroyed
+/// ```
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum BeanState
+{
+    /// Registered but not yet instantiated / 已注册但未实例化
+    Defined,
+    /// Factory is being invoked (cycle detection) / 工厂正在调用（循环检测）
+    Creating,
+    /// Singleton instance created and cached / 单例实例已创建并缓存
+    Created,
+    /// Pre-destroy callback being invoked / 销毁前回调正在调用
+    Destroying,
+    /// Bean removed from container / Bean已从容器移除
+    Destroyed,
+}
+
+impl Default for BeanState
+{
+    fn default() -> Self
+    {
+        Self::Defined
+    }
+}
+
 /// Bean scope
 /// Bean作用域
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
