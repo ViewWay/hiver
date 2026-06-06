@@ -695,6 +695,7 @@ const NOOP_RAW_WAKER_VTABLE: RawWakerVTable = RawWakerVTable::new(
 );
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

@@ -28,6 +28,7 @@
 #![allow(clippy::match_same_arms)]
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 pub mod bulkhead;

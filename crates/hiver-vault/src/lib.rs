@@ -64,4 +64,5 @@ pub use client::{VaultClient, VaultConfig};
 pub use error::VaultError;
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;

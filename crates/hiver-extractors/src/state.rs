@@ -142,6 +142,7 @@ pub trait AddState
 // 请改用Router的有状态处理程序。
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

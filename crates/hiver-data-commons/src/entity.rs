@@ -546,6 +546,7 @@ impl<E> EntityWithLifecycle for E where E: AggregateRoot {}
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use chrono::Utc;

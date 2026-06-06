@@ -544,6 +544,7 @@ pub fn status(status: StatusCode) -> Response
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

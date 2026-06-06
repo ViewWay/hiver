@@ -455,6 +455,7 @@ impl Default for RetryState
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

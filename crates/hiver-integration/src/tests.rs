@@ -2,6 +2,7 @@
 //! 集成测试模块
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests {
     // Integration tests for message handling patterns
     // 消息处理模式的集成测试

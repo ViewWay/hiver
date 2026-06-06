@@ -83,6 +83,7 @@ fn read_file(path: &PathBuf) -> GrpcResult<Vec<u8>>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

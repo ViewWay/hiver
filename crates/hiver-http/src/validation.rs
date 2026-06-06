@@ -588,6 +588,7 @@ impl ValidationHelpers
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

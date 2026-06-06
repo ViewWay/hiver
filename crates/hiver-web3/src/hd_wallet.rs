@@ -1592,6 +1592,7 @@ fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 3
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

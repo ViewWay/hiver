@@ -755,6 +755,7 @@ pub fn build_data_scope_authority(
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

@@ -189,6 +189,7 @@ pub async fn has_active_transaction_in_request(req: &Request) -> bool
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use hiver_http::{Method, Request};

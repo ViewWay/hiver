@@ -1180,6 +1180,7 @@ fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

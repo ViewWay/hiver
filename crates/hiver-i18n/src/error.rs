@@ -109,6 +109,7 @@ impl From<std::io::Error> for I18nError
 pub type I18nResult<T> = Result<T, I18nError>;
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

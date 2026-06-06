@@ -47,6 +47,7 @@ pub use hiver_aop_macros::{
 pub mod runtime;
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 // Re-export runtime types at crate root for convenience

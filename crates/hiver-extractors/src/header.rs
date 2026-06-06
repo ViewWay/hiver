@@ -293,6 +293,7 @@ pub fn has_header(req: &Request, name: &str) -> bool
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

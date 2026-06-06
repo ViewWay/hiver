@@ -310,6 +310,7 @@ pub fn build_where_clause_offset(
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use hiver_data_commons::Value;

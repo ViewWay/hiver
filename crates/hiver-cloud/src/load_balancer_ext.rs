@@ -178,6 +178,7 @@ impl<L: LoadBalancer> LoadBalancer for ZoneAwareLoadBalancer<L>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

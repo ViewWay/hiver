@@ -309,6 +309,7 @@ fn collect_rows<T: serde::de::DeserializeOwned>(rows: Vec<hiver_data_rdbc::Row>)
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

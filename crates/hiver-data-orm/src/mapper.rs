@@ -130,6 +130,7 @@ impl<'a, M: RowMapper<T>, T> ResultSetExtractor<Option<T>> for FirstRowExtractor
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

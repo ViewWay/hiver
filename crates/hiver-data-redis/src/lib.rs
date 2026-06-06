@@ -33,6 +33,7 @@
 #![warn(rust_2018_idioms)]
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 pub mod cache;

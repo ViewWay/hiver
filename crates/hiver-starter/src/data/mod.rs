@@ -339,6 +339,7 @@ pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyh
 // ============================================================================
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

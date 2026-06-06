@@ -298,6 +298,7 @@ pub fn destroy_bean<T: DisposableBean>(bean: &mut T) -> Result<()>
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use std::sync::{

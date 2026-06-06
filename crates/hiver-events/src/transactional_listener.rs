@@ -903,6 +903,7 @@ impl Clone for TransactionalEventBridge
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use std::sync::atomic::{AtomicU32, Ordering};

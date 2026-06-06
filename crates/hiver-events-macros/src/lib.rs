@@ -306,4 +306,5 @@ fn generate_transactional_listener_sync(
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;

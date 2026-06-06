@@ -579,6 +579,7 @@ pub fn redoc_html(spec_url: &str) -> String
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

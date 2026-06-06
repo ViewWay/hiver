@@ -17,6 +17,7 @@
 #![allow(dead_code)]
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 pub mod chain;

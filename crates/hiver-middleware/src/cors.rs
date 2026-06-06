@@ -346,6 +346,7 @@ pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'sta
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

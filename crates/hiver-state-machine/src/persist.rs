@@ -89,6 +89,7 @@ impl<S: Clone + Send + Sync> StateMachinePersist<S> for InMemoryStateMachineRepo
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

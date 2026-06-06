@@ -257,6 +257,7 @@ fn parse_matrix_variables_as_vec(path: &str) -> Vec<(String, String)>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

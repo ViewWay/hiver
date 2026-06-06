@@ -376,6 +376,7 @@ impl<T: fmt::Debug> fmt::Display for PagedModel<T> {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests {
     use super::*;
     use crate::link::LinkRelation;

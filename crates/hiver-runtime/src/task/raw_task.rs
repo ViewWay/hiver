@@ -331,6 +331,7 @@ pub(crate) unsafe fn read_output<T>(core: &TaskCore) -> Option<T>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

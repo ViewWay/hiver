@@ -46,6 +46,7 @@
 pub use hiver_retry_macros::{recover, retry};
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 mod template;

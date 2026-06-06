@@ -238,6 +238,7 @@ pub use OrmError as Error;
 pub type Result<T> = std::result::Result<T, OrmError>;
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

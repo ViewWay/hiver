@@ -153,6 +153,7 @@ impl fmt::Display for MethodError
 impl std::error::Error for MethodError {}
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

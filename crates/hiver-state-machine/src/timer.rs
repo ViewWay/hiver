@@ -134,6 +134,7 @@ impl<S: Clone + PartialEq, E: Clone> Default for TimerScheduler<S, E>
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use std::time::Duration;

@@ -382,6 +382,7 @@ pub async fn collect_stream(mut stream: ChatStream) -> Result<String, ModelError
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use futures::stream;

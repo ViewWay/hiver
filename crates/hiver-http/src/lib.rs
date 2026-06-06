@@ -106,6 +106,7 @@
 #![allow(async_fn_in_trait)]
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests;
 
 pub mod api_response;

@@ -265,6 +265,7 @@ pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenS
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     

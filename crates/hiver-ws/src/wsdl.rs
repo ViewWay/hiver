@@ -142,6 +142,7 @@ fn escape_xml(s: &str) -> String
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     use super::*;

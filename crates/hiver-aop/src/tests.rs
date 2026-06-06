@@ -8,6 +8,7 @@
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing)]
+#[allow(clippy::float_cmp, clippy::items_after_statements)]
 mod tests
 {
     /// Verify the test infrastructure is functional
