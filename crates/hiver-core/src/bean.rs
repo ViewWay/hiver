@@ -77,6 +77,7 @@ pub enum BeanState
 /// Bean scope
 /// Bean作用域
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[non_exhaustive]
 pub enum Scope
 {
     /// Single instance per container (default)
@@ -88,16 +89,16 @@ pub enum Scope
     /// 每次请求新实例
     Prototype,
 
-    /// Single instance per HTTP request
-    /// 每个HTTP请求单个实例
+    /// Single instance per HTTP request (not yet implemented)
+    /// 每个HTTP请求单个实例（尚未实现）
     Request,
 
-    /// Single instance per HTTP session
-    /// 每个HTTP会话单个实例
+    /// Single instance per HTTP session (not yet implemented)
+    /// 每个HTTP会话单个实例（尚未实现）
     Session,
 
-    /// Single instance per application
-    /// 每个应用单个实例
+    /// Single instance per application (not yet implemented)
+    /// 每个应用单个实例（尚未实现）
     Application,
 }
 
@@ -165,23 +166,6 @@ impl BeanDefinition
         self.lazy = lazy;
         self
     }
-}
-
-/// Bean factory
-/// Bean工厂
-pub trait BeanFactory: Send + Sync
-{
-    /// Get a bean by name
-    /// 按名称获取bean
-    fn get_bean_by_name(&self, name: &str) -> Option<std::sync::Arc<dyn Any + Send + Sync>>;
-
-    /// Get a bean by type
-    /// 按类型获取bean
-    fn get_bean_by_type<T: Any + Send + Sync>(&self) -> Option<std::sync::Arc<T>>;
-
-    /// Check if a bean exists
-    /// 检查bean是否存在
-    fn contains_bean(&self, name: &str) -> bool;
 }
 
 #[cfg(test)]
