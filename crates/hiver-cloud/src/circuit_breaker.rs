@@ -106,7 +106,7 @@ impl CircuitBreakerConfig {
         Self {
             failure_threshold: 5,
             success_threshold: 2,
-            open_timeout: Duration::from_mins(1),
+            open_timeout: Duration::from_secs(60),
             half_open_max_calls: 10,
             sliding_window_size: 0,
             failure_rate_threshold: 50.0,

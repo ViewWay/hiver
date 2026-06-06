@@ -102,8 +102,8 @@ impl RegisteredClient {
             redirect_uris: Vec::new(),
             grant_types: vec![GrantType::AuthorizationCode],
             scopes: vec!["openid".into()],
-            access_token_ttl: Duration::from_hours(1),
-            refresh_token_ttl: Duration::from_hours(720),
+            access_token_ttl: Duration::from_secs(3600),
+            refresh_token_ttl: Duration::from_secs(720 * 3600),
         }
     }
 
@@ -331,7 +331,7 @@ impl AuthorizationServer {
                 code_challenge: code_challenge.map(str::to_string),
                 code_challenge_method: code_challenge_method.map(str::to_string),
                 issued_at: Instant::now(),
-                ttl: Duration::from_mins(10),
+                ttl: Duration::from_secs(600),
             },
         );
         debug!(client_id, subject, "authorization code issued");
@@ -470,7 +470,7 @@ impl AuthorizationServer {
         }
         let device_code = random_token(32);
         let user_code = random_user_code();
-        let ttl = Duration::from_mins(30);
+        let ttl = Duration::from_secs(1800);
         self.device_codes.write().await.insert(
             device_code.clone(),
             DeviceCodeEntry {

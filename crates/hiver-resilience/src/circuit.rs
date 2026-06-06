@@ -236,7 +236,7 @@ impl Default for CircuitBreakerConfig {
         Self {
             error_threshold: 0.5,
             min_requests: 10,
-            open_duration: Duration::from_mins(1),
+            open_duration: Duration::from_secs(60),
             permitted_calls_in_half_open: 3,
             sliding_window_size: Duration::from_secs(10),
             max_calls_in_half_open: 10,

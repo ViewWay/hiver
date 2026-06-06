@@ -176,10 +176,8 @@ impl ToSql for bool {
 /// ```
 pub fn replace_placeholders(sql: &str, param_count: usize, start_idx: u32) -> String {
     let mut result = sql.to_string();
-    let mut idx = start_idx;
-    for _ in 0..param_count {
+    for idx in start_idx..start_idx + param_count as u32 {
         result = result.replacen('?', &format!("${idx}"), 1);
-        idx += 1;
     }
     result
 }

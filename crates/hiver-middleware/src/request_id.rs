@@ -140,6 +140,7 @@ impl RequestIdConfig {
 
 /// Generate a UUID v4-like string using random bytes.
 /// 使用随机字节生成类似 UUID v4 的字符串。
+#[allow(clippy::many_single_char_names)]
 fn generate_uuid() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -151,11 +152,11 @@ fn generate_uuid() -> String {
     // 使用时间戳 + 计数器熵的简单 UUID v4 类生成。
     let secs = ts.as_secs();
     let nanos = ts.subsec_nanos();
-    let a = (secs ^ (nanos as u64).wrapping_mul(2654435761)) & 0xFFFFFFFF;
+    let a = (secs ^ (nanos as u64).wrapping_mul(2_654_435_761)) & 0xFFFF_FFFF;
     let b = ((secs >> 32) ^ nanos as u64) & 0xFFFF;
     let c = (0x4000 | ((nanos >> 16) & 0x0FFF)) as u16; // version 4
     let d = (0x8000 | ((a >> 16) & 0x3FFF)) as u16; // variant 1
-    let e = (a ^ b ^ nanos as u64) & 0xFFFFFFFFFFFF;
+    let e = (a ^ b ^ nanos as u64) & 0xFFFF_FFFF_FFFF;
 
     format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", a, b, c, d, e)
 }

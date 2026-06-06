@@ -545,6 +545,8 @@ impl Condition {
         );
     }
 
+    /// Convert this criterion to a SQL WHERE clause fragment.
+    /// 将此条件转换为 SQL WHERE 子句片段。
     pub fn to_sql(&self) -> String {
         match self {
             Self::Eq { field, value } => {

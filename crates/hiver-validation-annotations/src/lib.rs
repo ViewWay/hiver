@@ -844,8 +844,9 @@ fn extract_fields_with_length(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ide
 
 /// Concat strings at compile time
 /// 在编译时连接字符串
+#[allow(unused_macros)]
 macro_rules! concat {
-    ($($str:expr),*) => {
+    ($str:expr) => {
         #[allow(unused_imports)]
         use proc_macro2::Ident;
         Ident::new($str).to_string()

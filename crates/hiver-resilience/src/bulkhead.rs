@@ -408,7 +408,7 @@ impl Bulkhead {
             });
         }
 
-        let mut permits = self.current_permits.lock().unwrap();
+        let mut permits = self.current_permits.lock().expect("bulkhead lock poisoned");
         if *permits < self.config.max_concurrent_calls {
             *permits += 1;
             self.metrics.record_accepted();
@@ -429,9 +429,8 @@ impl Bulkhead {
     /// 尝试获取许可，最多等待配置的 max_wait_duration。
     /// 使用协作让步（异步）。同步用法则通过短暂休眠轮询。
     pub async fn try_acquire_with_wait(&self) -> Result<BulkheadPermit> {
-        let max_wait = match self.config.max_wait_duration {
-            Some(d) => d,
-            None => return self.try_acquire(),
+        let Some(max_wait) = self.config.max_wait_duration else {
+            return self.try_acquire();
         };
 
         let start = std::time::Instant::now();
@@ -459,7 +458,7 @@ impl Bulkhead {
     /// Call this after the protected operation completes. Safe to call multiple times.
     /// 在受保护的操作完成后调用此方法。可以安全地多次调用。
     pub fn release(&self) {
-        let mut permits = self.current_permits.lock().unwrap();
+        let mut permits = self.current_permits.lock().expect("bulkhead lock poisoned");
         if *permits > 0 {
             *permits -= 1;
         }

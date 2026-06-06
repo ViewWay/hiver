@@ -225,7 +225,7 @@ impl CsvExporter {
         // UTF-8 BOM for Excel compatibility
         // UTF-8 BOM 用于 Excel 兼容性
         if self.config.include_bom {
-            buf.push_str("\u{FEFF}");
+            buf.push('\u{FEFF}');
         }
 
         // Header row

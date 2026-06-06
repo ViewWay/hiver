@@ -264,7 +264,7 @@ fn to_snake_case(s: &str) -> String {
 /// Convert to PascalCase.
 /// 转换为 PascalCase。
 fn to_pascal_case(s: &str) -> String {
-    s.split(|c: char| c == '-' || c == '_')
+    s.split(['-', '_'])
         .filter(|part| !part.is_empty())
         .map(|part| {
             let mut chars = part.chars();

@@ -488,7 +488,7 @@ impl WebClient {
     /// Execute a built HTTP request via TCP.
     /// 通过 TCP 执行构建好的 HTTP 请求。
     async fn execute(&self, req: http::Request<Bytes>) -> ClientResult<ClientResponse> {
-        use std::io::Write as StdWrite;
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
         let uri = req.uri();
         let host = uri.host().unwrap_or("localhost");
@@ -537,8 +537,6 @@ impl WebClient {
         // 写入请求
         let (mut reader, mut writer) = tokio::io::split(stream);
 
-        use tokio::io::{AsyncReadExt, AsyncWriteExt};
-
         let mut request_bytes = raw.into_bytes();
         request_bytes.extend_from_slice(&body);
 
@@ -565,12 +563,14 @@ impl WebClient {
             return Err(ClientError::Connection("Empty response from server".into()));
         }
 
+        #[allow(clippy::indexing_slicing)]
         parse_http_response(&response_buf[..n])
     }
 }
 
 /// Parse a raw HTTP response buffer.
 /// 解析原始 HTTP 响应缓冲区。
+#[allow(clippy::indexing_slicing)]
 fn parse_http_response(buf: &[u8]) -> ClientResult<ClientResponse> {
     let text = String::from_utf8_lossy(buf);
     let mut lines = text.split("\r\n");
@@ -624,13 +624,10 @@ fn parse_http_response(buf: &[u8]) -> ClientResult<ClientResponse> {
 
 /// Find the end of HTTP headers (position of \r\n\r\n).
 /// 查找 HTTP 头结束位置（\r\n\r\n 的位置）。
+#[allow(clippy::indexing_slicing)]
 fn find_header_end(buf: &[u8]) -> Option<usize> {
-    for i in 0..buf.len().saturating_sub(3) {
-        if buf[i] == b'\r' && buf[i + 1] == b'\n' && buf[i + 2] == b'\r' && buf[i + 3] == b'\n' {
-            return Some(i);
-        }
-    }
-    None
+    (0..buf.len().saturating_sub(3))
+        .find(|&i| buf[i] == b'\r' && buf[i + 1] == b'\n' && buf[i + 2] == b'\r' && buf[i + 3] == b'\n')
 }
 
 // ---------------------------------------------------------------------------

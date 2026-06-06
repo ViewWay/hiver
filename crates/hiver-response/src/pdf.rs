@@ -31,7 +31,7 @@
 //! ```
 
 use std::fmt::Write as FmtWrite;
-use std::io::{self, Write};
+use std::io;
 use std::path::Path;
 
 // ---------------------------------------------------------------------------
@@ -64,9 +64,11 @@ pub type Result<T> = std::result::Result<T, PdfError>;
 /// Font family for PDF text.
 /// PDF 文本的字体族。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum PdfFont {
     /// Helvetica (default sans-serif)
     /// Helvetica（默认无衬线体）
+    #[default]
     Helvetica,
     /// Helvetica Bold
     /// Helvetica 粗体
@@ -85,11 +87,6 @@ pub enum PdfFont {
     TimesBold,
 }
 
-impl Default for PdfFont {
-    fn default() -> Self {
-        Self::Helvetica
-    }
-}
 
 impl PdfFont {
     /// Get the PDF internal font name.
@@ -470,7 +467,7 @@ impl PdfBuilder {
 
         // Collect fonts used
         let fonts = collect_fonts(&self.pages);
-        let font_names: Vec<&str> = fonts.iter().map(|f| f.pdf_name()).collect();
+        let font_names: Vec<&str> = fonts.iter().map(PdfFont::pdf_name).collect();
         let unique_fonts: Vec<&str> = {
             let mut seen = std::collections::HashSet::new();
             font_names.into_iter().filter(|n| seen.insert(*n)).collect()
@@ -560,10 +557,10 @@ impl PdfBuilder {
         let xref_offset = buf.len();
         buf.push_str("xref\n");
         let total_objects = info_obj + 1;
-        let _ = write!(buf, "0 {}\n", total_objects);
+        let _ = writeln!(buf, "0 {}", total_objects);
         buf.push_str("0000000000 65535 f \n");
         for offset in &offsets {
-            let _ = write!(buf, "{:010} 00000 n \n", offset);
+            let _ = writeln!(buf, "{:010} 00000 n ", offset);
         }
 
         // Trailer
@@ -606,20 +603,22 @@ fn collect_fonts(pages: &[PdfPage]) -> Vec<PdfFont> {
 
 /// Find the font index in the unique fonts list.
 /// 在唯一字体列表中查找字体索引。
-fn font_index<'a>(font: &PdfFont, unique_fonts: &[&'a str]) -> usize {
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn font_index(font: &PdfFont, unique_fonts: &[&str]) -> usize {
     let name = font.pdf_name();
     unique_fonts.iter().position(|f| *f == name).unwrap_or(0)
 }
 
 /// Build the content stream for a page.
 /// 为页面构建内容流。
+#[allow(clippy::cast_precision_loss)]
 fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
     let mut stream = String::new();
 
     // Render lines
     for line in &page.lines {
         let _ =
-            write!(stream, "{} {} 0 0 {} {} re S\n", line.width / 2.0, line.x, line.length, line.y);
+            writeln!(stream, "{} {} 0 0 {} {} re S", line.width / 2.0, line.x, line.length, line.y);
     }
 
     // Render text elements
@@ -628,7 +627,7 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
 
         if let Some(ref color) = text.color {
             let (r, g, b) = parse_hex_color(color);
-            let _ = write!(stream, "{:.3} {:.3} {:.3} rg\n", r, g, b);
+            let _ = writeln!(stream, "{:.3} {:.3} {:.3} rg", r, g, b);
         }
 
         let _ = write!(
