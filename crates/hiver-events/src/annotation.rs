@@ -185,7 +185,7 @@ mod tests
     // Test conditional filter
     struct EvenValueFilter;
 
-    impl crate::registry::EventFilter<TestEvent> for EvenValueFilter
+    impl EventFilter<TestEvent> for EvenValueFilter
     {
         fn should_process(&self, event: &TestEvent) -> bool
         {

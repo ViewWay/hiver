@@ -215,7 +215,7 @@ mod tests
     #[test]
     fn test_binding_bind_queue()
     {
-        let queue = crate::Queue::durable("my_queue");
+        let queue = Queue::durable("my_queue");
         let exchange = Exchange::direct("my_exchange");
         let binding = Binding::bind_queue(queue, exchange, "orders.create");
 
@@ -242,7 +242,7 @@ mod tests
     #[test]
     fn test_binding_destination_variants()
     {
-        let queue_dest = BindingDestination::Queue(crate::Queue::durable("q"));
+        let queue_dest = BindingDestination::Queue(Queue::durable("q"));
         match &queue_dest
         {
             BindingDestination::Queue(q) => assert_eq!(q.name, "q"),
@@ -261,7 +261,7 @@ mod tests
     #[test]
     fn test_binding_with_argument()
     {
-        let queue = crate::Queue::durable("q");
+        let queue = Queue::durable("q");
         let exchange = Exchange::topic("ex");
         let binding = Binding::bind_queue(queue, exchange, "rk")
             .with_argument("x-match", serde_json::json!("all"))
@@ -275,7 +275,7 @@ mod tests
     #[test]
     fn test_binding_builder_queue()
     {
-        let binding = BindingBuilder::bind_queue(crate::Queue::durable("orders"))
+        let binding = BindingBuilder::bind_queue(Queue::durable("orders"))
             .to(Exchange::topic("events"))
             .with("order.created")
             .with_argument("x-priority", serde_json::json!(10))
@@ -305,7 +305,7 @@ mod tests
     fn test_binding_name_accessors()
     {
         let binding = Binding::bind_queue(
-            crate::Queue::new("q1"),
+            Queue::new("q1"),
             Exchange::new("e1", ExchangeType::Direct),
             "key1",
         );

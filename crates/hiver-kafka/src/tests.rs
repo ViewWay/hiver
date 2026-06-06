@@ -233,7 +233,7 @@ mod tests
         let json_de = JsonDeserializer;
 
         let original = "hello-world".to_string();
-        let encoded = bytes_ser.serialize(&original).unwrap();
+        let _encoded = bytes_ser.serialize(&original).unwrap();
         let json_wrapped = serde_json::to_vec(&original).unwrap();
         let decoded: String = json_de.deserialize(&json_wrapped).unwrap();
         assert_eq!(decoded, original);

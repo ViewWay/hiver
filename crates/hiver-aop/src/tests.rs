@@ -22,7 +22,7 @@ mod tests
     #[test]
     fn test_runtime_module_accessible()
     {
-        use crate::runtime::{AdviceType, JoinPoint, PointcutExpression};
+        use crate::runtime::AdviceType;
 
         let advice = AdviceType::Before;
         assert_eq!(format!("{:?}", advice), "Before");

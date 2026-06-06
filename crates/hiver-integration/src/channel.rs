@@ -531,7 +531,7 @@ mod tests
     #[tokio::test]
     async fn test_point_to_point_channel()
     {
-        let channel = PointToPointChannel::new("test", 10);
+        let _channel = PointToPointChannel::new("test", 10);
 
         // Spawn a receiver task
         // 生成接收器任务

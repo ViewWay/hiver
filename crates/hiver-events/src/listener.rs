@@ -1068,7 +1068,7 @@ mod tests
     #[test]
     fn test_listener_builder_with_id_and_order()
     {
-        let listener = ListenerBuilder::new(|event: &TestEvent| Ok(()))
+        let listener = ListenerBuilder::new(|_event: &TestEvent| Ok(()))
             .with_id("ordered_listener")
             .with_order(42)
             .build();

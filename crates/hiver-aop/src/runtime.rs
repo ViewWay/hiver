@@ -444,7 +444,7 @@ impl PointcutExpression
             if let Some(end) = expr[start..].find(')')
             {
                 let full_expr = &expr[start..start + end + 1];
-                let inner = &full_expr[11..full_expr.len() - 1]; // Remove "execution(" and ")"
+                let _inner = &full_expr[11..full_expr.len() - 1]; // Remove "execution(" and ")"
 
                 // Parse: package..class.method(params)
                 // 简化的解析逻辑
@@ -924,7 +924,7 @@ mod tests
         );
 
         let matching_jp = make_join_point("specific_method", "Service");
-        let non_matching_jp = make_join_point("other_method", "Service");
+        let _non_matching_jp = make_join_point("other_method", "Service");
 
         assert!(expr.matches(&matching_jp));
     }

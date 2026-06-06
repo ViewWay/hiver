@@ -1142,7 +1142,7 @@ pub trait PreDestroy
 mod tests
 {
     use super::*;
-    use crate::conditional::{ConditionalOnBean, ConditionalOnMissingBean, ConditionalOnProperty};
+    use crate::conditional::{ConditionalOnBean, ConditionalOnMissingBean};
 
     // ── Test fixtures / 测试夹具 ────────────────────────────────────────
 

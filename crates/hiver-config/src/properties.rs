@@ -546,7 +546,7 @@ mod tests
     #[test]
     fn test_properties_config_builder_new()
     {
-        let builder: PropertiesConfigBuilder<TestConfig> = PropertiesConfigBuilder::new();
+        let _builder: PropertiesConfigBuilder<TestConfig> = PropertiesConfigBuilder::new();
         // Just verify construction succeeds
         assert!(
             format!("{:?}", std::any::type_name::<PropertiesConfigBuilder<TestConfig>>()).len() > 0

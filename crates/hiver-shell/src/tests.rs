@@ -9,7 +9,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    Shell, ShellBuilder, ShellConfig,
+    ShellBuilder, ShellConfig,
     builtin::{BuiltinState, ClearCommand, EchoCommand, ExitCommand, HistoryCommand},
     command::{Command, CommandBox, CommandMeta, CommandRegistry, ParameterMeta},
     completion::CompletionProvider,
@@ -17,7 +17,7 @@ use crate::{
     result::{
         JsonResult, OutputFormat, ResultHandler, ShellError, ShellOutput, TableResult, TextResult,
     },
-    validation::{InputValidator, ValidatedInput},
+    validation::InputValidator,
 };
 
 // ============================================================================

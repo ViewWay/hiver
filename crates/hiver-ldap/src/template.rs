@@ -288,7 +288,7 @@ impl LdapTemplate
 mod tests
 {
     use super::*;
-    use crate::mapper::AttrMap;
+    
 
     #[test]
     fn test_template_creation()

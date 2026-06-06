@@ -269,7 +269,7 @@ mod tests
     fn create_publisher() -> Publisher
     {
         let config = crate::AmqpConfig::default();
-        let conn = crate::AmqpConnection::new(config);
+        let conn = AmqpConnection::new(config);
         Publisher::new(Arc::new(conn))
     }
 

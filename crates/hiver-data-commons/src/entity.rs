@@ -818,14 +818,14 @@ mod tests
     {
         /// Custom before_save callback for testing
         /// 用于测试的自定义 before_save 回调
-        pub fn before_save_custom(&mut self)
+        pub(crate) fn before_save_custom(&mut self)
         {
             self.before_save_called = true;
         }
 
         /// Custom after_load callback for testing
         /// 用于测试的自定义 after_load 回调
-        pub fn after_load_custom(&mut self)
+        pub(crate) fn after_load_custom(&mut self)
         {
             self.after_load_called = true;
         }

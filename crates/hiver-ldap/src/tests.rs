@@ -32,7 +32,7 @@ mod tests
         mail: String,
     }
 
-    impl odm::OdmEntry for Person
+    impl OdmEntry for Person
     {
         fn base_dn() -> &'static str
         {
@@ -63,7 +63,7 @@ mod tests
         member_count: usize,
     }
 
-    impl odm::OdmEntry for Group
+    impl OdmEntry for Group
     {
         fn base_dn() -> &'static str
         {
@@ -320,7 +320,7 @@ mod tests
     {
         let template = test_template();
         struct CtxMapper;
-        impl mapper::ContextMapper<String> for CtxMapper
+        impl ContextMapper<String> for CtxMapper
         {
             fn map_from_context(&self, ctx: &str) -> String
             {

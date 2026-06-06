@@ -433,7 +433,7 @@ mod tests
         mapper.add_mapping(AttributeMapping::new("cn", "name"));
         mapper.add_mapping(AttributeMapping::new("mail", "email"));
 
-        let mut attrs = crate::mapper::AttrMap::new();
+        let mut attrs = AttrMap::new();
         attrs.add("cn", &["John"]);
         attrs.add("mail", &["john@example.com"]);
         attrs.add("ignoreMe", &["ignored"]);
