@@ -765,9 +765,29 @@ pub struct AspectRegistry
     /// 已注册的切面
     aspects: RwLock<HashMap<String, AspectInfo>>,
 
-    /// Pointcut to advice mapping
-    /// 切点到通知的映射
+    /// Pointcut to advice name mapping
+    /// 切点到通知名称的映射
     pointcuts: RwLock<Vec<PointcutAdvice>>,
+
+    /// Pointcut to callable advice mapping
+    /// 切点到可调用通知的映射
+    callable_advices: RwLock<Vec<CallableAdvice>>,
+}
+
+/// Type-erased callable advice closures.
+/// 类型擦除的可调用通知闭包。
+type BeforeFn = Arc<dyn Fn(&JoinPoint) + Send + Sync>;
+type AroundFn = Arc<dyn Fn(&mut ProceedingJoinPoint) + Send + Sync>;
+type AfterFn = Arc<dyn Fn(&JoinPoint) + Send + Sync>;
+type AfterReturningFn = Arc<dyn Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync>;
+
+/// Associates a pointcut with a callable advice closure.
+/// 将切点与可调用通知闭包关联。
+struct CallableAdvice
+{
+    pointcut: PointcutExpression,
+    advice_type: AdviceType,
+    callback: Arc<dyn Any + Send + Sync>,
 }
 
 /// Information about an aspect
@@ -819,6 +839,7 @@ impl AspectRegistry
         Self {
             aspects: RwLock::new(HashMap::new()),
             pointcuts: RwLock::new(Vec::new()),
+            callable_advices: RwLock::new(Vec::new()),
         }
     }
 
@@ -888,6 +909,133 @@ impl AspectRegistry
     {
         let aspects = self.aspects.read().await;
         aspects.get(name).map(|info| info.instance.clone())
+    }
+
+    /// Register a @Before advice with a callable closure.
+    /// 注册带可调用闭包的 @Before 通知。
+    pub fn register_before(
+        &self,
+        pointcut: PointcutExpression,
+        advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
+    )
+    {
+        let mut advices = self.callable_advices.blocking_write();
+        let fn_ptr: BeforeFn = Arc::new(advice);
+        advices.push(CallableAdvice {
+            pointcut,
+            advice_type: AdviceType::Before,
+            callback: Arc::new(fn_ptr),
+        });
+    }
+
+    /// Register an @After advice with a callable closure.
+    /// 注册带可调用闭包的 @After 通知。
+    pub fn register_after(
+        &self,
+        pointcut: PointcutExpression,
+        advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
+    )
+    {
+        let mut advices = self.callable_advices.blocking_write();
+        let fn_ptr: AfterFn = Arc::new(advice);
+        advices.push(CallableAdvice {
+            pointcut,
+            advice_type: AdviceType::After,
+            callback: Arc::new(fn_ptr),
+        });
+    }
+
+    /// Register an @Around advice with a callable closure.
+    /// 注册带可调用闭包的 @Around 通知。
+    pub fn register_around(
+        &self,
+        pointcut: PointcutExpression,
+        advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static,
+    )
+    {
+        let mut advices = self.callable_advices.blocking_write();
+        let fn_ptr: AroundFn = Arc::new(advice);
+        advices.push(CallableAdvice {
+            pointcut,
+            advice_type: AdviceType::Around,
+            callback: Arc::new(fn_ptr),
+        });
+    }
+
+    /// Register an @AfterReturning advice with a callable closure.
+    /// 注册带可调用闭包的 @AfterReturning 通知。
+    pub fn register_after_returning(
+        &self,
+        pointcut: PointcutExpression,
+        advice: impl Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync + 'static,
+    )
+    {
+        let mut advices = self.callable_advices.blocking_write();
+        let fn_ptr: AfterReturningFn = Arc::new(advice);
+        advices.push(CallableAdvice {
+            pointcut,
+            advice_type: AdviceType::AfterReturning,
+            callback: Arc::new(fn_ptr),
+        });
+    }
+
+    /// Build an InterceptChain from all callable advice matching the join point.
+    /// 从所有匹配连接点的可调用通知构建拦截链。
+    pub fn build_chain(&self, join_point: &JoinPoint) -> InterceptChain
+    {
+        let advices = self.callable_advices.blocking_read();
+        let mut chain = InterceptChain::new();
+
+        for advice in advices.iter()
+        {
+            if !advice.pointcut.matches(join_point)
+            {
+                continue;
+            }
+
+            match advice.advice_type
+            {
+                AdviceType::Before =>
+                {
+                    if let Some(fn_ptr) = advice.callback.clone().downcast::<BeforeFn>().ok()
+                    {
+                        let f = Arc::clone(&fn_ptr);
+                        chain.before(move |jp| f(jp));
+                    }
+                },
+                AdviceType::After =>
+                {
+                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AfterFn>().ok()
+                    {
+                        let f = Arc::clone(&fn_ptr);
+                        chain.after(move |jp| f(jp));
+                    }
+                },
+                AdviceType::Around =>
+                {
+                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AroundFn>().ok()
+                    {
+                        let f = Arc::clone(&fn_ptr);
+                        chain.around(move |pjp| f(pjp));
+                    }
+                },
+                AdviceType::AfterReturning =>
+                {
+                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AfterReturningFn>().ok()
+                    {
+                        let f = Arc::clone(&fn_ptr);
+                        chain.after_returning(move |jp, val| f(jp, val));
+                    }
+                },
+                AdviceType::AfterThrowing =>
+                {
+                    // AfterThrowing not yet supported in InterceptChain
+                    // AfterThrowing 尚未在 InterceptChain 中支持
+                },
+            }
+        }
+
+        chain
     }
 }
 
@@ -2146,4 +2294,76 @@ mod tests
         assert!(after_called.load(Ordering::SeqCst));
     }
 
+    // ========================================================================
+    // Registry -> InterceptChain Bridge Tests
+    // ========================================================================
+
+    #[test]
+    fn test_registry_build_chain_before_after()
+    {
+        let log: Arc<std::sync::Mutex<Vec<i32>>> = Arc::new(std::sync::Mutex::new(Vec::new()));
+
+        let registry = AspectRegistry::new();
+        let pointcut = PointcutExpression::new("execution(* *..*.*(..))".to_string());
+
+        {
+            let log = log.clone();
+            registry.register_before(pointcut.clone(), move |jp| {
+                log.lock().unwrap().push(1);
+                let _ = jp.method_name();
+            });
+        }
+        {
+            let log = log.clone();
+            registry.register_after(pointcut.clone(), move |jp| {
+                log.lock().unwrap().push(3);
+                let _ = jp.method_name();
+            });
+        }
+
+        let jp = make_join_point("work", "Svc");
+        let chain = registry.build_chain(&jp);
+        let log_target = log.clone();
+        let result = chain.invoke(jp, move || {
+            log_target.lock().unwrap().push(2);
+            None
+        });
+
+        assert!(!result.has_return_value());
+        assert_eq!(*log.lock().unwrap(), vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_registry_build_chain_around()
+    {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        let target_called = Arc::new(AtomicBool::new(false));
+        let target_clone = target_called.clone();
+
+        let registry = AspectRegistry::new();
+        let pointcut = PointcutExpression::new("within(*)".to_string());
+        registry.register_around(pointcut, |pjp| { pjp.proceed(); });
+
+        let jp = make_join_point("save", "Repo");
+        let chain = registry.build_chain(&jp);
+        chain.invoke(jp, move || {
+            target_clone.store(true, Ordering::SeqCst);
+            None
+        });
+
+        assert!(target_called.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn test_registry_build_chain_no_match()
+    {
+        let registry = AspectRegistry::new();
+        let pointcut = PointcutExpression::new("execution(* nonexistent.method(..))".to_string());
+        registry.register_before(pointcut, |_| {});
+
+        let jp = make_join_point("work", "Svc");
+        let chain = registry.build_chain(&jp);
+        assert!(chain.is_empty());
+    }
 }
+
