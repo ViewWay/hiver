@@ -65,10 +65,9 @@ impl ApplicationEventPublisher
     ///
     /// Equivalent to Spring's `@EventListener`.
     /// 等价于 Spring 的 `@EventListener`。
-    pub fn subscribe<E, F>(&mut self, handler: F)
+    pub fn subscribe<E>(&mut self, handler: impl Fn(&E) -> Result<()> + Send + Sync + 'static)
     where
         E: ApplicationEvent,
-        F: Fn(&E) -> Result<()> + Send + Sync + 'static,
     {
         let type_id = TypeId::of::<E>();
         let wrapped: EventHandler = Arc::new(move |event: &dyn Any| {
