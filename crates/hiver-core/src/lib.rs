@@ -34,6 +34,7 @@ pub mod conditional;
 pub mod container;
 pub mod context;
 pub mod error;
+pub mod event;
 pub mod extension;
 pub mod lifecycle;
 pub mod reactive;
@@ -47,6 +48,7 @@ pub use conditional::{
 };
 pub use container::{ApplicationContext, Container};
 pub use error::{Error, ErrorKind, Result};
+pub use event::{ApplicationEvent, ApplicationEventPublisher};
 pub use extension::Extensions;
 pub use reactive::{Flux, Mono};
 pub use reflect::{ContainerReflectExt, ReflectContainer};
