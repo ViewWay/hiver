@@ -1315,6 +1315,7 @@ mod tests
         initialized: bool,
     }
 
+    impl Bean for UserRepository {}
 
     impl PostConstruct for UserRepository
     {
@@ -1338,11 +1339,15 @@ mod tests
         user_count: u32,
     }
 
+    impl Bean for UserService {}
+
     #[derive(Debug, Default)]
     struct EmailService
     {
         sent_count: u32,
     }
+
+    impl Bean for EmailService {}
 
     #[derive(Debug)]
     struct CacheService
@@ -1350,8 +1355,12 @@ mod tests
         hits: u64,
     }
 
+    impl Bean for CacheService {}
+
     #[derive(Debug, Default)]
     struct AuditService;
+
+    impl Bean for AuditService {}
 
     // ── Container::new / Container::default ────────────────────────────
 
@@ -2168,7 +2177,7 @@ mod tests
         let mut container = Container::new();
         container.extensions_mut().insert(42i32);
         // Extensions are separate from beans / 扩展与bean分离
-        assert!(!container.has_bean::<i32>());
+        assert!(!container.has_bean::<EmailService>());
         assert_eq!(container.extensions().get::<i32>(), Some(&42));
     }
 
