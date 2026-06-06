@@ -1191,7 +1191,7 @@ async fn pki_read_role()
 
     let data = pki.read_role("web-server").await.expect("pki read role");
     mock.assert_async().await;
-    assert_eq!(data["allow_subdomains"], true);
+    assert!(data["allow_subdomains"].as_bool().unwrap());
 }
 
 #[tokio::test]
