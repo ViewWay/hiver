@@ -630,7 +630,7 @@ mod tests {
             Box::pin(async {
                 Ok(Response::builder()
                     .status(StatusCode::OK)
-                    .body(hiver_http::Body::empty())
+                    .body(Body::empty())
                     .unwrap())
             })
         });
@@ -663,7 +663,7 @@ mod tests {
                 let id = params.get("id").cloned().unwrap_or_default();
                 Ok(Response::builder()
                     .status(StatusCode::OK)
-                    .body(hiver_http::Body::from(format!("id={}", id)))
+                    .body(Body::from(format!("id={}", id)))
                     .unwrap())
             })
         }

@@ -24,8 +24,7 @@ pub type ConversationId = String;
 ///
 /// 实现可以使用内存数据结构、数据库或外部服务作为对话存储后端。
 #[async_trait::async_trait]
-pub trait ChatMemory: Send + Sync
-{
+pub trait ChatMemory: Send + Sync {
     /// Adds a message to the conversation memory.
     /// 将消息添加到对话记忆中。
     async fn add(&self, conversation_id: &ConversationId, message: ChatMessage);
@@ -40,8 +39,7 @@ pub trait ChatMemory: Send + Sync
 
     /// Returns the number of messages in a conversation.
     /// 返回对话中的消息数量。
-    async fn message_count(&self, conversation_id: &ConversationId) -> usize
-    {
+    async fn message_count(&self, conversation_id: &ConversationId) -> usize {
         self.get_messages(conversation_id).await.len()
     }
 }
@@ -67,8 +65,7 @@ pub trait ChatMemory: Send + Sync
 /// assert_eq!(messages.len(), 1);
 /// ```
 #[derive(Debug, Clone, Default)]
-pub struct InMemoryChatMemory
-{
+pub struct InMemoryChatMemory {
     /// Maximum messages per conversation (None = unlimited).
     /// 每个对话的最大消息数（None = 无限制）。
     max_messages: Option<usize>,
@@ -77,13 +74,11 @@ pub struct InMemoryChatMemory
     conversations: Arc<RwLock<HashMap<ConversationId, Vec<ChatMessage>>>>,
 }
 
-impl InMemoryChatMemory
-{
+impl InMemoryChatMemory {
     /// Creates a new empty in-memory chat store.
     /// 创建新的空内存聊天存储。
     #[must_use]
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -93,8 +88,7 @@ impl InMemoryChatMemory
     /// When the limit is exceeded, the oldest messages are removed.
     /// 当超过限制时，最旧的消息将被移除。
     #[must_use]
-    pub fn with_max_messages(max_messages: usize) -> Self
-    {
+    pub fn with_max_messages(max_messages: usize) -> Self {
         Self {
             conversations: Arc::new(RwLock::new(HashMap::new())),
             max_messages: Some(max_messages),
@@ -103,23 +97,18 @@ impl InMemoryChatMemory
 
     /// Returns all conversation IDs currently stored.
     /// 返回当前存储的所有对话 ID。
-    pub async fn conversation_ids(&self) -> Vec<ConversationId>
-    {
+    pub async fn conversation_ids(&self) -> Vec<ConversationId> {
         let guard = self.conversations.read().await;
         guard.keys().cloned().collect()
     }
 
     /// Trims a conversation to the most recent N messages.
     /// 将对话修剪为最近的 N 条消息。
-    async fn trim_if_needed(&self, conversation_id: &ConversationId)
-    {
-        if let Some(max) = self.max_messages
-        {
+    async fn trim_if_needed(&self, conversation_id: &ConversationId) {
+        if let Some(max) = self.max_messages {
             let mut guard = self.conversations.write().await;
-            if let Some(messages) = guard.get_mut(conversation_id)
-            {
-                if messages.len() > max
-                {
+            if let Some(messages) = guard.get_mut(conversation_id) {
+                if messages.len() > max {
                     let drain_count = messages.len() - max;
                     messages.drain(..drain_count);
                 }
@@ -129,10 +118,8 @@ impl InMemoryChatMemory
 }
 
 #[async_trait::async_trait]
-impl ChatMemory for InMemoryChatMemory
-{
-    async fn add(&self, conversation_id: &ConversationId, message: ChatMessage)
-    {
+impl ChatMemory for InMemoryChatMemory {
+    async fn add(&self, conversation_id: &ConversationId, message: ChatMessage) {
         let mut guard = self.conversations.write().await;
         guard
             .entry(conversation_id.clone())
@@ -142,14 +129,12 @@ impl ChatMemory for InMemoryChatMemory
         self.trim_if_needed(conversation_id).await;
     }
 
-    async fn get_messages(&self, conversation_id: &ConversationId) -> Vec<ChatMessage>
-    {
+    async fn get_messages(&self, conversation_id: &ConversationId) -> Vec<ChatMessage> {
         let guard = self.conversations.read().await;
         guard.get(conversation_id).cloned().unwrap_or_default()
     }
 
-    async fn clear(&self, conversation_id: &ConversationId)
-    {
+    async fn clear(&self, conversation_id: &ConversationId) {
         let mut guard = self.conversations.write().await;
         guard.remove(conversation_id);
     }
@@ -163,19 +148,16 @@ impl ChatMemory for InMemoryChatMemory
 ///
 /// 提供用于处理对话记忆的高级 API，包括自动生成对话 ID 和默认设置。
 #[derive(Clone)]
-pub struct ChatMemoryManager
-{
+pub struct ChatMemoryManager {
     /// The underlying memory implementation.
     /// 底层记忆实现。
     memory: Arc<dyn ChatMemory>,
 }
 
-impl ChatMemoryManager
-{
+impl ChatMemoryManager {
     /// Creates a new memory manager with the given memory implementation.
     /// 使用给定的记忆实现创建新的记忆管理器。
-    pub fn new(memory: impl ChatMemory + 'static) -> Self
-    {
+    pub fn new(memory: impl ChatMemory + 'static) -> Self {
         Self {
             memory: Arc::new(memory),
         }
@@ -184,52 +166,45 @@ impl ChatMemoryManager
     /// Creates a new memory manager with the default in-memory implementation.
     /// 使用默认内存实现创建新的记忆管理器。
     #[must_use]
-    pub fn in_memory() -> Self
-    {
+    pub fn in_memory() -> Self {
         Self::new(InMemoryChatMemory::new())
     }
 
     /// Creates a new memory manager with in-memory storage limited by max messages.
     /// 创建带有最大消息数限制的内存存储记忆管理器。
     #[must_use]
-    pub fn in_memory_with_limit(max_messages: usize) -> Self
-    {
+    pub fn in_memory_with_limit(max_messages: usize) -> Self {
         Self::new(InMemoryChatMemory::with_max_messages(max_messages))
     }
 
     /// Adds a message to a conversation.
     /// 将消息添加到对话中。
-    pub async fn add(&self, conversation_id: &ConversationId, message: ChatMessage)
-    {
+    pub async fn add(&self, conversation_id: &ConversationId, message: ChatMessage) {
         self.memory.add(conversation_id, message).await;
     }
 
     /// Retrieves all messages for a conversation.
     /// 获取对话的所有消息。
-    pub async fn get_messages(&self, conversation_id: &ConversationId) -> Vec<ChatMessage>
-    {
+    pub async fn get_messages(&self, conversation_id: &ConversationId) -> Vec<ChatMessage> {
         self.memory.get_messages(conversation_id).await
     }
 
     /// Clears a conversation's history.
     /// 清除对话历史。
-    pub async fn clear(&self, conversation_id: &ConversationId)
-    {
+    pub async fn clear(&self, conversation_id: &ConversationId) {
         self.memory.clear(conversation_id).await;
     }
 
     /// Returns the number of messages in a conversation.
     /// 返回对话中的消息数量。
-    pub async fn message_count(&self, conversation_id: &ConversationId) -> usize
-    {
+    pub async fn message_count(&self, conversation_id: &ConversationId) -> usize {
         self.memory.message_count(conversation_id).await
     }
 
     /// Generates a new unique conversation ID.
     /// 生成新的唯一对话 ID。
     #[must_use]
-    pub fn new_conversation_id() -> ConversationId
-    {
+    pub fn new_conversation_id() -> ConversationId {
         use std::time::{SystemTime, UNIX_EPOCH};
         let nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -239,13 +214,11 @@ impl ChatMemoryManager
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_add_and_get_messages()
-    {
+    async fn test_add_and_get_messages() {
         let memory = InMemoryChatMemory::new();
         let conv_id = "test-conv".to_string();
 
@@ -259,8 +232,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_clear_conversation()
-    {
+    async fn test_clear_conversation() {
         let memory = InMemoryChatMemory::new();
         let conv_id = "test-clear".to_string();
 
@@ -272,8 +244,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_separate_conversations()
-    {
+    async fn test_separate_conversations() {
         let memory = InMemoryChatMemory::new();
 
         memory
@@ -288,21 +259,18 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_nonexistent_conversation()
-    {
+    async fn test_nonexistent_conversation() {
         let memory = InMemoryChatMemory::new();
         let messages = memory.get_messages(&"nonexistent".to_string()).await;
         assert!(messages.is_empty());
     }
 
     #[tokio::test]
-    async fn test_max_messages_limit()
-    {
+    async fn test_max_messages_limit() {
         let memory = InMemoryChatMemory::with_max_messages(3);
         let conv_id = "limited".to_string();
 
-        for i in 0..5
-        {
+        for i in 0..5 {
             memory
                 .add(&conv_id, ChatMessage::user(format!("msg-{i}")))
                 .await;
@@ -317,8 +285,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_conversation_ids()
-    {
+    async fn test_conversation_ids() {
         let memory = InMemoryChatMemory::new();
 
         memory
@@ -333,8 +300,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_memory_manager()
-    {
+    async fn test_memory_manager() {
         let manager = ChatMemoryManager::in_memory();
         let conv_id = "managed-conv".to_string();
 
@@ -347,13 +313,11 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_memory_manager_with_limit()
-    {
+    async fn test_memory_manager_with_limit() {
         let manager = ChatMemoryManager::in_memory_with_limit(2);
         let conv_id = "limited-managed".to_string();
 
-        for i in 0..4
-        {
+        for i in 0..4 {
             manager
                 .add(&conv_id, ChatMessage::user(format!("msg-{i}")))
                 .await;
@@ -365,10 +329,8 @@ mod tests
 
 // Manual Debug impl for ChatMemoryManager since dyn ChatMemory doesn't impl Debug
 // ChatMemoryManager 的手动 Debug 实现，因为 dyn ChatMemory 不实现 Debug
-impl std::fmt::Debug for ChatMemoryManager
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for ChatMemoryManager {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ChatMemoryManager").finish_non_exhaustive()
     }
 }

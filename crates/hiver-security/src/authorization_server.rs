@@ -931,7 +931,7 @@ mod tests {
 
     #[test]
     fn test_builder_default_issuer() {
-        let server = AuthorizationServerBuilder::default()
+        let _server = AuthorizationServerBuilder::default()
             .jwt_secret("secret")
             .build();
         // Default issuer should be https://localhost
@@ -940,7 +940,7 @@ mod tests {
 
     #[test]
     fn test_builder_custom_issuer() {
-        let server = AuthorizationServer::builder()
+        let _server = AuthorizationServer::builder()
             .issuer("https://my-auth.example.com")
             .jwt_secret("key")
             .build();
@@ -949,7 +949,7 @@ mod tests {
 
     #[test]
     fn test_builder_auto_generates_jwt_secret() {
-        let server = AuthorizationServerBuilder::default()
+        let _server = AuthorizationServerBuilder::default()
             .issuer("https://test")
             .build();
         // Should not panic even without explicit jwt_secret
@@ -957,7 +957,7 @@ mod tests {
 
     #[test]
     fn test_builder_registers_multiple_clients() {
-        let server = AuthorizationServer::builder()
+        let _server = AuthorizationServer::builder()
             .issuer("https://test")
             .jwt_secret("key")
             .register_client(RegisteredClient::new("c1").secret("s1"))

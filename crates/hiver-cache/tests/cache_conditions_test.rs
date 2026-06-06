@@ -2,12 +2,11 @@
 //! 缓存条件评估的测试
 
 use hiver_cache::{
-    Cache, CacheBuilder, CacheEvictOptions, CachePutOptions, CacheableOptions,
+    CacheEvictOptions, CachePutOptions, CacheableOptions,
     evaluate_cache_condition,
 };
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
-use std::sync::Arc;
 
 // ========================================================================
 // Test Cacheable with Conditions / 测试带条件的 Cacheable
@@ -76,7 +75,7 @@ fn test_condition_not_expressions() {
 #[test]
 fn test_condition_is_empty() {
     let mut args = HashMap::new();
-    args.insert("name".to_string(), JsonValue::String("".to_string()));
+    args.insert("name".to_string(), JsonValue::String(String::new()));
     args.insert("email".to_string(), JsonValue::String("test@example.com".to_string()));
     args.insert("list".to_string(), JsonValue::Array(vec![]));
     args.insert("items".to_string(), JsonValue::Array(vec![JsonValue::Number(1.into())]));
@@ -120,7 +119,7 @@ fn test_unless_result_empty() {
     assert!(evaluate_cache_condition(
         "#result.isEmpty()",
         &args,
-        Some(&JsonValue::String("".to_string()))
+        Some(&JsonValue::String(String::new()))
     ));
     assert!(!evaluate_cache_condition(
         "#result.isEmpty()",

@@ -111,8 +111,7 @@ pub mod step;
 pub mod writer;
 
 // Prelude module for convenient imports
-pub mod prelude
-{
+pub mod prelude {
     pub use crate::{
         context::{JobContext, StepContext},
         error::{BatchError, BatchResult},

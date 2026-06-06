@@ -34,9 +34,9 @@ pub enum TestError {
     Parse(String),
 }
 
-impl Into<Error> for TestError {
-    fn into(self) -> Error {
-        match self {
+impl From<TestError> for Error {
+    fn from(val: TestError) -> Self {
+        match val {
             TestError::Db(e) => Error::data_integrity_violation(e.to_string()),
             TestError::NotFound => Error::entity_not_found("User", "id"),
             TestError::Parse(s) => Error::InvalidDataAccess(s),

@@ -3,9 +3,9 @@
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
     use crate::manager::TransactionDefinition;
-    use crate::registry::{DelegatingTransactionManager, TransactionManagerRegistry};
+    use crate::registry::TransactionManagerRegistry;
     use crate::status::TransactionStatus;
     use crate::{NoopTransactionManager, TransactionManager};
     use std::sync::Arc;
@@ -150,7 +150,7 @@ mod tests {
         registry.register("gamma", Arc::new(NoopTransactionManager));
 
         let mut names = registry.manager_names();
-        names.sort();
+        names.sort_unstable();
         assert_eq!(names, vec!["alpha", "beta", "gamma"]);
     }
 
@@ -259,7 +259,7 @@ mod tests {
             &self,
             definition: &TransactionDefinition,
         ) -> crate::TransactionResult<TransactionStatus> {
-            Ok(TransactionStatus::new(&format!("{}::{}", self.name, definition.name)))
+            Ok(TransactionStatus::new(format!("{}::{}", self.name, definition.name)))
         }
 
         async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()> {

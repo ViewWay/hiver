@@ -529,7 +529,7 @@ mod pool_config_tests {
         let config = PoolConfig::default();
         assert_eq!(config.max_size, 10);
         assert_eq!(config.min_idle, 1);
-        assert_eq!(config.test_on_checkout, true);
+        assert!(config.test_on_checkout);
     }
 
     #[test]
@@ -541,6 +541,6 @@ mod pool_config_tests {
 
         assert_eq!(config.max_size, 20);
         assert_eq!(config.min_idle, 5);
-        assert_eq!(config.test_on_checkout, false);
+        assert!(!config.test_on_checkout);
     }
 }

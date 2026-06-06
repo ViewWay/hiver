@@ -18,8 +18,7 @@ use serde::{Deserialize, Serialize};
 /// 指标类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum MetricType
-{
+pub enum MetricType {
     /// A gauge can go up or down
     /// 仪表盘，可以上下变化
     Gauge,
@@ -37,8 +36,7 @@ pub enum MetricType
 /// 指标值
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum MetricValue
-{
+pub enum MetricValue {
     /// Integer value
     /// 整数值
     Integer(i64),
@@ -55,8 +53,7 @@ pub enum MetricValue
 /// A metric
 /// 指标
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Metric
-{
+pub struct Metric {
     /// Metric name
     /// 指标名称
     pub name: String,
@@ -86,12 +83,10 @@ pub struct Metric
     pub tags: HashMap<String, String>,
 }
 
-impl Metric
-{
+impl Metric {
     /// Create a new gauge metric
     /// 创建新的仪表盘指标
-    pub fn gauge(name: impl Into<String>, value: i64) -> Self
-    {
+    pub fn gauge(name: impl Into<String>, value: i64) -> Self {
         Self {
             name: name.into(),
             description: None,
@@ -104,8 +99,7 @@ impl Metric
 
     /// Create a new counter metric
     /// 创建新的计数器指标
-    pub fn counter(name: impl Into<String>, value: u64) -> Self
-    {
+    pub fn counter(name: impl Into<String>, value: u64) -> Self {
         Self {
             name: name.into(),
             description: None,
@@ -118,16 +112,14 @@ impl Metric
 
     /// Set the description
     /// 设置描述
-    pub fn with_description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
 
     /// Add a tag
     /// 添加标签
-    pub fn with_tag(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn with_tag(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.tags.insert(key.into(), value.into());
         self
     }
@@ -136,18 +128,15 @@ impl Metric
 /// Metrics registry
 /// 指标注册表
 #[derive(Debug, Default)]
-pub struct MetricsRegistry
-{
+pub struct MetricsRegistry {
     counters: HashMap<String, Arc<AtomicU64>>,
     gauges: HashMap<String, Arc<AtomicI64>>,
 }
 
-impl MetricsRegistry
-{
+impl MetricsRegistry {
     /// Create a new metrics registry
     /// 创建新的指标注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             counters: HashMap::new(),
             gauges: HashMap::new(),
@@ -156,8 +145,7 @@ impl MetricsRegistry
 
     /// Increment a counter
     /// 增加计数器
-    pub fn increment(&mut self, name: &str) -> u64
-    {
+    pub fn increment(&mut self, name: &str) -> u64 {
         let counter = self
             .counters
             .entry(name.to_string())
@@ -167,8 +155,7 @@ impl MetricsRegistry
 
     /// Increment a counter by a specific amount
     /// 按指定数量增加计数器
-    pub fn increment_by(&mut self, name: &str, amount: u64) -> u64
-    {
+    pub fn increment_by(&mut self, name: &str, amount: u64) -> u64 {
         let counter = self
             .counters
             .entry(name.to_string())
@@ -178,15 +165,13 @@ impl MetricsRegistry
 
     /// Get a counter value
     /// 获取计数器值
-    pub fn get_counter(&self, name: &str) -> Option<u64>
-    {
+    pub fn get_counter(&self, name: &str) -> Option<u64> {
         self.counters.get(name).map(|c| c.load(Ordering::Relaxed))
     }
 
     /// Set a gauge value
     /// 设置仪表盘值
-    pub fn set_gauge(&mut self, name: &str, value: i64)
-    {
+    pub fn set_gauge(&mut self, name: &str, value: i64) {
         let gauge = self
             .gauges
             .entry(name.to_string())
@@ -196,27 +181,23 @@ impl MetricsRegistry
 
     /// Get a gauge value
     /// 获取仪表盘值
-    pub fn get_gauge(&self, name: &str) -> Option<i64>
-    {
+    pub fn get_gauge(&self, name: &str) -> Option<i64> {
         self.gauges.get(name).map(|g| g.load(Ordering::Relaxed))
     }
 
     /// Collect all metrics
     /// 收集所有指标
-    pub fn collect(&self) -> Vec<Metric>
-    {
+    pub fn collect(&self) -> Vec<Metric> {
         let mut metrics = Vec::new();
 
         // Collect counters
-        for (name, counter) in &self.counters
-        {
+        for (name, counter) in &self.counters {
             let value = counter.load(Ordering::Relaxed);
             metrics.push(Metric::counter(name, value).with_description("Counter metric"));
         }
 
         // Collect gauges
-        for (name, gauge) in &self.gauges
-        {
+        for (name, gauge) in &self.gauges {
             let value = gauge.load(Ordering::Relaxed);
             metrics.push(Metric::gauge(name, value).with_description("Gauge metric"));
         }
@@ -226,8 +207,7 @@ impl MetricsRegistry
 
     /// Get metric names list
     /// 获取指标名称列表
-    pub fn names(&self) -> Vec<String>
-    {
+    pub fn names(&self) -> Vec<String> {
         let mut names = Vec::new();
         names.extend(self.counters.keys().cloned());
         names.extend(self.gauges.keys().cloned());
@@ -239,17 +219,14 @@ impl MetricsRegistry
 
 /// System metrics collector
 /// 系统指标收集器
-pub struct SystemMetrics
-{
+pub struct SystemMetrics {
     _registry: Arc<MetricsRegistry>,
 }
 
-impl SystemMetrics
-{
+impl SystemMetrics {
     /// Create new system metrics
     /// 创建新的系统指标
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             _registry: Arc::new(MetricsRegistry::new()),
         }
@@ -257,8 +234,7 @@ impl SystemMetrics
 
     /// Collect system metrics
     /// 收集系统指标
-    pub fn collect(&self) -> Vec<Metric>
-    {
+    pub fn collect(&self) -> Vec<Metric> {
         vec![
             Metric::gauge("jvm.memory.max", 1024 * 1024 * 512).with_description("Maximum memory"),
             Metric::gauge("jvm.memory.used", 1024 * 1024 * 128).with_description("Used memory"),
@@ -268,38 +244,32 @@ impl SystemMetrics
     }
 }
 
-impl Default for SystemMetrics
-{
-    fn default() -> Self
-    {
+impl Default for SystemMetrics {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_metric_gauge()
-    {
+    fn test_metric_gauge() {
         let metric = Metric::gauge("test.gauge", 42);
         assert_eq!(metric.name, "test.gauge");
         assert_eq!(metric.metric_type, MetricType::Gauge);
     }
 
     #[test]
-    fn test_metric_counter()
-    {
+    fn test_metric_counter() {
         let metric = Metric::counter("test.counter", 100);
         assert_eq!(metric.name, "test.counter");
         assert_eq!(metric.metric_type, MetricType::Counter);
     }
 
     #[test]
-    fn test_metrics_registry()
-    {
+    fn test_metrics_registry() {
         let mut registry = MetricsRegistry::new();
 
         registry.increment("test.counter");
@@ -312,8 +282,7 @@ mod tests
     }
 
     #[test]
-    fn test_metrics_collect()
-    {
+    fn test_metrics_collect() {
         let mut registry = MetricsRegistry::new();
 
         registry.increment("requests.total");

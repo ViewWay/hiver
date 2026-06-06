@@ -332,7 +332,7 @@ mod engine_impl {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use async_graphql::{EmptyMutation, EmptySubscription, Object, Schema};
+        use async_graphql::{EmptyMutation, EmptySubscription, Object};
 
         struct QueryRoot;
         #[Object]
@@ -375,7 +375,7 @@ mod engine_impl {
                 resp.data
                     .as_ref()
                     .and_then(|d| d.get("add"))
-                    .and_then(|v| v.as_i64()),
+                    .and_then(serde_json::Value::as_i64),
                 Some(7)
             );
         }
@@ -416,7 +416,7 @@ mod engine_impl {
                 resp.data
                     .as_ref()
                     .and_then(|d| d.get("add"))
-                    .and_then(|v| v.as_i64()),
+                    .and_then(serde_json::Value::as_i64),
                 Some(30)
             );
         }

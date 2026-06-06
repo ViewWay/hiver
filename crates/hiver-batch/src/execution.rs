@@ -25,8 +25,7 @@ use uuid::Uuid;
 /// }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BatchStatus
-{
+pub enum BatchStatus {
     /// Job/Step is starting
     /// 作业/步骤正在启动
     Starting,
@@ -60,26 +59,22 @@ pub enum BatchStatus
     Unknown,
 }
 
-impl BatchStatus
-{
+impl BatchStatus {
     /// Check if status is terminal (no further transitions)
     /// 检查状态是否为终止状态（无法再转换）
-    pub fn is_terminal(self) -> bool
-    {
+    pub fn is_terminal(self) -> bool {
         matches!(self, BatchStatus::Completed | BatchStatus::Failed | BatchStatus::Abandoned)
     }
 
     /// Check if status is running
     /// 检查状态是否为运行中
-    pub fn is_running(self) -> bool
-    {
+    pub fn is_running(self) -> bool {
         matches!(self, BatchStatus::Starting | BatchStatus::Started | BatchStatus::Executing)
     }
 
     /// Check if status is unsuccessful
     /// 检查状态是否为不成功
-    pub fn is_unsuccessful(self) -> bool
-    {
+    pub fn is_unsuccessful(self) -> bool {
         matches!(self, BatchStatus::Failed | BatchStatus::Abandoned)
     }
 }
@@ -99,8 +94,7 @@ pub type JobStatus = BatchStatus;
 /// Exit status for job/step
 /// 作业/步骤的退出状态
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct ExitStatus
-{
+pub struct ExitStatus {
     /// Exit code
     /// 退出代码
     pub code: String,
@@ -110,12 +104,10 @@ pub struct ExitStatus
     pub description: Option<String>,
 }
 
-impl ExitStatus
-{
+impl ExitStatus {
     /// Create new exit status
     /// 创建新退出状态
-    pub fn new(code: impl Into<String>) -> Self
-    {
+    pub fn new(code: impl Into<String>) -> Self {
         Self {
             code: code.into(),
             description: None,
@@ -124,37 +116,32 @@ impl ExitStatus
 
     /// Set description
     /// 设置描述
-    pub fn with_description(mut self, desc: impl Into<String>) -> Self
-    {
+    pub fn with_description(mut self, desc: impl Into<String>) -> Self {
         self.description = Some(desc.into());
         self
     }
 
     /// Completed exit status
     /// 完成退出状态
-    pub fn completed() -> Self
-    {
+    pub fn completed() -> Self {
         Self::new("COMPLETED").with_description("Job completed successfully")
     }
 
     /// Failed exit status
     /// 失败退出状态
-    pub fn failed() -> Self
-    {
+    pub fn failed() -> Self {
         Self::new("FAILED").with_description("Job failed")
     }
 
     /// Stopped exit status
     /// 停止退出状态
-    pub fn stopped() -> Self
-    {
+    pub fn stopped() -> Self {
         Self::new("STOPPED").with_description("Job was stopped")
     }
 
     /// Unknown exit status
     /// 未知退出状态
-    pub fn unknown() -> Self
-    {
+    pub fn unknown() -> Self {
         Self::new("UNKNOWN").with_description("Unknown exit status")
     }
 }
@@ -173,8 +160,7 @@ impl ExitStatus
 /// jobExecution.setStartTime(new Date());
 /// ```
 #[derive(Debug, Clone)]
-pub struct JobExecution
-{
+pub struct JobExecution {
     /// Unique execution ID
     /// 唯一执行ID
     pub id: Uuid,
@@ -216,12 +202,10 @@ pub struct JobExecution
     pub failures: Vec<String>,
 }
 
-impl JobExecution
-{
+impl JobExecution {
     /// Create new job execution
     /// 创建新作业执行
-    pub fn new(job_name: impl Into<String>, job_instance_id: Uuid) -> Self
-    {
+    pub fn new(job_name: impl Into<String>, job_instance_id: Uuid) -> Self {
         Self {
             id: Uuid::new_v4(),
             job_name: job_name.into(),
@@ -238,52 +222,44 @@ impl JobExecution
 
     /// Set status
     /// 设置状态
-    pub fn set_status(&mut self, status: JobStatus)
-    {
+    pub fn set_status(&mut self, status: JobStatus) {
         self.status = status;
     }
 
     /// Set start time
     /// 设置开始时间
-    pub fn set_start_time(&mut self, time: DateTime<Utc>)
-    {
+    pub fn set_start_time(&mut self, time: DateTime<Utc>) {
         self.start_time = Some(time);
     }
 
     /// Set end time
     /// 设置结束时间
-    pub fn set_end_time(&mut self, time: DateTime<Utc>)
-    {
+    pub fn set_end_time(&mut self, time: DateTime<Utc>) {
         self.end_time = Some(time);
     }
 
     /// Set exit status
     /// 设置退出状态
-    pub fn set_exit_status(&mut self, exit_status: ExitStatus)
-    {
+    pub fn set_exit_status(&mut self, exit_status: ExitStatus) {
         self.exit_status = exit_status;
     }
 
     /// Add step execution
     /// 添加步骤执行
-    pub fn add_step_execution(&mut self, step_execution: StepExecution)
-    {
+    pub fn add_step_execution(&mut self, step_execution: StepExecution) {
         self.step_executions.push(step_execution);
     }
 
     /// Add failure
     /// 添加失败
-    pub fn add_failure(&mut self, error: String)
-    {
+    pub fn add_failure(&mut self, error: String) {
         self.failures.push(error);
     }
 
     /// Get duration
     /// 获取执行时长
-    pub fn duration(&self) -> Option<chrono::Duration>
-    {
-        match (self.start_time, self.end_time)
-        {
+    pub fn duration(&self) -> Option<chrono::Duration> {
+        match (self.start_time, self.end_time) {
             (Some(start), Some(end)) => Some(end - start),
             _ => None,
         }
@@ -291,15 +267,13 @@ impl JobExecution
 
     /// Get all step executions
     /// 获取所有步骤执行
-    pub fn step_executions(&self) -> &[StepExecution]
-    {
+    pub fn step_executions(&self) -> &[StepExecution] {
         &self.step_executions
     }
 
     /// Check if execution is running
     /// 检查执行是否正在运行
-    pub fn is_running(&self) -> bool
-    {
+    pub fn is_running(&self) -> bool {
         self.status.is_running()
     }
 }
@@ -316,8 +290,7 @@ impl JobExecution
 /// stepExecution.setWriteCount(100);
 /// ```
 #[derive(Debug, Clone)]
-pub struct StepExecution
-{
+pub struct StepExecution {
     /// Unique execution ID
     /// 唯一执行ID
     pub id: Uuid,
@@ -371,12 +344,10 @@ pub struct StepExecution
     pub rollback_count: Arc<AtomicUsize>,
 }
 
-impl StepExecution
-{
+impl StepExecution {
     /// Create new step execution
     /// 创建新步骤执行
-    pub fn new(step_name: impl Into<String>, job_execution_id: Uuid) -> Self
-    {
+    pub fn new(step_name: impl Into<String>, job_execution_id: Uuid) -> Self {
         Self {
             id: Uuid::new_v4(),
             step_name: step_name.into(),
@@ -396,122 +367,104 @@ impl StepExecution
 
     /// Set status
     /// 设置状态
-    pub fn set_status(&mut self, status: BatchStatus)
-    {
+    pub fn set_status(&mut self, status: BatchStatus) {
         self.status = status;
     }
 
     /// Set start time
     /// 设置开始时间
-    pub fn set_start_time(&mut self, time: DateTime<Utc>)
-    {
+    pub fn set_start_time(&mut self, time: DateTime<Utc>) {
         self.start_time = Some(time);
     }
 
     /// Set end time
     /// 设置结束时间
-    pub fn set_end_time(&mut self, time: DateTime<Utc>)
-    {
+    pub fn set_end_time(&mut self, time: DateTime<Utc>) {
         self.end_time = Some(time);
     }
 
     /// Set exit status
     /// 设置退出状态
-    pub fn set_exit_status(&mut self, exit_status: ExitStatus)
-    {
+    pub fn set_exit_status(&mut self, exit_status: ExitStatus) {
         self.exit_status = exit_status;
     }
 
     /// Increment read count
     /// 增加读取计数
-    pub fn increment_read_count(&self) -> usize
-    {
+    pub fn increment_read_count(&self) -> usize {
         self.read_count.fetch_add(1, Ordering::SeqCst) + 1
     }
 
     /// Increment write count
     /// 增加写入计数
-    pub fn increment_write_count(&self, amount: usize) -> usize
-    {
+    pub fn increment_write_count(&self, amount: usize) -> usize {
         self.write_count.fetch_add(amount, Ordering::SeqCst) + amount
     }
 
     /// Increment process count
     /// 增加处理计数
-    pub fn increment_process_count(&self) -> usize
-    {
+    pub fn increment_process_count(&self) -> usize {
         self.process_count.fetch_add(1, Ordering::SeqCst) + 1
     }
 
     /// Increment skip count
     /// 增加跳过计数
-    pub fn increment_skip_count(&self) -> usize
-    {
+    pub fn increment_skip_count(&self) -> usize {
         self.skip_count.fetch_add(1, Ordering::SeqCst) + 1
     }
 
     /// Increment filter count
     /// 增加过滤计数
-    pub fn increment_filter_count(&self) -> usize
-    {
+    pub fn increment_filter_count(&self) -> usize {
         self.filter_count.fetch_add(1, Ordering::SeqCst) + 1
     }
 
     /// Increment rollback count
     /// 增加回滚计数
-    pub fn increment_rollback_count(&self) -> usize
-    {
+    pub fn increment_rollback_count(&self) -> usize {
         self.rollback_count.fetch_add(1, Ordering::SeqCst) + 1
     }
 
     /// Get read count
     /// 获取读取计数
-    pub fn read_count(&self) -> usize
-    {
+    pub fn read_count(&self) -> usize {
         self.read_count.load(Ordering::SeqCst)
     }
 
     /// Get write count
     /// 获取写入计数
-    pub fn write_count(&self) -> usize
-    {
+    pub fn write_count(&self) -> usize {
         self.write_count.load(Ordering::SeqCst)
     }
 
     /// Get process count
     /// 获取处理计数
-    pub fn process_count(&self) -> usize
-    {
+    pub fn process_count(&self) -> usize {
         self.process_count.load(Ordering::SeqCst)
     }
 
     /// Get skip count
     /// 获取跳过计数
-    pub fn skip_count(&self) -> usize
-    {
+    pub fn skip_count(&self) -> usize {
         self.skip_count.load(Ordering::SeqCst)
     }
 
     /// Get filter count
     /// 获取过滤计数
-    pub fn filter_count(&self) -> usize
-    {
+    pub fn filter_count(&self) -> usize {
         self.filter_count.load(Ordering::SeqCst)
     }
 
     /// Get rollback count
     /// 获取回滚计数
-    pub fn rollback_count(&self) -> usize
-    {
+    pub fn rollback_count(&self) -> usize {
         self.rollback_count.load(Ordering::SeqCst)
     }
 
     /// Get duration
     /// 获取执行时长
-    pub fn duration(&self) -> Option<chrono::Duration>
-    {
-        match (self.start_time, self.end_time)
-        {
+    pub fn duration(&self) -> Option<chrono::Duration> {
+        match (self.start_time, self.end_time) {
             (Some(start), Some(end)) => Some(end - start),
             _ => None,
         }
@@ -519,20 +472,17 @@ impl StepExecution
 
     /// Check if execution is running
     /// 检查执行是否正在运行
-    pub fn is_running(&self) -> bool
-    {
+    pub fn is_running(&self) -> bool {
         self.status.is_running()
     }
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_batch_status()
-    {
+    fn test_batch_status() {
         assert!(!BatchStatus::Starting.is_terminal());
         assert!(BatchStatus::Starting.is_running());
         assert!(!BatchStatus::Starting.is_unsuccessful());
@@ -547,8 +497,7 @@ mod tests
     }
 
     #[test]
-    fn test_exit_status()
-    {
+    fn test_exit_status() {
         let completed = ExitStatus::completed();
         assert_eq!(completed.code, "COMPLETED");
         assert!(completed.description.is_some());
@@ -559,8 +508,7 @@ mod tests
     }
 
     #[test]
-    fn test_job_execution()
-    {
+    fn test_job_execution() {
         let instance_id = Uuid::new_v4();
         let mut execution = JobExecution::new("test-job", instance_id);
 
@@ -577,8 +525,7 @@ mod tests
     }
 
     #[test]
-    fn test_step_execution_counters()
-    {
+    fn test_step_execution_counters() {
         let job_exec_id = Uuid::new_v4();
         let step_execution = StepExecution::new("test-step", job_exec_id);
 

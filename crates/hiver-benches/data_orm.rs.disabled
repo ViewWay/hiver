@@ -29,10 +29,8 @@ use hiver_data_rdbc::QueryParam;
 #[derive(Debug, Clone)]
 struct User;
 
-impl Model for User
-{
-    fn meta() -> ModelMeta
-    {
+impl Model for User {
+    fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("users");
         meta.columns
             .push(Column::new("id", ColumnType::I64).primary_key());
@@ -45,13 +43,11 @@ impl Model for User
         meta
     }
 
-    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String>
-    {
+    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String> {
         Ok("1".to_string())
     }
 
-    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()>
-    {
+    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()> {
         Ok(())
     }
 }
@@ -61,10 +57,8 @@ impl Model for User
 #[derive(Debug, Clone)]
 struct Product;
 
-impl Model for Product
-{
-    fn meta() -> ModelMeta
-    {
+impl Model for Product {
+    fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("products");
         meta.columns
             .push(Column::new("id", ColumnType::I64).primary_key());
@@ -84,13 +78,11 @@ impl Model for Product
         meta
     }
 
-    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String>
-    {
+    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String> {
         Ok("1".to_string())
     }
 
-    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()>
-    {
+    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()> {
         Ok(())
     }
 }
@@ -100,10 +92,8 @@ impl Model for Product
 #[derive(Debug, Clone)]
 struct Order;
 
-impl Model for Order
-{
-    fn meta() -> ModelMeta
-    {
+impl Model for Order {
+    fn meta() -> ModelMeta {
         let mut meta = ModelMeta::new("orders");
         meta.columns
             .push(Column::new("id", ColumnType::I64).primary_key());
@@ -115,13 +105,11 @@ impl Model for Order
         meta
     }
 
-    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String>
-    {
+    fn primary_key(&self) -> hiver_data_orm::prelude::Result<String> {
         Ok("1".to_string())
     }
 
-    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()>
-    {
+    fn set_primary_key(&mut self, _value: String) -> hiver_data_orm::prelude::Result<()> {
         Ok(())
     }
 }
@@ -132,8 +120,7 @@ impl Model for Order
 
 /// Benchmark: Simple SELECT query building
 /// 简单 SELECT 查询构建的基准测试
-fn bench_query_simple(c: &mut Criterion)
-{
+fn bench_query_simple(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_query_build");
 
     // SELECT * FROM users
@@ -176,8 +163,7 @@ fn bench_query_simple(c: &mut Criterion)
 
 /// Benchmark: Complex query building (joins, groups, pagination)
 /// 复杂查询构建的基准测试（JOIN、GROUP BY、分页）
-fn bench_query_complex(c: &mut Criterion)
-{
+fn bench_query_complex(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_query_build");
 
     // JOIN query: orders + users
@@ -238,12 +224,10 @@ fn bench_query_complex(c: &mut Criterion)
 
 /// Benchmark: Query building throughput at scale
 /// 大规模查询构建吞吐量的基准测试
-fn bench_query_throughput(c: &mut Criterion)
-{
+fn bench_query_throughput(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_query_throughput");
 
-    for n_wheres in [1usize, 3, 5, 10].iter()
-    {
+    for n_wheres in [1usize, 3, 5, 10].iter() {
         group.throughput(Throughput::Elements(*n_wheres as u64));
         group.bench_with_input(
             BenchmarkId::new("where_clauses", n_wheres),
@@ -251,8 +235,7 @@ fn bench_query_throughput(c: &mut Criterion)
             |b, &n_wheres| {
                 b.iter(|| {
                     let mut builder = QueryBuilder::<User>::new();
-                    for i in 0..n_wheres
-                    {
+                    for i in 0..n_wheres {
                         builder = builder
                             .where_(&format!("field{} > ?", i), &[QueryParam::I32(i as i32)]);
                     }
@@ -272,8 +255,7 @@ fn bench_query_throughput(c: &mut Criterion)
 
 /// Benchmark: Model metadata creation and inspection
 /// 模型元数据创建和检查的基准测试
-fn bench_model_meta(c: &mut Criterion)
-{
+fn bench_model_meta(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_model_meta");
 
     group.bench_function("user_meta_creation", |b| {
@@ -302,8 +284,7 @@ fn bench_model_meta(c: &mut Criterion)
 
 /// Benchmark: Column type to SQL conversion across dialects
 /// 列类型在不同 SQL 方言间的转换基准测试
-fn bench_column_type_sql(c: &mut Criterion)
-{
+fn bench_column_type_sql(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_column_sql");
 
     let types = vec![
@@ -322,10 +303,8 @@ fn bench_column_type_sql(c: &mut Criterion)
         ("sqlite", SqlDialect::SQLite),
     ];
 
-    for (type_name, col_type) in &types
-    {
-        for (dialect_name, dialect) in &dialects
-        {
+    for (type_name, col_type) in &types {
+        for (dialect_name, dialect) in &dialects {
             group.bench_function(&format!("{}_{}", type_name, dialect_name), |b| {
                 b.iter(|| {
                     let sql_type = col_type.as_sql(*dialect);
@@ -344,8 +323,7 @@ fn bench_column_type_sql(c: &mut Criterion)
 
 /// Benchmark: to_sql (inline values) vs build (parameterized)
 /// to_sql（内联值）与 build（参数化）的基准测试对比
-fn bench_sql_generation(c: &mut Criterion)
-{
+fn bench_sql_generation(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_sql_gen");
 
     group.bench_function("build_parameterized", |b| {
@@ -381,8 +359,7 @@ fn bench_sql_generation(c: &mut Criterion)
 
 /// Benchmark: CRUD SQL construction patterns
 /// CRUD SQL 构建模式的基准测试
-fn bench_crud_patterns(c: &mut Criterion)
-{
+fn bench_crud_patterns(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_crud_sql");
 
     // INSERT pattern (via raw SQL string building)
@@ -455,15 +432,13 @@ fn bench_crud_patterns(c: &mut Criterion)
 
 /// Benchmark: JSON serialization overhead for ORM-like objects
 /// ORM 类对象的 JSON 序列化开销基准测试
-fn bench_orm_serialization(c: &mut Criterion)
-{
+fn bench_orm_serialization(c: &mut Criterion) {
     let mut group = c.benchmark_group("orm_serialization");
 
     // Serialize a user-like struct
     // 序列化用户类结构体
     #[derive(serde::Serialize)]
-    struct UserRow
-    {
+    struct UserRow {
         id: i64,
         name: String,
         email: String,
@@ -530,8 +505,7 @@ fn bench_orm_serialization(c: &mut Criterion)
 // Criterion Main / Criterion 主函数
 // ============================================================================
 
-fn configure_criterion() -> Criterion
-{
+fn configure_criterion() -> Criterion {
     Criterion::default()
         .measurement_time(StdDuration::from_secs(5))
         .sample_size(100)

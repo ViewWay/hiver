@@ -218,7 +218,10 @@
       "Bash(sed -n '420,427p' crates/hiver-runtime/src/driver/iouring.rs)",
       "Bash(sed -n '516,524p' crates/hiver-runtime/src/driver/iouring.rs)",
       "Bash(sed -n '261,265p' crates/hiver-runtime/src/scheduler/local.rs)",
-      "Bash(xargs -I{} gh run view {} --log-failed)"
+      "Bash(xargs -I{} gh run view {} --log-failed)",
+      "Bash(env)",
+      "Bash(security find-certificate *)",
+      "Bash(openssl x509 *)"
     ]
   }
 }

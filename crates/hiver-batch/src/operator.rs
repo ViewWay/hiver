@@ -73,8 +73,7 @@ use crate::{
 ///     return operator;
 /// }
 /// ```
-pub struct AdvancedJobOperator
-{
+pub struct AdvancedJobOperator {
     repository: Arc<InMemoryJobRepository>,
     running_jobs: Arc<RwLock<HashMap<Uuid, JobExecution>>>,
     job_registry: Arc<RwLock<HashMap<String, RegisteredJob>>>,
@@ -83,8 +82,7 @@ pub struct AdvancedJobOperator
 /// A registered job entry.
 /// 已注册的作业条目。
 #[derive(Debug, Clone)]
-pub struct RegisteredJob
-{
+pub struct RegisteredJob {
     /// Job name
     /// 作业名称
     pub name: String,
@@ -98,12 +96,10 @@ pub struct RegisteredJob
     pub registered_at: DateTime<Utc>,
 }
 
-impl AdvancedJobOperator
-{
+impl AdvancedJobOperator {
     /// Create a new advanced job operator.
     /// 创建新的高级作业操作器。
-    pub fn new(repository: InMemoryJobRepository) -> Self
-    {
+    pub fn new(repository: InMemoryJobRepository) -> Self {
         Self {
             repository: Arc::new(repository),
             running_jobs: Arc::new(RwLock::new(HashMap::new())),
@@ -113,8 +109,7 @@ impl AdvancedJobOperator
 
     /// Create from an existing shared repository.
     /// 从现有共享存储库创建。
-    pub fn with_shared(repository: Arc<InMemoryJobRepository>) -> Self
-    {
+    pub fn with_shared(repository: Arc<InMemoryJobRepository>) -> Self {
         Self {
             repository,
             running_jobs: Arc::new(RwLock::new(HashMap::new())),
@@ -132,36 +127,35 @@ impl AdvancedJobOperator
     /// ```java
     /// jobRegistry.register(new ReferenceJobFactory(job));
     /// ```
-    pub async fn register_job(&self, name: &str, restartable: bool)
-    {
+    pub async fn register_job(&self, name: &str, restartable: bool) {
         let mut registry = self.job_registry.write().await;
-        registry.insert(name.to_string(), RegisteredJob {
-            name: name.to_string(),
-            restartable,
-            registered_at: Utc::now(),
-        });
+        registry.insert(
+            name.to_string(),
+            RegisteredJob {
+                name: name.to_string(),
+                restartable,
+                registered_at: Utc::now(),
+            },
+        );
     }
 
     /// Unregister a job by name.
     /// 按名称取消注册作业。
-    pub async fn unregister_job(&self, name: &str) -> bool
-    {
+    pub async fn unregister_job(&self, name: &str) -> bool {
         let mut registry = self.job_registry.write().await;
         registry.remove(name).is_some()
     }
 
     /// List all registered job names.
     /// 列出所有已注册的作业名称。
-    pub async fn registered_jobs(&self) -> Vec<String>
-    {
+    pub async fn registered_jobs(&self) -> Vec<String> {
         let registry = self.job_registry.read().await;
         registry.keys().cloned().collect()
     }
 
     /// Check if a job is registered.
     /// 检查作业是否已注册。
-    pub async fn is_registered(&self, name: &str) -> bool
-    {
+    pub async fn is_registered(&self, name: &str) -> bool {
         let registry = self.job_registry.read().await;
         registry.contains_key(name)
     }
@@ -170,32 +164,32 @@ impl AdvancedJobOperator
 
     /// Get a job execution by its ID.
     /// 通过 ID 获取作业执行。
-    pub async fn get_execution(&self, execution_id: Uuid) -> BatchResult<JobExecution>
-    {
+    pub async fn get_execution(&self, execution_id: Uuid) -> BatchResult<JobExecution> {
         self.repository.get_job_execution(execution_id).await
     }
 
     /// Get the last execution of a job by name.
     /// 通过名称获取作业的最后一次执行。
-    pub async fn get_last_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>>
-    {
+    pub async fn get_last_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>> {
         self.repository.get_last_job_execution(job_name).await
     }
 
     /// Get a summary of a job execution.
     /// 获取作业执行的摘要。
-    pub async fn get_job_summary(&self, job_name: &str)
-    -> BatchResult<Option<JobExecutionSummary>>
-    {
+    pub async fn get_job_summary(
+        &self,
+        job_name: &str,
+    ) -> BatchResult<Option<JobExecutionSummary>> {
         let execution = self.repository.get_last_job_execution(job_name).await?;
         Ok(execution.map(|e| JobExecutionSummary::from_execution(&e)))
     }
 
     /// Get summaries for all executions of a job.
     /// 获取作业所有执行的摘要。
-    pub async fn get_job_executions(&self, job_name: &str)
-    -> BatchResult<Vec<JobExecutionSummary>>
-    {
+    pub async fn get_job_executions(
+        &self,
+        job_name: &str,
+    ) -> BatchResult<Vec<JobExecutionSummary>> {
         // In the in-memory repo, we only store the last execution per job name
         let last = self.repository.get_last_job_execution(job_name).await?;
         Ok(last
@@ -218,18 +212,14 @@ impl AdvancedJobOperator
     /// ```java
     /// jobOperator.stop(executionId);
     /// ```
-    pub async fn stop(&self, execution_id: Uuid) -> BatchResult<()>
-    {
+    pub async fn stop(&self, execution_id: Uuid) -> BatchResult<()> {
         let mut running = self.running_jobs.write().await;
-        if let Some(mut execution) = running.remove(&execution_id)
-        {
+        if let Some(mut execution) = running.remove(&execution_id) {
             execution.set_status(JobStatus::Stopped);
             execution.set_end_time(Utc::now());
             execution.set_exit_status(ExitStatus::stopped());
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(BatchError::NotFound {
                 resource: "JobExecution".to_string(),
                 id: execution_id.to_string(),
@@ -245,14 +235,11 @@ impl AdvancedJobOperator
     /// ```java
     /// jobOperator.restart(executionId);
     /// ```
-    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution>
-    {
+    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution> {
         let last = self.repository.get_last_job_execution(job_name).await?;
-        let last = match last
-        {
+        let last = match last {
             Some(e) => e,
-            None =>
-            {
+            None => {
                 return Err(BatchError::NotFound {
                     resource: "JobExecution".to_string(),
                     id: job_name.to_string(),
@@ -260,15 +247,13 @@ impl AdvancedJobOperator
             },
         };
 
-        if last.status == JobStatus::Completed
-        {
+        if last.status == JobStatus::Completed {
             return Err(BatchError::JobAlreadyComplete {
                 job_name: job_name.to_string(),
             });
         }
 
-        if last.status.is_running()
-        {
+        if last.status.is_running() {
             return Err(BatchError::JobAlreadyRunning {
                 job_name: job_name.to_string(),
             });
@@ -291,12 +276,10 @@ impl AdvancedJobOperator
     /// ```java
     /// jobOperator.abandon(executionId);
     /// ```
-    pub async fn abandon(&self, execution_id: Uuid) -> BatchResult<()>
-    {
+    pub async fn abandon(&self, execution_id: Uuid) -> BatchResult<()> {
         let mut execution = self.repository.get_job_execution(execution_id).await?;
 
-        if execution.status.is_running()
-        {
+        if execution.status.is_running() {
             return Err(BatchError::Other(
                 "Cannot abandon a running execution; stop it first".to_string(),
             ));
@@ -310,40 +293,35 @@ impl AdvancedJobOperator
 
     /// Get the status of a job execution.
     /// 获取作业执行的状态。
-    pub async fn get_status(&self, execution_id: Uuid) -> BatchResult<BatchStatus>
-    {
+    pub async fn get_status(&self, execution_id: Uuid) -> BatchResult<BatchStatus> {
         let execution = self.repository.get_job_execution(execution_id).await?;
         Ok(execution.status)
     }
 
     /// List all currently running job names.
     /// 列出所有当前运行中的作业名称。
-    pub async fn running_job_names(&self) -> Vec<String>
-    {
+    pub async fn running_job_names(&self) -> Vec<String> {
         let running = self.running_jobs.read().await;
         running.values().map(|e| e.job_name.clone()).collect()
     }
 
     /// Count the number of running jobs.
     /// 计算运行中的作业数量。
-    pub async fn running_count(&self) -> usize
-    {
+    pub async fn running_count(&self) -> usize {
         let running = self.running_jobs.read().await;
         running.len()
     }
 
     /// Register a running job execution for tracking.
     /// 注册运行中的作业执行以进行跟踪。
-    pub async fn mark_running(&self, execution: JobExecution)
-    {
+    pub async fn mark_running(&self, execution: JobExecution) {
         let mut running = self.running_jobs.write().await;
         running.insert(execution.id, execution);
     }
 
     /// Remove a job from the running set (e.g., after completion).
     /// 从运行集合中移除作业（例如完成后）。
-    pub async fn mark_completed(&self, execution_id: Uuid)
-    {
+    pub async fn mark_completed(&self, execution_id: Uuid) {
         let mut running = self.running_jobs.write().await;
         running.remove(&execution_id);
     }
@@ -363,8 +341,7 @@ impl AdvancedJobOperator
 /// JobExecution execution = jobExplorer.getJobExecution(executionId);
 /// ```
 #[derive(Debug, Clone)]
-pub struct JobExecutionSummary
-{
+pub struct JobExecutionSummary {
     /// Execution ID
     /// 执行ID
     pub id: Uuid,
@@ -414,12 +391,10 @@ pub struct JobExecutionSummary
     pub total_skip_count: usize,
 }
 
-impl JobExecutionSummary
-{
+impl JobExecutionSummary {
     /// Create a summary from a JobExecution.
     /// 从 JobExecution 创建摘要。
-    pub fn from_execution(execution: &JobExecution) -> Self
-    {
+    pub fn from_execution(execution: &JobExecution) -> Self {
         let total_read_count: usize = execution
             .step_executions
             .iter()
@@ -454,15 +429,13 @@ impl JobExecutionSummary
 
     /// Check if the execution is running.
     /// 检查执行是否正在运行。
-    pub fn is_running(&self) -> bool
-    {
+    pub fn is_running(&self) -> bool {
         self.status.is_running()
     }
 
     /// Check if the execution is finished (terminal state).
     /// 检查执行是否已完成（终止状态）。
-    pub fn is_finished(&self) -> bool
-    {
+    pub fn is_finished(&self) -> bool {
         self.status.is_terminal()
     }
 }
@@ -493,8 +466,7 @@ impl JobExecutionSummary
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct FaultTolerantStep
-{
+pub struct FaultTolerantStep {
     /// Step name
     /// 步骤名称
     pub name: String,
@@ -528,12 +500,10 @@ pub struct FaultTolerantStep
     pub timeout_secs: Option<u64>,
 }
 
-impl FaultTolerantStep
-{
+impl FaultTolerantStep {
     /// Create a new fault-tolerant step configuration.
     /// 创建新的容错步骤配置。
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             chunk_size: 100,
@@ -548,68 +518,59 @@ impl FaultTolerantStep
 
     /// Set the chunk size.
     /// 设置块大小。
-    pub fn with_chunk_size(mut self, size: usize) -> Self
-    {
+    pub fn with_chunk_size(mut self, size: usize) -> Self {
         self.chunk_size = size;
         self
     }
 
     /// Set the skip limit.
     /// 设置跳过限制。
-    pub fn with_skip_limit(mut self, limit: usize) -> Self
-    {
+    pub fn with_skip_limit(mut self, limit: usize) -> Self {
         self.skip_limit = limit;
         self
     }
 
     /// Set the retry limit.
     /// 设置重试限制。
-    pub fn with_retry_limit(mut self, limit: usize) -> Self
-    {
+    pub fn with_retry_limit(mut self, limit: usize) -> Self {
         self.retry_limit = limit;
         self
     }
 
     /// Enable skipping on read errors.
     /// 启用读取错误时跳过。
-    pub fn skip_on_read_error(mut self) -> Self
-    {
+    pub fn skip_on_read_error(mut self) -> Self {
         self.skip_on_read_error = true;
         self
     }
 
     /// Enable skipping on write errors.
     /// 启用写入错误时跳过。
-    pub fn skip_on_write_error(mut self) -> Self
-    {
+    pub fn skip_on_write_error(mut self) -> Self {
         self.skip_on_write_error = true;
         self
     }
 
     /// Set step timeout.
     /// 设置步骤超时。
-    pub fn with_timeout(mut self, secs: u64) -> Self
-    {
+    pub fn with_timeout(mut self, secs: u64) -> Self {
         self.timeout_secs = Some(secs);
         self
     }
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_advanced_job_operator_creation()
-    {
+    fn test_advanced_job_operator_creation() {
         let repo = InMemoryJobRepository::new();
         let _operator = AdvancedJobOperator::new(repo);
     }
 
     #[tokio::test]
-    async fn test_job_registry()
-    {
+    async fn test_job_registry() {
         let repo = InMemoryJobRepository::new();
         let operator = AdvancedJobOperator::new(repo);
 
@@ -628,8 +589,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_running_jobs_tracking()
-    {
+    async fn test_running_jobs_tracking() {
         let repo = InMemoryJobRepository::new();
         let operator = AdvancedJobOperator::new(repo);
 
@@ -651,8 +611,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_abandon_non_running()
-    {
+    async fn test_abandon_non_running() {
         let repo = InMemoryJobRepository::new();
         let operator = AdvancedJobOperator::new(repo);
 
@@ -678,8 +637,7 @@ mod tests
     }
 
     #[test]
-    fn test_fault_tolerant_step_defaults()
-    {
+    fn test_fault_tolerant_step_defaults() {
         let step = FaultTolerantStep::new("test-step");
         assert_eq!(step.chunk_size, 100);
         assert_eq!(step.skip_limit, 0);
@@ -690,8 +648,7 @@ mod tests
     }
 
     #[test]
-    fn test_fault_tolerant_step_builder()
-    {
+    fn test_fault_tolerant_step_builder() {
         let step = FaultTolerantStep::new("test-step")
             .with_chunk_size(50)
             .with_skip_limit(10)
@@ -709,8 +666,7 @@ mod tests
     }
 
     #[test]
-    fn test_job_execution_summary()
-    {
+    fn test_job_execution_summary() {
         let instance_id = Uuid::new_v4();
         let execution = JobExecution::new("test-job", instance_id);
 

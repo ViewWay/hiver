@@ -51,8 +51,7 @@ const DEFAULT_TIMEOUT_SECS: u64 = 120;
 /// Ollama 在本地运行，不需要 API 密钥，非常适合开发、测试和
 /// 离线环境。
 #[derive(Debug, Clone)]
-pub struct OllamaConfig
-{
+pub struct OllamaConfig {
     /// Base URL of the Ollama API (default: "http://localhost:11434").
     /// Ollama API 的基础 URL（默认: "http://localhost:11434"）。
     pub base_url: String,
@@ -64,10 +63,8 @@ pub struct OllamaConfig
     pub timeout: Duration,
 }
 
-impl Default for OllamaConfig
-{
-    fn default() -> Self
-    {
+impl Default for OllamaConfig {
+    fn default() -> Self {
         Self {
             base_url: DEFAULT_BASE_URL.to_string(),
             model: DEFAULT_CHAT_MODEL.to_string(),
@@ -76,21 +73,18 @@ impl Default for OllamaConfig
     }
 }
 
-impl OllamaConfig
-{
+impl OllamaConfig {
     /// Creates a new configuration with default settings.
     /// 使用默认设置创建新配置。
     #[must_use]
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Sets a custom base URL.
     /// 设置自定义基础 URL。
     #[must_use]
-    pub fn base_url(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn base_url(mut self, url: impl Into<String>) -> Self {
         self.base_url = url.into();
         self
     }
@@ -98,8 +92,7 @@ impl OllamaConfig
     /// Sets the default model for chat completions.
     /// 设置聊天补全的默认模型。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self
-    {
+    pub fn model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
     }
@@ -107,8 +100,7 @@ impl OllamaConfig
     /// Sets the request timeout.
     /// 设置请求超时时间。
     #[must_use]
-    pub fn timeout(mut self, timeout: Duration) -> Self
-    {
+    pub fn timeout(mut self, timeout: Duration) -> Self {
         self.timeout = timeout;
         self
     }
@@ -122,8 +114,7 @@ impl OllamaConfig
 /// Ollama chat request body.
 /// Ollama 聊天请求体。
 #[derive(Debug, Serialize)]
-struct OllamaChatRequest
-{
+struct OllamaChatRequest {
     model: String,
     messages: Vec<OllamaMessage>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -134,8 +125,7 @@ struct OllamaChatRequest
 /// Generation options for the Ollama API.
 /// Ollama API 的生成选项。
 #[derive(Debug, Serialize, Deserialize)]
-struct OllamaOptions
-{
+struct OllamaOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     temperature: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -145,8 +135,7 @@ struct OllamaOptions
 /// A single message in the Ollama API format.
 /// Ollama API 格式中的单条消息。
 #[derive(Debug, Serialize, Deserialize)]
-struct OllamaMessage
-{
+struct OllamaMessage {
     role: String,
     content: String,
 }
@@ -154,8 +143,7 @@ struct OllamaMessage
 /// Ollama chat response body (non-streaming).
 /// Ollama 聊天响应体（非流式）。
 #[derive(Debug, Deserialize)]
-struct OllamaChatResponse
-{
+struct OllamaChatResponse {
     model: String,
     message: OllamaMessage,
     done: bool,
@@ -168,8 +156,7 @@ struct OllamaChatResponse
 /// A single streamed line from the Ollama chat API (NDJSON).
 /// Ollama 聊天 API 的单行流式响应（NDJSON）。
 #[derive(Debug, Deserialize)]
-struct OllamaStreamChunk
-{
+struct OllamaStreamChunk {
     model: Option<String>,
     message: Option<OllamaStreamMessage>,
     done: Option<bool>,
@@ -179,8 +166,7 @@ struct OllamaStreamChunk
 /// 流式块中的消息字段。
 #[allow(dead_code)] // Fields only needed for serde deserialization
 #[derive(Debug, Deserialize)]
-struct OllamaStreamMessage
-{
+struct OllamaStreamMessage {
     content: Option<String>,
     role: Option<String>,
 }
@@ -188,8 +174,7 @@ struct OllamaStreamMessage
 /// Ollama embeddings request body.
 /// Ollama 嵌入请求体。
 #[derive(Debug, Serialize)]
-struct OllamaEmbeddingRequest
-{
+struct OllamaEmbeddingRequest {
     model: String,
     prompt: String,
 }
@@ -197,16 +182,14 @@ struct OllamaEmbeddingRequest
 /// Ollama embeddings response body.
 /// Ollama 嵌入响应体。
 #[derive(Debug, Deserialize)]
-struct OllamaEmbeddingResponse
-{
+struct OllamaEmbeddingResponse {
     embedding: Vec<f32>,
 }
 
 /// Ollama error response body.
 /// Ollama 错误响应体。
 #[derive(Debug, Deserialize)]
-struct OllamaErrorResponse
-{
+struct OllamaErrorResponse {
     error: Option<String>,
 }
 
@@ -223,19 +206,16 @@ struct OllamaErrorResponse
 /// 实现 `ChatModel` trait，用于与 Ollama 本地 LLM API 交互，
 /// 支持完整和流式响应。
 #[derive(Debug)]
-pub struct OllamaChatModel
-{
+pub struct OllamaChatModel {
     config: OllamaConfig,
     client: Client,
 }
 
-impl OllamaChatModel
-{
+impl OllamaChatModel {
     /// Creates a new Ollama chat model with the given configuration.
     /// 使用给定配置创建新的 Ollama 聊天模型。
     #[must_use]
-    pub fn new(config: OllamaConfig) -> Self
-    {
+    pub fn new(config: OllamaConfig) -> Self {
         let client = Client::builder()
             .timeout(config.timeout)
             .build()
@@ -246,15 +226,13 @@ impl OllamaChatModel
     /// Creates a new Ollama chat model with a custom HTTP client.
     /// 使用自定义 HTTP 客户端创建新的 Ollama 聊天模型。
     #[must_use]
-    pub fn with_http_client(config: OllamaConfig, client: Client) -> Self
-    {
+    pub fn with_http_client(config: OllamaConfig, client: Client) -> Self {
         Self { config, client }
     }
 
     /// Builds the request body from a `ChatRequest`.
     /// 从 `ChatRequest` 构建请求体。
-    fn build_request_body(&self, request: &ChatRequest, stream: bool) -> OllamaChatRequest
-    {
+    fn build_request_body(&self, request: &ChatRequest, stream: bool) -> OllamaChatRequest {
         let messages: Vec<OllamaMessage> = request
             .messages
             .iter()
@@ -264,15 +242,12 @@ impl OllamaChatModel
             })
             .collect();
 
-        let options = if request.temperature.is_some() || request.max_tokens.is_some()
-        {
+        let options = if request.temperature.is_some() || request.max_tokens.is_some() {
             Some(OllamaOptions {
                 temperature: request.temperature,
                 num_predict: request.max_tokens,
             })
-        }
-        else
-        {
+        } else {
             None
         };
 
@@ -289,8 +264,7 @@ impl OllamaChatModel
 
     /// Handles HTTP error responses and maps them to `ModelError`.
     /// 处理 HTTP 错误响应并将其映射到 `ModelError`。
-    async fn handle_error_response(response: reqwest::Response) -> ModelError
-    {
+    async fn handle_error_response(response: reqwest::Response) -> ModelError {
         let status = response.status().as_u16();
         let body = response.text().await.unwrap_or_default();
 
@@ -299,18 +273,14 @@ impl OllamaChatModel
             .ok()
             .and_then(|e| e.error)
             .unwrap_or_else(|| {
-                if body.is_empty()
-                {
+                if body.is_empty() {
                     format!("HTTP {status}")
-                }
-                else
-                {
+                } else {
                     body
                 }
             });
 
-        match status
-        {
+        match status {
             401 | 403 => ModelError::AuthError(message),
             429 => ModelError::RateLimited {
                 retry_after_secs: 60,
@@ -324,10 +294,8 @@ impl OllamaChatModel
 }
 
 #[async_trait]
-impl ChatModel for OllamaChatModel
-{
-    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError>
-    {
+impl ChatModel for OllamaChatModel {
+    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError> {
         let url = format!("{}/api/chat", self.config.base_url);
         let body = self.build_request_body(&request, false);
 
@@ -340,8 +308,7 @@ impl ChatModel for OllamaChatModel
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -361,19 +328,15 @@ impl ChatModel for OllamaChatModel
             content: chat_response.message.content,
             model: chat_response.model,
             usage,
-            finish_reason: if chat_response.done
-            {
+            finish_reason: if chat_response.done {
                 Some("stop".to_string())
-            }
-            else
-            {
+            } else {
                 None
             },
         })
     }
 
-    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError>
-    {
+    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError> {
         let url = format!("{}/api/chat", self.config.base_url);
         let body = self.build_request_body(&request, true);
 
@@ -386,8 +349,7 @@ impl ChatModel for OllamaChatModel
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -406,11 +368,9 @@ impl ChatModel for OllamaChatModel
         let stream = response
             .bytes_stream()
             .scan((String::new(), model_name), |(buffer, model_name), chunk_result| {
-                let chunk = match chunk_result
-                {
+                let chunk = match chunk_result {
                     Ok(c) => c,
-                    Err(e) =>
-                    {
+                    Err(e) => {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
@@ -421,52 +381,41 @@ impl ChatModel for OllamaChatModel
 
                 let mut results: Vec<ChatChunk> = Vec::new();
 
-                while let Some(pos) = buffer.find('\n')
-                {
+                while let Some(pos) = buffer.find('\n') {
                     let line = buffer[..pos].trim().to_string();
                     buffer.drain(..=pos);
 
-                    if line.is_empty()
-                    {
+                    if line.is_empty() {
                         continue;
                     }
 
-                    match serde_json::from_str::<OllamaStreamChunk>(&line)
-                    {
-                        Ok(stream_chunk) =>
-                        {
+                    match serde_json::from_str::<OllamaStreamChunk>(&line) {
+                        Ok(stream_chunk) => {
                             // Update the running model name from the chunk's own field
                             // so that model aliases or dynamic routing are reflected correctly.
                             // 从块自身的 model
                             // 字段更新运行中的模型名，以正确反映模型别名或动态路由。
-                            if let Some(m) = stream_chunk.model.clone()
-                            {
+                            if let Some(m) = stream_chunk.model.clone() {
                                 *model_name = m;
                             }
-                            if let Some(msg) = &stream_chunk.message
-                            {
+                            if let Some(msg) = &stream_chunk.message {
                                 let content = msg.content.clone().unwrap_or_default();
                                 let is_done = stream_chunk.done.unwrap_or(false);
 
-                                if !content.is_empty() || is_done
-                                {
+                                if !content.is_empty() || is_done {
                                     results.push(ChatChunk {
                                         content,
                                         model: model_name.clone(),
-                                        finish_reason: if is_done
-                                        {
+                                        finish_reason: if is_done {
                                             Some("stop".to_string())
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             None
                                         },
                                     });
                                 }
                             }
                         },
-                        Err(e) =>
-                        {
+                        Err(e) => {
                             tracing::warn!("Failed to parse Ollama NDJSON line: {e}");
                         },
                     }
@@ -497,20 +446,17 @@ impl ChatModel for OllamaChatModel
 /// 注意：Ollama `/api/embeddings` 端点每次只处理一个提示，因此批量请求
 /// 会按顺序处理。
 #[derive(Debug)]
-pub struct OllamaEmbeddingModel
-{
+pub struct OllamaEmbeddingModel {
     config: OllamaConfig,
     model: String,
     client: Client,
 }
 
-impl OllamaEmbeddingModel
-{
+impl OllamaEmbeddingModel {
     /// Creates a new Ollama embedding model with default settings.
     /// 使用默认设置创建新的 Ollama 嵌入模型。
     #[must_use]
-    pub fn new(config: OllamaConfig) -> Self
-    {
+    pub fn new(config: OllamaConfig) -> Self {
         let model = DEFAULT_EMBEDDING_MODEL.to_string();
         let client = Client::builder()
             .timeout(config.timeout)
@@ -526,8 +472,7 @@ impl OllamaEmbeddingModel
     /// Creates a new Ollama embedding model with a custom HTTP client.
     /// 使用自定义 HTTP 客户端创建新的 Ollama 嵌入模型。
     #[must_use]
-    pub fn with_http_client(config: OllamaConfig, client: Client) -> Self
-    {
+    pub fn with_http_client(config: OllamaConfig, client: Client) -> Self {
         Self {
             config,
             model: DEFAULT_EMBEDDING_MODEL.to_string(),
@@ -538,25 +483,21 @@ impl OllamaEmbeddingModel
     /// Sets the embedding model.
     /// 设置嵌入模型。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self
-    {
+    pub fn model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
     }
 
     /// Handles HTTP error responses and maps them to `ModelError`.
     /// 处理 HTTP 错误响应并将其映射到 `ModelError`。
-    async fn handle_error_response(response: reqwest::Response) -> ModelError
-    {
+    async fn handle_error_response(response: reqwest::Response) -> ModelError {
         OllamaChatModel::handle_error_response(response).await
     }
 }
 
 #[async_trait]
-impl EmbeddingModel for OllamaEmbeddingModel
-{
-    async fn embed(&self, request: EmbeddingRequest) -> Result<EmbeddingResponse, ModelError>
-    {
+impl EmbeddingModel for OllamaEmbeddingModel {
+    async fn embed(&self, request: EmbeddingRequest) -> Result<EmbeddingResponse, ModelError> {
         let url = format!("{}/api/embeddings", self.config.base_url);
         let model = request.model.unwrap_or_else(|| self.model.clone());
 
@@ -565,8 +506,7 @@ impl EmbeddingModel for OllamaEmbeddingModel
         let mut embeddings = Vec::with_capacity(request.inputs.len());
         let mut total_prompt_tokens = 0u32;
 
-        for text in &request.inputs
-        {
+        for text in &request.inputs {
             let body = OllamaEmbeddingRequest {
                 model: model.clone(),
                 prompt: text.clone(),
@@ -581,8 +521,7 @@ impl EmbeddingModel for OllamaEmbeddingModel
                 .await
                 .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-            if !response.status().is_success()
-            {
+            if !response.status().is_success() {
                 return Err(Self::handle_error_response(response).await);
             }
 
@@ -610,16 +549,14 @@ impl EmbeddingModel for OllamaEmbeddingModel
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
     use crate::chat_model::ChatMessage;
 
     // ---- Config tests / 配置测试 ----
 
     #[test]
-    fn test_config_new_defaults()
-    {
+    fn test_config_new_defaults() {
         let config = OllamaConfig::new();
         assert_eq!(config.base_url, "http://localhost:11434");
         assert_eq!(config.model, "llama3.2");
@@ -627,15 +564,13 @@ mod tests
     }
 
     #[test]
-    fn test_config_default_trait()
-    {
+    fn test_config_default_trait() {
         let config = OllamaConfig::default();
         assert_eq!(config.base_url, "http://localhost:11434");
     }
 
     #[test]
-    fn test_config_builder()
-    {
+    fn test_config_builder() {
         let config = OllamaConfig::new()
             .base_url("http://192.168.1.100:11434")
             .model("mistral")
@@ -649,8 +584,7 @@ mod tests
     // ---- Request body building tests / 请求体构建测试 ----
 
     #[test]
-    fn test_chat_request_body_non_streaming()
-    {
+    fn test_chat_request_body_non_streaming() {
         let config = OllamaConfig::new();
         let model = OllamaChatModel::new(config);
 
@@ -669,8 +603,7 @@ mod tests
     }
 
     #[test]
-    fn test_chat_request_body_with_options()
-    {
+    fn test_chat_request_body_with_options() {
         let config = OllamaConfig::new();
         let model = OllamaChatModel::new(config);
 
@@ -686,8 +619,7 @@ mod tests
     }
 
     #[test]
-    fn test_chat_request_body_custom_model()
-    {
+    fn test_chat_request_body_custom_model() {
         let config = OllamaConfig::new().model("codellama");
         let model = OllamaChatModel::new(config);
 
@@ -703,8 +635,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_serialization()
-    {
+    fn test_request_body_serialization() {
         let config = OllamaConfig::new();
         let model = OllamaChatModel::new(config);
 
@@ -725,8 +656,7 @@ mod tests
     // ---- Response deserialization tests / 响应反序列化测试 ----
 
     #[test]
-    fn test_chat_response_deserialization()
-    {
+    fn test_chat_response_deserialization() {
         let json = r#"{
             "model": "llama3.2",
             "created_at": "2024-01-01T00:00:00Z",
@@ -750,8 +680,7 @@ mod tests
     }
 
     #[test]
-    fn test_chat_response_minimal()
-    {
+    fn test_chat_response_minimal() {
         let json = r#"{
             "model": "llama3.2",
             "message": {
@@ -769,8 +698,7 @@ mod tests
     }
 
     #[test]
-    fn test_stream_chunk_deserialization()
-    {
+    fn test_stream_chunk_deserialization() {
         let json = r#"{
             "model": "llama3.2",
             "created_at": "2024-01-01T00:00:00Z",
@@ -789,8 +717,7 @@ mod tests
     }
 
     #[test]
-    fn test_stream_chunk_final()
-    {
+    fn test_stream_chunk_final() {
         let json = r#"{
             "model": "llama3.2",
             "created_at": "2024-01-01T00:00:00Z",
@@ -809,8 +736,7 @@ mod tests
     }
 
     #[test]
-    fn test_embedding_response_deserialization()
-    {
+    fn test_embedding_response_deserialization() {
         let json = r#"{
             "model": "nomic-embed-text",
             "embedding": [0.1, -0.2, 0.3, 0.4, -0.5]
@@ -823,16 +749,14 @@ mod tests
     }
 
     #[test]
-    fn test_error_response_deserialization()
-    {
+    fn test_error_response_deserialization() {
         let json = r#"{"error": "model \"nonexistent\" not found"}"#;
         let error: OllamaErrorResponse = serde_json::from_str(json).expect("deserialize");
         assert_eq!(error.error.as_deref(), Some("model \"nonexistent\" not found"));
     }
 
     #[test]
-    fn test_error_response_empty_error()
-    {
+    fn test_error_response_empty_error() {
         let json = r#"{}"#;
         let error: OllamaErrorResponse = serde_json::from_str(json).expect("deserialize");
         assert!(error.error.is_none());
@@ -841,8 +765,7 @@ mod tests
     // ---- Embedding model config tests / 嵌入模型配置测试 ----
 
     #[test]
-    fn test_embedding_model_config()
-    {
+    fn test_embedding_model_config() {
         let config = OllamaConfig::new();
         let model = OllamaEmbeddingModel::new(config);
         assert_eq!(model.model, "nomic-embed-text");
@@ -850,8 +773,7 @@ mod tests
     }
 
     #[test]
-    fn test_embedding_model_custom()
-    {
+    fn test_embedding_model_custom() {
         let config = OllamaConfig::new();
         let model = OllamaEmbeddingModel::new(config).model("mxbai-embed-large");
         assert_eq!(model.model, "mxbai-embed-large");
@@ -860,8 +782,7 @@ mod tests
     // ---- ChatModel::complete() with mockito / 使用 mockito 的 ChatModel::complete() 测试 ----
 
     #[tokio::test]
-    async fn test_complete_success_mocked()
-    {
+    async fn test_complete_success_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/chat")
@@ -906,8 +827,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_with_system_message_mocked()
-    {
+    async fn test_complete_with_system_message_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/chat")
@@ -943,8 +863,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_model_not_found_error()
-    {
+    async fn test_complete_model_not_found_error() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/chat")
@@ -964,10 +883,8 @@ mod tests
             .await
             .expect_err("should fail with 404");
 
-        match err
-        {
-            ModelError::ApiError { status, message } =>
-            {
+        match err {
+            ModelError::ApiError { status, message } => {
                 assert_eq!(status, 404);
                 assert!(message.contains("not found"));
             },
@@ -978,8 +895,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_server_error()
-    {
+    async fn test_complete_server_error() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/chat")
@@ -997,10 +913,8 @@ mod tests
             .await
             .expect_err("should fail with server error");
 
-        match err
-        {
-            ModelError::ApiError { status, message } =>
-            {
+        match err {
+            ModelError::ApiError { status, message } => {
                 assert_eq!(status, 500);
                 assert!(message.contains("internal server error"));
             },
@@ -1013,8 +927,7 @@ mod tests
     // ---- EmbeddingModel::embed() with mockito / 使用 mockito 的 EmbeddingModel::embed() 测试 ----
 
     #[tokio::test]
-    async fn test_embed_success_mocked()
-    {
+    async fn test_embed_success_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/embeddings")
@@ -1049,8 +962,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_embed_batch_mocked()
-    {
+    async fn test_embed_batch_mocked() {
         let mut server = mockito::Server::new_async().await;
 
         // Ollama processes one prompt at a time, so expect two calls
@@ -1077,8 +989,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_embed_custom_model_mocked()
-    {
+    async fn test_embed_custom_model_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/embeddings")
@@ -1107,8 +1018,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_embed_error_mocked()
-    {
+    async fn test_embed_error_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/api/embeddings")
@@ -1123,10 +1033,8 @@ mod tests
         let request = EmbeddingRequest::new("test");
         let err = model.embed(request).await.expect_err("should fail");
 
-        match err
-        {
-            ModelError::ApiError { status, message } =>
-            {
+        match err {
+            ModelError::ApiError { status, message } => {
                 assert_eq!(status, 404);
                 assert!(message.contains("model not found"));
             },

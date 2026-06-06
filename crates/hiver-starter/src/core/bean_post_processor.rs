@@ -840,7 +840,7 @@ mod tests {
         }
 
         impl BeanPostProcessor for TestPostProcessor {
-            fn name(&self) -> &str {
+            fn name(&self) -> &'static str {
                 "TestPostProcessor"
             }
 

@@ -275,7 +275,7 @@ mod tests {
         assert_eq!(QueryParam::Bool(true).to_sql_literal(), "TRUE");
         assert_eq!(QueryParam::I32(42).to_sql_literal(), "42");
         assert_eq!(QueryParam::I64(100).to_sql_literal(), "100");
-        assert_eq!(QueryParam::F64(3.14).to_sql_literal(), "3.14");
+        assert_eq!(QueryParam::F64(3.15).to_sql_literal(), "3.15");
         assert_eq!(QueryParam::Text("hello".into()).to_sql_literal(), "'hello'");
         assert_eq!(QueryParam::Text("it's".into()).to_sql_literal(), "'it''s'");
         assert_eq!(QueryParam::Bytes(vec![0xDE, 0xAD]).to_sql_literal(), "'\\xdead'");

@@ -242,7 +242,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         // ...
         // PBKDF2 密钥推导（RFC 2898）
         let hash_len = 32; // SHA-256 output size / SHA-256 输出长度
-        let blocks_needed = (self.key_length + hash_len - 1) / hash_len;
+        let blocks_needed = self.key_length.div_ceil(hash_len);
         let mut dk = Vec::with_capacity(blocks_needed * hash_len);
 
         for block_idx in 1..=blocks_needed {
@@ -308,7 +308,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder {
         type HmacSha256 = Hmac<Sha256>;
         let hash_len = 32;
 
-        let blocks_needed = (expected_key.len() + hash_len - 1) / hash_len;
+        let blocks_needed = expected_key.len().div_ceil(hash_len);
         let mut dk = Vec::with_capacity(blocks_needed * hash_len);
 
         for block_idx in 1..=blocks_needed {

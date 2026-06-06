@@ -573,7 +573,7 @@ mod tests {
 
         // 3 fast calls
         for _ in 0..3 {
-            let _ = t.call(|| async { () }).await;
+            let _ = t.call(|| async {  }).await;
         }
 
         // 2 slow calls that time out
@@ -619,7 +619,7 @@ mod tests {
         let t1 = Timeout::new("shared", config);
         let t2 = t1.clone();
 
-        let _ = t1.call(|| async { () }).await;
+        let _ = t1.call(|| async {  }).await;
         let _ = t2
             .call(|| async {
                 tokio::time::sleep(Duration::from_secs(10)).await;

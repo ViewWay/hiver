@@ -83,8 +83,7 @@ pub mod runtime;
 /// struct LoggingAspect;
 /// ```
 #[proc_macro_attribute]
-pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
     aspect::impl_aspect(_attr, item)
 }
 
@@ -106,8 +105,7 @@ pub fn aspect(_attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_before(attr, item)
 }
 
@@ -125,8 +123,7 @@ pub fn before(attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_after(attr, item)
 }
 
@@ -147,8 +144,7 @@ pub fn after(attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_around(attr, item)
 }
 
@@ -169,8 +165,7 @@ pub fn around(attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn after_returning(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn after_returning(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_after_returning(attr, item)
 }
 
@@ -191,8 +186,7 @@ pub fn after_returning(attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream {
     advice::impl_after_throwing(attr, item)
 }
 
@@ -214,8 +208,7 @@ pub fn after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn pointcut(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
     pointcut::impl_pointcut(attr, item)
 }
 

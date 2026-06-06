@@ -11,8 +11,7 @@ use serde::{Deserialize, Serialize};
 /// Application information
 /// 应用信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AppInfo
-{
+pub struct AppInfo {
     /// Application name
     /// 应用名称
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,20 +38,16 @@ pub struct AppInfo
     pub custom: HashMap<String, serde_json::Value>,
 }
 
-impl Default for AppInfo
-{
-    fn default() -> Self
-    {
+impl Default for AppInfo {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl AppInfo
-{
+impl AppInfo {
     /// Create a new empty app info
     /// 创建新的空应用信息
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             name: None,
             version: None,
@@ -64,48 +59,42 @@ impl AppInfo
 
     /// Set the application name
     /// 设置应用名称
-    pub fn with_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn with_name(mut self, name: impl Into<String>) -> Self {
         self.name = Some(name.into());
         self
     }
 
     /// Set the application version
     /// 设置应用版本
-    pub fn with_version(mut self, version: impl Into<String>) -> Self
-    {
+    pub fn with_version(mut self, version: impl Into<String>) -> Self {
         self.version = Some(version.into());
         self
     }
 
     /// Set the application description
     /// 设置应用描述
-    pub fn with_description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
 
     /// Add build information
     /// 添加构建信息
-    pub fn with_build(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn with_build(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.build.insert(key.into(), value.into());
         self
     }
 
     /// Add custom property
     /// 添加自定义属性
-    pub fn with_custom(mut self, key: impl Into<String>, value: serde_json::Value) -> Self
-    {
+    pub fn with_custom(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.custom.insert(key.into(), value);
         self
     }
 
     /// Convert to JSON
     /// 转换为 JSON
-    pub fn to_json(&self) -> Result<String, serde_json::Error>
-    {
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(self)
     }
 }
@@ -113,17 +102,14 @@ impl AppInfo
 /// Builder for application information
 /// 应用信息构建器
 #[derive(Debug, Default)]
-pub struct InfoBuilder
-{
+pub struct InfoBuilder {
     info: AppInfo,
 }
 
-impl InfoBuilder
-{
+impl InfoBuilder {
     /// Create a new info builder
     /// 创建新的 info 构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             info: AppInfo::new(),
         }
@@ -131,60 +117,52 @@ impl InfoBuilder
 
     /// Set the application name
     /// 设置应用名称
-    pub fn name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn name(mut self, name: impl Into<String>) -> Self {
         self.info.name = Some(name.into());
         self
     }
 
     /// Set the application version
     /// 设置应用版本
-    pub fn version(mut self, version: impl Into<String>) -> Self
-    {
+    pub fn version(mut self, version: impl Into<String>) -> Self {
         self.info.version = Some(version.into());
         self
     }
 
     /// Set the application description
     /// 设置应用描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.info.description = Some(description.into());
         self
     }
 
     /// Add build information
     /// 添加构建信息
-    pub fn with_build(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn with_build(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.info.build.insert(key.into(), value.into());
         self
     }
 
     /// Add custom property
     /// 添加自定义属性
-    pub fn custom(mut self, key: impl Into<String>, value: serde_json::Value) -> Self
-    {
+    pub fn custom(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.info.custom.insert(key.into(), value);
         self
     }
 
     /// Build the app info
     /// 构建应用信息
-    pub fn build(self) -> AppInfo
-    {
+    pub fn build(self) -> AppInfo {
         self.info
     }
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_app_info()
-    {
+    fn test_app_info() {
         let info = AppInfo::new()
             .with_name("my-app")
             .with_version("1.0.0")
@@ -196,8 +174,7 @@ mod tests
     }
 
     #[test]
-    fn test_info_builder()
-    {
+    fn test_info_builder() {
         let info = InfoBuilder::new().name("my-app").version("1.0.0").build();
 
         assert_eq!(info.name, Some("my-app".to_string()));
@@ -205,8 +182,7 @@ mod tests
     }
 
     #[test]
-    fn test_app_info_to_json()
-    {
+    fn test_app_info_to_json() {
         let info = AppInfo::new().with_name("my-app").with_version("1.0.0");
 
         let json = info.to_json().unwrap();

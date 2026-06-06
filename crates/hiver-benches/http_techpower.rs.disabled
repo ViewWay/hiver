@@ -19,7 +19,7 @@
 #![warn(unreachable_pub)]
 
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
-use hiver_http::{Body, Method, Request, Response, StatusCode};
+use hiver_http::{Body, Response, StatusCode};
 use std::time::Duration as StdDuration;
 
 // ============================================================================

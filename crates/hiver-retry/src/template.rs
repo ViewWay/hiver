@@ -435,7 +435,7 @@ mod tests {
                 async move {
                     let count = cc.fetch_add(1, Ordering::SeqCst);
                     if count < 2 {
-                        Err(std::io::Error::new(std::io::ErrorKind::Other, "test error"))
+                        Err(std::io::Error::other("test error"))
                     } else {
                         Ok("success")
                     }
@@ -454,7 +454,7 @@ mod tests {
 
         let result = template
             .execute_with_recovery(
-                || async { Err::<&str, _>(std::io::Error::new(std::io::ErrorKind::Other, "fail")) },
+                || async { Err::<&str, _>(std::io::Error::other("fail")) },
                 |_error| "fallback",
             )
             .await;
@@ -515,7 +515,7 @@ mod tests {
                 async move {
                     let count = cc.fetch_add(1, Ordering::SeqCst);
                     if count < 2 {
-                        Err(std::io::Error::new(std::io::ErrorKind::Other, "test error"))
+                        Err(std::io::Error::other("test error"))
                     } else {
                         Ok("success")
                     }

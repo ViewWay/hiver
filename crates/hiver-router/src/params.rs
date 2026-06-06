@@ -368,8 +368,8 @@ mod tests {
     /// 测试 Query::get() 返回引用。
     #[test]
     fn test_query_get_ref() {
-        let q = Query(3.14f64);
-        assert_eq!(q.get(), &3.14);
+        let q = Query(3.15f64);
+        assert_eq!(q.get(), &3.15);
     }
 
     /// Test Query created via From trait.

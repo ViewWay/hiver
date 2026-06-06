@@ -425,7 +425,7 @@ mod tests {
         let task = ScheduledTask::fixed_rate("test", 5000).with_initial_delay(1000);
 
         assert_eq!(task.name, "test");
-        assert_eq!(task.initial_delay, Duration::from_millis(1000));
+        assert_eq!(task.initial_delay, Duration::from_secs(1));
     }
 
     #[tokio::test]

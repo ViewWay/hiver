@@ -254,7 +254,7 @@ mod tests {
     fn test_filter_exists() {
         let filter = MongoFilter::new().exists("deletedAt", false).build();
         let inner = filter.get_document("deletedAt").unwrap();
-        assert_eq!(inner.get_bool("$exists").unwrap(), false);
+        assert!(!inner.get_bool("$exists").unwrap());
     }
 
     #[test]

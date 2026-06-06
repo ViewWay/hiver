@@ -125,7 +125,7 @@ impl AutoConfigurationEntry {
     /// 检查条件是否满足（无条件时默认为 true）
     /// Check if condition is met (defaults to true when no condition)
     pub fn matches(&self, ctx: &ApplicationContext) -> bool {
-        self.condition.as_ref().map_or(true, |c| c.matches(ctx))
+        self.condition.as_ref().is_none_or(|c| c.matches(ctx))
     }
 
     /// 执行工厂函数
@@ -902,7 +902,7 @@ mod tests {
 
     #[test]
     fn test_conditional_on_missing_bean_condition() {
-        let mut ctx = ApplicationContext::new();
+        let ctx = ApplicationContext::new();
         let condition = ConditionalOnMissingBeanCondition::new::<i32>();
 
         // Bean 不存在，条件满足
@@ -920,7 +920,7 @@ mod tests {
 
     #[test]
     fn test_conditional_on_bean_condition() {
-        let mut ctx = ApplicationContext::new();
+        let ctx = ApplicationContext::new();
         let condition = ConditionalOnBeanCondition::new::<i32>();
 
         // Bean 不存在，条件不满足

@@ -83,7 +83,7 @@ mod tests {
         struct TestHandler;
         impl ExceptionHandler<String> for TestHandler {
             fn handle(&self, _error: String, _req: &hiver_http::Request) -> HandlerResult {
-                hiver_http::Response::internal_server_error()
+                Response::internal_server_error()
             }
         }
 

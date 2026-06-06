@@ -1403,10 +1403,10 @@ mod tests {
         assert_eq!(op, "find");
         assert!(matches!(&conds[0], QueryCondition::GreaterThan(f) if f == "age"));
 
-        let (op, conds, _, _) = parse_method_name("find_by_name_like");
+        let (_op, conds, _, _) = parse_method_name("find_by_name_like");
         assert!(matches!(&conds[0], QueryCondition::Like(f) if f == "name"));
 
-        let (op, conds, _, _) = parse_method_name("find_by_deleted_is_null");
+        let (_op, conds, _, _) = parse_method_name("find_by_deleted_is_null");
         assert!(matches!(&conds[0], QueryCondition::IsNull(f) if f == "deleted"));
 
         let (_, conds, order, limit) = parse_method_name("find_by_active_order_by_name_limit_10");

@@ -299,9 +299,9 @@ impl TransactionManager for DelegatingTransactionManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::manager::NoopTransactionManager;
+    
 
-    fn noop(name: &str) -> Arc<dyn TransactionManager> {
+    fn noop(_name: &str) -> Arc<dyn TransactionManager> {
         Arc::new(crate::manager::NoopTransactionManager)
     }
 
@@ -405,7 +405,7 @@ mod tests {
         registry.register("beta", Arc::new(RecordingManager::new("beta")));
 
         let mut names = registry.manager_names();
-        names.sort();
+        names.sort_unstable();
         assert_eq!(names, vec!["alpha", "beta"]);
     }
 

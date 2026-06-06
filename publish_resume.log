@@ -1,0 +1,4 @@
+=== Resuming publish: 34 crates to go ===
+[15:46:36 UTC] PUBLISHING: hiver-actuator
+[15:46:36 UTC] SUCCESS: hiver-actuator
+publish_resume.sh: line 75: CRATES: bad array subscript

@@ -43,9 +43,11 @@ pub const X_CORRELATION_ID: &str = "x-correlation-id";
 /// Request ID generation strategy.
 /// 请求 ID 生成策略。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum RequestIdStrategy {
     /// Use UUID v4 (random).
     /// 使用 UUID v4（随机）。
+    #[default]
     Uuid,
     /// Use monotonically increasing counter.
     /// 使用单调递增计数器。
@@ -55,11 +57,6 @@ pub enum RequestIdStrategy {
     Timestamp,
 }
 
-impl Default for RequestIdStrategy {
-    fn default() -> Self {
-        Self::Uuid
-    }
-}
 
 /// Request ID middleware configuration.
 /// 请求 ID 中间件配置。
@@ -158,7 +155,7 @@ fn generate_uuid() -> String {
     let b = ((secs >> 32) ^ nanos as u64) & 0xFFFF;
     let c = (0x4000 | ((nanos >> 16) & 0x0FFF)) as u16; // version 4
     let d = (0x8000 | ((a >> 16) & 0x3FFF)) as u16; // variant 1
-    let e = (a ^ b as u64 ^ nanos as u64) & 0xFFFFFFFFFFFF;
+    let e = (a ^ b ^ nanos as u64) & 0xFFFFFFFFFFFF;
 
     format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", a, b, c, d, e)
 }
@@ -288,9 +285,7 @@ where
             let request_id = if config.accept_existing {
                 req.headers()
                     .get(&config.header_name)
-                    .and_then(|v| v.to_str().ok())
-                    .map(|s| s.to_string())
-                    .unwrap_or_else(|| generate_id(config.strategy, &config.prefix))
+                    .and_then(|v| v.to_str().ok()).map_or_else(|| generate_id(config.strategy, &config.prefix), ToString::to_string)
             } else {
                 generate_id(config.strategy, &config.prefix)
             };

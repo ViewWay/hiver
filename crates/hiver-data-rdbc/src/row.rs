@@ -325,7 +325,7 @@ mod tests {
     #[test]
     fn test_column_value_as_type() {
         assert_eq!(ColumnValue::I64(42).as_type::<i64>(), Some(42));
-        assert_eq!(ColumnValue::F64(3.14).as_type::<f64>(), Some(3.14));
+        assert_eq!(ColumnValue::F64(3.15).as_type::<f64>(), Some(3.15));
         assert_eq!(ColumnValue::Bool(true).as_type::<bool>(), Some(true));
         assert_eq!(ColumnValue::String("hello".into()).as_type::<String>(), Some("hello".into()));
     }

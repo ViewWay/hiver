@@ -119,7 +119,7 @@ fn test_modulith_detects_cycle() {
 
 #[tokio::test]
 async fn test_modulith_domain_events() {
-    use hiver_modulith::{DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher};
+    use hiver_modulith::{DomainEvent, EventPublisher, InMemoryEventPublisher};
     use serde::Serialize;
 
     #[derive(Serialize)]

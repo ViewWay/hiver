@@ -15,7 +15,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use hiver_http::{Body, Method, Request, Response, StatusCode};
 use hiver_router::Router;
 use std::time::Duration;
@@ -34,7 +34,7 @@ fn bench_route_registration(c: &mut Criterion) {
         b.iter(|| {
             let mut router = Router::new();
             for i in 0..100 {
-                router = router.get(&format!("/api/endpoint{}", i), ok_handler);
+                router = router.get(format!("/api/endpoint{}", i), ok_handler);
             }
             black_box(router)
         });
@@ -47,7 +47,7 @@ fn bench_large_router_creation(c: &mut Criterion) {
         b.iter(|| {
             let mut router = Router::new();
             for i in 0..100 {
-                router = router.get(&format!("/api/endpoint{}", i), ok_handler);
+                router = router.get(format!("/api/endpoint{}", i), ok_handler);
             }
             // Also test nested routes
             router = router.get("/api/users/:id", ok_handler);

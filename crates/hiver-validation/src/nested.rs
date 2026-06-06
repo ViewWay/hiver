@@ -385,8 +385,8 @@ mod tests {
         assert!(validate_nested(&valid_address).is_ok());
 
         let invalid_address = Address {
-            street: "".to_string(),
-            city: "".to_string(),
+            street: String::new(),
+            city: String::new(),
         };
         assert!(validate_nested(&invalid_address).is_err());
     }
@@ -403,8 +403,8 @@ mod tests {
         assert!(validate_nested_option(&none_address).is_ok());
 
         let invalid_address: Option<Address> = Some(Address {
-            street: "".to_string(),
-            city: "".to_string(),
+            street: String::new(),
+            city: String::new(),
         });
         assert!(validate_nested_option(&invalid_address).is_err());
     }
@@ -429,8 +429,8 @@ mod tests {
                 city: "Springfield".to_string(),
             },
             Address {
-                street: "".to_string(),
-                city: "".to_string(),
+                street: String::new(),
+                city: String::new(),
             },
         ];
         assert!(validate_collection(invalid_items).is_err());
@@ -445,8 +445,8 @@ mod tests {
         assert!(validator.validate().is_ok());
 
         let validator = NestedValidator::new(Address {
-            street: "".to_string(),
-            city: "".to_string(),
+            street: String::new(),
+            city: String::new(),
         });
         assert!(validator.validate().is_err());
     }
@@ -471,8 +471,8 @@ mod tests {
                 city: "Springfield".to_string(),
             },
             Address {
-                street: "".to_string(),
-                city: "".to_string(),
+                street: String::new(),
+                city: String::new(),
             },
         ]);
         assert!(validator.validate().is_err());

@@ -791,7 +791,7 @@ mod tests {
         let properties = HashMap::from([
             ("app.enabled".to_string(), "true".to_string()),
             ("app.count".to_string(), "42".to_string()),
-            ("app.ratio".to_string(), "3.14".to_string()),
+            ("app.ratio".to_string(), "3.15".to_string()),
         ]);
 
         let enabled: bool = binder.bind("enabled", &properties).unwrap();
@@ -801,7 +801,7 @@ mod tests {
         assert_eq!(count, 42);
 
         let ratio: f64 = binder.bind("ratio", &properties).unwrap();
-        assert!((ratio - 3.14).abs() < f64::EPSILON);
+        assert!((ratio - 3.15).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -884,7 +884,7 @@ mod tests {
         struct TestPostProcessor;
 
         impl BeanFactoryPostProcessor for TestPostProcessor {
-            fn name(&self) -> &str {
+            fn name(&self) -> &'static str {
                 "TestPostProcessor"
             }
 

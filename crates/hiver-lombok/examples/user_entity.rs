@@ -180,7 +180,7 @@ fn example_with() {
 
     // Create modified copies / 创建修改后的副本
     let light_mode = settings.with_theme("light".into());
-    let chinese = settings.with_language("zh".into());
+    let _chinese = settings.with_language("zh".into());
 
     assert_eq!(settings.theme, "dark");
     assert_eq!(light_mode.theme, "light");

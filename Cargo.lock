@@ -5437,7 +5437,6 @@ dependencies = [
  "async-trait",
  "darling 0.23.0",
  "hiver-data-commons",
- "hiver-data-orm",
  "hiver-data-rdbc",
  "proc-macro-error",
  "proc-macro2",

@@ -510,10 +510,10 @@ server.host = "localhost"
     #[test]
     fn test_parse_properties() {
         let mut loader = ConfigurationLoader::new();
-        let props = r#"
+        let props = r"
 server.port=8080
 server.host=localhost
-"#;
+";
         assert!(loader.parse_properties(props).is_ok());
         assert_eq!(loader.get("server.port"), Some("8080".to_string()));
     }

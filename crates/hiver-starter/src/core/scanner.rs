@@ -463,17 +463,17 @@ mod tests {
                 ComponentDefinition::new(
                     "UserController".to_string(),
                     ComponentType::Controller,
-                    "".to_string(),
+                    String::new(),
                 ),
                 ComponentDefinition::new(
                     "UserService".to_string(),
                     ComponentType::Service,
-                    "".to_string(),
+                    String::new(),
                 ),
                 ComponentDefinition::new(
                     "OrderService".to_string(),
                     ComponentType::Service,
-                    "".to_string(),
+                    String::new(),
                 ),
             ],
             excluded: vec![],

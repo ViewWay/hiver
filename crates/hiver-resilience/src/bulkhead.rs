@@ -217,10 +217,10 @@ impl BulkheadMetrics {
             + 1;
         // Track peak concurrency
         let mut peak = self.max_concurrent_usage.load(Ordering::Relaxed);
-        while current as u64 > peak {
+        while current > peak {
             match self.max_concurrent_usage.compare_exchange_weak(
                 peak,
-                current as u64,
+                current,
                 Ordering::Relaxed,
                 Ordering::Relaxed,
             ) {
@@ -851,7 +851,7 @@ mod tests {
             max_concurrent_calls: 5,
         };
         assert!(format!("{}", full).contains("test"));
-        assert!(format!("{}", full).contains("5"));
+        assert!(format!("{}", full).contains('5'));
 
         let timeout = BulkheadError::WaitTimeout {
             name: "test2".into(),

@@ -1021,7 +1021,7 @@ mod tests {
         // Wait a moment then check TTL / 等待片刻后检查 TTL
         tokio::time::sleep(Duration::from_millis(500)).await;
         let ttl_before = guard.ttl().await.unwrap();
-        assert!(ttl_before <= 10 && ttl_before >= 8);
+        assert!((8..=10).contains(&ttl_before));
 
         // Renew / 续期
         let renewed = guard.renew().await.unwrap();

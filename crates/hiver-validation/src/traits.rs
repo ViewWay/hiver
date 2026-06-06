@@ -213,8 +213,8 @@ mod tests {
     #[test]
     fn test_validate_trait() {
         let request = TestRequest {
-            username: "".to_string(),
-            email: "".to_string(),
+            username: String::new(),
+            email: String::new(),
         };
 
         let result = request.validate();

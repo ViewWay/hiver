@@ -606,9 +606,9 @@ mod tests {
     /// 测试浮点数值创建和检查
     #[test]
     fn test_value_float() {
-        let v = Value::float(3.14);
+        let v = Value::float(3.15);
         assert!(v.is_float());
-        assert_eq!(v.as_f64(), Some(3.14));
+        assert_eq!(v.as_f64(), Some(3.15));
     }
 
     /// Test string value creation and checking
@@ -686,7 +686,7 @@ mod tests {
     fn test_as_f64_coercion() {
         assert_eq!(Value::float(2.5).as_f64(), Some(2.5));
         assert_eq!(Value::integer(10).as_f64(), Some(10.0));
-        assert_eq!(Value::string("3.14").as_f64(), Some(3.14));
+        assert_eq!(Value::string("3.15").as_f64(), Some(3.15));
         assert_eq!(Value::bool(true).as_f64(), Some(1.0));
         assert_eq!(Value::bool(false).as_f64(), Some(0.0));
         assert_eq!(Value::null().as_f64(), None);
@@ -711,7 +711,7 @@ mod tests {
         assert_eq!(Value::bool(true).to_string_value(), "true");
         assert_eq!(Value::bool(false).to_string_value(), "false");
         assert_eq!(Value::integer(42).to_string_value(), "42");
-        assert_eq!(Value::float(3.14).to_string_value(), "3.14");
+        assert_eq!(Value::float(3.15).to_string_value(), "3.15");
         assert_eq!(Value::string("hello".to_string()).to_string_value(), "hello");
     }
 
@@ -857,7 +857,7 @@ mod tests {
         assert!(vi.is_integer());
         assert_eq!(vi.as_i64(), Some(42));
 
-        let vf: Value = serde_json::from_str("3.14").unwrap();
+        let vf: Value = serde_json::from_str("3.15").unwrap();
         assert!(vf.is_float());
     }
 

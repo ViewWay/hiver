@@ -565,14 +565,12 @@ pub fn put_operation(path: &str, summary: &str) -> PathItem {
 
 /// Helper to quickly create a DELETE operation / 快速创建 DELETE 操作的助手
 pub fn delete_operation(path: &str, summary: &str) -> PathItem {
-    PathItem::new().delete(
-        Operation::new().summary(summary).operation_id(format!(
+    PathItem::new().delete(Operation::new().summary(summary).operation_id(format!(
             "delete_{}",
             path.trim_start_matches('/')
                 .replace('/', "_")
                 .replace(['{', '}'], "")
-        )),
-    )
+        )))
 }
 
 // ============================================================================

@@ -56,8 +56,7 @@ IMPORTANT: Only use tools from the available tools list. If no tool is appropria
 /// Configuration specific to the ReAct agent.
 /// ReAct 代理的特定配置。
 #[derive(Debug, Clone)]
-pub struct ReActConfig
-{
+pub struct ReActConfig {
     /// Maximum number of Thought-Action-Observation iterations.
     /// 最大 思考-行动-观察 迭代次数。
     pub max_iterations: usize,
@@ -66,10 +65,8 @@ pub struct ReActConfig
     pub agent_config: AgentConfig,
 }
 
-impl Default for ReActConfig
-{
-    fn default() -> Self
-    {
+impl Default for ReActConfig {
+    fn default() -> Self {
         Self {
             max_iterations: 5,
             agent_config: AgentConfig::default(),
@@ -77,21 +74,18 @@ impl Default for ReActConfig
     }
 }
 
-impl ReActConfig
-{
+impl ReActConfig {
     /// Creates a new ReAct config with default values.
     /// 使用默认值创建新的 ReAct 配置。
     #[must_use]
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Sets the maximum number of iterations.
     /// 设置最大迭代次数。
     #[must_use]
-    pub fn max_iterations(mut self, n: usize) -> Self
-    {
+    pub fn max_iterations(mut self, n: usize) -> Self {
         self.max_iterations = n;
         self
     }
@@ -99,8 +93,7 @@ impl ReActConfig
     /// Sets the agent configuration.
     /// 设置代理配置。
     #[must_use]
-    pub fn agent_config(mut self, config: AgentConfig) -> Self
-    {
+    pub fn agent_config(mut self, config: AgentConfig) -> Self {
         self.agent_config = config;
         self
     }
@@ -109,12 +102,10 @@ impl ReActConfig
 /// Parsed response from the LLM in the ReAct loop.
 /// ReAct 循环中 LLM 的解析响应。
 #[derive(Debug, Clone)]
-enum ReActStep
-{
+enum ReActStep {
     /// The agent wants to call a tool.
     /// 代理想要调用工具。
-    Action
-    {
+    Action {
         /// The name of the tool to call.
         /// 要调用的工具名称。
         tool_name: String,
@@ -127,8 +118,7 @@ enum ReActStep
     },
     /// The agent has reached a final answer.
     /// 代理已得出最终答案。
-    FinalAnswer
-    {
+    FinalAnswer {
         /// The final answer text.
         /// 最终答案文本。
         answer: String,
@@ -160,8 +150,7 @@ enum ReActStep
 /// let output = agent.run("What is the weather in Tokyo?").await?;
 /// println!("{}", output.text);
 /// ```
-pub struct ReActAgent
-{
+pub struct ReActAgent {
     /// The chat model for reasoning.
     /// 用于推理的聊天模型。
     chat_model: Arc<dyn ChatModel>,
@@ -179,26 +168,22 @@ pub struct ReActAgent
     system_template: PromptTemplate,
 }
 
-impl std::fmt::Debug for ReActAgent
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for ReActAgent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReActAgent")
             .field("config", &self.config)
             .finish_non_exhaustive()
     }
 }
 
-impl ReActAgent
-{
+impl ReActAgent {
     /// Creates a new ReAct agent with the given chat model, tool registry, and config.
     /// 使用给定的聊天模型、工具注册表和配置创建新的 ReAct 代理。
     pub fn new(
         chat_model: impl ChatModel + 'static,
         tool_registry: ToolRegistry,
         config: ReActConfig,
-    ) -> Self
-    {
+    ) -> Self {
         let model = Arc::new(chat_model);
         let executor = ToolExecutor::new(tool_registry);
         Self {
@@ -216,8 +201,7 @@ impl ReActAgent
         chat_model: Arc<dyn ChatModel>,
         tool_registry: Arc<ToolRegistry>,
         config: ReActConfig,
-    ) -> Self
-    {
+    ) -> Self {
         let executor = ToolExecutor::from_arc(tool_registry);
         Self {
             chat_model,
@@ -231,16 +215,14 @@ impl ReActAgent
     /// Sets a custom system prompt template.
     /// 设置自定义系统提示模板。
     #[must_use]
-    pub fn system_template(mut self, template: PromptTemplate) -> Self
-    {
+    pub fn system_template(mut self, template: PromptTemplate) -> Self {
         self.system_template = template;
         self
     }
 
     /// Builds the system prompt with the current tool definitions.
     /// 使用当前工具定义构建系统提示。
-    async fn build_system_prompt(&self) -> String
-    {
+    async fn build_system_prompt(&self) -> String {
         let definitions = self.tool_executor.tool_definitions().await;
         let tools_description: String = definitions
             .iter()
@@ -270,13 +252,11 @@ impl ReActAgent
 
     /// Parses the LLM response to extract thought, action, or final answer.
     /// 解析 LLM 响应以提取思考、行动或最终答案。
-    fn parse_response(&self, response: &str) -> ReActStep
-    {
+    fn parse_response(&self, response: &str) -> ReActStep {
         let thought = self.extract_thought(response);
 
         // Check for Final Answer first
-        if let Some(answer) = self.extract_final_answer(response)
-        {
+        if let Some(answer) = self.extract_final_answer(response) {
             return ReActStep::FinalAnswer { answer, thought };
         }
 
@@ -302,8 +282,7 @@ impl ReActAgent
 
     /// Extracts the Thought section from the response.
     /// 从响应中提取思考部分。
-    fn extract_thought(&self, response: &str) -> String
-    {
+    fn extract_thought(&self, response: &str) -> String {
         response
             .lines()
             .find(|l| l.trim().starts_with("Thought:"))
@@ -319,8 +298,7 @@ impl ReActAgent
 
     /// Extracts the Final Answer from the response.
     /// 从响应中提取最终答案。
-    fn extract_final_answer(&self, response: &str) -> Option<String>
-    {
+    fn extract_final_answer(&self, response: &str) -> Option<String> {
         response
             .lines()
             .find(|l| l.trim().starts_with("Final Answer:"))
@@ -335,8 +313,7 @@ impl ReActAgent
 
     /// Extracts the Action tool name from the response.
     /// 从响应中提取行动工具名称。
-    fn extract_action_name(&self, response: &str) -> Option<String>
-    {
+    fn extract_action_name(&self, response: &str) -> Option<String> {
         response
             .lines()
             .find(|l| l.trim().starts_with("Action:") && !l.contains("Action Input:"))
@@ -351,8 +328,7 @@ impl ReActAgent
 
     /// Extracts the Action Input from the response.
     /// 从响应中提取行动输入。
-    fn extract_action_input(&self, response: &str) -> Option<String>
-    {
+    fn extract_action_input(&self, response: &str) -> Option<String> {
         response
             .lines()
             .find(|l| l.trim().starts_with("Action Input:"))
@@ -367,8 +343,7 @@ impl ReActAgent
 
     /// Executes the ReAct loop until a final answer or max iterations.
     /// 执行 ReAct 循环直到得出最终答案或达到最大迭代次数。
-    async fn run_loop(&self, input: &str) -> Result<AgentOutput, AgentError>
-    {
+    async fn run_loop(&self, input: &str) -> Result<AgentOutput, AgentError> {
         let system_prompt = self.build_system_prompt().await;
         let mut messages = vec![
             ChatMessage::system(&system_prompt),
@@ -378,8 +353,7 @@ impl ReActAgent
         let mut tool_calls = Vec::new();
         let mut total_tokens = 0u32;
 
-        for iteration in 0..self.config.max_iterations
-        {
+        for iteration in 0..self.config.max_iterations {
             // Thinking step
             {
                 let mut state = self.state.write().await;
@@ -392,8 +366,7 @@ impl ReActAgent
                 .model(&self.config.agent_config.model);
 
             let mut req = request;
-            for msg in &messages
-            {
+            for msg in &messages {
                 req = req.message(msg.clone());
             }
 
@@ -407,10 +380,8 @@ impl ReActAgent
             let response_text = response.content;
             let step = self.parse_response(&response_text);
 
-            match step
-            {
-                ReActStep::FinalAnswer { answer, .. } =>
-                {
+            match step {
+                ReActStep::FinalAnswer { answer, .. } => {
                     let mut state = self.state.write().await;
                     *state = AgentState::Done;
                     return Ok(AgentOutput {
@@ -428,8 +399,7 @@ impl ReActAgent
                     tool_name,
                     tool_input,
                     thought: _,
-                } =>
-                {
+                } => {
                     // Acting step
                     {
                         let mut state = self.state.write().await;
@@ -446,8 +416,7 @@ impl ReActAgent
                     let agent_tool_call = AgentToolCall {
                         name: tool_name.clone(),
                         arguments: tool_input,
-                        result: match &result.output
-                        {
+                        result: match &result.output {
                             Ok(o) => Some(o.clone()),
                             Err(e) => Some(e.clone()),
                         },
@@ -461,8 +430,7 @@ impl ReActAgent
                     }
 
                     // Add assistant response and observation to messages
-                    let observation = match &result.output
-                    {
+                    let observation = match &result.output {
                         Ok(output) => format!("Observation: {output}"),
                         Err(e) => format!("Observation: Error - {e}"),
                     };
@@ -481,15 +449,12 @@ impl ReActAgent
 }
 
 #[async_trait::async_trait]
-impl Agent for ReActAgent
-{
-    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError>
-    {
+impl Agent for ReActAgent {
+    async fn run(&self, input: &str) -> Result<AgentOutput, AgentError> {
         self.run_loop(input).await
     }
 
-    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError>
-    {
+    async fn run_stream(&self, input: &str) -> Result<AgentStream, AgentError> {
         // For ReAct, we run the full loop and stream the final result
         let output = self.run_loop(input).await?;
         let chunk = AgentChunk {
@@ -501,37 +466,31 @@ impl Agent for ReActAgent
         Ok(Box::pin(stream))
     }
 
-    fn state(&self) -> AgentState
-    {
+    fn state(&self) -> AgentState {
         // Read the current state synchronously (best effort)
-        match self.state.try_read()
-        {
+        match self.state.try_read() {
             Ok(guard) => *guard,
             Err(_) => AgentState::Thinking,
         }
     }
 
-    fn config(&self) -> &AgentConfig
-    {
+    fn config(&self) -> &AgentConfig {
         &self.config.agent_config
     }
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_react_config_default()
-    {
+    fn test_react_config_default() {
         let config = ReActConfig::default();
         assert_eq!(config.max_iterations, 5);
     }
 
     #[test]
-    fn test_react_config_builder()
-    {
+    fn test_react_config_builder() {
         let config = ReActConfig::new()
             .max_iterations(10)
             .agent_config(AgentConfig::new().model("gpt-3.5-turbo"));
@@ -541,16 +500,13 @@ mod tests
     }
 
     #[test]
-    fn test_parse_final_answer()
-    {
+    fn test_parse_final_answer() {
         let agent = create_test_agent();
         let response =
             "Thought: I have enough information.\nFinal Answer: The capital of France is Paris.";
         let step = agent.parse_response(response);
-        match step
-        {
-            ReActStep::FinalAnswer { answer, thought } =>
-            {
+        match step {
+            ReActStep::FinalAnswer { answer, thought } => {
                 assert_eq!(answer, "The capital of France is Paris.");
                 assert_eq!(thought, "I have enough information.");
             },
@@ -559,20 +515,17 @@ mod tests
     }
 
     #[test]
-    fn test_parse_action()
-    {
+    fn test_parse_action() {
         let agent = create_test_agent();
         let response =
             "Thought: I need to search.\nAction: search\nAction Input: {\"query\": \"rust\"}";
         let step = agent.parse_response(response);
-        match step
-        {
+        match step {
             ReActStep::Action {
                 tool_name,
                 tool_input,
                 thought,
-            } =>
-            {
+            } => {
                 assert_eq!(tool_name, "search");
                 assert_eq!(thought, "I need to search.");
                 assert_eq!(tool_input["query"], "rust");
@@ -582,15 +535,12 @@ mod tests
     }
 
     #[test]
-    fn test_parse_plain_text_as_final_answer()
-    {
+    fn test_parse_plain_text_as_final_answer() {
         let agent = create_test_agent();
         let response = "Just a plain text response without any special formatting.";
         let step = agent.parse_response(response);
-        match step
-        {
-            ReActStep::FinalAnswer { answer, .. } =>
-            {
+        match step {
+            ReActStep::FinalAnswer { answer, .. } => {
                 assert_eq!(answer, response);
             },
             ReActStep::Action { .. } => panic!("Expected FinalAnswer, got Action"),
@@ -598,32 +548,28 @@ mod tests
     }
 
     #[test]
-    fn test_extract_thought()
-    {
+    fn test_extract_thought() {
         let agent = create_test_agent();
         assert_eq!(agent.extract_thought("Thought: hello"), "hello");
         assert_eq!(agent.extract_thought("No thought here"), "");
     }
 
     #[test]
-    fn test_extract_final_answer()
-    {
+    fn test_extract_final_answer() {
         let agent = create_test_agent();
         assert_eq!(agent.extract_final_answer("Final Answer: 42"), Some("42".to_string()));
         assert_eq!(agent.extract_final_answer("No answer"), None);
     }
 
     #[test]
-    fn test_extract_action_name()
-    {
+    fn test_extract_action_name() {
         let agent = create_test_agent();
         assert_eq!(agent.extract_action_name("Action: search"), Some("search".to_string()));
         assert_eq!(agent.extract_action_name("No action"), None);
     }
 
     #[test]
-    fn test_extract_action_input()
-    {
+    fn test_extract_action_input() {
         let agent = create_test_agent();
         assert_eq!(
             agent.extract_action_input("Action Input: {\"q\": \"test\"}"),
@@ -634,27 +580,23 @@ mod tests
 
     /// Helper to create a test agent with a mock model.
     /// 使用模拟模型创建测试代理的辅助函数。
-    fn create_test_agent() -> ReActAgent
-    {
+    fn create_test_agent() -> ReActAgent {
         use hiver_ai::chat_model::ModelError;
         struct MockModel;
 
         #[async_trait::async_trait]
-        impl ChatModel for MockModel
-        {
+        impl ChatModel for MockModel {
             async fn complete(
                 &self,
                 _request: ChatRequest,
-            ) -> Result<hiver_ai::chat_model::ChatResponse, ModelError>
-            {
+            ) -> Result<hiver_ai::chat_model::ChatResponse, ModelError> {
                 Ok(hiver_ai::chat_model::ChatResponse::new("mock", "mock"))
             }
 
             async fn stream(
                 &self,
                 _request: ChatRequest,
-            ) -> Result<hiver_ai::chat_model::ChatStream, ModelError>
-            {
+            ) -> Result<hiver_ai::chat_model::ChatStream, ModelError> {
                 Err(ModelError::Custom("not implemented".to_string()))
             }
         }

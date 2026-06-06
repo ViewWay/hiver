@@ -184,8 +184,8 @@ fn bench_jwt_verify_scale(c: &mut Criterion) {
                 .map(|i| {
                     provider
                         .generate_token(
-                            &format!("user-{}", i),
-                            &format!("name-{}", i),
+                            format!("user-{}", i),
+                            format!("name-{}", i),
                             &authorities,
                         )
                         .unwrap()
@@ -222,7 +222,7 @@ fn bench_jwt_algorithms(c: &mut Criterion) {
 
         let provider = JwtTokenProvider::with_settings("bench-secret-key", 24).with_algorithm(algo);
 
-        group.bench_function(&format!("create_{}", algo_name), |b| {
+        group.bench_function(format!("create_{}", algo_name), |b| {
             b.iter(|| {
                 let token = provider
                     .generate_token(
@@ -239,7 +239,7 @@ fn bench_jwt_algorithms(c: &mut Criterion) {
             .generate_token("user-123", "alice", &authorities)
             .unwrap();
 
-        group.bench_function(&format!("verify_{}", algo_name), |b| {
+        group.bench_function(format!("verify_{}", algo_name), |b| {
             b.iter(|| {
                 let claims = provider.decode_and_validate(black_box(&token)).unwrap();
                 black_box(claims)
@@ -263,7 +263,7 @@ fn bench_jwt_refresh(c: &mut Criterion) {
 
     // Refresh token
     // 刷新 token
-    let token = JwtUtil::create_token("user-123", "alice", &authorities).unwrap();
+    let _token = JwtUtil::create_token("user-123", "alice", &authorities).unwrap();
     group.bench_function("refresh_token", |b| {
         // Each iteration creates a fresh token to avoid expiry issues
         // 每次迭代创建新 token 以避免过期问题
@@ -301,7 +301,7 @@ fn bench_bcrypt_encode(c: &mut Criterion) {
     let mut group = c.benchmark_group("password_bcrypt_encode");
 
     for cost in [4u32, 8, 10, 12].iter() {
-        group.bench_function(&format!("cost_{}", cost), |b| {
+        group.bench_function(format!("cost_{}", cost), |b| {
             let encoder = BcryptPasswordEncoder::with_cost(*cost);
             b.iter(|| {
                 let hash = encoder.encode(black_box("password123"));
@@ -319,7 +319,7 @@ fn bench_bcrypt_verify(c: &mut Criterion) {
     let mut group = c.benchmark_group("password_bcrypt_verify");
 
     for cost in [4u32, 8, 10, 12].iter() {
-        group.bench_function(&format!("cost_{}", cost), |b| {
+        group.bench_function(format!("cost_{}", cost), |b| {
             let encoder = BcryptPasswordEncoder::with_cost(*cost);
             let hash = encoder.encode("password123");
             b.iter(|| {
@@ -338,7 +338,7 @@ fn bench_pbkdf2_encode(c: &mut Criterion) {
     let mut group = c.benchmark_group("password_pbkdf2_encode");
 
     for iterations in [1_000u32, 10_000, 100_000].iter() {
-        group.bench_function(&format!("iterations_{}", iterations), |b| {
+        group.bench_function(format!("iterations_{}", iterations), |b| {
             let encoder = Pbkdf2PasswordEncoder::with_iterations(*iterations);
             b.iter(|| {
                 let hash = encoder.encode(black_box("password123"));
@@ -356,7 +356,7 @@ fn bench_pbkdf2_verify(c: &mut Criterion) {
     let mut group = c.benchmark_group("password_pbkdf2_verify");
 
     for iterations in [1_000u32, 10_000, 100_000].iter() {
-        group.bench_function(&format!("iterations_{}", iterations), |b| {
+        group.bench_function(format!("iterations_{}", iterations), |b| {
             let encoder = Pbkdf2PasswordEncoder::with_iterations(*iterations);
             let hash = encoder.encode("password123");
             b.iter(|| {

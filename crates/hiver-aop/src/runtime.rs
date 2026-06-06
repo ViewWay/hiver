@@ -44,8 +44,7 @@ use tokio::sync::RwLock;
 ///     println!("Args: {:?}", join_point.args());
 /// }
 /// ```
-pub struct JoinPoint
-{
+pub struct JoinPoint {
     /// Target object (self)
     /// 目标对象 (self)
     target: Arc<dyn Any + Send + Sync>,
@@ -67,8 +66,7 @@ pub struct JoinPoint
     target_class: String,
 }
 
-impl JoinPoint
-{
+impl JoinPoint {
     /// Create a new join point
     /// 创建新的连接点
     pub fn new(
@@ -77,8 +75,7 @@ impl JoinPoint
         args: Vec<Arc<dyn Any + Send + Sync>>,
         signature: String,
         target_class: String,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             target,
             method_name,
@@ -90,51 +87,43 @@ impl JoinPoint
 
     /// Get the target object
     /// 获取目标对象
-    pub fn target(&self) -> &Arc<dyn Any + Send + Sync>
-    {
+    pub fn target(&self) -> &Arc<dyn Any + Send + Sync> {
         &self.target
     }
 
     /// Get the method name
     /// 获取方法名
-    pub fn method_name(&self) -> &str
-    {
+    pub fn method_name(&self) -> &str {
         &self.method_name
     }
 
     /// Get the method arguments
     /// 获取方法参数
-    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>]
-    {
+    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>] {
         &self.args
     }
 
     /// Get the method signature
     /// 获取方法签名
-    pub fn signature(&self) -> &str
-    {
+    pub fn signature(&self) -> &str {
         &self.signature
     }
 
     /// Get the target class name
     /// 获取目标类名
-    pub fn target_class(&self) -> &str
-    {
+    pub fn target_class(&self) -> &str {
         &self.target_class
     }
 
     /// Get argument by index
     /// 通过索引获取参数
-    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T>
-    {
+    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T> {
         self.args.get(index).and_then(|arg| arg.downcast_ref::<T>())
     }
 }
 
-impl Clone for JoinPoint
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for JoinPoint {
+    fn clone(&self) -> Self {
         Self {
             target: self.target.clone(),
             method_name: self.method_name.clone(),
@@ -145,10 +134,8 @@ impl Clone for JoinPoint
     }
 }
 
-impl fmt::Debug for JoinPoint
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for JoinPoint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("JoinPoint")
             .field("method_name", &self.method_name)
             .field("signature", &self.signature)
@@ -169,8 +156,7 @@ impl fmt::Debug for JoinPoint
 /// method executes.
 ///
 /// 用于 `@Around` 通知控制目标方法是否以及何时执行。
-pub struct ProceedingJoinPoint
-{
+pub struct ProceedingJoinPoint {
     /// Inner join point data.
     /// 内部连接点数据。
     inner: JoinPoint,
@@ -179,12 +165,10 @@ pub struct ProceedingJoinPoint
     proceeded: bool,
 }
 
-impl ProceedingJoinPoint
-{
+impl ProceedingJoinPoint {
     /// Create a new proceeding join point.
     /// 创建新的可继续连接点。
-    pub fn new(inner: JoinPoint) -> Self
-    {
+    pub fn new(inner: JoinPoint) -> Self {
         Self {
             inner,
             proceeded: false,
@@ -193,65 +177,55 @@ impl ProceedingJoinPoint
 
     /// Get the method name.
     /// 获取方法名。
-    pub fn method_name(&self) -> &str
-    {
+    pub fn method_name(&self) -> &str {
         self.inner.method_name()
     }
 
     /// Get the method arguments.
     /// 获取方法参数。
-    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>]
-    {
+    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>] {
         self.inner.args()
     }
 
     /// Get typed argument by index.
     /// 通过索引获取类型化参数。
-    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T>
-    {
+    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T> {
         self.inner.arg(index)
     }
 
     /// Get the target class name.
     /// 获取目标类名。
-    pub fn target_class(&self) -> &str
-    {
+    pub fn target_class(&self) -> &str {
         self.inner.target_class()
     }
 
     /// Get the method signature.
     /// 获取方法签名。
-    pub fn signature(&self) -> &str
-    {
+    pub fn signature(&self) -> &str {
         self.inner.signature()
     }
 
     /// Get the target object.
     /// 获取目标对象。
-    pub fn target(&self) -> &Arc<dyn Any + Send + Sync>
-    {
+    pub fn target(&self) -> &Arc<dyn Any + Send + Sync> {
         self.inner.target()
     }
 
     /// Mark that the underlying method should proceed.
     /// 标记底层方法应继续执行。
-    pub fn proceed(&mut self)
-    {
+    pub fn proceed(&mut self) {
         self.proceeded = true;
     }
 
     /// Check whether proceed has been called.
     /// 检查 proceed 是否已被调用。
-    pub fn is_proceeded(&self) -> bool
-    {
+    pub fn is_proceeded(&self) -> bool {
         self.proceeded
     }
 }
 
-impl Clone for ProceedingJoinPoint
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for ProceedingJoinPoint {
+    fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
             proceeded: self.proceeded,
@@ -259,10 +233,8 @@ impl Clone for ProceedingJoinPoint
     }
 }
 
-impl fmt::Debug for ProceedingJoinPoint
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for ProceedingJoinPoint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ProceedingJoinPoint")
             .field("method_name", &self.inner.method_name())
             .field("proceeded", &self.proceeded)
@@ -277,8 +249,7 @@ impl fmt::Debug for ProceedingJoinPoint
 /// Ordered advice to be applied to a join point.
 /// 要应用到连接点的有序通知。
 #[derive(Debug, Clone)]
-pub struct AdviceChain
-{
+pub struct AdviceChain {
     /// Before advices (in order).
     /// 前置通知（按顺序）。
     pub before: Vec<String>,
@@ -296,12 +267,10 @@ pub struct AdviceChain
     pub after_throwing: Vec<String>,
 }
 
-impl AdviceChain
-{
+impl AdviceChain {
     /// Create an empty chain.
     /// 创建空链。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             before: Vec::new(),
             around: Vec::new(),
@@ -313,13 +282,10 @@ impl AdviceChain
 
     /// Build a chain from matched advice.
     /// 从匹配的通知构建链。
-    pub fn from_matches(matches: &[(AdviceType, String, String)]) -> Self
-    {
+    pub fn from_matches(matches: &[(AdviceType, String, String)]) -> Self {
         let mut chain = Self::new();
-        for (advice_type, _aspect, method) in matches
-        {
-            match advice_type
-            {
+        for (advice_type, _aspect, method) in matches {
+            match advice_type {
                 AdviceType::Before => chain.before.push(method.clone()),
                 AdviceType::Around => chain.around.push(method.clone()),
                 AdviceType::After => chain.after.push(method.clone()),
@@ -332,8 +298,7 @@ impl AdviceChain
 
     /// Total number of advices in the chain.
     /// 链中通知总数。
-    pub fn total(&self) -> usize
-    {
+    pub fn total(&self) -> usize {
         self.before.len()
             + self.around.len()
             + self.after.len()
@@ -343,16 +308,13 @@ impl AdviceChain
 
     /// Check if the chain is empty.
     /// 检查链是否为空。
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.total() == 0
     }
 }
 
-impl Default for AdviceChain
-{
-    fn default() -> Self
-    {
+impl Default for AdviceChain {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -368,8 +330,7 @@ impl Default for AdviceChain
 ///
 /// 切点表达式定义应该应用通知的连接点。
 #[derive(Debug, Clone)]
-pub struct PointcutExpression
-{
+pub struct PointcutExpression {
     /// The expression string
     /// 表达式字符串
     expression: String,
@@ -382,12 +343,10 @@ pub struct PointcutExpression
 /// Components of a pointcut expression
 /// 切点表达式的组件
 #[derive(Debug, Clone, PartialEq)]
-enum ExpressionComponent
-{
+enum ExpressionComponent {
     /// Execution pointcut
     /// 执行切点
-    Execution
-    {
+    Execution {
         /// Package pattern
         /// 包模式
         package: String,
@@ -418,12 +377,10 @@ enum ExpressionComponent
     Not,
 }
 
-impl PointcutExpression
-{
+impl PointcutExpression {
     /// Create a new pointcut expression
     /// 创建新的切点表达式
-    pub fn new(expression: String) -> Self
-    {
+    pub fn new(expression: String) -> Self {
         let components = Self::parse_expression(&expression);
         Self {
             expression,
@@ -433,16 +390,13 @@ impl PointcutExpression
 
     /// Parse a pointcut expression
     /// 解析切点表达式
-    fn parse_expression(expr: &str) -> Vec<ExpressionComponent>
-    {
+    fn parse_expression(expr: &str) -> Vec<ExpressionComponent> {
         let mut components = Vec::new();
 
         // Parse execution expressions
         // 解析 execution 表达式
-        if let Some(start) = expr.find("execution(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
+        if let Some(start) = expr.find("execution(") {
+            if let Some(end) = expr[start..].find(')') {
                 let full_expr = &expr[start..start + end + 1];
                 let inner = &full_expr[11..full_expr.len() - 1]; // Remove "execution(" and ")"
 
@@ -459,10 +413,8 @@ impl PointcutExpression
 
         // Parse within expressions
         // 解析 within 表达式
-        if let Some(start) = expr.find("within(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
+        if let Some(start) = expr.find("within(") {
+            if let Some(end) = expr[start..].find(')') {
                 let inner = &expr[start + 7..start + end];
                 components.push(ExpressionComponent::Within(inner.to_string()));
             }
@@ -470,10 +422,8 @@ impl PointcutExpression
 
         // Parse @annotation expressions
         // 解析 @annotation 表达式
-        if let Some(start) = expr.find("@annotation(")
-        {
-            if let Some(end) = expr[start..].find(')')
-            {
+        if let Some(start) = expr.find("@annotation(") {
+            if let Some(end) = expr[start..].find(')') {
                 let inner = &expr[start + 13..start + end];
                 components.push(ExpressionComponent::Annotation(inner.to_string()));
             }
@@ -481,12 +431,9 @@ impl PointcutExpression
 
         // Parse logical operators
         // 解析逻辑运算符
-        if expr.contains(" && ")
-        {
+        if expr.contains(" && ") {
             components.push(ExpressionComponent::And);
-        }
-        else if expr.contains(" || ")
-        {
+        } else if expr.contains(" || ") {
             components.push(ExpressionComponent::Or);
         }
 
@@ -495,42 +442,32 @@ impl PointcutExpression
 
     /// Get the expression string
     /// 获取表达式字符串
-    pub fn expression(&self) -> &str
-    {
+    pub fn expression(&self) -> &str {
         &self.expression
     }
 
     /// Check if this pointcut matches a join point
     /// 检查此切点是否匹配连接点
-    pub fn matches(&self, join_point: &JoinPoint) -> bool
-    {
-        for component in &self.components
-        {
-            match component
-            {
-                ExpressionComponent::Execution { method, .. } =>
-                {
+    pub fn matches(&self, join_point: &JoinPoint) -> bool {
+        for component in &self.components {
+            match component {
+                ExpressionComponent::Execution { method, .. } => {
                     // Simple wildcard matching
                     // 简单的通配符匹配
-                    if *method == "*" || *method == join_point.method_name()
-                    {
+                    if *method == "*" || *method == join_point.method_name() {
                         return true;
                     }
                 },
-                ExpressionComponent::Within(class) =>
-                {
-                    if *class == "*" || *class == join_point.target_class()
-                    {
+                ExpressionComponent::Within(class) => {
+                    if *class == "*" || *class == join_point.target_class() {
                         return true;
                     }
                 },
-                ExpressionComponent::And | ExpressionComponent::Or | ExpressionComponent::Not =>
-                {
+                ExpressionComponent::And | ExpressionComponent::Or | ExpressionComponent::Not => {
                     // Logical operators would need more complex evaluation
                     // 逻辑运算符需要更复杂的评估
                 },
-                _ =>
-                {},
+                _ => {},
             }
         }
         false
@@ -544,8 +481,7 @@ impl PointcutExpression
 /// Type of advice
 /// 通知类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AdviceType
-{
+pub enum AdviceType {
     /// Before advice
     /// 前置通知
     Before,
@@ -573,8 +509,7 @@ pub enum AdviceType
 /// The aspect registry manages all registered aspects and their advice.
 ///
 /// 切面注册表管理所有已注册的切面及其通知。
-pub struct AspectRegistry
-{
+pub struct AspectRegistry {
     /// Registered aspects
     /// 已注册的切面
     aspects: RwLock<HashMap<String, AspectInfo>>,
@@ -587,8 +522,7 @@ pub struct AspectRegistry
 /// Information about an aspect
 /// 切面信息
 #[derive(Debug, Clone)]
-struct AspectInfo
-{
+struct AspectInfo {
     /// Aspect name
     /// 切面名称
     name: String,
@@ -605,8 +539,7 @@ struct AspectInfo
 /// Associates a pointcut with advice
 /// 关联切点和通知
 #[derive(Debug, Clone)]
-struct PointcutAdvice
-{
+struct PointcutAdvice {
     /// Pointcut expression
     /// 切点表达式
     pointcut: PointcutExpression,
@@ -624,12 +557,10 @@ struct PointcutAdvice
     method_name: String,
 }
 
-impl AspectRegistry
-{
+impl AspectRegistry {
     /// Create a new aspect registry
     /// 创建新的切面注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             aspects: RwLock::new(HashMap::new()),
             pointcuts: RwLock::new(Vec::new()),
@@ -638,8 +569,7 @@ impl AspectRegistry
 
     /// Register an aspect
     /// 注册切面
-    pub async fn register_aspect<T: Any + Send + Sync>(&self, name: String, instance: T)
-    {
+    pub async fn register_aspect<T: Any + Send + Sync>(&self, name: String, instance: T) {
         let info = AspectInfo {
             name: name.clone(),
             type_id: TypeId::of::<T>(),
@@ -658,8 +588,7 @@ impl AspectRegistry
         advice_type: AdviceType,
         aspect_name: String,
         method_name: String,
-    )
-    {
+    ) {
         let advice = PointcutAdvice {
             pointcut,
             advice_type,
@@ -676,15 +605,12 @@ impl AspectRegistry
     pub async fn find_matching_advice(
         &self,
         join_point: &JoinPoint,
-    ) -> Vec<(AdviceType, String, String)>
-    {
+    ) -> Vec<(AdviceType, String, String)> {
         let pointcuts = self.pointcuts.read().await;
         let mut matches = Vec::new();
 
-        for advice in pointcuts.iter()
-        {
-            if advice.pointcut.matches(join_point)
-            {
+        for advice in pointcuts.iter() {
+            if advice.pointcut.matches(join_point) {
                 matches.push((
                     advice.advice_type,
                     advice.aspect_name.clone(),
@@ -698,17 +624,14 @@ impl AspectRegistry
 
     /// Get an aspect by name
     /// 通过名称获取切面
-    pub async fn get_aspect(&self, name: &str) -> Option<Arc<dyn Any + Send + Sync>>
-    {
+    pub async fn get_aspect(&self, name: &str) -> Option<Arc<dyn Any + Send + Sync>> {
         let aspects = self.aspects.read().await;
         aspects.get(name).map(|info| info.instance.clone())
     }
 }
 
-impl Default for AspectRegistry
-{
-    fn default() -> Self
-    {
+impl Default for AspectRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -724,8 +647,7 @@ static GLOBAL_REGISTRY: once_cell::sync::Lazy<AspectRegistry> =
 
 /// Get the global aspect registry
 /// 获取全局切面注册表
-pub fn global_registry() -> &'static AspectRegistry
-{
+pub fn global_registry() -> &'static AspectRegistry {
     &GLOBAL_REGISTRY
 }
 
@@ -734,8 +656,7 @@ pub fn global_registry() -> &'static AspectRegistry
 // ============================================================================
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     // ========================================================================
@@ -744,8 +665,7 @@ mod tests
 
     /// Create a simple JoinPoint for testing
     /// 创建用于测试的简单 JoinPoint
-    fn make_join_point(method: &str, class: &str) -> JoinPoint
-    {
+    fn make_join_point(method: &str, class: &str) -> JoinPoint {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("target");
         JoinPoint::new(
             target,
@@ -762,8 +682,7 @@ mod tests
         method: &str,
         class: &str,
         args: Vec<Arc<dyn Any + Send + Sync>>,
-    ) -> JoinPoint
-    {
+    ) -> JoinPoint {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("target");
         let sig = format!("{}({} args)", method, args.len());
         JoinPoint::new(target, method.to_string(), args, sig, class.to_string())
@@ -776,8 +695,7 @@ mod tests
     /// Test basic JoinPoint construction and field access
     /// 测试基本 JoinPoint 构造和字段访问
     #[test]
-    fn test_join_point_basic_fields()
-    {
+    fn test_join_point_basic_fields() {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("test");
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(42), Arc::new("hello")];
 
@@ -798,8 +716,7 @@ mod tests
     /// Test JoinPoint with no arguments
     /// 测试无参数的 JoinPoint
     #[test]
-    fn test_join_point_no_args()
-    {
+    fn test_join_point_no_args() {
         let jp = make_join_point("no_args_method", "Svc");
 
         assert_eq!(jp.method_name(), "no_args_method");
@@ -810,8 +727,7 @@ mod tests
     /// Test JoinPoint typed argument retrieval via arg<T>
     /// 测试通过 arg<T> 获取类型化参数
     #[test]
-    fn test_join_point_typed_arg_access()
-    {
+    fn test_join_point_typed_arg_access() {
         let args: Vec<Arc<dyn Any + Send + Sync>> =
             vec![Arc::new(99_i32), Arc::new("world".to_string())];
         let jp = make_join_point_with_args("typed_method", "Repo", args);
@@ -835,8 +751,7 @@ mod tests
     /// Test JoinPoint arg<T> with wrong type returns None
     /// 测试 arg<T> 类型不匹配时返回 None
     #[test]
-    fn test_join_point_arg_wrong_type()
-    {
+    fn test_join_point_arg_wrong_type() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(42_i32)];
         let jp = make_join_point_with_args("cast_method", "Svc", args);
 
@@ -849,8 +764,7 @@ mod tests
     /// Test JoinPoint Clone produces an equal copy
     /// 测试 JoinPoint Clone 产生相等的副本
     #[test]
-    fn test_join_point_clone()
-    {
+    fn test_join_point_clone() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(7_i32)];
         let jp = make_join_point_with_args("clone_method", "Svc", args);
         let jp2 = jp.clone();
@@ -864,8 +778,7 @@ mod tests
     /// Test JoinPoint Debug output contains key fields
     /// 测试 JoinPoint Debug 输出包含关键字段
     #[test]
-    fn test_join_point_debug()
-    {
+    fn test_join_point_debug() {
         let jp = make_join_point("debug_method", "DebugClass");
         let debug_str = format!("{:?}", jp);
 
@@ -877,8 +790,7 @@ mod tests
     /// Test JoinPoint target accessor returns the original Arc
     /// 测试 JoinPoint target 访问器返回原始 Arc
     #[test]
-    fn test_join_point_target_accessor()
-    {
+    fn test_join_point_target_accessor() {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("my_target");
         let jp =
             JoinPoint::new(target, "m".to_string(), vec![], "m()".to_string(), "C".to_string());
@@ -896,8 +808,7 @@ mod tests
     /// Test PointcutExpression stores and returns the raw expression string
     /// 测试切点表达式存储并返回原始表达式字符串
     #[test]
-    fn test_pointcut_expression_stores_raw_string()
-    {
+    fn test_pointcut_expression_stores_raw_string() {
         let raw = "execution(* com.example..*.*(..))";
         let expr = PointcutExpression::new(raw.to_string());
         assert_eq!(expr.expression(), raw);
@@ -906,8 +817,7 @@ mod tests
     /// Test execution pointcut matches any method via wildcard
     /// 测试 execution 切点通过通配符匹配任意方法
     #[test]
-    fn test_pointcut_execution_wildcard_matches()
-    {
+    fn test_pointcut_execution_wildcard_matches() {
         let expr = PointcutExpression::new("execution(* *..*.*(..))".to_string());
         let jp = make_join_point("any_method", "AnyClass");
 
@@ -917,8 +827,7 @@ mod tests
     /// Test execution pointcut with specific method name matches
     /// 测试带有具体方法名的 execution 切点匹配
     #[test]
-    fn test_pointcut_execution_specific_method()
-    {
+    fn test_pointcut_execution_specific_method() {
         let expr = PointcutExpression::new(
             "execution(* com.example.Service.specific_method(..))".to_string(),
         );
@@ -932,8 +841,7 @@ mod tests
     /// Test within pointcut matches target class
     /// 测试 within 切点匹配目标类
     #[test]
-    fn test_pointcut_within_matches_class()
-    {
+    fn test_pointcut_within_matches_class() {
         let expr = PointcutExpression::new("within(com.example.Service)".to_string());
 
         let jp_match = make_join_point("method_a", "com.example.Service");
@@ -943,8 +851,7 @@ mod tests
     /// Test within pointcut with wildcard matches any class
     /// 测试带通配符的 within 切点匹配任意类
     #[test]
-    fn test_pointcut_within_wildcard()
-    {
+    fn test_pointcut_within_wildcard() {
         let expr = PointcutExpression::new("within(*)".to_string());
         let jp = make_join_point("anything", "AnyClass");
 
@@ -954,8 +861,7 @@ mod tests
     /// Test @annotation pointcut expression is parsed without panic
     /// 测试 @annotation 切点表达式解析不会 panic
     #[test]
-    fn test_pointcut_annotation_parsing()
-    {
+    fn test_pointcut_annotation_parsing() {
         let expr = PointcutExpression::new("@annotation(org.example.Transactional)".to_string());
         assert_eq!(expr.expression(), "@annotation(org.example.Transactional)");
     }
@@ -963,8 +869,7 @@ mod tests
     /// Test combined expression with AND operator
     /// 测试带 AND 操作符的组合表达式
     #[test]
-    fn test_pointcut_and_operator()
-    {
+    fn test_pointcut_and_operator() {
         let expr = PointcutExpression::new(
             "execution(* *..*.*(..)) && within(com.example.Service)".to_string(),
         );
@@ -976,8 +881,7 @@ mod tests
     /// Test combined expression with OR operator
     /// 测试带 OR 操作符的组合表达式
     #[test]
-    fn test_pointcut_or_operator()
-    {
+    fn test_pointcut_or_operator() {
         let expr = PointcutExpression::new(
             "execution(* com.example..*.*(..)) || within(com.other..*)".to_string(),
         );
@@ -987,8 +891,7 @@ mod tests
     /// Test empty expression produces no components and never matches
     /// 测试空表达式不产生组件且永不匹配
     #[test]
-    fn test_pointcut_empty_expression()
-    {
+    fn test_pointcut_empty_expression() {
         let expr = PointcutExpression::new(String::new());
         let jp = make_join_point("any", "Any");
 
@@ -999,8 +902,7 @@ mod tests
     /// Test PointcutExpression clone preserves expression string
     /// 测试切点表达式克隆保留表达式字符串
     #[test]
-    fn test_pointcut_clone()
-    {
+    fn test_pointcut_clone() {
         let expr = PointcutExpression::new("execution(* com.example..*.*(..))".to_string());
         let cloned = expr.clone();
 
@@ -1010,8 +912,7 @@ mod tests
     /// Test PointcutExpression Debug output
     /// 测试切点表达式 Debug 输出
     #[test]
-    fn test_pointcut_debug()
-    {
+    fn test_pointcut_debug() {
         let expr = PointcutExpression::new("execution(* *(..))".to_string());
         let debug_str = format!("{:?}", expr);
 
@@ -1025,8 +926,7 @@ mod tests
     /// Test AdviceType variants equality
     /// 测试 AdviceType 变体的相等性
     #[test]
-    fn test_advice_type_equality()
-    {
+    fn test_advice_type_equality() {
         assert_eq!(AdviceType::Before, AdviceType::Before);
         assert_eq!(AdviceType::After, AdviceType::After);
         assert_eq!(AdviceType::Around, AdviceType::Around);
@@ -1041,8 +941,7 @@ mod tests
     /// Test AdviceType Copy and Clone
     /// 测试 AdviceType 的 Copy 和 Clone
     #[test]
-    fn test_advice_type_copy_clone()
-    {
+    fn test_advice_type_copy_clone() {
         let a = AdviceType::Before;
         let b = a; // Copy
         let c = a; // Copy again
@@ -1053,8 +952,7 @@ mod tests
     /// Test AdviceType Debug output contains variant names
     /// 测试 AdviceType Debug 输出包含变体名称
     #[test]
-    fn test_advice_type_debug()
-    {
+    fn test_advice_type_debug() {
         assert!(format!("{:?}", AdviceType::Before).contains("Before"));
         assert!(format!("{:?}", AdviceType::After).contains("After"));
         assert!(format!("{:?}", AdviceType::Around).contains("Around"));
@@ -1067,8 +965,7 @@ mod tests
     /// Test AspectRegistry creation with new() and default()
     /// 测试使用 new() 和 default() 创建切面注册表
     #[test]
-    fn test_aspect_registry_new_and_default()
-    {
+    fn test_aspect_registry_new_and_default() {
         let _r1 = AspectRegistry::new();
         let _r2 = AspectRegistry::default();
     }
@@ -1076,8 +973,7 @@ mod tests
     /// Test registering and retrieving an aspect
     /// 测试注册并获取切面
     #[tokio::test]
-    async fn test_aspect_registry_register_and_get()
-    {
+    async fn test_aspect_registry_register_and_get() {
         let registry = AspectRegistry::new();
 
         let instance = "test_aspect";
@@ -1097,8 +993,7 @@ mod tests
     /// Test retrieving a non-existent aspect returns None
     /// 测试获取不存在的切面返回 None
     #[tokio::test]
-    async fn test_aspect_registry_get_missing()
-    {
+    async fn test_aspect_registry_get_missing() {
         let registry = AspectRegistry::new();
 
         let result = registry.get_aspect("DoesNotExist").await;
@@ -1108,8 +1003,7 @@ mod tests
     /// Test registering multiple aspects
     /// 测试注册多个切面
     #[tokio::test]
-    async fn test_aspect_registry_multiple_aspects()
-    {
+    async fn test_aspect_registry_multiple_aspects() {
         let registry = AspectRegistry::new();
 
         registry.register_aspect("AspectA".to_string(), 1_i32).await;
@@ -1128,8 +1022,7 @@ mod tests
     /// Test overwriting an aspect with the same name
     /// 测试用相同名称覆盖切面
     #[tokio::test]
-    async fn test_aspect_registry_overwrite()
-    {
+    async fn test_aspect_registry_overwrite() {
         let registry = AspectRegistry::new();
 
         registry.register_aspect("Aspect".to_string(), "v1").await;
@@ -1142,8 +1035,7 @@ mod tests
     /// Test register_pointcut and find_matching_advice
     /// 测试注册切点和查找匹配通知
     #[tokio::test]
-    async fn test_aspect_registry_register_pointcut_and_match()
-    {
+    async fn test_aspect_registry_register_pointcut_and_match() {
         let registry = AspectRegistry::new();
 
         let pointcut = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1168,8 +1060,7 @@ mod tests
     /// Test find_matching_advice with no registered pointcuts
     /// 测试无已注册切点时查找匹配通知
     #[tokio::test]
-    async fn test_aspect_registry_no_matching_advice()
-    {
+    async fn test_aspect_registry_no_matching_advice() {
         let registry = AspectRegistry::new();
 
         let jp = make_join_point("method", "Class");
@@ -1181,8 +1072,7 @@ mod tests
     /// Test multiple pointcuts matching the same join point
     /// 测试多个切点匹配同一个连接点
     #[tokio::test]
-    async fn test_aspect_registry_multiple_matching_pointcuts()
-    {
+    async fn test_aspect_registry_multiple_matching_pointcuts() {
         let registry = AspectRegistry::new();
 
         let p1 = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1204,8 +1094,7 @@ mod tests
     /// Test pointcut with non-matching join point returns empty
     /// 测试切点与不匹配的连接点返回空结果
     #[tokio::test]
-    async fn test_aspect_registry_pointcut_no_match()
-    {
+    async fn test_aspect_registry_pointcut_no_match() {
         let registry = AspectRegistry::new();
 
         // Empty expression never matches
@@ -1228,8 +1117,7 @@ mod tests
     /// Test global_registry() returns a valid reference
     /// 测试 global_registry() 返回有效引用
     #[test]
-    fn test_global_registry_exists()
-    {
+    fn test_global_registry_exists() {
         let reg = global_registry();
         // Verify it is the same instance each call
         // 验证每次调用返回同一实例
@@ -1240,8 +1128,7 @@ mod tests
     /// Test global registry can register and retrieve aspects
     /// 测试全局注册表可以注册和获取切面
     #[tokio::test]
-    async fn test_global_registry_register_and_get()
-    {
+    async fn test_global_registry_register_and_get() {
         let registry = global_registry();
 
         registry
@@ -1260,8 +1147,7 @@ mod tests
     /// Test full workflow: register aspect, register pointcuts, match advice
     /// 测试完整流程：注册切面、注册切点、匹配通知
     #[tokio::test]
-    async fn test_full_aop_workflow()
-    {
+    async fn test_full_aop_workflow() {
         let registry = AspectRegistry::new();
 
         // Register aspect instance
@@ -1324,8 +1210,7 @@ mod tests
 
         // All advice belong to the same aspect
         // 所有通知属于同一个切面
-        for m in &matches
-        {
+        for m in &matches {
             assert_eq!(m.1, "TransactionAspect");
         }
     }
@@ -1333,8 +1218,7 @@ mod tests
     /// Test advice ordering: before, around, after registered in sequence
     /// 测试通知顺序：按前置、环绕、后置顺序注册
     #[tokio::test]
-    async fn test_advice_ordering()
-    {
+    async fn test_advice_ordering() {
         let registry = AspectRegistry::new();
 
         let wildcard = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1377,12 +1261,11 @@ mod tests
     /// Test JoinPoint with complex typed arguments
     /// 测试带有复杂类型参数的 JoinPoint
     #[test]
-    fn test_join_point_complex_args()
-    {
+    fn test_join_point_complex_args() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![
             Arc::new(42_i64),
             Arc::new(true),
-            Arc::new(3.14_f64),
+            Arc::new(3.15_f64),
             Arc::new(String::from("hello")),
         ];
 
@@ -1390,15 +1273,14 @@ mod tests
 
         assert_eq!(jp.arg::<i64>(0), Some(&42));
         assert_eq!(jp.arg::<bool>(1), Some(&true));
-        assert_eq!(jp.arg::<f64>(2), Some(&3.14));
+        assert_eq!(jp.arg::<f64>(2), Some(&3.15));
         assert_eq!(jp.arg::<String>(3), Some(&String::from("hello")));
     }
 
     /// Test JoinPoint with many arguments
     /// 测试带有大量参数的 JoinPoint
     #[test]
-    fn test_join_point_many_args()
-    {
+    fn test_join_point_many_args() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = (0..100)
             .map(|i| Arc::new(i) as Arc<dyn Any + Send + Sync>)
             .collect();

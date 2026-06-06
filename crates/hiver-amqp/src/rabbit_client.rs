@@ -27,8 +27,7 @@
 //! ```
 
 #[cfg(feature = "lapin")]
-mod inner
-{
+mod inner {
     use std::sync::Arc;
 
     use lapin::{
@@ -45,8 +44,7 @@ mod inner
     /// Error type for RabbitMQ operations.
     /// RabbitMQ 操作错误类型。
     #[derive(Debug, thiserror::Error)]
-    pub enum RabbitError
-    {
+    pub enum RabbitError {
         /// lapin library error. / lapin 库错误。
         #[error("lapin error: {0}")]
         Lapin(#[from] lapin::Error),
@@ -63,19 +61,16 @@ mod inner
     /// Shared lapin connection + channel pool.
     /// 共享的 lapin 连接和通道池。
     #[derive(Clone)]
-    pub struct RabbitMqClient
-    {
+    pub struct RabbitMqClient {
         connection: Arc<Connection>,
         channel: Arc<Mutex<Channel>>,
         amqp_url: String,
     }
 
-    impl RabbitMqClient
-    {
+    impl RabbitMqClient {
         /// Connect to RabbitMQ and open a channel.
         /// 连接到 RabbitMQ 并打开通道。
-        pub async fn connect(amqp_url: &str) -> Result<Self>
-        {
+        pub async fn connect(amqp_url: &str) -> Result<Self> {
             info!("Connecting to RabbitMQ at {}", amqp_url);
             let conn = Connection::connect(amqp_url, ConnectionProperties::default())
                 .await
@@ -91,8 +86,7 @@ mod inner
 
         /// Declare a durable queue. Idempotent.
         /// 声明一个持久化队列（幂等）。
-        pub async fn declare_queue(&self, name: &str) -> Result<()>
-        {
+        pub async fn declare_queue(&self, name: &str) -> Result<()> {
             let channel = self.channel.lock().await;
             channel
                 .queue_declare(
@@ -110,11 +104,9 @@ mod inner
 
         /// Declare a durable topic exchange. Idempotent.
         /// 声明一个持久化 topic 交换机（幂等）。
-        pub async fn declare_exchange(&self, name: &str, kind: &str) -> Result<()>
-        {
+        pub async fn declare_exchange(&self, name: &str, kind: &str) -> Result<()> {
             use lapin::ExchangeKind;
-            let kind = match kind
-            {
+            let kind = match kind {
                 "direct" => ExchangeKind::Direct,
                 "fanout" => ExchangeKind::Fanout,
                 "headers" => ExchangeKind::Headers,
@@ -138,9 +130,12 @@ mod inner
 
         /// Bind a queue to an exchange with a routing key.
         /// 将队列绑定到交换机。
-        pub async fn bind_queue(&self, queue: &str, exchange: &str, routing_key: &str)
-        -> Result<()>
-        {
+        pub async fn bind_queue(
+            &self,
+            queue: &str,
+            exchange: &str,
+            routing_key: &str,
+        ) -> Result<()> {
             let channel = self.channel.lock().await;
             channel
                 .queue_bind(
@@ -157,9 +152,12 @@ mod inner
 
         /// Publish a message to an exchange with a routing key.
         /// 向交换机发布消息。
-        pub async fn publish(&self, exchange: &str, routing_key: &str, payload: &[u8])
-        -> Result<()>
-        {
+        pub async fn publish(
+            &self,
+            exchange: &str,
+            routing_key: &str,
+            payload: &[u8],
+        ) -> Result<()> {
             let channel = self.channel.lock().await;
             channel
                 .basic_publish(
@@ -182,8 +180,7 @@ mod inner
             exchange: &str,
             routing_key: &str,
             payload: &T,
-        ) -> Result<()>
-        {
+        ) -> Result<()> {
             let json = serde_json::to_vec(payload)
                 .map_err(|e| RabbitError::ConnectionFailed(format!("serialize: {e}")))?;
             let channel = self.channel.lock().await;
@@ -233,43 +230,39 @@ mod inner
             let handler = Arc::new(handler);
             tokio::spawn(async move {
                 use futures::StreamExt;
-                while let Some(delivery) = consumer.next().await
-                {
-                    match delivery
-                    {
-                        Ok(delivery) =>
-                        {
+                while let Some(delivery) = consumer.next().await {
+                    match delivery {
+                        Ok(delivery) => {
                             let tag = delivery.delivery_tag;
                             let routing_key = delivery.routing_key.to_string();
                             let data = delivery.data.clone();
                             let h = handler.clone();
                             let ch = consumer_channel.clone();
                             tokio::spawn(async move {
-                                match h(data, routing_key).await
-                                {
-                                    Ok(()) =>
-                                    {
+                                match h(data, routing_key).await {
+                                    Ok(()) => {
                                         if let Err(e) =
                                             ch.basic_ack(tag, BasicAckOptions::default()).await
                                         {
                                             error!("ack failed: {e}");
                                         }
                                     },
-                                    Err(e) =>
-                                    {
+                                    Err(e) => {
                                         error!("handler error: {e}");
                                         let _ = ch
-                                            .basic_nack(tag, BasicNackOptions {
-                                                requeue: true,
-                                                ..Default::default()
-                                            })
+                                            .basic_nack(
+                                                tag,
+                                                BasicNackOptions {
+                                                    requeue: true,
+                                                    ..Default::default()
+                                                },
+                                            )
                                             .await;
                                     },
                                 }
                             });
                         },
-                        Err(e) =>
-                        {
+                        Err(e) => {
                             error!("Consumer delivery error: {e}");
                             break;
                         },
@@ -283,15 +276,13 @@ mod inner
 
         /// Check if the underlying connection is still open.
         /// 检查底层连接是否仍然打开。
-        pub fn is_connected(&self) -> bool
-        {
+        pub fn is_connected(&self) -> bool {
             self.connection.status().connected()
         }
 
         /// Return the AMQP URL used for this connection.
         /// 返回此连接使用的 AMQP URL。
-        pub fn url(&self) -> &str
-        {
+        pub fn url(&self) -> &str {
             &self.amqp_url
         }
     }
@@ -301,14 +292,11 @@ mod inner
 pub use inner::{RabbitError, RabbitMqClient};
 
 #[cfg(not(feature = "lapin"))]
-mod stub
-{
+mod stub {
     /// Stub when lapin feature is disabled.
     pub struct RabbitMqClient;
-    impl RabbitMqClient
-    {
-        pub async fn connect(_url: &str) -> Result<Self, String>
-        {
+    impl RabbitMqClient {
+        pub async fn connect(_url: &str) -> Result<Self, String> {
             Err("hiver-amqp lapin feature not enabled".to_string())
         }
     }

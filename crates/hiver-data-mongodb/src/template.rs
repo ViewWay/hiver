@@ -131,7 +131,7 @@ impl MongoTemplate {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
 
     #[test]
     fn test_template_database_name() {

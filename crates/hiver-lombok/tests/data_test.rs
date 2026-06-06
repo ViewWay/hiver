@@ -65,7 +65,7 @@ fn test_data_default_impl() {
     let default_cfg = Config::default();
     assert_eq!(default_cfg.port, 0u16);
     assert_eq!(default_cfg.host, "");
-    assert_eq!(default_cfg.enabled, false);
+    assert!(!default_cfg.enabled);
 
     // Default should equal manual zero values
     // Default 应等于手动设置的零值
@@ -159,8 +159,8 @@ fn test_getter_varied_types() {
     };
     assert_eq!(rec.id(), 42);
     assert_eq!(rec.name(), "test");
-    assert_eq!(rec.active(), true);
-    assert!((rec.score() - 3.14).abs() < f64::EPSILON);
+    assert!(rec.active());
+    assert!((rec.score() - 3.15).abs() < f64::EPSILON);
 }
 
 /// Test #[get] attribute skips field getter generation.
@@ -284,7 +284,7 @@ fn test_all_args_constructor_many_fields() {
     assert_eq!(e.c, 3);
     assert_eq!(e.d, 4);
     assert_eq!(e.e, "five");
-    assert_eq!(e.f, true);
+    assert!(e.f);
 }
 
 // ============================================================================
@@ -325,7 +325,7 @@ fn test_no_args_constructor_primitive_defaults() {
     }
 
     let p = Primitives::default();
-    assert_eq!(p.flag, false);
+    assert!(!p.flag);
     assert_eq!(p.ratio, 0.0);
     assert_eq!(p.count, 0);
     assert_eq!(p.label, "");
@@ -557,7 +557,7 @@ fn test_combined_derives() {
     assert_eq!(default_item.qty, 0);
 
     // Setter
-    let mut item2 = Item::new("".into(), 0);
+    let mut item2 = Item::new(String::new(), 0);
     item2.set_sku("XYZ".into());
     item2.set_qty(5);
     assert_eq!(item2.sku, "XYZ");

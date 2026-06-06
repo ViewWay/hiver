@@ -553,7 +553,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mdc_with_initial_values() {
-        let mut initial = std::collections::HashMap::new();
+        let mut initial = HashMap::new();
         initial.insert("pre_set".to_string(), "value".to_string());
 
         Mdc::with_initial_values(initial, async {

@@ -1048,7 +1048,7 @@ mod tests {
         assert_eq!(map.get("spring.profiles.active"), Some(&"dev".to_string()));
         assert_eq!(map.get("count"), Some(&"42".to_string()));
         assert_eq!(map.get("enabled"), Some(&"true".to_string()));
-        assert_eq!(map.get("empty"), Some(&"".to_string()));
+        assert_eq!(map.get("empty"), Some(&String::new()));
         // Array should be serialized as JSON string
         // 数组应序列化为JSON字符串
         assert!(map.get("tags").unwrap().contains("web"));

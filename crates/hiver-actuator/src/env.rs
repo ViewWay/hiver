@@ -12,8 +12,7 @@ use serde::{Deserialize, Serialize};
 /// 环境属性源
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct PropertySource
-{
+pub struct PropertySource {
     /// Property source name
     /// 属性源名称
     pub name: String,
@@ -27,8 +26,7 @@ pub struct PropertySource
 /// 环境属性值
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct PropertyValue
-{
+pub struct PropertyValue {
     /// Property value
     /// 属性值
     pub value: String,
@@ -39,12 +37,10 @@ pub struct PropertyValue
     pub origin: Option<String>,
 }
 
-impl PropertyValue
-{
+impl PropertyValue {
     /// Create a new property value
     /// 创建新的属性值
-    pub fn new(value: impl Into<String>) -> Self
-    {
+    pub fn new(value: impl Into<String>) -> Self {
         Self {
             value: value.into(),
             origin: None,
@@ -53,8 +49,7 @@ impl PropertyValue
 
     /// Set the origin
     /// 设置来源
-    pub fn with_origin(mut self, origin: impl Into<String>) -> Self
-    {
+    pub fn with_origin(mut self, origin: impl Into<String>) -> Self {
         self.origin = Some(origin.into());
         self
     }
@@ -63,8 +58,7 @@ impl PropertyValue
 /// Environment information
 /// 环境信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Environment
-{
+pub struct Environment {
     /// Active profiles
     /// 活动配置
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -75,12 +69,10 @@ pub struct Environment
     pub property_sources: Vec<PropertySource>,
 }
 
-impl Environment
-{
+impl Environment {
     /// Create a new environment info
     /// 创建新的环境信息
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             profiles: Vec::new(),
             property_sources: Vec::new(),
@@ -89,33 +81,28 @@ impl Environment
 
     /// Set the active profiles
     /// 设置活动配置
-    pub fn with_profiles(mut self, profiles: Vec<String>) -> Self
-    {
+    pub fn with_profiles(mut self, profiles: Vec<String>) -> Self {
         self.profiles = profiles;
         self
     }
 
     /// Add a property source
     /// 添加属性源
-    pub fn with_property_source(mut self, source: PropertySource) -> Self
-    {
+    pub fn with_property_source(mut self, source: PropertySource) -> Self {
         self.property_sources.push(source);
         self
     }
 }
 
-impl Default for Environment
-{
-    fn default() -> Self
-    {
+impl Default for Environment {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 /// Environment collector
 /// 环境收集器
-pub struct EnvironmentCollector
-{
+pub struct EnvironmentCollector {
     /// Include system environment variables
     /// 包含系统环境变量
     include_system_env: bool,
@@ -129,12 +116,10 @@ pub struct EnvironmentCollector
     custom_sources: HashMap<String, HashMap<String, String>>,
 }
 
-impl EnvironmentCollector
-{
+impl EnvironmentCollector {
     /// Create a new environment collector
     /// 创建新的环境收集器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             include_system_env: true,
             include_system_properties: true,
@@ -144,16 +129,14 @@ impl EnvironmentCollector
 
     /// Enable or disable system environment variables
     /// 启用或禁用系统环境变量
-    pub fn with_system_env(mut self, include: bool) -> Self
-    {
+    pub fn with_system_env(mut self, include: bool) -> Self {
         self.include_system_env = include;
         self
     }
 
     /// Enable or disable system properties
     /// 启用或禁用系统属性
-    pub fn with_system_properties(mut self, include: bool) -> Self
-    {
+    pub fn with_system_properties(mut self, include: bool) -> Self {
         self.include_system_properties = include;
         self
     }
@@ -164,25 +147,21 @@ impl EnvironmentCollector
         mut self,
         name: impl Into<String>,
         properties: HashMap<String, String>,
-    ) -> Self
-    {
+    ) -> Self {
         self.custom_sources.insert(name.into(), properties);
         self
     }
 
     /// Collect environment information
     /// 收集环境信息
-    pub fn collect(&self) -> Environment
-    {
+    pub fn collect(&self) -> Environment {
         let mut env = Environment::new();
         let mut sources = Vec::new();
 
         // Add custom sources first (highest priority)
-        for (name, props) in &self.custom_sources
-        {
+        for (name, props) in &self.custom_sources {
             let mut properties = HashMap::new();
-            for (key, value) in props
-            {
+            for (key, value) in props {
                 properties.insert(key.clone(), PropertyValue::new(value).with_origin("custom"));
             }
             sources.push(PropertySource {
@@ -192,14 +171,11 @@ impl EnvironmentCollector
         }
 
         // Add system environment variables
-        if self.include_system_env
-        {
+        if self.include_system_env {
             let mut properties = HashMap::new();
-            for (key, value) in env::vars()
-            {
+            for (key, value) in env::vars() {
                 // Filter out sensitive information
-                if !Self::is_sensitive(&key)
-                {
+                if !Self::is_sensitive(&key) {
                     properties.insert(
                         key.clone(),
                         PropertyValue::new(value).with_origin("systemEnvironment"),
@@ -213,17 +189,14 @@ impl EnvironmentCollector
         }
 
         // Add system properties (Rust equivalent to Java system properties)
-        if self.include_system_properties
-        {
+        if self.include_system_properties {
             let mut properties = HashMap::new();
 
             // Add some common system properties
-            if let Ok(val) = env::var("RUST_VERSION")
-            {
+            if let Ok(val) = env::var("RUST_VERSION") {
                 properties.insert("rust.version".to_string(), PropertyValue::new(val));
             }
-            if let Ok(val) = env::var("CARGO_PKG_VERSION")
-            {
+            if let Ok(val) = env::var("CARGO_PKG_VERSION") {
                 properties.insert("app.version".to_string(), PropertyValue::new(val));
             }
 
@@ -235,12 +208,9 @@ impl EnvironmentCollector
             }
 
             // Home directory
-            if let Ok(val) = env::var("HOME")
-            {
+            if let Ok(val) = env::var("HOME") {
                 properties.insert("user.home".to_string(), PropertyValue::new(val));
-            }
-            else if let Ok(val) = env::var("USERPROFILE")
-            {
+            } else if let Ok(val) = env::var("USERPROFILE") {
                 properties.insert("user.home".to_string(), PropertyValue::new(val));
             }
 
@@ -249,8 +219,7 @@ impl EnvironmentCollector
             properties.insert("os.arch".to_string(), PropertyValue::new(env::consts::ARCH));
             properties.insert("os.family".to_string(), PropertyValue::new(env::consts::FAMILY));
 
-            for (key, value) in properties
-            {
+            for (key, value) in properties {
                 sources.push(PropertySource {
                     name: "systemProperties".to_string(),
                     properties: HashMap::from([(key, value)]),
@@ -264,8 +233,7 @@ impl EnvironmentCollector
 
     /// Check if a key is sensitive and should be filtered
     /// 检查键是否敏感且应被过滤
-    fn is_sensitive(key: &str) -> bool
-    {
+    fn is_sensitive(key: &str) -> bool {
         let key_lower = key.to_lowercase();
         key_lower.contains("password")
             || key_lower.contains("secret")
@@ -279,13 +247,10 @@ impl EnvironmentCollector
 
     /// Get a specific property value
     /// 获取特定属性值
-    pub fn get_property(&self, key: &str) -> Option<String>
-    {
+    pub fn get_property(&self, key: &str) -> Option<String> {
         // Check custom sources first
-        for props in self.custom_sources.values()
-        {
-            if let Some(value) = props.get(key)
-            {
+        for props in self.custom_sources.values() {
+            if let Some(value) = props.get(key) {
                 return Some(value.clone());
             }
         }
@@ -301,10 +266,8 @@ impl EnvironmentCollector
     }
 }
 
-impl Default for EnvironmentCollector
-{
-    fn default() -> Self
-    {
+impl Default for EnvironmentCollector {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -312,8 +275,7 @@ impl Default for EnvironmentCollector
 /// Environment response for the /env endpoint
 /// /env 端点的环境响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EnvironmentResponse
-{
+pub struct EnvironmentResponse {
     /// Active profiles
     /// 活动配置
     #[serde(skip_serializing_if = "Vec::is_empty", rename = "activeProfiles")]
@@ -325,10 +287,8 @@ pub struct EnvironmentResponse
     pub property_sources: Vec<PropertySource>,
 }
 
-impl From<Environment> for EnvironmentResponse
-{
-    fn from(env: Environment) -> Self
-    {
+impl From<Environment> for EnvironmentResponse {
+    fn from(env: Environment) -> Self {
         Self {
             active_profiles: env.profiles,
             property_sources: env.property_sources,
@@ -337,21 +297,18 @@ impl From<Environment> for EnvironmentResponse
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_property_value()
-    {
+    fn test_property_value() {
         let value = PropertyValue::new("test").with_origin("test-origin");
         assert_eq!(value.value, "test");
         assert_eq!(value.origin, Some("test-origin".to_string()));
     }
 
     #[test]
-    fn test_environment_new()
-    {
+    fn test_environment_new() {
         let env = Environment::new().with_profiles(vec!["dev".to_string(), "test".to_string()]);
 
         assert_eq!(env.profiles.len(), 2);
@@ -359,8 +316,7 @@ mod tests
     }
 
     #[test]
-    fn test_environment_collector()
-    {
+    fn test_environment_collector() {
         let collector = EnvironmentCollector::new()
             .with_system_env(false)
             .with_system_properties(false)
@@ -375,8 +331,7 @@ mod tests
     }
 
     #[test]
-    fn test_is_sensitive()
-    {
+    fn test_is_sensitive() {
         assert!(EnvironmentCollector::is_sensitive("PASSWORD"));
         assert!(EnvironmentCollector::is_sensitive("api_secret"));
         assert!(EnvironmentCollector::is_sensitive("MY_TOKEN"));
@@ -385,8 +340,7 @@ mod tests
     }
 
     #[test]
-    fn test_get_property()
-    {
+    fn test_get_property() {
         let mut custom_source = HashMap::new();
         custom_source.insert("custom.key".to_string(), "custom.value".to_string());
 

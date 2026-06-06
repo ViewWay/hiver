@@ -56,7 +56,7 @@ tokio::task_local! {
 pub async fn with_request_scope<F, Fut, R>(f: F) -> R
 where
     F: FnOnce() -> Fut,
-    Fut: std::future::Future<Output = R>,
+    Fut: Future<Output = R>,
 {
     REQUEST_BEANS.scope(RwLock::new(HashMap::new()), f()).await
 }

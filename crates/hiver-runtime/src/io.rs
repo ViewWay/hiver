@@ -283,8 +283,7 @@ impl Future for ConnectFuture {
                     // Socket is writable — check for connection error via SO_ERROR
                     // Socket 可写 — 通过 SO_ERROR 检查连接错误
                     let mut err_val: libc::c_int = 0;
-                    let mut err_len: libc::socklen_t =
-                        size_of::<libc::c_int>() as libc::socklen_t;
+                    let mut err_len: libc::socklen_t = size_of::<libc::c_int>() as libc::socklen_t;
                     unsafe {
                         libc::getsockopt(
                             fd,

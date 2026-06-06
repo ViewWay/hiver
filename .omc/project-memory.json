@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1780530912951,
+  "lastScanned": 1780674047141,
   "projectRoot": "/Users/yimiliya/RustroverProjects/hiver",
   "techStack": {
     "languages": [
       {
         "name": "Rust",
-        "version": "1.85",
+        "version": "1.87",
         "confidence": "high",
         "markers": [
           "Cargo.toml"
@@ -19,7 +19,7 @@
   },
   "build": {
     "buildCommand": "cargo build",
-    "testCommand": "cargo test",
+    "testCommand": "cargo test --workspace --lib --exclude hiver-benches 2>&1 | tail -10",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -50,7 +50,7 @@
       "path": "LICENSES",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1780530912945,
+      "lastAccessed": 1780674047134,
       "keyFiles": [
         "Apache-2.0.txt",
         "MIT.txt",
@@ -61,14 +61,14 @@
       "path": "crates",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047136,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 13,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047137,
       "keyFiles": [
         "CODEMAP.md",
         "DOCS-INDEX.md",
@@ -81,7 +81,7 @@
       "path": "examples",
       "purpose": "Example code",
       "fileCount": 18,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047139,
       "keyFiles": [
         "Cargo.toml",
         "EXAMPLES.md",
@@ -94,7 +94,7 @@
       "path": "fuzzers",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047139,
       "keyFiles": [
         "Cargo.toml",
         "README.md"
@@ -104,14 +104,14 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 0,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047139,
       "keyFiles": []
     },
     "target": {
       "path": "target",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047139,
       "keyFiles": [
         "CACHEDIR.TAG"
       ]
@@ -120,7 +120,7 @@
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 3,
-      "lastAccessed": 1780530912946,
+      "lastAccessed": 1780674047140,
       "keyFiles": [
         "Cargo.toml",
         "cross_crate_tests.rs",
@@ -131,14 +131,14 @@
       "path": "~",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1780530912947,
+      "lastAccessed": 1780674047140,
       "keyFiles": []
     },
     "docs/api": {
       "path": "docs/api",
       "purpose": "API routes",
       "fileCount": 6,
-      "lastAccessed": 1780530912947,
+      "lastAccessed": 1780674047140,
       "keyFiles": [
         "AGENTS.md",
         "annotations-reference.md",
@@ -149,309 +149,33 @@
       "path": "~/lib",
       "purpose": "Library code",
       "fileCount": 0,
-      "lastAccessed": 1780530912947,
+      "lastAccessed": 1780674047141,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
-      "path": "crates/hiver-data-orm/src/active_record.rs",
-      "accessCount": 47,
-      "lastAccessed": 1780234645428,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/relationships.rs",
-      "accessCount": 42,
-      "lastAccessed": 1780234774237,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/query.rs",
-      "accessCount": 42,
-      "lastAccessed": 1780328556737,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/lib.rs",
-      "accessCount": 40,
-      "lastAccessed": 1780356876297,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-core/src/container.rs",
-      "accessCount": 38,
-      "lastAccessed": 1779631048508,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/task.rs",
-      "accessCount": 34,
-      "lastAccessed": 1780587312069,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/client.rs",
-      "accessCount": 32,
-      "lastAccessed": 1780228452276,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-macros/src/lib.rs",
-      "accessCount": 25,
-      "lastAccessed": 1780325052520,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/lib.rs",
-      "accessCount": 24,
-      "lastAccessed": 1780204085476,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/repository.rs",
-      "accessCount": 22,
-      "lastAccessed": 1780216477727,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-security/src/lib.rs",
-      "accessCount": 19,
-      "lastAccessed": 1780242835850,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-tx/src/lib.rs",
-      "accessCount": 18,
-      "lastAccessed": 1780237070787,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/connection.rs",
-      "accessCount": 17,
-      "lastAccessed": 1780203889267,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-commons/src/method_name.rs",
-      "accessCount": 16,
-      "lastAccessed": 1780233872499,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-annotations/src/lib.rs",
-      "accessCount": 15,
-      "lastAccessed": 1780239272976,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/pool.rs",
-      "accessCount": 13,
-      "lastAccessed": 1780202695732,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-core/src/reactive.rs",
-      "accessCount": 12,
-      "lastAccessed": 1779631070344,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-ldap/src/repository.rs",
-      "accessCount": 12,
-      "lastAccessed": 1780067672827,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-resilience/src/lib.rs",
-      "accessCount": 12,
-      "lastAccessed": 1780323856910,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-websocket-stomp/src/handler.rs",
-      "accessCount": 11,
-      "lastAccessed": 1779619714734,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-router/src/lib.rs",
-      "accessCount": 11,
-      "lastAccessed": 1780242824458,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/lib.rs",
-      "accessCount": 11,
-      "lastAccessed": 1780242995570,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-security/src/rbac.rs",
-      "accessCount": 10,
-      "lastAccessed": 1780066005461,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/task/raw_task.rs",
-      "accessCount": 10,
-      "lastAccessed": 1780066937813,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-router/src/route.rs",
-      "accessCount": 8,
-      "lastAccessed": 1780161420215,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-orm/src/sqlx.rs",
-      "accessCount": 7,
-      "lastAccessed": 1780235128353,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-annotations/src/transactional_macro.rs",
-      "accessCount": 7,
-      "lastAccessed": 1780238970561,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/scheduler/work_stealing.rs",
-      "accessCount": 7,
-      "lastAccessed": 1780588123693,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/scheduler/handle.rs",
-      "accessCount": 6,
-      "lastAccessed": 1779622112681,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-core/src/extension.rs",
-      "accessCount": 6,
-      "lastAccessed": 1779631053042,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-tx/src/template.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780160944441,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-tx/src/manager.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780160944687,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/row.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780202537177,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-rdbc/src/error.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780202659710,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/runtime.rs",
-      "accessCount": 6,
-      "lastAccessed": 1780242877215,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-security/src/authorization_server.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780065975706,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-websocket-stomp/src/lib.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780201171205,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-ldap/src/lib.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780201182306,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-commons/src/part_tree.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780202508789,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-data-annotations/src/transactional.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780202514156,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-core/src/bean.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780242879594,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-resilience/src/timeout.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780323601162,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/scheduler/local.rs",
-      "accessCount": 5,
-      "lastAccessed": 1780586122102,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-router/src/params.rs",
+      "path": "publish_resume.sh",
       "accessCount": 4,
-      "lastAccessed": 1780160941043,
+      "lastAccessed": 1780674463884,
       "type": "file"
     },
     {
-      "path": "crates/hiver-runtime/src/driver/mod.rs",
-      "accessCount": 4,
-      "lastAccessed": 1780161398193,
+      "path": "crates/hiver-http/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1780674115007,
       "type": "file"
     },
     {
-      "path": "crates/hiver-data-annotations/src/pre_authorize_macro.rs",
-      "accessCount": 4,
-      "lastAccessed": 1780202514421,
+      "path": "crates/hiver-runtime/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1780674115069,
       "type": "file"
     },
     {
-      "path": "crates/hiver-ldap/Cargo.toml",
-      "accessCount": 3,
-      "lastAccessed": 1779619813512,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-runtime/src/scheduler/mod.rs",
-      "accessCount": 3,
-      "lastAccessed": 1779620626086,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-security/src/context.rs",
-      "accessCount": 3,
-      "lastAccessed": 1780055941253,
-      "type": "file"
-    },
-    {
-      "path": "crates/hiver-security/src/pre_authorize.rs",
-      "accessCount": 3,
-      "lastAccessed": 1780064350629,
+      "path": "crates/hiver-core/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1780674115114,
       "type": "file"
     }
   ],

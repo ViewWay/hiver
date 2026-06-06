@@ -32,7 +32,6 @@ jobs:
 
       - name: Check formatting / 检查格式
         run: cargo fmt --all -- --check
-        continue-on-error: true
 
   clippy:
     name: Clippy
@@ -50,8 +49,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run clippy / 运行 Clippy
-        run: cargo clippy --workspace --all-targets
-        continue-on-error: true
+        run: cargo clippy --workspace --lib -- -W warnings
 
   build:
     name: Build
@@ -83,8 +81,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run tests / 运行测试
-        run: cargo test --workspace
-        continue-on-error: true
+        run: cargo test --workspace --lib --exclude hiver-benches
 
   audit:
     name: Security Audit

@@ -68,7 +68,7 @@ pub enum ClientError {
 
 /// Result type alias for client operations.
 /// 客户端操作的 Result 类型别名。
-pub type ClientResult<T> = std::result::Result<T, ClientError>;
+pub type ClientResult<T> = Result<T, ClientError>;
 
 // ---------------------------------------------------------------------------
 // Client configuration
@@ -499,7 +499,7 @@ impl WebClient {
             } else {
                 80
             });
-        let path = uri.path_and_query().map(|pq| pq.as_str()).unwrap_or("/");
+        let path = uri.path_and_query().map_or("/", http::uri::PathAndQuery::as_str);
 
         // Connect with timeout
         // 带超时连接
@@ -642,17 +642,11 @@ fn find_header_end(buf: &[u8]) -> Option<usize> {
 ///
 /// Equivalent to Spring's `WebClient.builder()`.
 /// 等价于 Spring 的 `WebClient.builder()`。
+#[derive(Default)]
 pub struct WebClientBuilder {
     config: WebClientConfig,
 }
 
-impl Default for WebClientBuilder {
-    fn default() -> Self {
-        Self {
-            config: WebClientConfig::default(),
-        }
-    }
-}
 
 impl WebClientBuilder {
     /// Set the base URL.

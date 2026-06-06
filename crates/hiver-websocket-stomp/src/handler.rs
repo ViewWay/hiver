@@ -821,7 +821,7 @@ mod tests {
     /// 收集通道中当前所有帧。
     async fn collect_frames(rx: &mut mpsc::Receiver<StompFrame>) -> Vec<StompFrame> {
         let mut frames = Vec::new();
-        while let Some(f) = rx.try_recv().ok() {
+        while let Ok(f) = rx.try_recv() {
             frames.push(f);
         }
         frames

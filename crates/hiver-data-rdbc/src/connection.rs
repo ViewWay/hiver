@@ -261,8 +261,8 @@ impl ConnectionPool {
             #[cfg(feature = "mysql")]
             DatabaseType::MySQL => {
                 let sqlx_pool = sqlx::mysql::MySqlPoolOptions::new()
-                    .max_connections(config.max_size as u32)
-                    .min_connections(config.min_idle as u32)
+                    .max_connections(config.max_size)
+                    .min_connections(config.min_idle)
                     .acquire_timeout(config.connection_timeout)
                     .idle_timeout(config.idle_timeout)
                     .max_lifetime(config.max_lifetime)
@@ -523,7 +523,7 @@ mod tests {
         let config = PoolConfig::default();
         assert_eq!(config.max_size, 10);
         assert_eq!(config.min_idle, 1);
-        assert_eq!(config.test_on_checkout, true);
+        assert!(config.test_on_checkout);
     }
 
     #[test]
@@ -535,7 +535,7 @@ mod tests {
 
         assert_eq!(config.max_size, 20);
         assert_eq!(config.min_idle, 5);
-        assert_eq!(config.test_on_checkout, false);
+        assert!(!config.test_on_checkout);
     }
 
     #[test]

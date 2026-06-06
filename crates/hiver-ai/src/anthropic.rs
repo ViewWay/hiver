@@ -40,8 +40,7 @@ const ANTHROPIC_VERSION: &str = "2023-06-01";
 /// Configuration for the Anthropic API client.
 /// Anthropic API 客户端的配置。
 #[derive(Debug, Clone)]
-pub struct AnthropicConfig
-{
+pub struct AnthropicConfig {
     /// API key for authentication.
     /// 用于身份验证的 API 密钥。
     pub api_key: String,
@@ -56,13 +55,11 @@ pub struct AnthropicConfig
     pub max_tokens: u32,
 }
 
-impl AnthropicConfig
-{
+impl AnthropicConfig {
     /// Creates a new configuration with the given API key.
     /// 使用给定的 API 密钥创建新配置。
     #[must_use]
-    pub fn new(api_key: impl Into<String>) -> Self
-    {
+    pub fn new(api_key: impl Into<String>) -> Self {
         Self {
             api_key: api_key.into(),
             base_url: DEFAULT_BASE_URL.to_string(),
@@ -74,8 +71,7 @@ impl AnthropicConfig
     /// Sets a custom base URL (useful for proxies).
     /// 设置自定义基础 URL（适用于代理）。
     #[must_use]
-    pub fn base_url(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn base_url(mut self, url: impl Into<String>) -> Self {
         self.base_url = url.into();
         self
     }
@@ -83,8 +79,7 @@ impl AnthropicConfig
     /// Sets the default model for chat completions.
     /// 设置聊天补全的默认模型。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self
-    {
+    pub fn model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
     }
@@ -92,8 +87,7 @@ impl AnthropicConfig
     /// Sets the default maximum tokens for responses.
     /// 设置响应的默认最大 token 数。
     #[must_use]
-    pub fn max_tokens(mut self, max_tokens: u32) -> Self
-    {
+    pub fn max_tokens(mut self, max_tokens: u32) -> Self {
         self.max_tokens = max_tokens;
         self
     }
@@ -107,8 +101,7 @@ impl AnthropicConfig
 /// Anthropic Messages API request body.
 /// Anthropic Messages API 请求体。
 #[derive(Debug, Serialize)]
-struct AnthropicRequest
-{
+struct AnthropicRequest {
     model: String,
     messages: Vec<AnthropicMessage>,
     max_tokens: u32,
@@ -123,8 +116,7 @@ struct AnthropicRequest
 /// A single message in the Anthropic API format.
 /// Anthropic API 格式中的单条消息。
 #[derive(Debug, Serialize, Deserialize)]
-struct AnthropicMessage
-{
+struct AnthropicMessage {
     role: String,
     content: String,
 }
@@ -132,8 +124,7 @@ struct AnthropicMessage
 /// Anthropic Messages API response body.
 /// Anthropic Messages API 响应体。
 #[derive(Debug, Deserialize)]
-struct AnthropicResponse
-{
+struct AnthropicResponse {
     content: Vec<AnthropicContentBlock>,
     model: String,
     usage: AnthropicUsage,
@@ -143,8 +134,7 @@ struct AnthropicResponse
 /// A content block in the Anthropic response.
 /// Anthropic 响应中的内容块。
 #[derive(Debug, Deserialize)]
-struct AnthropicContentBlock
-{
+struct AnthropicContentBlock {
     text: Option<String>,
     #[serde(rename = "type")]
     block_type: String,
@@ -153,8 +143,7 @@ struct AnthropicContentBlock
 /// Token usage in the Anthropic response format.
 /// Anthropic 响应格式中的 token 使用量。
 #[derive(Debug, Deserialize)]
-struct AnthropicUsage
-{
+struct AnthropicUsage {
     input_tokens: u32,
     output_tokens: u32,
 }
@@ -162,8 +151,7 @@ struct AnthropicUsage
 /// A single streamed event from the Anthropic API.
 /// Anthropic API 的单个流式事件。
 #[derive(Debug, Deserialize)]
-struct AnthropicStreamEvent
-{
+struct AnthropicStreamEvent {
     #[serde(rename = "type")]
     event_type: String,
     delta: Option<AnthropicDelta>,
@@ -176,8 +164,7 @@ struct AnthropicStreamEvent
 /// Delta content in a streamed event.
 /// 流式事件中的增量内容。
 #[derive(Debug, Deserialize)]
-struct AnthropicDelta
-{
+struct AnthropicDelta {
     text: Option<String>,
     stop_reason: Option<String>,
 }
@@ -186,8 +173,7 @@ struct AnthropicDelta
 /// 流式事件中的消息起始信息。
 #[allow(dead_code)] // Fields only needed for serde deserialization
 #[derive(Debug, Deserialize)]
-struct AnthropicMessageStart
-{
+struct AnthropicMessageStart {
     model: Option<String>,
     usage: Option<AnthropicUsage>,
 }
@@ -195,16 +181,14 @@ struct AnthropicMessageStart
 /// Anthropic error response body.
 /// Anthropic 错误响应体。
 #[derive(Debug, Deserialize)]
-struct AnthropicErrorResponse
-{
+struct AnthropicErrorResponse {
     error: AnthropicErrorDetail,
 }
 
 /// Error detail from the Anthropic API.
 /// Anthropic API 的错误详情。
 #[derive(Debug, Deserialize)]
-struct AnthropicErrorDetail
-{
+struct AnthropicErrorDetail {
     message: String,
 }
 
@@ -221,19 +205,16 @@ struct AnthropicErrorDetail
 /// 实现 `ChatModel` trait，用于与 Anthropic Messages API 交互，
 /// 支持完整和流式响应。
 #[derive(Debug)]
-pub struct AnthropicChatModel
-{
+pub struct AnthropicChatModel {
     config: AnthropicConfig,
     client: Client,
 }
 
-impl AnthropicChatModel
-{
+impl AnthropicChatModel {
     /// Creates a new Anthropic chat model with the given configuration.
     /// 使用给定配置创建新的 Anthropic 聊天模型。
     #[must_use]
-    pub fn new(config: AnthropicConfig) -> Self
-    {
+    pub fn new(config: AnthropicConfig) -> Self {
         Self {
             config,
             client: Client::new(),
@@ -243,8 +224,7 @@ impl AnthropicChatModel
     /// Creates a new Anthropic chat model with a custom HTTP client.
     /// 使用自定义 HTTP 客户端创建新的 Anthropic 聊天模型。
     #[must_use]
-    pub fn with_http_client(config: AnthropicConfig, client: Client) -> Self
-    {
+    pub fn with_http_client(config: AnthropicConfig, client: Client) -> Self {
         Self { config, client }
     }
 
@@ -256,19 +236,14 @@ impl AnthropicChatModel
     ///
     /// Anthropic 将系统消息与其他消息分开，将其作为顶级 `system` 字段
     /// 发送，而不是放在消息数组中。
-    fn build_request_body(&self, request: &ChatRequest) -> AnthropicRequest
-    {
+    fn build_request_body(&self, request: &ChatRequest) -> AnthropicRequest {
         let mut system_prompt: Option<String> = None;
         let mut messages: Vec<AnthropicMessage> = Vec::new();
 
-        for msg in &request.messages
-        {
-            if msg.role == crate::chat_model::Role::System
-            {
+        for msg in &request.messages {
+            if msg.role == crate::chat_model::Role::System {
                 system_prompt = Some(msg.content.clone());
-            }
-            else
-            {
+            } else {
                 messages.push(AnthropicMessage {
                     role: msg.role.as_str().to_string(),
                     content: msg.content.clone(),
@@ -291,8 +266,7 @@ impl AnthropicChatModel
 
     /// Handles HTTP error responses and maps them to `ModelError`.
     /// 处理 HTTP 错误响应并将其映射到 `ModelError`。
-    async fn handle_error_response(response: reqwest::Response) -> ModelError
-    {
+    async fn handle_error_response(response: reqwest::Response) -> ModelError {
         let status = response.status().as_u16();
         let retry_after = response
             .headers()
@@ -305,20 +279,16 @@ impl AnthropicChatModel
         // Try to parse structured Anthropic error / 尝试解析结构化的 Anthropic 错误
         let message = serde_json::from_str::<AnthropicErrorResponse>(&body).map_or_else(
             |_| {
-                if body.is_empty()
-                {
+                if body.is_empty() {
                     format!("HTTP {status}")
-                }
-                else
-                {
+                } else {
                     body
                 }
             },
             |e| e.error.message,
         );
 
-        match status
-        {
+        match status {
             401 | 403 => ModelError::AuthError(message),
             429 => ModelError::RateLimited {
                 retry_after_secs: retry_after.unwrap_or(60),
@@ -332,10 +302,8 @@ impl AnthropicChatModel
 }
 
 #[async_trait]
-impl ChatModel for AnthropicChatModel
-{
-    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError>
-    {
+impl ChatModel for AnthropicChatModel {
+    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError> {
         let url = format!("{}/v1/messages", self.config.base_url);
         let body = self.build_request_body(&request);
 
@@ -350,8 +318,7 @@ impl ChatModel for AnthropicChatModel
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -366,12 +333,9 @@ impl ChatModel for AnthropicChatModel
             .content
             .iter()
             .find_map(|block| {
-                if block.block_type == "text"
-                {
+                if block.block_type == "text" {
                     block.text.clone()
-                }
-                else
-                {
+                } else {
                     None
                 }
             })
@@ -388,8 +352,7 @@ impl ChatModel for AnthropicChatModel
         })
     }
 
-    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError>
-    {
+    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError> {
         let url = format!("{}/v1/messages", self.config.base_url);
         let mut body = self.build_request_body(&request);
         body.stream = Some(true);
@@ -405,8 +368,7 @@ impl ChatModel for AnthropicChatModel
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -422,11 +384,9 @@ impl ChatModel for AnthropicChatModel
         let stream = response
             .bytes_stream()
             .scan((String::new(), model_name), |(buffer, model_name), chunk_result| {
-                let chunk = match chunk_result
-                {
+                let chunk = match chunk_result {
                     Ok(c) => c,
-                    Err(e) =>
-                    {
+                    Err(e) => {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
@@ -437,37 +397,28 @@ impl ChatModel for AnthropicChatModel
 
                 let mut results: Vec<ChatChunk> = Vec::new();
 
-                while let Some(pos) = buffer.find('\n')
-                {
+                while let Some(pos) = buffer.find('\n') {
                     let line = buffer[..pos].trim().to_string();
                     buffer.drain(..=pos);
 
-                    if line.is_empty()
-                    {
+                    if line.is_empty() {
                         continue;
                     }
 
-                    if let Some(data) = line.strip_prefix("data: ")
-                    {
-                        match serde_json::from_str::<AnthropicStreamEvent>(data)
-                        {
-                            Ok(event) =>
-                            {
-                                if event.event_type == "content_block_delta"
-                                {
-                                    if let Some(delta) = event.delta
-                                    {
+                    if let Some(data) = line.strip_prefix("data: ") {
+                        match serde_json::from_str::<AnthropicStreamEvent>(data) {
+                            Ok(event) => {
+                                if event.event_type == "content_block_delta" {
+                                    if let Some(delta) = event.delta {
                                         let text = delta.text.unwrap_or_default();
-                                        if !text.is_empty()
-                                        {
+                                        if !text.is_empty() {
                                             results.push(ChatChunk {
                                                 content: text,
                                                 model: model_name.clone(),
                                                 finish_reason: None,
                                             });
                                         }
-                                        if let Some(reason) = delta.stop_reason
-                                        {
+                                        if let Some(reason) = delta.stop_reason {
                                             results.push(ChatChunk {
                                                 content: String::new(),
                                                 model: model_name.clone(),
@@ -477,8 +428,7 @@ impl ChatModel for AnthropicChatModel
                                     }
                                 }
                             },
-                            Err(e) =>
-                            {
+                            Err(e) => {
                                 tracing::warn!("Failed to parse stream event: {e}");
                             },
                         }
@@ -499,16 +449,14 @@ impl ChatModel for AnthropicChatModel
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
     use crate::chat_model::ChatMessage;
 
     // ---- Config tests / 配置测试 ----
 
     #[test]
-    fn test_config_new_defaults()
-    {
+    fn test_config_new_defaults() {
         let config = AnthropicConfig::new("sk-ant-test");
         assert_eq!(config.api_key, "sk-ant-test");
         assert_eq!(config.base_url, "https://api.anthropic.com");
@@ -517,8 +465,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_builder()
-    {
+    fn test_config_builder() {
         let config = AnthropicConfig::new("sk-ant-key")
             .base_url("https://proxy.example.com")
             .model("claude-opus-4-20250514")
@@ -532,8 +479,7 @@ mod tests
     // ---- Request body building tests / 请求体构建测试 ----
 
     #[test]
-    fn test_request_body_system_extraction()
-    {
+    fn test_request_body_system_extraction() {
         let config = AnthropicConfig::new("sk-ant-test");
         let model = AnthropicChatModel::new(config);
 
@@ -552,8 +498,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_no_system()
-    {
+    fn test_request_body_no_system() {
         let config = AnthropicConfig::new("sk-ant-test");
         let model = AnthropicChatModel::new(config);
 
@@ -565,8 +510,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_custom_model()
-    {
+    fn test_request_body_custom_model() {
         let config = AnthropicConfig::new("sk-ant-test");
         let model = AnthropicChatModel::new(config);
 
@@ -579,8 +523,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_max_tokens()
-    {
+    fn test_request_body_max_tokens() {
         let config = AnthropicConfig::new("sk-ant-test").max_tokens(2048);
         let model = AnthropicChatModel::new(config);
 
@@ -590,8 +533,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_max_tokens_override()
-    {
+    fn test_request_body_max_tokens_override() {
         let config = AnthropicConfig::new("sk-ant-test").max_tokens(2048);
         let model = AnthropicChatModel::new(config);
 
@@ -606,8 +548,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_body_serialization()
-    {
+    fn test_request_body_serialization() {
         let config = AnthropicConfig::new("sk-ant-test");
         let model = AnthropicChatModel::new(config);
 
@@ -630,8 +571,7 @@ mod tests
     // ---- Response deserialization tests / 响应反序列化测试 ----
 
     #[test]
-    fn test_response_deserialization()
-    {
+    fn test_response_deserialization() {
         let json = r#"{
             "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
             "type": "message",
@@ -663,8 +603,7 @@ mod tests
     }
 
     #[test]
-    fn test_response_multiple_content_blocks()
-    {
+    fn test_response_multiple_content_blocks() {
         let json = r#"{
             "id": "msg_multi",
             "type": "message",
@@ -685,8 +624,7 @@ mod tests
     }
 
     #[test]
-    fn test_error_response_deserialization()
-    {
+    fn test_error_response_deserialization() {
         let json = r#"{
             "type": "error",
             "error": {
@@ -702,8 +640,7 @@ mod tests
     // ---- Stream event deserialization tests / 流式事件反序列化测试 ----
 
     #[test]
-    fn test_stream_event_content_delta()
-    {
+    fn test_stream_event_content_delta() {
         let json = r#"{
             "type": "content_block_delta",
             "index": 0,
@@ -719,8 +656,7 @@ mod tests
     }
 
     #[test]
-    fn test_stream_event_message_start()
-    {
+    fn test_stream_event_message_start() {
         let json = r#"{
             "type": "message_start",
             "message": {
@@ -741,8 +677,7 @@ mod tests
     // ---- ChatModel::complete() with mockito / 使用 mockito 的 ChatModel::complete() 测试 ----
 
     #[tokio::test]
-    async fn test_complete_success_mocked()
-    {
+    async fn test_complete_success_mocked() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/v1/messages")
@@ -782,8 +717,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_with_system_message()
-    {
+    async fn test_complete_with_system_message() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/v1/messages")
@@ -828,8 +762,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_auth_error()
-    {
+    async fn test_complete_auth_error() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/v1/messages")
@@ -847,8 +780,7 @@ mod tests
             .await
             .expect_err("should fail with auth error");
 
-        match err
-        {
+        match err {
             ModelError::AuthError(msg) => assert!(msg.contains("Invalid API key")),
             _ => panic!("Expected AuthError, got: {err}"),
         }
@@ -857,8 +789,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_rate_limit()
-    {
+    async fn test_complete_rate_limit() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/v1/messages")
@@ -879,8 +810,7 @@ mod tests
             .await
             .expect_err("should fail with rate limit");
 
-        match err
-        {
+        match err {
             ModelError::RateLimited { retry_after_secs } => assert_eq!(retry_after_secs, 20),
             _ => panic!("Expected RateLimited, got: {err}"),
         }
@@ -889,8 +819,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_complete_server_error()
-    {
+    async fn test_complete_server_error() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/v1/messages")
@@ -907,10 +836,8 @@ mod tests
         let request = ChatRequest::new().message(ChatMessage::user("Hi"));
         let err = model.complete(request).await.expect_err("should fail");
 
-        match err
-        {
-            ModelError::ApiError { status, message } =>
-            {
+        match err {
+            ModelError::ApiError { status, message } => {
                 assert_eq!(status, 500);
                 assert!(message.contains("Overloaded"));
             },
@@ -923,8 +850,7 @@ mod tests
     // ---- Edge case tests / 边界情况测试 ----
 
     #[test]
-    fn test_empty_content_response()
-    {
+    fn test_empty_content_response() {
         let json = r#"{
             "id": "msg_empty",
             "type": "message",
@@ -941,8 +867,7 @@ mod tests
     }
 
     #[test]
-    fn test_tool_use_content_block()
-    {
+    fn test_tool_use_content_block() {
         let json = r#"{
             "id": "msg_tool",
             "type": "message",

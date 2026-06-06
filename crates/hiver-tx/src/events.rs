@@ -314,13 +314,13 @@ mod tests {
             self.0.before_commit(tx).await
         }
         async fn after_commit(&self, tx: &str) {
-            self.0.after_commit(tx).await
+            self.0.after_commit(tx).await;
         }
         async fn after_rollback(&self, tx: &str) {
-            self.0.after_rollback(tx).await
+            self.0.after_rollback(tx).await;
         }
         async fn after_completion(&self, tx: &str, c: bool) {
-            self.0.after_completion(tx, c).await
+            self.0.after_completion(tx, c).await;
         }
     }
 

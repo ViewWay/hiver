@@ -1,0 +1,883 @@
+[10:52:28 UTC] === Starting batch publish of 50 crates ===
+[10:52:28 UTC] Already published: hiver-runtime hiver-ai hiver-aop hiver-cli hiver-events-macros
+[10:52:28 UTC] PUBLISHING: hiver-flyway
+    Updating crates.io index
+   Packaging hiver-flyway v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-flyway)
+    Updating crates.io index
+    Packaged 12 files, 128.3KiB (31.0KiB compressed)
+   Verifying hiver-flyway v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-flyway)
+   Compiling hiver-flyway v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-flyway-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.09s
+   Uploading hiver-flyway v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-flyway)
+    Uploaded hiver-flyway v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-flyway v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-flyway v0.1.0-alpha.6 at registry `crates-io`
+[10:52:35 UTC] SUCCESS: hiver-flyway
+[10:52:35 UTC] Waiting 660s before next crate...
+[11:03:35 UTC] PUBLISHING: hiver-grpc
+    Updating crates.io index
+   Packaging hiver-grpc v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-grpc)
+    Updating crates.io index
+    Packaged 13 files, 93.8KiB (24.5KiB compressed)
+   Verifying hiver-grpc v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-grpc)
+   Compiling hiver-grpc v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-grpc-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.47s
+   Uploading hiver-grpc v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-grpc)
+    Uploaded hiver-grpc v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-grpc v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-grpc v0.1.0-alpha.6 at registry `crates-io`
+[11:03:41 UTC] SUCCESS: hiver-grpc
+[11:03:41 UTC] Waiting 660s before next crate...
+[11:14:41 UTC] PUBLISHING: hiver-lombok
+    Updating crates.io index
+   Packaging hiver-lombok v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-lombok)
+    Updating crates.io index
+    Packaged 15 files, 83.2KiB (18.7KiB compressed)
+   Verifying hiver-lombok v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-lombok)
+   Compiling hiver-lombok v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-lombok-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.28s
+   Uploading hiver-lombok v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-lombok)
+    Uploaded hiver-lombok v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-lombok v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-lombok v0.1.0-alpha.6 at registry `crates-io`
+[11:14:47 UTC] SUCCESS: hiver-lombok
+[11:14:47 UTC] Waiting 660s before next crate...
+[11:18:03 UTC] === Starting batch publish v2: 57 crates ===
+[11:18:03 UTC] Already published: hiver-runtime hiver-ai hiver-aop hiver-cli hiver-events-macros
+[11:18:03 UTC] PUBLISHING: hiver-flyway
+    Updating crates.io index
+error: crate hiver-flyway@0.1.0-alpha.6 already exists on crates.io index
+[11:18:05 UTC] Already on crates.io: hiver-flyway
+[11:18:05 UTC] Waiting 660s before next crate...
+[11:29:05 UTC] PUBLISHING: hiver-grpc
+    Updating crates.io index
+error: crate hiver-grpc@0.1.0-alpha.6 already exists on crates.io index
+[11:29:07 UTC] Already on crates.io: hiver-grpc
+[11:29:07 UTC] Waiting 660s before next crate...
+[11:40:07 UTC] PUBLISHING: hiver-lombok
+    Updating crates.io index
+error: crate hiver-lombok@0.1.0-alpha.6 already exists on crates.io index
+[11:40:08 UTC] Already on crates.io: hiver-lombok
+[11:40:08 UTC] Waiting 660s before next crate...
+[11:51:08 UTC] PUBLISHING: hiver-retry-macros
+    Updating crates.io index
+   Packaging hiver-retry-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-retry-macros)
+    Updating crates.io index
+    Packaged 6 files, 11.6KiB (4.0KiB compressed)
+   Verifying hiver-retry-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-retry-macros)
+   Compiling hiver-retry-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-retry-macros-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.11s
+   Uploading hiver-retry-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-retry-macros)
+    Uploaded hiver-retry-macros v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-retry-macros v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-retry-macros v0.1.0-alpha.6 at registry `crates-io`
+[11:51:13 UTC] SUCCESS: hiver-retry-macros
+[11:51:13 UTC] Waiting 660s before next crate...
+[12:02:14 UTC] PUBLISHING: hiver-shell-macros
+    Updating crates.io index
+   Packaging hiver-shell-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-shell-macros)
+    Updating crates.io index
+    Packaged 6 files, 10.2KiB (4.1KiB compressed)
+   Verifying hiver-shell-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-shell-macros)
+   Compiling hiver-shell-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-shell-macros-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.58s
+   Uploading hiver-shell-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-shell-macros)
+    Uploaded hiver-shell-macros v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-shell-macros v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-shell-macros v0.1.0-alpha.6 at registry `crates-io`
+[12:02:19 UTC] SUCCESS: hiver-shell-macros
+[12:02:19 UTC] Waiting 660s before next crate...
+[12:13:19 UTC] PUBLISHING: hiver-spel
+    Updating crates.io index
+   Packaging hiver-spel v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-spel)
+    Updating crates.io index
+    Packaged 8 files, 29.7KiB (7.8KiB compressed)
+   Verifying hiver-spel v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-spel)
+   Compiling hiver-spel v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-spel-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.55s
+   Uploading hiver-spel v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-spel)
+    Uploaded hiver-spel v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-spel v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-spel v0.1.0-alpha.6 at registry `crates-io`
+[12:13:24 UTC] SUCCESS: hiver-spel
+[12:13:24 UTC] Waiting 660s before next crate...
+[12:24:24 UTC] PUBLISHING: hiver-validation-annotations
+    Updating crates.io index
+   Packaging hiver-validation-annotations v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-validation-annotations)
+    Updating crates.io index
+    Packaged 7 files, 50.5KiB (11.3KiB compressed)
+   Verifying hiver-validation-annotations v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-validation-annotations)
+   Compiling hiver-validation-annotations v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-validation-annotations-0.1.0-alpha.6)
+warning: unused macro definition: `concat`
+   --> src/lib.rs:853:14
+    |
+853 | macro_rules! concat {
+    |              ^^^^^^
+    |
+    = note: `#[warn(unused_macros)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable `str` is still repeating at this depth
+   --> src/lib.rs:857:20
+    |
+854 |     ($($str:expr),*) => {
+    |                   - expected repetition
+...
+857 |         Ident::new($str).to_string()
+    |                    ^^^^
+    |
+    = note: requested on the command line with `-W meta-variable-misuse`
+
+warning: `hiver-validation-annotations` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.29s
+   Uploading hiver-validation-annotations v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-validation-annotations)
+    Uploaded hiver-validation-annotations v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-validation-annotations v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-validation-annotations v0.1.0-alpha.6 at registry `crates-io`
+[12:24:32 UTC] SUCCESS: hiver-validation-annotations
+[12:24:32 UTC] Waiting 660s before next crate...
+[12:35:32 UTC] PUBLISHING: hiver-ws
+    Updating crates.io index
+   Packaging hiver-ws v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ws)
+    Updating crates.io index
+    Packaged 14 files, 43.4KiB (13.5KiB compressed)
+   Verifying hiver-ws v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ws)
+   Compiling hiver-ws v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-ws-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.40s
+   Uploading hiver-ws v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ws)
+    Uploaded hiver-ws v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-ws v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-ws v0.1.0-alpha.6 at registry `crates-io`
+[12:35:38 UTC] SUCCESS: hiver-ws
+[12:35:38 UTC] Waiting 660s before next crate...
+[12:46:38 UTC] PUBLISHING: hiver-agent
+    Updating crates.io index
+   Packaging hiver-agent v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-agent)
+    Updating crates.io index
+    Packaged 9 files, 97.5KiB (25.0KiB compressed)
+   Verifying hiver-agent v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-agent)
+ Downloading crates ...
+  Downloaded hiver-ai v0.1.0-alpha.6
+   Compiling hiver-ai v0.1.0-alpha.6
+   Compiling hiver-agent v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-agent-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.01s
+   Uploading hiver-agent v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-agent)
+    Uploaded hiver-agent v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-agent v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-agent v0.1.0-alpha.6 at registry `crates-io`
+[12:46:48 UTC] SUCCESS: hiver-agent
+[12:46:48 UTC] Waiting 660s before next crate...
+[12:57:48 UTC] PUBLISHING: hiver-amqp
+    Updating crates.io index
+   Packaging hiver-amqp v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-amqp)
+    Updating crates.io index
+    Packaged 20 files, 230.2KiB (53.5KiB compressed)
+   Verifying hiver-amqp v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-amqp)
+ Downloading crates ...
+  Downloaded hiver-runtime v0.1.0-alpha.6
+   Compiling libc v0.2.186
+   Compiling num-traits v0.2.19
+   Compiling minimal-lexical v0.2.1
+   Compiling smallvec v1.15.1
+   Compiling concurrent-queue v2.5.0
+   Compiling displaydoc v0.2.6
+   Compiling block-padding v0.3.3
+   Compiling deranged v0.5.8
+   Compiling der_derive v0.7.3
+   Compiling time-macros v0.2.27
+   Compiling flagset v0.4.7
+   Compiling const-oid v0.9.6
+   Compiling inout v0.1.4
+   Compiling getrandom v0.3.4
+   Compiling asn1-rs-derive v0.6.0
+   Compiling nom v7.1.3
+   Compiling cipher v0.4.4
+   Compiling asn1-rs-impl v0.2.0
+   Compiling oid-registry v0.8.1
+   Compiling pbkdf2 v0.12.2
+   Compiling salsa20 v0.10.2
+   Compiling event-listener v5.4.1
+   Compiling tinystr v0.8.3
+   Compiling der v0.7.10
+   Compiling zerotrie v0.2.4
+   Compiling icu_collections v2.1.1
+   Compiling rustls v0.23.40
+   Compiling rustix v1.1.4
+   Compiling futures-lite v2.6.1
+   Compiling icu_locale_core v2.1.1
+   Compiling event-listener-strategy v0.5.4
+   Compiling cbc v0.1.2
+   Compiling io-lifetimes v1.0.11
+   Compiling lazy_static v1.5.0
+   Compiling data-encoding v2.11.0
+   Compiling form_urlencoded v1.2.2
+   Compiling tracing v0.1.44
+   Compiling getrandom v0.2.17
+   Compiling num_threads v0.1.7
+   Compiling cpufeatures v0.2.17
+   Compiling errno v0.3.14
+   Compiling rusticata-macros v4.1.0
+   Compiling time v0.3.47
+   Compiling num-integer v0.1.46
+   Compiling ring v0.17.14
+   Compiling sha2 v0.10.9
+   Compiling security-framework-sys v2.17.0
+   Compiling core-foundation v0.9.4
+   Compiling spki v0.7.3
+   Compiling rand_core v0.9.5
+   Compiling aes v0.8.4
+   Compiling icu_provider v2.1.1
+   Compiling num-bigint v0.4.6
+   Compiling x509-cert v0.2.5
+   Compiling security-framework v2.11.1
+   Compiling rand_chacha v0.9.0
+   Compiling scrypt v0.11.0
+   Compiling sha1 v0.10.6
+   Compiling icu_normalizer v2.1.1
+   Compiling icu_properties v2.1.2
+   Compiling pkcs5 v0.7.1
+   Compiling rand v0.9.4
+   Compiling parking_lot_core v0.9.12
+   Compiling serde v1.0.228
+   Compiling serde_json v1.0.150
+   Compiling rustls-webpki v0.103.13
+   Compiling rustls-native-certs v0.7.3
+   Compiling rc2 v0.8.1
+   Compiling asn1-rs v0.7.2
+   Compiling des v0.8.1
+   Compiling cms v0.2.3
+   Compiling idna_adapter v1.2.1
+   Compiling idna v1.1.0
+   Compiling polling v2.8.0
+   Compiling async-io v2.6.0
+   Compiling rustix v0.37.28
+   Compiling cookie-factory v0.3.3
+   Compiling pkcs12 v0.1.0
+   Compiling async-task v4.7.1
+   Compiling amq-protocol-types v7.2.3
+   Compiling der-parser v10.0.0
+   Compiling polling v3.11.0
+   Compiling url v2.5.8
+   Compiling piper v0.2.5
+   Compiling nanorand v0.7.0
+   Compiling async-channel v2.5.0
+   Compiling futures-channel v0.3.32
+   Compiling async-io v1.13.0
+   Compiling x509-parser v0.17.0
+   Compiling waker-fn v1.2.0
+   Compiling doc-comment v0.3.4
+   Compiling event-listener v2.5.3
+   Compiling fastrand v1.9.0
+   Compiling bitflags v1.3.2
+   Compiling amq-protocol-uri v7.2.3
+   Compiling futures-util v0.3.32
+   Compiling blocking v1.6.2
+   Compiling async-lock v2.8.0
+   Compiling futures-lite v1.13.0
+   Compiling flume v0.11.1
+   Compiling async-executor v1.14.0
+   Compiling parking_lot v0.12.5
+   Compiling socket2 v0.4.10
+   Compiling async-lock v3.4.2
+   Compiling amq-protocol v7.2.3
+   Compiling executor-trait v2.1.2
+   Compiling reactor-trait v1.1.0
+   Compiling kqueue-sys v1.1.2
+   Compiling pin-project-internal v1.1.13
+   Compiling lapin v2.5.5
+   Compiling dashmap v6.2.1
+   Compiling p12-keystore v0.1.5
+   Compiling async-global-executor v3.1.0
+   Compiling kqueue v1.2.0
+   Compiling pinky-swear v6.2.1
+   Compiling async-reactor-trait v1.1.0
+   Compiling getrandom v0.4.2
+   Compiling async-global-executor-trait v2.2.0
+   Compiling num_cpus v1.17.0
+   Compiling uuid v1.23.2
+   Compiling tokio v1.52.3
+   Compiling urlencoding v2.1.3
+   Compiling rustls-connector v0.20.2
+   Compiling tcp-stream v0.28.0
+   Compiling amq-protocol-tcp v7.2.3
+   Compiling pin-project v1.1.13
+   Compiling futures-executor v0.3.32
+   Compiling futures v0.3.32
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling hiver-amqp v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-amqp-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.80s
+   Uploading hiver-amqp v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-amqp)
+    Uploaded hiver-amqp v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-amqp v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-amqp v0.1.0-alpha.6 at registry `crates-io`
+[12:58:07 UTC] SUCCESS: hiver-amqp
+[12:58:08 UTC] Waiting 660s before next crate...
+[13:09:08 UTC] PUBLISHING: hiver-config
+    Updating crates.io index
+   Packaging hiver-config v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-config)
+    Updating crates.io index
+    Packaged 17 files, 256.2KiB (58.7KiB compressed)
+   Verifying hiver-config v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-config)
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling serde_core v1.0.228
+   Compiling quote v1.0.45
+   Compiling crunchy v0.2.4
+   Compiling tiny-keccak v2.0.2
+   Compiling libc v0.2.186
+   Compiling serde v1.0.228
+   Compiling rand_core v0.6.4
+   Compiling typeid v1.0.3
+   Compiling ucd-trie v0.1.7
+   Compiling fnv v1.0.7
+   Compiling inout v0.1.4
+   Compiling winnow v1.0.3
+   Compiling foldhash v0.2.0
+   Compiling erased-serde v0.4.10
+   Compiling crypto-common v0.1.7
+   Compiling pest v2.8.6
+   Compiling universal-hash v0.5.1
+   Compiling cipher v0.4.4
+   Compiling hashbrown v0.16.1
+   Compiling getrandom v0.2.17
+   Compiling parking_lot_core v0.9.12
+   Compiling getrandom v0.3.4
+   Compiling regex-syntax v0.8.10
+   Compiling opaque-debug v0.3.1
+   Compiling syn v2.0.117
+   Compiling percent-encoding v2.3.2
+   Compiling rand_core v0.9.5
+   Compiling polyval v0.6.2
+   Compiling hashlink v0.11.0
+   Compiling digest v0.10.7
+   Compiling const-random-macro v0.1.16
+   Compiling toml_parser v1.1.2+spec-1.1.0
+   Compiling form_urlencoded v1.2.2
+   Compiling encoding_rs v0.8.35
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling arraydeque v0.5.1
+   Compiling unicode-segmentation v1.13.3
+   Compiling rand_chacha v0.9.0
+   Compiling ghash v0.5.1
+   Compiling parking_lot v0.12.5
+   Compiling const-random v0.1.18
+   Compiling pest_meta v2.8.6
+   Compiling dlv-list v0.5.2
+   Compiling dashmap v6.2.1
+   Compiling convert_case v0.6.0
+   Compiling ordered-multimap v0.7.3
+   Compiling regex-automata v0.4.14
+   Compiling aes v0.8.4
+   Compiling ctr v0.9.2
+   Compiling aead v0.5.2
+   Compiling rust-ini v0.21.3
+   Compiling pathdiff v0.2.3
+   Compiling unsafe-libyaml v0.2.11
+   Compiling aes-gcm v0.10.3
+   Compiling yaml-rust2 v0.11.0
+   Compiling rand v0.9.4
+   Compiling sha2 v0.10.9
+   Compiling hmac v0.12.1
+   Compiling bitflags v2.12.1
+   Compiling serde_spanned v1.1.1
+   Compiling kqueue-sys v1.1.2
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling serde_json v1.0.150
+   Compiling deranged v0.5.8
+   Compiling kqueue v1.2.0
+   Compiling regex v1.12.3
+   Compiling serde-untagged v0.1.9
+   Compiling toml v1.1.2+spec-1.1.0
+   Compiling indexmap v2.14.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling toml v0.9.12+spec-1.1.0
+   Compiling synstructure v0.13.2
+   Compiling darling_core v0.20.11
+   Compiling pest_generator v2.8.6
+   Compiling proc-macro-error2 v2.0.1
+   Compiling time v0.3.47
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.6
+   Compiling serde_derive v1.0.228
+   Compiling futures-macro v0.3.32
+   Compiling pin-project-internal v1.1.13
+   Compiling thiserror-impl v2.0.18
+   Compiling pest_derive v2.8.6
+   Compiling tracing-attributes v0.1.31
+   Compiling async-trait v0.1.89
+   Compiling futures-util v0.3.32
+   Compiling pin-project v1.1.13
+   Compiling darling_macro v0.20.11
+   Compiling zerofrom v0.1.8
+   Compiling thiserror v2.0.18
+   Compiling yoke v0.8.2
+   Compiling tracing v0.1.44
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling darling v0.20.11
+   Compiling validator_derive v0.20.0
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling icu_collections v2.1.1
+   Compiling icu_locale_core v2.1.1
+   Compiling json5 v0.4.1
+   Compiling ron v0.12.1
+   Compiling chrono v0.4.44
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling icu_provider v2.1.1
+   Compiling icu_properties v2.1.2
+   Compiling icu_normalizer v2.1.1
+   Compiling futures-executor v0.3.32
+   Compiling futures v0.3.32
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling config v0.15.23
+   Compiling idna_adapter v1.2.1
+   Compiling idna v1.1.0
+   Compiling url v2.5.8
+   Compiling validator v0.20.0
+   Compiling hiver-config v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-config-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.54s
+   Uploading hiver-config v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-config)
+    Uploaded hiver-config v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-config v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-config v0.1.0-alpha.6 at registry `crates-io`
+[13:09:23 UTC] SUCCESS: hiver-config
+[13:09:23 UTC] Waiting 660s before next crate...
+[13:20:23 UTC] PUBLISHING: hiver-core
+    Updating crates.io index
+   Packaging hiver-core v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-core)
+    Updating crates.io index
+    Packaged 16 files, 230.2KiB (50.5KiB compressed)
+   Verifying hiver-core v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-core)
+   Compiling getrandom v0.3.4
+   Compiling ahash v0.8.12
+   Compiling indexmap v2.14.0
+   Compiling serde v1.0.228
+   Compiling winnow v0.5.40
+   Compiling semver v1.0.28
+   Compiling toml_datetime v0.6.11
+   Compiling futures-util v0.3.32
+   Compiling tokio v1.52.3
+   Compiling getrandom v0.4.2
+   Compiling thiserror-impl v1.0.69
+   Compiling erased-serde v0.4.10
+   Compiling rustc_version v0.4.1
+   Compiling fixedbitset v0.4.2
+   Compiling smallvec v1.15.1
+   Compiling rustc-hash v1.1.0
+   Compiling petgraph v0.6.5
+   Compiling uuid v1.23.2
+   Compiling error-stack v0.6.0
+   Compiling parking_lot_core v0.9.12
+   Compiling bevy_utils_proc_macros v0.13.2
+   Compiling nonmax v0.5.5
+   Compiling web-time v0.2.4
+   Compiling time v0.3.47
+   Compiling parking_lot v0.12.5
+   Compiling flume v0.11.1
+   Compiling either v1.16.0
+   Compiling hashbrown v0.14.5
+   Compiling downcast-rs v1.2.1
+   Compiling bevy_ptr v0.13.2
+   Compiling itertools v0.14.0
+   Compiling toml_edit v0.21.1
+   Compiling thiserror v1.0.69
+   Compiling dashmap v6.2.1
+   Compiling bevy_utils v0.13.2
+   Compiling futures-executor v0.3.32
+   Compiling futures v0.3.32
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling tokio-util v0.7.18
+   Compiling bevy_macro_utils v0.13.2
+   Compiling h2 v0.4.14
+   Compiling bevy_reflect_derive v0.13.2
+   Compiling bevy_reflect v0.13.2
+   Compiling hyper v1.10.1
+   Compiling hiver-core v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-core-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.11s
+   Uploading hiver-core v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-core)
+    Uploaded hiver-core v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-core v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-core v0.1.0-alpha.6 at registry `crates-io`
+[13:20:36 UTC] SUCCESS: hiver-core
+[13:20:36 UTC] Waiting 660s before next crate...
+[13:31:36 UTC] PUBLISHING: hiver-data-commons
+    Updating crates.io index
+   Packaging hiver-data-commons v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-data-commons)
+    Updating crates.io index
+    Packaged 19 files, 270.6KiB (58.7KiB compressed)
+   Verifying hiver-data-commons v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-data-commons)
+   Compiling chrono v0.4.44
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling hiver-data-commons v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-data-commons-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.57s
+   Uploading hiver-data-commons v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-data-commons)
+    Uploaded hiver-data-commons v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-data-commons v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-data-commons v0.1.0-alpha.6 at registry `crates-io`
+[13:31:45 UTC] SUCCESS: hiver-data-commons
+[13:31:45 UTC] Waiting 660s before next crate...
+[13:42:45 UTC] PUBLISHING: hiver-kafka
+    Updating crates.io index
+   Packaging hiver-kafka v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-kafka)
+    Updating crates.io index
+    Packaged 19 files, 182.8KiB (41.4KiB compressed)
+   Verifying hiver-kafka v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-kafka)
+   Compiling equivalent v1.0.2
+   Compiling winnow v1.0.3
+   Compiling hashbrown v0.17.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling libz-sys v1.1.29
+   Compiling futures-channel v0.3.32
+   Compiling cmake v0.1.58
+   Compiling tokio v1.52.3
+   Compiling futures-util v0.3.32
+   Compiling rdkafka-sys v4.10.0+2.12.1
+   Compiling indexmap v2.14.0
+   Compiling toml_parser v1.1.2+spec-1.1.0
+   Compiling toml_edit v0.25.12+spec-1.1.0
+   Compiling proc-macro-crate v3.5.0
+   Compiling num_enum_derive v0.7.6
+   Compiling futures-executor v0.3.32
+   Compiling futures v0.3.32
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling num_enum v0.7.6
+   Compiling rdkafka v0.36.2
+   Compiling hiver-kafka v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-kafka-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.66s
+   Uploading hiver-kafka v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-kafka)
+    Uploaded hiver-kafka v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-kafka v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-kafka v0.1.0-alpha.6 at registry `crates-io`
+[13:43:03 UTC] SUCCESS: hiver-kafka
+[13:43:03 UTC] Waiting 660s before next crate...
+[13:54:03 UTC] PUBLISHING: hiver-modulith
+    Updating crates.io index
+   Packaging hiver-modulith v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-modulith)
+    Updating crates.io index
+    Packaged 10 files, 46.1KiB (13.3KiB compressed)
+   Verifying hiver-modulith v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-modulith)
+   Compiling tokio v1.52.3
+   Compiling hiver-modulith v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-modulith-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.39s
+   Uploading hiver-modulith v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-modulith)
+    Uploaded hiver-modulith v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-modulith v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-modulith v0.1.0-alpha.6 at registry `crates-io`
+[13:54:12 UTC] SUCCESS: hiver-modulith
+[13:54:12 UTC] Waiting 660s before next crate...
+[14:05:12 UTC] PUBLISHING: hiver-web3
+    Updating crates.io index
+   Packaging hiver-web3 v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-web3)
+    Updating crates.io index
+    Packaged 16 files, 372.9KiB (83.9KiB compressed)
+   Verifying hiver-web3 v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-web3)
+   Compiling typenum v1.20.1
+   Compiling subtle v2.6.1
+   Compiling generic-array v0.14.7
+   Compiling unicode-segmentation v1.13.3
+   Compiling foldhash v0.2.0
+   Compiling unicode-xid v0.2.6
+   Compiling paste v1.0.15
+   Compiling ruint-macro v1.2.1
+   Compiling getrandom v0.2.17
+   Compiling cpufeatures v0.3.0
+   Compiling serde_core v1.0.228
+   Compiling bytes v1.11.1
+   Compiling der v0.7.10
+   Compiling keccak v0.2.0
+   Compiling rand_core v0.6.4
+   Compiling hashbrown v0.17.1
+   Compiling base16ct v0.2.0
+   Compiling convert_case v0.10.0
+   Compiling ff v0.13.1
+   Compiling alloy-rlp-derive v0.3.15
+   Compiling arrayvec v0.7.6
+   Compiling group v0.13.0
+   Compiling hybrid-array v0.4.12
+   Compiling serde v1.0.228
+   Compiling derive_more-impl v2.1.1
+   Compiling dunce v1.0.5
+   Compiling smallvec v1.15.1
+   Compiling spki v0.7.3
+   Compiling const-hex v1.19.1
+   Compiling jobserver v0.1.34
+   Compiling serde_json v1.0.150
+   Compiling memchr v2.8.1
+   Compiling block-buffer v0.12.0
+   Compiling crypto-common v0.2.2
+   Compiling cc v1.2.63
+   Compiling alloy-rlp v0.3.15
+   Compiling rustc-hash v2.1.2
+   Compiling winnow v1.0.3
+   Compiling macro-string v0.2.0
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling crypto-bigint v0.5.5
+   Compiling sec1 v0.7.3
+   Compiling digest v0.10.7
+   Compiling ruint v1.17.2
+   Compiling syn-solidity v1.6.0
+   Compiling digest v0.11.3
+   Compiling hmac v0.12.1
+   Compiling signature v2.2.0
+   Compiling sha3 v0.11.0
+   Compiling rfc6979 v0.4.0
+   Compiling sha2 v0.10.9
+   Compiling indexmap v2.14.0
+   Compiling cmake v0.1.58
+   Compiling proc-macro-error2 v2.0.1
+   Compiling http v1.4.1
+   Compiling elliptic-curve v0.13.8
+   Compiling alloy-sol-type-parser v1.6.0
+   Compiling fs_extra v1.3.0
+   Compiling tokio v1.52.3
+   Compiling darling_core v0.21.3
+   Compiling either v1.16.0
+   Compiling ecdsa v0.16.9
+   Compiling aws-lc-sys v0.41.0
+   Compiling auto_impl v1.3.0
+   Compiling futures-util v0.3.32
+   Compiling darling_core v0.23.0
+   Compiling aws-lc-rs v1.17.0
+   Compiling k256 v0.13.4
+   Compiling nybbles v0.4.7
+   Compiling icu_normalizer v2.1.1
+   Compiling http-body v1.0.1
+   Compiling rustls v0.23.40
+   Compiling itertools v0.14.0
+   Compiling idna_adapter v1.2.1
+   Compiling parking_lot_core v0.9.12
+   Compiling derive_more v2.1.1
+   Compiling alloy-primitives v1.6.0
+   Compiling idna v1.1.0
+   Compiling security-framework-sys v2.17.0
+   Compiling core-foundation v0.10.1
+   Compiling futures-utils-wasm v0.1.0
+   Compiling parking_lot v0.12.5
+   Compiling url v2.5.8
+   Compiling http-body-util v0.1.3
+   Compiling security-framework v3.7.0
+   Compiling strum_macros v0.27.2
+   Compiling darling_macro v0.21.3
+   Compiling futures-executor v0.3.32
+   Compiling alloy-json-abi v1.6.0
+   Compiling darling_macro v0.23.0
+   Compiling alloy-eip7702 v0.6.3
+   Compiling alloy-eip2124 v0.2.0
+   Compiling darling v0.21.3
+   Compiling alloy-eip7928 v0.3.7
+   Compiling serde_with_macros v3.17.0
+   Compiling alloy-eip2930 v0.2.3
+   Compiling alloy-serde v2.0.5
+   Compiling darling v0.23.0
+   Compiling alloy-tx-macros v2.0.5
+   Compiling tokio-util v0.7.18
+   Compiling alloy-sol-macro-input v1.6.0
+   Compiling alloy-trie v0.9.5
+   Compiling alloy-sol-macro-expander v1.6.0
+   Compiling h2 v0.4.14
+   Compiling tower v0.5.3
+   Compiling serde_with v3.17.0
+   Compiling futures v0.3.32
+   Compiling alloy-signer v2.0.5
+   Compiling num_enum_derive v0.7.6
+   Compiling hashbrown v0.16.1
+   Compiling tower-http v0.6.11
+   Compiling dashmap v6.2.1
+   Compiling strum v0.27.2
+   Compiling tokio-stream v0.1.18
+   Compiling async-stream-impl v0.3.6
+   Compiling rand_chacha v0.3.1
+   Compiling lru v0.16.4
+   Compiling secp256k1-sys v0.11.0
+   Compiling deranged v0.5.8
+   Compiling rand v0.8.6
+   Compiling nanorand v0.7.0
+   Compiling keccak v0.1.6
+   Compiling async-stream v0.3.6
+   Compiling sha3 v0.10.9
+   Compiling num_enum v0.7.6
+   Compiling flume v0.11.1
+   Compiling alloy-chains v0.2.34
+   Compiling chrono v0.4.44
+   Compiling alloy-eips v2.0.5
+   Compiling time v0.3.47
+   Compiling alloy-sol-macro v1.6.0
+   Compiling hyper v1.10.1
+   Compiling hiver-runtime v0.1.0-alpha.6
+   Compiling alloy-sol-types v1.6.0
+   Compiling alloy-consensus v2.0.5
+   Compiling hyper-util v0.1.20
+   Compiling secp256k1 v0.31.1
+   Compiling alloy-json-rpc v2.0.5
+   Compiling alloy-dyn-abi v1.6.0
+   Compiling alloy-consensus-any v2.0.5
+   Compiling alloy-network-primitives v2.0.5
+   Compiling alloy-transport v2.0.5
+   Compiling alloy-core v1.6.0
+   Compiling alloy-rpc-types-eth v2.0.5
+   Compiling alloy-rpc-types-any v2.0.5
+   Compiling alloy-rpc-types v2.0.5
+   Compiling alloy-network v2.0.5
+   Compiling alloy-signer-local v2.0.5
+   Compiling rustls-webpki v0.103.13
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling alloy-transport-http v2.0.5
+   Compiling alloy-rpc-client v2.0.5
+   Compiling alloy-provider v2.0.5
+   Compiling alloy-contract v2.0.5
+   Compiling alloy v2.0.5
+   Compiling hiver-web3 v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-web3-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 25.28s
+   Uploading hiver-web3 v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-web3)
+    Uploaded hiver-web3 v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-web3 v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-web3 v0.1.0-alpha.6 at registry `crates-io`
+[14:05:41 UTC] SUCCESS: hiver-web3
+[14:05:41 UTC] Waiting 660s before next crate...
+[14:16:41 UTC] PUBLISHING: hiver-async
+    Updating crates.io index
+   Packaging hiver-async v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-async)
+    Updating crates.io index
+    Packaged 10 files, 71.9KiB (18.0KiB compressed)
+   Verifying hiver-async v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-async)
+ Downloading crates ...
+  Downloaded hiver-core v0.1.0-alpha.6
+   Compiling tokio v1.52.3
+   Compiling tokio-util v0.7.18
+   Compiling h2 v0.4.14
+   Compiling hyper v1.10.1
+   Compiling hiver-core v0.1.0-alpha.6
+   Compiling hiver-async v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-async-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.56s
+   Uploading hiver-async v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-async)
+    Uploaded hiver-async v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-async v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-async v0.1.0-alpha.6 at registry `crates-io`
+[14:16:55 UTC] SUCCESS: hiver-async
+[14:16:55 UTC] Waiting 660s before next crate...
+[14:27:56 UTC] PUBLISHING: hiver-batch
+    Updating crates.io index
+   Packaging hiver-batch v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-batch)
+    Updating crates.io index
+    Packaged 20 files, 206.1KiB (43.5KiB compressed)
+   Verifying hiver-batch v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-batch)
+   Compiling tokio v1.52.3
+   Compiling tokio-util v0.7.18
+   Compiling h2 v0.4.14
+   Compiling hyper v1.10.1
+   Compiling hiver-core v0.1.0-alpha.6
+   Compiling hiver-batch v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-batch-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.82s
+   Uploading hiver-batch v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-batch)
+    Uploaded hiver-batch v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-batch v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-batch v0.1.0-alpha.6 at registry `crates-io`
+[14:28:11 UTC] SUCCESS: hiver-batch
+[14:28:11 UTC] Waiting 660s before next crate...
+[14:39:11 UTC] SKIP (already published): hiver-events
+[14:39:11 UTC] PUBLISHING: hiver-http
+    Updating crates.io index
+   Packaging hiver-http v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-http)
+    Updating crates.io index
+    Packaged 31 files, 392.0KiB (90.8KiB compressed)
+   Verifying hiver-http v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-http)
+   Compiling uuid v1.23.2
+   Compiling aho-corasick v1.1.4
+   Compiling regex-syntax v0.8.10
+   Compiling rustls v0.23.40
+   Compiling form_urlencoded v1.2.2
+   Compiling serde_urlencoded v0.7.1
+   Compiling bevy_reflect_derive v0.13.2
+   Compiling regex-automata v0.4.14
+   Compiling bevy_reflect v0.13.2
+   Compiling regex v1.12.3
+   Compiling hiver-core v0.1.0-alpha.6
+   Compiling hiver-http v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-http-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.32s
+   Uploading hiver-http v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-http)
+    Uploaded hiver-http v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-http v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-http v0.1.0-alpha.6 at registry `crates-io`
+[14:39:26 UTC] SUCCESS: hiver-http
+[14:39:26 UTC] Waiting 660s before next crate...
+[14:50:26 UTC] PUBLISHING: hiver-i18n
+    Updating crates.io index
+   Packaging hiver-i18n v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-i18n)
+    Updating crates.io index
+    Packaged 11 files, 82.1KiB (20.7KiB compressed)
+   Verifying hiver-i18n v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-i18n)
+   Compiling hiver-i18n v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-i18n-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.19s
+   Uploading hiver-i18n v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-i18n)
+    Uploaded hiver-i18n v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-i18n v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-i18n v0.1.0-alpha.6 at registry `crates-io`
+[14:50:38 UTC] SUCCESS: hiver-i18n
+[14:50:38 UTC] Waiting 660s before next crate...
+[15:01:38 UTC] PUBLISHING: hiver-integration
+    Updating crates.io index
+   Packaging hiver-integration v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-integration)
+    Updating crates.io index
+    Packaged 17 files, 170.5KiB (36.9KiB compressed)
+   Verifying hiver-integration v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-integration)
+   Compiling tokio v1.52.3
+   Compiling tokio-util v0.7.18
+   Compiling h2 v0.4.14
+   Compiling hyper v1.10.1
+   Compiling hiver-core v0.1.0-alpha.6
+   Compiling hiver-integration v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-integration-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 12.79s
+   Uploading hiver-integration v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-integration)
+    Uploaded hiver-integration v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-integration v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-integration v0.1.0-alpha.6 at registry `crates-io`
+[15:01:55 UTC] SUCCESS: hiver-integration
+[15:01:55 UTC] Waiting 660s before next crate...
+[15:12:55 UTC] PUBLISHING: hiver-ldap
+    Updating crates.io index
+   Packaging hiver-ldap v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ldap)
+    Updating crates.io index
+    Packaged 17 files, 200.6KiB (46.0KiB compressed)
+   Verifying hiver-ldap v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ldap)
+   Compiling tokio v1.52.3
+   Compiling tokio-util v0.7.18
+   Compiling h2 v0.4.14
+   Compiling hyper v1.10.1
+   Compiling hiver-core v0.1.0-alpha.6
+   Compiling hiver-ldap v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/target/package/hiver-ldap-0.1.0-alpha.6)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.75s
+   Uploading hiver-ldap v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crates/hiver-ldap)
+    Uploaded hiver-ldap v0.1.0-alpha.6 to registry `crates-io`
+note: waiting for hiver-ldap v0.1.0-alpha.6 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published hiver-ldap v0.1.0-alpha.6 at registry `crates-io`
+[15:13:11 UTC] SUCCESS: hiver-ldap
+[15:13:11 UTC] Waiting 660s before next crate...

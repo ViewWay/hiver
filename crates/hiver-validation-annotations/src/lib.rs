@@ -577,8 +577,7 @@ fn extract_email_fields(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident, &s
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "email")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "email")
             });
 
             f.ident
@@ -607,8 +606,7 @@ fn extract_fields_with_size(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "size")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "size")
             });
 
             f.ident.as_ref().and_then(|id| {
@@ -733,8 +731,7 @@ fn extract_fields_with_min(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "min")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "min")
             });
 
             f.ident.as_ref().and_then(|id| {
@@ -767,8 +764,7 @@ fn extract_fields_with_max(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ident,
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "max")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "max")
             });
 
             f.ident.as_ref().and_then(|id| {
@@ -801,8 +797,7 @@ fn extract_fields_with_pattern(input: &syn::DeriveInput) -> Vec<(proc_macro2::Id
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "pattern")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "pattern")
             });
 
             f.ident.as_ref().and_then(|id| {
@@ -835,8 +830,7 @@ fn extract_fields_with_length(input: &syn::DeriveInput) -> Vec<(proc_macro2::Ide
                 attr.path()
                     .segments
                     .last()
-                    .map(|s| s.ident == "length")
-                    .unwrap_or(false)
+                    .is_some_and(|s| s.ident == "length")
             });
 
             f.ident.as_ref().and_then(|id| {
