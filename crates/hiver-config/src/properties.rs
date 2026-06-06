@@ -34,6 +34,7 @@
 //! fn default_port() -> u16 { 8080 }
 //! ```
 
+#![allow(dead_code)]
 use std::{
     any::{Any, TypeId},
     collections::HashMap,

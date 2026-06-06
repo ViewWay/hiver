@@ -7,6 +7,7 @@
 //! - `EnvironmentPostProcessor` - Loader processors
 //! - File watching and hot reload support
 
+#![allow(dead_code)]
 use std::{collections::HashMap, path::PathBuf, sync::Arc, time::Duration};
 
 use crate::{Config, ConfigError, ConfigResult, FileFormat, ReloadStrategy};

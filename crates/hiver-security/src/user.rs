@@ -1,6 +1,7 @@
 //! User and `UserDetails` module
 //! `用户和UserDetails模块`
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};

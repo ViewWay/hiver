@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! OAuth2/OIDC Client Support
 //! OAuth2/OIDC 客户端支持
 //!

@@ -1,6 +1,7 @@
 //! Transaction status
 //! 事务状态
 
+#![allow(dead_code)]
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},

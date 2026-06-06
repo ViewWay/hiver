@@ -20,6 +20,7 @@
 //! 3. **观察**：代理处理工具的结果。
 //! 4. 重复直到得出最终答案或超过最大迭代次数。
 
+#![allow(dead_code)]
 use std::{collections::HashMap, sync::Arc};
 
 use hiver_ai::{

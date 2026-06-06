@@ -1,6 +1,7 @@
 //! AMQP message publisher
 //! AMQP消息发布者
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use crate::AmqpConnection;

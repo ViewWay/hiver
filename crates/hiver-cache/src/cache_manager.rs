@@ -8,6 +8,7 @@
 //! - `CompositeCacheManager` - Multiple cache managers
 //! - `@EnableCaching` - `EnableCaching` setup
 
+#![allow(dead_code)]
 use std::{collections::HashMap, hash::Hash, sync::Arc};
 
 use crate::{Cache, CacheConfig, MemoryCache};

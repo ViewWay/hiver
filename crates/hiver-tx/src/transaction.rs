@@ -1,6 +1,7 @@
 //! Transaction implementation
 //! 事务实现
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use crate::{Propagation, TransactionStatus};

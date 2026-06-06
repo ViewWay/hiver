@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"python3 -c \\\"\\nwith open('crates/hiver-validation/src/groups.rs', 'r') as f:\\n    content = f.read()\\ncontent = content.replace(\\n    '    ) => {\\\\n        $(\\\\n            $(#[\\\\$meta])*\\...",
-  "error": "Exit code 1\n(eval):12: unmatched \"\n(eval):12: unmatched \"",
-  "timestamp": "2026-06-06T06:02:10.645Z",
-  "retry_count": 1
-}

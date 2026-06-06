@@ -12,6 +12,7 @@
 //! - AspectRegistry: 注册和管理切面
 //! - Proxy: 生成应用切面的代理
 
+#![allow(dead_code)]
 use std::{
     any::{Any, TypeId},
     collections::HashMap,

@@ -1,6 +1,7 @@
 //! Core cache implementation
 //! 核心缓存实现
 
+#![allow(dead_code)]
 use std::{hash::Hash, sync::Arc, time::Duration};
 
 use async_trait::async_trait;

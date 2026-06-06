@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! RPC client module
 //! RPC客户端模块
 //!

@@ -1,6 +1,7 @@
 //! Security error types
 //! 安全错误类型
 
+#![allow(dead_code)]
 use thiserror::Error;
 
 /// Security error

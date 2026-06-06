@@ -1,6 +1,7 @@
 //! Test configuration support
 //! 测试配置支持
 
+#![allow(dead_code)]
 use std::{collections::HashMap, sync::Arc};
 
 use serde::{Deserialize, Serialize};

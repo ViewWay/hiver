@@ -46,6 +46,7 @@
 //! }
 //! ```
 
+#![allow(dead_code)]
 use std::{any::Any, fmt, sync::Arc};
 
 use crate::mock_bean::MockRegistry;

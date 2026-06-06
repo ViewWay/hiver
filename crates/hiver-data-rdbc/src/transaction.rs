@@ -6,8 +6,8 @@
 //! Transaction management for database operations.
 //! 数据库操作的事务管理。
 
-#![allow(dead_code)]
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use futures_util::future::BoxFuture;

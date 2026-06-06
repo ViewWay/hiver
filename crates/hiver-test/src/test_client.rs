@@ -1,6 +1,7 @@
 //! Test client for making HTTP requests in tests
 //! 用于在测试中发起HTTP请求的测试客户端
 
+#![allow(dead_code)]
 use http::method::Method;
 use serde::de::DeserializeOwned;
 

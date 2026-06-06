@@ -3,6 +3,7 @@
 //!
 //! Equivalent to Spring Security's `RememberMeServices` + `TokenBasedRememberMeServices`.
 
+#![allow(dead_code)]
 use std::{collections::HashMap, sync::RwLock};
 
 use chrono::{DateTime, Utc};

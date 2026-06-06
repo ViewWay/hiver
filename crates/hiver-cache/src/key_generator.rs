@@ -7,6 +7,7 @@
 //! - `SimpleKeyGenerator` - Default key generator
 //! - `SpEL` expression support for keys
 
+#![allow(dead_code)]
 use std::{
     fmt::Debug,
     hash::{Hash, Hasher},

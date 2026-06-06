@@ -23,6 +23,7 @@
 //! }
 //! ```
 
+#![allow(dead_code)]
 use testcontainers::ContainerAsync;
 use testcontainers_modules::{kafka::Kafka, postgres::Postgres, redis::Redis};
 use tracing::info;

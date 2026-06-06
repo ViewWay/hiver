@@ -1,6 +1,7 @@
 //! Message converter
 //! 消息转换器
 
+#![allow(dead_code)]
 use crate::{Message, MessageProperties};
 
 /// Message converter trait

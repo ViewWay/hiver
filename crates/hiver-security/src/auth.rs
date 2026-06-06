@@ -1,6 +1,7 @@
 //! Authentication module
 //! 认证模块
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use chrono::{DateTime, Utc};

@@ -6,6 +6,7 @@
 //! - `@CacheConfig` - Class-level cache configuration
 //! - Cache customization properties
 
+#![allow(dead_code)]
 use serde::{Deserialize, Serialize};
 
 /// Cache configuration

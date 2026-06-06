@@ -33,6 +33,7 @@
 //!     "https://app.example.com/callback", None).await?;
 //! ```
 
+#![allow(dead_code)]
 use std::{
     collections::HashMap,
     sync::Arc,

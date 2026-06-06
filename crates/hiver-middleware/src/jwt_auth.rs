@@ -20,6 +20,7 @@
 //!     .get("/api/users", get_users);
 //! ```
 
+#![allow(dead_code)]
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use hiver_router::{Middleware, Next};

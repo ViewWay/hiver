@@ -1,6 +1,7 @@
 //! Mock bean support for tests
 //! 测试的模拟bean支持
 
+#![allow(dead_code)]
 use std::{any::Any, collections::HashMap, sync::Arc};
 
 use tokio::sync::RwLock;

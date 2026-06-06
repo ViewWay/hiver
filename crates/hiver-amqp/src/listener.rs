@@ -1,6 +1,7 @@
 //! AMQP message listener
 //! AMQP消息监听器
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use tokio::sync::RwLock;

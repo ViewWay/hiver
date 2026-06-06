@@ -1,6 +1,7 @@
 //! Transaction template
 //! 事务模板
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use crate::{IsolationLevel, Propagation, TransactionError, TransactionManager, TransactionResult};

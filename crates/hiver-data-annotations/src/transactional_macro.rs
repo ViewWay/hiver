@@ -4,6 +4,7 @@
 //! This macro provides compile-time support for the @Transactional annotation.
 //! 此宏为 @Transactional 注解提供编译时支持。
 
+#![allow(dead_code)]
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{

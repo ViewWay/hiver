@@ -6,7 +6,6 @@
 //! domain event publication, and module verification.
 
 #![warn(missing_docs)]
-#![allow(dead_code)]
 #![allow(unreachable_pub)]
 
 mod event;

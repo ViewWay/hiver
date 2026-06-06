@@ -7,6 +7,7 @@
 //! - `SimpleCacheResolver` - Basic cache resolver
 //! - `NamedCacheResolver` - Resolve by cache name
 
+#![allow(dead_code)]
 use std::{collections::HashSet, sync::Arc};
 
 use crate::CacheManager;

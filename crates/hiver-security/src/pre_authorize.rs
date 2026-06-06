@@ -1,6 +1,7 @@
 //! `PreAuthorize` module
 //! PreAuthorize模块（@PreAuthorize等价物）
 
+#![allow(dead_code)]
 use std::{future::Future, pin::Pin};
 
 use crate::{Authority, SecurityContext};

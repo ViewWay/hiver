@@ -4,6 +4,7 @@
 //! 提供 `CrudRepository` trait，自动生成基础的 CRUD 方法
 //! Provides `CrudRepository` trait for automatic CRUD method generation
 
+#![allow(dead_code)]
 use async_trait::async_trait;
 
 /// 基础 CRUD Repository trait

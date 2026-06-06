@@ -14,6 +14,7 @@
 //! Authentication auth = context.getAuthentication();
 //! ```
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use crate::Authentication;

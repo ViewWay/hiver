@@ -1,6 +1,7 @@
 //! Transaction manager
 //! 事务管理器
 
+#![allow(dead_code)]
 use async_trait::async_trait;
 
 use crate::{IsolationLevel, Propagation, TransactionError, TransactionResult, TransactionStatus};

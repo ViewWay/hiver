@@ -1,6 +1,7 @@
 //! Transaction error types
 //! 事务错误类型
 
+#![allow(dead_code)]
 use thiserror::Error;
 
 /// Transaction error

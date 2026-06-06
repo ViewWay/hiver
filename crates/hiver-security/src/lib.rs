@@ -41,7 +41,6 @@
 // provided for users but not used internally. This is expected and intentional.
 // 允许 dead_code：这是一个框架库，包含许多公共 API 供用户使用但内部未使用。
 // 这是预期且有意的设计。
-#![allow(dead_code)]
 // Allow unreachable_pub: Some public items are exported for feature flag compatibility
 // 允许 unreachable_pub：某些公共项目导出用于功能标志兼容性
 #![allow(unreachable_pub)]

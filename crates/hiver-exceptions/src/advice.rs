@@ -4,6 +4,7 @@
 //! # Equivalent to Spring's @`ControllerAdvice`
 //! # 等价于 Spring 的 @`ControllerAdvice`
 
+#![allow(dead_code)]
 use std::{
     any::{Any, TypeId},
     collections::HashMap,

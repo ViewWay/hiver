@@ -1,6 +1,7 @@
 //! `PostAuthorize` module
 //! PostAuthorize模块（@PostAuthorize等价物）
 
+#![allow(dead_code)]
 use std::{future::Future, pin::Pin};
 
 use crate::{SecurityContext, pre_authorize::SecurityExpression};

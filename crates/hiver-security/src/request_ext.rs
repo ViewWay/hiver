@@ -4,6 +4,7 @@
 //! This module provides Request-based `SecurityContext` that works across async boundaries.
 //! 本模块提供基于Request的SecurityContext，可在异步边界间工作。
 
+#![allow(dead_code)]
 use std::sync::Arc;
 
 use hiver_http::Request;

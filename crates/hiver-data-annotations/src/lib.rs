@@ -53,7 +53,6 @@
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
-#![allow(dead_code)]
 // Annotations/traits intended for external use via proc macros; 注解/Trait 供外部 proc macro 使用
 #![allow(clippy::expect_used, clippy::unwrap_used)]
 

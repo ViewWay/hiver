@@ -1,6 +1,7 @@
 //! Secured module
 //! Secured模块（@Secured等价物）
 
+#![allow(dead_code)]
 use crate::{Authority, Role, SecurityContext};
 
 /// Secured metadata
