@@ -99,7 +99,7 @@ enum_discrim_align_threshold = 0
 fn_call_width = 80
 
 # Fn args layout / 函数参数布局
-fn_args_layout = "Tall"
+fn_params_layout = "Tall"
 
 # Fn single line / 函数单行
 fn_single_line = false

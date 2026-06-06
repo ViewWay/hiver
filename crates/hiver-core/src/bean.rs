@@ -22,28 +22,33 @@ use std::any::Any;
 /// - `@Component`
 /// - `@Service`
 /// - `@Repository`
-pub trait Bean: Any {
+pub trait Bean: Any
+{
     /// Get the bean name
     /// 获取bean名称
-    fn bean_name(&self) -> &str {
+    fn bean_name(&self) -> &str
+    {
         std::any::type_name::<Self>()
     }
 
     /// Get the bean scope
     /// 获取bean作用域
-    fn scope(&self) -> Scope {
+    fn scope(&self) -> Scope
+    {
         Scope::Singleton
     }
 
     /// Initialize callback (equivalent to @`PostConstruct`)
     /// 初始化回调（等价于 @`PostConstruct`）
-    fn init(&self) {
+    fn init(&self)
+    {
         // Default: no-op
     }
 
     /// Destroy callback (equivalent to @`PreDestroy`)
     /// 销毁回调（等价于 @`PreDestroy`）
-    fn destroy(&self) {
+    fn destroy(&self)
+    {
         // Default: no-op
     }
 }
@@ -55,7 +60,8 @@ impl<T: Any> Bean for T {}
 /// Bean scope
 /// Bean作用域
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Scope {
+pub enum Scope
+{
     /// Single instance per container (default)
     /// 每个容器单个实例（默认）
     #[default]
@@ -81,7 +87,8 @@ pub enum Scope {
 /// Bean definition
 /// Bean定义
 #[derive(Clone)]
-pub struct BeanDefinition {
+pub struct BeanDefinition
+{
     /// Bean name
     /// Bean名称
     pub name: String,
@@ -103,10 +110,12 @@ pub struct BeanDefinition {
     pub lazy: bool,
 }
 
-impl BeanDefinition {
+impl BeanDefinition
+{
     /// Create a new bean definition
     /// 创建新bean定义
-    pub fn new(name: impl Into<String>, type_name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>, type_name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             type_name: type_name.into(),
@@ -118,21 +127,24 @@ impl BeanDefinition {
 
     /// Set the scope
     /// 设置作用域
-    pub fn scope(mut self, scope: Scope) -> Self {
+    pub fn scope(mut self, scope: Scope) -> Self
+    {
         self.scope = scope;
         self
     }
 
     /// Set as primary
     /// 设置为主bean
-    pub fn primary(mut self, primary: bool) -> Self {
+    pub fn primary(mut self, primary: bool) -> Self
+    {
         self.primary = primary;
         self
     }
 
     /// Set lazy initialization
     /// 设置延迟初始化
-    pub fn lazy(mut self, lazy: bool) -> Self {
+    pub fn lazy(mut self, lazy: bool) -> Self
+    {
         self.lazy = lazy;
         self
     }
@@ -140,7 +152,8 @@ impl BeanDefinition {
 
 /// Bean factory
 /// Bean工厂
-pub trait BeanFactory: Send + Sync {
+pub trait BeanFactory: Send + Sync
+{
     /// Get a bean by name
     /// 按名称获取bean
     fn get_bean_by_name(&self, name: &str) -> Option<std::sync::Arc<dyn Any + Send + Sync>>;
@@ -155,26 +168,30 @@ pub trait BeanFactory: Send + Sync {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ── Scope tests / Scope测试 ────────────────────────────────────────
 
     #[test]
-    fn test_scope_default_is_singleton() {
+    fn test_scope_default_is_singleton()
+    {
         let scope = Scope::default();
         assert_eq!(scope, Scope::Singleton);
     }
 
     #[test]
-    fn test_scope_equality() {
+    fn test_scope_equality()
+    {
         assert_eq!(Scope::Singleton, Scope::Singleton);
         assert_eq!(Scope::Prototype, Scope::Prototype);
         assert_ne!(Scope::Singleton, Scope::Prototype);
     }
 
     #[test]
-    fn test_scope_variants() {
+    fn test_scope_variants()
+    {
         let variants = [
             Scope::Singleton,
             Scope::Prototype,
@@ -183,29 +200,34 @@ mod tests {
             Scope::Application,
         ];
         // Verify all variants are distinct / 验证所有变体互不相同
-        for i in 0..variants.len() {
-            for j in (i + 1)..variants.len() {
+        for i in 0..variants.len()
+        {
+            for j in (i + 1)..variants.len()
+            {
                 assert_ne!(variants[i], variants[j]);
             }
         }
     }
 
     #[test]
-    fn test_scope_clone() {
+    fn test_scope_clone()
+    {
         let s = Scope::Prototype;
         let cloned = s.clone();
         assert_eq!(s, cloned);
     }
 
     #[test]
-    fn test_scope_copy() {
+    fn test_scope_copy()
+    {
         let s = Scope::Request;
         let copied = s; // Copy, not move / Copy语义，非移动
         assert_eq!(s, copied);
     }
 
     #[test]
-    fn test_scope_debug_format() {
+    fn test_scope_debug_format()
+    {
         assert_eq!(format!("{:?}", Scope::Singleton), "Singleton");
         assert_eq!(format!("{:?}", Scope::Prototype), "Prototype");
         assert_eq!(format!("{:?}", Scope::Request), "Request");
@@ -214,7 +236,8 @@ mod tests {
     }
 
     #[test]
-    fn test_scope_hash() {
+    fn test_scope_hash()
+    {
         use std::collections::HashSet;
         let set: HashSet<Scope> = [Scope::Singleton, Scope::Prototype, Scope::Singleton]
             .into_iter()
@@ -225,7 +248,8 @@ mod tests {
     // ── BeanDefinition tests / BeanDefinition测试 ──────────────────────
 
     #[test]
-    fn test_bean_definition_new_defaults() {
+    fn test_bean_definition_new_defaults()
+    {
         let def = BeanDefinition::new("myBean", "com.example.MyBean");
         assert_eq!(def.name, "myBean");
         assert_eq!(def.type_name, "com.example.MyBean");
@@ -235,25 +259,29 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_definition_scope_builder() {
+    fn test_bean_definition_scope_builder()
+    {
         let def = BeanDefinition::new("b", "T").scope(Scope::Prototype);
         assert_eq!(def.scope, Scope::Prototype);
     }
 
     #[test]
-    fn test_bean_definition_primary_builder() {
+    fn test_bean_definition_primary_builder()
+    {
         let def = BeanDefinition::new("b", "T").primary(true);
         assert!(def.primary);
     }
 
     #[test]
-    fn test_bean_definition_lazy_builder() {
+    fn test_bean_definition_lazy_builder()
+    {
         let def = BeanDefinition::new("b", "T").lazy(true);
         assert!(def.lazy);
     }
 
     #[test]
-    fn test_bean_definition_chained_builders() {
+    fn test_bean_definition_chained_builders()
+    {
         let def = BeanDefinition::new("svc", "MyService")
             .scope(Scope::Request)
             .primary(true)
@@ -266,7 +294,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_definition_clone() {
+    fn test_bean_definition_clone()
+    {
         let def = BeanDefinition::new("orig", "T").primary(true);
         let cloned = def.clone();
         assert_eq!(def.name, cloned.name);
@@ -277,7 +306,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_definition_into_string() {
+    fn test_bean_definition_into_string()
+    {
         // Accepts both &str and String / 接受 &str 和 String
         let def1 = BeanDefinition::new("name", "type");
         let def2 = BeanDefinition::new(String::from("name"), String::from("type"));
@@ -288,7 +318,8 @@ mod tests {
     // ── Bean trait tests / Bean trait测试 ──────────────────────────────
 
     #[test]
-    fn test_bean_trait_blanket_impl() {
+    fn test_bean_trait_blanket_impl()
+    {
         // Blanket impl means any type has Bean / 通用实现意味着任何类型都有Bean
         struct MyStruct;
         let s = MyStruct;
@@ -299,14 +330,16 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_default_scope_is_singleton() {
+    fn test_bean_default_scope_is_singleton()
+    {
         struct Foo;
         let foo = Foo;
         assert_eq!(foo.scope(), Scope::Singleton);
     }
 
     #[test]
-    fn test_bean_init_default_noop() {
+    fn test_bean_init_default_noop()
+    {
         struct Bar;
         let bar = Bar;
         // Should not panic / 不应panic
@@ -314,7 +347,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_destroy_default_noop() {
+    fn test_bean_destroy_default_noop()
+    {
         struct Baz;
         let baz = Baz;
         // Should not panic / 不应panic
@@ -322,7 +356,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_name_contains_type() {
+    fn test_bean_name_contains_type()
+    {
         struct VerySpecificType;
         let v = VerySpecificType;
         let name = v.bean_name();
@@ -330,15 +365,18 @@ mod tests {
     }
 
     #[test]
-    fn test_scope_all_variants_usable() {
-        // Ensure all scope variants can be used in BeanDefinition / 确保所有作用域变体都可用于BeanDefinition
+    fn test_scope_all_variants_usable()
+    {
+        // Ensure all scope variants can be used in BeanDefinition /
+        // 确保所有作用域变体都可用于BeanDefinition
         for scope in [
             Scope::Singleton,
             Scope::Prototype,
             Scope::Request,
             Scope::Session,
             Scope::Application,
-        ] {
+        ]
+        {
             let def = BeanDefinition::new("b", "T").scope(scope);
             assert_eq!(def.scope, scope);
         }

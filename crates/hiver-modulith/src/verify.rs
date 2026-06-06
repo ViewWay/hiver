@@ -4,7 +4,8 @@ use crate::registry::ModuleRegistry;
 
 /// Result of module verification.
 #[derive(Debug)]
-pub struct VerificationResult {
+pub struct VerificationResult
+{
     /// Whether all verifications passed.
     pub valid: bool,
     /// Errors found during verification.
@@ -13,8 +14,10 @@ pub struct VerificationResult {
     pub warnings: Vec<String>,
 }
 
-impl VerificationResult {
-    fn ok() -> Self {
+impl VerificationResult
+{
+    fn ok() -> Self
+    {
         Self {
             valid: true,
             errors: Vec::new(),
@@ -24,15 +27,19 @@ impl VerificationResult {
 }
 
 /// Verify module dependency graph: no missing deps, no cycles.
-pub fn verify_modules(registry: &ModuleRegistry) -> VerificationResult {
+pub fn verify_modules(registry: &ModuleRegistry) -> VerificationResult
+{
     let modules = registry.all_modules();
     let names: std::collections::HashSet<&str> = modules.iter().map(|m| m.name.as_str()).collect();
     let mut result = VerificationResult::ok();
 
     // 1. Check that all dependencies exist
-    for module in &modules {
-        for dep in &module.dependencies {
-            if !names.contains(dep.as_str()) {
+    for module in &modules
+    {
+        for dep in &module.dependencies
+        {
+            if !names.contains(dep.as_str())
+            {
                 result.valid = false;
                 result.errors.push(format!(
                     "Module '{}' depends on '{}', which is not registered",
@@ -51,7 +58,8 @@ pub fn verify_modules(registry: &ModuleRegistry) -> VerificationResult {
     let mut visited = std::collections::HashSet::<String>::new();
     let mut in_stack = std::collections::HashSet::<String>::new();
 
-    for module in &modules {
+    for module in &modules
+    {
         if let Some(cycle) =
             detect_cycle(&module.name, &module_map, &mut visited, &mut in_stack, &mut Vec::new())
         {
@@ -63,8 +71,10 @@ pub fn verify_modules(registry: &ModuleRegistry) -> VerificationResult {
     }
 
     // 3. Warn about self-dependencies
-    for module in &modules {
-        if module.dependencies.contains(&module.name) {
+    for module in &modules
+    {
+        if module.dependencies.contains(&module.name)
+        {
             result
                 .warnings
                 .push(format!("Module '{}' has a self-dependency", module.name));
@@ -80,15 +90,18 @@ fn detect_cycle(
     visited: &mut std::collections::HashSet<String>,
     in_stack: &mut std::collections::HashSet<String>,
     path: &mut Vec<String>,
-) -> Option<Vec<String>> {
-    if in_stack.contains(node) {
+) -> Option<Vec<String>>
+{
+    if in_stack.contains(node)
+    {
         let cycle_start = path.iter().position(|n| n == node).unwrap_or(0);
         let mut cycle: Vec<String> = path[cycle_start..].to_vec();
         cycle.push(node.to_string());
         return Some(cycle);
     }
 
-    if visited.contains(node) {
+    if visited.contains(node)
+    {
         return None;
     }
 
@@ -96,9 +109,12 @@ fn detect_cycle(
     in_stack.insert(node.to_string());
     path.push(node.to_string());
 
-    if let Some(deps) = graph.get(node) {
-        for dep in deps {
-            if let Some(cycle) = detect_cycle(dep, graph, visited, in_stack, path) {
+    if let Some(deps) = graph.get(node)
+    {
+        for dep in deps
+        {
+            if let Some(cycle) = detect_cycle(dep, graph, visited, in_stack, path)
+            {
                 return Some(cycle);
             }
         }
@@ -110,39 +126,51 @@ fn detect_cycle(
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::module::Module;
 
     struct ModA;
-    impl Module for ModA {
-        fn name(&self) -> &str {
+    impl Module for ModA
+    {
+        fn name(&self) -> &str
+        {
             "a"
         }
     }
 
     struct ModB;
-    impl Module for ModB {
-        fn name(&self) -> &str {
+    impl Module for ModB
+    {
+        fn name(&self) -> &str
+        {
             "b"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["a"]
         }
     }
 
     struct ModC;
-    impl Module for ModC {
-        fn name(&self) -> &str {
+    impl Module for ModC
+    {
+        fn name(&self) -> &str
+        {
             "c"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["b"]
         }
     }
 
     #[test]
-    fn test_valid_modules() {
+    fn test_valid_modules()
+    {
         let registry = ModuleRegistry::new();
         registry.register(&ModA);
         registry.register(&ModB);
@@ -154,7 +182,8 @@ mod tests {
     }
 
     #[test]
-    fn test_missing_dependency() {
+    fn test_missing_dependency()
+    {
         let registry = ModuleRegistry::new();
         registry.register(&ModB);
 
@@ -164,27 +193,36 @@ mod tests {
     }
 
     struct ModX;
-    impl Module for ModX {
-        fn name(&self) -> &str {
+    impl Module for ModX
+    {
+        fn name(&self) -> &str
+        {
             "x"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["y"]
         }
     }
 
     struct ModY;
-    impl Module for ModY {
-        fn name(&self) -> &str {
+    impl Module for ModY
+    {
+        fn name(&self) -> &str
+        {
             "y"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["x"]
         }
     }
 
     #[test]
-    fn test_circular_dependency() {
+    fn test_circular_dependency()
+    {
         let registry = ModuleRegistry::new();
         registry.register(&ModX);
         registry.register(&ModY);
@@ -195,7 +233,8 @@ mod tests {
     }
 
     #[test]
-    fn test_empty_registry() {
+    fn test_empty_registry()
+    {
         let registry = ModuleRegistry::new();
         let result = verify_modules(&registry);
         assert!(result.valid);

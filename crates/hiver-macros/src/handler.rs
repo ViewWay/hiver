@@ -12,8 +12,8 @@
 //! The macro:
 //! - Validates that the function is `async`
 //! - Generates parameter extraction via `FromRequest`
-//! - Generates a wrapper function that accepts `Request`, extracts params,
-//!   calls the original function, and converts the result via `IntoResponse`
+//! - Generates a wrapper function that accepts `Request`, extracts params, calls the original
+//!   function, and converts the result via `IntoResponse`
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -41,12 +41,14 @@ use syn::{FnArg, ItemFn, parse_macro_input};
 ///         .unwrap()
 /// }
 /// ```
-pub(crate) fn handler_impl(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn handler_impl(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
 
     // Validate the function is async
     // 验证函数是异步的
-    if input.sig.asyncness.is_none() {
+    if input.sig.asyncness.is_none()
+    {
         return syn::Error::new_spanned(
             &input.sig.ident,
             "#[handler] can only be applied to async functions / #[handler] 只能应用于异步函数",
@@ -67,11 +69,14 @@ pub(crate) fn handler_impl(_attr: TokenStream, item: TokenStream) -> TokenStream
     let param_info: Vec<_> = fn_inputs
         .iter()
         .map(|arg| {
-            if let FnArg::Typed(pat_type) = arg {
+            if let FnArg::Typed(pat_type) = arg
+            {
                 let pat = &*pat_type.pat;
                 let ty = &*pat_type.ty;
                 (pat.clone(), ty.clone())
-            } else {
+            }
+            else
+            {
                 // Skip `self` parameters (shouldn't appear in handlers)
                 panic!("#[handler] does not support self parameters / #[handler] 不支持 self 参数");
             }

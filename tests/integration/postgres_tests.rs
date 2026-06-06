@@ -9,16 +9,15 @@
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::PgPoolOptions;
-use sqlx::{Executor, PgPool, Row};
-use testcontainers::core::IntoContainerPort;
-use testcontainers::runners::AsyncRunner;
+use sqlx::{Executor, PgPool, Row, postgres::PgPoolOptions};
+use testcontainers::{core::IntoContainerPort, runners::AsyncRunner};
 use testcontainers_modules::postgres::Postgres;
 
 /// Test user entity for CRUD operations.
 /// 用于 CRUD 操作的测试用户实体。
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
-struct TestUser {
+struct TestUser
+{
     id: i64,
     username: String,
     email: String,
@@ -29,7 +28,8 @@ struct TestUser {
 
 /// Helper: start a PostgreSQL container and return pool + container.
 /// 辅助函数：启动 PostgreSQL 容器并返回连接池和容器。
-async fn setup_postgres() -> (PgPool, testcontainers::ContainerAsync<Postgres>) {
+async fn setup_postgres() -> (PgPool, testcontainers::ContainerAsync<Postgres>)
+{
     let container = Postgres::default()
         .with_user("testuser")
         .with_password("testpass")
@@ -57,7 +57,8 @@ async fn setup_postgres() -> (PgPool, testcontainers::ContainerAsync<Postgres>) 
 
 /// Helper: create the test_users table.
 /// 辅助函数：创建 test_users 表。
-async fn create_test_table(pool: &PgPool) {
+async fn create_test_table(pool: &PgPool)
+{
     pool.execute(
         r#"
         CREATE TABLE IF NOT EXISTS test_users (
@@ -76,7 +77,8 @@ async fn create_test_table(pool: &PgPool) {
 
 /// Helper: seed initial test data.
 /// 辅助函数：插入初始测试数据。
-async fn seed_test_data(pool: &PgPool) {
+async fn seed_test_data(pool: &PgPool)
+{
     sqlx::query(
         r#"
         INSERT INTO test_users (username, email, age, is_active)
@@ -97,7 +99,8 @@ async fn seed_test_data(pool: &PgPool) {
 // 测试 1：PostgreSQL 容器启动并接受连接
 // ============================================================
 #[tokio::test]
-async fn test_postgres_container_connectivity() {
+async fn test_postgres_container_connectivity()
+{
     let (pool, _container) = setup_postgres().await;
 
     let row: (String,) = sqlx::query_as("SELECT version()")
@@ -117,7 +120,8 @@ async fn test_postgres_container_connectivity() {
 // 测试 2：创建包含多种列类型的表
 // ============================================================
 #[tokio::test]
-async fn test_postgres_create_table() {
+async fn test_postgres_create_table()
+{
     let (pool, _container) = setup_postgres().await;
 
     create_test_table(&pool).await;
@@ -138,7 +142,8 @@ async fn test_postgres_create_table() {
 // 测试 3：插入单行数据并读回
 // ============================================================
 #[tokio::test]
-async fn test_postgres_insert_and_select() {
+async fn test_postgres_insert_and_select()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
@@ -168,7 +173,8 @@ async fn test_postgres_insert_and_select() {
 // 测试 4：更新已有行
 // ============================================================
 #[tokio::test]
-async fn test_postgres_update() {
+async fn test_postgres_update()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -194,7 +200,8 @@ async fn test_postgres_update() {
 // 测试 5：删除行
 // ============================================================
 #[tokio::test]
-async fn test_postgres_delete() {
+async fn test_postgres_delete()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -231,7 +238,8 @@ async fn test_postgres_delete() {
 // 测试 6：事务提交
 // ============================================================
 #[tokio::test]
-async fn test_postgres_transaction_commit() {
+async fn test_postgres_transaction_commit()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
@@ -262,7 +270,8 @@ async fn test_postgres_transaction_commit() {
 // 测试 7：事务回滚
 // ============================================================
 #[tokio::test]
-async fn test_postgres_transaction_rollback() {
+async fn test_postgres_transaction_rollback()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
@@ -292,7 +301,8 @@ async fn test_postgres_transaction_rollback() {
 // 测试 8：使用 LIMIT/OFFSET 分页
 // ============================================================
 #[tokio::test]
-async fn test_postgres_pagination() {
+async fn test_postgres_pagination()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -319,7 +329,8 @@ async fn test_postgres_pagination() {
 // 测试 9：聚合查询（COUNT, AVG, MAX）
 // ============================================================
 #[tokio::test]
-async fn test_postgres_aggregation() {
+async fn test_postgres_aggregation()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -343,7 +354,8 @@ async fn test_postgres_aggregation() {
 // 测试 10：唯一约束冲突
 // ============================================================
 #[tokio::test]
-async fn test_postgres_unique_constraint() {
+async fn test_postgres_unique_constraint()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
@@ -375,7 +387,8 @@ async fn test_postgres_unique_constraint() {
 // 测试 11：查询中的 NULL 处理
 // ============================================================
 #[tokio::test]
-async fn test_postgres_null_handling() {
+async fn test_postgres_null_handling()
+{
     let (pool, _container) = setup_postgres().await;
     create_test_table(&pool).await;
 
@@ -403,12 +416,14 @@ async fn test_postgres_null_handling() {
 // 测试 12：连接池管理多个连接
 // ============================================================
 #[tokio::test]
-async fn test_postgres_connection_pool() {
+async fn test_postgres_connection_pool()
+{
     let (pool, _container) = setup_postgres().await;
 
     // Spawn multiple concurrent queries to exercise the pool
     let mut handles = Vec::new();
-    for i in 0..10 {
+    for i in 0..10
+    {
         let pool_clone = pool.clone();
         handles.push(tokio::spawn(async move {
             let row: (i32,) = sqlx::query_as("SELECT $1::int AS val")
@@ -421,7 +436,8 @@ async fn test_postgres_connection_pool() {
 
     let results: Vec<_> = futures::future::join_all(handles).await;
 
-    for (i, result) in results.into_iter().enumerate() {
+    for (i, result) in results.into_iter().enumerate()
+    {
         let row = result.expect("Query should succeed");
         assert_eq!(row.0, i as i32, "Concurrent query {i} should return correct value");
     }

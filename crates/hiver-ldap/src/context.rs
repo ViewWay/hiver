@@ -6,9 +6,11 @@
 //! 通过 `ldap3` 提供可选的真实LDAP连接管理。
 //! 等价于 Spring LDAP 的 `ContextSource` 接口。
 
-use crate::error::{LdapError, LdapResult};
-use async_trait::async_trait;
 use std::time::Duration;
+
+use async_trait::async_trait;
+
+use crate::error::{LdapError, LdapResult};
 
 /// Represents an LDAP connection / LDAP连接
 ///
@@ -18,25 +20,31 @@ use std::time::Duration;
 /// 启用 `ldap` feature 时包装真实的 `ldap3` 连接。
 /// 否则作为API兼容的轻量级存根。
 #[derive(Debug)]
-pub struct LdapConnection {
+pub struct LdapConnection
+{
     url: String,
     connected: bool,
-    /// Inner ldap3 connection, only present with `ldap` feature / 内部ldap3连接，仅在启用ldap feature时存在
+    /// Inner ldap3 connection, only present with `ldap` feature / 内部ldap3连接，仅在启用ldap
+    /// feature时存在
     #[cfg(feature = "ldap")]
     inner: Option<ldap3::Ldap>,
 }
 
-impl LdapConnection {
+impl LdapConnection
+{
     /// Whether this connection is currently active / 此连接当前是否活跃
-    pub fn is_connected(&self) -> bool {
+    pub fn is_connected(&self) -> bool
+    {
         self.connected
     }
 
     /// Disconnect from the server / 断开与服务器的连接
     #[allow(clippy::unused_async)]
-    pub async fn unbind(&mut self) -> LdapResult<()> {
+    pub async fn unbind(&mut self) -> LdapResult<()>
+    {
         #[cfg(feature = "ldap")]
-        if let Some(ref mut ldap) = self.inner {
+        if let Some(ref mut ldap) = self.inner
+        {
             let _ = ldap.unbind().await;
         }
         self.connected = false;
@@ -45,14 +53,17 @@ impl LdapConnection {
 
     /// Perform a simple bind (username/password auth) / 执行简单绑定（用户名/密码认证）
     #[allow(clippy::unused_async)]
-    pub async fn simple_bind(&mut self, user: &str, pass: &str) -> LdapResult<()> {
+    pub async fn simple_bind(&mut self, user: &str, pass: &str) -> LdapResult<()>
+    {
         #[cfg(feature = "ldap")]
-        if let Some(ref mut ldap) = self.inner {
+        if let Some(ref mut ldap) = self.inner
+        {
             let result = ldap
                 .simple_bind(user, pass)
                 .await
                 .map_err(|e| LdapError::Authentication(e.to_string()))?;
-            if !result.success() {
+            if !result.success()
+            {
                 return Err(LdapError::Authentication(format!(
                     "Bind failed: {:?}",
                     result.result_code()
@@ -65,7 +76,8 @@ impl LdapConnection {
     }
 
     /// Get the server URL / 获取服务器URL
-    pub fn url(&self) -> &str {
+    pub fn url(&self) -> &str
+    {
         &self.url
     }
 
@@ -80,7 +92,8 @@ impl LdapConnection {
         scope: ldap3::SearchScope,
         filter: &str,
         attrs: &[&str],
-    ) -> LdapResult<Vec<(String, Vec<(String, Vec<String>)>)>> {
+    ) -> LdapResult<Vec<(String, Vec<(String, Vec<String>)>)>>
+    {
         use ldap3::SearchEntry;
         let ldap = self
             .inner
@@ -93,7 +106,8 @@ impl LdapConnection {
             .map_err(|e| LdapError::Operation(e.to_string()))?;
 
         let mut entries = Vec::new();
-        for entry in rs {
+        for entry in rs
+        {
             let se = SearchEntry::construct(entry);
             let attrs: Vec<(String, Vec<String>)> = se.attrs.into_iter().collect();
             entries.push((se.dn, attrs));
@@ -107,7 +121,8 @@ impl LdapConnection {
         &mut self,
         dn: &str,
         attrs: Vec<(String, std::collections::HashSet<String>)>,
-    ) -> LdapResult<()> {
+    ) -> LdapResult<()>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -120,7 +135,8 @@ impl LdapConnection {
 
     /// Delete an LDAP entry / 删除LDAP条目
     #[cfg(feature = "ldap")]
-    pub(crate) async fn delete(&mut self, dn: &str) -> LdapResult<()> {
+    pub(crate) async fn delete(&mut self, dn: &str) -> LdapResult<()>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -133,7 +149,8 @@ impl LdapConnection {
 
     /// Modify an existing LDAP entry / 修改现有LDAP条目
     #[cfg(feature = "ldap")]
-    pub(crate) async fn modify(&mut self, dn: &str, mods: Vec<ldap3::Mod>) -> LdapResult<()> {
+    pub(crate) async fn modify(&mut self, dn: &str, mods: Vec<ldap3::Mod>) -> LdapResult<()>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -152,7 +169,8 @@ impl LdapConnection {
         new_rdn: &str,
         delete_old_rdn: bool,
         new_superior: Option<&str>,
-    ) -> LdapResult<()> {
+    ) -> LdapResult<()>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -170,7 +188,8 @@ impl LdapConnection {
         dn: &str,
         attribute: &str,
         value: &str,
-    ) -> LdapResult<bool> {
+    ) -> LdapResult<bool>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -184,7 +203,8 @@ impl LdapConnection {
 
     /// Abandon an ongoing operation / 放弃正在进行的操作
     #[cfg(feature = "ldap")]
-    pub(crate) async fn abandon(&mut self, message_id: i32) -> LdapResult<()> {
+    pub(crate) async fn abandon(&mut self, message_id: i32) -> LdapResult<()>
+    {
         let ldap = self
             .inner
             .as_mut()
@@ -198,7 +218,8 @@ impl LdapConnection {
 
 /// Context source trait / 上下文源 trait
 #[async_trait]
-pub trait ContextSource: Send + Sync {
+pub trait ContextSource: Send + Sync
+{
     /// Get an authenticated connection / 获取已认证的连接
     async fn get_context(&self) -> LdapResult<LdapConnection>;
     /// Get an anonymous connection / 获取匿名连接
@@ -218,7 +239,8 @@ pub trait ContextSource: Send + Sync {
 /// 管理到LDAP目录服务器的连接。
 /// 启用 `ldap` feature 时连接为真实连接，否则为轻量级存根。
 #[derive(Debug, Clone)]
-pub struct LdapContextSource {
+pub struct LdapContextSource
+{
     url: String,
     base_dn: String,
     username: Option<String>,
@@ -227,9 +249,11 @@ pub struct LdapContextSource {
     connect_timeout: Duration,
 }
 
-impl LdapContextSource {
+impl LdapContextSource
+{
     /// Create a new context source / 创建新的上下文源
-    pub fn new(url: &str, base_dn: &str) -> Self {
+    pub fn new(url: &str, base_dn: &str) -> Self
+    {
         Self {
             url: url.to_string(),
             base_dn: base_dn.to_string(),
@@ -240,21 +264,26 @@ impl LdapContextSource {
     }
 
     /// Create a builder / 创建构建器
-    pub fn builder() -> LdapContextSourceBuilder {
+    pub fn builder() -> LdapContextSourceBuilder
+    {
         LdapContextSourceBuilder::default()
     }
 
     /// Get the server URL / 获取服务器URL
-    pub fn url(&self) -> &str {
+    pub fn url(&self) -> &str
+    {
         &self.url
     }
+
     /// Get the base DN / 获取基础DN
-    pub fn base_dn(&self) -> &str {
+    pub fn base_dn(&self) -> &str
+    {
         &self.base_dn
     }
 
     /// Set authentication credentials / 设置认证凭据
-    pub fn with_credentials(mut self, user: &str, pass: &str) -> Self {
+    pub fn with_credentials(mut self, user: &str, pass: &str) -> Self
+    {
         self.username = Some(user.to_string());
         self.password = Some(pass.to_string());
         self
@@ -262,19 +291,23 @@ impl LdapContextSource {
 
     /// Open a real or stub connection / 打开真实或存根连接
     #[cfg(feature = "ldap")]
-    async fn create_connection(&self, authenticate: bool) -> LdapResult<LdapConnection> {
+    async fn create_connection(&self, authenticate: bool) -> LdapResult<LdapConnection>
+    {
         let ldap = ldap3::LdapConnAsync::new(&self.url)
             .await
             .map_err(|e| LdapError::Connection(e.to_string()))?;
         let mut ldap_conn = ldap3::LdapConn::from(ldap);
 
-        if authenticate {
-            if let (Some(user), Some(pass)) = (&self.username, &self.password) {
+        if authenticate
+        {
+            if let (Some(user), Some(pass)) = (&self.username, &self.password)
+            {
                 let result = ldap_conn
                     .simple_bind(user, pass)
                     .await
                     .map_err(|e| LdapError::Authentication(e.to_string()))?;
-                if !result.success() {
+                if !result.success()
+                {
                     return Err(LdapError::Authentication(format!(
                         "Bind failed: {:?}",
                         result.result_code()
@@ -293,7 +326,8 @@ impl LdapContextSource {
     /// Open a stub connection (no ldap feature) / 打开存根连接（无ldap feature）
     #[cfg(not(feature = "ldap"))]
     #[allow(clippy::unused_async)]
-    async fn create_connection(&self, _authenticate: bool) -> LdapResult<LdapConnection> {
+    async fn create_connection(&self, _authenticate: bool) -> LdapResult<LdapConnection>
+    {
         Ok(LdapConnection {
             url: self.url.clone(),
             connected: true,
@@ -302,26 +336,33 @@ impl LdapContextSource {
 }
 
 #[async_trait]
-impl ContextSource for LdapContextSource {
-    async fn get_context(&self) -> LdapResult<LdapConnection> {
+impl ContextSource for LdapContextSource
+{
+    async fn get_context(&self) -> LdapResult<LdapConnection>
+    {
         self.create_connection(true).await
     }
 
-    async fn get_anonymous_context(&self) -> LdapResult<LdapConnection> {
+    async fn get_anonymous_context(&self) -> LdapResult<LdapConnection>
+    {
         self.create_connection(false).await
     }
 
-    fn base_dn(&self) -> &str {
+    fn base_dn(&self) -> &str
+    {
         &self.base_dn
     }
-    fn url(&self) -> &str {
+
+    fn url(&self) -> &str
+    {
         &self.url
     }
 }
 
 /// Builder for `LdapContextSource` / `LdapContextSource构建器`
 #[derive(Debug, Default)]
-pub struct LdapContextSourceBuilder {
+pub struct LdapContextSourceBuilder
+{
     url: Option<String>,
     base_dn: Option<String>,
     username: Option<String>,
@@ -329,35 +370,46 @@ pub struct LdapContextSourceBuilder {
     connect_timeout: Option<Duration>,
 }
 
-impl LdapContextSourceBuilder {
+impl LdapContextSourceBuilder
+{
     /// Set the LDAP server URL / 设置LDAP服务器URL
-    pub fn url(mut self, url: impl Into<String>) -> Self {
+    pub fn url(mut self, url: impl Into<String>) -> Self
+    {
         self.url = Some(url.into());
         self
     }
+
     /// Set the base DN / 设置基础DN
-    pub fn base_dn(mut self, base_dn: impl Into<String>) -> Self {
+    pub fn base_dn(mut self, base_dn: impl Into<String>) -> Self
+    {
         self.base_dn = Some(base_dn.into());
         self
     }
+
     /// Set the bind username / 设置绑定用户名
-    pub fn username(mut self, username: impl Into<String>) -> Self {
+    pub fn username(mut self, username: impl Into<String>) -> Self
+    {
         self.username = Some(username.into());
         self
     }
+
     /// Set the bind password / 设置绑定密码
-    pub fn password(mut self, password: impl Into<String>) -> Self {
+    pub fn password(mut self, password: impl Into<String>) -> Self
+    {
         self.password = Some(password.into());
         self
     }
+
     /// Set the connection timeout / 设置连接超时
-    pub fn connect_timeout(mut self, timeout: Duration) -> Self {
+    pub fn connect_timeout(mut self, timeout: Duration) -> Self
+    {
         self.connect_timeout = Some(timeout);
         self
     }
 
     /// Build the context source / 构建上下文源
-    pub fn build(self) -> LdapResult<LdapContextSource> {
+    pub fn build(self) -> LdapResult<LdapContextSource>
+    {
         let url = self
             .url
             .ok_or_else(|| LdapError::Connection("URL required".into()))?;
@@ -375,25 +427,29 @@ impl LdapContextSourceBuilder {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_context_source_new() {
+    fn test_context_source_new()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         assert_eq!(ctx.url(), "ldap://localhost:389");
         assert_eq!(ctx.base_dn(), "dc=example,dc=com");
     }
 
     #[test]
-    fn test_context_source_with_credentials() {
+    fn test_context_source_with_credentials()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com")
             .with_credentials("cn=admin", "secret");
         assert_eq!(ctx.url(), "ldap://localhost:389");
     }
 
     #[test]
-    fn test_builder_success() {
+    fn test_builder_success()
+    {
         let ctx = LdapContextSource::builder()
             .url("ldap://localhost:389")
             .base_dn("dc=example,dc=com")
@@ -406,7 +462,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_missing_url() {
+    fn test_builder_missing_url()
+    {
         let result = LdapContextSource::builder()
             .base_dn("dc=example,dc=com")
             .build();
@@ -414,7 +471,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_missing_base_dn() {
+    fn test_builder_missing_base_dn()
+    {
         let result = LdapContextSource::builder()
             .url("ldap://localhost:389")
             .build();
@@ -422,7 +480,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_stub_connection() {
+    async fn test_stub_connection()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let conn = ctx.get_anonymous_context().await.unwrap();
         assert!(conn.is_connected());
@@ -430,7 +489,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_stub_connection_unbind() {
+    async fn test_stub_connection_unbind()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let mut conn = ctx.get_anonymous_context().await.unwrap();
         assert!(conn.is_connected());
@@ -439,7 +499,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_stub_simple_bind() {
+    async fn test_stub_simple_bind()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let mut conn = ctx.get_context().await.unwrap();
         let result = conn.simple_bind("cn=admin", "password").await;

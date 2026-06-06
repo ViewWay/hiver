@@ -12,6 +12,12 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
+
 use super::{
     bean::{Bean, BeanDefinition, Scope},
     conditional::{Condition, ConditionContext},
@@ -19,9 +25,6 @@ use super::{
     extension::Extensions,
     reflect::ReflectContainer,
 };
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
 
 /// Bean factory function type
 /// Bean工厂函数类型
@@ -32,7 +35,8 @@ pub type BeanFactoryFn<T> = Arc<dyn Fn(&Container) -> Result<T> + Send + Sync>;
 
 /// Bean registration with metadata
 /// 带元数据的bean注册
-pub struct BeanRegistration<T> {
+pub struct BeanRegistration<T>
+{
     /// The bean definition
     /// Bean定义
     pub definition: BeanDefinition,
@@ -50,10 +54,12 @@ pub struct BeanRegistration<T> {
     pub pre_destroy: Option<Arc<dyn Fn(&T) -> Result<()> + Send + Sync>>,
 }
 
-impl<T> BeanRegistration<T> {
+impl<T> BeanRegistration<T>
+{
     /// Create a new bean registration
     /// 创建新的bean注册
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             definition: BeanDefinition::new(name, std::any::type_name::<T>()),
             factory: None,
@@ -64,7 +70,8 @@ impl<T> BeanRegistration<T> {
 
     /// Set the factory function
     /// 设置工厂函数
-    pub fn factory(mut self, factory: BeanFactoryFn<T>) -> Self {
+    pub fn factory(mut self, factory: BeanFactoryFn<T>) -> Self
+    {
         self.factory = Some(factory);
         self
     }
@@ -91,39 +98,49 @@ impl<T> BeanRegistration<T> {
 
     /// Set the scope
     /// 设置作用域
-    pub fn scope(mut self, scope: Scope) -> Self {
+    pub fn scope(mut self, scope: Scope) -> Self
+    {
         self.definition.scope = scope;
         self
     }
 
     /// Set as primary
     /// 设置为主bean
-    pub fn primary(mut self, primary: bool) -> Self {
+    pub fn primary(mut self, primary: bool) -> Self
+    {
         self.definition.primary = primary;
         self
     }
 
     /// Set lazy initialization
     /// 设置延迟初始化
-    pub fn lazy(mut self, lazy: bool) -> Self {
+    pub fn lazy(mut self, lazy: bool) -> Self
+    {
         self.definition.lazy = lazy;
         self
     }
 }
 
-trait PreDestroyHook: Send + Sync {
+trait PreDestroyHook: Send + Sync
+{
     fn invoke(&self, bean: &dyn Any) -> Result<()>;
 }
 
-struct PreDestroyHookImpl<T> {
+struct PreDestroyHookImpl<T>
+{
     callback: Arc<dyn Fn(&T) -> Result<()> + Send + Sync>,
 }
 
-impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T> {
-    fn invoke(&self, bean: &dyn Any) -> Result<()> {
-        if let Some(typed) = bean.downcast_ref::<T>() {
+impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T>
+{
+    fn invoke(&self, bean: &dyn Any) -> Result<()>
+    {
+        if let Some(typed) = bean.downcast_ref::<T>()
+        {
             (self.callback)(typed)
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
@@ -131,7 +148,8 @@ impl<T: 'static> PreDestroyHook for PreDestroyHookImpl<T> {
 
 /// Internal bean storage
 /// 内部bean存储
-struct BeanStore {
+struct BeanStore
+{
     /// Singleton beans (created once and reused)
     /// 单例bean（创建一次并重用）
     singletons: HashMap<TypeId, Arc<dyn Any + Send + Sync>>,
@@ -165,8 +183,10 @@ struct BeanStore {
     lazy_flags: HashMap<TypeId, bool>,
 }
 
-impl BeanStore {
-    fn new() -> Self {
+impl BeanStore
+{
+    fn new() -> Self
+    {
         Self {
             singletons: HashMap::new(),
             registrations: HashMap::new(),
@@ -206,7 +226,8 @@ impl BeanStore {
 /// let service: Arc<UserService> = container.get_bean()?;
 /// ```
 #[derive(Clone)]
-pub struct Container {
+pub struct Container
+{
     beans: Arc<RwLock<BeanStore>>,
     extensions: Extensions,
     /// Reflection container for dynamic bean operations
@@ -214,10 +235,12 @@ pub struct Container {
     reflect: Arc<ReflectContainer>,
 }
 
-impl Container {
+impl Container
+{
     /// Create a new container
     /// 创建新容器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             #[allow(clippy::arc_with_non_send_sync)]
             beans: Arc::new(RwLock::new(BeanStore::new())),
@@ -271,7 +294,8 @@ impl Container {
     {
         let type_id = TypeId::of::<T>();
 
-        if let Some(pre_destroy) = &registration.pre_destroy {
+        if let Some(pre_destroy) = &registration.pre_destroy
+        {
             let hook = PreDestroyHookImpl {
                 callback: pre_destroy.clone(),
             };
@@ -312,7 +336,8 @@ impl Container {
     ///
     /// Equivalent to Spring's `@Component` scanning.
     /// 等价于Spring的`@Component`扫描。
-    pub fn register_bean<T: Bean + Send + Sync + 'static>(&mut self, bean: T) -> Result<()> {
+    pub fn register_bean<T: Bean + Send + Sync + 'static>(&mut self, bean: T) -> Result<()>
+    {
         let type_id = TypeId::of::<T>();
         let bean_arc = Arc::new(bean);
 
@@ -427,9 +452,12 @@ impl Container {
                 .with_bean_names(bean_names)
         };
 
-        if condition.matches(&context) {
+        if condition.matches(&context)
+        {
             self.register(factory)
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
@@ -451,7 +479,8 @@ impl Container {
     /// - 延迟初始化
     /// - 单例作用域（默认）
     /// - 循环依赖检测和解析
-    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>> {
+    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
+    {
         let type_id = TypeId::of::<T>();
 
         // First, check if we already have a singleton
@@ -471,7 +500,8 @@ impl Container {
             // Check for circular dependency: if we're currently creating this bean,
             // try to return the early-exposed Weak reference
             // 检查循环依赖：如果正在创建此bean，尝试返回提前暴露的Weak引用
-            if beans.creating.borrow().contains(&type_id) {
+            if beans.creating.borrow().contains(&type_id)
+            {
                 if let Some(weak) = beans.early_exposed.get(&type_id)
                     && let Some(arc) = weak.upgrade()
                     && let Ok(typed) = arc.downcast::<T>()
@@ -502,7 +532,8 @@ impl Container {
                 .and_then(|reg| reg.factory.clone())
         };
 
-        if let Some(factory) = factory_opt {
+        if let Some(factory) = factory_opt
+        {
             // Mark as creating (for cycle detection)
             // 标记为正在创建（用于循环检测）
             {
@@ -564,7 +595,9 @@ impl Container {
             }
 
             Ok(placeholder)
-        } else {
+        }
+        else
+        {
             Err(Error::not_found(format!("Bean not found: {}", std::any::type_name::<T>())))
         }
     }
@@ -574,7 +607,8 @@ impl Container {
     ///
     /// Equivalent to Spring's `ApplicationContext.getBean(String)`.
     /// 等价于Spring的`ApplicationContext.getBean(String)`。
-    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>> {
+    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
+    {
         let type_id = {
             let beans = self
                 .beans
@@ -618,7 +652,8 @@ impl Container {
                 .and_then(|reg| reg.factory.clone())
         };
 
-        if let Some(factory) = factory_opt {
+        if let Some(factory) = factory_opt
+        {
             // Create the bean using the factory (resolving dependencies)
             // 使用工厂创建bean（解析依赖）
             let bean = factory(self)?;
@@ -634,14 +669,17 @@ impl Container {
             beans.singletons.insert(type_id, bean_arc.clone());
 
             Ok(bean_arc)
-        } else {
+        }
+        else
+        {
             Err(Error::not_found(format!("Bean not found: {}", name)))
         }
     }
 
     /// Check if a bean is registered
     /// 检查bean是否已注册
-    pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool {
+    pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool
+    {
         let type_id = TypeId::of::<T>();
 
         if let Ok(beans) = self.beans.try_read()
@@ -656,19 +694,22 @@ impl Container {
 
     /// Get the extensions
     /// 获取扩展
-    pub fn extensions(&self) -> &Extensions {
+    pub fn extensions(&self) -> &Extensions
+    {
         &self.extensions
     }
 
     /// Get a mutable reference to extensions
     /// 获取扩展的可变引用
-    pub fn extensions_mut(&mut self) -> &mut Extensions {
+    pub fn extensions_mut(&mut self) -> &mut Extensions
+    {
         &mut self.extensions
     }
 
     /// Get the reflection container
     /// 获取反射容器
-    pub fn reflect(&self) -> &Arc<ReflectContainer> {
+    pub fn reflect(&self) -> &Arc<ReflectContainer>
+    {
         &self.reflect
     }
 
@@ -679,7 +720,8 @@ impl Container {
     /// 等价于在所有非延迟注册的bean上调用`getBean()`。
     /// Lazy beans are skipped and will be initialized on first access.
     /// 延迟bean被跳过，将在首次访问时初始化。
-    pub fn initialize(&self) -> Result<()> {
+    pub fn initialize(&self) -> Result<()>
+    {
         let to_init: Vec<TypeId> = {
             let beans = self
                 .beans
@@ -693,7 +735,8 @@ impl Container {
                 .collect()
         };
 
-        for type_id in to_init {
+        for type_id in to_init
+        {
             let init_fn = {
                 let beans = self
                     .beans
@@ -701,7 +744,8 @@ impl Container {
                     .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
                 beans.eager_init_fns.get(&type_id).cloned()
             };
-            if let Some(init_fn) = init_fn {
+            if let Some(init_fn) = init_fn
+            {
                 init_fn(self)?;
             }
         }
@@ -711,15 +755,18 @@ impl Container {
 
     /// Shutdown the container, calling pre-destroy callbacks
     /// 关闭容器，调用销毁前回调
-    pub fn shutdown(&self) -> Result<()> {
+    pub fn shutdown(&self) -> Result<()>
+    {
         let mut beans = self
             .beans
             .write()
             .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
 
         let hooks: Vec<_> = beans.pre_destroy_hooks.drain().collect();
-        for (type_id, hook) in hooks {
-            if let Some(bean) = beans.singletons.get(&type_id) {
+        for (type_id, hook) in hooks
+        {
+            if let Some(bean) = beans.singletons.get(&type_id)
+            {
                 let _ = hook.invoke(bean.as_ref());
             }
         }
@@ -732,8 +779,10 @@ impl Container {
     }
 }
 
-impl Default for Container {
-    fn default() -> Self {
+impl Default for Container
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -748,16 +797,19 @@ impl Default for Container {
 /// - `ApplicationContext`
 /// - `ConfigurableApplicationContext`
 /// - `WebApplicationContext`
-pub struct ApplicationContext {
+pub struct ApplicationContext
+{
     container: Container,
     profile: String,
     active: bool,
 }
 
-impl ApplicationContext {
+impl ApplicationContext
+{
     /// Create a new application context
     /// 创建新的应用上下文
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             container: Container::new(),
             profile: std::env::var("SPRING_PROFILES_ACTIVE")
@@ -768,37 +820,43 @@ impl ApplicationContext {
 
     /// Get the active profile
     /// 获取活动配置文件
-    pub fn profile(&self) -> &str {
+    pub fn profile(&self) -> &str
+    {
         &self.profile
     }
 
     /// Set the active profile
     /// 设置活动配置文件
-    pub fn set_profile(&mut self, profile: impl Into<String>) {
+    pub fn set_profile(&mut self, profile: impl Into<String>)
+    {
         self.profile = profile.into();
     }
 
     /// Check if a profile is active
     /// 检查配置文件是否活动
-    pub fn accepts_profile(&self, profile: &str) -> bool {
+    pub fn accepts_profile(&self, profile: &str) -> bool
+    {
         self.profile == profile || self.profile == "default" || profile == "default"
     }
 
     /// Get the underlying container
     /// 获取底层容器
-    pub fn container(&self) -> &Container {
+    pub fn container(&self) -> &Container
+    {
         &self.container
     }
 
     /// Get a mutable reference to the container
     /// 获取容器的可变引用
-    pub fn container_mut(&mut self) -> &mut Container {
+    pub fn container_mut(&mut self) -> &mut Container
+    {
         &mut self.container
     }
 
     /// Register a bean
     /// 注册bean
-    pub fn register<T: Bean + Send + Sync + 'static>(&mut self, bean: T) -> Result<()> {
+    pub fn register<T: Bean + Send + Sync + 'static>(&mut self, bean: T) -> Result<()>
+    {
         self.container.register_bean(bean)
     }
 
@@ -814,19 +872,22 @@ impl ApplicationContext {
 
     /// Get a bean
     /// 获取bean
-    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>> {
+    pub fn get_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
+    {
         self.container.get_bean()
     }
 
     /// Get a bean by name
     /// 按名称获取bean
-    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>> {
+    pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
+    {
         self.container.get_bean_by_name(name)
     }
 
     /// Check if a bean exists
     /// 检查bean是否存在
-    pub fn contains_bean<T: Bean + Send + Sync + 'static>(&self) -> bool {
+    pub fn contains_bean<T: Bean + Send + Sync + 'static>(&self) -> bool
+    {
         self.container.has_bean::<T>()
     }
 
@@ -842,7 +903,8 @@ impl ApplicationContext {
     /// - 在现有bean上调用销毁前回调
     /// - 清除所有单例实例
     /// - 从注册中重新初始化所有非延迟bean
-    pub fn refresh(&mut self) -> Result<()> {
+    pub fn refresh(&mut self) -> Result<()>
+    {
         // Step 1: Collect all singletons to destroy
         // 步骤1：收集要销毁的所有单例
         let singletons_to_destroy: Vec<_> = {
@@ -860,7 +922,8 @@ impl ApplicationContext {
         // and call them. For now, we rely on the PreDestroy trait implementation.
         // 注意：在完整实现中，我们会检查注册中的销毁前回调并调用它们
         // 目前，我们依赖PreDestroy trait实现
-        for _type_id in singletons_to_destroy {
+        for _type_id in singletons_to_destroy
+        {
             // The bean will be dropped when cleared from the map
             // bean从映射清除时将被丢弃
         }
@@ -886,40 +949,48 @@ impl ApplicationContext {
 
     /// Start the context (initialize all eager singletons)
     /// 启动上下文（初始化所有急切单例）
-    pub fn start(&mut self) -> Result<()> {
+    pub fn start(&mut self) -> Result<()>
+    {
         self.active = true;
         self.container.initialize()
     }
 
     /// Close the context and release resources
     /// 关闭上下文并释放资源
-    pub fn close(self) -> Result<()> {
+    pub fn close(self) -> Result<()>
+    {
         self.container.shutdown()
     }
 
     /// Check if context is active
     /// 检查上下文是否活动
-    pub fn is_active(&self) -> bool {
+    pub fn is_active(&self) -> bool
+    {
         self.active
     }
 }
 
-impl Default for ApplicationContext {
-    fn default() -> Self {
+impl Default for ApplicationContext
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// Component scanner (equivalent to @`ComponentScan`)
 /// 组件扫描器（等价于 @`ComponentScan`）
-pub struct ComponentScanner {
+pub struct ComponentScanner
+{
     base_packages: Vec<String>,
 }
 
-impl ComponentScanner {
+impl ComponentScanner
+{
     /// Create a new scanner
     /// 创建新扫描器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             base_packages: Vec::new(),
         }
@@ -934,7 +1005,8 @@ impl ComponentScanner {
     /// let scanner = ComponentScanner::new()
     ///     .scan_package("com.example");
     /// ```
-    pub fn scan_package(mut self, package: impl Into<String>) -> Self {
+    pub fn scan_package(mut self, package: impl Into<String>) -> Self
+    {
         self.base_packages.push(package.into());
         self
     }
@@ -965,7 +1037,8 @@ impl ComponentScanner {
     /// // Components are collected at compile time and registered automatically
     /// // 组件在编译时被收集并自动注册
     /// ```
-    pub fn scan(&self, _context: &mut ApplicationContext) -> Result<()> {
+    pub fn scan(&self, _context: &mut ApplicationContext) -> Result<()>
+    {
         // Component scanning in Rust is done at compile time via proc-macros
         // The `#[component]` macro generates registration code
         // 在Rust中，组件扫描通过proc宏在编译时完成
@@ -988,15 +1061,18 @@ impl ComponentScanner {
     pub fn register_component<T: Bean + Send + Sync + 'static>(
         &self,
         _context: &mut ApplicationContext,
-    ) -> Result<()> {
+    ) -> Result<()>
+    {
         // The proc-macro will generate a call to register_bean for each component
         // proc宏将为每个组件生成对register_bean的调用
         Ok(())
     }
 }
 
-impl Default for ComponentScanner {
-    fn default() -> Self {
+impl Default for ComponentScanner
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -1023,7 +1099,8 @@ impl Default for ComponentScanner {
 ///     }
 /// }
 /// ```
-pub trait PostConstruct {
+pub trait PostConstruct
+{
     /// Called after the bean is constructed
     /// 在bean构造后调用
     fn post_construct(&self) -> Result<()>;
@@ -1054,48 +1131,58 @@ pub trait PostConstruct {
 ///     }
 /// }
 /// ```
-pub trait PreDestroy {
+pub trait PreDestroy
+{
     /// Called before the bean is destroyed
     /// 在bean销毁前调用
     fn pre_destroy(&self) -> Result<()>;
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::conditional::{ConditionalOnBean, ConditionalOnMissingBean, ConditionalOnProperty};
 
     // ── Test fixtures / 测试夹具 ────────────────────────────────────────
 
     #[derive(Debug, Default)]
-    struct UserRepository {
+    struct UserRepository
+    {
         initialized: bool,
     }
 
-    impl PostConstruct for UserRepository {
-        fn post_construct(&self) -> Result<()> {
+    impl PostConstruct for UserRepository
+    {
+        fn post_construct(&self) -> Result<()>
+        {
             Ok(())
         }
     }
 
-    impl PreDestroy for UserRepository {
-        fn pre_destroy(&self) -> Result<()> {
+    impl PreDestroy for UserRepository
+    {
+        fn pre_destroy(&self) -> Result<()>
+        {
             Ok(())
         }
     }
 
     #[derive(Debug)]
-    struct UserService {
+    struct UserService
+    {
         user_count: u32,
     }
 
     #[derive(Debug, Default)]
-    struct EmailService {
+    struct EmailService
+    {
         sent_count: u32,
     }
 
     #[derive(Debug)]
-    struct CacheService {
+    struct CacheService
+    {
         hits: u64,
     }
 
@@ -1105,19 +1192,22 @@ mod tests {
     // ── Container::new / Container::default ────────────────────────────
 
     #[test]
-    fn test_container_new() {
+    fn test_container_new()
+    {
         let container = Container::new();
         assert!(!container.has_bean::<UserRepository>());
     }
 
     #[test]
-    fn test_container_default() {
+    fn test_container_default()
+    {
         let container = Container::default();
         assert!(!container.has_bean::<UserService>());
     }
 
     #[test]
-    fn test_container_clone_independent() {
+    fn test_container_clone_independent()
+    {
         let mut container = Container::new();
         container.register(|_| Ok(EmailService::default())).unwrap();
         // Clone shares underlying Arc<RwLock<>> so beans are shared / Clone共享底层Arc<RwLock<>>
@@ -1128,7 +1218,8 @@ mod tests {
     // ── register / get_bean ────────────────────────────────────────────
 
     #[test]
-    fn test_register_and_get_bean() {
+    fn test_register_and_get_bean()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserRepository::default()))
@@ -1138,7 +1229,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_factory_creates_instance() {
+    fn test_register_factory_creates_instance()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 42 }))
@@ -1148,14 +1240,16 @@ mod tests {
     }
 
     #[test]
-    fn test_get_bean_missing_returns_error() {
+    fn test_get_bean_missing_returns_error()
+    {
         let container = Container::new();
         let result = container.get_bean::<UserService>();
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_get_bean_singleton_identity() {
+    fn test_get_bean_singleton_identity()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 1 }))
@@ -1167,7 +1261,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_factory_simple() {
+    fn test_register_factory_simple()
+    {
         let mut container = Container::new();
         container
             .register_factory(|| EmailService { sent_count: 5 })
@@ -1177,7 +1272,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_factory_default() {
+    fn test_register_factory_default()
+    {
         let mut container = Container::new();
         container
             .register_factory(|| EmailService::default())
@@ -1189,7 +1285,8 @@ mod tests {
     // ── register_bean (direct instance) ────────────────────────────────
 
     #[test]
-    fn test_register_bean_direct() {
+    fn test_register_bean_direct()
+    {
         let mut container = Container::new();
         container
             .register_bean(UserRepository { initialized: true })
@@ -1201,13 +1298,15 @@ mod tests {
     // ── has_bean ───────────────────────────────────────────────────────
 
     #[test]
-    fn test_has_bean_false_initially() {
+    fn test_has_bean_false_initially()
+    {
         let container = Container::new();
         assert!(!container.has_bean::<UserService>());
     }
 
     #[test]
-    fn test_has_bean_true_after_register() {
+    fn test_has_bean_true_after_register()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1216,14 +1315,16 @@ mod tests {
     }
 
     #[test]
-    fn test_has_bean_true_after_register_bean() {
+    fn test_has_bean_true_after_register_bean()
+    {
         let mut container = Container::new();
         container.register_bean(EmailService::default()).unwrap();
         assert!(container.has_bean::<EmailService>());
     }
 
     #[test]
-    fn test_has_bean_false_for_unregistered_type() {
+    fn test_has_bean_false_for_unregistered_type()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1234,7 +1335,8 @@ mod tests {
     // ── get_bean_by_name ───────────────────────────────────────────────
 
     #[test]
-    fn test_get_bean_by_name() {
+    fn test_get_bean_by_name()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 7 }))
@@ -1247,7 +1349,8 @@ mod tests {
     }
 
     #[test]
-    fn test_get_bean_by_name_missing() {
+    fn test_get_bean_by_name_missing()
+    {
         let container = Container::new();
         let result = container.get_bean_by_name::<UserService>("nonexistent");
         assert!(result.is_err());
@@ -1256,7 +1359,8 @@ mod tests {
     // ── register_with (full configuration) ─────────────────────────────
 
     #[test]
-    fn test_register_with_factory() {
+    fn test_register_with_factory()
+    {
         let mut container = Container::new();
         let reg = BeanRegistration::new("custom_service")
             .factory(Arc::new(|_| Ok(UserService { user_count: 99 })));
@@ -1266,7 +1370,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_with_post_construct() {
+    fn test_register_with_post_construct()
+    {
         use std::sync::atomic::{AtomicBool, Ordering};
         let called = Arc::new(AtomicBool::new(false));
         let called_clone = called.clone();
@@ -1284,7 +1389,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_with_pre_destroy() {
+    fn test_register_with_pre_destroy()
+    {
         use std::sync::atomic::{AtomicBool, Ordering};
         let destroyed = Arc::new(AtomicBool::new(false));
         let destroyed_clone = destroyed.clone();
@@ -1303,7 +1409,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_with_scope() {
+    fn test_register_with_scope()
+    {
         let mut container = Container::new();
         let reg = BeanRegistration::new("svc")
             .factory(Arc::new(|_| Ok(UserService { user_count: 0 })))
@@ -1313,7 +1420,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_with_primary() {
+    fn test_register_with_primary()
+    {
         let mut container = Container::new();
         let reg = BeanRegistration::new("svc")
             .factory(Arc::new(|_| Ok(UserService { user_count: 0 })))
@@ -1323,7 +1431,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_with_lazy() {
+    fn test_register_with_lazy()
+    {
         let mut container = Container::new();
         let reg = BeanRegistration::new("svc")
             .factory(Arc::new(|_| Ok(UserService { user_count: 0 })))
@@ -1335,7 +1444,8 @@ mod tests {
     // ── Dependency injection ───────────────────────────────────────────
 
     #[test]
-    fn test_dependency_injection() {
+    fn test_dependency_injection()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserRepository::default()))
@@ -1353,7 +1463,8 @@ mod tests {
     // ── shutdown ───────────────────────────────────────────────────────
 
     #[test]
-    fn test_shutdown_clears_beans() {
+    fn test_shutdown_clears_beans()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1364,7 +1475,8 @@ mod tests {
     }
 
     #[test]
-    fn test_shutdown_on_empty_container() {
+    fn test_shutdown_on_empty_container()
+    {
         let container = Container::new();
         // Should not panic / 不应panic
         container.shutdown().unwrap();
@@ -1373,7 +1485,8 @@ mod tests {
     // ── initialize ─────────────────────────────────────────────────────
 
     #[test]
-    fn test_initialize_no_error() {
+    fn test_initialize_no_error()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1382,7 +1495,8 @@ mod tests {
     }
 
     #[test]
-    fn test_initialize_creates_eager_beans() {
+    fn test_initialize_creates_eager_beans()
+    {
         use std::sync::atomic::{AtomicBool, Ordering};
         let created = Arc::new(AtomicBool::new(false));
         let created_clone = created.clone();
@@ -1404,7 +1518,8 @@ mod tests {
     }
 
     #[test]
-    fn test_initialize_skips_lazy_beans() {
+    fn test_initialize_skips_lazy_beans()
+    {
         use std::sync::atomic::{AtomicBool, Ordering};
         let created = Arc::new(AtomicBool::new(false));
         let created_clone = created.clone();
@@ -1430,7 +1545,8 @@ mod tests {
     }
 
     #[test]
-    fn test_initialize_mixed_lazy_and_eager() {
+    fn test_initialize_mixed_lazy_and_eager()
+    {
         use std::sync::atomic::{AtomicBool, Ordering};
         let eager_created = Arc::new(AtomicBool::new(false));
         let eager_clone = eager_created.clone();
@@ -1449,17 +1565,20 @@ mod tests {
     // ── Extensions ─────────────────────────────────────────────────────
 
     #[test]
-    fn test_container_extensions() {
+    fn test_container_extensions()
+    {
         let mut container = Container::new();
         container.extensions_mut().insert("test".to_string());
         assert_eq!(container.extensions().get::<String>(), Some(&"test".to_string()));
     }
 
     #[test]
-    fn test_container_extensions_mut() {
+    fn test_container_extensions_mut()
+    {
         let mut container = Container::new();
         container.extensions_mut().insert(42i32);
-        if let Some(v) = container.extensions_mut().get_mut::<i32>() {
+        if let Some(v) = container.extensions_mut().get_mut::<i32>()
+        {
             *v = 100;
         }
         assert_eq!(container.extensions().get::<i32>(), Some(&100));
@@ -1468,7 +1587,8 @@ mod tests {
     // ── Reflect ────────────────────────────────────────────────────────
 
     #[test]
-    fn test_container_reflect() {
+    fn test_container_reflect()
+    {
         let container = Container::new();
         let _reflect = container.reflect();
     }
@@ -1476,7 +1596,8 @@ mod tests {
     // ── register_conditional ───────────────────────────────────────────
 
     #[test]
-    fn test_register_conditional_on_missing_bean_registers_when_absent() {
+    fn test_register_conditional_on_missing_bean_registers_when_absent()
+    {
         let mut container = Container::new();
         let cond = ConditionalOnMissingBean::of::<CacheService>();
         container
@@ -1486,7 +1607,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_conditional_on_missing_bean_skips_when_present() {
+    fn test_register_conditional_on_missing_bean_skips_when_present()
+    {
         let mut container = Container::new();
         // First register / 先注册
         container
@@ -1502,7 +1624,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_conditional_on_bean_registers_when_present() {
+    fn test_register_conditional_on_bean_registers_when_present()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserRepository::default()))
@@ -1517,34 +1640,39 @@ mod tests {
     // ── ApplicationContext ─────────────────────────────────────────────
 
     #[test]
-    fn test_application_context_new() {
+    fn test_application_context_new()
+    {
         let ctx = ApplicationContext::new();
         assert_eq!(ctx.profile(), "default");
         assert!(!ctx.is_active());
     }
 
     #[test]
-    fn test_application_context_default() {
+    fn test_application_context_default()
+    {
         let ctx = ApplicationContext::default();
         assert_eq!(ctx.profile(), "default");
     }
 
     #[test]
-    fn test_application_context_set_profile() {
+    fn test_application_context_set_profile()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.set_profile("production");
         assert_eq!(ctx.profile(), "production");
     }
 
     #[test]
-    fn test_application_context_accepts_profile_default() {
+    fn test_application_context_accepts_profile_default()
+    {
         let ctx = ApplicationContext::new();
         assert!(ctx.accepts_profile("default"));
         assert!(ctx.accepts_profile("anything")); // "default" context accepts all / "default"上下文接受所有
     }
 
     #[test]
-    fn test_application_context_accepts_profile_specific() {
+    fn test_application_context_accepts_profile_specific()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.set_profile("staging");
         assert!(ctx.accepts_profile("staging"));
@@ -1553,14 +1681,16 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_start() {
+    fn test_application_context_start()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.start().unwrap();
         assert!(ctx.is_active());
     }
 
     #[test]
-    fn test_application_context_register_and_get() {
+    fn test_application_context_register_and_get()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register(EmailService::default()).unwrap();
         let bean = ctx.get_bean::<EmailService>().unwrap();
@@ -1568,7 +1698,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_register_with_factory() {
+    fn test_application_context_register_with_factory()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register_with(|_| Ok(UserService { user_count: 5 }))
             .unwrap();
@@ -1577,7 +1708,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_contains_bean() {
+    fn test_application_context_contains_bean()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register(AuditService).unwrap();
         assert!(ctx.contains_bean::<AuditService>());
@@ -1585,7 +1717,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_get_bean_by_name() {
+    fn test_application_context_get_bean_by_name()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register_with(|_| Ok(UserService { user_count: 3 }))
             .unwrap();
@@ -1595,7 +1728,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_close() {
+    fn test_application_context_close()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register(EmailService::default()).unwrap();
         ctx.start().unwrap();
@@ -1603,7 +1737,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_refresh() {
+    fn test_application_context_refresh()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register_with(|_| Ok(UserService { user_count: 1 }))
             .unwrap();
@@ -1613,7 +1748,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_container_access() {
+    fn test_application_context_container_access()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register_with(|_| Ok(UserService { user_count: 0 }))
             .unwrap();
@@ -1629,21 +1765,24 @@ mod tests {
     // ── ComponentScanner ───────────────────────────────────────────────
 
     #[test]
-    fn test_component_scanner_new() {
+    fn test_component_scanner_new()
+    {
         let scanner = ComponentScanner::new();
         let mut ctx = ApplicationContext::new();
         scanner.scan(&mut ctx).unwrap();
     }
 
     #[test]
-    fn test_component_scanner_default() {
+    fn test_component_scanner_default()
+    {
         let scanner = ComponentScanner::default();
         let mut ctx = ApplicationContext::new();
         scanner.scan(&mut ctx).unwrap();
     }
 
     #[test]
-    fn test_component_scanner_scan_package_builder() {
+    fn test_component_scanner_scan_package_builder()
+    {
         let scanner = ComponentScanner::new()
             .scan_package("com.example")
             .scan_package("com.other");
@@ -1652,7 +1791,8 @@ mod tests {
     }
 
     #[test]
-    fn test_component_scanner_register_component() {
+    fn test_component_scanner_register_component()
+    {
         let scanner = ComponentScanner::new();
         let mut ctx = ApplicationContext::new();
         scanner.register_component::<UserService>(&mut ctx).unwrap();
@@ -1661,10 +1801,13 @@ mod tests {
     // ── PostConstruct / PreDestroy traits ──────────────────────────────
 
     #[test]
-    fn test_post_construct_trait() {
+    fn test_post_construct_trait()
+    {
         struct MySvc;
-        impl PostConstruct for MySvc {
-            fn post_construct(&self) -> Result<()> {
+        impl PostConstruct for MySvc
+        {
+            fn post_construct(&self) -> Result<()>
+            {
                 Ok(())
             }
         }
@@ -1673,10 +1816,13 @@ mod tests {
     }
 
     #[test]
-    fn test_pre_destroy_trait() {
+    fn test_pre_destroy_trait()
+    {
         struct MySvc;
-        impl PreDestroy for MySvc {
-            fn pre_destroy(&self) -> Result<()> {
+        impl PreDestroy for MySvc
+        {
+            fn pre_destroy(&self) -> Result<()>
+            {
                 Ok(())
             }
         }
@@ -1687,7 +1833,8 @@ mod tests {
     // ── Edge cases / 边界情况 ──────────────────────────────────────────
 
     #[test]
-    fn test_register_multiple_different_types() {
+    fn test_register_multiple_different_types()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 1 }))
@@ -1707,7 +1854,8 @@ mod tests {
     }
 
     #[test]
-    fn test_get_bean_after_shutdown_returns_error() {
+    fn test_get_bean_after_shutdown_returns_error()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1719,7 +1867,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_registration_builder() {
+    fn test_bean_registration_builder()
+    {
         let reg: BeanRegistration<UserService> = BeanRegistration::new("test_svc")
             .scope(Scope::Prototype)
             .primary(true)
@@ -1731,7 +1880,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_registration_new_defaults() {
+    fn test_bean_registration_new_defaults()
+    {
         let reg: BeanRegistration<UserService> = BeanRegistration::new("svc");
         assert_eq!(reg.definition.name, "svc");
         assert!(reg.factory.is_none());
@@ -1745,7 +1895,8 @@ mod tests {
     // ── Additional container tests / 额外容器测试 ──────────────────────
 
     #[test]
-    fn test_register_bean_overwrite() {
+    fn test_register_bean_overwrite()
+    {
         let mut container = Container::new();
         container
             .register_bean(UserService { user_count: 1 })
@@ -1759,7 +1910,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_factory_with_container_access() {
+    fn test_register_factory_with_container_access()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserRepository { initialized: true }))
@@ -1777,13 +1929,15 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_not_active_before_start() {
+    fn test_application_context_not_active_before_start()
+    {
         let ctx = ApplicationContext::new();
         assert!(!ctx.is_active());
     }
 
     #[test]
-    fn test_application_context_set_profile_multiple_times() {
+    fn test_application_context_set_profile_multiple_times()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.set_profile("dev");
         assert_eq!(ctx.profile(), "dev");
@@ -1792,7 +1946,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_accepts_profile_default_always() {
+    fn test_application_context_accepts_profile_default_always()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.set_profile("custom");
         // "default" profile is always accepted / "default"配置始终被接受
@@ -1802,7 +1957,8 @@ mod tests {
     }
 
     #[test]
-    fn test_application_context_register_unit_type() {
+    fn test_application_context_register_unit_type()
+    {
         let mut ctx = ApplicationContext::new();
         ctx.register(AuditService).unwrap();
         assert!(ctx.contains_bean::<AuditService>());
@@ -1810,7 +1966,8 @@ mod tests {
     }
 
     #[test]
-    fn test_shutdown_twice() {
+    fn test_shutdown_twice()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(UserService { user_count: 0 }))
@@ -1822,7 +1979,8 @@ mod tests {
     }
 
     #[test]
-    fn test_get_bean_by_name_after_lazy_creation() {
+    fn test_get_bean_by_name_after_lazy_creation()
+    {
         let mut container = Container::new();
         container
             .register(|_| Ok(CacheService { hits: 42 }))
@@ -1841,7 +1999,8 @@ mod tests {
     }
 
     #[test]
-    fn test_container_extensions_isolation() {
+    fn test_container_extensions_isolation()
+    {
         let mut container = Container::new();
         container.extensions_mut().insert(42i32);
         // Extensions are separate from beans / 扩展与bean分离
@@ -1850,7 +2009,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_conditional_on_bean_skips_when_absent() {
+    fn test_register_conditional_on_bean_skips_when_absent()
+    {
         let mut container = Container::new();
         // UserService not registered, so conditional should skip / UserService未注册，条件应跳过
         let cond = ConditionalOnBean::of::<UserService>();
@@ -1863,11 +2023,14 @@ mod tests {
     }
 
     #[test]
-    fn test_multiple_beans_same_factory_pattern() {
+    fn test_multiple_beans_same_factory_pattern()
+    {
         let mut container = Container::new();
-        for i in 0..3 {
+        for i in 0..3
+        {
             let count = i;
-            match i % 3 {
+            match i % 3
+            {
                 0 => container
                     .register(move |_| Ok(UserService { user_count: count }))
                     .unwrap(),

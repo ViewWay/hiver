@@ -5,8 +5,10 @@
 /// PKI 密钥引擎生成动态 TLS 证书。
 use serde::{Deserialize, Serialize};
 
-use crate::client::VaultClient;
-use crate::error::{VaultError, VaultResult};
+use crate::{
+    client::VaultClient,
+    error::{VaultError, VaultResult},
+};
 
 /// PKI certificate management service / PKI 证书管理服务
 ///
@@ -29,14 +31,16 @@ use crate::error::{VaultError, VaultResult};
 /// }
 /// ```
 #[derive(Debug)]
-pub struct Pki<'a> {
+pub struct Pki<'a>
+{
     client: &'a VaultClient,
     mount: String,
 }
 
 /// Certificate generation request / 证书生成请求
 #[derive(Debug, Clone, Serialize)]
-pub struct CertificateRequest {
+pub struct CertificateRequest
+{
     /// Common name / 通用名称
     #[serde(rename = "common_name")]
     pub common_name: String,
@@ -62,7 +66,8 @@ pub struct CertificateRequest {
 
 /// Certificate issue/generate response / 证书签发/生成响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Certificate {
+pub struct Certificate
+{
     /// The certificate in PEM format / PEM 格式的证书
     pub certificate: String,
     /// The private key in PEM format / PEM 格式的私钥
@@ -79,7 +84,8 @@ pub struct Certificate {
 
 /// Certificate role configuration / 证书角色配置
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CertificateRole {
+pub struct CertificateRole
+{
     /// Allowed domains / 允许的域名
     #[serde(rename = "allowed_domains", skip_serializing_if = "Option::is_none")]
     pub allowed_domains: Option<Vec<String>>,
@@ -111,27 +117,32 @@ pub struct CertificateRole {
 
 /// CA certificate set request / CA 证书设置请求
 #[derive(Debug, Clone, Serialize)]
-struct CaSetRequest {
+struct CaSetRequest
+{
     #[serde(rename = "pem_bundle")]
     pem_bundle: String,
 }
 
 /// CRL information / CRL 信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CrlInfo {
+pub struct CrlInfo
+{
     /// Whether CRL building is enabled / 是否启用 CRL 构建
     pub building: Option<bool>,
 }
 
 /// Data response wrapper / 数据响应包装
 #[derive(Debug, Clone, Deserialize)]
-struct DataResponse<T> {
+struct DataResponse<T>
+{
     data: T,
 }
 
-impl<'a> Pki<'a> {
+impl<'a> Pki<'a>
+{
     /// Create a new PKI handle / 创建新的 PKI 句柄
-    pub fn new(client: &'a VaultClient, mount: &str) -> Self {
+    pub fn new(client: &'a VaultClient, mount: &str) -> Self
+    {
         Self {
             client,
             mount: mount.to_string(),
@@ -147,7 +158,8 @@ impl<'a> Pki<'a> {
         role: &str,
         common_name: &str,
         alt_names: Vec<String>,
-    ) -> VaultResult<Certificate> {
+    ) -> VaultResult<Certificate>
+    {
         let path = format!("{}/issue/{}", self.mount, role);
         let body = CertificateRequest {
             common_name: common_name.to_string(),
@@ -169,7 +181,8 @@ impl<'a> Pki<'a> {
         &self,
         role: &str,
         request: &CertificateRequest,
-    ) -> VaultResult<Certificate> {
+    ) -> VaultResult<Certificate>
+    {
         let path = format!("{}/issue/{}", self.mount, role);
         let resp = self.client.post(&path, request).await?;
         let cert_resp: DataResponse<Certificate> = resp.json().await?;
@@ -177,14 +190,16 @@ impl<'a> Pki<'a> {
     }
 
     /// Create or update a certificate role / 创建或更新证书角色
-    pub async fn set_role(&self, role_name: &str, role: &CertificateRole) -> VaultResult<()> {
+    pub async fn set_role(&self, role_name: &str, role: &CertificateRole) -> VaultResult<()>
+    {
         let path = format!("{}/roles/{}", self.mount, role_name);
         self.client.post(&path, role).await?;
         Ok(())
     }
 
     /// Read a certificate role / 读取证书角色
-    pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value> {
+    pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value>
+    {
         let path = format!("{}/roles/{}", self.mount, role_name);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -194,20 +209,23 @@ impl<'a> Pki<'a> {
     }
 
     /// List certificate roles / 列出证书角色
-    pub async fn list_roles(&self) -> VaultResult<Vec<String>> {
+    pub async fn list_roles(&self) -> VaultResult<Vec<String>>
+    {
         let path = format!("{}/roles", self.mount);
         crate::secret::list(self.client, &path).await
     }
 
     /// Delete a certificate role / 删除证书角色
-    pub async fn delete_role(&self, role_name: &str) -> VaultResult<()> {
+    pub async fn delete_role(&self, role_name: &str) -> VaultResult<()>
+    {
         let path = format!("{}/roles/{}", self.mount, role_name);
         self.client.delete(&path).await?;
         Ok(())
     }
 
     /// Revoke a certificate by serial number / 通过序列号撤销证书
-    pub async fn revoke(&self, serial_number: &str) -> VaultResult<()> {
+    pub async fn revoke(&self, serial_number: &str) -> VaultResult<()>
+    {
         let path = format!("{}/revoke", self.mount);
         let body = serde_json::json!({
             "serial_number": serial_number
@@ -217,7 +235,8 @@ impl<'a> Pki<'a> {
     }
 
     /// Read the CA certificate / 读取 CA 证书
-    pub async fn read_ca_certificate(&self) -> VaultResult<String> {
+    pub async fn read_ca_certificate(&self) -> VaultResult<String>
+    {
         let path = format!("{}/cert/ca", self.mount);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -229,7 +248,8 @@ impl<'a> Pki<'a> {
     }
 
     /// Read a certificate by serial number / 通过序列号读取证书
-    pub async fn read_certificate(&self, serial_number: &str) -> VaultResult<String> {
+    pub async fn read_certificate(&self, serial_number: &str) -> VaultResult<String>
+    {
         let path = format!("{}/cert/{}", self.mount, serial_number);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -241,13 +261,15 @@ impl<'a> Pki<'a> {
     }
 
     /// List all certificates / 列出所有证书
-    pub async fn list_certificates(&self) -> VaultResult<Vec<String>> {
+    pub async fn list_certificates(&self) -> VaultResult<Vec<String>>
+    {
         let path = format!("{}/certs", self.mount);
         crate::secret::list(self.client, &path).await
     }
 
     /// Set the CA certificate and private key / 设置 CA 证书和私钥
-    pub async fn set_ca(&self, pem_bundle: &str) -> VaultResult<()> {
+    pub async fn set_ca(&self, pem_bundle: &str) -> VaultResult<()>
+    {
         let path = format!("{}/config/ca", self.mount);
         let body = CaSetRequest {
             pem_bundle: pem_bundle.to_string(),
@@ -263,7 +285,8 @@ impl<'a> Pki<'a> {
         key_type: &str,
         key_bits: u32,
         ttl: &str,
-    ) -> VaultResult<Certificate> {
+    ) -> VaultResult<Certificate>
+    {
         let path = format!("{}/root/generate/internal", self.mount);
         let body = serde_json::json!({
             "common_name": common_name,
@@ -278,14 +301,16 @@ impl<'a> Pki<'a> {
     }
 
     /// Read CRL information / 读取 CRL 信息
-    pub async fn read_crl(&self) -> VaultResult<String> {
+    pub async fn read_crl(&self) -> VaultResult<String>
+    {
         let path = format!("{}/crl", self.mount);
         let resp = self.client.get(&path).await?;
         Ok(resp.text().await?)
     }
 
     /// Rotate the CRL / 轮换 CRL
-    pub async fn rotate_crl(&self) -> VaultResult<()> {
+    pub async fn rotate_crl(&self) -> VaultResult<()>
+    {
         let path = format!("{}/crl/rotate", self.mount);
         self.client.post(&path, &serde_json::json!({})).await?;
         Ok(())
@@ -296,7 +321,8 @@ impl<'a> Pki<'a> {
         &self,
         issuing_certificates: Vec<String>,
         crl_distribution_points: Vec<String>,
-    ) -> VaultResult<()> {
+    ) -> VaultResult<()>
+    {
         let path = format!("{}/config/urls", self.mount);
         let body = serde_json::json!({
             "issuing_certificates": issuing_certificates,
@@ -307,7 +333,8 @@ impl<'a> Pki<'a> {
     }
 
     /// Tidy up the PKI backend / 清理 PKI 后端
-    pub async fn tidy(&self) -> VaultResult<()> {
+    pub async fn tidy(&self) -> VaultResult<()>
+    {
         let path = format!("{}/tidy", self.mount);
         self.client.post(&path, &serde_json::json!({})).await?;
         Ok(())

@@ -15,7 +15,8 @@ use std::ptr::NonNull;
 /// 跟踪I/O操作从提交到完成的生命周期。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
-pub enum IoState {
+pub enum IoState
+{
     /// Operation is idle, not yet submitted / 操作空闲，尚未提交
     Idle = 0,
     /// Operation has been submitted to kernel / 操作已提交给内核
@@ -30,25 +31,29 @@ pub enum IoState {
     Failed = 5,
 }
 
-impl IoState {
+impl IoState
+{
     /// Check if the operation is finished (completed, cancelled, or failed)
     /// 检查操作是否已完成（成功、取消或失败）
     #[must_use]
-    pub const fn is_finished(self) -> bool {
+    pub const fn is_finished(self) -> bool
+    {
         matches!(self, Self::Completed | Self::Cancelled | Self::Failed)
     }
 
     /// Check if the operation is in progress (submitted or in progress)
     /// 检查操作是否进行中（已提交或进行中）
     #[must_use]
-    pub const fn is_in_progress(self) -> bool {
+    pub const fn is_in_progress(self) -> bool
+    {
         matches!(self, Self::Submitted | Self::InProgress)
     }
 
     /// Check if the operation succeeded
     /// 检查操作是否成功
     #[must_use]
-    pub fn is_success(self) -> bool {
+    pub fn is_success(self) -> bool
+    {
         matches!(self, Self::Completed)
     }
 }
@@ -66,7 +71,8 @@ impl IoState {
 /// - 如果非空，`buf_ptr` 必须对 `buf_len` 字节有效
 /// - 缓冲区必须在操作完成前保持有效
 #[derive(Debug, Clone)]
-pub struct SubmitEntry {
+pub struct SubmitEntry
+{
     /// File descriptor to operate on / 操作的文件描述符
     pub fd: i32,
     /// Operation opcode (READ, WRITE, etc.) / 操作操作码
@@ -89,14 +95,16 @@ pub struct SubmitEntry {
 /// Socket address storage for connection operations
 /// 连接操作的套接字地址存储
 #[derive(Debug, Clone)]
-pub struct SockAddr {
+pub struct SockAddr
+{
     /// The raw socket address / 原始套接字地址
     pub storage: libc::sockaddr_storage,
     /// Length of the address / 地址长度
     pub len: libc::socklen_t,
 }
 
-impl SockAddr {
+impl SockAddr
+{
     /// Create a new socket address from a raw sockaddr_storage
     /// 从原始sockaddr_storage创建新的套接字地址
     ///
@@ -104,16 +112,19 @@ impl SockAddr {
     ///
     /// The storage must contain a valid socket address.
     /// storage必须包含有效的套接字地址。
-    pub unsafe fn from_raw(storage: libc::sockaddr_storage, len: libc::socklen_t) -> Self {
+    pub unsafe fn from_raw(storage: libc::sockaddr_storage, len: libc::socklen_t) -> Self
+    {
         Self { storage, len }
     }
 }
 
-impl SubmitEntry {
+impl SubmitEntry
+{
     /// Create a new submission entry
     /// 创建新的提交条目
     #[must_use]
-    pub const fn new(fd: i32, opcode: u8, user_data: u64) -> Self {
+    pub const fn new(fd: i32, opcode: u8, user_data: u64) -> Self
+    {
         Self {
             fd,
             opcode,
@@ -134,7 +145,8 @@ impl SubmitEntry {
     /// `buf` must be valid for reads and remain valid until completion.
     /// `buf` 必须对读取有效并在完成前保持有效。
     #[must_use]
-    pub unsafe fn read(fd: i32, buf: *mut u8, buf_len: u32, user_data: u64) -> Self {
+    pub unsafe fn read(fd: i32, buf: *mut u8, buf_len: u32, user_data: u64) -> Self
+    {
         Self {
             fd,
             opcode: super::opcode::READ,
@@ -155,7 +167,8 @@ impl SubmitEntry {
     /// `buf` must be valid for reads and remain valid until completion.
     /// `buf` 必须对读取有效并在完成前保持有效。
     #[must_use]
-    pub unsafe fn write(fd: i32, buf: *const u8, buf_len: u32, user_data: u64) -> Self {
+    pub unsafe fn write(fd: i32, buf: *const u8, buf_len: u32, user_data: u64) -> Self
+    {
         Self {
             fd,
             opcode: super::opcode::WRITE,
@@ -176,7 +189,8 @@ impl SubmitEntry {
     /// `buf` must be valid for `buf_len` bytes.
     /// `buf` 必须对 `buf_len` 字节有效。
     #[must_use]
-    pub unsafe fn with_buffer(mut self, buf: *mut u8, buf_len: u32) -> Self {
+    pub unsafe fn with_buffer(mut self, buf: *mut u8, buf_len: u32) -> Self
+    {
         self.buf_ptr = NonNull::new(buf);
         self.buf_len = buf_len;
         self
@@ -185,7 +199,8 @@ impl SubmitEntry {
     /// Set the offset for file operations
     /// 为文件操作设置偏移量
     #[must_use]
-    pub const fn with_offset(mut self, offset: u64) -> Self {
+    pub const fn with_offset(mut self, offset: u64) -> Self
+    {
         self.offset = offset;
         self
     }
@@ -193,7 +208,8 @@ impl SubmitEntry {
     /// Set operation flags
     /// 设置操作标志
     #[must_use]
-    pub const fn with_flags(mut self, flags: u16) -> Self {
+    pub const fn with_flags(mut self, flags: u16) -> Self
+    {
         self.flags = flags;
         self
     }
@@ -201,7 +217,8 @@ impl SubmitEntry {
     /// Set socket address for connect/accept
     /// 为connect/accept设置套接字地址
     #[must_use]
-    pub fn with_addr(mut self, addr: SockAddr) -> Self {
+    pub fn with_addr(mut self, addr: SockAddr) -> Self
+    {
         self.addr = Some(addr);
         self
     }
@@ -214,7 +231,8 @@ impl SubmitEntry {
     /// The returned slice is only valid if the buffer is still alive.
     /// 返回的切片仅在缓冲区仍然存活时有效。
     #[must_use]
-    pub unsafe fn buffer(&self) -> Option<&[u8]> {
+    pub unsafe fn buffer(&self) -> Option<&[u8]>
+    {
         self.buf_ptr
             .map(|ptr| std::slice::from_raw_parts(ptr.as_ptr(), self.buf_len as usize))
     }
@@ -227,7 +245,8 @@ impl SubmitEntry {
     /// The returned slice is only valid if the buffer is still alive and mutable.
     /// 返回的切片仅在缓冲区仍然存活且可变时有效。
     #[must_use]
-    pub unsafe fn buffer_mut(&self) -> Option<&mut [u8]> {
+    pub unsafe fn buffer_mut(&self) -> Option<&mut [u8]>
+    {
         self.buf_ptr
             .map(|ptr| std::slice::from_raw_parts_mut(ptr.as_ptr(), self.buf_len as usize))
     }
@@ -245,7 +264,8 @@ impl SubmitEntry {
 /// Represents a completed I/O operation returned from the kernel.
 /// 表示从内核返回的已完成的I/O操作。
 #[derive(Debug, Clone, Copy)]
-pub struct CompletionEntry {
+pub struct CompletionEntry
+{
     /// User data from the corresponding submission / 来自相应提交的用户数据
     pub user_data: u64,
     /// Result code: positive = bytes transferred, negative = error code
@@ -255,11 +275,13 @@ pub struct CompletionEntry {
     pub flags: u32,
 }
 
-impl CompletionEntry {
+impl CompletionEntry
+{
     /// Create a new completion entry
     /// 创建新的完成条目
     #[must_use]
-    pub const fn new(user_data: u64, result: i32, flags: u32) -> Self {
+    pub const fn new(user_data: u64, result: i32, flags: u32) -> Self
+    {
         Self {
             user_data,
             result,
@@ -270,14 +292,16 @@ impl CompletionEntry {
     /// Check if the operation succeeded
     /// 检查操作是否成功
     #[must_use]
-    pub const fn is_success(self) -> bool {
+    pub const fn is_success(self) -> bool
+    {
         self.result >= 0
     }
 
     /// Check if the operation failed
     /// 检查操作是否失败
     #[must_use]
-    pub const fn is_error(self) -> bool {
+    pub const fn is_error(self) -> bool
+    {
         self.result < 0
     }
 
@@ -287,10 +311,14 @@ impl CompletionEntry {
     /// Returns `None` if the operation failed.
     /// 如果操作失败则返回 `None`。
     #[must_use]
-    pub const fn bytes_transferred(self) -> Option<u32> {
-        if self.result >= 0 {
+    pub const fn bytes_transferred(self) -> Option<u32>
+    {
+        if self.result >= 0
+        {
             Some(self.result as u32)
-        } else {
+        }
+        else
+        {
             None
         }
     }
@@ -298,10 +326,14 @@ impl CompletionEntry {
     /// Get the error code if the operation failed
     /// 如果操作失败，获取错误码
     #[must_use]
-    pub const fn error_code(self) -> Option<i32> {
-        if self.result < 0 {
+    pub const fn error_code(self) -> Option<i32>
+    {
+        if self.result < 0
+        {
             Some(-self.result)
-        } else {
+        }
+        else
+        {
             None
         }
     }
@@ -312,21 +344,27 @@ impl CompletionEntry {
     /// Returns `Ok(bytes_transferred)` on success, `Err(error)` on failure.
     /// 成功返回 `Ok(bytes_transferred)`，失败返回 `Err(error)`。
     #[must_use = "the result of the operation should be checked"]
-    pub fn into_result(self) -> std::io::Result<u32> {
-        if self.result >= 0 {
+    pub fn into_result(self) -> std::io::Result<u32>
+    {
+        if self.result >= 0
+        {
             Ok(self.result as u32)
-        } else {
+        }
+        else
+        {
             Err(std::io::Error::from_raw_os_error(-self.result))
         }
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_io_state() {
+    fn test_io_state()
+    {
         assert!(IoState::Completed.is_finished());
         assert!(IoState::Cancelled.is_finished());
         assert!(IoState::Failed.is_finished());
@@ -339,7 +377,8 @@ mod tests {
     }
 
     #[test]
-    fn test_completion_entry() {
+    fn test_completion_entry()
+    {
         // Success case / 成功情况
         let entry = CompletionEntry::new(123, 1024, 0);
         assert!(entry.is_success());
@@ -356,7 +395,8 @@ mod tests {
     }
 
     #[test]
-    fn test_submit_entry_builder() {
+    fn test_submit_entry_builder()
+    {
         let buf = [0u8; 1024];
         let entry = unsafe {
             SubmitEntry::read(0, buf.as_ptr() as *mut u8, 1024, 42)
@@ -373,7 +413,8 @@ mod tests {
     }
 
     #[test]
-    fn test_interest_builder() {
+    fn test_interest_builder()
+    {
         let interest = crate::driver::Interest::readable()
             .with_writable()
             .with_edge();

@@ -30,9 +30,7 @@
 //! let bytes = doc.to_bytes().unwrap();
 //! ```
 
-use std::fmt::Write as FmtWrite;
-use std::io;
-use std::path::Path;
+use std::{fmt::Write as FmtWrite, io, path::Path};
 
 // ---------------------------------------------------------------------------
 // Error types
@@ -41,7 +39,8 @@ use std::path::Path;
 /// PDF export error.
 /// PDF 导出错误。
 #[derive(Debug, thiserror::Error)]
-pub enum PdfError {
+pub enum PdfError
+{
     /// I/O error during write.
     /// 写入过程中的 I/O 错误。
     #[error("I/O error: {0}")]
@@ -64,7 +63,8 @@ pub type Result<T> = std::result::Result<T, PdfError>;
 /// Font family for PDF text.
 /// PDF 文本的字体族。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum PdfFont {
+pub enum PdfFont
+{
     /// Helvetica (default sans-serif)
     /// Helvetica（默认无衬线体）
     #[default]
@@ -86,11 +86,14 @@ pub enum PdfFont {
     TimesBold,
 }
 
-impl PdfFont {
+impl PdfFont
+{
     /// Get the PDF internal font name.
     /// 获取 PDF 内部字体名称。
-    pub fn pdf_name(&self) -> &'static str {
-        match self {
+    pub fn pdf_name(&self) -> &'static str
+    {
+        match self
+        {
             PdfFont::Helvetica => "Helvetica",
             PdfFont::HelveticaBold => "Helvetica-Bold",
             PdfFont::Courier => "Courier",
@@ -104,7 +107,8 @@ impl PdfFont {
 /// A text element on a PDF page.
 /// PDF 页面上的文本元素。
 #[derive(Debug, Clone)]
-pub struct PdfText {
+pub struct PdfText
+{
     /// Text content / 文本内容
     pub content: String,
     /// X position in points / X 位置（磅）
@@ -119,10 +123,12 @@ pub struct PdfText {
     pub color: Option<String>,
 }
 
-impl PdfText {
+impl PdfText
+{
     /// Create a new text element.
     /// 创建新的文本元素。
-    pub fn new(content: impl Into<String>) -> Self {
+    pub fn new(content: impl Into<String>) -> Self
+    {
         Self {
             content: content.into(),
             x: 72.0,
@@ -135,7 +141,8 @@ impl PdfText {
 
     /// Set the position (x, y in points from bottom-left).
     /// 设置位置（x, y 以左下角为原点的磅值）。
-    pub fn at(mut self, x: f64, y: f64) -> Self {
+    pub fn at(mut self, x: f64, y: f64) -> Self
+    {
         self.x = x;
         self.y = y;
         self
@@ -143,21 +150,24 @@ impl PdfText {
 
     /// Set the font size.
     /// 设置字体大小。
-    pub fn font_size(mut self, size: f64) -> Self {
+    pub fn font_size(mut self, size: f64) -> Self
+    {
         self.font_size = size;
         self
     }
 
     /// Set the font family.
     /// 设置字体族。
-    pub fn font(mut self, font: PdfFont) -> Self {
+    pub fn font(mut self, font: PdfFont) -> Self
+    {
         self.font = font;
         self
     }
 
     /// Set the text color.
     /// 设置文本颜色。
-    pub fn color(mut self, color: impl Into<String>) -> Self {
+    pub fn color(mut self, color: impl Into<String>) -> Self
+    {
         self.color = Some(color.into());
         self
     }
@@ -170,7 +180,8 @@ impl PdfText {
 /// A table element on a PDF page.
 /// PDF 页面上的表格元素。
 #[derive(Debug, Clone)]
-pub struct PdfTable {
+pub struct PdfTable
+{
     /// Column headers / 列标题
     pub headers: Vec<String>,
     /// Data rows / 数据行
@@ -189,10 +200,12 @@ pub struct PdfTable {
     pub data_font_size: f64,
 }
 
-impl PdfTable {
+impl PdfTable
+{
     /// Create a new table with headers.
     /// 创建带标题的新表格。
-    pub fn new(headers: Vec<String>) -> Self {
+    pub fn new(headers: Vec<String>) -> Self
+    {
         Self {
             headers,
             rows: Vec::new(),
@@ -207,13 +220,15 @@ impl PdfTable {
 
     /// Add a data row.
     /// 添加数据行。
-    pub fn add_row(&mut self, row: Vec<String>) {
+    pub fn add_row(&mut self, row: Vec<String>)
+    {
         self.rows.push(row);
     }
 
     /// Set position.
     /// 设置位置。
-    pub fn at(mut self, x: f64, y: f64) -> Self {
+    pub fn at(mut self, x: f64, y: f64) -> Self
+    {
         self.x = x;
         self.y = y;
         self
@@ -221,14 +236,16 @@ impl PdfTable {
 
     /// Set column width.
     /// 设置列宽。
-    pub fn col_width(mut self, width: f64) -> Self {
+    pub fn col_width(mut self, width: f64) -> Self
+    {
         self.col_width = width;
         self
     }
 
     /// Set row height.
     /// 设置行高。
-    pub fn row_height(mut self, height: f64) -> Self {
+    pub fn row_height(mut self, height: f64) -> Self
+    {
         self.row_height = height;
         self
     }
@@ -241,7 +258,8 @@ impl PdfTable {
 /// A horizontal line element.
 /// 水平线元素。
 #[derive(Debug, Clone)]
-pub struct PdfLine {
+pub struct PdfLine
+{
     /// X start position / X 起始位置
     pub x: f64,
     /// Y position / Y 位置
@@ -252,10 +270,12 @@ pub struct PdfLine {
     pub width: f64,
 }
 
-impl PdfLine {
+impl PdfLine
+{
     /// Create a new horizontal line.
     /// 创建新的水平线。
-    pub fn new(x: f64, y: f64, length: f64) -> Self {
+    pub fn new(x: f64, y: f64, length: f64) -> Self
+    {
         Self {
             x,
             y,
@@ -266,7 +286,8 @@ impl PdfLine {
 
     /// Set line width.
     /// 设置线宽。
-    pub fn width(mut self, w: f64) -> Self {
+    pub fn width(mut self, w: f64) -> Self
+    {
         self.width = w;
         self
     }
@@ -279,7 +300,8 @@ impl PdfLine {
 /// A single page in a PDF document.
 /// PDF 文档中的单页。
 #[derive(Debug, Clone)]
-pub struct PdfPage {
+pub struct PdfPage
+{
     /// Page width in points / 页面宽度（磅）
     pub width: f64,
     /// Page height in points / 页面高度（磅）
@@ -292,10 +314,12 @@ pub struct PdfPage {
     pub lines: Vec<PdfLine>,
 }
 
-impl PdfPage {
+impl PdfPage
+{
     /// Standard US Letter size (8.5" x 11").
     /// 标准 US Letter 尺寸（8.5" x 11"）。
-    pub fn letter() -> Self {
+    pub fn letter() -> Self
+    {
         Self {
             width: 612.0,
             height: 792.0,
@@ -307,7 +331,8 @@ impl PdfPage {
 
     /// Standard A4 size (210mm x 297mm).
     /// 标准 A4 尺寸（210mm x 297mm）。
-    pub fn a4() -> Self {
+    pub fn a4() -> Self
+    {
         Self {
             width: 595.28,
             height: 841.89,
@@ -319,7 +344,8 @@ impl PdfPage {
 
     /// Create a custom-sized page.
     /// 创建自定义尺寸页面。
-    pub fn custom(width: f64, height: f64) -> Self {
+    pub fn custom(width: f64, height: f64) -> Self
+    {
         Self {
             width,
             height,
@@ -331,19 +357,22 @@ impl PdfPage {
 
     /// Add a text element.
     /// 添加文本元素。
-    pub fn add_text(&mut self, text: PdfText) {
+    pub fn add_text(&mut self, text: PdfText)
+    {
         self.texts.push(text);
     }
 
     /// Add a table element.
     /// 添加表格元素。
-    pub fn add_table(&mut self, table: PdfTable) {
+    pub fn add_table(&mut self, table: PdfTable)
+    {
         self.tables.push(table);
     }
 
     /// Add a line element.
     /// 添加线元素。
-    pub fn add_line(&mut self, line: PdfLine) {
+    pub fn add_line(&mut self, line: PdfLine)
+    {
         self.lines.push(line);
     }
 }
@@ -357,7 +386,8 @@ impl PdfPage {
 ///
 /// Equivalent to Spring's JasperReports `JasperPrint` or iText `PdfDocument`.
 /// 等价于 Spring 的 JasperReports `JasperPrint` 或 iText `PdfDocument`。
-pub struct PdfDocument {
+pub struct PdfDocument
+{
     /// Document title / 文档标题
     pub title: String,
     /// Document author / 文档作者
@@ -366,10 +396,12 @@ pub struct PdfDocument {
     pub pages: Vec<PdfPage>,
 }
 
-impl PdfDocument {
+impl PdfDocument
+{
     /// Create a new PDF document with a title.
     /// 创建带标题的新 PDF 文档。
-    pub fn new(title: impl Into<String>) -> Self {
+    pub fn new(title: impl Into<String>) -> Self
+    {
         Self {
             title: title.into(),
             author: String::new(),
@@ -379,32 +411,38 @@ impl PdfDocument {
 
     /// Set the document author.
     /// 设置文档作者。
-    pub fn author(mut self, author: impl Into<String>) -> Self {
+    pub fn author(mut self, author: impl Into<String>) -> Self
+    {
         self.author = author.into();
         self
     }
 
     /// Add a page to the document.
     /// 向文档添加页面。
-    pub fn add_page(&mut self, page: PdfPage) {
+    pub fn add_page(&mut self, page: PdfPage)
+    {
         self.pages.push(page);
     }
 
     /// Returns the number of pages.
     /// 返回页数。
-    pub fn page_count(&self) -> usize {
+    pub fn page_count(&self) -> usize
+    {
         self.pages.len()
     }
 
     /// Generate the PDF as bytes.
     /// 将 PDF 生成为字节。
-    pub fn to_bytes(&self) -> Result<Vec<u8>> {
+    pub fn to_bytes(&self) -> Result<Vec<u8>>
+    {
         let mut pdf = PdfBuilder::new();
         pdf.set_title(&self.title);
-        if !self.author.is_empty() {
+        if !self.author.is_empty()
+        {
             pdf.set_author(&self.author);
         }
-        for page in &self.pages {
+        for page in &self.pages
+        {
             pdf.add_page(page);
         }
         pdf.build()
@@ -412,7 +450,8 @@ impl PdfDocument {
 
     /// Write the PDF to a file.
     /// 将 PDF 写入文件。
-    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()> {
+    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()>
+    {
         let bytes = self.to_bytes()?;
         std::fs::write(path, bytes)?;
         Ok(())
@@ -425,14 +464,17 @@ impl PdfDocument {
 
 /// Internal PDF structure builder.
 /// 内部 PDF 结构构建器。
-struct PdfBuilder {
+struct PdfBuilder
+{
     title: String,
     author: String,
     pages: Vec<PdfPage>,
 }
 
-impl PdfBuilder {
-    fn new() -> Self {
+impl PdfBuilder
+{
+    fn new() -> Self
+    {
         Self {
             title: String::new(),
             author: String::new(),
@@ -440,21 +482,25 @@ impl PdfBuilder {
         }
     }
 
-    fn set_title(&mut self, title: &str) {
+    fn set_title(&mut self, title: &str)
+    {
         self.title = title.to_string();
     }
 
-    fn set_author(&mut self, author: &str) {
+    fn set_author(&mut self, author: &str)
+    {
         self.author = author.to_string();
     }
 
-    fn add_page(&mut self, page: &PdfPage) {
+    fn add_page(&mut self, page: &PdfPage)
+    {
         self.pages.push(page.clone());
     }
 
     /// Build the PDF document as bytes.
     /// 将 PDF 文档构建为字节。
-    fn build(&self) -> Result<Vec<u8>> {
+    fn build(&self) -> Result<Vec<u8>>
+    {
         let mut buf = String::new();
         let mut offsets: Vec<usize> = Vec::new();
 
@@ -493,7 +539,8 @@ impl PdfBuilder {
         );
 
         // Object 3+: Font objects
-        for (i, font_name) in unique_fonts.iter().enumerate() {
+        for (i, font_name) in unique_fonts.iter().enumerate()
+        {
             offsets.push(buf.len());
             let _ = write!(
                 buf,
@@ -505,7 +552,8 @@ impl PdfBuilder {
 
         // Page objects: each page needs a Page dict + Content stream
         let base_obj = 3 + unique_fonts.len();
-        for (page_idx, page) in self.pages.iter().enumerate() {
+        for (page_idx, page) in self.pages.iter().enumerate()
+        {
             let page_obj = base_obj + page_idx * 2;
             let content_obj = page_obj + 1;
 
@@ -521,7 +569,8 @@ impl PdfBuilder {
                 .collect();
             let _ = write!(
                 buf,
-                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {} {}] /Contents {} 0 R /Resources << /Font << {} >> >> >>\nendobj\n",
+                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {} {}] /Contents {} 0 R \
+                 /Resources << /Font << {} >> >> >>\nendobj\n",
                 page_obj,
                 page.width,
                 page.height,
@@ -557,7 +606,8 @@ impl PdfBuilder {
         let total_objects = info_obj + 1;
         let _ = writeln!(buf, "0 {}", total_objects);
         buf.push_str("0000000000 65535 f \n");
-        for offset in &offsets {
+        for offset in &offsets
+        {
             let _ = writeln!(buf, "{:010} 00000 n ", offset);
         }
 
@@ -575,25 +625,33 @@ impl PdfBuilder {
 
 /// Collect all unique fonts used across pages.
 /// 收集所有页面中使用的唯一字体。
-fn collect_fonts(pages: &[PdfPage]) -> Vec<PdfFont> {
+fn collect_fonts(pages: &[PdfPage]) -> Vec<PdfFont>
+{
     let mut fonts = Vec::new();
-    for page in pages {
-        for text in &page.texts {
-            if !fonts.contains(&text.font) {
+    for page in pages
+    {
+        for text in &page.texts
+        {
+            if !fonts.contains(&text.font)
+            {
                 fonts.push(text.font);
             }
         }
-        for _table in &page.tables {
+        for _table in &page.tables
+        {
             // Tables use Helvetica by default
-            if !fonts.contains(&PdfFont::Helvetica) {
+            if !fonts.contains(&PdfFont::Helvetica)
+            {
                 fonts.push(PdfFont::Helvetica);
             }
-            if !fonts.contains(&PdfFont::HelveticaBold) {
+            if !fonts.contains(&PdfFont::HelveticaBold)
+            {
                 fonts.push(PdfFont::HelveticaBold);
             }
         }
     }
-    if fonts.is_empty() {
+    if fonts.is_empty()
+    {
         fonts.push(PdfFont::Helvetica);
     }
     fonts
@@ -602,7 +660,8 @@ fn collect_fonts(pages: &[PdfPage]) -> Vec<PdfFont> {
 /// Find the font index in the unique fonts list.
 /// 在唯一字体列表中查找字体索引。
 #[allow(clippy::trivially_copy_pass_by_ref)]
-fn font_index(font: &PdfFont, unique_fonts: &[&str]) -> usize {
+fn font_index(font: &PdfFont, unique_fonts: &[&str]) -> usize
+{
     let name = font.pdf_name();
     unique_fonts.iter().position(|f| *f == name).unwrap_or(0)
 }
@@ -610,20 +669,24 @@ fn font_index(font: &PdfFont, unique_fonts: &[&str]) -> usize {
 /// Build the content stream for a page.
 /// 为页面构建内容流。
 #[allow(clippy::cast_precision_loss)]
-fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
+fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String
+{
     let mut stream = String::new();
 
     // Render lines
-    for line in &page.lines {
+    for line in &page.lines
+    {
         let _ =
             writeln!(stream, "{} {} 0 0 {} {} re S", line.width / 2.0, line.x, line.length, line.y);
     }
 
     // Render text elements
-    for text in &page.texts {
+    for text in &page.texts
+    {
         let fi = font_index(&text.font, unique_fonts);
 
-        if let Some(ref color) = text.color {
+        if let Some(ref color) = text.color
+        {
             let (r, g, b) = parse_hex_color(color);
             let _ = writeln!(stream, "{:.3} {:.3} {:.3} rg", r, g, b);
         }
@@ -640,7 +703,8 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
     }
 
     // Render tables
-    for table in &page.tables {
+    for table in &page.tables
+    {
         // Header row
         let header_fi = font_index(&PdfFont::HelveticaBold, unique_fonts);
         let data_fi = font_index(&PdfFont::Helvetica, unique_fonts);
@@ -658,7 +722,8 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
         );
 
         // Header text
-        for (i, header) in table.headers.iter().enumerate() {
+        for (i, header) in table.headers.iter().enumerate()
+        {
             let x = table.x + i as f64 * table.col_width + 4.0;
             let y = table.y - header_height + 6.0;
             let _ = write!(
@@ -683,10 +748,12 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
         );
 
         // Data rows
-        for (row_idx, row) in table.rows.iter().enumerate() {
+        for (row_idx, row) in table.rows.iter().enumerate()
+        {
             let row_y = table.y - header_height - (row_idx + 1) as f64 * table.row_height;
 
-            for (col_idx, cell) in row.iter().enumerate() {
+            for (col_idx, cell) in row.iter().enumerate()
+            {
                 let x = table.x + col_idx as f64 * table.col_width + 4.0;
                 let y = row_y + 6.0;
                 let _ = write!(
@@ -717,31 +784,39 @@ fn build_page_stream(page: &PdfPage, unique_fonts: &[&str]) -> String {
 
 /// Parse a hex color string (e.g. "#FF0000") into (r, g, b) floats in [0, 1].
 /// 将十六进制颜色字符串（如 "#FF0000"）解析为 [0, 1] 范围的 (r, g, b) 浮点数。
-fn parse_hex_color(color: &str) -> (f64, f64, f64) {
+fn parse_hex_color(color: &str) -> (f64, f64, f64)
+{
     let hex = color.trim_start_matches('#');
-    if hex.len() == 6 {
+    if hex.len() == 6
+    {
         let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(0) as f64 / 255.0;
         let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(0) as f64 / 255.0;
         let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(0) as f64 / 255.0;
         (r, g, b)
-    } else {
+    }
+    else
+    {
         (0.0, 0.0, 0.0)
     }
 }
 
 /// Escape special characters in PDF string literals.
 /// 转义 PDF 字符串字面量中的特殊字符。
-fn escape_pdf_string(s: &str) -> String {
+fn escape_pdf_string(s: &str) -> String
+{
     let mut out = String::with_capacity(s.len());
-    for ch in s.chars() {
-        match ch {
+    for ch in s.chars()
+    {
+        match ch
+        {
             '\\' => out.push_str("\\\\"),
             '(' => out.push_str("\\("),
             ')' => out.push_str("\\)"),
             '\n' => out.push_str("\\n"),
             '\r' => out.push_str("\\r"),
             '\t' => out.push_str("\\t"),
-            c if c as u32 > 127 => {
+            c if c as u32 > 127 =>
+            {
                 let _ = write!(out, "\\{:03o}", c as u32);
             },
             c => out.push(c),
@@ -758,9 +833,12 @@ fn escape_pdf_string(s: &str) -> String {
 /// 包装类型，使 PDF 输出可以用作 HTTP 响应。
 pub struct Pdf(pub PdfDocument);
 
-impl crate::IntoResponse for Pdf {
-    fn into_response(self) -> crate::Response {
-        match self.0.to_bytes() {
+impl crate::IntoResponse for Pdf
+{
+    fn into_response(self) -> crate::Response
+    {
+        match self.0.to_bytes()
+        {
             Ok(bytes) => crate::Response::builder()
                 .header("content-type", "application/pdf")
                 .header("content-disposition", "attachment; filename=\"export.pdf\"")
@@ -779,11 +857,13 @@ impl crate::IntoResponse for Pdf {
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_pdf_text_builder() {
+    fn test_pdf_text_builder()
+    {
         let text = PdfText::new("Hello")
             .at(100.0, 700.0)
             .font_size(16.0)
@@ -799,7 +879,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_table_builder() {
+    fn test_pdf_table_builder()
+    {
         let mut table = PdfTable::new(vec!["Name".into(), "Age".into()])
             .at(72.0, 700.0)
             .col_width(100.0)
@@ -813,21 +894,24 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_page_a4() {
+    fn test_pdf_page_a4()
+    {
         let page = PdfPage::a4();
         assert_eq!(page.width, 595.28);
         assert_eq!(page.height, 841.89);
     }
 
     #[test]
-    fn test_pdf_page_letter() {
+    fn test_pdf_page_letter()
+    {
         let page = PdfPage::letter();
         assert_eq!(page.width, 612.0);
         assert_eq!(page.height, 792.0);
     }
 
     #[test]
-    fn test_pdf_document_simple() {
+    fn test_pdf_document_simple()
+    {
         let mut doc = PdfDocument::new("Test Report").author("Hiver");
         let mut page = PdfPage::a4();
         page.add_text(PdfText::new("Hello, World!").at(72.0, 760.0));
@@ -842,7 +926,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_document_with_table() {
+    fn test_pdf_document_with_table()
+    {
         let mut doc = PdfDocument::new("Table Report");
         let mut page = PdfPage::a4();
 
@@ -860,10 +945,12 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_multi_page() {
+    fn test_pdf_multi_page()
+    {
         let mut doc = PdfDocument::new("Multi-page");
 
-        for i in 0..3 {
+        for i in 0..3
+        {
             let mut page = PdfPage::a4();
             page.add_text(PdfText::new(format!("Page {}", i + 1)).at(72.0, 760.0));
             doc.add_page(page);
@@ -875,7 +962,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_write_to_file() {
+    fn test_pdf_write_to_file()
+    {
         let mut doc = PdfDocument::new("File Test");
         let mut page = PdfPage::a4();
         page.add_text(PdfText::new("File output test").at(72.0, 760.0));
@@ -892,7 +980,8 @@ mod tests {
     }
 
     #[test]
-    fn test_escape_pdf_string() {
+    fn test_escape_pdf_string()
+    {
         assert_eq!(escape_pdf_string("hello"), "hello");
         assert_eq!(escape_pdf_string("a(b)c"), "a\\(b\\)c");
         assert_eq!(escape_pdf_string("a\\b"), "a\\\\b");
@@ -900,7 +989,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_hex_color() {
+    fn test_parse_hex_color()
+    {
         assert_eq!(parse_hex_color("#FF0000"), (1.0, 0.0, 0.0));
         assert_eq!(parse_hex_color("#00FF00"), (0.0, 1.0, 0.0));
         assert_eq!(parse_hex_color("#0000FF"), (0.0, 0.0, 1.0));
@@ -909,7 +999,8 @@ mod tests {
     }
 
     #[test]
-    fn test_font_pdf_name() {
+    fn test_font_pdf_name()
+    {
         assert_eq!(PdfFont::Helvetica.pdf_name(), "Helvetica");
         assert_eq!(PdfFont::HelveticaBold.pdf_name(), "Helvetica-Bold");
         assert_eq!(PdfFont::Courier.pdf_name(), "Courier");
@@ -917,7 +1008,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_line() {
+    fn test_pdf_line()
+    {
         let line = PdfLine::new(72.0, 700.0, 200.0).width(1.0);
         assert_eq!(line.x, 72.0);
         assert_eq!(line.y, 700.0);
@@ -926,7 +1018,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pdf_empty_document() {
+    fn test_pdf_empty_document()
+    {
         let doc = PdfDocument::new("Empty");
         assert_eq!(doc.page_count(), 0);
         // Should still generate valid PDF

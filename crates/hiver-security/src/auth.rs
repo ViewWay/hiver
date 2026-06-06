@@ -1,10 +1,12 @@
 //! Authentication module
 //! 认证模块
 
-use crate::{PasswordEncoder, SecurityError, SecurityResult, User, UserDetails};
+use std::sync::Arc;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+
+use crate::{PasswordEncoder, SecurityError, SecurityResult, User, UserDetails};
 
 /// Authentication
 /// 认证
@@ -28,7 +30,8 @@ use std::sync::Arc;
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Authentication {
+pub struct Authentication
+{
     /// Principal (user)
     /// 主体（用户）
     pub principal: String,
@@ -55,10 +58,12 @@ pub struct Authentication {
     pub login_time: DateTime<Utc>,
 }
 
-impl Authentication {
+impl Authentication
+{
     /// Create a new unauthenticated authentication
     /// 创建新的未认证认证
-    pub fn new(principal: impl Into<String>, credentials: impl Into<String>) -> Self {
+    pub fn new(principal: impl Into<String>, credentials: impl Into<String>) -> Self
+    {
         Self {
             principal: principal.into(),
             credentials: Some(credentials.into()),
@@ -71,7 +76,8 @@ impl Authentication {
 
     /// Create authenticated from user
     /// 从用户创建已认证
-    pub fn from_user(user: &User) -> Self {
+    pub fn from_user(user: &User) -> Self
+    {
         Self {
             principal: user.username.clone(),
             credentials: None, // Clear password after auth
@@ -84,7 +90,8 @@ impl Authentication {
 
     /// Create authenticated from user details
     /// 从用户详情创建已认证
-    pub fn from_user_details(user_details: &dyn UserDetails) -> Self {
+    pub fn from_user_details(user_details: &dyn UserDetails) -> Self
+    {
         Self {
             principal: user_details.username().to_string(),
             credentials: None,
@@ -97,46 +104,53 @@ impl Authentication {
 
     /// Set authenticated
     /// 设置认证
-    pub fn set_authenticated(mut self, authenticated: bool) -> Self {
+    pub fn set_authenticated(mut self, authenticated: bool) -> Self
+    {
         self.authenticated = authenticated;
         self
     }
 
     /// Set authorities
     /// 设置权限
-    pub fn set_authorities(mut self, authorities: Vec<crate::Authority>) -> Self {
+    pub fn set_authorities(mut self, authorities: Vec<crate::Authority>) -> Self
+    {
         self.authorities = authorities;
         self
     }
 
     /// Set details
     /// 设置详情
-    pub fn set_details(mut self, details: AuthDetails) -> Self {
+    pub fn set_details(mut self, details: AuthDetails) -> Self
+    {
         self.details = Some(details);
         self
     }
 
     /// Clear credentials
     /// 清除凭据
-    pub fn clear_credentials(&mut self) {
+    pub fn clear_credentials(&mut self)
+    {
         self.credentials = None;
     }
 
     /// Get name (alias for principal)
     /// 获取名称（principal的别名）
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.principal
     }
 
     /// Check if has authority
     /// 检查是否有权限
-    pub fn has_authority(&self, authority: &crate::Authority) -> bool {
+    pub fn has_authority(&self, authority: &crate::Authority) -> bool
+    {
         self.authorities.contains(authority)
     }
 
     /// Check if has role
     /// 检查是否有角色
-    pub fn has_role(&self, role: &crate::Role) -> bool {
+    pub fn has_role(&self, role: &crate::Role) -> bool
+    {
         self.authorities
             .contains(&crate::Authority::Role(role.clone()))
     }
@@ -145,7 +159,8 @@ impl Authentication {
 /// Authentication details
 /// 认证详情
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct AuthDetails {
+pub struct AuthDetails
+{
     /// Remote address
     /// 远程地址
     pub remote_address: Option<String>,
@@ -163,10 +178,12 @@ pub struct AuthDetails {
     pub auth_type: Option<String>,
 }
 
-impl AuthDetails {
+impl AuthDetails
+{
     /// Create new auth details
     /// 创建新的认证详情
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             remote_address: None,
             session_id: None,
@@ -177,35 +194,41 @@ impl AuthDetails {
 
     /// Set remote address
     /// 设置远程地址
-    pub fn remote_address(mut self, addr: impl Into<String>) -> Self {
+    pub fn remote_address(mut self, addr: impl Into<String>) -> Self
+    {
         self.remote_address = Some(addr.into());
         self
     }
 
     /// Set session ID
     /// 设置会话ID
-    pub fn session_id(mut self, id: impl Into<String>) -> Self {
+    pub fn session_id(mut self, id: impl Into<String>) -> Self
+    {
         self.session_id = Some(id.into());
         self
     }
 
     /// Set user agent
     /// 设置用户代理
-    pub fn user_agent(mut self, agent: impl Into<String>) -> Self {
+    pub fn user_agent(mut self, agent: impl Into<String>) -> Self
+    {
         self.user_agent = Some(agent.into());
         self
     }
 
     /// Set auth type
     /// 设置认证类型
-    pub fn auth_type(mut self, auth_type: impl Into<String>) -> Self {
+    pub fn auth_type(mut self, auth_type: impl Into<String>) -> Self
+    {
         self.auth_type = Some(auth_type.into());
         self
     }
 }
 
-impl Default for AuthDetails {
-    fn default() -> Self {
+impl Default for AuthDetails
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -216,7 +239,8 @@ impl Default for AuthDetails {
 /// Equivalent to Spring's `UsernamePasswordAuthenticationToken`.
 /// `等价于Spring的UsernamePasswordAuthenticationToken`。
 #[derive(Debug, Clone)]
-pub struct UsernamePasswordAuthenticationToken {
+pub struct UsernamePasswordAuthenticationToken
+{
     /// Username
     /// 用户名
     pub username: String,
@@ -226,10 +250,12 @@ pub struct UsernamePasswordAuthenticationToken {
     pub password: String,
 }
 
-impl UsernamePasswordAuthenticationToken {
+impl UsernamePasswordAuthenticationToken
+{
     /// Create a new token
     /// 创建新令牌
-    pub fn new(username: impl Into<String>, password: impl Into<String>) -> Self {
+    pub fn new(username: impl Into<String>, password: impl Into<String>) -> Self
+    {
         Self {
             username: username.into(),
             password: password.into(),
@@ -251,7 +277,8 @@ impl UsernamePasswordAuthenticationToken {
 /// }
 /// ```
 #[async_trait::async_trait]
-pub trait AuthenticationManager: Send + Sync {
+pub trait AuthenticationManager: Send + Sync
+{
     /// Authenticate the given authentication
     /// 认证给定的认证
     async fn authenticate(&self, auth: Authentication) -> SecurityResult<Authentication>;
@@ -266,7 +293,8 @@ pub trait AuthenticationManager: Send + Sync {
 ///
 /// Uses a user service to authenticate.
 /// 使用用户服务进行认证。
-pub struct SimpleAuthenticationManager {
+pub struct SimpleAuthenticationManager
+{
     /// User service
     /// 用户服务
     user_service: Arc<dyn crate::UserService>,
@@ -280,13 +308,15 @@ pub struct SimpleAuthenticationManager {
     pub hide_user_not_found: bool,
 }
 
-impl SimpleAuthenticationManager {
+impl SimpleAuthenticationManager
+{
     /// Create a new authentication manager
     /// 创建新的认证管理器
     pub fn new(
         user_service: Arc<dyn crate::UserService>,
         password_encoder: Arc<dyn PasswordEncoder>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             user_service,
             password_encoder,
@@ -296,25 +326,31 @@ impl SimpleAuthenticationManager {
 
     /// Set hide user not found
     /// 设置隐藏用户未找到
-    pub fn hide_user_not_found(mut self, hide: bool) -> Self {
+    pub fn hide_user_not_found(mut self, hide: bool) -> Self
+    {
         self.hide_user_not_found = hide;
         self
     }
 }
 
 #[async_trait::async_trait]
-impl AuthenticationManager for SimpleAuthenticationManager {
-    async fn authenticate(&self, auth: Authentication) -> SecurityResult<Authentication> {
+impl AuthenticationManager for SimpleAuthenticationManager
+{
+    async fn authenticate(&self, auth: Authentication) -> SecurityResult<Authentication>
+    {
         let username = &auth.principal;
         let password = auth.credentials.as_ref().ok_or_else(|| {
             SecurityError::InvalidCredentials("No credentials provided".to_string())
         })?;
 
         // Load user
-        let user = match self.user_service.load_user_by_username(username).await {
+        let user = match self.user_service.load_user_by_username(username).await
+        {
             Ok(u) => u,
-            Err(e) => {
-                if self.hide_user_not_found {
+            Err(e) =>
+            {
+                if self.hide_user_not_found
+                {
                     return Err(SecurityError::InvalidCredentials(
                         "Invalid credentials".to_string(),
                     ));
@@ -324,24 +360,29 @@ impl AuthenticationManager for SimpleAuthenticationManager {
         };
 
         // Validate user
-        if !user.is_enabled() {
+        if !user.is_enabled()
+        {
             return Err(SecurityError::Disabled("User is disabled".to_string()));
         }
 
-        if !user.is_account_non_expired() {
+        if !user.is_account_non_expired()
+        {
             return Err(SecurityError::AccountExpired("Account expired".to_string()));
         }
 
-        if !user.is_account_non_locked() {
+        if !user.is_account_non_locked()
+        {
             return Err(SecurityError::Locked("Account is locked".to_string()));
         }
 
-        if !user.is_credentials_non_expired() {
+        if !user.is_credentials_non_expired()
+        {
             return Err(SecurityError::CredentialsExpired("Credentials expired".to_string()));
         }
 
         // Check password
-        if !self.password_encoder.matches(password, user.password()) {
+        if !self.password_encoder.matches(password, user.password())
+        {
             return Err(SecurityError::InvalidCredentials("Invalid credentials".to_string()));
         }
 
@@ -349,7 +390,8 @@ impl AuthenticationManager for SimpleAuthenticationManager {
         Ok(Authentication::from_user_details(user.as_ref()))
     }
 
-    fn supports(&self, auth: &Authentication) -> bool {
+    fn supports(&self, auth: &Authentication) -> bool
+    {
         // Supports username/password authentication
         auth.credentials.is_some()
     }
@@ -363,10 +405,12 @@ impl AuthenticationManager for SimpleAuthenticationManager {
 #[derive(Debug, Clone)]
 pub struct AnonymousAuthentication;
 
-impl AnonymousAuthentication {
+impl AnonymousAuthentication
+{
     /// Create an anonymous authentication
     /// 创建匿名认证
-    pub fn new() -> Authentication {
+    pub fn new() -> Authentication
+    {
         Authentication {
             principal: crate::ANONYMOUS_USER.to_string(),
             credentials: None,
@@ -379,7 +423,8 @@ impl AnonymousAuthentication {
 
     /// Check if authentication is anonymous
     /// 检查认证是否为匿名
-    pub fn is_anonymous(auth: &Authentication) -> bool {
+    pub fn is_anonymous(auth: &Authentication) -> bool
+    {
         auth.principal == crate::ANONYMOUS_USER
     }
 }
@@ -390,16 +435,19 @@ impl AnonymousAuthentication {
 /// Equivalent to Spring's `RememberMeAuthenticationToken`.
 /// `等价于Spring的RememberMeAuthenticationToken`。
 #[derive(Debug, Clone)]
-pub struct RememberMeAuthentication {
+pub struct RememberMeAuthentication
+{
     /// Key hash
     /// 密钥哈希
     pub key_hash: String,
 }
 
-impl RememberMeAuthentication {
+impl RememberMeAuthentication
+{
     /// Create remember me authentication
     /// 创建记住我认证
-    pub fn new(key: &str) -> Self {
+    pub fn new(key: &str) -> Self
+    {
         use md5::{Digest, Md5};
         let hash = Md5::digest(key.as_bytes());
         Self {
@@ -409,7 +457,8 @@ impl RememberMeAuthentication {
 
     /// Verify remember me key
     /// 验证记住我密钥
-    pub fn verify(&self, key: &str) -> bool {
+    pub fn verify(&self, key: &str) -> bool
+    {
         use md5::{Digest, Md5};
         let hash = Md5::digest(key.as_bytes());
         hex::encode(hash) == self.key_hash
@@ -417,25 +466,31 @@ impl RememberMeAuthentication {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
+    use std::sync::Arc;
+
     use super::*;
     use crate::{PasswordEncoder, Role};
-    use std::sync::Arc;
 
     struct MockPasswordEncoder;
 
-    impl PasswordEncoder for MockPasswordEncoder {
-        fn encode(&self, raw: &str) -> String {
+    impl PasswordEncoder for MockPasswordEncoder
+    {
+        fn encode(&self, raw: &str) -> String
+        {
             format!("HASH:{}", raw)
         }
 
-        fn matches(&self, raw: &str, encoded: &str) -> bool {
+        fn matches(&self, raw: &str, encoded: &str) -> bool
+        {
             encoded == format!("HASH:{}", raw)
         }
     }
 
     #[tokio::test]
-    async fn test_simple_auth_manager() {
+    async fn test_simple_auth_manager()
+    {
         let user_service = Arc::new(
             crate::InMemoryUserService::with_users(vec![User::with_roles(
                 "john",
@@ -457,7 +512,8 @@ mod tests {
     }
 
     #[test]
-    fn test_anonymous_authentication() {
+    fn test_anonymous_authentication()
+    {
         let auth = AnonymousAuthentication::new();
         assert!(AnonymousAuthentication::is_anonymous(&auth));
         assert!(auth.authenticated);

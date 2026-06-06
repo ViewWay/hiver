@@ -20,13 +20,16 @@
 //!     .with_host("0.0.0.0");
 //! ```
 
-use crate::core::{ApplicationContext, AutoConfiguration};
-use anyhow::Result as AnyhowResult;
 use std::net::SocketAddr;
+
+use anyhow::Result as AnyhowResult;
+
+use crate::core::{ApplicationContext, AutoConfiguration};
 
 /// Get the number of available CPU cores
 /// 获取可用的 CPU 核心数
-fn available_parallelism() -> usize {
+fn available_parallelism() -> usize
+{
     num_cpus::get()
 }
 
@@ -76,7 +79,8 @@ pub use hiver_http::{
 /// let config = WebServerAutoConfiguration::from_config(&ctx);
 /// ```
 #[derive(Debug, Clone)]
-pub struct WebServerAutoConfiguration {
+pub struct WebServerAutoConfiguration
+{
     /// 服务器端口
     /// Server port
     pub port: u16,
@@ -102,7 +106,8 @@ pub struct WebServerAutoConfiguration {
     pub max_connections: usize,
 }
 
-impl WebServerAutoConfiguration {
+impl WebServerAutoConfiguration
+{
     /// 创建新的 Web 服务器自动配置（使用默认值）
     /// Create a new web server auto-configuration with defaults
     ///
@@ -123,7 +128,8 @@ impl WebServerAutoConfiguration {
     /// let config = WebServerAutoConfiguration::new();
     /// assert_eq!(config.port, 8080);
     /// ```
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             port: 8080,
             host: "127.0.0.1".to_string(),
@@ -146,7 +152,8 @@ impl WebServerAutoConfiguration {
     /// ```rust,ignore
     /// let config = WebServerAutoConfiguration::from_config(&ctx);
     /// ```
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             port: ctx
                 .get_property("server.port")
@@ -178,7 +185,8 @@ impl WebServerAutoConfiguration {
     /// # 参数 / Parameters
     ///
     /// - `port`: 服务器端口 / Server port
-    pub fn with_port(mut self, port: u16) -> Self {
+    pub fn with_port(mut self, port: u16) -> Self
+    {
         self.port = port;
         self
     }
@@ -189,7 +197,8 @@ impl WebServerAutoConfiguration {
     /// # 参数 / Parameters
     ///
     /// - `host`: 主机地址 / Host address
-    pub fn with_host(mut self, host: impl Into<String>) -> Self {
+    pub fn with_host(mut self, host: impl Into<String>) -> Self
+    {
         self.host = host.into();
         self
     }
@@ -200,14 +209,16 @@ impl WebServerAutoConfiguration {
     /// # 参数 / Parameters
     ///
     /// - `threads`: 工作线程数 / Number of worker threads
-    pub fn with_worker_threads(mut self, threads: usize) -> Self {
+    pub fn with_worker_threads(mut self, threads: usize) -> Self
+    {
         self.worker_threads = threads;
         self
     }
 
     /// 启用 HTTP/2
     /// Enable HTTP/2
-    pub fn with_http2(mut self, enabled: bool) -> Self {
+    pub fn with_http2(mut self, enabled: bool) -> Self
+    {
         self.http2_enabled = enabled;
         self
     }
@@ -218,7 +229,8 @@ impl WebServerAutoConfiguration {
     /// # 参数 / Parameters
     ///
     /// - `secs`: 超时时间（秒）/ Timeout in seconds
-    pub fn with_request_timeout(mut self, secs: u64) -> Self {
+    pub fn with_request_timeout(mut self, secs: u64) -> Self
+    {
         self.request_timeout_secs = secs;
         self
     }
@@ -229,7 +241,8 @@ impl WebServerAutoConfiguration {
     /// # 参数 / Parameters
     ///
     /// - `max`: 最大连接数 / Maximum connections
-    pub fn with_max_connections(mut self, max: usize) -> Self {
+    pub fn with_max_connections(mut self, max: usize) -> Self
+    {
         self.max_connections = max;
         self
     }
@@ -241,21 +254,26 @@ impl WebServerAutoConfiguration {
     ///
     /// 返回 `host:port` 格式的绑定地址字符串。
     /// Returns bind address string in `host:port` format.
-    pub fn bind_address(&self) -> String {
+    pub fn bind_address(&self) -> String
+    {
         format!("{}:{}", self.host, self.port)
     }
 }
 
-impl Default for WebServerAutoConfiguration {
-    fn default() -> Self {
+impl Default for WebServerAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for WebServerAutoConfiguration {
+impl AutoConfiguration for WebServerAutoConfiguration
+{
     /// 获取配置名称
     /// Get configuration name
-    fn name(&self) -> &'static str {
+    fn name(&self) -> &'static str
+    {
         "WebServerAutoConfiguration"
     }
 
@@ -264,7 +282,8 @@ impl AutoConfiguration for WebServerAutoConfiguration {
     ///
     /// 优先级为 0，在核心配置（-100）之后执行。
     /// Priority is 0, executed after core configuration (-100).
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         0
     }
 
@@ -273,7 +292,8 @@ impl AutoConfiguration for WebServerAutoConfiguration {
     ///
     /// 配置 HTTP 服务器并注册相关 Bean。
     /// Configure HTTP server and register related beans.
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         // Register the configuration as a bean so it can be retrieved later
         // 将配置注册为 Bean，以便后续获取
         ctx.register_named_bean("webServerConfig".to_string(), self.clone());
@@ -281,7 +301,8 @@ impl AutoConfiguration for WebServerAutoConfiguration {
     }
 }
 
-impl WebServerAutoConfiguration {
+impl WebServerAutoConfiguration
+{
     /// Create and start the HTTP server with the given service
     /// 使用给定的服务创建并启动 HTTP 服务器
     ///
@@ -339,7 +360,8 @@ impl WebServerAutoConfiguration {
     ///
     /// 返回配置好的 `hiver_http::Server` 实例。
     /// Returns a configured `hiver_http::Server` instance.
-    pub fn create_server(&self) -> Server {
+    pub fn create_server(&self) -> Server
+    {
         let bind_addr = self.bind_address();
         // Validate the address format, fall back to default if invalid
         // 验证地址格式，如果无效则使用默认值
@@ -379,7 +401,8 @@ impl WebServerAutoConfiguration {
 /// }
 /// ```
 #[derive(Debug)]
-pub struct RouterAutoConfiguration {
+pub struct RouterAutoConfiguration
+{
     /// 基础路径
     /// Base path for all routes
     pub base_path: String,
@@ -389,10 +412,12 @@ pub struct RouterAutoConfiguration {
     pub cors_enabled: bool,
 }
 
-impl RouterAutoConfiguration {
+impl RouterAutoConfiguration
+{
     /// 创建新的路由自动配置
     /// Create a new router auto-configuration
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             base_path: "/".to_string(),
             cors_enabled: false,
@@ -401,35 +426,43 @@ impl RouterAutoConfiguration {
 
     /// 设置基础路径
     /// Set base path
-    pub fn with_base_path(mut self, path: impl Into<String>) -> Self {
+    pub fn with_base_path(mut self, path: impl Into<String>) -> Self
+    {
         self.base_path = path.into();
         self
     }
 
     /// 启用 CORS
     /// Enable CORS
-    pub fn with_cors(mut self, enabled: bool) -> Self {
+    pub fn with_cors(mut self, enabled: bool) -> Self
+    {
         self.cors_enabled = enabled;
         self
     }
 }
 
-impl Default for RouterAutoConfiguration {
-    fn default() -> Self {
+impl Default for RouterAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for RouterAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for RouterAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "RouterAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         10 // 在服务器配置（0）之后
     }
 
-    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         // Spring Boot 风格：不在启动时打印详细配置
         // Spring Boot style: Don't print detailed config during startup
         //
@@ -437,10 +470,8 @@ impl AutoConfiguration for RouterAutoConfiguration {
         // 路由扫描需要：
         // 1. Collect route handlers from modules annotated with route attributes
         //    从带有路由属性的模块收集路由处理器
-        // 2. Build a Router from collected routes
-        //    从收集的路由构建 Router
-        // 3. Register the Router to the ApplicationContext
-        //    将 Router 注册到 ApplicationContext
+        // 2. Build a Router from collected routes 从收集的路由构建 Router
+        // 3. Register the Router to the ApplicationContext 将 Router 注册到 ApplicationContext
         Ok(())
     }
 }
@@ -464,7 +495,8 @@ impl AutoConfiguration for RouterAutoConfiguration {
 /// - RateLimit：速率限制
 /// - CSRF：CSRF 保护
 #[derive(Debug)]
-pub struct MiddlewareAutoConfiguration {
+pub struct MiddlewareAutoConfiguration
+{
     /// 是否启用 CORS 中间件
     /// Whether CORS middleware is enabled
     pub cors_enabled: bool,
@@ -486,10 +518,12 @@ pub struct MiddlewareAutoConfiguration {
     pub rate_limit_enabled: bool,
 }
 
-impl MiddlewareAutoConfiguration {
+impl MiddlewareAutoConfiguration
+{
     /// 创建新的中间件自动配置
     /// Create a new middleware auto-configuration
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             cors_enabled: false,
             compression_enabled: false,
@@ -501,7 +535,8 @@ impl MiddlewareAutoConfiguration {
 
     /// 从 `ApplicationContext` 读取配置
     /// Create from `ApplicationContext`
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             cors_enabled: ctx
                 .get_property("server.cors.enabled")
@@ -527,22 +562,28 @@ impl MiddlewareAutoConfiguration {
     }
 }
 
-impl Default for MiddlewareAutoConfiguration {
-    fn default() -> Self {
+impl Default for MiddlewareAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for MiddlewareAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for MiddlewareAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "MiddlewareAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         20 // 在路由配置（10）之后
     }
 
-    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         // Spring Boot 风格：不在启动时打印详细配置
         // Spring Boot style: Don't print detailed config during startup
         //
@@ -550,12 +591,9 @@ impl AutoConfiguration for MiddlewareAutoConfiguration {
         // 中间件配置需要：
         // 1. Create middleware instances (CORS, Compression, Logger, etc.)
         //    创建中间件实例（CORS、压缩、日志等）
-        // 2. Configure each middleware based on application properties
-        //    根据应用属性配置每个中间件
-        // 3. Build the middleware chain
-        //    构建中间件链
-        // 4. Register to the server/router
-        //    注册到服务器/路由器
+        // 2. Configure each middleware based on application properties 根据应用属性配置每个中间件
+        // 3. Build the middleware chain 构建中间件链
+        // 4. Register to the server/router 注册到服务器/路由器
         Ok(())
     }
 }
@@ -565,7 +603,8 @@ impl AutoConfiguration for MiddlewareAutoConfiguration {
 // ============================================================================
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ------------------------------------------------------------------------
@@ -573,7 +612,8 @@ mod tests {
     // ------------------------------------------------------------------------
 
     #[test]
-    fn test_web_server_auto_config_new() {
+    fn test_web_server_auto_config_new()
+    {
         let config = WebServerAutoConfiguration::new();
         assert_eq!(config.port, 8080);
         assert_eq!(config.host, "127.0.0.1");
@@ -583,7 +623,8 @@ mod tests {
     }
 
     #[test]
-    fn test_web_server_auto_config_builder() {
+    fn test_web_server_auto_config_builder()
+    {
         let config = WebServerAutoConfiguration::new()
             .with_port(9090)
             .with_host("0.0.0.0")
@@ -601,7 +642,8 @@ mod tests {
     }
 
     #[test]
-    fn test_web_server_bind_address() {
+    fn test_web_server_bind_address()
+    {
         let config = WebServerAutoConfiguration::new()
             .with_port(9090)
             .with_host("0.0.0.0");
@@ -609,7 +651,8 @@ mod tests {
     }
 
     #[test]
-    fn test_web_server_create_server() {
+    fn test_web_server_create_server()
+    {
         let config = WebServerAutoConfiguration::new()
             .with_port(9090)
             .with_host("0.0.0.0")
@@ -620,7 +663,8 @@ mod tests {
     }
 
     #[test]
-    fn test_web_server_configure_registers_bean() {
+    fn test_web_server_configure_registers_bean()
+    {
         use crate::core::ApplicationContext;
 
         let config = WebServerAutoConfiguration::new()
@@ -644,14 +688,16 @@ mod tests {
     // ------------------------------------------------------------------------
 
     #[test]
-    fn test_router_auto_config_new() {
+    fn test_router_auto_config_new()
+    {
         let config = RouterAutoConfiguration::new();
         assert_eq!(config.base_path, "/");
         assert!(!config.cors_enabled);
     }
 
     #[test]
-    fn test_router_auto_config_builder() {
+    fn test_router_auto_config_builder()
+    {
         let config = RouterAutoConfiguration::new()
             .with_base_path("/api")
             .with_cors(true);
@@ -665,7 +711,8 @@ mod tests {
     // ------------------------------------------------------------------------
 
     #[test]
-    fn test_middleware_auto_config_new() {
+    fn test_middleware_auto_config_new()
+    {
         let config = MiddlewareAutoConfiguration::new();
         assert!(!config.cors_enabled);
         assert!(!config.compression_enabled);

@@ -14,7 +14,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 #[derive(Default)]
-pub enum LogLevel {
+pub enum LogLevel
+{
     /// Trace level / Trace 级别
     Trace,
     /// Debug level / Debug 级别
@@ -30,9 +31,12 @@ pub enum LogLevel {
     Off,
 }
 
-impl std::fmt::Display for LogLevel {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for LogLevel
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             LogLevel::Trace => write!(f, "TRACE"),
             LogLevel::Debug => write!(f, "DEBUG"),
             LogLevel::Info => write!(f, "INFO"),
@@ -46,7 +50,8 @@ impl std::fmt::Display for LogLevel {
 /// Single logger descriptor.
 /// 单个日志器描述符。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LoggerDescriptor {
+pub struct LoggerDescriptor
+{
     /// Effective log level.
     /// 有效日志级别。
     pub effective_level: LogLevel,
@@ -58,7 +63,8 @@ pub struct LoggerDescriptor {
 /// Response for /actuator/loggers.
 /// /actuator/loggers 的响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LoggersResponse {
+pub struct LoggersResponse
+{
     /// Available log levels.
     /// 可用日志级别。
     pub levels: Vec<LogLevel>,
@@ -70,41 +76,41 @@ pub struct LoggersResponse {
 /// Logger level manager.
 /// 日志级别管理器。
 #[derive(Debug, Clone)]
-pub struct LoggerManager {
+pub struct LoggerManager
+{
     loggers: HashMap<String, LoggerDescriptor>,
 }
 
-impl LoggerManager {
+impl LoggerManager
+{
     /// Create a new manager with root logger at INFO.
     /// 创建带根日志器（INFO 级别）的新管理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         let mut loggers = HashMap::new();
-        loggers.insert(
-            "ROOT".to_string(),
-            LoggerDescriptor {
-                effective_level: LogLevel::Info,
-                configured_level: Some(LogLevel::Info),
-            },
-        );
+        loggers.insert("ROOT".to_string(), LoggerDescriptor {
+            effective_level: LogLevel::Info,
+            configured_level: Some(LogLevel::Info),
+        });
         Self { loggers }
     }
 
     /// Register a logger.
     /// 注册日志器。
-    pub fn register(&mut self, name: impl Into<String>, level: LogLevel) {
-        self.loggers.insert(
-            name.into(),
-            LoggerDescriptor {
-                effective_level: level,
-                configured_level: Some(level),
-            },
-        );
+    pub fn register(&mut self, name: impl Into<String>, level: LogLevel)
+    {
+        self.loggers.insert(name.into(), LoggerDescriptor {
+            effective_level: level,
+            configured_level: Some(level),
+        });
     }
 
     /// Set the level for a logger.
     /// 设置日志器的级别。
-    pub fn set_level(&mut self, name: &str, level: LogLevel) {
-        if let Some(desc) = self.loggers.get_mut(name) {
+    pub fn set_level(&mut self, name: &str, level: LogLevel)
+    {
+        if let Some(desc) = self.loggers.get_mut(name)
+        {
             desc.configured_level = Some(level);
             desc.effective_level = level;
         }
@@ -112,13 +118,15 @@ impl LoggerManager {
 
     /// Get a logger descriptor.
     /// 获取日志器描述符。
-    pub fn get(&self, name: &str) -> Option<&LoggerDescriptor> {
+    pub fn get(&self, name: &str) -> Option<&LoggerDescriptor>
+    {
         self.loggers.get(name)
     }
 
     /// Build the response.
     /// 构建响应。
-    pub fn to_response(&self) -> LoggersResponse {
+    pub fn to_response(&self) -> LoggersResponse
+    {
         LoggersResponse {
             levels: vec![
                 LogLevel::Trace,
@@ -133,25 +141,30 @@ impl LoggerManager {
     }
 }
 
-impl Default for LoggerManager {
-    fn default() -> Self {
+impl Default for LoggerManager
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_logger_manager_new() {
+    fn test_logger_manager_new()
+    {
         let mgr = LoggerManager::new();
         let root = mgr.get("ROOT").unwrap();
         assert_eq!(root.effective_level, LogLevel::Info);
     }
 
     #[test]
-    fn test_register_and_set() {
+    fn test_register_and_set()
+    {
         let mut mgr = LoggerManager::new();
         mgr.register("hiver::http", LogLevel::Debug);
         assert_eq!(mgr.get("hiver::http").unwrap().effective_level, LogLevel::Debug);
@@ -160,7 +173,8 @@ mod tests {
     }
 
     #[test]
-    fn test_to_response() {
+    fn test_to_response()
+    {
         let mut mgr = LoggerManager::new();
         mgr.register("app", LogLevel::Trace);
         let resp = mgr.to_response();
@@ -169,7 +183,8 @@ mod tests {
     }
 
     #[test]
-    fn test_log_level_display() {
+    fn test_log_level_display()
+    {
         assert_eq!(LogLevel::Info.to_string(), "INFO");
         assert_eq!(LogLevel::Debug.to_string(), "DEBUG");
     }

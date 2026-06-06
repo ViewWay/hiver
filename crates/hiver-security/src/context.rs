@@ -14,8 +14,9 @@
 //! Authentication auth = context.getAuthentication();
 //! ```
 
-use crate::Authentication;
 use std::sync::Arc;
+
+use crate::Authentication;
 
 // ---------------------------------------------------------------------------
 // SecurityContext
@@ -36,16 +37,19 @@ use std::sync::Arc;
 /// SecurityContext context = SecurityContextHolder.getContext();
 /// Authentication auth = context.getAuthentication();
 /// ```
-pub struct SecurityContext {
+pub struct SecurityContext
+{
     /// Current authentication
     /// 当前认证
     authentication: Arc<tokio::sync::RwLock<Option<Authentication>>>,
 }
 
-impl SecurityContext {
+impl SecurityContext
+{
     /// Create a new security context
     /// 创建新的安全上下文
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             authentication: Arc::new(tokio::sync::RwLock::new(None)),
         }
@@ -53,27 +57,31 @@ impl SecurityContext {
 
     /// Get current authentication
     /// 获取当前认证
-    pub async fn get_authentication(&self) -> Option<Authentication> {
+    pub async fn get_authentication(&self) -> Option<Authentication>
+    {
         self.authentication.read().await.clone()
     }
 
     /// Set authentication
     /// 设置认证
-    pub async fn set_authentication(&self, auth: Authentication) {
+    pub async fn set_authentication(&self, auth: Authentication)
+    {
         let mut auth_guard = self.authentication.write().await;
         *auth_guard = Some(auth);
     }
 
     /// Clear authentication
     /// 清除认证
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         let mut auth_guard = self.authentication.write().await;
         *auth_guard = None;
     }
 
     /// Check if authenticated
     /// 检查是否已认证
-    pub async fn is_authenticated(&self) -> bool {
+    pub async fn is_authenticated(&self) -> bool
+    {
         self.authentication
             .read()
             .await
@@ -83,7 +91,8 @@ impl SecurityContext {
 
     /// Get current username
     /// 获取当前用户名
-    pub async fn get_username(&self) -> Option<String> {
+    pub async fn get_username(&self) -> Option<String>
+    {
         self.authentication
             .read()
             .await
@@ -93,7 +102,8 @@ impl SecurityContext {
 
     /// Check if user has authority
     /// 检查用户是否有权限
-    pub async fn has_authority(&self, authority: &crate::Authority) -> bool {
+    pub async fn has_authority(&self, authority: &crate::Authority) -> bool
+    {
         self.authentication
             .read()
             .await
@@ -103,7 +113,8 @@ impl SecurityContext {
 
     /// Check if user has role
     /// 检查用户是否有角色
-    pub async fn has_role(&self, role: &crate::Role) -> bool {
+    pub async fn has_role(&self, role: &crate::Role) -> bool
+    {
         self.authentication
             .read()
             .await
@@ -112,8 +123,10 @@ impl SecurityContext {
     }
 }
 
-impl Default for SecurityContext {
-    fn default() -> Self {
+impl Default for SecurityContext
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -132,49 +145,57 @@ static GLOBAL_CONTEXT: std::sync::LazyLock<SecurityContext> =
 
 /// Get global security context
 /// 获取全局安全上下文
-pub fn context() -> &'static SecurityContext {
+pub fn context() -> &'static SecurityContext
+{
     &GLOBAL_CONTEXT
 }
 
 /// Get current authentication from global context
 /// 从全局上下文获取当前认证
-pub async fn get_authentication() -> Option<Authentication> {
+pub async fn get_authentication() -> Option<Authentication>
+{
     context().get_authentication().await
 }
 
 /// Set authentication in global context
 /// 在全局上下文中设置认证
-pub async fn set_authentication(auth: Authentication) {
+pub async fn set_authentication(auth: Authentication)
+{
     context().set_authentication(auth).await;
 }
 
 /// Clear global context
 /// 清除全局上下文
-pub async fn clear_context() {
+pub async fn clear_context()
+{
     context().clear().await;
 }
 
 /// Check if current user is authenticated
 /// 检查当前用户是否已认证
-pub async fn is_authenticated() -> bool {
+pub async fn is_authenticated() -> bool
+{
     context().is_authenticated().await
 }
 
 /// Get current username
 /// 获取当前用户名
-pub async fn get_username() -> Option<String> {
+pub async fn get_username() -> Option<String>
+{
     context().get_username().await
 }
 
 /// Check if current user has authority
 /// 检查当前用户是否有权限
-pub async fn has_authority(authority: &crate::Authority) -> bool {
+pub async fn has_authority(authority: &crate::Authority) -> bool
+{
     context().has_authority(authority).await
 }
 
 /// Check if current user has role
 /// 检查当前用户是否有角色
-pub async fn has_role(role: &crate::Role) -> bool {
+pub async fn has_role(role: &crate::Role) -> bool
+{
     context().has_role(role).await
 }
 
@@ -222,16 +243,19 @@ tokio::task_local! {
 ///     42
 /// });
 /// ```
-pub struct SecurityContextGuard {
+pub struct SecurityContextGuard
+{
     /// The wrapped security context.
     /// 包装的安全上下文。
     ctx: Arc<SecurityContext>,
 }
 
-impl SecurityContextGuard {
+impl SecurityContextGuard
+{
     /// Create a new guard wrapping the given [`SecurityContext`].
     /// 创建新的守卫，包装给定的 [`SecurityContext`]。
-    pub fn new(ctx: SecurityContext) -> Self {
+    pub fn new(ctx: SecurityContext) -> Self
+    {
         Self { ctx: Arc::new(ctx) }
     }
 
@@ -260,7 +284,8 @@ impl SecurityContextGuard {
 
     /// Get a clone of the inner `Arc<SecurityContext>`.
     /// 获取内部 `Arc<SecurityContext>` 的克隆。
-    pub fn context(&self) -> Arc<SecurityContext> {
+    pub fn context(&self) -> Arc<SecurityContext>
+    {
         self.ctx.clone()
     }
 }
@@ -299,7 +324,8 @@ where
 ///
 /// This function may be called both in async and sync contexts.
 /// 此函数可以在异步和同步上下文中调用。
-pub fn get_security_context() -> Option<Arc<SecurityContext>> {
+pub fn get_security_context() -> Option<Arc<SecurityContext>>
+{
     CURRENT_SECURITY_CONTEXT.try_with(Clone::clone).ok()
 }
 
@@ -365,11 +391,13 @@ where
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_security_context() {
+    async fn test_security_context()
+    {
         let context = SecurityContext::new();
 
         assert!(!context.is_authenticated().await);
@@ -391,13 +419,15 @@ mod tests {
     }
 
     #[test]
-    fn test_default_security_context() {
+    fn test_default_security_context()
+    {
         let ctx = SecurityContext::default();
         assert!(ctx.authentication.try_read().is_ok());
     }
 
     #[tokio::test]
-    async fn test_guard_scope_sync() {
+    async fn test_guard_scope_sync()
+    {
         // Initially no context is set.
         assert!(get_security_context().is_none());
 
@@ -424,7 +454,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_set_security_context() {
+    async fn test_set_security_context()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "bob".to_string(),
@@ -448,7 +479,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_security_context() {
+    async fn test_with_security_context()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "bob".to_string(),
@@ -472,7 +504,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_security_context_async() {
+    async fn test_with_security_context_async()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "charlie".to_string(),
@@ -500,7 +533,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_context_propagates_across_await() {
+    async fn test_context_propagates_across_await()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "dave".to_string(),
@@ -537,7 +571,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_spawned_task_does_not_inherit_context() {
+    async fn test_spawned_task_does_not_inherit_context()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "eve".to_string(),
@@ -564,7 +599,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_guard_context_accessor() {
+    async fn test_guard_context_accessor()
+    {
         let ctx = SecurityContext::new();
         ctx.set_authentication(Authentication {
             principal: "frank".to_string(),

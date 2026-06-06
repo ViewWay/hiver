@@ -20,7 +20,8 @@
 /// A single specification predicate
 /// 单个规约谓词
 #[derive(Debug, Clone)]
-pub struct Spec {
+pub struct Spec
+{
     /// SQL where clause fragment (e.g. "status = ?")
     /// SQL WHERE 子句片段
     pub clause: String,
@@ -29,10 +30,12 @@ pub struct Spec {
     pub params: Vec<String>,
 }
 
-impl Spec {
+impl Spec
+{
     /// Create a new specification
     /// 创建新规约
-    pub fn new(clause: impl Into<String>, params: Vec<&str>) -> Self {
+    pub fn new(clause: impl Into<String>, params: Vec<&str>) -> Self
+    {
         Self {
             clause: clause.into(),
             params: params.iter().map(|s| s.to_string()).collect(),
@@ -41,7 +44,8 @@ impl Spec {
 
     /// Create an empty (always-true) specification
     /// 创建空规约（恒真）
-    pub fn none() -> Self {
+    pub fn none() -> Self
+    {
         Self {
             clause: "1=1".to_string(),
             params: Vec::new(),
@@ -50,13 +54,15 @@ impl Spec {
 
     /// Get the clause
     /// 获取子句
-    pub fn clause(&self) -> &str {
+    pub fn clause(&self) -> &str
+    {
         &self.clause
     }
 
     /// Get the parameters
     /// 获取参数
-    pub fn params(&self) -> &[String] {
+    pub fn params(&self) -> &[String]
+    {
         &self.params
     }
 }
@@ -64,7 +70,8 @@ impl Spec {
 /// Composite specification with AND/OR logic
 /// 带有 AND/OR 逻辑的组合规约
 #[derive(Debug, Clone)]
-pub enum CompositeSpec {
+pub enum CompositeSpec
+{
     /// A single predicate
     /// 单个谓词
     Leaf(Spec),
@@ -79,52 +86,62 @@ pub enum CompositeSpec {
     Not(Box<CompositeSpec>),
 }
 
-impl CompositeSpec {
+impl CompositeSpec
+{
     /// Create from a simple spec
     /// 从简单规约创建
-    pub fn from_spec(spec: Spec) -> Self {
+    pub fn from_spec(spec: Spec) -> Self
+    {
         Self::Leaf(spec)
     }
 
     /// Combine with AND
     /// AND 组合
-    pub fn and(self, other: CompositeSpec) -> Self {
+    pub fn and(self, other: CompositeSpec) -> Self
+    {
         Self::And(Box::new(self), Box::new(other))
     }
 
     /// Combine with OR
     /// OR 组合
-    pub fn or(self, other: CompositeSpec) -> Self {
+    pub fn or(self, other: CompositeSpec) -> Self
+    {
         Self::Or(Box::new(self), Box::new(other))
     }
 
     /// Negate
     /// 取反
     #[allow(clippy::should_implement_trait)]
-    pub fn not(self) -> Self {
+    pub fn not(self) -> Self
+    {
         Self::Not(Box::new(self))
     }
 
     /// Convert to SQL WHERE clause with parameters
     /// 转换为 SQL WHERE 子句和参数
-    pub fn to_sql(&self) -> (String, Vec<String>) {
-        match self {
+    pub fn to_sql(&self) -> (String, Vec<String>)
+    {
+        match self
+        {
             CompositeSpec::Leaf(spec) => (spec.clause.clone(), spec.params.clone()),
-            CompositeSpec::And(left, right) => {
+            CompositeSpec::And(left, right) =>
+            {
                 let (l_clause, l_params) = left.to_sql();
                 let (r_clause, r_params) = right.to_sql();
                 let mut params = l_params;
                 params.extend(r_params);
                 (format!("({} AND {})", l_clause, r_clause), params)
             },
-            CompositeSpec::Or(left, right) => {
+            CompositeSpec::Or(left, right) =>
+            {
                 let (l_clause, l_params) = left.to_sql();
                 let (r_clause, r_params) = right.to_sql();
                 let mut params = l_params;
                 params.extend(r_params);
                 (format!("({} OR {})", l_clause, r_clause), params)
             },
-            CompositeSpec::Not(inner) => {
+            CompositeSpec::Not(inner) =>
+            {
                 let (clause, params) = inner.to_sql();
                 (format!("NOT ({})", clause), params)
             },
@@ -137,7 +154,8 @@ impl CompositeSpec {
 ///
 /// Equivalent to Spring Data JPA's `Specification<T>` interface.
 /// 等价于 Spring Data JPA 的 `Specification<T>` 接口。
-pub trait Specification: Send + Sync {
+pub trait Specification: Send + Sync
+{
     /// Convert this specification to a composite spec
     /// 将此规约转换为组合规约
     fn to_spec(&self) -> CompositeSpec;
@@ -145,7 +163,8 @@ pub trait Specification: Send + Sync {
 
 /// Trait for repositories supporting Specification queries
 /// 支持 Specification 查询的 Repository trait
-pub trait JpaSpecificationExecutor<T: Send>: Send + Sync {
+pub trait JpaSpecificationExecutor<T: Send>: Send + Sync
+{
     /// Find all entities matching the specification
     /// 查找所有匹配规约的实体
     fn find_by_spec(
@@ -174,25 +193,29 @@ pub trait JpaSpecificationExecutor<T: Send>: Send + Sync {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_spec_creation() {
+    fn test_spec_creation()
+    {
         let spec = Spec::new("status = ?", vec!["active"]);
         assert_eq!(spec.clause(), "status = ?");
         assert_eq!(spec.params().len(), 1);
     }
 
     #[test]
-    fn test_spec_none() {
+    fn test_spec_none()
+    {
         let spec = Spec::none();
         assert_eq!(spec.clause(), "1=1");
         assert!(spec.params().is_empty());
     }
 
     #[test]
-    fn test_composite_and() {
+    fn test_composite_and()
+    {
         let left = CompositeSpec::from_spec(Spec::new("age > ?", vec!["18"]));
         let right = CompositeSpec::from_spec(Spec::new("status = ?", vec!["active"]));
         let combined = left.and(right);
@@ -202,7 +225,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_or() {
+    fn test_composite_or()
+    {
         let left = CompositeSpec::from_spec(Spec::new("role = ?", vec!["ADMIN"]));
         let right = CompositeSpec::from_spec(Spec::new("role = ?", vec!["MODERATOR"]));
         let combined = left.or(right);
@@ -212,7 +236,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_not() {
+    fn test_composite_not()
+    {
         let inner = CompositeSpec::from_spec(Spec::new("deleted = ?", vec!["true"]));
         let negated = inner.not();
         let (sql, params) = negated.to_sql();
@@ -221,7 +246,8 @@ mod tests {
     }
 
     #[test]
-    fn test_nested_composition() {
+    fn test_nested_composition()
+    {
         let a = CompositeSpec::from_spec(Spec::new("a = ?", vec!["1"]));
         let b = CompositeSpec::from_spec(Spec::new("b = ?", vec!["2"]));
         let c = CompositeSpec::from_spec(Spec::new("c = ?", vec!["3"]));

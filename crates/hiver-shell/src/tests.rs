@@ -8,28 +8,33 @@
 
 use std::sync::{Arc, Mutex};
 
-use crate::builtin::{BuiltinState, ClearCommand, EchoCommand, ExitCommand, HistoryCommand};
-use crate::command::{Command, CommandBox, CommandMeta, CommandRegistry, ParameterMeta};
-use crate::completion::CompletionProvider;
-use crate::prompt::{Banner, PromptColor, PromptStyle};
-use crate::result::{
-    JsonResult, OutputFormat, ResultHandler, ShellError, ShellOutput, TableResult, TextResult,
+use crate::{
+    Shell, ShellBuilder, ShellConfig,
+    builtin::{BuiltinState, ClearCommand, EchoCommand, ExitCommand, HistoryCommand},
+    command::{Command, CommandBox, CommandMeta, CommandRegistry, ParameterMeta},
+    completion::CompletionProvider,
+    prompt::{Banner, PromptColor, PromptStyle},
+    result::{
+        JsonResult, OutputFormat, ResultHandler, ShellError, ShellOutput, TableResult, TextResult,
+    },
+    validation::{InputValidator, ValidatedInput},
 };
-use crate::validation::{InputValidator, ValidatedInput};
-use crate::{Shell, ShellBuilder, ShellConfig};
 
 // ============================================================================
 // Helper: Simple test command / 辅助：简单测试命令
 // ============================================================================
 
-struct TestCommand {
+struct TestCommand
+{
     name: String,
     desc: String,
     handler: fn(&[&str]) -> Result<String, ShellError>,
 }
 
-impl TestCommand {
-    fn new(name: &str, desc: &str) -> Self {
+impl TestCommand
+{
+    fn new(name: &str, desc: &str) -> Self
+    {
         Self {
             name: name.to_string(),
             desc: desc.to_string(),
@@ -41,7 +46,8 @@ impl TestCommand {
         name: &str,
         desc: &str,
         handler: fn(&[&str]) -> Result<String, ShellError>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             name: name.to_string(),
             desc: desc.to_string(),
@@ -50,12 +56,15 @@ impl TestCommand {
     }
 }
 
-impl Command for TestCommand {
-    fn meta(&self) -> CommandMeta {
+impl Command for TestCommand
+{
+    fn meta(&self) -> CommandMeta
+    {
         CommandMeta::new(&self.name).description(&self.desc)
     }
 
-    fn execute(&self, args: &[&str]) -> Result<String, ShellError> {
+    fn execute(&self, args: &[&str]) -> Result<String, ShellError>
+    {
         (self.handler)(args)
     }
 }
@@ -65,14 +74,16 @@ impl Command for TestCommand {
 // ============================================================================
 
 #[test]
-fn test_command_registry_new() {
+fn test_command_registry_new()
+{
     let registry = CommandRegistry::new();
     assert!(registry.is_empty());
     assert_eq!(registry.len(), 0);
 }
 
 #[test]
-fn test_command_registry_register_and_lookup() {
+fn test_command_registry_register_and_lookup()
+{
     let mut registry = CommandRegistry::new();
     registry.register(TestCommand::new("greet", "Greet someone"));
 
@@ -87,17 +98,22 @@ fn test_command_registry_register_and_lookup() {
 }
 
 #[test]
-fn test_command_registry_aliases() {
+fn test_command_registry_aliases()
+{
     let mut registry = CommandRegistry::new();
 
     struct AliasCmd;
-    impl Command for AliasCmd {
-        fn meta(&self) -> CommandMeta {
+    impl Command for AliasCmd
+    {
+        fn meta(&self) -> CommandMeta
+        {
             CommandMeta::new("hello")
                 .description("Say hello")
                 .aliases(&["hi", "hey"])
         }
-        fn execute(&self, args: &[&str]) -> Result<String, ShellError> {
+
+        fn execute(&self, args: &[&str]) -> Result<String, ShellError>
+        {
             Ok(format!("Hello, {}!", args.first().unwrap_or(&"World")))
         }
     }
@@ -115,7 +131,8 @@ fn test_command_registry_aliases() {
 }
 
 #[test]
-fn test_command_registry_execute_line() {
+fn test_command_registry_execute_line()
+{
     let mut registry = CommandRegistry::new();
     registry.register(TestCommand::with_handler("add", "Add numbers", |args| {
         let sum: i32 = args.iter().filter_map(|s| s.parse::<i32>().ok()).sum();
@@ -127,18 +144,21 @@ fn test_command_registry_execute_line() {
 }
 
 #[test]
-fn test_command_registry_unknown_command() {
+fn test_command_registry_unknown_command()
+{
     let registry = CommandRegistry::new();
     let result = registry.execute_line("unknown_cmd");
     assert!(result.is_err());
-    match result.unwrap_err() {
+    match result.unwrap_err()
+    {
         ShellError::CommandNotFound(name) => assert_eq!(name, "unknown_cmd"),
         _ => panic!("Expected CommandNotFound error"),
     }
 }
 
 #[test]
-fn test_command_registry_all_commands() {
+fn test_command_registry_all_commands()
+{
     let mut registry = CommandRegistry::new();
     registry.register(TestCommand::new("alpha", "First"));
     registry.register(TestCommand::new("beta", "Second"));
@@ -149,17 +169,22 @@ fn test_command_registry_all_commands() {
 }
 
 #[test]
-fn test_command_registry_hidden_commands() {
+fn test_command_registry_hidden_commands()
+{
     let mut registry = CommandRegistry::new();
 
     struct HiddenCmd;
-    impl Command for HiddenCmd {
-        fn meta(&self) -> CommandMeta {
+    impl Command for HiddenCmd
+    {
+        fn meta(&self) -> CommandMeta
+        {
             CommandMeta::new("secret")
                 .description("Hidden cmd")
                 .hidden(true)
         }
-        fn execute(&self, _args: &[&str]) -> Result<String, ShellError> {
+
+        fn execute(&self, _args: &[&str]) -> Result<String, ShellError>
+        {
             Ok("secret".to_string())
         }
     }
@@ -180,14 +205,16 @@ fn test_command_registry_hidden_commands() {
 // ============================================================================
 
 #[test]
-fn test_result_handler_plain() {
+fn test_result_handler_plain()
+{
     let handler = ResultHandler::with_format(OutputFormat::Plain);
     let text = TextResult::new("hello world");
     assert_eq!(handler.handle(&text), "hello world");
 }
 
 #[test]
-fn test_result_handler_json() {
+fn test_result_handler_json()
+{
     let handler = ResultHandler::with_format(OutputFormat::Json);
     let text = TextResult::new("hello");
     let output = handler.handle(&text);
@@ -196,7 +223,8 @@ fn test_result_handler_json() {
 }
 
 #[test]
-fn test_result_handler_error() {
+fn test_result_handler_error()
+{
     let handler = ResultHandler::new();
     let error = ShellError::CommandNotFound("test".to_string());
     let output = handler.handle_error(&error);
@@ -204,7 +232,8 @@ fn test_result_handler_error() {
 }
 
 #[test]
-fn test_table_result_render() {
+fn test_table_result_render()
+{
     let table = TableResult::new(&["Name", "Age", "City"])
         .row(&["Alice", "30", "NYC"])
         .row(&["Bob", "25", "LA"]);
@@ -217,7 +246,8 @@ fn test_table_result_render() {
 }
 
 #[test]
-fn test_table_result_json() {
+fn test_table_result_json()
+{
     let table = TableResult::new(&["Name", "Age"]).row(&["Alice", "30"]);
 
     let json = table.render_json();
@@ -226,7 +256,8 @@ fn test_table_result_json() {
 }
 
 #[test]
-fn test_json_result() {
+fn test_json_result()
+{
     let json_result = JsonResult::from_str(r#"{"key": "value"}"#).unwrap();
     let rendered = json_result.render_json();
     assert!(rendered.contains("key"));
@@ -234,7 +265,8 @@ fn test_json_result() {
 }
 
 #[test]
-fn test_text_result_json() {
+fn test_text_result_json()
+{
     let text = TextResult::new("hello world");
     let json = text.render_json();
     assert!(json.contains("hello world"));
@@ -245,7 +277,8 @@ fn test_text_result_json() {
 // ============================================================================
 
 #[test]
-fn test_validation_valid_input() {
+fn test_validation_valid_input()
+{
     let validator = InputValidator::new();
     let result = validator.validate("greet Alice").unwrap();
     assert_eq!(result.command, "greet");
@@ -253,35 +286,40 @@ fn test_validation_valid_input() {
 }
 
 #[test]
-fn test_validation_empty_input() {
+fn test_validation_empty_input()
+{
     let validator = InputValidator::new().allow_empty(true);
     let result = validator.validate("  ").unwrap();
     assert!(result.is_empty());
 }
 
 #[test]
-fn test_validation_empty_not_allowed() {
+fn test_validation_empty_not_allowed()
+{
     let validator = InputValidator::new().allow_empty(false);
     let result = validator.validate("");
     assert!(result.is_err());
 }
 
 #[test]
-fn test_validation_too_long() {
+fn test_validation_too_long()
+{
     let validator = InputValidator::new().max_length(10);
     let result = validator.validate("this is a very long input string");
     assert!(result.is_err());
 }
 
 #[test]
-fn test_validation_null_bytes() {
+fn test_validation_null_bytes()
+{
     let validator = InputValidator::new();
     let result = validator.validate("cmd\0arg");
     assert!(result.is_err());
 }
 
 #[test]
-fn test_validation_invalid_command_name() {
+fn test_validation_invalid_command_name()
+{
     use crate::validation::validate_command_name;
     assert!(validate_command_name("123invalid").is_err());
     assert!(validate_command_name("valid-cmd").is_ok());
@@ -295,7 +333,8 @@ fn test_validation_invalid_command_name() {
 // ============================================================================
 
 #[test]
-fn test_completion_basic() {
+fn test_completion_basic()
+{
     let mut registry = CommandRegistry::new();
     registry.register(TestCommand::new("greet", "Greet"));
     registry.register(TestCommand::new("goodbye", "Goodbye"));
@@ -318,7 +357,8 @@ fn test_completion_basic() {
 }
 
 #[test]
-fn test_completion_no_match() {
+fn test_completion_no_match()
+{
     let mut registry = CommandRegistry::new();
     registry.register(TestCommand::new("hello", "Hello"));
 
@@ -332,7 +372,8 @@ fn test_completion_no_match() {
 // ============================================================================
 
 #[test]
-fn test_prompt_style_default() {
+fn test_prompt_style_default()
+{
     let style = PromptStyle::new();
     let rendered = style.render();
     assert!(rendered.contains("hiver"));
@@ -340,7 +381,8 @@ fn test_prompt_style_default() {
 }
 
 #[test]
-fn test_prompt_style_custom() {
+fn test_prompt_style_custom()
+{
     let style = PromptStyle::new()
         .app_name("myapp")
         .color(PromptColor::Green)
@@ -352,7 +394,8 @@ fn test_prompt_style_custom() {
 }
 
 #[test]
-fn test_banner_render() {
+fn test_banner_render()
+{
     let banner = Banner::new();
     let rendered = banner.render();
     assert!(!rendered.is_empty());
@@ -360,7 +403,8 @@ fn test_banner_render() {
 }
 
 #[test]
-fn test_banner_disabled() {
+fn test_banner_disabled()
+{
     let banner = Banner::disabled();
     let rendered = banner.render();
     assert!(rendered.is_empty());
@@ -371,7 +415,8 @@ fn test_banner_disabled() {
 // ============================================================================
 
 #[test]
-fn test_builtin_echo_command() {
+fn test_builtin_echo_command()
+{
     let cmd = EchoCommand;
     assert_eq!(cmd.name(), "echo");
 
@@ -383,7 +428,8 @@ fn test_builtin_echo_command() {
 }
 
 #[test]
-fn test_builtin_clear_command() {
+fn test_builtin_clear_command()
+{
     let cmd = ClearCommand;
     assert_eq!(cmd.name(), "clear");
 
@@ -393,20 +439,24 @@ fn test_builtin_clear_command() {
 }
 
 #[test]
-fn test_builtin_exit_command() {
+fn test_builtin_exit_command()
+{
     let cmd = ExitCommand;
     assert_eq!(cmd.name(), "exit");
 
     let result = cmd.execute(&[]);
     assert!(result.is_err());
-    match result.unwrap_err() {
-        ShellError::ExitRequested => {},
+    match result.unwrap_err()
+    {
+        ShellError::ExitRequested =>
+        {},
         _ => panic!("Expected ExitRequested"),
     }
 }
 
 #[test]
-fn test_builtin_history_command() {
+fn test_builtin_history_command()
+{
     let state = Arc::new(Mutex::new(BuiltinState::new()));
     {
         let mut s = state.lock().unwrap_or_else(|e| e.into_inner());
@@ -425,7 +475,8 @@ fn test_builtin_history_command() {
 // ============================================================================
 
 #[test]
-fn test_command_meta_builder() {
+fn test_command_meta_builder()
+{
     let meta = CommandMeta::new("test")
         .description("A test command")
         .group("Testing")
@@ -449,7 +500,8 @@ fn test_command_meta_builder() {
 }
 
 #[test]
-fn test_command_meta_display() {
+fn test_command_meta_display()
+{
     let meta = CommandMeta::new("hello")
         .description("Say hello")
         .aliases(&["hi"]);
@@ -465,7 +517,8 @@ fn test_command_meta_display() {
 // ============================================================================
 
 #[test]
-fn test_shell_builder_default() {
+fn test_shell_builder_default()
+{
     let shell = ShellBuilder::new().build();
     // Should have built-in commands registered
     // 应该已注册内置命令
@@ -479,13 +532,15 @@ fn test_shell_builder_default() {
 }
 
 #[test]
-fn test_shell_builder_no_builtins() {
+fn test_shell_builder_no_builtins()
+{
     let shell = ShellBuilder::new().register_builtins(false).build();
     assert!(shell.registry().is_empty());
 }
 
 #[test]
-fn test_shell_builder_custom_commands() {
+fn test_shell_builder_custom_commands()
+{
     let shell = ShellBuilder::new()
         .register(TestCommand::new("custom1", "Custom 1"))
         .register(TestCommand::new("custom2", "Custom 2"))
@@ -498,7 +553,8 @@ fn test_shell_builder_custom_commands() {
 }
 
 #[test]
-fn test_shell_execute_line() {
+fn test_shell_execute_line()
+{
     let shell = ShellBuilder::new()
         .register(TestCommand::with_handler("double", "Double a number", |args| {
             let n: i32 = args.first().unwrap_or(&"0").parse().unwrap_or(0);
@@ -511,7 +567,8 @@ fn test_shell_execute_line() {
 }
 
 #[test]
-fn test_shell_execute_script() {
+fn test_shell_execute_script()
+{
     let shell = ShellBuilder::new()
         .register(TestCommand::with_handler("echo", "Echo", |args| Ok(args.join(" "))))
         .build();
@@ -528,7 +585,8 @@ fn test_shell_execute_script() {
 // ============================================================================
 
 #[test]
-fn test_shell_config_builder() {
+fn test_shell_config_builder()
+{
     let config = ShellConfig::new()
         .app_name("test-app")
         .show_banner(false)
@@ -544,7 +602,8 @@ fn test_shell_config_builder() {
 // ============================================================================
 
 #[test]
-fn test_builtin_state_history() {
+fn test_builtin_state_history()
+{
     let mut state = BuiltinState::new();
     state.add_history("cmd1");
     state.add_history("cmd2");
@@ -556,9 +615,11 @@ fn test_builtin_state_history() {
 }
 
 #[test]
-fn test_builtin_state_history_max() {
+fn test_builtin_state_history_max()
+{
     let mut state = BuiltinState::new();
-    for i in 0..150 {
+    for i in 0..150
+    {
         state.add_history(&format!("cmd{i}"));
     }
     // Should be capped at MAX_HISTORY (100)
@@ -566,7 +627,8 @@ fn test_builtin_state_history_max() {
 }
 
 #[test]
-fn test_builtin_state_history_skip_empty() {
+fn test_builtin_state_history_skip_empty()
+{
     let mut state = BuiltinState::new();
     state.add_history("cmd1");
     state.add_history("   ");
@@ -577,7 +639,8 @@ fn test_builtin_state_history_skip_empty() {
 }
 
 #[test]
-fn test_builtin_state_record_error() {
+fn test_builtin_state_record_error()
+{
     let mut state = BuiltinState::new();
     let error = ShellError::CommandNotFound("test".to_string());
     state.record_error(&error);
@@ -592,7 +655,8 @@ fn test_builtin_state_record_error() {
 // ============================================================================
 
 #[test]
-fn test_shell_command_macro() {
+fn test_shell_command_macro()
+{
     let cmd: CommandBox =
         crate::shell_command!("test-macro", "A macro-defined command", |args: &[&str]| {
             Ok(format!("macro output: {}", args.join(",")))
@@ -610,7 +674,8 @@ fn test_shell_command_macro() {
 // ============================================================================
 
 #[test]
-fn test_parameter_meta() {
+fn test_parameter_meta()
+{
     let required = ParameterMeta::required("name", "Your name");
     assert!(required.required);
     assert_eq!(required.name, "name");

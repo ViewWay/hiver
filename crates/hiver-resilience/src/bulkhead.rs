@@ -40,20 +40,26 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::collections::HashMap;
-use std::fmt;
-use std::future::Future;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::time::Duration;
+use std::{
+    collections::HashMap,
+    fmt,
+    future::Future,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, AtomicU64, Ordering},
+    },
+    time::Duration,
+};
 
 /// Bulkhead error
 /// 舱壁错误
 #[derive(Debug, Clone)]
-pub enum BulkheadError {
+pub enum BulkheadError
+{
     /// Bulkhead is full — no capacity available
     /// 舱壁已满 — 无可用容量
-    Full {
+    Full
+    {
         /// Name of the bulkhead that rejected the call
         /// 拒绝调用的舱壁名称
         name: String,
@@ -63,7 +69,8 @@ pub enum BulkheadError {
     },
     /// Wait duration exceeded while trying to acquire a permit
     /// 尝试获取许可时等待超时
-    WaitTimeout {
+    WaitTimeout
+    {
         /// Name of the bulkhead
         /// 舱壁名称
         name: String,
@@ -73,20 +80,25 @@ pub enum BulkheadError {
     },
 }
 
-impl fmt::Display for BulkheadError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for BulkheadError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Full {
                 name,
                 max_concurrent_calls,
-            } => {
+            } =>
+            {
                 write!(
                     f,
                     "Bulkhead '{}' is full and does not permit further calls (max: {})",
                     name, max_concurrent_calls
                 )
             },
-            Self::WaitTimeout { name, max_wait } => {
+            Self::WaitTimeout { name, max_wait } =>
+            {
                 write!(f, "Bulkhead '{}' wait timeout after {}ms", name, max_wait.as_millis())
             },
         }
@@ -105,7 +117,8 @@ pub type Result<T> = std::result::Result<T, BulkheadError>;
 /// Builder-pattern configuration for creating a bulkhead.
 /// 用于创建舱壁的构建器模式配置。
 #[derive(Debug, Clone)]
-pub struct BulkheadConfig {
+pub struct BulkheadConfig
+{
     /// Maximum number of concurrent calls allowed.
     /// 允许的最大并发调用数。
     pub max_concurrent_calls: usize,
@@ -125,8 +138,10 @@ pub struct BulkheadConfig {
     pub writable_stack_trace_enabled: bool,
 }
 
-impl Default for BulkheadConfig {
-    fn default() -> Self {
+impl Default for BulkheadConfig
+{
+    fn default() -> Self
+    {
         Self {
             max_concurrent_calls: 25,
             max_wait_duration: None,
@@ -136,16 +151,19 @@ impl Default for BulkheadConfig {
     }
 }
 
-impl BulkheadConfig {
+impl BulkheadConfig
+{
     /// Create a new bulkhead config with defaults (max_concurrent_calls = 25, no wait).
     /// 创建新的舱壁配置，使用默认值（max_concurrent_calls = 25，无等待）。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the maximum number of concurrent calls.
     /// 设置最大并发调用数。
-    pub fn with_max_concurrent_calls(mut self, max: usize) -> Self {
+    pub fn with_max_concurrent_calls(mut self, max: usize) -> Self
+    {
         self.max_concurrent_calls = max;
         self
     }
@@ -154,21 +172,24 @@ impl BulkheadConfig {
     /// `None` disables waiting (callers fail immediately when full).
     /// 设置获取许可的最大等待时间。
     /// `None` 禁用等待（满时调用方立即失败）。
-    pub fn with_max_wait_duration(mut self, duration: Duration) -> Self {
+    pub fn with_max_wait_duration(mut self, duration: Duration) -> Self
+    {
         self.max_wait_duration = Some(duration);
         self
     }
 
     /// Enable or disable fair (FIFO) ordering.
     /// 启用或禁用公平（FIFO）排序。
-    pub fn with_fair(mut self, fair: bool) -> Self {
+    pub fn with_fair(mut self, fair: bool) -> Self
+    {
         self.fair = fair;
         self
     }
 
     /// Enable or disable writable stack traces for debugging.
     /// 启用或禁用于调试的可写堆栈跟踪。
-    pub fn with_writable_stack_trace(mut self, enabled: bool) -> Self {
+    pub fn with_writable_stack_trace(mut self, enabled: bool) -> Self
+    {
         self.writable_stack_trace_enabled = enabled;
         self
     }
@@ -180,7 +201,8 @@ impl BulkheadConfig {
 /// Tracks the operational statistics of a bulkhead.
 /// 跟踪舱壁的运行统计信息。
 #[derive(Debug, Default)]
-pub struct BulkheadMetrics {
+pub struct BulkheadMetrics
+{
     /// Number of calls currently running
     /// 当前正在运行的调用数
     available_concurrent_calls: AtomicU64,
@@ -206,10 +228,12 @@ pub struct BulkheadMetrics {
     forced_open: AtomicBool,
 }
 
-impl BulkheadMetrics {
+impl BulkheadMetrics
+{
     /// Record an accepted call — increment in-flight and total accepted.
     /// 记录接受的调用——增加进行中和接受的计数。
-    fn record_accepted(&self) -> usize {
+    fn record_accepted(&self) -> usize
+    {
         let prev = self.accepted_calls.fetch_add(1, Ordering::Relaxed);
         let current = self
             .available_concurrent_calls
@@ -217,13 +241,15 @@ impl BulkheadMetrics {
             + 1;
         // Track peak concurrency
         let mut peak = self.max_concurrent_usage.load(Ordering::Relaxed);
-        while current > peak {
+        while current > peak
+        {
             match self.max_concurrent_usage.compare_exchange_weak(
                 peak,
                 current,
                 Ordering::Relaxed,
                 Ordering::Relaxed,
-            ) {
+            )
+            {
                 Ok(_) => break,
                 Err(p) => peak = p,
             }
@@ -233,74 +259,86 @@ impl BulkheadMetrics {
 
     /// Record a completed call — decrement in-flight count.
     /// 记录完成的调用——减少进行中计数。
-    fn record_completed(&self) {
+    fn record_completed(&self)
+    {
         self.available_concurrent_calls
             .fetch_sub(1, Ordering::Relaxed);
     }
 
     /// Record a rejected call (bulkhead full).
     /// 记录被拒绝的调用（舱壁已满）。
-    fn record_rejected(&self) {
+    fn record_rejected(&self)
+    {
         self.rejected_calls.fetch_add(1, Ordering::Relaxed);
     }
 
     /// Record a wait-timeout rejection.
     /// 记录等待超时拒绝。
-    fn record_wait_timeout(&self) {
+    fn record_wait_timeout(&self)
+    {
         self.wait_timeout_count.fetch_add(1, Ordering::Relaxed);
     }
 
     /// Returns the number of currently running calls.
     /// 返回当前正在运行的调用数。
-    pub fn in_flight(&self) -> u64 {
+    pub fn in_flight(&self) -> u64
+    {
         self.available_concurrent_calls.load(Ordering::Relaxed)
     }
 
     /// Returns total accepted calls count.
     /// 返回接受的调用总数。
-    pub fn accepted_count(&self) -> u64 {
+    pub fn accepted_count(&self) -> u64
+    {
         self.accepted_calls.load(Ordering::Relaxed)
     }
 
     /// Returns total rejected calls count.
     /// 返回被拒绝的调用总数。
-    pub fn rejected_count(&self) -> u64 {
+    pub fn rejected_count(&self) -> u64
+    {
         self.rejected_calls.load(Ordering::Relaxed)
     }
 
     /// Returns wait timeout rejection count.
     /// 返回等待超时拒绝计数。
-    pub fn wait_timeout_count(&self) -> u64 {
+    pub fn wait_timeout_count(&self) -> u64
+    {
         self.wait_timeout_count.load(Ordering::Relaxed)
     }
 
     /// Returns peak concurrent usage.
     /// 返回峰值并发使用量。
-    pub fn peak_concurrent(&self) -> u64 {
+    pub fn peak_concurrent(&self) -> u64
+    {
         self.max_concurrent_usage.load(Ordering::Relaxed)
     }
 
     /// Check if the bulkhead is force-opened (disabled).
     /// 检查舱壁是否已被强制打开（禁用）。
-    pub fn is_forced_open(&self) -> bool {
+    pub fn is_forced_open(&self) -> bool
+    {
         self.forced_open.load(Ordering::Relaxed)
     }
 
     /// Force open (disable) the bulkhead — all calls pass through.
     /// 强制打开（禁用）舱壁——所有调用通过。
-    pub fn force_open(&self) {
+    pub fn force_open(&self)
+    {
         self.forced_open.store(true, Ordering::Relaxed);
     }
 
     /// Close (re-enable) the bulkhead.
     /// 关闭（重新启用）舱壁。
-    pub fn force_close(&self) {
+    pub fn force_close(&self)
+    {
         self.forced_open.store(false, Ordering::Relaxed);
     }
 
     /// Reset all metrics counters to zero.
     /// 将所有指标计数器重置为零。
-    pub fn reset(&self) {
+    pub fn reset(&self)
+    {
         self.available_concurrent_calls.store(0, Ordering::Relaxed);
         self.accepted_calls.store(0, Ordering::Relaxed);
         self.rejected_calls.store(0, Ordering::Relaxed);
@@ -313,15 +351,18 @@ impl BulkheadMetrics {
 /// When dropped, the caller should explicitly call `Bulkhead::release()`.
 /// 表示拥有舱壁槽位的许可。释放时调用方应显式调用 `Bulkhead::release()`。
 #[derive(Debug)]
-pub struct BulkheadPermit {
+pub struct BulkheadPermit
+{
     /// Name of the owning bulkhead (for diagnostics).
     name: String,
 }
 
-impl BulkheadPermit {
+impl BulkheadPermit
+{
     /// Return the bulkhead name.
     /// 返回舱壁名称。
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.name
     }
 }
@@ -335,7 +376,8 @@ impl BulkheadPermit {
 /// 使用类似信号量的计数器来限制对受保护资源的并发访问。
 /// 支持可选的超时等待排队。
 #[derive(Debug)]
-pub struct Bulkhead {
+pub struct Bulkhead
+{
     /// Name of this bulkhead instance
     /// 此舱壁实例的名称
     name: String,
@@ -350,7 +392,8 @@ pub struct Bulkhead {
     current_permits: Arc<std::sync::Mutex<usize>>,
 }
 
-impl Bulkhead {
+impl Bulkhead
+{
     /// Create a new bulkhead with the given name and configuration.
     /// 使用给定的名称和配置创建新的舱壁。
     ///
@@ -359,12 +402,12 @@ impl Bulkhead {
     /// ```rust
     /// use hiver_resilience::bulkhead::{Bulkhead, BulkheadConfig};
     ///
-    /// let config = BulkheadConfig::new()
-    ///     .with_max_concurrent_calls(10);
+    /// let config = BulkheadConfig::new().with_max_concurrent_calls(10);
     ///
     /// let bulkhead = Bulkhead::new("my-bulkhead", config);
     /// ```
-    pub fn new(name: impl Into<String>, config: BulkheadConfig) -> Self {
+    pub fn new(name: impl Into<String>, config: BulkheadConfig) -> Self
+    {
         Self {
             name: name.into(),
             current_permits: Arc::new(std::sync::Mutex::new(0)),
@@ -375,19 +418,22 @@ impl Bulkhead {
 
     /// Return the bulkhead name.
     /// 返回舱壁名称。
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.name
     }
 
     /// Return a reference to the configuration.
     /// 返回配置的引用。
-    pub fn config(&self) -> &BulkheadConfig {
+    pub fn config(&self) -> &BulkheadConfig
+    {
         &self.config
     }
 
     /// Return a reference to the metrics.
     /// 返回指标的引用。
-    pub fn metrics(&self) -> &BulkheadMetrics {
+    pub fn metrics(&self) -> &BulkheadMetrics
+    {
         &self.metrics
     }
 
@@ -399,9 +445,11 @@ impl Bulkhead {
     /// The caller **must** call `bulkhead.release()` after the operation completes
     /// to return the slot to the pool.
     /// 调用方**必须**在操作完成后调用 `bulkhead.release()` 将槽位归还给池。
-    pub fn try_acquire(&self) -> Result<BulkheadPermit> {
+    pub fn try_acquire(&self) -> Result<BulkheadPermit>
+    {
         // If force-opened, all calls pass through
-        if self.metrics.is_forced_open() {
+        if self.metrics.is_forced_open()
+        {
             self.metrics.record_accepted();
             return Ok(BulkheadPermit {
                 name: self.name.clone(),
@@ -409,13 +457,16 @@ impl Bulkhead {
         }
 
         let mut permits = self.current_permits.lock().expect("bulkhead lock poisoned");
-        if *permits < self.config.max_concurrent_calls {
+        if *permits < self.config.max_concurrent_calls
+        {
             *permits += 1;
             self.metrics.record_accepted();
             Ok(BulkheadPermit {
                 name: self.name.clone(),
             })
-        } else {
+        }
+        else
+        {
             self.metrics.record_rejected();
             Err(BulkheadError::Full {
                 name: self.name.clone(),
@@ -428,18 +479,25 @@ impl Bulkhead {
     /// Uses cooperative yielding (async). For sync usage, this polls with short sleeps.
     /// 尝试获取许可，最多等待配置的 max_wait_duration。
     /// 使用协作让步（异步）。同步用法则通过短暂休眠轮询。
-    pub async fn try_acquire_with_wait(&self) -> Result<BulkheadPermit> {
-        let Some(max_wait) = self.config.max_wait_duration else {
+    pub async fn try_acquire_with_wait(&self) -> Result<BulkheadPermit>
+    {
+        let Some(max_wait) = self.config.max_wait_duration
+        else
+        {
             return self.try_acquire();
         };
 
         let start = std::time::Instant::now();
-        loop {
-            match self.try_acquire() {
+        loop
+        {
+            match self.try_acquire()
+            {
                 Ok(permit) => return Ok(permit),
-                Err(BulkheadError::Full { .. }) => {
+                Err(BulkheadError::Full { .. }) =>
+                {
                     tokio::time::sleep(Duration::from_millis(5)).await;
-                    if start.elapsed() >= max_wait {
+                    if start.elapsed() >= max_wait
+                    {
                         self.metrics.record_wait_timeout();
                         return Err(BulkheadError::WaitTimeout {
                             name: self.name.clone(),
@@ -457,9 +515,11 @@ impl Bulkhead {
     ///
     /// Call this after the protected operation completes. Safe to call multiple times.
     /// 在受保护的操作完成后调用此方法。可以安全地多次调用。
-    pub fn release(&self) {
+    pub fn release(&self)
+    {
         let mut permits = self.current_permits.lock().expect("bulkhead lock poisoned");
-        if *permits > 0 {
+        if *permits > 0
+        {
             *permits -= 1;
         }
         self.metrics.record_completed();
@@ -494,13 +554,15 @@ impl Bulkhead {
     /// Changing max_concurrent_calls immediately affects subsequent acquire calls.
     /// 在运行时更改舱壁配置。
     /// 更改 max_concurrent_calls 会立即影响后续的获取调用。
-    pub fn reconfigure(&mut self, config: BulkheadConfig) {
+    pub fn reconfigure(&mut self, config: BulkheadConfig)
+    {
         self.config = config;
     }
 
     /// Reset metrics counters. Does NOT affect in-flight operations.
     /// 重置指标计数器。不影响正在进行的操作。
-    pub fn reset_metrics(&self) {
+    pub fn reset_metrics(&self)
+    {
         self.metrics.reset();
     }
 
@@ -508,37 +570,44 @@ impl Bulkhead {
     /// Useful for circuit-breaker integration or maintenance.
     /// 强制打开舱壁——所有调用不受限制地通过。
     /// 用于熔断器集成或维护。
-    pub fn force_open(&self) {
+    pub fn force_open(&self)
+    {
         self.metrics.force_open();
     }
 
     /// Close the bulkhead, resuming normal limiting.
     /// 关闭舱壁，恢复正常限制。
-    pub fn force_close(&self) {
+    pub fn force_close(&self)
+    {
         self.metrics.force_close();
     }
 
     /// Check if the bulkhead is force-opened.
     /// 检查舱壁是否已被强制打开。
-    pub fn is_forced_open(&self) -> bool {
+    pub fn is_forced_open(&self) -> bool
+    {
         self.metrics.is_forced_open()
     }
 
     /// Return the current number of in-flight calls.
     /// 返回当前进行中的调用数。
-    pub fn in_flight(&self) -> u64 {
+    pub fn in_flight(&self) -> u64
+    {
         self.metrics.in_flight()
     }
 
     /// Return the peak concurrent usage observed.
     /// 返回观察到的峰值并发使用量。
-    pub fn peak_concurrent(&self) -> u64 {
+    pub fn peak_concurrent(&self) -> u64
+    {
         self.metrics.peak_concurrent()
     }
 }
 
-impl fmt::Display for Bulkhead {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Bulkhead
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(
             f,
             "Bulkhead(name={}, in_flight={}/{}, accepted={}, rejected={})",
@@ -555,14 +624,17 @@ impl fmt::Display for Bulkhead {
 /// Allows looking up and managing bulkhead instances by name.
 /// 命名舱壁的注册表。允许按名称查找和管理舱壁实例。
 #[derive(Debug, Default)]
-pub struct BulkheadRegistry {
+pub struct BulkheadRegistry
+{
     bulkheads: HashMap<String, Arc<Bulkhead>>,
 }
 
-impl BulkheadRegistry {
+impl BulkheadRegistry
+{
     /// Create a new empty registry.
     /// 创建新的空注册表。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             bulkheads: HashMap::new(),
         }
@@ -577,7 +649,8 @@ impl BulkheadRegistry {
         &mut self,
         name: impl Into<String>,
         config: BulkheadConfig,
-    ) -> Arc<Bulkhead> {
+    ) -> Arc<Bulkhead>
+    {
         let name = name.into();
         self.bulkheads
             .entry(name)
@@ -587,42 +660,50 @@ impl BulkheadRegistry {
 
     /// Get an existing bulkhead by name.
     /// 按名称获取现有舱壁。
-    pub fn get(&self, name: &str) -> Option<&Arc<Bulkhead>> {
+    pub fn get(&self, name: &str) -> Option<&Arc<Bulkhead>>
+    {
         self.bulkheads.get(name)
     }
 
     /// Return the number of registered bulkheads.
     /// 返回已注册的舱壁数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.bulkheads.len()
     }
 
     /// Check if the registry is empty.
     /// 检查注册表是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.bulkheads.is_empty()
     }
 
     /// Return an iterator over all registered bulkheads.
     /// 返回所有已注册舱壁的迭代器。
-    pub fn iter(&self) -> impl Iterator<Item = (&String, &Arc<Bulkhead>)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&String, &Arc<Bulkhead>)>
+    {
         self.bulkheads.iter()
     }
 
     /// Remove a bulkhead from the registry.
     /// 从注册表中移除舱壁。
-    pub fn remove(&mut self, name: &str) -> Option<Arc<Bulkhead>> {
+    pub fn remove(&mut self, name: &str) -> Option<Arc<Bulkhead>>
+    {
         self.bulkheads.remove(name)
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod tests
+{
     use std::time::Duration;
 
+    use super::*;
+
     #[test]
-    fn test_config_defaults() {
+    fn test_config_defaults()
+    {
         let config = BulkheadConfig::default();
         assert_eq!(config.max_concurrent_calls, 25);
         assert!(config.max_wait_duration.is_none());
@@ -630,7 +711,8 @@ mod tests {
     }
 
     #[test]
-    fn test_config_builder() {
+    fn test_config_builder()
+    {
         let config = BulkheadConfig::new()
             .with_max_concurrent_calls(5)
             .with_max_wait_duration(Duration::from_secs(1))
@@ -644,7 +726,8 @@ mod tests {
     }
 
     #[test]
-    fn test_try_acquire_basic() {
+    fn test_try_acquire_basic()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(2);
         let bh = Bulkhead::new("test", config);
 
@@ -666,7 +749,8 @@ mod tests {
     }
 
     #[test]
-    fn test_release_and_reacquire() {
+    fn test_release_and_reacquire()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(1);
         let bh = Bulkhead::new("test", config);
 
@@ -679,7 +763,8 @@ mod tests {
     }
 
     #[test]
-    fn test_force_open() {
+    fn test_force_open()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(1);
         let bh = Bulkhead::new("test", config);
 
@@ -703,7 +788,8 @@ mod tests {
     }
 
     #[test]
-    fn test_metrics_tracking() {
+    fn test_metrics_tracking()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(10);
         let bh = Bulkhead::new("test", config);
 
@@ -720,7 +806,8 @@ mod tests {
     }
 
     #[test]
-    fn test_peak_concurrent_tracking() {
+    fn test_peak_concurrent_tracking()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(5);
         let bh = Bulkhead::new("test", config);
 
@@ -735,7 +822,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_wait_timeout() {
+    async fn test_wait_timeout()
+    {
         let config = BulkheadConfig::new()
             .with_max_concurrent_calls(1)
             .with_max_wait_duration(Duration::from_millis(50));
@@ -756,7 +844,8 @@ mod tests {
     }
 
     #[test]
-    fn test_execute_sync() {
+    fn test_execute_sync()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(1);
         let bh = Bulkhead::new("test", config);
 
@@ -765,7 +854,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_execute_async() {
+    async fn test_execute_async()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(1);
         let bh = Bulkhead::new("test", config);
 
@@ -774,7 +864,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry() {
+    fn test_registry()
+    {
         let mut registry = BulkheadRegistry::new();
         assert!(registry.is_empty());
 
@@ -804,7 +895,8 @@ mod tests {
     }
 
     #[test]
-    fn test_display() {
+    fn test_display()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(10);
         let bh = Bulkhead::new("my-bh", config);
         let display = format!("{}", bh);
@@ -813,7 +905,8 @@ mod tests {
     }
 
     #[test]
-    fn test_reconfigure() {
+    fn test_reconfigure()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(1);
         let mut bh = Bulkhead::new("test", config);
 
@@ -830,7 +923,8 @@ mod tests {
     }
 
     #[test]
-    fn test_reset_metrics() {
+    fn test_reset_metrics()
+    {
         let config = BulkheadConfig::new().with_max_concurrent_calls(10);
         let bh = Bulkhead::new("test", config);
 
@@ -844,7 +938,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let full = BulkheadError::Full {
             name: "test".into(),
             max_concurrent_calls: 5,

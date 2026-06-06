@@ -10,11 +10,11 @@ use hiver_lombok::{
 // ============================================================================
 // Example 1: #[Data] - Most Common / 最常用
 // ============================================================================
-///
 /// User entity with automatic getters, setters, constructor, and with methods
 /// 自动生成 getters, setters, constructor 和 with methods 的用户实体
 #[derive(Data, Clone, PartialEq, Debug)]
-pub struct User {
+pub struct User
+{
     pub id: i64,
     pub username: String,
     pub email: String,
@@ -22,7 +22,8 @@ pub struct User {
 }
 
 #[allow(dead_code)]
-fn example_data() {
+fn example_data()
+{
     // Constructor / 构造函数
     let user = User::new(1, "alice".into(), "alice@example.com".into(), 25);
 
@@ -52,13 +53,15 @@ fn example_data() {
 /// Point struct with explicit getter/setter
 /// 显式 getter/setter 的点结构体
 #[derive(Getter, Setter, PartialEq, Debug)]
-pub struct Point {
+pub struct Point
+{
     pub x: i32,
     pub y: i32,
 }
 
 #[allow(dead_code)]
-fn example_individual() {
+fn example_individual()
+{
     let mut point = Point { x: 0, y: 0 };
 
     // Getter
@@ -76,7 +79,8 @@ fn example_individual() {
 /// Config with all-args constructor
 /// 全参数构造函数的 Config
 #[derive(AllArgsConstructor, PartialEq, Debug)]
-pub struct Config {
+pub struct Config
+{
     pub port: u16,
     pub host: String,
     pub timeout: u64,
@@ -85,14 +89,16 @@ pub struct Config {
 /// Config with no-args constructor (uses Default)
 /// 无参数构造函数的 Config（使用 Default）
 #[derive(NoArgsConstructor, PartialEq, Debug)]
-pub struct DefaultConfig {
+pub struct DefaultConfig
+{
     pub port: u16,
     pub host: String,
     pub timeout: u64,
 }
 
 #[allow(dead_code)]
-fn example_constructors() {
+fn example_constructors()
+{
     // All args / 所有参数
     let config = Config::new(8080, "localhost".into(), 30000);
     println!("Config: {:?}", config);
@@ -108,13 +114,15 @@ fn example_constructors() {
 
 /// Immutable value object / 不可变值对象
 #[derive(Value, Clone, PartialEq, Debug)]
-pub struct Money {
+pub struct Money
+{
     pub amount: i64,
     pub currency: String,
 }
 
 #[allow(dead_code)]
-fn example_value() {
+fn example_value()
+{
     let money1 = Money::new(100, "USD".into());
 
     // Read-only access / 只读访问
@@ -135,7 +143,8 @@ fn example_value() {
 /// Complex user with many optional fields
 /// 有许多可选字段的复杂用户
 #[derive(Builder, PartialEq, Debug)]
-pub struct ComplexUser {
+pub struct ComplexUser
+{
     pub id: i64,
     pub username: String,
     pub email: String,
@@ -145,7 +154,8 @@ pub struct ComplexUser {
 }
 
 #[allow(dead_code)]
-fn example_builder() {
+fn example_builder()
+{
     let user = ComplexUser::builder()
         .id(1)
         .username("alice".into())
@@ -164,14 +174,16 @@ fn example_builder() {
 /// Struct with with methods
 /// 带有 with 方法的结构体
 #[derive(With, Clone, PartialEq, Debug)]
-pub struct Settings {
+pub struct Settings
+{
     pub theme: String,
     pub language: String,
     pub notifications: bool,
 }
 
 #[allow(dead_code)]
-fn example_with() {
+fn example_with()
+{
     let settings = Settings {
         theme: "dark".into(),
         language: "en".into(),
@@ -196,9 +208,10 @@ fn example_with() {
     Data,      // Getters, setters, constructor, with methods
     Clone,     // Required for with methods
     PartialEq, // For comparisons
-    Debug,     // For debugging
+    Debug,     /* For debugging */
 )]
-pub struct CompleteUser {
+pub struct CompleteUser
+{
     pub id: i64,
     pub username: String,
     pub email: String,
@@ -206,7 +219,8 @@ pub struct CompleteUser {
 }
 
 #[allow(dead_code)]
-fn example_complete() {
+fn example_complete()
+{
     // Constructor / 构造函数
     let mut user = CompleteUser::new(1, "alice".into(), "alice@example.com".into(), 25);
 
@@ -217,7 +231,8 @@ fn example_complete() {
     let _ = user2;
 }
 
-fn main() {
+fn main()
+{
     println!("=== Example 1: #[Data] ===");
     example_data();
 

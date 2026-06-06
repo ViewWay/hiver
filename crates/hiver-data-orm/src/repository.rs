@@ -17,8 +17,7 @@
 //! let user = repo.find_by_id("42".to_string()).await?;
 //! ```
 
-use std::marker::PhantomData;
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
 
 use async_trait::async_trait;
 use hiver_data_commons::{CrudRepository, Repository};
@@ -31,15 +30,18 @@ use crate::{Model, Result};
 ///
 /// Implements `CrudRepository<T, String>` for any `Model` type.
 /// 为任意 `Model` 类型实现 `CrudRepository<T, String>`。
-pub struct OrmRepository<T: Model + Send + Sync> {
+pub struct OrmRepository<T: Model + Send + Sync>
+{
     client: Arc<dyn DatabaseClient>,
     _phantom: PhantomData<T>,
 }
 
-impl<T: Model + Send + Sync> OrmRepository<T> {
+impl<T: Model + Send + Sync> OrmRepository<T>
+{
     /// Create a new repository with the given database client.
     /// 使用给定的数据库客户端创建新的 repository。
-    pub fn new(client: Arc<dyn DatabaseClient>) -> Self {
+    pub fn new(client: Arc<dyn DatabaseClient>) -> Self
+    {
         Self {
             client,
             _phantom: PhantomData,
@@ -62,25 +64,33 @@ impl<T: Model + Send + Sync> OrmRepository<T> {
     ///     tx_repo.save(user).await
     /// }).await?;
     /// ```
-    pub fn client(&self) -> &Arc<dyn DatabaseClient> {
+    pub fn client(&self) -> &Arc<dyn DatabaseClient>
+    {
         &self.client
     }
 
     /// Create a new repository sharing the same client (e.g., within a transaction).
     /// 创建共享相同客户端的新 repository（例如，在事务内）。
-    pub fn with_client(client: Arc<dyn DatabaseClient>) -> Self {
+    pub fn with_client(client: Arc<dyn DatabaseClient>) -> Self
+    {
         Self::new(client)
     }
 }
 
 /// Map an ORM error to a commons error.
 /// 将 ORM 错误映射为 commons 错误。
-fn to_commons<T: Model>(e: crate::Error) -> hiver_data_commons::Error {
-    if e.is_not_found() {
+fn to_commons<T: Model>(e: crate::Error) -> hiver_data_commons::Error
+{
+    if e.is_not_found()
+    {
         hiver_data_commons::Error::entity_not_found(T::table_name(), "")
-    } else if e.is_validation() {
+    }
+    else if e.is_validation()
+    {
         hiver_data_commons::Error::data_integrity_violation(e.to_string())
-    } else {
+    }
+    else
+    {
         hiver_data_commons::Error::connection(e.to_string())
     }
 }
@@ -92,15 +102,19 @@ where
 {
     type Error = hiver_data_commons::Error;
 
-    async fn save(&self, entity: T) -> std::result::Result<T, Self::Error> {
+    async fn save(&self, entity: T) -> std::result::Result<T, Self::Error>
+    {
         let pk = entity.primary_key().unwrap_or_default();
-        if pk.is_empty() || pk == "0" {
+        if pk.is_empty() || pk == "0"
+        {
             // Insert — use active_record pattern
             let json = serde_json::to_value(&entity)
                 .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string()))?;
-            let map = match &json {
+            let map = match &json
+            {
                 serde_json::Value::Object(m) => m,
-                _ => {
+                _ =>
+                {
                     return Err(hiver_data_commons::Error::data_integrity_violation(
                         "not an object",
                     ));
@@ -115,7 +129,8 @@ where
                 cols.join(", "),
                 placeholders.join(", ")
             );
-            match self.client.fetch_one_params(&sql, &params).await {
+            match self.client.fetch_one_params(&sql, &params).await
+            {
                 Ok(Some(row)) => row.deserialize().map_err(|e| {
                     hiver_data_commons::Error::data_integrity_violation(e.to_string())
                 }),
@@ -125,13 +140,17 @@ where
                 )),
                 Err(e) => Err(hiver_data_commons::Error::connection(e.to_string())),
             }
-        } else {
+        }
+        else
+        {
             // Update
             let json = serde_json::to_value(&entity)
                 .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string()))?;
-            let map = match &json {
+            let map = match &json
+            {
                 serde_json::Value::Object(m) => m,
-                _ => {
+                _ =>
+                {
                     return Err(hiver_data_commons::Error::data_integrity_violation(
                         "not an object",
                     ));
@@ -140,8 +159,10 @@ where
             let mut set_parts: Vec<String> = Vec::new();
             let mut params: Vec<QueryParam> = Vec::new();
             let mut idx = 1u32;
-            for (k, v) in map.iter() {
-                if k == "id" {
+            for (k, v) in map.iter()
+            {
+                if k == "id"
+                {
                     continue;
                 }
                 set_parts.push(format!("{} = ${idx}", k));
@@ -156,11 +177,13 @@ where
                 T::table_name(),
                 set_parts.join(", ")
             );
-            match self.client.fetch_one_params(&sql, &params).await {
+            match self.client.fetch_one_params(&sql, &params).await
+            {
                 Ok(Some(row)) => row.deserialize().map_err(|e| {
                     hiver_data_commons::Error::data_integrity_violation(e.to_string())
                 }),
-                Ok(None) => {
+                Ok(None) =>
+                {
                     Err(hiver_data_commons::Error::entity_not_found(T::table_name(), &pk_param))
                 },
                 Err(e) => Err(hiver_data_commons::Error::connection(e.to_string())),
@@ -168,14 +191,16 @@ where
         }
     }
 
-    async fn find_by_id(&self, id: String) -> std::result::Result<Option<T>, Self::Error> {
+    async fn find_by_id(&self, id: String) -> std::result::Result<Option<T>, Self::Error>
+    {
         let sql = format!("SELECT * FROM {} WHERE id = $1", T::table_name());
         let row = self
             .client
             .fetch_one_params(&sql, &[QueryParam::Text(id)])
             .await
             .map_err(|e| hiver_data_commons::Error::connection(e.to_string()))?;
-        match row {
+        match row
+        {
             Some(r) => r
                 .deserialize()
                 .map(Some)
@@ -184,7 +209,8 @@ where
         }
     }
 
-    async fn find_all(&self) -> std::result::Result<Vec<T>, Self::Error> {
+    async fn find_all(&self) -> std::result::Result<Vec<T>, Self::Error>
+    {
         let sql = format!("SELECT * FROM {}", T::table_name());
         let rows = self
             .client
@@ -194,7 +220,8 @@ where
         collect_rows(rows).map_err(|e| to_commons::<T>(e))
     }
 
-    async fn count(&self) -> std::result::Result<u64, Self::Error> {
+    async fn count(&self) -> std::result::Result<u64, Self::Error>
+    {
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", T::table_name());
         let rows = self
             .client
@@ -208,7 +235,8 @@ where
         Ok(cnt as u64)
     }
 
-    async fn delete_by_id(&self, id: String) -> std::result::Result<(), Self::Error> {
+    async fn delete_by_id(&self, id: String) -> std::result::Result<(), Self::Error>
+    {
         let sql = format!("DELETE FROM {} WHERE id = $1", T::table_name());
         self.client
             .execute_params(&sql, &[QueryParam::Text(id)])
@@ -217,14 +245,16 @@ where
         Ok(())
     }
 
-    async fn delete(&self, entity: T) -> std::result::Result<(), Self::Error> {
+    async fn delete(&self, entity: T) -> std::result::Result<(), Self::Error>
+    {
         let pk = entity
             .primary_key()
             .map_err(|e| hiver_data_commons::Error::data_integrity_violation(e.to_string()))?;
         self.delete_by_id(pk).await
     }
 
-    async fn delete_all(&self) -> std::result::Result<(), Self::Error> {
+    async fn delete_all(&self) -> std::result::Result<(), Self::Error>
+    {
         let sql = format!("DELETE FROM {}", T::table_name());
         self.client
             .execute_params(&sql, &[])
@@ -239,16 +269,24 @@ impl<T> CrudRepository<T, String> for OrmRepository<T> where
 {
 }
 
-fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
-    match v {
+fn json_value_to_param(v: &serde_json::Value) -> QueryParam
+{
+    match v
+    {
         serde_json::Value::Null => QueryParam::Null,
         serde_json::Value::Bool(b) => QueryParam::Bool(*b),
-        serde_json::Value::Number(n) => {
-            if let Some(i) = n.as_i64() {
+        serde_json::Value::Number(n) =>
+        {
+            if let Some(i) = n.as_i64()
+            {
                 QueryParam::I64(i)
-            } else if let Some(f) = n.as_f64() {
+            }
+            else if let Some(f) = n.as_f64()
+            {
                 QueryParam::F64(f)
-            } else {
+            }
+            else
+            {
                 QueryParam::Text(n.to_string())
             }
         },
@@ -257,9 +295,11 @@ fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
     }
 }
 
-fn collect_rows<T: serde::de::DeserializeOwned>(rows: Vec<hiver_data_rdbc::Row>) -> Result<Vec<T>> {
+fn collect_rows<T: serde::de::DeserializeOwned>(rows: Vec<hiver_data_rdbc::Row>) -> Result<Vec<T>>
+{
     let mut results = Vec::with_capacity(rows.len());
-    for row in &rows {
+    for row in &rows
+    {
         results.push(
             row.deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}")))?,
@@ -269,18 +309,22 @@ fn collect_rows<T: serde::de::DeserializeOwned>(rows: Vec<hiver_data_rdbc::Row>)
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     struct MockModel;
-    impl Model for MockModel {
-        fn meta() -> crate::ModelMeta {
+    impl Model for MockModel
+    {
+        fn meta() -> crate::ModelMeta
+        {
             crate::ModelMeta::new("mock_table")
         }
     }
 
     #[test]
-    fn test_orm_repository_send_sync() {
+    fn test_orm_repository_send_sync()
+    {
         fn assert_send_sync<T: Send + Sync>() {}
         assert_send_sync::<OrmRepository<MockModel>>();
     }

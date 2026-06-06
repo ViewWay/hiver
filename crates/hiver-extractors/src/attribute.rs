@@ -29,8 +29,9 @@
 //! }
 //! ```
 
-use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 use std::sync::Arc;
+
+use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 
 /// Request attribute extractor
 /// 请求属性提取器
@@ -63,22 +64,26 @@ use std::sync::Arc;
 /// ```
 pub struct RequestAttribute<T>(pub T);
 
-impl<T> RequestAttribute<T> {
+impl<T> RequestAttribute<T>
+{
     /// Consume the extractor and get the inner value
     /// 消耗提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.0
     }
 }
@@ -87,7 +92,8 @@ impl<T> std::fmt::Debug for RequestAttribute<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("RequestAttribute").field(&self.0).finish()
     }
 }
@@ -96,7 +102,8 @@ impl<T> Clone for RequestAttribute<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -106,15 +113,18 @@ impl<T> FromRequest for RequestAttribute<T>
 where
     T: Clone + Send + Sync + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         // Try to get the value from extensions
-        if let Some(value) = req.extensions().get::<T>() {
+        if let Some(value) = req.extensions().get::<T>()
+        {
             let cloned = value.clone();
             return Box::pin(async move { Ok(RequestAttribute(cloned)) });
         }
 
         // Also try to get it wrapped in Arc (common pattern)
-        if let Some(value) = req.extensions().get::<Arc<T>>() {
+        if let Some(value) = req.extensions().get::<Arc<T>>()
+        {
             let cloned = (**value).clone();
             return Box::pin(async move { Ok(RequestAttribute(cloned)) });
         }
@@ -158,22 +168,26 @@ where
 /// ```
 pub struct NamedRequestAttribute<T>(pub T);
 
-impl<T> NamedRequestAttribute<T> {
+impl<T> NamedRequestAttribute<T>
+{
     /// Consume the extractor and get the inner value
     /// 消耗提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.0
     }
 }
@@ -182,7 +196,8 @@ impl<T> std::fmt::Debug for NamedRequestAttribute<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("NamedRequestAttribute")
             .field(&self.0)
             .finish()
@@ -193,29 +208,34 @@ impl<T> Clone for NamedRequestAttribute<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_request_attribute_consume() {
+    fn test_request_attribute_consume()
+    {
         let attr = RequestAttribute("test_value".to_string());
         assert_eq!(attr.into_inner(), "test_value");
     }
 
     #[test]
-    fn test_request_attribute_get() {
+    fn test_request_attribute_get()
+    {
         let attr = RequestAttribute("test_value".to_string());
         assert_eq!(attr.get(), "test_value");
     }
 
     #[test]
-    fn test_named_request_attribute_consume() {
+    fn test_named_request_attribute_consume()
+    {
         let attr = NamedRequestAttribute::<String>("user123".to_string());
         assert_eq!(attr.into_inner(), "user123");
     }

@@ -4,11 +4,15 @@
 //! # Equivalent to Spring's @`ControllerAdvice`
 //! # 等价于 Spring 的 @`ControllerAdvice`
 
-use crate::handler::ExceptionHandler;
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+    fmt::Debug,
+};
+
 use hiver_http::Response;
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
-use std::fmt::Debug;
+
+use crate::handler::ExceptionHandler;
 
 /// Controller advice - global exception handler registry
 /// Controller advice - 全局异常处理器注册表
@@ -49,7 +53,8 @@ use std::fmt::Debug;
 ///     .handler(NotFoundHandler);
 /// ```
 #[derive(Default)]
-pub struct ControllerAdvice {
+pub struct ControllerAdvice
+{
     /// Registry of exception handlers by `TypeId`
     /// 异常处理器的注册表，按 `TypeId` 索引
     handlers: HashMap<TypeId, Box<dyn HandlerWrapper>>,
@@ -57,7 +62,8 @@ pub struct ControllerAdvice {
 
 /// Wrapper for exception handlers to enable type erasure
 /// 异常处理器的包装器，实现类型擦除
-trait HandlerWrapper: Send + Sync {
+trait HandlerWrapper: Send + Sync
+{
     /// Handle the error if types match
     /// 如果类型匹配则处理错误
     fn handle_box(&self, error: &dyn Any, request: &hiver_http::Request) -> Option<Response>;
@@ -66,7 +72,8 @@ trait HandlerWrapper: Send + Sync {
 
 /// Concrete wrapper implementation
 /// 具体包装器实现
-struct HandlerWrapperImpl<E, H> {
+struct HandlerWrapperImpl<E, H>
+{
     handler: H,
     _phantom: std::marker::PhantomData<E>,
 }
@@ -75,7 +82,8 @@ impl<E, H> Debug for HandlerWrapperImpl<E, H>
 where
     H: Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("HandlerWrapperImpl")
             .field("handler", &self.handler)
             .finish()
@@ -87,21 +95,25 @@ where
     E: Any + Debug + Send + Sync + Clone + 'static,
     H: ExceptionHandler<E> + Send + Sync + 'static,
 {
-    fn handle_box(&self, error: &dyn Any, request: &hiver_http::Request) -> Option<Response> {
+    fn handle_box(&self, error: &dyn Any, request: &hiver_http::Request) -> Option<Response>
+    {
         error
             .downcast_ref::<E>()
             .map(|e| self.handler.handle(e.clone(), request))
     }
 
-    fn priority(&self) -> i32 {
+    fn priority(&self) -> i32
+    {
         self.handler.priority()
     }
 }
 
-impl ControllerAdvice {
+impl ControllerAdvice
+{
     /// Create a new empty controller advice
     /// 创建新的空 controller advice
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             handlers: HashMap::new(),
         }
@@ -192,18 +204,27 @@ impl ControllerAdvice {
 
 /// Default exception handlers (equivalent to `ResponseEntityExceptionHandler`)
 /// 默认异常处理器（等价于 `ResponseEntityExceptionHandler`）
-impl ControllerAdvice {
+impl ControllerAdvice
+{
     /// Create a default controller advice with standard handlers
     /// 创建带有标准处理器的默认 controller advice
-    pub fn default() -> Self {
+    pub fn default() -> Self
+    {
         Self::new().with_handler(|err: String, _req: &hiver_http::Request| {
-            if err.contains("not found") || err.contains("Not Found") {
+            if err.contains("not found") || err.contains("Not Found")
+            {
                 Response::not_found()
-            } else if err.contains("unauthorized") || err.contains("Unauthorized") {
+            }
+            else if err.contains("unauthorized") || err.contains("Unauthorized")
+            {
                 Response::unauthorized()
-            } else if err.contains("forbidden") || err.contains("Forbidden") {
+            }
+            else if err.contains("forbidden") || err.contains("Forbidden")
+            {
                 Response::forbidden()
-            } else {
+            }
+            else
+            {
                 Response::bad_request()
             }
         })
@@ -211,17 +232,20 @@ impl ControllerAdvice {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_controller_advice_new() {
+    fn test_controller_advice_new()
+    {
         let advice = ControllerAdvice::new();
         assert!(advice.handlers.is_empty());
     }
 
     #[test]
-    fn test_controller_advice_default() {
+    fn test_controller_advice_default()
+    {
         let advice = ControllerAdvice::default();
         assert!(!advice.handlers.is_empty());
     }

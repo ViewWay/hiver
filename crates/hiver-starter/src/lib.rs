@@ -120,16 +120,14 @@ pub mod prelude;
 
 // 核心类型导出
 pub use core::{ApplicationContext, AutoConfiguration, BeanDefinition, ComponentRegistry};
-
-// 配置类型导出
-pub use config::{ConfigurationLoader, ConfigurationProperties, Environment};
+pub use std::sync::Arc;
 
 // ============================================================================
 // 常用 trait 和类型的重新导出 / Common Re-exports
 // ============================================================================
-
 pub use anyhow::Result as HiverResult;
-pub use std::sync::Arc;
+// 配置类型导出
+pub use config::{ConfigurationLoader, ConfigurationProperties, Environment};
 
 /// 应用启动结果类型
 pub type ApplicationResult = Result<(), Box<dyn std::error::Error + Send + Sync + 'static>>;

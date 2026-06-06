@@ -119,42 +119,48 @@ where
 
     /// Set chunk size
     /// 设置块大小
-    pub fn with_chunk_size(mut self, size: usize) -> Self {
+    pub fn with_chunk_size(mut self, size: usize) -> Self
+    {
         self.chunk_size = size;
         self
     }
 
     /// Set processor
     /// 设置处理器
-    pub fn with_processor(mut self, processor: P) -> Self {
+    pub fn with_processor(mut self, processor: P) -> Self
+    {
         self.processor = Arc::new(RwLock::new(processor));
         self
     }
 
     /// Set skip limit
     /// 设置跳过限制
-    pub fn with_skip_limit(mut self, limit: usize) -> Self {
+    pub fn with_skip_limit(mut self, limit: usize) -> Self
+    {
         self.skip_limit = limit;
         self
     }
 
     /// Set retry limit
     /// 设置重试限制
-    pub fn with_retry_limit(mut self, limit: usize) -> Self {
+    pub fn with_retry_limit(mut self, limit: usize) -> Self
+    {
         self.retry_limit = limit;
         self
     }
 
     /// Set timeout
     /// 设置超时
-    pub fn with_timeout(mut self, secs: u64) -> Self {
+    pub fn with_timeout(mut self, secs: u64) -> Self
+    {
         self.timeout_secs = Some(secs);
         self
     }
 
     /// Set listener
     /// 设置监听器
-    pub fn with_listener(mut self, listener: Arc<dyn StepListener>) -> Self {
+    pub fn with_listener(mut self, listener: Arc<dyn StepListener>) -> Self
+    {
         self.listener = Some(listener);
         self
     }
@@ -165,11 +171,13 @@ where
         &self,
         step_execution: &mut StepExecution,
         context: &StepContext,
-    ) -> BatchResult<ExitStatus> {
+    ) -> BatchResult<ExitStatus>
+    {
         step_execution.set_status(BatchStatus::Started);
         step_execution.set_start_time(Utc::now());
 
-        if let Some(listener) = &self.listener {
+        if let Some(listener) = &self.listener
+        {
             listener.before_step(step_execution, context).await?;
         }
 
@@ -177,18 +185,22 @@ where
 
         step_execution.set_end_time(Utc::now());
 
-        match &result {
-            Ok(_) => {
+        match &result
+        {
+            Ok(_) =>
+            {
                 step_execution.set_status(BatchStatus::Completed);
                 step_execution.set_exit_status(ExitStatus::completed());
             },
-            Err(_e) => {
+            Err(_e) =>
+            {
                 step_execution.set_status(BatchStatus::Failed);
                 step_execution.set_exit_status(ExitStatus::failed());
             },
         }
 
-        if let Some(listener) = &self.listener {
+        if let Some(listener) = &self.listener
+        {
             listener.after_step(step_execution, context).await?;
         }
 
@@ -199,7 +211,8 @@ where
         &self,
         step_execution: &mut StepExecution,
         _context: &StepContext,
-    ) -> BatchResult<ExitStatus> {
+    ) -> BatchResult<ExitStatus>
+    {
         // Open reader and writer
         self.reader.write().await.open().await?;
         self.writer.write().await.open().await?;
@@ -207,18 +220,23 @@ where
 
         let mut skip_count = 0;
 
-        loop {
+        loop
+        {
             // Read chunk
             let mut items = Vec::with_capacity(self.chunk_size);
             let mut processed = Vec::with_capacity(self.chunk_size);
 
-            for _ in 0..self.chunk_size {
-                let item = match self.reader.write().await.read().await {
+            for _ in 0..self.chunk_size
+            {
+                let item = match self.reader.write().await.read().await
+                {
                     Ok(Some(item)) => item,
                     Ok(None) => break,
-                    Err(_e) => {
+                    Err(_e) =>
+                    {
                         skip_count += 1;
-                        if skip_count > self.skip_limit {
+                        if skip_count > self.skip_limit
+                        {
                             return Err(BatchError::SkipLimitExceeded {
                                 limit: self.skip_limit,
                                 count: skip_count,
@@ -232,35 +250,45 @@ where
                 items.push(item);
             }
 
-            if items.is_empty() {
+            if items.is_empty()
+            {
                 break;
             }
 
             // Process items
-            for item in items {
-                let result = match self.processor.write().await.process(item).await {
+            for item in items
+            {
+                let result = match self.processor.write().await.process(item).await
+                {
                     Ok(Some(processed_item)) => Ok(Some(processed_item)),
-                    Ok(None) => {
+                    Ok(None) =>
+                    {
                         // Filtered out
                         Ok(None)
                     },
-                    Err(e) => {
+                    Err(e) =>
+                    {
                         step_execution.increment_rollback_count();
                         Err(e)
                     },
                 };
 
-                match result {
-                    Ok(Some(processed_item)) => {
+                match result
+                {
+                    Ok(Some(processed_item)) =>
+                    {
                         processed.push(processed_item);
                         step_execution.increment_process_count();
                     },
-                    Ok(None) => {
+                    Ok(None) =>
+                    {
                         step_execution.increment_filter_count();
                     },
-                    Err(_e) => {
+                    Err(_e) =>
+                    {
                         skip_count += 1;
-                        if skip_count > self.skip_limit {
+                        if skip_count > self.skip_limit
+                        {
                             return Err(BatchError::SkipLimitExceeded {
                                 limit: self.skip_limit,
                                 count: skip_count,
@@ -272,7 +300,8 @@ where
             }
 
             // Write processed items
-            if !processed.is_empty() {
+            if !processed.is_empty()
+            {
                 self.writer.write().await.write(processed).await?;
                 step_execution.increment_write_count(step_execution.process_count());
             }
@@ -294,7 +323,8 @@ where
 /// ```java
 /// StepBuilder builder = new StepBuilder("stepName", jobRepository);
 /// ```
-pub struct StepBuilder {
+pub struct StepBuilder
+{
     name: String,
     chunk_size: usize,
     skip_limit: usize,
@@ -304,10 +334,12 @@ pub struct StepBuilder {
     listener: Option<Arc<dyn StepListener>>,
 }
 
-impl StepBuilder {
+impl StepBuilder
+{
     /// Create new step builder
     /// 创建新步骤构建器
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             chunk_size: 100,
@@ -321,35 +353,40 @@ impl StepBuilder {
 
     /// Set chunk size
     /// 设置块大小
-    pub fn with_chunk_size(mut self, size: usize) -> Self {
+    pub fn with_chunk_size(mut self, size: usize) -> Self
+    {
         self.chunk_size = size;
         self
     }
 
     /// Set skip limit
     /// 设置跳过限制
-    pub fn with_skip_limit(mut self, limit: usize) -> Self {
+    pub fn with_skip_limit(mut self, limit: usize) -> Self
+    {
         self.skip_limit = limit;
         self
     }
 
     /// Set retry limit
     /// 设置重试限制
-    pub fn with_retry_limit(mut self, limit: usize) -> Self {
+    pub fn with_retry_limit(mut self, limit: usize) -> Self
+    {
         self.retry_limit = limit;
         self
     }
 
     /// Set timeout
     /// 设置超时
-    pub fn with_timeout(mut self, secs: u64) -> Self {
+    pub fn with_timeout(mut self, secs: u64) -> Self
+    {
         self.timeout_secs = Some(secs);
         self
     }
 
     /// Set listener
     /// 设置监听器
-    pub fn with_listener(mut self, listener: Arc<dyn StepListener>) -> Self {
+    pub fn with_listener(mut self, listener: Arc<dyn StepListener>) -> Self
+    {
         self.listener = Some(listener);
         self
     }
@@ -414,14 +451,16 @@ impl StepBuilder {
 /// }
 /// ```
 #[async_trait]
-pub trait StepListener: Send + Sync {
+pub trait StepListener: Send + Sync
+{
     /// Called before step execution
     /// 步骤执行前调用
     async fn before_step(
         &self,
         step_execution: &StepExecution,
         context: &StepContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         let _ = (step_execution, context);
         Ok(())
     }
@@ -432,18 +471,17 @@ pub trait StepListener: Send + Sync {
         &self,
         step_execution: &StepExecution,
         context: &StepContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         let _ = (step_execution, context);
         Ok(())
     }
 
     /// Called on step error
     /// 步骤错误时调用
-    async fn on_error(
-        &self,
-        step_execution: &StepExecution,
-        error: &BatchError,
-    ) -> BatchResult<()> {
+    async fn on_error(&self, step_execution: &StepExecution, error: &BatchError)
+    -> BatchResult<()>
+    {
         let _ = (step_execution, error);
         Ok(())
     }
@@ -451,12 +489,15 @@ pub trait StepListener: Send + Sync {
 
 /// Simple step listener for logging
 /// 用于日志记录的简单步骤监听器
-pub struct LoggingStepListener {
+pub struct LoggingStepListener
+{
     pub log_prefix: String,
 }
 
-impl LoggingStepListener {
-    pub fn new(prefix: impl Into<String>) -> Self {
+impl LoggingStepListener
+{
+    pub fn new(prefix: impl Into<String>) -> Self
+    {
         Self {
             log_prefix: prefix.into(),
         }
@@ -464,12 +505,14 @@ impl LoggingStepListener {
 }
 
 #[async_trait]
-impl StepListener for LoggingStepListener {
+impl StepListener for LoggingStepListener
+{
     async fn before_step(
         &self,
         step_execution: &StepExecution,
         _context: &StepContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         tracing::info!("[{}] Starting step: {}", self.log_prefix, step_execution.step_name);
         Ok(())
     }
@@ -478,7 +521,8 @@ impl StepListener for LoggingStepListener {
         &self,
         step_execution: &StepExecution,
         _context: &StepContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         tracing::info!(
             "[{}] Completed step: {} - read: {}, write: {}, skip: {}",
             self.log_prefix,
@@ -490,11 +534,9 @@ impl StepListener for LoggingStepListener {
         Ok(())
     }
 
-    async fn on_error(
-        &self,
-        step_execution: &StepExecution,
-        error: &BatchError,
-    ) -> BatchResult<()> {
+    async fn on_error(&self, step_execution: &StepExecution, error: &BatchError)
+    -> BatchResult<()>
+    {
         tracing::error!(
             "[{}] Error in step {}: {}",
             self.log_prefix,
@@ -506,14 +548,16 @@ impl StepListener for LoggingStepListener {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use uuid::Uuid;
 
     use super::*;
     use crate::{reader::ItemStreamReader, writer::ItemStreamWriter};
 
     #[tokio::test]
-    async fn test_step_builder() {
+    async fn test_step_builder()
+    {
         let builder = StepBuilder::new("test-step")
             .with_chunk_size(50)
             .with_skip_limit(10);
@@ -528,7 +572,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_step_execution() {
+    async fn test_step_execution()
+    {
         let reader = ItemStreamReader::new(vec![1, 2, 3, 4, 5]);
         let writer = ItemStreamWriter::new();
 
@@ -548,7 +593,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_logging_listener() {
+    async fn test_logging_listener()
+    {
         let listener = Arc::new(LoggingStepListener::new("TEST"));
 
         let reader = ItemStreamReader::new(vec![1, 2, 3]);

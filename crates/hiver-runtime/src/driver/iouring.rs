@@ -11,11 +11,15 @@
 #![cfg(target_os = "linux")]
 #![allow(warnings)]
 
-use std::cell::UnsafeCell;
-use std::os::fd::{AsRawFd, RawFd};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU32, AtomicUsize, Ordering};
-use std::time::Duration;
+use std::{
+    cell::UnsafeCell,
+    os::fd::{AsRawFd, RawFd},
+    sync::{
+        Arc,
+        atomic::{AtomicU32, AtomicUsize, Ordering},
+    },
+    time::Duration,
+};
 
 use crate::driver::{CompletionEntry, Driver, ERROR_TRANSPORT, Interest, SubmitEntry};
 
@@ -29,7 +33,8 @@ const MAX_CQES: u32 = 256;
 /// io_uring setup flags / io_uring设置标志
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
-struct IoUringParams {
+struct IoUringParams
+{
     /// Submission queue entries / 提交队列条目数
     sq_entries: u32,
     /// Completion queue entries / 完成队列条目数
@@ -48,7 +53,8 @@ struct IoUringParams {
 /// io_uring环形缓冲区访问的偏移量
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
-struct IoUringOffsets {
+struct IoUringOffsets
+{
     /// Head index / 头索引
     head: u32,
     /// Tail index / 尾索引
@@ -75,7 +81,8 @@ struct IoUringOffsets {
 /// io_uring提交队列条目(SQE)
 #[repr(C)]
 #[derive(Clone, Copy)]
-struct SubmissionQueueEntry {
+struct SubmissionQueueEntry
+{
     /// Opcode / 操作码
     opcode: u8,
     /// Flags / 标志
@@ -106,7 +113,8 @@ struct SubmissionQueueEntry {
 /// io_uring完成队列条目(CQE)
 #[repr(C)]
 #[derive(Clone, Copy)]
-struct CompletionQueueEntry {
+struct CompletionQueueEntry
+{
     /// User data / 用户数据
     user_data: u64,
     /// Result / 结果
@@ -119,7 +127,8 @@ struct CompletionQueueEntry {
 
 /// io_uring submission queue
 /// io_uring提交队列
-struct SubmissionQueue {
+struct SubmissionQueue
+{
     /// Head index / 头索引
     head: *const u32,
     /// Tail index / 尾索引
@@ -147,7 +156,8 @@ unsafe impl Sync for SubmissionQueue {}
 
 /// io_uring completion queue
 /// io_uring完成队列
-struct CompletionQueue {
+struct CompletionQueue
+{
     /// Head index / 头索引
     head: *const u32,
     /// Tail index / 尾索引
@@ -171,7 +181,8 @@ unsafe impl Sync for CompletionQueue {}
 
 /// Internal state for the io_uring driver
 /// io_uring driver的内部状态
-struct IoUringState {
+struct IoUringState
+{
     /// Submission queue head index / 提交队列头索引
     sq_head: AtomicU32,
     /// Submission queue tail index / 提交队列尾索引
@@ -196,7 +207,8 @@ struct IoUringState {
 /// - Zero-copy I/O support / 零拷贝I/O支持
 /// - Batched operation submission / 批量操作提交
 /// - Efficient poll-based I/O / 高效的基于轮询的I/O
-pub struct IoUringDriver {
+pub struct IoUringDriver
+{
     /// io_uring instance file descriptor / io_uring实例文件描述符
     ring_fd: RawFd,
     /// Submission queue ring buffer memory (mapped) / 提交队列环形缓冲区内存（映射）
@@ -245,14 +257,16 @@ unsafe impl Send for IoUringDriver {}
 // Debug 构建包含线程 ID 检查以捕获误用。
 unsafe impl Sync for IoUringDriver {}
 
-impl IoUringDriver {
+impl IoUringDriver
+{
     /// Assert that the caller is the thread that created this driver.
     /// In debug builds, panics if called from a different thread.
     /// 断言调用者是创建此驱动程序的线程。
     /// Debug 构建中，如果从不同线程调用则 panic。
     #[inline]
     #[cfg(debug_assertions)]
-    fn assert_owner(&self) {
+    fn assert_owner(&self)
+    {
         assert_eq!(
             std::thread::current().id(),
             self.owner_thread,
@@ -272,7 +286,8 @@ impl IoUringDriver {
     ///
     /// Returns an error if io_uring instance creation fails.
     /// 如果io_uring实例创建失败则返回错误。
-    pub fn new() -> std::io::Result<Self> {
+    pub fn new() -> std::io::Result<Self>
+    {
         Self::with_config(crate::driver::DriverConfig::default())
     }
 
@@ -286,7 +301,8 @@ impl IoUringDriver {
     /// - The configuration is invalid / 配置无效
     /// - io_uring setup fails / io_uring设置失败
     /// - Memory mapping fails / 内存映射失败
-    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self> {
+    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self>
+    {
         let entries = config.entries.max(MIN_IOURING_SIZE);
 
         // Setup io_uring parameters
@@ -308,7 +324,8 @@ impl IoUringDriver {
             ) as RawFd
         };
 
-        if ring_fd < 0 {
+        if ring_fd < 0
+        {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -339,7 +356,8 @@ impl IoUringDriver {
             ) as *mut u8
         };
 
-        if sq_ring as *mut libc::c_void == libc::MAP_FAILED {
+        if sq_ring as *mut libc::c_void == libc::MAP_FAILED
+        {
             unsafe { libc::close(ring_fd) };
             return Err(std::io::Error::last_os_error());
         }
@@ -355,7 +373,8 @@ impl IoUringDriver {
             ) as *mut u8
         };
 
-        if cq_ring as *mut libc::c_void == libc::MAP_FAILED {
+        if cq_ring as *mut libc::c_void == libc::MAP_FAILED
+        {
             unsafe {
                 libc::munmap(sq_ring as *mut libc::c_void, sq_ring_size);
                 libc::close(ring_fd);
@@ -374,7 +393,8 @@ impl IoUringDriver {
             ) as *mut SubmissionQueueEntry
         };
 
-        if sqes as *mut libc::c_void == libc::MAP_FAILED {
+        if sqes as *mut libc::c_void == libc::MAP_FAILED
+        {
             unsafe {
                 libc::munmap(sq_ring as *mut libc::c_void, sq_ring_size);
                 libc::munmap(cq_ring as *mut libc::c_void, cq_ring_size);
@@ -446,25 +466,29 @@ impl IoUringDriver {
     /// Get the current submission queue position
     /// 获取当前提交队列位置
     #[inline]
-    fn sq_pos(&self, index: u32) -> u32 {
+    fn sq_pos(&self, index: u32) -> u32
+    {
         index & self.sq.ring_mask_value
     }
 
     /// Get the current completion queue position
     /// 获取当前完成队列位置
     #[inline]
-    fn cq_pos(&self, index: u32) -> u32 {
+    fn cq_pos(&self, index: u32) -> u32
+    {
         index & self.cq.ring_mask_value
     }
 
     /// Submit operations to the kernel
     /// 向内核提交操作
-    fn submit_to_kernel(&self) -> std::io::Result<usize> {
+    fn submit_to_kernel(&self) -> std::io::Result<usize>
+    {
         let head = unsafe { *self.sq.head };
         let tail = self.state.sq_tail.load(Ordering::Acquire);
         let to_submit = tail - head;
 
-        if to_submit == 0 {
+        if to_submit == 0
+        {
             return Ok(0);
         }
 
@@ -487,23 +511,28 @@ impl IoUringDriver {
             ) as libc::c_long
         };
 
-        if result < 0 {
+        if result < 0
+        {
             Err(std::io::Error::last_os_error())
-        } else {
+        }
+        else
+        {
             Ok(result as usize)
         }
     }
 
     /// Get a free submission queue entry
     /// 获取一个空闲的提交队列条目
-    fn get_free_sqe(&self) -> Option<*mut SubmissionQueueEntry> {
+    fn get_free_sqe(&self) -> Option<*mut SubmissionQueueEntry>
+    {
         let head = unsafe { *self.sq.head };
         let tail = self.state.sq_tail.load(Ordering::Acquire);
         let next_tail = tail + 1;
 
         // Check if queue is full
         // 检查队列是否已满
-        if next_tail - head >= self.sq.entries {
+        if next_tail - head >= self.sq.entries
+        {
             return None;
         }
 
@@ -512,8 +541,10 @@ impl IoUringDriver {
     }
 }
 
-impl Drop for IoUringDriver {
-    fn drop(&mut self) {
+impl Drop for IoUringDriver
+{
+    fn drop(&mut self)
+    {
         // Use the actual mmap sizes stored during setup, not hardcoded values
         // 使用 setup 时存储的实际 mmap 尺寸，而非硬编码值
         let sqes_size = self.capacity * size_of::<SubmissionQueueEntry>();
@@ -527,26 +558,33 @@ impl Drop for IoUringDriver {
     }
 }
 
-impl AsRawFd for IoUringDriver {
-    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for IoUringDriver
+{
+    fn as_raw_fd(&self) -> RawFd
+    {
         self.ring_fd
     }
 }
 
-impl Driver for IoUringDriver {
-    fn submit(&self) -> std::io::Result<usize> {
+impl Driver for IoUringDriver
+{
+    fn submit(&self) -> std::io::Result<usize>
+    {
         let mut submitted = 0;
 
         // Process all pending submissions from our internal queue
         // 处理内部队列中所有挂起的提交
         self.assert_owner();
         let len = self.state.sq_len.load(Ordering::Acquire);
-        for i in 0..len {
+        for i in 0..len
+        {
             let submit_queue = unsafe { &*self.submit_queue.get() };
             let entry = &submit_queue[i];
 
-            if entry.fd >= 0 {
-                if let Some(sqe) = self.get_free_sqe() {
+            if entry.fd >= 0
+            {
+                if let Some(sqe) = self.get_free_sqe()
+                {
                     unsafe {
                         (*sqe).opcode = entry.opcode;
                         (*sqe).flags = 0;
@@ -587,11 +625,13 @@ impl Driver for IoUringDriver {
         Ok(submitted)
     }
 
-    fn wait(&self) -> std::io::Result<usize> {
+    fn wait(&self) -> std::io::Result<usize>
+    {
         self.wait_timeout(Duration::from_secs(1)).map(|(n, _)| n)
     }
 
-    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)> {
+    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)>
+    {
         // Convert duration to timespec
         // 转换持续时间为timespec
         let ts = libc::timespec {
@@ -610,7 +650,8 @@ impl Driver for IoUringDriver {
             ) as libc::c_long
         };
 
-        if result < 0 {
+        if result < 0
+        {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -621,7 +662,8 @@ impl Driver for IoUringDriver {
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = unsafe { *self.cq.tail };
 
-        while head != tail {
+        while head != tail
+        {
             let index = self.cq_pos(head);
             let cqe = unsafe { &*self.cq.cqes.add(index as usize) };
 
@@ -632,9 +674,12 @@ impl Driver for IoUringDriver {
                 let pos = self.state.cq_tail.load(Ordering::Acquire) as usize % self.capacity;
                 completion_queue[pos] = Some(CompletionEntry {
                     user_data: (*cqe).user_data,
-                    result: if (*cqe).res < 0 {
+                    result: if (*cqe).res < 0
+                    {
                         ERROR_TRANSPORT
-                    } else {
+                    }
+                    else
+                    {
                         (*cqe).res
                     },
                     flags: (*cqe).flags,
@@ -657,11 +702,13 @@ impl Driver for IoUringDriver {
         Ok((completed, timed_out))
     }
 
-    fn get_submission(&self) -> Option<&mut SubmitEntry> {
+    fn get_submission(&self) -> Option<&mut SubmitEntry>
+    {
         self.assert_owner();
         let len = self.state.sq_len.load(Ordering::Acquire);
 
-        if len >= self.capacity {
+        if len >= self.capacity
+        {
             return None;
         }
 
@@ -673,12 +720,14 @@ impl Driver for IoUringDriver {
         }
     }
 
-    fn get_completion(&self) -> Option<&CompletionEntry> {
+    fn get_completion(&self) -> Option<&CompletionEntry>
+    {
         self.assert_owner();
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = self.state.cq_tail.load(Ordering::Acquire);
 
-        if head == tail {
+        if head == tail
+        {
             return None;
         }
 
@@ -689,12 +738,14 @@ impl Driver for IoUringDriver {
         }
     }
 
-    fn advance_completion(&self) {
+    fn advance_completion(&self)
+    {
         self.assert_owner();
         let head = self.state.cq_head.load(Ordering::Acquire);
         let tail = self.state.cq_tail.load(Ordering::Acquire);
 
-        if head != tail {
+        if head != tail
+        {
             unsafe {
                 let completion_queue = &mut *self.completion_queue.get();
                 let pos = head as usize % self.capacity;
@@ -705,17 +756,20 @@ impl Driver for IoUringDriver {
         }
     }
 
-    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
+    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
+    {
         // io_uring uses POLL_ADD or POLL_REMOVE for registration
         // For now, we'll use a simple approach with poll operation
         // io_uring使用POLL_ADD或POLL_REMOVE进行注册
         // 目前，我们使用简单的poll操作
 
         let mut events = 0i16;
-        if interest.readable {
+        if interest.readable
+        {
             events |= libc::POLLIN as i16;
         }
-        if interest.writable {
+        if interest.writable
+        {
             events |= libc::POLLOUT as i16;
         }
 
@@ -743,7 +797,8 @@ impl Driver for IoUringDriver {
         Ok(())
     }
 
-    fn deregister(&self, fd: RawFd) -> std::io::Result<()> {
+    fn deregister(&self, fd: RawFd) -> std::io::Result<()>
+    {
         // Use POLL_REMOVE to deregister
         // 使用POLL_REMOVE注销
         let sqe = self.get_free_sqe().ok_or_else(|| {
@@ -765,22 +820,26 @@ impl Driver for IoUringDriver {
         Ok(())
     }
 
-    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
+    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
+    {
         // Remove and re-register
         // 移除并重新注册
         self.deregister(fd)?;
         self.register(fd, interest)
     }
 
-    fn submission_capacity(&self) -> usize {
+    fn submission_capacity(&self) -> usize
+    {
         self.capacity
     }
 
-    fn completion_capacity(&self) -> usize {
+    fn completion_capacity(&self) -> usize
+    {
         self.capacity
     }
 
-    fn supports_operation(&self, opcode: u8) -> bool {
+    fn supports_operation(&self, opcode: u8) -> bool
+    {
         // io_uring supports all operations
         // io_uring支持所有操作
         matches!(
@@ -794,11 +853,13 @@ impl Driver for IoUringDriver {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_iouring_driver_creation() {
+    fn test_iouring_driver_creation()
+    {
         // This test may fail on systems without io_uring support
         // 此测试可能在没有io_uring支持的系统上失败
         let driver = IoUringDriver::new();
@@ -808,17 +869,20 @@ mod tests {
     }
 
     #[test]
-    fn test_iouring_params_size() {
+    fn test_iouring_params_size()
+    {
         assert_eq!(size_of::<IoUringParams>(), 40);
     }
 
     #[test]
-    fn test_submission_queue_entry_size() {
+    fn test_submission_queue_entry_size()
+    {
         assert_eq!(size_of::<SubmissionQueueEntry>(), 64);
     }
 
     #[test]
-    fn test_completion_queue_entry_size() {
+    fn test_completion_queue_entry_size()
+    {
         assert_eq!(size_of::<CompletionQueueEntry>(), 16);
     }
 }

@@ -25,11 +25,13 @@ pub use evaluator::SpelEvaluator;
 pub use parser::{SpelError, SpelExpr};
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_has_role() {
+    fn test_has_role()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         assert!(
@@ -45,7 +47,8 @@ mod tests {
     }
 
     #[test]
-    fn test_has_authority() {
+    fn test_has_authority()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_authority("WRITE");
         assert!(
@@ -61,7 +64,8 @@ mod tests {
     }
 
     #[test]
-    fn test_has_any_role() {
+    fn test_has_any_role()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_role("EDITOR");
         assert!(
@@ -77,14 +81,16 @@ mod tests {
     }
 
     #[test]
-    fn test_permit_all_deny_all() {
+    fn test_permit_all_deny_all()
+    {
         let ctx = SpelContext::new();
         assert!(SpelEvaluator::new("permitAll").evaluate(&ctx).unwrap());
         assert!(!SpelEvaluator::new("denyAll").evaluate(&ctx).unwrap());
     }
 
     #[test]
-    fn test_logical_and_or() {
+    fn test_logical_and_or()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         ctx.add_authority("WRITE");
@@ -106,14 +112,16 @@ mod tests {
     }
 
     #[test]
-    fn test_logical_not() {
+    fn test_logical_not()
+    {
         let ctx = SpelContext::new();
         assert!(SpelEvaluator::new("not denyAll").evaluate(&ctx).unwrap());
         assert!(SpelEvaluator::new("!denyAll").evaluate(&ctx).unwrap());
     }
 
     #[test]
-    fn test_number_comparison() {
+    fn test_number_comparison()
+    {
         let mut ctx = SpelContext::new();
         ctx.set_variable("age", serde_json::json!(42));
         assert!(SpelEvaluator::new("#age == 42").evaluate(&ctx).unwrap());
@@ -122,7 +130,8 @@ mod tests {
     }
 
     #[test]
-    fn test_variable_string_eq() {
+    fn test_variable_string_eq()
+    {
         let mut ctx = SpelContext::new();
         ctx.set_variable("name", serde_json::json!("alice"));
         assert!(
@@ -134,7 +143,8 @@ mod tests {
     }
 
     #[test]
-    fn test_complex_expression() {
+    fn test_complex_expression()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         ctx.set_variable("userId", serde_json::json!(1));
@@ -146,7 +156,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parenthesized() {
+    fn test_parenthesized()
+    {
         let mut ctx = SpelContext::new();
         ctx.add_role("ADMIN");
         assert!(
@@ -157,7 +168,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_error() {
+    fn test_parse_error()
+    {
         let ctx = SpelContext::new();
         assert!(SpelEvaluator::new("hasRole(").evaluate(&ctx).is_err());
     }

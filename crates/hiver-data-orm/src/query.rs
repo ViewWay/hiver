@@ -29,11 +29,14 @@
 //!     .all().await?;
 //! ```
 
-use crate::{Error, Model, Result};
-use hiver_data_rdbc::{DatabaseClient, QueryParam};
 use std::marker::PhantomData;
 
-pub(crate) fn validate_identifier(name: &str) -> bool {
+use hiver_data_rdbc::{DatabaseClient, QueryParam};
+
+use crate::{Error, Model, Result};
+
+pub(crate) fn validate_identifier(name: &str) -> bool
+{
     !name.is_empty() && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
@@ -43,7 +46,8 @@ pub(crate) fn validate_identifier(name: &str) -> bool {
 /// Represents a condition in a WHERE clause.
 /// 表示 WHERE 子句中的条件。
 #[derive(Debug, Clone)]
-pub struct WhereClause {
+pub struct WhereClause
+{
     /// The condition SQL (with `?` placeholders)
     /// 条件 SQL（使用 `?` 占位符）
     pub condition: String,
@@ -53,10 +57,12 @@ pub struct WhereClause {
     pub params: Vec<QueryParam>,
 }
 
-impl WhereClause {
+impl WhereClause
+{
     /// Create a new where clause
     /// 创建新的 WHERE 子句
-    pub fn new(condition: impl Into<String>) -> Self {
+    pub fn new(condition: impl Into<String>) -> Self
+    {
         Self {
             condition: condition.into(),
             params: Vec::new(),
@@ -65,14 +71,16 @@ impl WhereClause {
 
     /// Add a parameter
     /// 添加参数
-    pub fn param(mut self, value: impl Into<QueryParam>) -> Self {
+    pub fn param(mut self, value: impl Into<QueryParam>) -> Self
+    {
         self.params.push(value.into());
         self
     }
 
     /// Add multiple parameters
     /// 添加多个参数
-    pub fn params(mut self, values: &[QueryParam]) -> Self {
+    pub fn params(mut self, values: &[QueryParam]) -> Self
+    {
         self.params.extend(values.iter().cloned());
         self
     }
@@ -84,7 +92,8 @@ impl WhereClause {
 /// Represents sorting in a query.
 /// 表示查询中的排序。
 #[derive(Debug, Clone)]
-pub struct OrderBy {
+pub struct OrderBy
+{
     /// Column name
     /// 列名
     pub column: String,
@@ -94,10 +103,12 @@ pub struct OrderBy {
     pub direction: OrderDirection,
 }
 
-impl OrderBy {
+impl OrderBy
+{
     /// Create a new order by clause
     /// 创建新的 ORDER BY 子句
-    pub fn new(column: impl Into<String>) -> Self {
+    pub fn new(column: impl Into<String>) -> Self
+    {
         Self {
             column: column.into(),
             direction: OrderDirection::Asc,
@@ -106,14 +117,16 @@ impl OrderBy {
 
     /// Set direction to ascending
     /// 设置方向为升序
-    pub fn asc(mut self) -> Self {
+    pub fn asc(mut self) -> Self
+    {
         self.direction = OrderDirection::Asc;
         self
     }
 
     /// Set direction to descending
     /// 设置方向为降序
-    pub fn desc(mut self) -> Self {
+    pub fn desc(mut self) -> Self
+    {
         self.direction = OrderDirection::Desc;
         self
     }
@@ -122,7 +135,8 @@ impl OrderBy {
 /// Order direction
 /// 排序方向
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum OrderDirection {
+pub enum OrderDirection
+{
     /// Ascending
     /// 升序
     Asc,
@@ -132,11 +146,14 @@ pub enum OrderDirection {
     Desc,
 }
 
-impl OrderDirection {
+impl OrderDirection
+{
     /// Get the SQL keyword
     /// 获取 SQL 关键字
-    pub fn as_sql(&self) -> &str {
-        match self {
+    pub fn as_sql(&self) -> &str
+    {
+        match self
+        {
             OrderDirection::Asc => "ASC",
             OrderDirection::Desc => "DESC",
         }
@@ -149,7 +166,8 @@ impl OrderDirection {
 /// Represents the LIMIT and OFFSET in a query.
 /// 表示查询中的 LIMIT 和 OFFSET。
 #[derive(Debug, Clone)]
-pub struct Limit {
+pub struct Limit
+{
     /// Maximum number of rows to return
     /// 要返回的最大行数
     pub limit: Option<usize>,
@@ -159,10 +177,12 @@ pub struct Limit {
     pub offset: Option<usize>,
 }
 
-impl Limit {
+impl Limit
+{
     /// Create a new limit clause
     /// 创建新的 LIMIT 子句
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             limit: None,
             offset: None,
@@ -171,21 +191,25 @@ impl Limit {
 
     /// Set the limit
     /// 设置限制
-    pub fn with_limit(mut self, limit: usize) -> Self {
+    pub fn with_limit(mut self, limit: usize) -> Self
+    {
         self.limit = Some(limit);
         self
     }
 
     /// Set the offset
     /// 设置偏移
-    pub fn with_offset(mut self, offset: usize) -> Self {
+    pub fn with_offset(mut self, offset: usize) -> Self
+    {
         self.offset = Some(offset);
         self
     }
 }
 
-impl Default for Limit {
-    fn default() -> Self {
+impl Default for Limit
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -196,7 +220,8 @@ impl Default for Limit {
 /// Represents a JOIN in a query.
 /// 表示查询中的 JOIN。
 #[derive(Debug, Clone)]
-pub struct Join {
+pub struct Join
+{
     /// Join type (INNER, LEFT, RIGHT)
     /// JOIN 类型（INNER, LEFT, RIGHT）
     pub join_type: JoinType,
@@ -214,10 +239,12 @@ pub struct Join {
     pub alias: Option<String>,
 }
 
-impl Join {
+impl Join
+{
     /// Create a new join clause
     /// 创建新的 JOIN 子句
-    pub fn new(join_type: JoinType, table: impl Into<String>, on: impl Into<String>) -> Self {
+    pub fn new(join_type: JoinType, table: impl Into<String>, on: impl Into<String>) -> Self
+    {
         Self {
             join_type,
             table: table.into(),
@@ -228,7 +255,8 @@ impl Join {
 
     /// Set an alias for the joined table
     /// 为连接的表设置别名
-    pub fn alias(mut self, alias: impl Into<String>) -> Self {
+    pub fn alias(mut self, alias: impl Into<String>) -> Self
+    {
         self.alias = Some(alias.into());
         self
     }
@@ -237,7 +265,8 @@ impl Join {
 /// Join type
 /// JOIN 类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum JoinType {
+pub enum JoinType
+{
     /// Inner join
     /// 内连接
     Inner,
@@ -255,11 +284,14 @@ pub enum JoinType {
     Cross,
 }
 
-impl JoinType {
+impl JoinType
+{
     /// Get the SQL keyword
     /// 获取 SQL 关键字
-    pub fn as_sql(&self) -> &str {
-        match self {
+    pub fn as_sql(&self) -> &str
+    {
+        match self
+        {
             JoinType::Inner => "INNER JOIN",
             JoinType::Left => "LEFT JOIN",
             JoinType::Right => "RIGHT JOIN",
@@ -299,7 +331,8 @@ impl JoinType {
 /// let sql = query.to_sql();
 /// // SELECT * FROM users WHERE age > 18 ORDER BY created_at DESC LIMIT 10
 /// ```
-pub struct QueryBuilder<M: Model> {
+pub struct QueryBuilder<M: Model>
+{
     /// Model type
     /// 模型类型
     _phantom: PhantomData<M>,
@@ -337,10 +370,12 @@ pub struct QueryBuilder<M: Model> {
     distinct: bool,
 }
 
-impl<M: Model> QueryBuilder<M> {
+impl<M: Model> QueryBuilder<M>
+{
     /// Create a new query builder
     /// 创建新的查询构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             _phantom: PhantomData,
             wheres: Vec::new(),
@@ -369,7 +404,8 @@ impl<M: Model> QueryBuilder<M> {
     // Callers MUST use the `?` placeholder pattern for values and never concatenate
     // untrusted user input into the condition string.
     #[must_use = "QueryBuilder is consumed by each method; chain calls or use the final result"]
-    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
+    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self
+    {
         let placeholder_count = condition.matches('?').count();
         assert_eq!(
             placeholder_count,
@@ -395,10 +431,12 @@ impl<M: Model> QueryBuilder<M> {
     ///     .order_by("created_at DESC")
     ///     .all().await?;
     /// ```
-    pub fn order_by(self, column: &str) -> OrderByBuilder<M> {
+    pub fn order_by(self, column: &str) -> OrderByBuilder<M>
+    {
         assert!(
             validate_identifier(column),
-            "order_by column must contain only alphanumeric characters and underscores, got: {column}"
+            "order_by column must contain only alphanumeric characters and underscores, got: \
+             {column}"
         );
         OrderByBuilder {
             query_builder: self,
@@ -417,7 +455,8 @@ impl<M: Model> QueryBuilder<M> {
     ///     .all().await?;
     /// ```
     #[must_use]
-    pub fn limit(mut self, limit: usize) -> Self {
+    pub fn limit(mut self, limit: usize) -> Self
+    {
         self.limit.limit = Some(limit);
         self
     }
@@ -434,7 +473,8 @@ impl<M: Model> QueryBuilder<M> {
     ///     .all().await?;
     /// ```
     #[must_use]
-    pub fn offset(mut self, offset: usize) -> Self {
+    pub fn offset(mut self, offset: usize) -> Self
+    {
         self.limit.offset = Some(offset);
         self
     }
@@ -451,20 +491,23 @@ impl<M: Model> QueryBuilder<M> {
     /// ```
     /// Validate a raw SQL condition to reject injection patterns.
     /// 验证原始 SQL 条件以拒绝注入模式。
-    fn validate_raw_condition(condition: &str, context: &str) {
+    fn validate_raw_condition(condition: &str, context: &str)
+    {
         assert!(
             !condition.contains('\'')
                 && !condition.contains(';')
                 && !condition.contains("--")
                 && !condition.contains("/*"),
-            "{context} contains disallowed characters (quotes, semicolons, or comments): {condition}"
+            "{context} contains disallowed characters (quotes, semicolons, or comments): \
+             {condition}"
         );
     }
 
     /// Add a JOIN clause.
     /// 添加 JOIN 子句。
     #[must_use]
-    pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self {
+    pub fn join(mut self, join_type: JoinType, table: &str, on: &str) -> Self
+    {
         assert!(
             validate_identifier(table),
             "join table must contain only alphanumeric characters and underscores, got: {table}"
@@ -485,11 +528,14 @@ impl<M: Model> QueryBuilder<M> {
     ///     .all().await?;
     /// ```
     #[must_use]
-    pub fn select(mut self, columns: &[&str]) -> Self {
-        for col in columns {
+    pub fn select(mut self, columns: &[&str]) -> Self
+    {
+        for col in columns
+        {
             assert!(
                 validate_identifier(col),
-                "select column must contain only alphanumeric characters and underscores, got: {col}"
+                "select column must contain only alphanumeric characters and underscores, got: \
+                 {col}"
             );
         }
         self.select = columns.iter().map(|s| s.to_string()).collect();
@@ -499,11 +545,14 @@ impl<M: Model> QueryBuilder<M> {
     /// Add a group by clause
     /// 添加 GROUP BY 子句
     #[must_use]
-    pub fn group_by(mut self, columns: &[&str]) -> Self {
-        for col in columns {
+    pub fn group_by(mut self, columns: &[&str]) -> Self
+    {
+        for col in columns
+        {
             assert!(
                 validate_identifier(col),
-                "group_by column must contain only alphanumeric characters and underscores, got: {col}"
+                "group_by column must contain only alphanumeric characters and underscores, got: \
+                 {col}"
             );
         }
         self.group_by = columns.iter().map(|s| s.to_string()).collect();
@@ -521,7 +570,8 @@ impl<M: Model> QueryBuilder<M> {
     /// 调用者不得将不受信任的用户输入传入此条件字符串。
     /// 该条件是直接插入 HAVING 子句的原始 SQL 片段。
     #[must_use]
-    pub fn having(mut self, condition: &str) -> Self {
+    pub fn having(mut self, condition: &str) -> Self
+    {
         Self::validate_raw_condition(condition, "HAVING condition");
         self.having = Some(condition.to_string());
         self
@@ -530,7 +580,8 @@ impl<M: Model> QueryBuilder<M> {
     /// Set distinct flag
     /// 设置 DISTINCT 标志
     #[must_use]
-    pub fn distinct(mut self) -> Self {
+    pub fn distinct(mut self) -> Self
+    {
         self.distinct = true;
         self
     }
@@ -540,19 +591,24 @@ impl<M: Model> QueryBuilder<M> {
     ///
     /// Returns `(sql, params)` where `sql` uses `$1, $2, ...` placeholders
     /// and `params` contains the corresponding parameter values.
-    pub fn build(&self) -> (String, Vec<QueryParam>) {
+    pub fn build(&self) -> (String, Vec<QueryParam>)
+    {
         let mut sql = String::new();
         let mut params = Vec::new();
         let mut param_idx = 1u32;
 
         // SELECT clause
         sql.push_str("SELECT ");
-        if self.distinct {
+        if self.distinct
+        {
             sql.push_str("DISTINCT ");
         }
-        if self.select.is_empty() {
+        if self.select.is_empty()
+        {
             sql.push('*');
-        } else {
+        }
+        else
+        {
             sql.push_str(&self.select.join(", "));
         }
 
@@ -561,12 +617,14 @@ impl<M: Model> QueryBuilder<M> {
         sql.push_str(&M::table_name());
 
         // JOINs
-        for join in &self.joins {
+        for join in &self.joins
+        {
             sql.push(' ');
             sql.push_str(join.join_type.as_sql());
             sql.push(' ');
             sql.push_str(&join.table);
-            if let Some(alias) = &join.alias {
+            if let Some(alias) = &join.alias
+            {
                 sql.push_str(" AS ");
                 sql.push_str(alias);
             }
@@ -575,7 +633,8 @@ impl<M: Model> QueryBuilder<M> {
         }
 
         // WHERE clause — replace ? with $N
-        if !self.wheres.is_empty() {
+        if !self.wheres.is_empty()
+        {
             sql.push_str(" WHERE ");
             let conditions: Vec<String> = self
                 .wheres
@@ -595,19 +654,22 @@ impl<M: Model> QueryBuilder<M> {
         }
 
         // GROUP BY clause
-        if !self.group_by.is_empty() {
+        if !self.group_by.is_empty()
+        {
             sql.push_str(" GROUP BY ");
             sql.push_str(&self.group_by.join(", "));
         }
 
         // HAVING clause
-        if let Some(having) = &self.having {
+        if let Some(having) = &self.having
+        {
             sql.push_str(" HAVING ");
             sql.push_str(having);
         }
 
         // ORDER BY clause
-        if !self.order_by.is_empty() {
+        if !self.order_by.is_empty()
+        {
             sql.push_str(" ORDER BY ");
             let orderings: Vec<String> = self
                 .order_by
@@ -618,12 +680,14 @@ impl<M: Model> QueryBuilder<M> {
         }
 
         // LIMIT clause
-        if let Some(limit) = self.limit.limit {
+        if let Some(limit) = self.limit.limit
+        {
             sql.push_str(&format!(" LIMIT {}", limit));
         }
 
         // OFFSET clause
-        if let Some(offset) = self.limit.offset {
+        if let Some(offset) = self.limit.offset
+        {
             sql.push_str(&format!(" OFFSET {}", offset));
         }
 
@@ -632,10 +696,12 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Build SQL with inline values (backward compatible)
     /// 构建带内联值的 SQL（向后兼容）
-    pub fn to_sql(&self) -> String {
+    pub fn to_sql(&self) -> String
+    {
         let (sql, params) = self.build();
         let mut result = sql;
-        for (i, param) in params.iter().enumerate() {
+        for (i, param) in params.iter().enumerate()
+        {
             let placeholder = format!("${}", i + 1);
             result = result.replace(&placeholder, &param.to_sql_literal());
         }
@@ -654,7 +720,8 @@ impl<M: Model> QueryBuilder<M> {
             .await
             .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows {
+        for row in &rows
+        {
             results.push(
                 row.deserialize()
                     .map_err(|e| Error::query_build(format!("Row deserialization failed: {e}")))?,
@@ -674,7 +741,8 @@ impl<M: Model> QueryBuilder<M> {
             .fetch_one_params(&sql, &params)
             .await
             .map_err(|e| Error::query_build(format!("Query failed: {e}")))?;
-        match row {
+        match row
+        {
             Some(r) => r
                 .deserialize()
                 .map(Some)
@@ -685,13 +753,15 @@ impl<M: Model> QueryBuilder<M> {
 
     /// Execute a COUNT query and return the count.
     /// 执行 COUNT 查询并返回计数。
-    pub async fn count<C: DatabaseClient>(&self, client: &C) -> Result<i64> {
+    pub async fn count<C: DatabaseClient>(&self, client: &C) -> Result<i64>
+    {
         let (_, where_params) = self.build();
 
         let mut count_sql = String::from("SELECT COUNT(*) AS cnt FROM ");
         count_sql.push_str(&M::table_name());
 
-        if !self.wheres.is_empty() {
+        if !self.wheres.is_empty()
+        {
             count_sql.push_str(" WHERE ");
             let mut param_idx = 1u32;
             let conditions: Vec<String> = self
@@ -735,9 +805,12 @@ impl<M: Model> QueryBuilder<M> {
         let total = self.count(client).await?;
         let offset = ((page.max(1) - 1) * per_page) as usize;
         let (base_sql, params) = self.build();
-        let sql = if base_sql.contains("LIMIT") {
+        let sql = if base_sql.contains("LIMIT")
+        {
             base_sql
-        } else {
+        }
+        else
+        {
             format!("{} LIMIT {} OFFSET {}", base_sql, per_page, offset)
         };
 
@@ -757,23 +830,28 @@ impl<M: Model> QueryBuilder<M> {
     }
 }
 
-impl<M: Model> Default for QueryBuilder<M> {
-    fn default() -> Self {
+impl<M: Model> Default for QueryBuilder<M>
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// Builder for order by clause
 /// ORDER BY 子句的构建器
-pub struct OrderByBuilder<M: Model> {
+pub struct OrderByBuilder<M: Model>
+{
     query_builder: QueryBuilder<M>,
     column: String,
 }
 
-impl<M: Model> OrderByBuilder<M> {
+impl<M: Model> OrderByBuilder<M>
+{
     /// Set direction to ascending and return the query builder
     /// 设置方向为升序并返回查询构建器
-    pub fn asc(self) -> QueryBuilder<M> {
+    pub fn asc(self) -> QueryBuilder<M>
+    {
         let mut builder = self.query_builder;
         builder.order_by.push(OrderBy {
             column: self.column,
@@ -784,7 +862,8 @@ impl<M: Model> OrderByBuilder<M> {
 
     /// Set direction to descending and return the query builder
     /// 设置方向为降序并返回查询构建器
-    pub fn desc(self) -> QueryBuilder<M> {
+    pub fn desc(self) -> QueryBuilder<M>
+    {
         let mut builder = self.query_builder;
         builder.order_by.push(OrderBy {
             column: self.column,
@@ -795,15 +874,18 @@ impl<M: Model> OrderByBuilder<M> {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // Mock model for testing
     #[derive(Debug, Clone)]
     struct User;
 
-    impl Model for User {
-        fn meta() -> crate::ModelMeta {
+    impl Model for User
+    {
+        fn meta() -> crate::ModelMeta
+        {
             let mut meta = crate::ModelMeta::new("users");
             meta.columns
                 .push(crate::Column::new("id", crate::ColumnType::I64));
@@ -814,17 +896,20 @@ mod tests {
             meta
         }
 
-        fn primary_key(&self) -> Result<String> {
+        fn primary_key(&self) -> Result<String>
+        {
             Ok("1".to_string())
         }
 
-        fn set_primary_key(&mut self, _value: String) -> Result<()> {
+        fn set_primary_key(&mut self, _value: String) -> Result<()>
+        {
             Ok(())
         }
     }
 
     #[test]
-    fn test_query_builder_basic() {
+    fn test_query_builder_basic()
+    {
         let query = QueryBuilder::<User>::new()
             .where_("age > ?", &[QueryParam::I32(18)])
             .to_sql();
@@ -835,7 +920,8 @@ mod tests {
     }
 
     #[test]
-    fn test_query_builder_build_parameterized() {
+    fn test_query_builder_build_parameterized()
+    {
         let (sql, params) = QueryBuilder::<User>::new()
             .where_("age > ?", &[QueryParam::I32(18)])
             .where_("name = ?", &[QueryParam::Text("Alice".into())])
@@ -849,7 +935,8 @@ mod tests {
     }
 
     #[test]
-    fn test_query_builder_order_by() {
+    fn test_query_builder_order_by()
+    {
         let query = QueryBuilder::<User>::new()
             .order_by("created_at")
             .desc()
@@ -860,7 +947,8 @@ mod tests {
     }
 
     #[test]
-    fn test_query_builder_limit_offset() {
+    fn test_query_builder_limit_offset()
+    {
         let query = QueryBuilder::<User>::new().limit(10).offset(20).to_sql();
 
         assert!(query.contains("LIMIT 10"));
@@ -868,7 +956,8 @@ mod tests {
     }
 
     #[test]
-    fn test_query_builder_join() {
+    fn test_query_builder_join()
+    {
         let query = QueryBuilder::<User>::new()
             .join(JoinType::Inner, "posts", "users.id = posts.user_id")
             .to_sql();
@@ -878,7 +967,8 @@ mod tests {
     }
 
     #[test]
-    fn test_to_sql_for_various_types() {
+    fn test_to_sql_for_various_types()
+    {
         assert_eq!(QueryParam::I32(42).to_sql_literal(), "42");
         assert_eq!(QueryParam::Text("hello".into()).to_sql_literal(), "'hello'");
         assert_eq!(QueryParam::Text("it's".into()).to_sql_literal(), "'it''s'");
@@ -887,7 +977,8 @@ mod tests {
     }
 
     #[test]
-    fn test_build_sql_injection_prevention() {
+    fn test_build_sql_injection_prevention()
+    {
         let malicious = "'; DROP TABLE users; --";
         let (sql, params) = QueryBuilder::<User>::new()
             .where_("name = ?", &[QueryParam::Text(malicious.into())])

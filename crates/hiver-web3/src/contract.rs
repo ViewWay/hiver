@@ -40,7 +40,8 @@ use crate::wallet::Address;
 /// Contract error
 /// 合约错误
 #[derive(Debug, Clone)]
-pub enum ContractError {
+pub enum ContractError
+{
     /// ABI encoding error
     /// ABI编码错误
     AbiError(String),
@@ -58,9 +59,12 @@ pub enum ContractError {
     RpcError(String),
 }
 
-impl fmt::Display for ContractError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for ContractError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::AbiError(msg) => write!(f, "ABI encoding error: {}", msg),
             Self::DecodingError(msg) => write!(f, "ABI decoding error: {}", msg),
             Self::CallError(msg) => write!(f, "Contract call error: {}", msg),
@@ -79,16 +83,19 @@ impl std::error::Error for ContractError {}
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FunctionSelector(pub [u8; 4]);
 
-impl FunctionSelector {
+impl FunctionSelector
+{
     /// Create from bytes
     /// 从字节创建
-    pub const fn from_bytes(bytes: [u8; 4]) -> Self {
+    pub const fn from_bytes(bytes: [u8; 4]) -> Self
+    {
         Self(bytes)
     }
 
     /// Compute from function signature
     /// 从函数签名计算
-    pub fn from_signature(signature: &str) -> Self {
+    pub fn from_signature(signature: &str) -> Self
+    {
         let hash = crate::wallet::keccak256(signature.as_bytes());
         let mut selector = [0u8; 4];
         selector.copy_from_slice(&hash[..4]);
@@ -97,7 +104,8 @@ impl FunctionSelector {
 
     /// Convert to hex
     /// 转换为十六进制
-    pub fn to_hex(&self) -> String {
+    pub fn to_hex(&self) -> String
+    {
         format!("0x{}", hex::encode(self.0))
     }
 }
@@ -105,7 +113,8 @@ impl FunctionSelector {
 /// Contract call parameters
 /// 合约调用参数
 #[derive(Debug, Clone)]
-pub struct CallParams {
+pub struct CallParams
+{
     /// Function selector
     /// 函数选择器
     pub selector: FunctionSelector,
@@ -115,10 +124,12 @@ pub struct CallParams {
     pub data: Vec<u8>,
 }
 
-impl CallParams {
+impl CallParams
+{
     /// Create new call parameters
     /// 创建新的调用参数
-    pub fn new(selector: FunctionSelector) -> Self {
+    pub fn new(selector: FunctionSelector) -> Self
+    {
         Self {
             selector,
             data: Vec::new(),
@@ -127,21 +138,24 @@ impl CallParams {
 
     /// Add address parameter
     /// 添加地址参数
-    pub fn push_address(mut self, address: &Address) -> Self {
+    pub fn push_address(mut self, address: &Address) -> Self
+    {
         self.data.extend_from_slice(&address.0);
         self
     }
 
     /// Add uint256 parameter (32 bytes)
     /// 添加uint256参数（32字节）
-    pub fn push_uint256(mut self, value: &[u8; 32]) -> Self {
+    pub fn push_uint256(mut self, value: &[u8; 32]) -> Self
+    {
         self.data.extend_from_slice(value);
         self
     }
 
     /// Add bytes parameter
     /// 添加bytes参数
-    pub fn push_bytes(mut self, bytes: &[u8]) -> Self {
+    pub fn push_bytes(mut self, bytes: &[u8]) -> Self
+    {
         // Encode length and offset (simplified)
         let len = bytes.len();
         // Pad to 32 bytes
@@ -154,7 +168,8 @@ impl CallParams {
 
     /// Build the full call data
     /// 构建完整的调用数据
-    pub fn build(self) -> Vec<u8> {
+    pub fn build(self) -> Vec<u8>
+    {
         let mut result = Vec::with_capacity(4 + self.data.len());
         result.extend_from_slice(&self.selector.0);
         result.extend_from_slice(&self.data);
@@ -171,7 +186,8 @@ impl CallParams {
 /// This is available only when the `rpc` feature is enabled.
 /// 仅当启用`rpc`功能时可用。
 #[cfg(feature = "rpc")]
-pub struct Contract<'a> {
+pub struct Contract<'a>
+{
     /// Contract address
     /// 合约地址
     address: Address,
@@ -182,16 +198,19 @@ pub struct Contract<'a> {
 }
 
 #[cfg(feature = "rpc")]
-impl<'a> Contract<'a> {
+impl<'a> Contract<'a>
+{
     /// Create a new contract instance
     /// 创建新的合约实例
-    pub fn new(address: Address, client: &'a crate::rpc::RpcClient) -> Self {
+    pub fn new(address: Address, client: &'a crate::rpc::RpcClient) -> Self
+    {
         Self { address, client }
     }
 
     /// Get the contract address
     /// 获取合约地址
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
@@ -201,7 +220,8 @@ impl<'a> Contract<'a> {
         &self,
         selector: &FunctionSelector,
         params: &[u8],
-    ) -> Result<Vec<u8>, ContractError> {
+    ) -> Result<Vec<u8>, ContractError>
+    {
         let mut call_data = Vec::with_capacity(4 + params.len());
         call_data.extend_from_slice(&selector.0);
         call_data.extend_from_slice(params);
@@ -223,20 +243,28 @@ impl<'a> Contract<'a> {
         &self,
         function: &str,
         params: &[String],
-    ) -> Result<String, ContractError> {
+    ) -> Result<String, ContractError>
+    {
         let selector = FunctionSelector::from_signature(function);
         let call_data = selector.to_hex();
 
         let mut full_call = call_data;
-        for param in params {
+        for param in params
+        {
             // For simple hex addresses, append them directly
-            if param.starts_with("0x") {
+            if param.starts_with("0x")
+            {
                 full_call.push_str(&param[2..]);
-            } else {
+            }
+            else
+            {
                 // Encode as uint256 (left-padded to 64 hex chars)
-                let value = if param.starts_with("0x") {
+                let value = if param.starts_with("0x")
+                {
                     &param[2..]
-                } else {
+                }
+                else
+                {
                     param
                 };
                 full_call
@@ -261,7 +289,8 @@ impl<'a> Contract<'a> {
         selector: &FunctionSelector,
         params: &[u8],
         value: Option<u128>,
-    ) -> Result<TxHash, ContractError> {
+    ) -> Result<TxHash, ContractError>
+    {
         // This would require signing a transaction
         // For now, return a placeholder error
         Err(ContractError::CallError("Transaction signing not implemented".to_string()))
@@ -269,8 +298,10 @@ impl<'a> Contract<'a> {
 }
 
 #[cfg(feature = "rpc")]
-impl<'a> fmt::Debug for Contract<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<'a> fmt::Debug for Contract<'a>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("Contract")
             .field("address", &self.address)
             .finish()
@@ -283,7 +314,8 @@ impl<'a> fmt::Debug for Contract<'a> {
 /// Builder for making contract calls.
 /// 用于进行合约调用的构建器。
 #[cfg(feature = "rpc")]
-pub struct ContractCall<'a, 'b> {
+pub struct ContractCall<'a, 'b>
+{
     /// Contract reference
     /// 合约引用
     contract: &'a Contract<'b>,
@@ -302,10 +334,12 @@ pub struct ContractCall<'a, 'b> {
 }
 
 #[cfg(feature = "rpc")]
-impl<'a, 'b> ContractCall<'a, 'b> {
+impl<'a, 'b> ContractCall<'a, 'b>
+{
     /// Create a new contract call
     /// 创建新的合约调用
-    pub fn new(contract: &'a Contract<'b>) -> Self {
+    pub fn new(contract: &'a Contract<'b>) -> Self
+    {
         Self {
             contract,
             selector: None,
@@ -316,21 +350,24 @@ impl<'a, 'b> ContractCall<'a, 'b> {
 
     /// Set the function selector
     /// 设置函数选择器
-    pub fn selector(mut self, selector: FunctionSelector) -> Self {
+    pub fn selector(mut self, selector: FunctionSelector) -> Self
+    {
         self.selector = Some(selector);
         self
     }
 
     /// Add a parameter
     /// 添加参数
-    pub fn param(mut self, param: &[u8]) -> Self {
+    pub fn param(mut self, param: &[u8]) -> Self
+    {
         self.params.extend_from_slice(param);
         self
     }
 
     /// Add an address parameter
     /// 添加地址参数
-    pub fn address_param(mut self, address: &Address) -> Self {
+    pub fn address_param(mut self, address: &Address) -> Self
+    {
         // Pad address to 32 bytes
         self.params.extend_from_slice(&[0u8; 12]);
         self.params.extend_from_slice(&address.0);
@@ -339,21 +376,24 @@ impl<'a, 'b> ContractCall<'a, 'b> {
 
     /// Add a uint256 parameter
     /// 添加uint256参数
-    pub fn uint256_param(mut self, value: &[u8; 32]) -> Self {
+    pub fn uint256_param(mut self, value: &[u8; 32]) -> Self
+    {
         self.params.extend_from_slice(value);
         self
     }
 
     /// Set the ETH value to send
     /// 设置要发送的ETH金额
-    pub fn value(mut self, value: u128) -> Self {
+    pub fn value(mut self, value: u128) -> Self
+    {
         self.value = Some(value);
         self
     }
 
     /// Execute the call (read-only)
     /// 执行调用（只读）
-    pub async fn call(self) -> Result<Vec<u8>, ContractError> {
+    pub async fn call(self) -> Result<Vec<u8>, ContractError>
+    {
         let selector = self
             .selector
             .ok_or_else(|| ContractError::CallError("Function selector not set".to_string()))?;
@@ -363,21 +403,24 @@ impl<'a, 'b> ContractCall<'a, 'b> {
 
     /// Execute the call and decode as String
     /// 执行调用并解码为字符串
-    pub async fn call_string(self) -> Result<String, ContractError> {
+    pub async fn call_string(self) -> Result<String, ContractError>
+    {
         let bytes = self.call().await?;
         String::from_utf8(bytes).map_err(|e| ContractError::DecodingError(e.to_string()))
     }
 }
 
 #[cfg(feature = "rpc")]
-impl<'a, 'b> Contract<'a> {
+impl<'a, 'b> Contract<'a>
+{
     /// Internal call method
     /// 内部调用方法
     async fn _call(
         &self,
         selector: &FunctionSelector,
         params: &[u8],
-    ) -> Result<Vec<u8>, ContractError> {
+    ) -> Result<Vec<u8>, ContractError>
+    {
         let mut call_data = Vec::with_capacity(4 + params.len());
         call_data.extend_from_slice(&selector.0);
         call_data.extend_from_slice(params);
@@ -403,23 +446,21 @@ impl<'a, 'b> Contract<'a> {
 pub struct ERC20;
 
 #[cfg(feature = "rpc")]
-impl ERC20 {
-    /// Function selector for balanceOf
-    /// balanceOf的函数选择器
-    pub const BALANCE_OF: FunctionSelector = FunctionSelector::from_bytes([0x70, 0xa0, 0x82, 0x31]);
-
-    /// Function selector for transfer
-    /// transfer的函数选择器
-    pub const TRANSFER: FunctionSelector = FunctionSelector::from_bytes([0xa9, 0x05, 0x9c, 0xbb]);
-
+impl ERC20
+{
     /// Function selector for approve
     /// approve的函数选择器
     pub const APPROVE: FunctionSelector = FunctionSelector::from_bytes([0x09, 0x5e, 0xa7, 0xb3]);
-
+    /// Function selector for balanceOf
+    /// balanceOf的函数选择器
+    pub const BALANCE_OF: FunctionSelector = FunctionSelector::from_bytes([0x70, 0xa0, 0x82, 0x31]);
     /// Function selector for totalSupply
     /// totalSupply的函数选择器
     pub const TOTAL_SUPPLY: FunctionSelector =
         FunctionSelector::from_bytes([0x18, 0x16, 0x0d, 0xdd]);
+    /// Function selector for transfer
+    /// transfer的函数选择器
+    pub const TRANSFER: FunctionSelector = FunctionSelector::from_bytes([0xa9, 0x05, 0x9c, 0xbb]);
 }
 
 /// ERC721 standard interface
@@ -432,47 +473,51 @@ impl ERC20 {
 pub struct ERC721;
 
 #[cfg(feature = "rpc")]
-impl ERC721 {
+impl ERC721
+{
     /// Function selector for ownerOf
     /// ownerOf的函数选择器
     pub const OWNER_OF: FunctionSelector = FunctionSelector::from_bytes([0x63, 0x52, 0x21, 0x1e]);
-
-    /// Function selector for transferFrom
-    /// transferFrom的函数选择器
-    pub const TRANSFER_FROM: FunctionSelector =
-        FunctionSelector::from_bytes([0x23, 0xb8, 0x72, 0xdd]);
-
     /// Function selector for safeTransferFrom
     /// safeTransferFrom的函数选择器
     pub const SAFE_TRANSFER_FROM: FunctionSelector =
         FunctionSelector::from_bytes([0x4a, 0x39, 0xdc, 0x06]);
+    /// Function selector for transferFrom
+    /// transferFrom的函数选择器
+    pub const TRANSFER_FROM: FunctionSelector =
+        FunctionSelector::from_bytes([0x23, 0xb8, 0x72, 0xdd]);
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_function_selector_from_signature() {
+    fn test_function_selector_from_signature()
+    {
         let selector = FunctionSelector::from_signature("balanceOf(address)");
         assert_eq!(selector.0.len(), 4);
     }
 
     #[test]
-    fn test_function_selector_to_hex() {
+    fn test_function_selector_to_hex()
+    {
         let selector = FunctionSelector::from_bytes([0x70, 0xa0, 0x82, 0x31]);
         assert_eq!(selector.to_hex(), "0x70a08231");
     }
 
     #[test]
-    fn test_call_params_new() {
+    fn test_call_params_new()
+    {
         let selector = FunctionSelector::from_bytes([0x70, 0xa0, 0x82, 0x31]);
         let params = CallParams::new(selector);
         assert_eq!(params.data.len(), 0);
     }
 
     #[test]
-    fn test_call_params_push_address() {
+    fn test_call_params_push_address()
+    {
         let selector = FunctionSelector::from_bytes([0x70, 0xa0, 0x82, 0x31]);
         let addr = Address::zero();
         let params = CallParams::new(selector).push_address(&addr);
@@ -480,21 +525,24 @@ mod tests {
     }
 
     #[test]
-    fn test_contract_error_display() {
+    fn test_contract_error_display()
+    {
         let err = ContractError::AbiError("test error".to_string());
         assert!(err.to_string().contains("ABI encoding error"));
     }
 
     #[test]
     #[cfg(feature = "rpc")]
-    fn test_erc20_constants() {
+    fn test_erc20_constants()
+    {
         assert_eq!(ERC20::BALANCE_OF.0, [0x70, 0xa0, 0x82, 0x31]);
         assert_eq!(ERC20::TRANSFER.0, [0xa9, 0x05, 0x9c, 0xbb]);
     }
 
     #[test]
     #[cfg(feature = "rpc")]
-    fn test_erc721_constants() {
+    fn test_erc721_constants()
+    {
         assert_eq!(ERC721::OWNER_OF.0, [0x63, 0x52, 0x21, 0x1e]);
         assert_eq!(ERC721::TRANSFER_FROM.0, [0x23, 0xb8, 0x72, 0xdd]);
     }

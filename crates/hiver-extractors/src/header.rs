@@ -29,8 +29,7 @@ use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 ///
 /// # Type Parameters / 类型参数
 ///
-/// - `T` - The type to convert the header value to.
-///   要将 header 值转换成的类型。
+/// - `T` - The type to convert the header value to. 要将 header 值转换成的类型。
 ///
 /// # Example / 示例
 ///
@@ -50,16 +49,19 @@ use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 /// ```
 pub struct Header<T>(pub T);
 
-impl<T> Header<T> {
+impl<T> Header<T>
+{
     /// Consume the header extractor and get the inner value
     /// 消耗header提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 }
@@ -68,7 +70,8 @@ impl<T> std::fmt::Debug for Header<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("Header").field(&self.0).finish()
     }
 }
@@ -77,14 +80,17 @@ impl<T> Clone for Header<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
 
 // Implement FromRequest for String - extracts first header
-impl FromRequest for Header<String> {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+impl FromRequest for Header<String>
+{
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         // Get the first header value
         let value = req
             .headers()
@@ -122,16 +128,19 @@ impl FromRequest for Header<String> {
 /// ```
 pub struct HeaderOption<T>(pub Option<T>);
 
-impl<T> HeaderOption<T> {
+impl<T> HeaderOption<T>
+{
     /// Consume the header extractor and get the inner value
     /// 消耗header提取器并获取内部值
-    pub fn into_inner(self) -> Option<T> {
+    pub fn into_inner(self) -> Option<T>
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> Option<&T> {
+    pub fn get(&self) -> Option<&T>
+    {
         self.0.as_ref()
     }
 }
@@ -140,7 +149,8 @@ impl<T> std::fmt::Debug for HeaderOption<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("HeaderOption").field(&self.0).finish()
     }
 }
@@ -149,13 +159,16 @@ impl<T> Clone for HeaderOption<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
 
-impl FromRequest for HeaderOption<String> {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+impl FromRequest for HeaderOption<String>
+{
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let value = req
             .headers()
             .iter()
@@ -183,7 +196,8 @@ impl FromRequest for HeaderOption<String> {
 ///     format!("Header {}: {}", auth.name, auth.value)
 /// }
 /// ```
-pub struct NamedHeader<T> {
+pub struct NamedHeader<T>
+{
     /// Header name
     /// Header名称
     pub name: String,
@@ -193,10 +207,12 @@ pub struct NamedHeader<T> {
     pub value: T,
 }
 
-impl<T> NamedHeader<T> {
+impl<T> NamedHeader<T>
+{
     /// Create a new named header
     /// 创建新的命名header
-    pub fn new(name: impl Into<String>, value: T) -> Self {
+    pub fn new(name: impl Into<String>, value: T) -> Self
+    {
         Self {
             name: name.into(),
             value,
@@ -205,13 +221,15 @@ impl<T> NamedHeader<T> {
 
     /// Get reference to the value
     /// 获取值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.value
     }
 
     /// Consume and get the inner value
     /// 消耗并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.value
     }
 }
@@ -220,7 +238,8 @@ impl<T> std::fmt::Debug for NamedHeader<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("NamedHeader")
             .field("name", &self.name)
             .field("value", &self.value)
@@ -232,7 +251,8 @@ impl<T> Clone for NamedHeader<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             name: self.name.clone(),
             value: self.value.clone(),
@@ -245,7 +265,8 @@ where
 ///
 /// Equivalent to Spring's `@RequestHeader("Authorization")`.
 /// 等价于Spring的`@RequestHeader("Authorization")`。
-pub fn get_header(req: &Request, name: &str) -> Option<String> {
+pub fn get_header(req: &Request, name: &str) -> Option<String>
+{
     req.headers()
         .get(name)
         .and_then(|v| v.to_str().ok())
@@ -254,7 +275,8 @@ pub fn get_header(req: &Request, name: &str) -> Option<String> {
 
 /// Get all header values for a name
 /// 获取名称的所有header值
-pub fn get_all_headers(req: &Request, name: &str) -> Vec<String> {
+pub fn get_all_headers(req: &Request, name: &str) -> Vec<String>
+{
     req.headers()
         .get_all(name)
         .iter()
@@ -265,28 +287,33 @@ pub fn get_all_headers(req: &Request, name: &str) -> Vec<String> {
 
 /// Check if a header exists
 /// 检查header是否存在
-pub fn has_header(req: &Request, name: &str) -> bool {
+pub fn has_header(req: &Request, name: &str) -> bool
+{
     req.headers().get(name).is_some()
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_header_into_inner() {
+    fn test_header_into_inner()
+    {
         let header: Header<String> = Header("test".to_string());
         assert_eq!(header.into_inner(), "test");
     }
 
     #[test]
-    fn test_header_option() {
+    fn test_header_option()
+    {
         let header: HeaderOption<String> = HeaderOption(Some("test".to_string()));
         assert_eq!(header.into_inner(), Some("test".to_string()));
     }
 
     #[test]
-    fn test_named_header() {
+    fn test_named_header()
+    {
         let named = NamedHeader::new("Authorization", "Bearer token");
         assert_eq!(named.name, "Authorization");
         assert_eq!(named.value, "Bearer token");

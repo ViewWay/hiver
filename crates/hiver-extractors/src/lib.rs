@@ -80,10 +80,15 @@ pub mod path;
 pub mod query;
 pub mod state;
 
+use std::{future::Future, pin::Pin};
+
 pub use attribute::{NamedRequestAttribute, RequestAttribute};
 pub use cookie::{Cookie, CookieOption, NamedCookie};
 pub use form::Form;
 pub use header::{Header, HeaderOption, NamedHeader};
+// Re-export Request from hiver-http
+// 从 hiver-http 重新导出 Request
+pub use hiver_http::Request;
 pub use json::Json;
 pub use matrix::{MatrixPath, MatrixVariable, MatrixVariables};
 pub use model::{ModelAttribute, QueryParams};
@@ -92,13 +97,6 @@ pub use multipart::{Multipart, MultipartParser, UploadConfig, UploadError, Uploa
 pub use path::Path;
 pub use query::Query;
 pub use state::State;
-
-use std::future::Future;
-use std::pin::Pin;
-
-// Re-export Request from hiver-http
-// 从 hiver-http 重新导出 Request
-pub use hiver_http::Request;
 
 /// Extractor trait
 /// 提取器trait
@@ -136,7 +134,8 @@ pub use hiver_http::Request;
 ///     format!("ID: {}", params.id)
 /// }
 /// ```
-pub trait FromRequest: Sized {
+pub trait FromRequest: Sized
+{
     /// Extract from request
     /// 从请求提取
     ///
@@ -169,7 +168,8 @@ pub type ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorErr
 /// 请求数据提取过程中可能发生的错误。
 /// 每个变体代表不同类别的提取失败。
 #[derive(Debug, thiserror::Error)]
-pub enum ExtractorError {
+pub enum ExtractorError
+{
     /// Missing parameter
     /// 缺少参数
     ///

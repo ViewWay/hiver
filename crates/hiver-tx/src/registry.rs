@@ -19,14 +19,15 @@
 //! let manager = registry.get("orders").unwrap();
 //! ```
 
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 
-use crate::manager::{TransactionDefinition, TransactionManager};
-use crate::status::TransactionStatus;
-use crate::{TransactionError, TransactionResult};
+use crate::{
+    TransactionError, TransactionResult,
+    manager::{TransactionDefinition, TransactionManager},
+    status::TransactionStatus,
+};
 
 // ---------------------------------------------------------------------------
 // TransactionManagerRegistry
@@ -55,7 +56,8 @@ use crate::{TransactionError, TransactionResult};
 /// }
 /// ```
 #[derive(Clone, Default)]
-pub struct TransactionManagerRegistry {
+pub struct TransactionManagerRegistry
+{
     /// Named managers. / 按名称注册的管理器。
     managers: HashMap<String, Arc<dyn TransactionManager>>,
 
@@ -63,18 +65,22 @@ pub struct TransactionManagerRegistry {
     default_name: Option<String>,
 }
 
-impl std::fmt::Debug for TransactionManagerRegistry {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for TransactionManagerRegistry
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("TransactionManagerRegistry")
             .field("managers", &self.managers.keys().collect::<Vec<_>>())
             .field("default_name", &self.default_name)
             .finish()
     }
 }
-impl TransactionManagerRegistry {
+impl TransactionManagerRegistry
+{
     /// Create an empty registry.
     /// 创建空的注册表。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             managers: HashMap::new(),
             default_name: None,
@@ -86,9 +92,11 @@ impl TransactionManagerRegistry {
     ///
     /// The first registered manager becomes the default unless overridden.
     /// 第一个注册的管理器将成为默认管理器，除非被覆盖。
-    pub fn register(&mut self, name: impl Into<String>, manager: Arc<dyn TransactionManager>) {
+    pub fn register(&mut self, name: impl Into<String>, manager: Arc<dyn TransactionManager>)
+    {
         let key = name.into();
-        if self.managers.is_empty() || self.default_name.is_none() {
+        if self.managers.is_empty() || self.default_name.is_none()
+        {
             self.default_name = Some(key.clone());
         }
         self.managers.insert(key, manager);
@@ -100,7 +108,8 @@ impl TransactionManagerRegistry {
         &mut self,
         name: impl Into<String>,
         manager: Arc<dyn TransactionManager>,
-    ) {
+    )
+    {
         let key = name.into();
         self.default_name = Some(key.clone());
         self.managers.insert(key, manager);
@@ -108,13 +117,15 @@ impl TransactionManagerRegistry {
 
     /// Get a transaction manager by name.
     /// 按名称获取事务管理器。
-    pub fn get(&self, name: &str) -> Option<Arc<dyn TransactionManager>> {
+    pub fn get(&self, name: &str) -> Option<Arc<dyn TransactionManager>>
+    {
         self.managers.get(name).cloned()
     }
 
     /// Get the default transaction manager.
     /// 获取默认事务管理器。
-    pub fn default_manager(&self) -> Option<Arc<dyn TransactionManager>> {
+    pub fn default_manager(&self) -> Option<Arc<dyn TransactionManager>>
+    {
         self.default_name
             .as_ref()
             .and_then(|n| self.managers.get(n).cloned())
@@ -122,31 +133,36 @@ impl TransactionManagerRegistry {
 
     /// Get the name of the default manager.
     /// 获取默认管理器的名称。
-    pub fn default_name(&self) -> Option<&str> {
+    pub fn default_name(&self) -> Option<&str>
+    {
         self.default_name.as_deref()
     }
 
     /// List all registered manager names.
     /// 列出所有已注册的管理器名称。
-    pub fn manager_names(&self) -> Vec<&str> {
+    pub fn manager_names(&self) -> Vec<&str>
+    {
         self.managers.keys().map(String::as_str).collect()
     }
 
     /// Check if a manager with the given name exists.
     /// 检查是否存在给定名称的管理器。
-    pub fn contains(&self, name: &str) -> bool {
+    pub fn contains(&self, name: &str) -> bool
+    {
         self.managers.contains_key(name)
     }
 
     /// Number of registered managers.
     /// 已注册管理器数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.managers.len()
     }
 
     /// Check if the registry is empty.
     /// 检查注册表是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.managers.is_empty()
     }
 
@@ -155,9 +171,11 @@ impl TransactionManagerRegistry {
     ///
     /// If the removed manager was the default, the default is cleared.
     /// 如果移除的是默认管理器，则清除默认设置。
-    pub fn remove(&mut self, name: &str) -> Option<Arc<dyn TransactionManager>> {
+    pub fn remove(&mut self, name: &str) -> Option<Arc<dyn TransactionManager>>
+    {
         let removed = self.managers.remove(name);
-        if removed.is_some() && self.default_name.as_deref() == Some(name) {
+        if removed.is_some() && self.default_name.as_deref() == Some(name)
+        {
             self.default_name = None;
         }
         removed
@@ -169,7 +187,8 @@ impl TransactionManagerRegistry {
     ///
     /// Returns an error if no default manager is set.
     /// 如果未设置默认管理器则返回错误。
-    pub fn into_delegate(self) -> TransactionResult<DelegatingTransactionManager> {
+    pub fn into_delegate(self) -> TransactionResult<DelegatingTransactionManager>
+    {
         let default = self.default_manager().ok_or_else(|| {
             TransactionError::InvalidState("No default transaction manager registered".into())
         })?;
@@ -202,13 +221,16 @@ impl TransactionManagerRegistry {
 /// delegate.commit_for("orders", status).await?;
 /// ```
 #[derive(Clone)]
-pub struct DelegatingTransactionManager {
+pub struct DelegatingTransactionManager
+{
     registry: TransactionManagerRegistry,
     fallback: Arc<dyn TransactionManager>,
 }
 
-impl std::fmt::Debug for DelegatingTransactionManager {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for DelegatingTransactionManager
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("DelegatingTransactionManager")
             .field("registry", &self.registry)
             .field("fallback", &"dyn TransactionManager")
@@ -216,16 +238,19 @@ impl std::fmt::Debug for DelegatingTransactionManager {
     }
 }
 
-impl DelegatingTransactionManager {
+impl DelegatingTransactionManager
+{
     /// Create a new delegating manager.
     /// 创建新的委托管理器。
-    pub fn new(registry: &TransactionManagerRegistry) -> TransactionResult<Self> {
+    pub fn new(registry: &TransactionManagerRegistry) -> TransactionResult<Self>
+    {
         registry.clone().into_delegate()
     }
 
     /// Get a reference to the underlying registry.
     /// 获取底层注册表的引用。
-    pub fn registry(&self) -> &TransactionManagerRegistry {
+    pub fn registry(&self) -> &TransactionManagerRegistry
+    {
         &self.registry
     }
 
@@ -235,7 +260,8 @@ impl DelegatingTransactionManager {
         &self,
         name: &str,
         definition: &TransactionDefinition,
-    ) -> TransactionResult<TransactionStatus> {
+    ) -> TransactionResult<TransactionStatus>
+    {
         self.registry
             .get(name)
             .ok_or_else(|| {
@@ -247,7 +273,8 @@ impl DelegatingTransactionManager {
 
     /// Commit a transaction on a specific named data source.
     /// 在指定名称的数据源上提交事务。
-    pub async fn commit_for(&self, name: &str, status: TransactionStatus) -> TransactionResult<()> {
+    pub async fn commit_for(&self, name: &str, status: TransactionStatus) -> TransactionResult<()>
+    {
         self.registry
             .get(name)
             .ok_or_else(|| {
@@ -259,11 +286,9 @@ impl DelegatingTransactionManager {
 
     /// Rollback a transaction on a specific named data source.
     /// 在指定名称的数据源上回滚事务。
-    pub async fn rollback_for(
-        &self,
-        name: &str,
-        status: TransactionStatus,
-    ) -> TransactionResult<()> {
+    pub async fn rollback_for(&self, name: &str, status: TransactionStatus)
+    -> TransactionResult<()>
+    {
         self.registry
             .get(name)
             .ok_or_else(|| {
@@ -275,68 +300,83 @@ impl DelegatingTransactionManager {
 }
 
 #[async_trait]
-impl TransactionManager for DelegatingTransactionManager {
+impl TransactionManager for DelegatingTransactionManager
+{
     async fn begin(
         &self,
         definition: &TransactionDefinition,
-    ) -> TransactionResult<TransactionStatus> {
+    ) -> TransactionResult<TransactionStatus>
+    {
         self.fallback.begin(definition).await
     }
 
-    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
+    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
         self.fallback.commit(status).await
     }
 
-    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
+    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
         self.fallback.rollback(status).await
     }
 
-    fn name(&self) -> &'static str {
+    fn name(&self) -> &'static str
+    {
         "delegating"
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
-    fn noop(_name: &str) -> Arc<dyn TransactionManager> {
+    fn noop(_name: &str) -> Arc<dyn TransactionManager>
+    {
         Arc::new(crate::manager::NoopTransactionManager)
     }
 
     // Helper: a simple manager that records operations for assertion.
     // 辅助：一个记录操作的简单管理器，用于断言。
     #[derive(Debug, Default)]
-    struct RecordingManager {
+    struct RecordingManager
+    {
         name: String,
     }
 
-    impl RecordingManager {
-        fn new(name: impl Into<String>) -> Self {
+    impl RecordingManager
+    {
+        fn new(name: impl Into<String>) -> Self
+        {
             Self { name: name.into() }
         }
     }
 
     #[async_trait]
-    impl TransactionManager for RecordingManager {
+    impl TransactionManager for RecordingManager
+    {
         async fn begin(
             &self,
             definition: &TransactionDefinition,
-        ) -> TransactionResult<TransactionStatus> {
+        ) -> TransactionResult<TransactionStatus>
+        {
             Ok(TransactionStatus::new(&definition.name))
         }
 
-        async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
+        async fn commit(&self, status: TransactionStatus) -> TransactionResult<()>
+        {
             status.mark_completed();
             Ok(())
         }
 
-        async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
+        async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()>
+        {
             status.mark_completed();
             Ok(())
         }
 
-        fn name(&self) -> &str {
+        fn name(&self) -> &str
+        {
             &self.name
         }
     }
@@ -346,7 +386,8 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[test]
-    fn test_registry_new_is_empty() {
+    fn test_registry_new_is_empty()
+    {
         let registry = TransactionManagerRegistry::new();
         assert!(registry.is_empty());
         assert_eq!(registry.len(), 0);
@@ -354,7 +395,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_sets_first_as_default() {
+    fn test_register_sets_first_as_default()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(RecordingManager::new("primary")));
         registry.register("secondary", Arc::new(RecordingManager::new("secondary")));
@@ -366,7 +408,8 @@ mod tests {
     }
 
     #[test]
-    fn test_register_default_overrides() {
+    fn test_register_default_overrides()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("a", Arc::new(RecordingManager::new("a")));
         registry.register_default("b", Arc::new(RecordingManager::new("b")));
@@ -375,7 +418,8 @@ mod tests {
     }
 
     #[test]
-    fn test_get_by_name() {
+    fn test_get_by_name()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("orders", Arc::new(RecordingManager::new("orders")));
 
@@ -384,7 +428,8 @@ mod tests {
     }
 
     #[test]
-    fn test_remove_manager() {
+    fn test_remove_manager()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(RecordingManager::new("primary")));
         registry.register("secondary", Arc::new(RecordingManager::new("secondary")));
@@ -398,7 +443,8 @@ mod tests {
     }
 
     #[test]
-    fn test_manager_names() {
+    fn test_manager_names()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("alpha", Arc::new(RecordingManager::new("alpha")));
         registry.register("beta", Arc::new(RecordingManager::new("beta")));
@@ -413,7 +459,8 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_delegate_uses_default_manager() {
+    async fn test_delegate_uses_default_manager()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(RecordingManager::new("primary")));
 
@@ -427,7 +474,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delegate_begin_for_named_source() {
+    async fn test_delegate_begin_for_named_source()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("orders", Arc::new(RecordingManager::new("orders")));
         registry.register("inventory", Arc::new(RecordingManager::new("inventory")));
@@ -447,7 +495,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delegate_begin_for_unknown_fails() {
+    async fn test_delegate_begin_for_unknown_fails()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(RecordingManager::new("primary")));
 
@@ -459,7 +508,8 @@ mod tests {
     }
 
     #[test]
-    fn test_into_delegate_empty_registry_fails() {
+    fn test_into_delegate_empty_registry_fails()
+    {
         let registry = TransactionManagerRegistry::new();
         let result = registry.into_delegate();
         assert!(result.is_err());

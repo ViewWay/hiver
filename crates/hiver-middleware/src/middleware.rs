@@ -45,7 +45,8 @@ pub use hiver_router::{Middleware, Next};
 ///     .add(Arc::new(LoggerMiddleware::new()));
 /// ```
 #[derive(Clone)]
-pub struct MiddlewareStack<S> {
+pub struct MiddlewareStack<S>
+{
     middleware: Vec<Arc<dyn Middleware<S>>>,
     _phantom: std::marker::PhantomData<S>,
 }
@@ -56,7 +57,8 @@ where
 {
     /// Create a new middleware stack
     /// 创建新的中间件栈
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             middleware: Vec::new(),
             _phantom: std::marker::PhantomData,
@@ -65,26 +67,30 @@ where
 
     /// Add a middleware to the stack
     /// 向栈中添加中间件
-    pub fn add(mut self, middleware: Arc<dyn Middleware<S>>) -> Self {
+    pub fn add(mut self, middleware: Arc<dyn Middleware<S>>) -> Self
+    {
         self.middleware.push(middleware);
         self
     }
 
     /// Get all middleware in the stack
     /// 获取栈中的所有中间件
-    pub fn middleware(&self) -> &[Arc<dyn Middleware<S>>] {
+    pub fn middleware(&self) -> &[Arc<dyn Middleware<S>>]
+    {
         &self.middleware
     }
 
     /// Check if the stack is empty
     /// 检查栈是否为空
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.middleware.is_empty()
     }
 
     /// Get the number of middleware in the stack
     /// 获取栈中的中间件数量
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.middleware.len()
     }
 }
@@ -93,24 +99,28 @@ impl<S> Default for MiddlewareStack<S>
 where
     S: Send + Sync + 'static,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_middleware_stack_creation() {
+    fn test_middleware_stack_creation()
+    {
         let stack: MiddlewareStack<()> = MiddlewareStack::new();
         assert!(stack.is_empty());
         assert_eq!(stack.len(), 0);
     }
 
     #[test]
-    fn test_middleware_stack_default() {
+    fn test_middleware_stack_default()
+    {
         let stack: MiddlewareStack<()> = MiddlewareStack::default();
         assert!(stack.is_empty());
     }

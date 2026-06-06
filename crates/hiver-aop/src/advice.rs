@@ -11,12 +11,15 @@ use syn::{
 
 /// Parses pointcut expression from advice annotation
 /// 解析通知注解中的切点表达式
-struct PointcutExpr {
+struct PointcutExpr
+{
     expression: String,
 }
 
-impl Parse for PointcutExpr {
-    fn parse(input: ParseStream) -> SynResult<Self> {
+impl Parse for PointcutExpr
+{
+    fn parse(input: ParseStream) -> SynResult<Self>
+    {
         // Try to parse a string literal
         // 尝试解析字符串字面量
         let expr_lit: LitStr = input.parse()?;
@@ -51,7 +54,8 @@ impl Parse for PointcutExpr {
 ///     println!("Entering: {}", join_point.method_name());
 /// }
 /// ```
-pub(crate) fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -98,7 +102,8 @@ pub(crate) fn impl_before(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     println!("Exiting: {}", join_point.method_name());
 /// }
 /// ```
-pub(crate) fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -148,7 +153,8 @@ pub(crate) fn impl_after(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     Ok(result)
 /// }
 /// ```
-pub(crate) fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -195,7 +201,8 @@ pub(crate) fn impl_around(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     println!("Method returned successfully: {}", join_point.method_name());
 /// }
 /// ```
-pub(crate) fn impl_after_returning(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_after_returning(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -240,7 +247,8 @@ pub(crate) fn impl_after_returning(attr: TokenStream, item: TokenStream) -> Toke
 ///     eprintln!("Method threw error: {} - {}", join_point.method_name(), error);
 /// }
 /// ```
-pub(crate) fn impl_after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_after_throwing(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

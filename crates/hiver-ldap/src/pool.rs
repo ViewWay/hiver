@@ -3,14 +3,17 @@
 //! Equivalent to Spring LDAP Pooling Support
 //! 等价于 Spring LDAP 池化支持
 
-use crate::context::LdapContextSource;
-use crate::error::LdapResult;
-use std::collections::VecDeque;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::VecDeque,
+    sync::{Arc, Mutex},
+};
+
+use crate::{context::LdapContextSource, error::LdapResult};
 
 /// Configuration for LDAP connection pool / LDAP连接池配置
 #[derive(Debug, Clone)]
-pub struct PoolConfig {
+pub struct PoolConfig
+{
     /// Maximum number of connections / 最大连接数
     pub max_size: usize,
     /// Maximum number of idle connections / 最大空闲连接数
@@ -25,8 +28,10 @@ pub struct PoolConfig {
     pub test_on_return: bool,
 }
 
-impl Default for PoolConfig {
-    fn default() -> Self {
+impl Default for PoolConfig
+{
+    fn default() -> Self
+    {
         Self {
             max_size: 8,
             max_idle: 4,
@@ -46,19 +51,23 @@ struct PooledConnection {}
 ///
 /// Manages a pool of LDAP context sources for efficient connection reuse.
 /// 管理一个LDAP上下文源池以实现高效的连接重用。
-pub struct LdapPool {
+pub struct LdapPool
+{
     config: PoolConfig,
     context_source: LdapContextSource,
     idle: Arc<Mutex<VecDeque<PooledConnection>>>,
     active_count: Arc<Mutex<usize>>,
 }
 
-impl LdapPool {
+impl LdapPool
+{
     /// Create a new LDAP pool / 创建新的LDAP池
-    pub fn new(context_source: LdapContextSource, config: PoolConfig) -> Self {
+    pub fn new(context_source: LdapContextSource, config: PoolConfig) -> Self
+    {
         // Pre-create idle connections
         let mut idle = VecDeque::new();
-        for _ in 0..config.min_idle {
+        for _ in 0..config.min_idle
+        {
             idle.push_back(PooledConnection {});
         }
 
@@ -71,36 +80,46 @@ impl LdapPool {
     }
 
     /// Borrow a connection from the pool / 从池中借用连接
-    pub fn borrow(&self) -> LdapResult<LdapContextSource> {
+    pub fn borrow(&self) -> LdapResult<LdapContextSource>
+    {
         let mut idle = self.idle.lock().expect("lock poisoned");
-        if let Some(conn) = idle.pop_front() {
+        if let Some(conn) = idle.pop_front()
+        {
             let _ = conn;
             *self.active_count.lock().expect("lock poisoned") += 1;
             Ok(self.context_source.clone())
-        } else {
+        }
+        else
+        {
             // Create new if under max
             let active = *self.active_count.lock().expect("lock poisoned");
-            if active < self.config.max_size {
+            if active < self.config.max_size
+            {
                 *self.active_count.lock().expect("lock poisoned") += 1;
                 Ok(self.context_source.clone())
-            } else {
+            }
+            else
+            {
                 Err(crate::error::LdapError::Connection("Pool exhausted".into()))
             }
         }
     }
 
     /// Return a connection to the pool / 将连接归还到池
-    pub fn return_connection(&self, _conn: LdapContextSource) {
+    pub fn return_connection(&self, _conn: LdapContextSource)
+    {
         let mut idle = self.idle.lock().expect("lock poisoned");
         *self.active_count.lock().expect("lock poisoned") -= 1;
 
-        if idle.len() < self.config.max_idle {
+        if idle.len() < self.config.max_idle
+        {
             idle.push_back(PooledConnection {});
         }
     }
 
     /// Get pool statistics / 获取池统计信息
-    pub fn stats(&self) -> PoolStats {
+    pub fn stats(&self) -> PoolStats
+    {
         PoolStats {
             active: *self.active_count.lock().expect("lock poisoned"),
             idle: self.idle.lock().expect("lock poisoned").len(),
@@ -111,7 +130,8 @@ impl LdapPool {
 
 /// Pool statistics / 池统计信息
 #[derive(Debug, Clone)]
-pub struct PoolStats {
+pub struct PoolStats
+{
     /// Number of active (borrowed) connections / 活跃（已借用）连接数
     pub active: usize,
     /// Number of idle connections / 空闲连接数
@@ -121,11 +141,13 @@ pub struct PoolStats {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_pool_creation() {
+    fn test_pool_creation()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let pool = LdapPool::new(ctx, PoolConfig::default());
         let stats = pool.stats();
@@ -134,7 +156,8 @@ mod tests {
     }
 
     #[test]
-    fn test_pool_borrow_return() {
+    fn test_pool_borrow_return()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let pool = LdapPool::new(ctx, PoolConfig::default());
         let conn = pool.borrow().unwrap();

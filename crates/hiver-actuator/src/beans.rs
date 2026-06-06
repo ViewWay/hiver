@@ -12,7 +12,8 @@ use serde::{Deserialize, Serialize};
 /// Descriptor for a single bean.
 /// 单个 Bean 的描述符。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BeanDescriptor {
+pub struct BeanDescriptor
+{
     /// Bean scope (singleton / prototype).
     /// Bean 作用域。
     pub scope: String,
@@ -28,7 +29,8 @@ pub struct BeanDescriptor {
 /// Response for /actuator/beans.
 /// /actuator/beans 的响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BeansResponse {
+pub struct BeansResponse
+{
     /// Map of bean name → descriptor.
     /// Bean 名称到描述符的映射。
     pub beans: HashMap<String, BeanDescriptor>,
@@ -37,14 +39,17 @@ pub struct BeansResponse {
 /// Builder for collecting bean descriptors.
 /// Bean 描述符收集器构建器。
 #[derive(Debug, Clone, Default)]
-pub struct BeansBuilder {
+pub struct BeansBuilder
+{
     beans: HashMap<String, BeanDescriptor>,
 }
 
-impl BeansBuilder {
+impl BeansBuilder
+{
     /// Create a new builder.
     /// 创建新构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
@@ -55,15 +60,13 @@ impl BeansBuilder {
         name: impl Into<String>,
         r#type: impl Into<String>,
         scope: impl Into<String>,
-    ) -> Self {
-        self.beans.insert(
-            name.into(),
-            BeanDescriptor {
-                scope: scope.into(),
-                r#type: r#type.into(),
-                dependencies: Vec::new(),
-            },
-        );
+    ) -> Self
+    {
+        self.beans.insert(name.into(), BeanDescriptor {
+            scope: scope.into(),
+            r#type: r#type.into(),
+            dependencies: Vec::new(),
+        });
         self
     }
 
@@ -75,31 +78,32 @@ impl BeansBuilder {
         r#type: impl Into<String>,
         scope: impl Into<String>,
         dependencies: Vec<String>,
-    ) -> Self {
-        self.beans.insert(
-            name.into(),
-            BeanDescriptor {
-                scope: scope.into(),
-                r#type: r#type.into(),
-                dependencies,
-            },
-        );
+    ) -> Self
+    {
+        self.beans.insert(name.into(), BeanDescriptor {
+            scope: scope.into(),
+            r#type: r#type.into(),
+            dependencies,
+        });
         self
     }
 
     /// Build the response.
     /// 构建响应。
-    pub fn build(self) -> BeansResponse {
+    pub fn build(self) -> BeansResponse
+    {
         BeansResponse { beans: self.beans }
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_beans_builder() {
+    fn test_beans_builder()
+    {
         let resp = BeansBuilder::new()
             .bean("userController", "UserController", "singleton")
             .bean_with_deps("userService", "UserService", "singleton", vec!["userRepo".into()])
@@ -112,7 +116,8 @@ mod tests {
     }
 
     #[test]
-    fn test_beans_serialize() {
+    fn test_beans_serialize()
+    {
         let resp = BeansBuilder::new()
             .bean("app", "Application", "singleton")
             .build();

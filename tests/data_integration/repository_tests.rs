@@ -1,29 +1,35 @@
 //! Repository integration tests
 //! 仓储集成测试
 
-use crate::data_integration::helpers::*;
 use async_trait::async_trait;
 use hiver_data_commons::{CrudRepository, Error, Repository};
+
+use crate::data_integration::helpers::*;
 
 /// Mock repository for testing
 /// 用于测试的模拟仓储
 pub struct TestUserRepository;
 
-impl TestUserRepository {
-    pub fn new() -> Self {
+impl TestUserRepository
+{
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl Default for TestUserRepository {
-    fn default() -> Self {
+impl Default for TestUserRepository
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// Custom error type for tests
 #[derive(Debug, thiserror::Error)]
-pub enum TestError {
+pub enum TestError
+{
     #[error("Database error: {0}")]
     Db(#[from] sqlx::Error),
 
@@ -34,9 +40,12 @@ pub enum TestError {
     Parse(String),
 }
 
-impl From<TestError> for Error {
-    fn from(val: TestError) -> Self {
-        match val {
+impl From<TestError> for Error
+{
+    fn from(val: TestError) -> Self
+    {
+        match val
+        {
             TestError::Db(e) => Error::data_integrity_violation(e.to_string()),
             TestError::NotFound => Error::entity_not_found("User", "id"),
             TestError::Parse(s) => Error::InvalidDataAccess(s),
@@ -46,15 +55,18 @@ impl From<TestError> for Error {
 
 /// User entity for repository tests
 #[derive(Debug, Clone, PartialEq)]
-pub struct User {
+pub struct User
+{
     pub id: i64,
     pub email: String,
     pub name: Option<String>,
 }
 
 // Implement Sqlx FromRow for User
-impl sqlx::FromRow<'_, sqlx::sqlite::SqliteRow> for User {
-    fn from_row(row: &sqlx::sqlite::SqliteRow) -> Result<Self, sqlx::Error> {
+impl sqlx::FromRow<'_, sqlx::sqlite::SqliteRow> for User
+{
+    fn from_row(row: &sqlx::sqlite::SqliteRow) -> Result<Self, sqlx::Error>
+    {
         use sqlx::Row;
         Ok(User {
             id: row.try_get("id")?,
@@ -65,13 +77,16 @@ impl sqlx::FromRow<'_, sqlx::sqlite::SqliteRow> for User {
 }
 
 #[async_trait]
-impl Repository<User, i64> for TestUserRepository {
+impl Repository<User, i64> for TestUserRepository
+{
     type Error = TestError;
 
-    async fn save(&self, entity: User) -> Result<User, Self::Error> {
+    async fn save(&self, entity: User) -> Result<User, Self::Error>
+    {
         let pool = get_test_pool().await;
 
-        if entity.id > 0 {
+        if entity.id > 0
+        {
             // Update
             sqlx::query("UPDATE users SET email = ?, name = ? WHERE id = ?")
                 .bind(&entity.email)
@@ -80,7 +95,9 @@ impl Repository<User, i64> for TestUserRepository {
                 .execute(pool)
                 .await?;
             Ok(entity)
-        } else {
+        }
+        else
+        {
             // Insert
             let result = sqlx::query("INSERT INTO users (email, name) VALUES (?, ?)")
                 .bind(&entity.email)
@@ -95,7 +112,8 @@ impl Repository<User, i64> for TestUserRepository {
         }
     }
 
-    async fn find_by_id(&self, id: i64) -> Result<Option<User>, Self::Error> {
+    async fn find_by_id(&self, id: i64) -> Result<Option<User>, Self::Error>
+    {
         let pool = get_test_pool().await;
 
         let row = sqlx::query_as::<_, User>("SELECT id, email, name FROM users WHERE id = ?")
@@ -106,7 +124,8 @@ impl Repository<User, i64> for TestUserRepository {
         Ok(row)
     }
 
-    async fn find_all(&self) -> Result<Vec<User>, Self::Error> {
+    async fn find_all(&self) -> Result<Vec<User>, Self::Error>
+    {
         let pool = get_test_pool().await;
 
         let rows = sqlx::query_as::<_, User>("SELECT id, email, name FROM users ORDER BY id")
@@ -116,7 +135,8 @@ impl Repository<User, i64> for TestUserRepository {
         Ok(rows)
     }
 
-    async fn count(&self) -> Result<u64, Self::Error> {
+    async fn count(&self) -> Result<u64, Self::Error>
+    {
         let pool = get_test_pool().await;
 
         let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
@@ -126,7 +146,8 @@ impl Repository<User, i64> for TestUserRepository {
         Ok(row.0 as u64)
     }
 
-    async fn delete_by_id(&self, id: i64) -> Result<(), Self::Error> {
+    async fn delete_by_id(&self, id: i64) -> Result<(), Self::Error>
+    {
         let pool = get_test_pool().await;
         sqlx::query("DELETE FROM users WHERE id = ?")
             .bind(id)
@@ -135,11 +156,13 @@ impl Repository<User, i64> for TestUserRepository {
         Ok(())
     }
 
-    async fn delete(&self, entity: User) -> Result<(), Self::Error> {
+    async fn delete(&self, entity: User) -> Result<(), Self::Error>
+    {
         self.delete_by_id(entity.id).await
     }
 
-    async fn delete_all(&self) -> Result<(), Self::Error> {
+    async fn delete_all(&self) -> Result<(), Self::Error>
+    {
         let pool = get_test_pool().await;
         sqlx::query("DELETE FROM users").execute(pool).await?;
         Ok(())
@@ -150,12 +173,14 @@ impl Repository<User, i64> for TestUserRepository {
 impl CrudRepository<User, i64> for TestUserRepository {}
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_save() {
+    async fn test_crud_repository_save()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -177,7 +202,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_find_by_id() {
+    async fn test_crud_repository_find_by_id()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -205,7 +231,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_exists_by_id() {
+    async fn test_crud_repository_exists_by_id()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -230,14 +257,16 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_find_all() {
+    async fn test_crud_repository_find_all()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
         let repo = TestUserRepository::new();
 
         // Create multiple users
-        for i in 1..=3 {
+        for i in 1..=3
+        {
             let user = User {
                 id: 0,
                 email: format!("user{}@example.com", i),
@@ -255,7 +284,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_count() {
+    async fn test_crud_repository_count()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -265,7 +295,8 @@ mod tests {
         assert_eq!(repo.count().await.unwrap(), 0);
 
         // Add users
-        for i in 0..3 {
+        for i in 0..3
+        {
             let user = User {
                 id: 0,
                 email: format!("count{}@example.com", i),
@@ -282,7 +313,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_delete_by_id() {
+    async fn test_crud_repository_delete_by_id()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -310,7 +342,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_delete() {
+    async fn test_crud_repository_delete()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -335,14 +368,16 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_delete_all() {
+    async fn test_crud_repository_delete_all()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
         let repo = TestUserRepository::new();
 
         // Create users
-        for i in 0..3 {
+        for i in 0..3
+        {
             let user = User {
                 id: 0,
                 email: format!("delete_all{}@example.com", i),
@@ -362,7 +397,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_update() {
+    async fn test_crud_repository_update()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 
@@ -395,7 +431,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_crud_repository_save_all() {
+    async fn test_crud_repository_save_all()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 

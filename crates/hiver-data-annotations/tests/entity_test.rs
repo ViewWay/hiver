@@ -8,9 +8,11 @@ use hiver_data_annotations::{Entity, Table};
 // ========================================================================
 
 #[test]
-fn test_entity_macro() {
+fn test_entity_macro()
+{
     #[Entity]
-    struct TestUser {
+    struct TestUser
+    {
         id: i64,
         username: String,
     }
@@ -23,9 +25,11 @@ fn test_entity_macro() {
 }
 
 #[test]
-fn test_table_macro_with_custom_name() {
+fn test_table_macro_with_custom_name()
+{
     #[Table(name = "custom_users")]
-    struct TestUser {
+    struct TestUser
+    {
         id: i64,
         username: String,
     }
@@ -34,9 +38,11 @@ fn test_table_macro_with_custom_name() {
 }
 
 #[test]
-fn test_table_default_name() {
+fn test_table_default_name()
+{
     #[Table]
-    struct TestUser {
+    struct TestUser
+    {
         id: i64,
         username: String,
     }
@@ -47,9 +53,11 @@ fn test_table_default_name() {
 }
 
 #[test]
-fn test_entity_with_multiple_fields() {
+fn test_entity_with_multiple_fields()
+{
     #[Entity]
-    struct TestUser {
+    struct TestUser
+    {
         id: i64,
         username: String,
         email: String,
@@ -67,9 +75,11 @@ fn test_entity_with_multiple_fields() {
 }
 
 #[test]
-fn test_table_with_multiple_fields() {
+fn test_table_with_multiple_fields()
+{
     #[Table(name = "users")]
-    struct User {
+    struct User
+    {
         id: i64,
         username: String,
         email: String,
@@ -85,11 +95,13 @@ fn test_table_with_multiple_fields() {
 }
 
 #[test]
-fn test_entity_no_id_field() {
+fn test_entity_no_id_field()
+{
     // Entity without #[Id] returns None for id_field_name
     // 没有 #[Id] 的实体 id_field_name 返回 None
     #[Entity]
-    struct AuditLog {
+    struct AuditLog
+    {
         action: String,
         timestamp: i64,
     }

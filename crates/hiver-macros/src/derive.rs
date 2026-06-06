@@ -31,16 +31,19 @@ use syn::{Data, DataStruct, DeriveInput, Fields, parse_macro_input};
 ///     age: u32,
 /// }
 /// ```
-pub fn from_request(input: TokenStream) -> TokenStream {
+pub fn from_request(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 
-    let fields = match &input.data {
+    let fields = match &input.data
+    {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(
                 struct_name,
                 "FromRequest can only be derived for structs with named fields",
@@ -89,7 +92,8 @@ pub fn from_request(input: TokenStream) -> TokenStream {
 ///     name: String,
 /// }
 /// ```
-pub fn into_response(input: TokenStream) -> TokenStream {
+pub fn into_response(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 

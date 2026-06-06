@@ -74,7 +74,8 @@ pub use web_test_client::{RequestSpec, ResponseSpec, WebTestClient};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         MockBeanWrapper, MockRegistry, MockitoHelper, TestApplication, TestApplicationBuilder,
         TestApplicationError, TestClient, TestConfig, TestContext, WebTestClient,

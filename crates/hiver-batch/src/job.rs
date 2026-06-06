@@ -27,7 +27,8 @@ use crate::{
 ///         .build();
 /// }
 /// ```
-pub struct Job {
+pub struct Job
+{
     /// Job name
     /// 作业名称
     pub name: String,
@@ -55,7 +56,8 @@ pub struct Job {
 /// Note: This trait uses `&mut StepExecution` which is not `Send` across await.
 /// For production use, consider using `Arc<RwLock<StepExecution>>` instead.
 #[async_trait]
-pub trait AnyStep: Send + Sync {
+pub trait AnyStep: Send + Sync
+{
     /// Get step name
     /// 获取步骤名称
     fn name(&self) -> &str;
@@ -78,7 +80,8 @@ where
     P::Output: Send + Sync + 'static,
     W: crate::writer::ItemWriter<Item = P::Output> + Send + Sync + 'static,
 {
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         &self.name
     }
 
@@ -86,18 +89,21 @@ where
         &self,
         step_execution: &mut StepExecution,
         context: &StepContext,
-    ) -> BatchResult<ExitStatus> {
+    ) -> BatchResult<ExitStatus>
+    {
         self.execute(step_execution, context).await
     }
 }
 
-impl Job {
+impl Job
+{
     /// Execute the job with given repository
     /// 使用给定存储库执行作业
     pub async fn execute_with_repository(
         &self,
         repository: &InMemoryJobRepository,
-    ) -> BatchResult<JobExecution> {
+    ) -> BatchResult<JobExecution>
+    {
         // Create job execution
         let mut job_execution = repository
             .create_job_execution(self.name.clone(), self.parameters.clone())
@@ -113,14 +119,16 @@ impl Job {
         let job_context = JobContext::new();
 
         // Notify listener
-        if let Some(listener) = &self.listener {
+        if let Some(listener) = &self.listener
+        {
             listener.before_job(&job_execution, &job_context).await?;
         }
 
         // Execute steps
         let mut final_status = ExitStatus::completed();
 
-        for step in &self.steps {
+        for step in &self.steps
+        {
             // Create step execution
             let mut step_execution = repository
                 .create_step_execution(step.name().to_string(), job_execution.id)
@@ -136,11 +144,14 @@ impl Job {
             repository.update_step_execution(&step_execution).await?;
             job_execution.add_step_execution(step_execution);
 
-            match step_result {
-                Ok(status) => {
+            match step_result
+            {
+                Ok(status) =>
+                {
                     final_status = status;
                 },
-                Err(e) => {
+                Err(e) =>
+                {
                     final_status = ExitStatus::failed();
                     job_execution.failures.push(e.to_string());
                     break;
@@ -151,10 +162,13 @@ impl Job {
         // Update job execution
         job_execution.set_end_time(Utc::now());
 
-        if final_status.code == "COMPLETED" {
+        if final_status.code == "COMPLETED"
+        {
             job_execution.set_status(JobStatus::Completed);
             job_execution.set_exit_status(ExitStatus::completed());
-        } else {
+        }
+        else
+        {
             job_execution.set_status(JobStatus::Failed);
             job_execution.set_exit_status(final_status);
         }
@@ -162,7 +176,8 @@ impl Job {
         repository.update_job_execution(&job_execution).await?;
 
         // Notify listener
-        if let Some(listener) = &self.listener {
+        if let Some(listener) = &self.listener
+        {
             listener.after_job(&job_execution, &job_context).await?;
         }
 
@@ -178,7 +193,8 @@ impl Job {
 /// ```java
 /// JobBuilder builder = new JobBuilder("jobName", jobRepository);
 /// ```
-pub struct JobBuilder {
+pub struct JobBuilder
+{
     name: String,
     steps: Vec<Arc<dyn AnyStep>>,
     allow_restart: bool,
@@ -186,10 +202,12 @@ pub struct JobBuilder {
     listener: Option<Arc<dyn JobListener>>,
 }
 
-impl JobBuilder {
+impl JobBuilder
+{
     /// Create new job builder
     /// 创建新作业构建器
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             steps: Vec::new(),
@@ -215,29 +233,34 @@ impl JobBuilder {
 
     /// Set job parameters
     /// 设置作业参数
-    pub fn with_parameters(mut self, params: HashMap<String, String>) -> Self {
+    pub fn with_parameters(mut self, params: HashMap<String, String>) -> Self
+    {
         self.parameters = params;
         self
     }
 
     /// Add a single parameter
     /// 添加单个参数
-    pub fn with_parameter(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn with_parameter(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.parameters.insert(key.into(), value.into());
         self
     }
 
     /// Set listener
     /// 设置监听器
-    pub fn with_listener(mut self, listener: Arc<dyn JobListener>) -> Self {
+    pub fn with_listener(mut self, listener: Arc<dyn JobListener>) -> Self
+    {
         self.listener = Some(listener);
         self
     }
 
     /// Build job
     /// 构建作业
-    pub fn build(self) -> BatchResult<Job> {
-        if self.steps.is_empty() {
+    pub fn build(self) -> BatchResult<Job>
+    {
+        if self.steps.is_empty()
+        {
             return Err(BatchError::ValidationError {
                 message: "Job must have at least one step".to_string(),
             });
@@ -265,32 +288,33 @@ impl JobBuilder {
 /// }
 /// ```
 #[async_trait]
-pub trait JobListener: Send + Sync {
+pub trait JobListener: Send + Sync
+{
     /// Called before job execution
     /// 作业执行前调用
     async fn before_job(
         &self,
         job_execution: &JobExecution,
         context: &JobContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         let _ = (job_execution, context);
         Ok(())
     }
 
     /// Called after job execution
     /// 作业执行后调用
-    async fn after_job(
-        &self,
-        job_execution: &JobExecution,
-        context: &JobContext,
-    ) -> BatchResult<()> {
+    async fn after_job(&self, job_execution: &JobExecution, context: &JobContext)
+    -> BatchResult<()>
+    {
         let _ = (job_execution, context);
         Ok(())
     }
 
     /// Called on job error
     /// 作业错误时调用
-    async fn on_error(&self, job_execution: &JobExecution, error: &BatchError) -> BatchResult<()> {
+    async fn on_error(&self, job_execution: &JobExecution, error: &BatchError) -> BatchResult<()>
+    {
         let _ = (job_execution, error);
         Ok(())
     }
@@ -298,12 +322,15 @@ pub trait JobListener: Send + Sync {
 
 /// Simple job listener for logging
 /// 用于日志记录的简单作业监听器
-pub struct LoggingJobListener {
+pub struct LoggingJobListener
+{
     pub log_prefix: String,
 }
 
-impl LoggingJobListener {
-    pub fn new(prefix: impl Into<String>) -> Self {
+impl LoggingJobListener
+{
+    pub fn new(prefix: impl Into<String>) -> Self
+    {
         Self {
             log_prefix: prefix.into(),
         }
@@ -311,12 +338,14 @@ impl LoggingJobListener {
 }
 
 #[async_trait]
-impl JobListener for LoggingJobListener {
+impl JobListener for LoggingJobListener
+{
     async fn before_job(
         &self,
         job_execution: &JobExecution,
         _context: &JobContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         tracing::info!("[{}] Starting job: {}", self.log_prefix, job_execution.job_name);
         Ok(())
     }
@@ -325,7 +354,8 @@ impl JobListener for LoggingJobListener {
         &self,
         job_execution: &JobExecution,
         _context: &JobContext,
-    ) -> BatchResult<()> {
+    ) -> BatchResult<()>
+    {
         tracing::info!(
             "[{}] Completed job: {} - status: {:?}",
             self.log_prefix,
@@ -335,21 +365,24 @@ impl JobListener for LoggingJobListener {
         Ok(())
     }
 
-    async fn on_error(&self, job_execution: &JobExecution, error: &BatchError) -> BatchResult<()> {
+    async fn on_error(&self, job_execution: &JobExecution, error: &BatchError) -> BatchResult<()>
+    {
         tracing::error!("[{}] Error in job {}: {}", self.log_prefix, job_execution.job_name, error);
         Ok(())
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use std::sync::Arc;
 
     use super::*;
     use crate::{reader::ItemStreamReader, step::StepBuilder, writer::ItemStreamWriter};
 
     #[tokio::test]
-    async fn test_job_builder() {
+    async fn test_job_builder()
+    {
         let reader = ItemStreamReader::new(vec![1, 2, 3]);
         let writer = ItemStreamWriter::new();
 
@@ -364,7 +397,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_job_execute() {
+    async fn test_job_execute()
+    {
         let reader = ItemStreamReader::new(vec![1, 2, 3, 4, 5]);
         let writer = ItemStreamWriter::new();
 
@@ -384,7 +418,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_job_with_listener() {
+    async fn test_job_with_listener()
+    {
         let reader = ItemStreamReader::new(vec![1, 2, 3]);
         let writer = ItemStreamWriter::new();
 
@@ -405,14 +440,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_job_builder_no_steps() {
+    async fn test_job_builder_no_steps()
+    {
         let result = JobBuilder::new("empty-job").build();
 
         assert!(result.is_err());
     }
 
     #[tokio::test]
-    async fn test_job_with_parameters() {
+    async fn test_job_with_parameters()
+    {
         let reader = ItemStreamReader::new(vec![1, 2, 3]);
         let writer = ItemStreamWriter::new();
 

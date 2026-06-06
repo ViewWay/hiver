@@ -12,7 +12,8 @@ use serde::{Deserialize, Serialize};
 /// TopicPartition topicPartition = new TopicPartition("my_topic", 0);
 /// ```
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct TopicPartition {
+pub struct TopicPartition
+{
     /// Topic name
     /// 主题名称
     pub topic: String,
@@ -22,10 +23,12 @@ pub struct TopicPartition {
     pub partition: i32,
 }
 
-impl TopicPartition {
+impl TopicPartition
+{
     /// Create new topic partition
     /// 创建新的主题分区
-    pub fn new(topic: impl Into<String>, partition: i32) -> Self {
+    pub fn new(topic: impl Into<String>, partition: i32) -> Self
+    {
         Self {
             topic: topic.into(),
             partition,
@@ -36,7 +39,8 @@ impl TopicPartition {
 /// Offset position
 /// 偏移位置
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Offset {
+pub enum Offset
+{
     /// Beginning of the partition
     /// 分区开始位置
     Beginning,
@@ -50,11 +54,14 @@ pub enum Offset {
     Specific(i64),
 }
 
-impl Offset {
+impl Offset
+{
     /// Get offset value or return default
     /// 获取偏移值或返回默认值
-    pub fn value_or(self, default: i64) -> i64 {
-        match self {
+    pub fn value_or(self, default: i64) -> i64
+    {
+        match self
+        {
             Self::Beginning => 0,
             Self::End => default,
             Self::Specific(offset) => offset,
@@ -75,7 +82,8 @@ impl Offset {
 ///     .build();
 /// ```
 #[derive(Clone, Debug)]
-pub struct TopicPartitionBuilder {
+pub struct TopicPartitionBuilder
+{
     /// Topic name
     /// 主题名称
     pub topic: String,
@@ -93,10 +101,12 @@ pub struct TopicPartitionBuilder {
     pub config: std::collections::HashMap<String, String>,
 }
 
-impl TopicPartitionBuilder {
+impl TopicPartitionBuilder
+{
     /// Create new topic partition builder
     /// 创建新的主题分区构建器
-    pub fn new(topic: impl Into<String>) -> Self {
+    pub fn new(topic: impl Into<String>) -> Self
+    {
         Self {
             topic: topic.into(),
             partitions: 1,
@@ -107,40 +117,46 @@ impl TopicPartitionBuilder {
 
     /// Set partitions
     /// 设置分区
-    pub fn with_partitions(mut self, partitions: i32) -> Self {
+    pub fn with_partitions(mut self, partitions: i32) -> Self
+    {
         self.partitions = partitions;
         self
     }
 
     /// Set replication factor
     /// 设置复制因子
-    pub fn with_replication_factor(mut self, factor: i32) -> Self {
+    pub fn with_replication_factor(mut self, factor: i32) -> Self
+    {
         self.replication_factor = factor;
         self
     }
 
     /// Add config
     /// 添加配置
-    pub fn with_config(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn with_config(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.config.insert(key.into(), value.into());
         self
     }
 
     /// Build topic partition
     /// 构建主题分区
-    pub fn build(self) -> TopicPartition {
+    pub fn build(self) -> TopicPartition
+    {
         TopicPartition::new(self.topic, 0)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test TopicPartition construction
     /// 测试 TopicPartition 构造
     #[test]
-    fn test_topic_partition_new() {
+    fn test_topic_partition_new()
+    {
         let tp = TopicPartition::new("my-topic", 3);
         assert_eq!(tp.topic, "my-topic");
         assert_eq!(tp.partition, 3);
@@ -149,7 +165,8 @@ mod tests {
     /// Test TopicPartition equality and hashing
     /// 测试 TopicPartition 相等性和哈希
     #[test]
-    fn test_topic_partition_equality() {
+    fn test_topic_partition_equality()
+    {
         let tp1 = TopicPartition::new("topic", 0);
         let tp2 = TopicPartition::new("topic", 0);
         let tp3 = TopicPartition::new("topic", 1);
@@ -160,7 +177,8 @@ mod tests {
     /// Test TopicPartition serde round-trip
     /// 测试 TopicPartition 序列化往返
     #[test]
-    fn test_topic_partition_serde_roundtrip() {
+    fn test_topic_partition_serde_roundtrip()
+    {
         let tp = TopicPartition::new("serde-topic", 5);
         let json = serde_json::to_string(&tp).unwrap();
         let restored: TopicPartition = serde_json::from_str(&json).unwrap();
@@ -172,7 +190,8 @@ mod tests {
     /// Test Offset::value_or for all variants
     /// 测试所有变体的 Offset::value_or
     #[test]
-    fn test_offset_value_or() {
+    fn test_offset_value_or()
+    {
         assert_eq!(Offset::Beginning.value_or(999), 0);
         assert_eq!(Offset::End.value_or(999), 999);
         assert_eq!(Offset::Specific(42).value_or(999), 42);
@@ -181,7 +200,8 @@ mod tests {
     /// Test Offset equality and copy
     /// 测试 Offset 相等性和拷贝
     #[test]
-    fn test_offset_equality() {
+    fn test_offset_equality()
+    {
         assert_eq!(Offset::Beginning, Offset::Beginning);
         assert_eq!(Offset::End, Offset::End);
         assert_eq!(Offset::Specific(10), Offset::Specific(10));
@@ -191,9 +211,11 @@ mod tests {
     /// Test Offset serde round-trip
     /// 测试 Offset 序列化往返
     #[test]
-    fn test_offset_serde_roundtrip() {
+    fn test_offset_serde_roundtrip()
+    {
         let offsets = vec![Offset::Beginning, Offset::End, Offset::Specific(123)];
-        for off in &offsets {
+        for off in &offsets
+        {
             let json = serde_json::to_string(off).unwrap();
             let restored: Offset = serde_json::from_str(&json).unwrap();
             assert_eq!(*off, restored);
@@ -205,7 +227,8 @@ mod tests {
     /// Test TopicPartitionBuilder defaults
     /// 测试 TopicPartitionBuilder 默认值
     #[test]
-    fn test_topic_partition_builder_defaults() {
+    fn test_topic_partition_builder_defaults()
+    {
         let builder = TopicPartitionBuilder::new("my-topic");
         assert_eq!(builder.topic, "my-topic");
         assert_eq!(builder.partitions, 1);
@@ -216,7 +239,8 @@ mod tests {
     /// Test TopicPartitionBuilder with all options
     /// 测试带所有选项的 TopicPartitionBuilder
     #[test]
-    fn test_topic_partition_builder_full() {
+    fn test_topic_partition_builder_full()
+    {
         let tp = TopicPartitionBuilder::new("full-topic")
             .with_partitions(6)
             .with_replication_factor(3)
@@ -232,7 +256,8 @@ mod tests {
     /// Test TopicPartitionBuilder clone
     /// 测试 TopicPartitionBuilder 克隆
     #[test]
-    fn test_topic_partition_builder_clone() {
+    fn test_topic_partition_builder_clone()
+    {
         let builder = TopicPartitionBuilder::new("clone-topic")
             .with_partitions(3)
             .with_replication_factor(2);

@@ -1,9 +1,11 @@
 //! Local task queue for thread-per-core scheduler
 //! thread-per-core调度器的本地任务队列
 
-use std::cell::UnsafeCell;
-use std::mem::MaybeUninit;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::{
+    cell::UnsafeCell,
+    mem::MaybeUninit,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 use super::RawTask;
 
@@ -17,7 +19,8 @@ use super::RawTask;
 /// 使用为单个消费者（调度器线程）优化的有界环形缓冲区，
 /// 支持外部生产者（工作窃取注入器）。
 /// 使用内部可变性实现线程安全操作。
-pub struct LocalQueue {
+pub struct LocalQueue
+{
     /// Ring buffer for task pointers / 任务指针的环形缓冲区
     buffer: Box<[UnsafeCell<MaybeUninit<RawTask>>]>,
     /// Queue capacity (must be power of 2) / 队列容量（必须是2的幂）
@@ -36,14 +39,16 @@ pub struct LocalQueue {
 unsafe impl Send for LocalQueue {}
 unsafe impl Sync for LocalQueue {}
 
-impl LocalQueue {
+impl LocalQueue
+{
     /// Create a new local queue with the specified capacity
     /// 创建具有指定容量的新本地队列
     ///
     /// The capacity will be rounded up to the next power of 2.
     /// 容量将向上舍入到下一个2的幂。
     #[must_use]
-    pub fn new(capacity: usize) -> Self {
+    pub fn new(capacity: usize) -> Self
+    {
         let capacity = capacity.next_power_of_two().max(2);
         let mask = capacity - 1;
 
@@ -68,14 +73,17 @@ impl LocalQueue {
     /// Returns `true` if successful, `false` if the queue is full.
     /// 成功返回 `true`，队列已满返回 `false`。
     #[inline]
-    pub fn push(&self, task: RawTask) -> bool {
-        loop {
+    pub fn push(&self, task: RawTask) -> bool
+    {
+        loop
+        {
             let tail = self.tail.load(Ordering::Relaxed);
             let head = self.head.load(Ordering::Acquire);
 
             // Check if queue is full
             // 检查队列是否已满
-            if tail - head >= self.capacity {
+            if tail - head >= self.capacity
+            {
                 return false;
             }
 
@@ -102,12 +110,15 @@ impl LocalQueue {
     /// Returns `Some(task)` if available, `None` if the queue is empty.
     /// 有可用任务时返回 `Some(task)`，队列为空时返回 `None`。
     #[inline]
-    pub fn pop(&self) -> Option<RawTask> {
-        loop {
+    pub fn pop(&self) -> Option<RawTask>
+    {
+        loop
+        {
             let head = self.head.load(Ordering::Relaxed);
             let tail = self.tail.load(Ordering::Acquire);
 
-            if head == tail {
+            if head == tail
+            {
                 return None;
             }
 
@@ -135,7 +146,8 @@ impl LocalQueue {
     /// 获取队列当前长度
     #[inline]
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         let tail = self.tail.load(Ordering::Relaxed);
         let head = self.head.load(Ordering::Relaxed);
         tail.saturating_sub(head)
@@ -145,7 +157,8 @@ impl LocalQueue {
     /// 检查队列是否为空
     #[inline]
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.len() == 0
     }
 
@@ -153,7 +166,8 @@ impl LocalQueue {
     /// 获取队列容量
     #[inline]
     #[must_use]
-    pub const fn capacity(&self) -> usize {
+    pub const fn capacity(&self) -> usize
+    {
         self.capacity
     }
 
@@ -165,35 +179,42 @@ impl LocalQueue {
     ///
     /// Returns the number of tasks stolen.
     /// 返回被窃取的任务数量。
-    pub fn steal(&self, dest: &LocalQueue) -> usize {
+    pub fn steal(&self, dest: &LocalQueue) -> usize
+    {
         let head = self.head.load(Ordering::Relaxed);
         let tail = self.tail.load(Ordering::Acquire);
 
         let len = tail.saturating_sub(head);
-        if len == 0 {
+        if len == 0
+        {
             return 0;
         }
 
         // Steal half (rounding down)
         // 窃取一半（向下取整）
         let steal_count = len / 2;
-        if steal_count == 0 {
+        if steal_count == 0
+        {
             return 0;
         }
 
         let mut stolen = 0;
-        for i in 0..steal_count {
+        for i in 0..steal_count
+        {
             let pos = (head + i) & self.mask;
             // SAFETY: pos is within bounds and value was initialized by push
             // SAFETY: pos在范围内且值由push初始化
             let task = unsafe { self.buffer[pos].get().read().assume_init() };
 
-            if dest.push(task) {
+            if dest.push(task)
+            {
                 stolen += 1;
                 // Update head to reflect stolen tasks
                 // 更新head以反映被窃取的任务
                 self.head.store(head + i + 1, Ordering::Release);
-            } else {
+            }
+            else
+            {
                 // Destination full, put back remaining
                 // 目标已满，放回剩余任务
                 break;
@@ -205,11 +226,13 @@ impl LocalQueue {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_queue_push_pop() {
+    fn test_queue_push_pop()
+    {
         let queue = LocalQueue::new(16);
 
         let task1 = 0x1000 as RawTask;
@@ -224,7 +247,8 @@ mod tests {
     }
 
     #[test]
-    fn test_queue_empty_full() {
+    fn test_queue_empty_full()
+    {
         let queue = LocalQueue::new(4);
 
         assert!(queue.is_empty());
@@ -232,7 +256,8 @@ mod tests {
 
         // Fill the queue
         // 填满队列
-        for i in 0..4 {
+        for i in 0..4
+        {
             assert!(queue.push(i as RawTask));
         }
 
@@ -243,7 +268,8 @@ mod tests {
 
         // Empty the queue
         // 清空队列
-        for i in 0..4 {
+        for i in 0..4
+        {
             assert_eq!(queue.pop(), Some(i as RawTask));
         }
 
@@ -251,24 +277,29 @@ mod tests {
     }
 
     #[test]
-    fn test_queue_wrap_around() {
+    fn test_queue_wrap_around()
+    {
         let queue = LocalQueue::new(4);
 
         // Fill and drain multiple times to test wrap-around
         // 多次填充和排空以测试包装
-        for round in 0..3 {
-            for i in 0..4 {
+        for round in 0..3
+        {
+            for i in 0..4
+            {
                 assert!(queue.push((round * 4 + i) as RawTask));
             }
 
-            for i in 0..4 {
+            for i in 0..4
+            {
                 assert_eq!(queue.pop(), Some((round * 4 + i) as RawTask));
             }
         }
     }
 
     #[test]
-    fn test_queue_capacity_power_of_two() {
+    fn test_queue_capacity_power_of_two()
+    {
         // Capacity should be rounded to next power of 2
         // 容量应向上舍入到下一个2的幂
         let q = LocalQueue::new(5);

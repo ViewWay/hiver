@@ -16,18 +16,21 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 /// - Constructor with all fields / 包含所有字段的构造函数
 /// - Getter methods / Getter 方法
 /// - with_xxx methods (for creating modified copies) / with_xxx 方法（用于创建修改副本）
-pub fn impl_value(input: DeriveInput) -> TokenStream {
+pub fn impl_value(input: DeriveInput) -> TokenStream
+{
     let struct_name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data {
+    let fields = match &input.data
+    {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[Value] can only be used on structs with named fields",

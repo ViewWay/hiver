@@ -25,9 +25,12 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
-    pub use crate::event::{DomainEvent, EventPublisher, InMemoryEventPublisher};
-    pub use crate::module::Module;
-    pub use crate::registry::ModuleRegistry;
-    pub use crate::verify::{VerificationResult, verify_modules};
+pub mod prelude
+{
+    pub use crate::{
+        event::{DomainEvent, EventPublisher, InMemoryEventPublisher},
+        module::Module,
+        registry::ModuleRegistry,
+        verify::{VerificationResult, verify_modules},
+    };
 }

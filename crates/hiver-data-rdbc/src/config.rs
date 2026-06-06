@@ -26,7 +26,8 @@ use serde::{Deserialize, Serialize};
 /// });
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum DatabaseConfig {
+pub enum DatabaseConfig
+{
     /// PostgreSQL configuration
     /// PostgreSQL 配置
     Postgres(PostgresConfig),
@@ -40,11 +41,14 @@ pub enum DatabaseConfig {
     Sqlite(SqliteConfig),
 }
 
-impl DatabaseConfig {
+impl DatabaseConfig
+{
     /// Get the connection URL for this configuration
     /// 获取此配置的连接 URL
-    pub fn connection_url(&self) -> String {
-        match self {
+    pub fn connection_url(&self) -> String
+    {
+        match self
+        {
             Self::Postgres(cfg) => cfg.connection_url(),
             Self::MySql(cfg) => cfg.connection_url(),
             Self::Sqlite(cfg) => cfg.connection_url(),
@@ -55,7 +59,8 @@ impl DatabaseConfig {
 /// PostgreSQL configuration
 /// PostgreSQL 配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostgresConfig {
+pub struct PostgresConfig
+{
     /// Database host
     /// 数据库主机
     pub host: String,
@@ -93,8 +98,10 @@ pub struct PostgresConfig {
     pub connect_timeout: u64,
 }
 
-impl Default for PostgresConfig {
-    fn default() -> Self {
+impl Default for PostgresConfig
+{
+    fn default() -> Self
+    {
         Self {
             host: "localhost".to_string(),
             port: 5432,
@@ -109,17 +116,21 @@ impl Default for PostgresConfig {
     }
 }
 
-impl PostgresConfig {
+impl PostgresConfig
+{
     /// Create a new PostgreSQL configuration
     /// 创建新的 PostgreSQL 配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Get the connection URL
     /// 获取连接 URL
-    pub fn connection_url(&self) -> String {
-        let ssl = match self.ssl_mode {
+    pub fn connection_url(&self) -> String
+    {
+        let ssl = match self.ssl_mode
+        {
             SslMode::Disable => "",
             SslMode::Require => "?sslmode=require",
             SslMode::Prefer => "?sslmode=prefer",
@@ -132,35 +143,40 @@ impl PostgresConfig {
 
     /// Set the host
     /// 设置主机
-    pub fn host(mut self, host: impl Into<String>) -> Self {
+    pub fn host(mut self, host: impl Into<String>) -> Self
+    {
         self.host = host.into();
         self
     }
 
     /// Set the port
     /// 设置端口
-    pub fn port(mut self, port: u16) -> Self {
+    pub fn port(mut self, port: u16) -> Self
+    {
         self.port = port;
         self
     }
 
     /// Set the database
     /// 设置数据库
-    pub fn database(mut self, database: impl Into<String>) -> Self {
+    pub fn database(mut self, database: impl Into<String>) -> Self
+    {
         self.database = database.into();
         self
     }
 
     /// Set the username
     /// 设置用户名
-    pub fn username(mut self, username: impl Into<String>) -> Self {
+    pub fn username(mut self, username: impl Into<String>) -> Self
+    {
         self.username = username.into();
         self
     }
 
     /// Set the password
     /// 设置密码
-    pub fn password(mut self, password: impl Into<String>) -> Self {
+    pub fn password(mut self, password: impl Into<String>) -> Self
+    {
         self.password = password.into();
         self
     }
@@ -169,7 +185,8 @@ impl PostgresConfig {
 /// MySQL configuration
 /// MySQL 配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MySqlConfig {
+pub struct MySqlConfig
+{
     /// Database host
     /// 数据库主机
     pub host: String,
@@ -203,8 +220,10 @@ pub struct MySqlConfig {
     pub connect_timeout: u64,
 }
 
-impl Default for MySqlConfig {
-    fn default() -> Self {
+impl Default for MySqlConfig
+{
+    fn default() -> Self
+    {
         Self {
             host: "localhost".to_string(),
             port: 3306,
@@ -218,16 +237,19 @@ impl Default for MySqlConfig {
     }
 }
 
-impl MySqlConfig {
+impl MySqlConfig
+{
     /// Create a new MySQL configuration
     /// 创建新的 MySQL 配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Get the connection URL
     /// 获取连接 URL
-    pub fn connection_url(&self) -> String {
+    pub fn connection_url(&self) -> String
+    {
         format!(
             "mysql://{}:{}@{}:{}/{}",
             self.username, self.password, self.host, self.port, self.database
@@ -236,35 +258,40 @@ impl MySqlConfig {
 
     /// Set the host
     /// 设置主机
-    pub fn host(mut self, host: impl Into<String>) -> Self {
+    pub fn host(mut self, host: impl Into<String>) -> Self
+    {
         self.host = host.into();
         self
     }
 
     /// Set the port
     /// 设置端口
-    pub fn port(mut self, port: u16) -> Self {
+    pub fn port(mut self, port: u16) -> Self
+    {
         self.port = port;
         self
     }
 
     /// Set the database
     /// 设置数据库
-    pub fn database(mut self, database: impl Into<String>) -> Self {
+    pub fn database(mut self, database: impl Into<String>) -> Self
+    {
         self.database = database.into();
         self
     }
 
     /// Set the username
     /// 设置用户名
-    pub fn username(mut self, username: impl Into<String>) -> Self {
+    pub fn username(mut self, username: impl Into<String>) -> Self
+    {
         self.username = username.into();
         self
     }
 
     /// Set the password
     /// 设置密码
-    pub fn password(mut self, password: impl Into<String>) -> Self {
+    pub fn password(mut self, password: impl Into<String>) -> Self
+    {
         self.password = password.into();
         self
     }
@@ -273,7 +300,8 @@ impl MySqlConfig {
 /// SQLite configuration
 /// SQLite 配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SqliteConfig {
+pub struct SqliteConfig
+{
     /// Database file path
     /// 数据库文件路径
     pub path: String,
@@ -291,8 +319,10 @@ pub struct SqliteConfig {
     pub connect_timeout: u64,
 }
 
-impl Default for SqliteConfig {
-    fn default() -> Self {
+impl Default for SqliteConfig
+{
+    fn default() -> Self
+    {
         Self {
             path: ":memory:".to_string(),
             max_connections: 5,
@@ -302,29 +332,34 @@ impl Default for SqliteConfig {
     }
 }
 
-impl SqliteConfig {
+impl SqliteConfig
+{
     /// Create a new SQLite configuration
     /// 创建新的 SQLite 配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Get the connection URL
     /// 获取连接 URL
-    pub fn connection_url(&self) -> String {
+    pub fn connection_url(&self) -> String
+    {
         format!("sqlite:{}", self.path)
     }
 
     /// Set the path
     /// 设置路径
-    pub fn path(mut self, path: impl Into<String>) -> Self {
+    pub fn path(mut self, path: impl Into<String>) -> Self
+    {
         self.path = path.into();
         self
     }
 
     /// Set to in-memory database
     /// 设置为内存数据库
-    pub fn in_memory() -> Self {
+    pub fn in_memory() -> Self
+    {
         Self {
             path: ":memory:".to_string(),
             ..Default::default()
@@ -335,7 +370,8 @@ impl SqliteConfig {
 /// SSL mode for PostgreSQL
 /// PostgreSQL SSL 模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SslMode {
+pub enum SslMode
+{
     /// Disable SSL
     /// 禁用 SSL
     Disable,
@@ -350,11 +386,13 @@ pub enum SslMode {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_postgres_config_url() {
+    fn test_postgres_config_url()
+    {
         let config = PostgresConfig::new()
             .host("localhost")
             .port(5432)
@@ -369,7 +407,8 @@ mod tests {
     }
 
     #[test]
-    fn test_mysql_config_url() {
+    fn test_mysql_config_url()
+    {
         let config = MySqlConfig::new()
             .host("localhost")
             .port(3306)
@@ -384,21 +423,24 @@ mod tests {
     }
 
     #[test]
-    fn test_sqlite_config_url() {
+    fn test_sqlite_config_url()
+    {
         let config = SqliteConfig::new().path("/tmp/test.db");
         let url = config.connection_url();
         assert!(url.contains("sqlite:/tmp/test.db"));
     }
 
     #[test]
-    fn test_sqlite_in_memory() {
+    fn test_sqlite_in_memory()
+    {
         let config = SqliteConfig::in_memory();
         let url = config.connection_url();
         assert_eq!(url, "sqlite::memory:");
     }
 
     #[test]
-    fn test_database_config_url() {
+    fn test_database_config_url()
+    {
         let pg_config = PostgresConfig::new()
             .host("localhost")
             .database("testdb")
@@ -431,7 +473,8 @@ mod tests {
 ///     .with_idle_timeout(Duration::from_secs(600));
 /// ```
 #[derive(Debug, Clone)]
-pub struct PoolConfig {
+pub struct PoolConfig
+{
     /// Maximum number of connections in the pool
     /// 连接池中的最大连接数
     pub max_size: u32,
@@ -457,8 +500,10 @@ pub struct PoolConfig {
     pub test_on_checkout: bool,
 }
 
-impl Default for PoolConfig {
-    fn default() -> Self {
+impl Default for PoolConfig
+{
+    fn default() -> Self
+    {
         Self {
             max_size: 10,
             min_idle: 1,
@@ -470,62 +515,72 @@ impl Default for PoolConfig {
     }
 }
 
-impl PoolConfig {
+impl PoolConfig
+{
     /// Create a new pool configuration with defaults
     /// 使用默认值创建新的连接池配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the maximum pool size
     /// 设置最大连接池大小
-    pub fn with_max_size(mut self, size: u32) -> Self {
+    pub fn with_max_size(mut self, size: u32) -> Self
+    {
         self.max_size = size;
         self
     }
 
     /// Set the minimum idle connections
     /// 设置最小空闲连接数
-    pub fn with_min_idle(mut self, min: u32) -> Self {
+    pub fn with_min_idle(mut self, min: u32) -> Self
+    {
         self.min_idle = min;
         self
     }
 
     /// Set the connection timeout
     /// 设置连接超时
-    pub fn with_connection_timeout(mut self, timeout: std::time::Duration) -> Self {
+    pub fn with_connection_timeout(mut self, timeout: std::time::Duration) -> Self
+    {
         self.connection_timeout = timeout;
         self
     }
 
     /// Set the idle timeout
     /// 设置空闲超时
-    pub fn with_idle_timeout(mut self, timeout: std::time::Duration) -> Self {
+    pub fn with_idle_timeout(mut self, timeout: std::time::Duration) -> Self
+    {
         self.idle_timeout = timeout;
         self
     }
 
     /// Set the maximum connection lifetime
     /// 设置最大连接生命周期
-    pub fn with_max_lifetime(mut self, lifetime: std::time::Duration) -> Self {
+    pub fn with_max_lifetime(mut self, lifetime: std::time::Duration) -> Self
+    {
         self.max_lifetime = Some(lifetime);
         self
     }
 
     /// Set whether to test connections on checkout
     /// 设置是否在检出时测试连接
-    pub fn with_test_on_checkout(mut self, test: bool) -> Self {
+    pub fn with_test_on_checkout(mut self, test: bool) -> Self
+    {
         self.test_on_checkout = test;
         self
     }
 }
 
 #[cfg(test)]
-mod pool_config_tests {
+mod pool_config_tests
+{
     use super::*;
 
     #[test]
-    fn test_pool_config_default() {
+    fn test_pool_config_default()
+    {
         let config = PoolConfig::default();
         assert_eq!(config.max_size, 10);
         assert_eq!(config.min_idle, 1);
@@ -533,7 +588,8 @@ mod pool_config_tests {
     }
 
     #[test]
-    fn test_pool_config_builder() {
+    fn test_pool_config_builder()
+    {
         let config = PoolConfig::new()
             .with_max_size(20)
             .with_min_idle(5)

@@ -21,14 +21,16 @@ use crate::error::{AsyncError, AsyncResult};
 ///     }
 /// }
 /// ```
-pub trait AsyncTask: Send + Sync + 'static {
+pub trait AsyncTask: Send + Sync + 'static
+{
     /// Run the async task
     /// 运行异步任务
     fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>>;
 
     /// Get task name
     /// 获取任务名称
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         "async_task"
     }
 }
@@ -42,7 +44,8 @@ pub trait AsyncTask: Send + Sync + 'static {
 /// CompletableFuture<Void> future = asyncTask.execute();
 /// future.get(); // Wait for completion
 /// ```
-pub struct AsyncTaskHandle {
+pub struct AsyncTaskHandle
+{
     /// Task name for tracking
     /// 任务名称用于追踪
     task_name: String,
@@ -52,13 +55,15 @@ pub struct AsyncTaskHandle {
     receiver: tokio::sync::oneshot::Receiver<AsyncResult<()>>,
 }
 
-impl AsyncTaskHandle {
+impl AsyncTaskHandle
+{
     /// Create new task handle
     /// 创建新任务句柄
     pub(crate) fn new(
         task_name: String,
         receiver: tokio::sync::oneshot::Receiver<AsyncResult<()>>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             task_name,
             receiver,
@@ -67,21 +72,25 @@ impl AsyncTaskHandle {
 
     /// Get task name
     /// 获取任务名称
-    pub fn task_name(&self) -> &str {
+    pub fn task_name(&self) -> &str
+    {
         &self.task_name
     }
 
     /// Wait for task completion
     /// 等待任务完成
-    pub async fn await_completion(self) -> AsyncResult<()> {
+    pub async fn await_completion(self) -> AsyncResult<()>
+    {
         self.receiver
             .await
             .map_err(|_| AsyncError::Other("Task cancelled".to_string()))?
     }
 }
 
-impl fmt::Debug for AsyncTaskHandle {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for AsyncTaskHandle
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("AsyncTaskHandle")
             .field("task_name", &self.task_name)
             .finish()
@@ -93,7 +102,8 @@ impl fmt::Debug for AsyncTaskHandle {
 ///
 /// Wraps a boxed async task for execution.
 /// 包装装箱的异步任务用于执行。
-pub struct RunnableTask {
+pub struct RunnableTask
+{
     /// The boxed task
     /// 装箱的任务
     task: Box<dyn AsyncTask>,
@@ -103,10 +113,12 @@ pub struct RunnableTask {
     completion_sender: tokio::sync::oneshot::Sender<AsyncResult<()>>,
 }
 
-impl RunnableTask {
+impl RunnableTask
+{
     /// Create new runnable task
     /// 创建新可运行任务
-    pub fn new(task: Box<dyn AsyncTask>) -> (Self, AsyncTaskHandle) {
+    pub fn new(task: Box<dyn AsyncTask>) -> (Self, AsyncTaskHandle)
+    {
         let (sender, receiver) = tokio::sync::oneshot::channel();
         let task_name = task.name().to_string();
 
@@ -122,7 +134,8 @@ impl RunnableTask {
 
     /// Execute the task
     /// 执行任务
-    pub async fn execute(self) {
+    pub async fn execute(self)
+    {
         let result = self.task.run().await;
         // Ignore send errors - receiver might have been dropped
         let _ = self.completion_sender.send(result);
@@ -130,7 +143,8 @@ impl RunnableTask {
 
     /// Get task name
     /// 获取任务名称
-    pub fn task_name(&self) -> &str {
+    pub fn task_name(&self) -> &str
+    {
         self.task.name()
     }
 }
@@ -169,7 +183,8 @@ where
 {
     /// Create new function task
     /// 创建新函数任务
-    pub fn new(name: impl Into<String>, f: F) -> Self {
+    pub fn new(name: impl Into<String>, f: F) -> Self
+    {
         Self {
             name: name.into(),
             f,
@@ -182,11 +197,13 @@ where
     F: Fn() -> Fut + Send + Sync + 'static,
     Fut: Future<Output = AsyncResult<()>> + Send + 'static,
 {
-    fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>> {
+    fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>>
+    {
         Box::pin((self.f)())
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         &self.name
     }
 }
@@ -213,7 +230,8 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use std::sync::{
         Arc,
         atomic::{AtomicU32, Ordering},
@@ -222,27 +240,33 @@ mod tests {
     use super::*;
 
     #[derive(Debug)]
-    struct TestTask {
+    struct TestTask
+    {
         name: String,
         counter: Arc<AtomicU32>,
     }
 
-    impl TestTask {
-        fn new(name: impl Into<String>) -> Self {
+    impl TestTask
+    {
+        fn new(name: impl Into<String>) -> Self
+        {
             Self {
                 name: name.into(),
                 counter: Arc::new(AtomicU32::new(0)),
             }
         }
 
-        fn count(&self) -> u32 {
+        fn count(&self) -> u32
+        {
             self.counter.load(Ordering::Relaxed)
         }
     }
 
     #[async_trait::async_trait]
-    impl AsyncTask for TestTask {
-        fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>> {
+    impl AsyncTask for TestTask
+    {
+        fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>>
+        {
             let counter = self.counter.clone();
             Box::pin(async move {
                 counter.fetch_add(1, Ordering::Relaxed);
@@ -251,13 +275,15 @@ mod tests {
             })
         }
 
-        fn name(&self) -> &str {
+        fn name(&self) -> &str
+        {
             &self.name
         }
     }
 
     #[tokio::test]
-    async fn test_async_task() {
+    async fn test_async_task()
+    {
         let task = TestTask::new("test_task");
         assert_eq!(task.name(), "test_task");
         assert_eq!(task.count(), 0);
@@ -267,7 +293,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_function_task() {
+    async fn test_function_task()
+    {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
@@ -287,7 +314,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_closure_task() {
+    async fn test_closure_task()
+    {
         let task = closure_task("closure_task", || async { Ok(()) });
 
         assert_eq!(task.name(), "closure_task");
@@ -295,7 +323,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_task_handle() {
+    async fn test_task_handle()
+    {
         let (sender, receiver) = tokio::sync::oneshot::channel();
         let handle = AsyncTaskHandle::new("test".to_string(), receiver);
 
@@ -310,7 +339,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_runnable_task() {
+    async fn test_runnable_task()
+    {
         let task = TestTask::new("runnable_test");
         let (runnable, handle) = RunnableTask::new(Box::new(task));
 

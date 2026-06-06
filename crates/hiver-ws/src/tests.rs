@@ -1,8 +1,10 @@
 //! Tests for hiver-ws
 #[cfg(test)]
-mod tests {
+mod tests
+{
     #[test]
-    fn smoke_test() {
+    fn smoke_test()
+    {
         assert!(true, "hiver-ws test infrastructure working");
     }
 }

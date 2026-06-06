@@ -8,7 +8,8 @@ use thiserror::Error;
 /// Parse / evaluation errors.
 /// 解析/求值错误。
 #[derive(Debug, Error)]
-pub enum SpelError {
+pub enum SpelError
+{
     /// Parse error.
     /// 解析错误。
     #[error("parse error: {0}")]
@@ -22,7 +23,8 @@ pub enum SpelError {
 /// Comparison operator.
 /// 比较运算符。
 #[derive(Debug, Clone, Copy)]
-pub enum CmpOp {
+pub enum CmpOp
+{
     Eq,
     NotEq,
     Gt,
@@ -34,7 +36,8 @@ pub enum CmpOp {
 /// Parsed SpEL expression AST.
 /// 解析后的 SpEL 表达式 AST。
 #[derive(Debug, Clone)]
-pub enum SpelExpr {
+pub enum SpelExpr
+{
     /// `hasRole('X')` check.
     HasRole(String),
     /// `hasAuthority('X')` check.
@@ -63,12 +66,16 @@ pub enum SpelExpr {
     LiteralString(String),
 }
 
-impl fmt::Display for SpelExpr {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for SpelExpr
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::HasRole(r) => write!(f, "hasRole('{r}')"),
             Self::HasAuthority(a) => write!(f, "hasAuthority('{a}')"),
-            Self::HasAnyRole(rs) => {
+            Self::HasAnyRole(rs) =>
+            {
                 let args: Vec<String> = rs.iter().map(|r| format!("'{r}'")).collect();
                 write!(f, "hasAnyRole({})", args.join(", "))
             },
@@ -77,8 +84,10 @@ impl fmt::Display for SpelExpr {
             Self::And(a, b) => write!(f, "({a} and {b})"),
             Self::Or(a, b) => write!(f, "({a} or {b})"),
             Self::Not(e) => write!(f, "not {e}"),
-            Self::Compare(l, op, r) => {
-                let s = match op {
+            Self::Compare(l, op, r) =>
+            {
+                let s = match op
+                {
                     CmpOp::Eq => "==",
                     CmpOp::NotEq => "!=",
                     CmpOp::Gt => ">",
@@ -101,7 +110,8 @@ impl fmt::Display for SpelExpr {
 // ============================================================
 
 #[derive(Debug, Clone)]
-enum Token {
+enum Token
+{
     Ident(String),
     StringLit(String),
     Number(f64),
@@ -119,82 +129,103 @@ enum Token {
 }
 
 #[allow(clippy::indexing_slicing)]
-fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
+fn tokenize(input: &str) -> Result<Vec<Token>, SpelError>
+{
     let chars: Vec<char> = input.chars().collect();
     let mut tokens = Vec::new();
     let mut pos = 0;
 
-    while pos < chars.len() {
-        match chars[pos] {
+    while pos < chars.len()
+    {
+        match chars[pos]
+        {
             ' ' | '\t' | '\n' | '\r' => pos += 1,
-            '(' => {
+            '(' =>
+            {
                 tokens.push(Token::LParen);
                 pos += 1;
             },
-            ')' => {
+            ')' =>
+            {
                 tokens.push(Token::RParen);
                 pos += 1;
             },
-            ',' => {
+            ',' =>
+            {
                 tokens.push(Token::Comma);
                 pos += 1;
             },
-            '#' => {
+            '#' =>
+            {
                 pos += 1;
                 let mut name = String::new();
-                while pos < chars.len() && (chars[pos].is_alphanumeric() || chars[pos] == '_') {
+                while pos < chars.len() && (chars[pos].is_alphanumeric() || chars[pos] == '_')
+                {
                     name.push(chars[pos]);
                     pos += 1;
                 }
-                if name.is_empty() {
+                if name.is_empty()
+                {
                     return Err(SpelError::Parse("expected variable name after '#'".into()));
                 }
                 tokens.push(Token::Variable(name));
             },
-            '\'' => {
+            '\'' =>
+            {
                 pos += 1;
                 let mut s = String::new();
-                while pos < chars.len() && chars[pos] != '\'' {
+                while pos < chars.len() && chars[pos] != '\''
+                {
                     s.push(chars[pos]);
                     pos += 1;
                 }
-                if pos >= chars.len() {
+                if pos >= chars.len()
+                {
                     return Err(SpelError::Parse("unterminated string literal".into()));
                 }
                 pos += 1;
                 tokens.push(Token::StringLit(s));
             },
-            '=' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
+            '=' if pos + 1 < chars.len() && chars[pos + 1] == '=' =>
+            {
                 tokens.push(Token::Eq);
                 pos += 2;
             },
-            '!' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
+            '!' if pos + 1 < chars.len() && chars[pos + 1] == '=' =>
+            {
                 tokens.push(Token::NotEq);
                 pos += 2;
             },
-            '!' => {
+            '!' =>
+            {
                 tokens.push(Token::Bang);
                 pos += 1;
             },
-            '>' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
+            '>' if pos + 1 < chars.len() && chars[pos + 1] == '=' =>
+            {
                 tokens.push(Token::GtEq);
                 pos += 2;
             },
-            '>' => {
+            '>' =>
+            {
                 tokens.push(Token::Gt);
                 pos += 1;
             },
-            '<' if pos + 1 < chars.len() && chars[pos + 1] == '=' => {
+            '<' if pos + 1 < chars.len() && chars[pos + 1] == '=' =>
+            {
                 tokens.push(Token::LtEq);
                 pos += 2;
             },
-            '<' => {
+            '<' =>
+            {
                 tokens.push(Token::Lt);
                 pos += 1;
             },
-            c if c.is_ascii_digit() => {
+            c if c.is_ascii_digit() =>
+            {
                 let start = pos;
-                while pos < chars.len() && (chars[pos].is_ascii_digit() || chars[pos] == '.') {
+                while pos < chars.len() && (chars[pos].is_ascii_digit() || chars[pos] == '.')
+                {
                     pos += 1;
                 }
                 let s: String = chars[start..pos].iter().collect();
@@ -203,9 +234,11 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
                     .map_err(|_| SpelError::Parse(format!("invalid number: {s}")))?;
                 tokens.push(Token::Number(n));
             },
-            c if c.is_alphabetic() || c == '_' => {
+            c if c.is_alphabetic() || c == '_' =>
+            {
                 let mut s = String::new();
-                while pos < chars.len() && (chars[pos].is_alphanumeric() || chars[pos] == '_') {
+                while pos < chars.len() && (chars[pos].is_alphanumeric() || chars[pos] == '_')
+                {
                     s.push(chars[pos]);
                     pos += 1;
                 }
@@ -222,36 +255,45 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError> {
 // Recursive descent parser / 递归下降解析器
 // ============================================================
 
-struct Parser {
+struct Parser
+{
     tokens: Vec<Token>,
     pos: usize,
 }
 
-impl Parser {
-    fn new(tokens: Vec<Token>) -> Self {
+impl Parser
+{
+    fn new(tokens: Vec<Token>) -> Self
+    {
         Self { tokens, pos: 0 }
     }
 
-    fn peek(&self) -> Option<&Token> {
+    fn peek(&self) -> Option<&Token>
+    {
         self.tokens.get(self.pos)
     }
 
-    fn advance(&mut self) {
+    fn advance(&mut self)
+    {
         self.pos += 1;
     }
 
-    fn parse(&mut self) -> Result<SpelExpr, SpelError> {
+    fn parse(&mut self) -> Result<SpelExpr, SpelError>
+    {
         let expr = self.parse_or()?;
-        if self.pos < self.tokens.len() {
+        if self.pos < self.tokens.len()
+        {
             return Err(SpelError::Parse("unexpected tokens after expression".into()));
         }
         Ok(expr)
     }
 
     // or = and ("or" and)*
-    fn parse_or(&mut self) -> Result<SpelExpr, SpelError> {
+    fn parse_or(&mut self) -> Result<SpelExpr, SpelError>
+    {
         let mut left = self.parse_and()?;
-        while matches!(self.peek(), Some(Token::Ident(s)) if s == "or") {
+        while matches!(self.peek(), Some(Token::Ident(s)) if s == "or")
+        {
             self.advance();
             let right = self.parse_and()?;
             left = SpelExpr::Or(Box::new(left), Box::new(right));
@@ -260,9 +302,11 @@ impl Parser {
     }
 
     // and = cmp ("and" cmp)*
-    fn parse_and(&mut self) -> Result<SpelExpr, SpelError> {
+    fn parse_and(&mut self) -> Result<SpelExpr, SpelError>
+    {
         let mut left = self.parse_cmp()?;
-        while matches!(self.peek(), Some(Token::Ident(s)) if s == "and") {
+        while matches!(self.peek(), Some(Token::Ident(s)) if s == "and")
+        {
             self.advance();
             let right = self.parse_cmp()?;
             left = SpelExpr::And(Box::new(left), Box::new(right));
@@ -271,9 +315,11 @@ impl Parser {
     }
 
     // cmp = not (comp_op not)?
-    fn parse_cmp(&mut self) -> Result<SpelExpr, SpelError> {
+    fn parse_cmp(&mut self) -> Result<SpelExpr, SpelError>
+    {
         let left = self.parse_not()?;
-        let op = match self.peek() {
+        let op = match self.peek()
+        {
             Some(Token::Eq) => Some(CmpOp::Eq),
             Some(Token::NotEq) => Some(CmpOp::NotEq),
             Some(Token::Gt) => Some(CmpOp::Gt),
@@ -282,24 +328,31 @@ impl Parser {
             Some(Token::LtEq) => Some(CmpOp::LtEq),
             _ => None,
         };
-        if let Some(op) = op {
+        if let Some(op) = op
+        {
             self.advance();
             let right = self.parse_not()?;
             Ok(SpelExpr::Compare(Box::new(left), op, Box::new(right)))
-        } else {
+        }
+        else
+        {
             Ok(left)
         }
     }
 
     // not = "not" not | "!" not | primary
-    fn parse_not(&mut self) -> Result<SpelExpr, SpelError> {
-        match self.peek() {
-            Some(Token::Bang) => {
+    fn parse_not(&mut self) -> Result<SpelExpr, SpelError>
+    {
+        match self.peek()
+        {
+            Some(Token::Bang) =>
+            {
                 self.advance();
                 let expr = self.parse_not()?;
                 Ok(SpelExpr::Not(Box::new(expr)))
             },
-            Some(Token::Ident(s)) if s == "not" => {
+            Some(Token::Ident(s)) if s == "not" =>
+            {
                 self.advance();
                 let expr = self.parse_not()?;
                 Ok(SpelExpr::Not(Box::new(expr)))
@@ -309,29 +362,37 @@ impl Parser {
     }
 
     // primary = "(" expr ")" | function_call | variable | literal
-    fn parse_primary(&mut self) -> Result<SpelExpr, SpelError> {
-        match self.peek().cloned() {
-            Some(Token::LParen) => {
+    fn parse_primary(&mut self) -> Result<SpelExpr, SpelError>
+    {
+        match self.peek().cloned()
+        {
+            Some(Token::LParen) =>
+            {
                 self.advance();
                 let expr = self.parse_or()?;
                 self.expect_rparen()?;
                 Ok(expr)
             },
-            Some(Token::Variable(name)) => {
+            Some(Token::Variable(name)) =>
+            {
                 self.advance();
                 Ok(SpelExpr::Variable(name))
             },
-            Some(Token::StringLit(s)) => {
+            Some(Token::StringLit(s)) =>
+            {
                 self.advance();
                 Ok(SpelExpr::LiteralString(s))
             },
-            Some(Token::Number(n)) => {
+            Some(Token::Number(n)) =>
+            {
                 self.advance();
                 Ok(SpelExpr::LiteralNumber(n))
             },
-            Some(Token::Ident(ident)) => {
+            Some(Token::Ident(ident)) =>
+            {
                 self.advance();
-                match ident.as_str() {
+                match ident.as_str()
+                {
                     "hasRole" => self.parse_single_arg_fn(SpelExpr::HasRole),
                     "hasAuthority" => self.parse_single_arg_fn(SpelExpr::HasAuthority),
                     "hasAnyRole" => self.parse_has_any_role(),
@@ -349,17 +410,20 @@ impl Parser {
     fn parse_single_arg_fn(
         &mut self,
         ctor: impl Fn(String) -> SpelExpr,
-    ) -> Result<SpelExpr, SpelError> {
+    ) -> Result<SpelExpr, SpelError>
+    {
         self.expect_lparen()?;
         let arg = self.expect_string_lit()?;
         self.expect_rparen()?;
         Ok(ctor(arg))
     }
 
-    fn parse_has_any_role(&mut self) -> Result<SpelExpr, SpelError> {
+    fn parse_has_any_role(&mut self) -> Result<SpelExpr, SpelError>
+    {
         self.expect_lparen()?;
         let mut roles = vec![self.expect_string_lit()?];
-        while matches!(self.peek(), Some(Token::Comma)) {
+        while matches!(self.peek(), Some(Token::Comma))
+        {
             self.advance();
             roles.push(self.expect_string_lit()?);
         }
@@ -367,9 +431,12 @@ impl Parser {
         Ok(SpelExpr::HasAnyRole(roles))
     }
 
-    fn expect_lparen(&mut self) -> Result<(), SpelError> {
-        match self.peek() {
-            Some(Token::LParen) => {
+    fn expect_lparen(&mut self) -> Result<(), SpelError>
+    {
+        match self.peek()
+        {
+            Some(Token::LParen) =>
+            {
                 self.advance();
                 Ok(())
             },
@@ -377,9 +444,12 @@ impl Parser {
         }
     }
 
-    fn expect_rparen(&mut self) -> Result<(), SpelError> {
-        match self.peek() {
-            Some(Token::RParen) => {
+    fn expect_rparen(&mut self) -> Result<(), SpelError>
+    {
+        match self.peek()
+        {
+            Some(Token::RParen) =>
+            {
                 self.advance();
                 Ok(())
             },
@@ -387,9 +457,12 @@ impl Parser {
         }
     }
 
-    fn expect_string_lit(&mut self) -> Result<String, SpelError> {
-        match self.peek().cloned() {
-            Some(Token::StringLit(s)) => {
+    fn expect_string_lit(&mut self) -> Result<String, SpelError>
+    {
+        match self.peek().cloned()
+        {
+            Some(Token::StringLit(s)) =>
+            {
                 self.advance();
                 Ok(s)
             },
@@ -400,7 +473,8 @@ impl Parser {
 
 /// Parse a SpEL expression string into an AST.
 /// 将 SpEL 表达式字符串解析为 AST。
-pub(crate) fn parse(input: &str) -> Result<SpelExpr, SpelError> {
+pub(crate) fn parse(input: &str) -> Result<SpelExpr, SpelError>
+{
     let tokens = tokenize(input)?;
     let mut parser = Parser::new(tokens);
     parser.parse()

@@ -8,7 +8,8 @@ pub type Result<T> = std::result::Result<T, IntegrationError>;
 /// Integration error types
 /// 集成错误类型
 #[derive(Debug, thiserror::Error)]
-pub enum IntegrationError {
+pub enum IntegrationError
+{
     /// Message error
     /// 消息错误
     #[error("Message error: {0}")]
@@ -80,50 +81,60 @@ pub enum IntegrationError {
     Aggregation(String),
 }
 
-impl IntegrationError {
+impl IntegrationError
+{
     /// Create a message error
     /// 创建消息错误
-    pub fn message(msg: impl Into<String>) -> Self {
+    pub fn message(msg: impl Into<String>) -> Self
+    {
         Self::Message(msg.into())
     }
 
     /// Create a channel error
     /// 创建通道错误
-    pub fn channel(msg: impl Into<String>) -> Self {
+    pub fn channel(msg: impl Into<String>) -> Self
+    {
         Self::Channel(msg.into())
     }
 
     /// Create a transformation error
     /// 创建转换错误
-    pub fn transformation(msg: impl Into<String>) -> Self {
+    pub fn transformation(msg: impl Into<String>) -> Self
+    {
         Self::Transformation(msg.into())
     }
 
     /// Create a routing error
     /// 创建路由错误
-    pub fn routing(msg: impl Into<String>) -> Self {
+    pub fn routing(msg: impl Into<String>) -> Self
+    {
         Self::Routing(msg.into())
     }
 }
 
-impl From<serde_json::Error> for IntegrationError {
-    fn from(err: serde_json::Error) -> Self {
+impl From<serde_json::Error> for IntegrationError
+{
+    fn from(err: serde_json::Error) -> Self
+    {
         Self::Serialization(err.to_string())
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let err = IntegrationError::message("test error");
         assert_eq!(err.to_string(), "Message error: test error");
     }
 
     #[test]
-    fn test_error_from_json() {
+    fn test_error_from_json()
+    {
         let err: IntegrationError = serde_json::from_str::<serde_json::Value>("invalid")
             .map_err(|e| e.into())
             .unwrap_err();

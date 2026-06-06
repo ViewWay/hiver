@@ -6,7 +6,8 @@ use std::fmt;
 /// STOMP protocol error
 /// STOMP 协议错误
 #[derive(Debug)]
-pub enum StompError {
+pub enum StompError
+{
     /// Invalid frame format
     /// 帧格式无效
     InvalidFrame(String),
@@ -37,7 +38,10 @@ pub enum StompError {
 
     /// Message size exceeded
     /// 消息大小超限
-    MessageSizeExceeded { max: usize, actual: usize },
+    MessageSizeExceeded
+    {
+        max: usize, actual: usize
+    },
 
     /// Heartbeat timeout
     /// 心跳超时
@@ -52,9 +56,12 @@ pub enum StompError {
     Io(std::io::Error),
 }
 
-impl fmt::Display for StompError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for StompError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             StompError::InvalidFrame(msg) => write!(f, "Invalid frame: {}", msg),
             StompError::UnsupportedCommand(cmd) => write!(f, "Unsupported command: {}", cmd),
             StompError::MissingHeader(header) => write!(f, "Missing required header: {}", header),
@@ -62,7 +69,8 @@ impl fmt::Display for StompError {
             StompError::AuthenticationFailed(msg) => write!(f, "Authentication failed: {}", msg),
             StompError::SubscriptionNotFound(id) => write!(f, "Subscription not found: {}", id),
             StompError::DestinationNotFound(dest) => write!(f, "Destination not found: {}", dest),
-            StompError::MessageSizeExceeded { max, actual } => {
+            StompError::MessageSizeExceeded { max, actual } =>
+            {
                 write!(f, "Message size exceeded: {} > {}", actual, max)
             },
             StompError::HeartbeatTimeout => write!(f, "Heartbeat timeout"),
@@ -72,17 +80,22 @@ impl fmt::Display for StompError {
     }
 }
 
-impl std::error::Error for StompError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
+impl std::error::Error for StompError
+{
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+    {
+        match self
+        {
             StompError::Io(err) => Some(err),
             _ => None,
         }
     }
 }
 
-impl From<std::io::Error> for StompError {
-    fn from(err: std::io::Error) -> Self {
+impl From<std::io::Error> for StompError
+{
+    fn from(err: std::io::Error) -> Self
+    {
         StompError::Io(err)
     }
 }
@@ -92,11 +105,13 @@ impl From<std::io::Error> for StompError {
 pub type Result<T> = std::result::Result<T, StompError>;
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         assert_eq!(StompError::InvalidFrame("test".to_string()).to_string(), "Invalid frame: test");
         assert_eq!(
             StompError::MissingHeader("destination".to_string()).to_string(),
@@ -105,7 +120,8 @@ mod tests {
     }
 
     #[test]
-    fn test_message_size_exceeded() {
+    fn test_message_size_exceeded()
+    {
         let err = StompError::MessageSizeExceeded {
             max: 1024,
             actual: 2048,

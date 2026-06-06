@@ -22,8 +22,9 @@
 //! }
 //! ```
 
-use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 use std::str::FromStr;
+
+use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 
 /// Path parameter extractor
 /// 路径参数提取器
@@ -52,16 +53,19 @@ use std::str::FromStr;
 /// ```
 pub struct Path<T>(pub T);
 
-impl<T> Path<T> {
+impl<T> Path<T>
+{
     /// Consume the path extractor and get the inner value
     /// 消耗路径提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 }
@@ -70,7 +74,8 @@ impl<T> std::fmt::Debug for Path<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("Path").field(&self.0).finish()
     }
 }
@@ -79,7 +84,8 @@ impl<T> Clone for Path<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -119,12 +125,14 @@ where
     T2: FromStr + Send + 'static,
     T2::Err: std::fmt::Display,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let path_vars = req.path_vars().clone();
         let var_names: Vec<_> = path_vars.keys().cloned().collect();
 
         Box::pin(async move {
-            if var_names.len() < 2 {
+            if var_names.len() < 2
+            {
                 return Err(ExtractorError::Missing("expected 2 path parameters".to_string()));
             }
 
@@ -164,12 +172,14 @@ where
     T3: FromStr + Send + 'static,
     T3::Err: std::fmt::Display,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let path_vars = req.path_vars().clone();
         let var_names: Vec<_> = path_vars.keys().cloned().collect();
 
         Box::pin(async move {
-            if var_names.len() < 3 {
+            if var_names.len() < 3
+            {
                 return Err(ExtractorError::Missing("expected 3 path parameters".to_string()));
             }
 
@@ -225,28 +235,33 @@ where
 ///     format!("ID: {}", id)
 /// }
 /// ```
-pub fn get_path_var(req: &Request, name: &str) -> Option<String> {
+pub fn get_path_var(req: &Request, name: &str) -> Option<String>
+{
     req.path_var(name).map(ToString::to_string)
 }
 
 /// Get all path variables
 /// 获取所有路径变量
-pub fn get_all_path_vars(req: &Request) -> std::collections::HashMap<String, String> {
+pub fn get_all_path_vars(req: &Request) -> std::collections::HashMap<String, String>
+{
     req.path_vars().clone()
 }
 
 /// Check if a path variable exists
 /// 检查路径变量是否存在
-pub fn has_path_var(req: &Request, name: &str) -> bool {
+pub fn has_path_var(req: &Request, name: &str) -> bool
+{
     req.path_var(name).is_some()
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_path_into_inner() {
+    fn test_path_into_inner()
+    {
         let path: Path<u64> = Path(123);
         assert_eq!(path.into_inner(), 123);
     }

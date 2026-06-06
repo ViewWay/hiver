@@ -28,11 +28,11 @@
 //! }
 //! ```
 
-use crate::StatusCode;
-use crate::body::Body;
-use crate::response::Response;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+
+use crate::{StatusCode, body::Body, response::Response};
 
 // ============================================================================
 // Result Code Enum / 结果码枚举
@@ -41,7 +41,8 @@ use std::collections::HashMap;
 /// Standard result codes
 /// 标准结果码
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ResultCode {
+pub enum ResultCode
+{
     // Success / 成功
     /// 200 OK - Request succeeded / 请求成功
     Success = 200,
@@ -81,17 +82,21 @@ pub enum ResultCode {
     ServiceUnavailable = 503,
 }
 
-impl ResultCode {
+impl ResultCode
+{
     /// Get the numeric code
     /// 获取数字代码
-    pub fn code(&self) -> u16 {
+    pub fn code(&self) -> u16
+    {
         *self as u16
     }
 
     /// Get the default message
     /// 获取默认消息
-    pub fn message(&self) -> &'static str {
-        match self {
+    pub fn message(&self) -> &'static str
+    {
+        match self
+        {
             ResultCode::Success => "Success",
             ResultCode::Created => "Created",
             ResultCode::Accepted => "Accepted",
@@ -115,8 +120,10 @@ impl ResultCode {
 
     /// Get Chinese message
     /// 获取中文消息
-    pub fn message_zh(&self) -> &'static str {
-        match self {
+    pub fn message_zh(&self) -> &'static str
+    {
+        match self
+        {
             ResultCode::Success => "操作成功",
             ResultCode::Created => "创建成功",
             ResultCode::Accepted => "请求已接受",
@@ -140,7 +147,8 @@ impl ResultCode {
 
     /// Get the HTTP status code
     /// 获取 HTTP 状态码
-    pub fn status_code(&self) -> StatusCode {
+    pub fn status_code(&self) -> StatusCode
+    {
         StatusCode::from_u16(self.code())
     }
 }
@@ -177,7 +185,8 @@ impl ResultCode {
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ApiResponse<T> {
+pub struct ApiResponse<T>
+{
     /// Response code / 响应码
     pub code: u16,
 
@@ -204,10 +213,12 @@ pub struct ApiResponse<T> {
     pub errors: HashMap<String, String>,
 }
 
-impl<T> ApiResponse<T> {
+impl<T> ApiResponse<T>
+{
     /// Create a new API response
     /// 创建新的 API 响应
-    pub fn new(code: u16, message: impl Into<String>) -> Self {
+    pub fn new(code: u16, message: impl Into<String>) -> Self
+    {
         Self {
             code,
             message: message.into(),
@@ -221,7 +232,8 @@ impl<T> ApiResponse<T> {
 
     /// Create a success response with data
     /// 创建带数据的成功响应
-    pub fn success_data(data: T) -> Self {
+    pub fn success_data(data: T) -> Self
+    {
         Self {
             code: ResultCode::Success.code(),
             message: ResultCode::Success.message().to_string(),
@@ -235,7 +247,8 @@ impl<T> ApiResponse<T> {
 
     /// Create a 201 Created response
     /// 创建 201 Created 响应
-    pub fn created(data: T) -> Self {
+    pub fn created(data: T) -> Self
+    {
         Self {
             code: ResultCode::Created.code(),
             message: ResultCode::Created.message().to_string(),
@@ -249,35 +262,40 @@ impl<T> ApiResponse<T> {
 
     /// Set the response code
     /// 设置响应码
-    pub fn code(mut self, code: u16) -> Self {
+    pub fn code(mut self, code: u16) -> Self
+    {
         self.code = code;
         self
     }
 
     /// Set the response message
     /// 设置响应消息
-    pub fn message(mut self, message: impl Into<String>) -> Self {
+    pub fn message(mut self, message: impl Into<String>) -> Self
+    {
         self.message = message.into();
         self
     }
 
     /// Set the error code
     /// 设置错误码
-    pub fn error(mut self, error: impl Into<String>) -> Self {
+    pub fn error(mut self, error: impl Into<String>) -> Self
+    {
         self.error = Some(error.into());
         self
     }
 
     /// Set the request path
     /// 设置请求路径
-    pub fn path(mut self, path: impl Into<String>) -> Self {
+    pub fn path(mut self, path: impl Into<String>) -> Self
+    {
         self.path = Some(path.into());
         self
     }
 
     /// Add an error field
     /// 添加错误字段
-    pub fn add_error(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn add_error(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.errors.insert(key.into(), value.into());
         self
     }
@@ -300,29 +318,34 @@ impl<T> ApiResponse<T> {
 
     /// Check if this is a success response (2xx)
     /// 检查是否为成功响应 (2xx)
-    pub fn is_success(&self) -> bool {
+    pub fn is_success(&self) -> bool
+    {
         (200..300).contains(&self.code)
     }
 
     /// Check if this is a client error (4xx)
     /// 检查是否为客户端错误 (4xx)
-    pub fn is_client_error(&self) -> bool {
+    pub fn is_client_error(&self) -> bool
+    {
         (400..500).contains(&self.code)
     }
 
     /// Check if this is a server error (5xx)
     /// 检查是否为服务端错误 (5xx)
-    pub fn is_server_error(&self) -> bool {
+    pub fn is_server_error(&self) -> bool
+    {
         (500..600).contains(&self.code)
     }
 }
 
 /// Methods that don't depend on type parameter T
 /// 不依赖类型参数 T 的方法
-impl ApiResponse<()> {
+impl ApiResponse<()>
+{
     /// Create a success response without data
     /// 创建无数据的成功响应
-    pub fn success() -> Self {
+    pub fn success() -> Self
+    {
         Self {
             code: ResultCode::Success.code(),
             message: ResultCode::Success.message().to_string(),
@@ -336,7 +359,8 @@ impl ApiResponse<()> {
 
     /// Create a 204 No Content response
     /// 创建 204 No Content 响应
-    pub fn no_content() -> Self {
+    pub fn no_content() -> Self
+    {
         Self {
             code: ResultCode::NoContent.code(),
             message: ResultCode::NoContent.message().to_string(),
@@ -350,49 +374,57 @@ impl ApiResponse<()> {
 
     /// Create a 400 Bad Request response
     /// 创建 400 Bad Request 响应
-    pub fn bad_request() -> Self {
+    pub fn bad_request() -> Self
+    {
         Self::error_code(ResultCode::BadRequest)
     }
 
     /// Create a 401 Unauthorized response
     /// 创建 401 Unauthorized 响应
-    pub fn unauthorized() -> Self {
+    pub fn unauthorized() -> Self
+    {
         Self::error_code(ResultCode::Unauthorized)
     }
 
     /// Create a 403 Forbidden response
     /// 创建 403 Forbidden 响应
-    pub fn forbidden() -> Self {
+    pub fn forbidden() -> Self
+    {
         Self::error_code(ResultCode::Forbidden)
     }
 
     /// Create a 404 Not Found response
     /// 创建 404 Not Found 响应
-    pub fn not_found() -> Self {
+    pub fn not_found() -> Self
+    {
         Self::error_code(ResultCode::NotFound)
     }
 
     /// Create a 409 Conflict response
     /// 创建 409 Conflict 响应
-    pub fn conflict() -> Self {
+    pub fn conflict() -> Self
+    {
         Self::error_code(ResultCode::Conflict)
     }
 
     /// Create a 422 Unprocessable Entity response
     /// 创建 422 Unprocessable Entity 响应
-    pub fn unprocessable_entity() -> Self {
+    pub fn unprocessable_entity() -> Self
+    {
         Self::error_code(ResultCode::UnprocessableEntity)
     }
 
     /// Create a 500 Internal Server Error response
     /// 创建 500 Internal Server Error 响应
-    pub fn internal_error() -> Self {
+    pub fn internal_error() -> Self
+    {
         Self::error_code(ResultCode::InternalError)
     }
 
     /// Create an error response from a result code
     /// 从结果码创建错误响应
-    pub fn error_code(code: ResultCode) -> Self {
+    pub fn error_code(code: ResultCode) -> Self
+    {
         Self {
             code: code.code(),
             message: code.message().to_string(),
@@ -415,7 +447,8 @@ impl ApiResponse<()> {
 /// Equivalent to Spring's `Page<T>` or `PageResult<T>`.
 /// 等价于 Spring 的 `Page<T>` 或 `PageResult<T>`。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PageResponse<T> {
+pub struct PageResponse<T>
+{
     /// Page content / 页面内容
     pub content: Vec<T>,
 
@@ -438,14 +471,19 @@ pub struct PageResponse<T> {
     pub last: bool,
 }
 
-impl<T> PageResponse<T> {
+impl<T> PageResponse<T>
+{
     /// Create a new page response
     /// 创建新的分页响应
-    pub fn new(content: Vec<T>, page: u32, size: u32, total_elements: u64) -> Self {
+    pub fn new(content: Vec<T>, page: u32, size: u32, total_elements: u64) -> Self
+    {
         #[allow(clippy::cast_precision_loss)]
-        let total_pages = if size == 0 {
+        let total_pages = if size == 0
+        {
             0
-        } else {
+        }
+        else
+        {
             ((total_elements as f64) / (size as f64)).ceil() as u32
         };
 
@@ -462,13 +500,15 @@ impl<T> PageResponse<T> {
 
     /// Create an empty page response
     /// 创建空的分页响应
-    pub fn empty() -> Self {
+    pub fn empty() -> Self
+    {
         Self::new(vec![], 0, 10, 0)
     }
 
     /// Wrap the page content in an `ApiResponse`
     /// 将分页内容包装为 `ApiResponse`
-    pub fn into_api_response(self) -> ApiResponse<Vec<T>> {
+    pub fn into_api_response(self) -> ApiResponse<Vec<T>>
+    {
         ApiResponse::success_data(self.content)
             .add_error("page", self.page.to_string())
             .add_error("size", self.size.to_string())
@@ -483,7 +523,8 @@ impl<T> PageResponse<T> {
 
 /// Format current timestamp in ISO 8601 format
 /// 格式化当前时间戳为 ISO 8601 格式
-fn format_timestamp() -> String {
+fn format_timestamp() -> String
+{
     use std::time::{SystemTime, UNIX_EPOCH};
     let duration = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -507,14 +548,17 @@ fn format_timestamp() -> String {
 
 /// Trait for converting types to `ApiResponse`
 /// 将类型转换为 `ApiResponse` 的 Trait
-pub trait IntoApiResponse<T> {
+pub trait IntoApiResponse<T>
+{
     /// Convert self into an `ApiResponse`
     /// 将 self 转换为 `ApiResponse`
     fn into_api_response(self) -> ApiResponse<T>;
 }
 
-impl<T: Serialize> IntoApiResponse<T> for T {
-    fn into_api_response(self) -> ApiResponse<T> {
+impl<T: Serialize> IntoApiResponse<T> for T
+{
+    fn into_api_response(self) -> ApiResponse<T>
+    {
         ApiResponse::success_data(self)
     }
 }
@@ -523,14 +567,18 @@ impl<T: Serialize> IntoApiResponse<T> for T {
 // IntoResponse Implementation / IntoResponse 实现
 // ============================================================================
 
-impl<T: Serialize> crate::IntoResponse for ApiResponse<T> {
-    fn into_response(self) -> Response {
+impl<T: Serialize> crate::IntoResponse for ApiResponse<T>
+{
+    fn into_response(self) -> Response
+    {
         self.into_response()
     }
 }
 
-impl<T: Serialize> crate::IntoResponse for PageResponse<T> {
-    fn into_response(self) -> Response {
+impl<T: Serialize> crate::IntoResponse for PageResponse<T>
+{
+    fn into_response(self) -> Response
+    {
         let api_response = ApiResponse::success_data(self.content)
             .add_error("page", self.page.to_string())
             .add_error("size", self.size.to_string())
@@ -546,11 +594,13 @@ impl<T: Serialize> crate::IntoResponse for PageResponse<T> {
 // ============================================================================
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_result_code_messages() {
+    fn test_result_code_messages()
+    {
         assert_eq!(ResultCode::Success.message(), "Success");
         assert_eq!(ResultCode::Success.message_zh(), "操作成功");
         assert_eq!(ResultCode::NotFound.message(), "Not Found");
@@ -558,9 +608,11 @@ mod tests {
     }
 
     #[test]
-    fn test_api_response_success() {
+    fn test_api_response_success()
+    {
         #[derive(Serialize)]
-        struct User {
+        struct User
+        {
             id: u64,
             name: String,
         }
@@ -580,7 +632,8 @@ mod tests {
     }
 
     #[test]
-    fn test_api_response_error() {
+    fn test_api_response_error()
+    {
         let response = ApiResponse::not_found();
         assert_eq!(response.code, 404);
         assert_eq!(response.message, "Not Found");
@@ -591,7 +644,8 @@ mod tests {
     }
 
     #[test]
-    fn test_api_response_builder() {
+    fn test_api_response_builder()
+    {
         let response = ApiResponse::bad_request()
             .code(400)
             .message("Invalid input")
@@ -605,7 +659,8 @@ mod tests {
     }
 
     #[test]
-    fn test_page_response() {
+    fn test_page_response()
+    {
         let content = vec![1, 2, 3, 4, 5];
         let page = PageResponse::new(content, 0, 5, 12);
 
@@ -618,7 +673,8 @@ mod tests {
     }
 
     #[test]
-    fn test_page_response_empty() {
+    fn test_page_response_empty()
+    {
         let page = PageResponse::<i32>::empty();
         assert!(page.content.is_empty());
         assert_eq!(page.total_elements, 0);

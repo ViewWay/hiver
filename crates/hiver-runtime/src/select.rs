@@ -26,9 +26,11 @@
 //! }
 //! ```
 
-use std::future::Future;
-use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::{
+    future::Future,
+    pin::Pin,
+    task::{Context, Poll},
+};
 
 /// Select from two futures, returning the first that completes
 /// 从两个future中选择，返回第一个完成的
@@ -62,7 +64,8 @@ where
 
 /// Select future for two futures
 /// 两个future的select future
-pub struct SelectTwo<F1, F2> {
+pub struct SelectTwo<F1, F2>
+{
     future1: Option<F1>,
     future2: Option<F2>,
 }
@@ -74,28 +77,37 @@ where
 {
     type Output = SelectTwoOutput<T1, T2>;
 
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         // Try polling the first future
         // 尝试轮询第一个future
-        if let Some(future1) = &mut self.future1 {
-            match Pin::new(future1).poll(cx) {
-                Poll::Ready(value) => {
+        if let Some(future1) = &mut self.future1
+        {
+            match Pin::new(future1).poll(cx)
+            {
+                Poll::Ready(value) =>
+                {
                     self.future1 = None;
                     return Poll::Ready(SelectTwoOutput::First(value));
                 },
-                Poll::Pending => {},
+                Poll::Pending =>
+                {},
             }
         }
 
         // Try polling the second future
         // 尝试轮询第二个future
-        if let Some(future2) = &mut self.future2 {
-            match Pin::new(future2).poll(cx) {
-                Poll::Ready(value) => {
+        if let Some(future2) = &mut self.future2
+        {
+            match Pin::new(future2).poll(cx)
+            {
+                Poll::Ready(value) =>
+                {
                     self.future2 = None;
                     return Poll::Ready(SelectTwoOutput::Second(value));
                 },
-                Poll::Pending => {},
+                Poll::Pending =>
+                {},
             }
         }
 
@@ -106,7 +118,8 @@ where
 /// Output of selecting between two futures
 /// 两个future之间选择的输出
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SelectTwoOutput<T1, T2> {
+pub enum SelectTwoOutput<T1, T2>
+{
     /// The first future completed
     /// 第一个future完成了
     First(T1),
@@ -129,7 +142,8 @@ where
 
 /// Select future for multiple futures
 /// 多个future的select future
-pub struct SelectMultiple<F> {
+pub struct SelectMultiple<F>
+{
     futures: Vec<F>,
 }
 
@@ -139,15 +153,20 @@ where
 {
     type Output = SelectMultipleOutput<F::Output>;
 
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         // Try polling each future
         // 尝试轮询每个future
-        for (index, future) in self.futures.iter_mut().enumerate() {
-            match Pin::new(future).poll(cx) {
-                Poll::Ready(value) => {
+        for (index, future) in self.futures.iter_mut().enumerate()
+        {
+            match Pin::new(future).poll(cx)
+            {
+                Poll::Ready(value) =>
+                {
                     return Poll::Ready(SelectMultipleOutput::Completed(index, value));
                 },
-                Poll::Pending => {},
+                Poll::Pending =>
+                {},
             }
         }
 
@@ -158,7 +177,8 @@ where
 /// Output of selecting from multiple futures
 /// 从多个future中选择的输出
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SelectMultipleOutput<T> {
+pub enum SelectMultipleOutput<T>
+{
     /// A future completed with its index and value
     /// 一个future完成了，带有其索引和值
     Completed(usize, T),
@@ -166,7 +186,8 @@ pub enum SelectMultipleOutput<T> {
 
 /// Internal helper for select macro binding
 /// select宏绑定的内部辅助
-pub struct SelectMultipleBinding<T> {
+pub struct SelectMultipleBinding<T>
+{
     /// Index of the completed future
     /// 完成的future的索引
     pub index: usize,
@@ -177,38 +198,46 @@ pub struct SelectMultipleBinding<T> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod tests
+{
     use std::task::{Context, Waker};
 
+    use super::*;
+
     #[test]
-    fn test_select_two_output_first() {
+    fn test_select_two_output_first()
+    {
         let output: SelectTwoOutput<i32, i32> = SelectTwoOutput::First(42);
         assert!(matches!(output, SelectTwoOutput::First(42)));
     }
 
     #[test]
-    fn test_select_two_output_second() {
+    fn test_select_two_output_second()
+    {
         let output: SelectTwoOutput<i32, i32> = SelectTwoOutput::Second(100);
         assert!(matches!(output, SelectTwoOutput::Second(100)));
     }
 
     #[test]
-    fn test_select_multiple_output() {
+    fn test_select_multiple_output()
+    {
         let output = SelectMultipleOutput::Completed(0, 42);
         assert!(matches!(output, SelectMultipleOutput::Completed(0, 42)));
     }
 
     #[test]
-    fn test_ready_future() {
+    fn test_ready_future()
+    {
         // Test a future that's immediately ready
         // 测试立即就绪的future
         struct Ready;
 
-        impl Future for Ready {
+        impl Future for Ready
+        {
             type Output = i32;
 
-            fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+            fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+            {
                 Poll::Ready(42)
             }
         }

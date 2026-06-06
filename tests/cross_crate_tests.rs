@@ -6,13 +6,15 @@ use std::sync::Arc;
 // --- core: Container and Flux ---
 
 #[test]
-fn test_core_container_create() {
+fn test_core_container_create()
+{
     use hiver_core::container::Container;
     let _container = Container::new();
 }
 
 #[tokio::test]
-async fn test_core_reactive_flux() {
+async fn test_core_reactive_flux()
+{
     use futures::StreamExt;
     use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5]);
@@ -21,7 +23,8 @@ async fn test_core_reactive_flux() {
 }
 
 #[tokio::test]
-async fn test_core_reactive_flux_backpressure() {
+async fn test_core_reactive_flux_backpressure()
+{
     use futures::StreamExt;
     use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5, 6]);
@@ -33,7 +36,8 @@ async fn test_core_reactive_flux_backpressure() {
 // --- config encryption ---
 
 #[test]
-fn test_config_encryption_round_trip() {
+fn test_config_encryption_round_trip()
+{
     use hiver_config::ConfigEncryptor;
     let encryptor = ConfigEncryptor::new("my-secret-passphrase");
     let plaintext = "my-secret-password";
@@ -45,7 +49,8 @@ fn test_config_encryption_round_trip() {
 }
 
 #[test]
-fn test_config_encryption_non_encrypted_passthrough() {
+fn test_config_encryption_non_encrypted_passthrough()
+{
     use hiver_config::ConfigEncryptor;
     let encryptor = ConfigEncryptor::new("my-secret-passphrase");
     let result = encryptor.maybe_decrypt("just-a-normal-value").unwrap();
@@ -55,22 +60,29 @@ fn test_config_encryption_non_encrypted_passthrough() {
 // --- modulith: module registration and verification ---
 
 #[test]
-fn test_modulith_register_and_verify() {
+fn test_modulith_register_and_verify()
+{
     use hiver_modulith::{Module, ModuleRegistry, verify_modules};
 
     struct ModA;
-    impl Module for ModA {
-        fn name(&self) -> &str {
+    impl Module for ModA
+    {
+        fn name(&self) -> &str
+        {
             "a"
         }
     }
 
     struct ModB;
-    impl Module for ModB {
-        fn name(&self) -> &str {
+    impl Module for ModB
+    {
+        fn name(&self) -> &str
+        {
             "b"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["a"]
         }
     }
@@ -85,25 +97,34 @@ fn test_modulith_register_and_verify() {
 }
 
 #[test]
-fn test_modulith_detects_cycle() {
+fn test_modulith_detects_cycle()
+{
     use hiver_modulith::{Module, ModuleRegistry, verify_modules};
 
     struct ModX;
-    impl Module for ModX {
-        fn name(&self) -> &str {
+    impl Module for ModX
+    {
+        fn name(&self) -> &str
+        {
             "x"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["y"]
         }
     }
 
     struct ModY;
-    impl Module for ModY {
-        fn name(&self) -> &str {
+    impl Module for ModY
+    {
+        fn name(&self) -> &str
+        {
             "y"
         }
-        fn dependencies(&self) -> Vec<&str> {
+
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["x"]
         }
     }
@@ -118,24 +139,22 @@ fn test_modulith_detects_cycle() {
 }
 
 #[tokio::test]
-async fn test_modulith_domain_events() {
+async fn test_modulith_domain_events()
+{
     use hiver_modulith::{DomainEvent, EventPublisher, InMemoryEventPublisher};
     use serde::Serialize;
 
     #[derive(Serialize)]
-    struct UserPayload {
+    struct UserPayload
+    {
         user_id: String,
     }
 
     let publisher = Arc::new(InMemoryEventPublisher::new());
 
-    let event = DomainEvent::new(
-        "user.created",
-        "user-module",
-        UserPayload {
-            user_id: "user-123".to_string(),
-        },
-    );
+    let event = DomainEvent::new("user.created", "user-module", UserPayload {
+        user_id: "user-123".to_string(),
+    });
 
     // Verify event creation
     assert_eq!(event.event_type, "user.created");
@@ -148,15 +167,17 @@ async fn test_modulith_domain_events() {
 // --- statemachine: full lifecycle with persistence ---
 
 #[test]
-fn test_statemachine_with_persistence() {
-    use hiver_state_machine::persist::{
-        InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot,
+fn test_statemachine_with_persistence()
+{
+    use hiver_state_machine::{
+        Event, State, StateMachineBuilder,
+        persist::{InMemoryStateMachineRepository, StateMachinePersist, StateMachineSnapshot},
+        state::StateData,
     };
-    use hiver_state_machine::state::StateData;
-    use hiver_state_machine::{Event, State, StateMachineBuilder};
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum OrderState {
+    enum OrderState
+    {
         Pending,
         Confirmed,
         Shipped,
@@ -164,7 +185,8 @@ fn test_statemachine_with_persistence() {
     impl State for OrderState {}
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum OrderEvent {
+    enum OrderEvent
+    {
         Confirm,
         Ship,
     }
@@ -203,9 +225,12 @@ fn test_statemachine_with_persistence() {
 // --- statemachine: visualization ---
 
 #[test]
-fn test_statemachine_visualization() {
-    use hiver_state_machine::config::{StateConfig, StateMachineConfig, TransitionConfig};
-    use hiver_state_machine::visualizer::{DiagramFormat, StateMachineVisualizer};
+fn test_statemachine_visualization()
+{
+    use hiver_state_machine::{
+        config::{StateConfig, StateMachineConfig, TransitionConfig},
+        visualizer::{DiagramFormat, StateMachineVisualizer},
+    };
 
     let config = StateMachineConfig::new("order", "Pending")
         .add_state(StateConfig::new("Pending"))
@@ -226,12 +251,16 @@ fn test_statemachine_visualization() {
 // --- statemachine: fork/join regions ---
 
 #[test]
-fn test_statemachine_fork_join() {
-    use hiver_state_machine::regions::{ForkJoinRegion, Region};
-    use hiver_state_machine::state::State;
+fn test_statemachine_fork_join()
+{
+    use hiver_state_machine::{
+        regions::{ForkJoinRegion, Region},
+        state::State,
+    };
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum S {
+    enum S
+    {
         A1,
         A2,
         B1,
@@ -259,9 +288,11 @@ fn test_statemachine_fork_join() {
 // --- statemachine: timers ---
 
 #[test]
-fn test_statemachine_timers() {
-    use hiver_state_machine::timer::{StateMachineTimer, TimerScheduler};
+fn test_statemachine_timers()
+{
     use std::time::Duration;
+
+    use hiver_state_machine::timer::{StateMachineTimer, TimerScheduler};
 
     let mut scheduler = TimerScheduler::new();
     scheduler.register(

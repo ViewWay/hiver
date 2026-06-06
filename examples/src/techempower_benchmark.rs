@@ -24,13 +24,15 @@ use serde::{Deserialize, Serialize};
 
 /// Test data / 测试数据
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct World {
+struct World
+{
     id: i32,
     random_number: i32,
 }
 
 /// JSON serialization test / JSON 序列化测试
-fn json() -> Response {
+fn json() -> Response
+{
     let message = "Hello, World!";
     Response::build_ok()
         .header("content-type", "application/json")
@@ -38,7 +40,8 @@ fn json() -> Response {
 }
 
 /// Single database query test / 单数据库查询测试
-fn db_query() -> Response {
+fn db_query() -> Response
+{
     // Simulate database query
     // 模拟数据库查询
     let world = World {
@@ -51,14 +54,18 @@ fn db_query() -> Response {
 }
 
 /// Multiple database queries test / 多数据库查询测试
-fn multiple_queries(query: Option<&str>) -> Response {
+fn multiple_queries(query: Option<&str>) -> Response
+{
     let count = query
         .and_then(|q| {
             q.split('&').find_map(|p| {
                 let mut parts = p.split('=');
-                if parts.next() == Some("queries") {
+                if parts.next() == Some("queries")
+                {
                     parts.next().and_then(|v| v.parse::<usize>().ok())
-                } else {
+                }
+                else
+                {
                     None
                 }
             })
@@ -80,21 +87,26 @@ fn multiple_queries(query: Option<&str>) -> Response {
 }
 
 /// Plaintext test / 纯文本测试
-fn plaintext() -> Response {
+fn plaintext() -> Response
+{
     Response::build_ok()
         .header("content-type", "text/plain")
         .body("Hello, World!")
 }
 
 /// Update test / 更新测试
-fn update(query: Option<&str>) -> Response {
+fn update(query: Option<&str>) -> Response
+{
     let count = query
         .and_then(|q| {
             q.split('&').find_map(|p| {
                 let mut parts = p.split('=');
-                if parts.next() == Some("queries") {
+                if parts.next() == Some("queries")
+                {
                     parts.next().and_then(|v| v.parse::<usize>().ok())
-                } else {
+                }
+                else
+                {
                     None
                 }
             })
@@ -116,7 +128,8 @@ fn update(query: Option<&str>) -> Response {
 }
 
 /// Fortunes template test / Fortune 模板测试
-fn fortunes() -> Response {
+fn fortunes() -> Response
+{
     let fortunes = vec![
         (0, "fortune: No such file or directory"),
         (1, "A computer scientist is someone who fixes things that aren't broken."),
@@ -125,7 +138,8 @@ fn fortunes() -> Response {
 
     let mut html =
         String::from("<!DOCTYPE html><html><head><title>Fortunes</title></head><body><table>");
-    for (id, fortune) in fortunes {
+    for (id, fortune) in fortunes
+    {
         html.push_str(&format!("<tr><td>{}</td><td>{}</td></tr>", id, fortune));
     }
     html.push_str("</table></body></html>");
@@ -150,7 +164,8 @@ fn fortunes() -> Response {
 /// curl http://localhost:8080/fortunes
 /// ```
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>>
+{
     println!("=== TechEmpower Benchmark Server / TechEmpower 基准测试服务器 ===\n");
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
@@ -169,7 +184,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 简单HTTP服务器实现
     use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 
-    loop {
+    loop
+    {
         let (stream, _addr) = listener.accept().await?;
 
         tokio::spawn(async move {
@@ -183,21 +199,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut request_line = String::new();
             reader.read_line(&mut request_line).await.ok();
 
-            if let Some(line) = request_line.strip_suffix("\r\n") {
+            if let Some(line) = request_line.strip_suffix("\r\n")
+            {
                 let parts: Vec<&str> = line.split_whitespace().collect();
-                if parts.len() >= 2 {
+                if parts.len() >= 2
+                {
                     let _method = parts[0]; // Currently only supporting GET / 当前仅支持 GET
                     let path = parts[1];
 
                     // Parse query string / 解析查询字符串
-                    let (path, query) = if let Some(pos) = path.find('?') {
+                    let (path, query) = if let Some(pos) = path.find('?')
+                    {
                         (&path[..pos], Some(&path[pos + 1..]))
-                    } else {
+                    }
+                    else
+                    {
                         (path, None)
                     };
 
                     // Match route and get response / 匹配路由并获取响应
-                    let response = match path {
+                    let response = match path
+                    {
                         "/json" => json(),
                         "/db" => db_query(),
                         "/queries" => multiple_queries(query),

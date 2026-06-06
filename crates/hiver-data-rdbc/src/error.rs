@@ -6,8 +6,9 @@
 //! This module defines error types specific to R2DBC operations.
 //! 本模块定义 R2DBC 操作特定的错误类型。
 
-use hiver_data_commons::Error as DataError;
 use std::fmt;
+
+use hiver_data_commons::Error as DataError;
 
 /// R2DBC error
 /// R2DBC 错误
@@ -15,7 +16,8 @@ use std::fmt;
 /// Errors that can occur during R2DBC operations.
 /// R2DBC 操作期间可能发生的错误。
 #[derive(Debug)]
-pub enum R2dbcError {
+pub enum R2dbcError
+{
     /// SQL error
     /// SQL 错误
     Sql(String),
@@ -57,83 +59,98 @@ pub enum R2dbcError {
     Deserialization(String),
 }
 
-impl R2dbcError {
+impl R2dbcError
+{
     /// Create a SQL error
     /// 创建 SQL 错误
-    pub fn sql(msg: impl Into<String>) -> Self {
+    pub fn sql(msg: impl Into<String>) -> Self
+    {
         Self::Sql(msg.into())
     }
 
     /// Create a connection error
     /// 创建连接错误
-    pub fn connection(msg: impl Into<String>) -> Self {
+    pub fn connection(msg: impl Into<String>) -> Self
+    {
         Self::Connection(msg.into())
     }
 
     /// Create a transaction error
     /// 创建事务错误
-    pub fn transaction(msg: impl Into<String>) -> Self {
+    pub fn transaction(msg: impl Into<String>) -> Self
+    {
         Self::Transaction(msg.into())
     }
 
     /// Create a pool error
     /// 创建连接池错误
-    pub fn pool(msg: impl Into<String>) -> Self {
+    pub fn pool(msg: impl Into<String>) -> Self
+    {
         Self::Pool(msg.into())
     }
 
     /// Create a row mapping error
     /// 创建行映射错误
-    pub fn row_mapping(msg: impl Into<String>) -> Self {
+    pub fn row_mapping(msg: impl Into<String>) -> Self
+    {
         Self::RowMapping(msg.into())
     }
 
     /// Create a timeout error
     /// 创建超时错误
-    pub fn timeout(msg: impl Into<String>) -> Self {
+    pub fn timeout(msg: impl Into<String>) -> Self
+    {
         Self::Timeout(msg.into())
     }
 
     /// Create an unknown error
     /// 创建未知错误
-    pub fn unknown(msg: impl Into<String>) -> Self {
+    pub fn unknown(msg: impl Into<String>) -> Self
+    {
         Self::Unknown(msg.into())
     }
 
     /// Create a deserialization error
     /// 创建反序列化错误
-    pub fn deserialization(msg: impl Into<String>) -> Self {
+    pub fn deserialization(msg: impl Into<String>) -> Self
+    {
         Self::Deserialization(msg.into())
     }
 
     /// Check if this is a connection error
     /// 检查是否为连接错误
-    pub fn is_connection(&self) -> bool {
+    pub fn is_connection(&self) -> bool
+    {
         matches!(self, Self::Connection { .. })
     }
 
     /// Check if this is a timeout error
     /// 检查是否为超时错误
-    pub fn is_timeout(&self) -> bool {
+    pub fn is_timeout(&self) -> bool
+    {
         matches!(self, Self::Timeout { .. })
     }
 
     /// Check if this is a SQL error
     /// 检查是否为 SQL 错误
-    pub fn is_sql(&self) -> bool {
+    pub fn is_sql(&self) -> bool
+    {
         matches!(self, Self::Sql { .. })
     }
 
     /// Check if this is a transaction error
     /// 检查是否为事务错误
-    pub fn is_transaction(&self) -> bool {
+    pub fn is_transaction(&self) -> bool
+    {
         matches!(self, Self::Transaction { .. })
     }
 
     /// Get the error category for logging/metrics
     /// 获取错误类别用于日志/指标
-    pub fn category(&self) -> &str {
-        match self {
+    pub fn category(&self) -> &str
+    {
+        match self
+        {
             Self::Sql(_) => "sql",
             Self::Connection(_) => "connection",
             Self::Transaction(_) => "transaction",
@@ -148,9 +165,12 @@ impl R2dbcError {
     }
 }
 
-impl fmt::Display for R2dbcError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for R2dbcError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Sql(msg) => write!(f, "SQL error: {}", msg),
             Self::Connection(msg) => write!(f, "Connection error: {}", msg),
             Self::Transaction(msg) => write!(f, "Transaction error: {}", msg),
@@ -165,24 +185,32 @@ impl fmt::Display for R2dbcError {
     }
 }
 
-impl std::error::Error for R2dbcError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
+impl std::error::Error for R2dbcError
+{
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+    {
+        match self
+        {
             Self::DataCommons(err) => Some(err),
             _ => None,
         }
     }
 }
 
-impl From<DataError> for R2dbcError {
-    fn from(err: DataError) -> Self {
+impl From<DataError> for R2dbcError
+{
+    fn from(err: DataError) -> Self
+    {
         Self::DataCommons(err)
     }
 }
 
-impl From<sqlx::Error> for R2dbcError {
-    fn from(err: sqlx::Error) -> Self {
-        match err {
+impl From<sqlx::Error> for R2dbcError
+{
+    fn from(err: sqlx::Error) -> Self
+    {
+        match err
+        {
             sqlx::Error::Database(db_err) => Self::Sql(format!(
                 "{}: {}",
                 db_err.message(),
@@ -209,11 +237,13 @@ pub use R2dbcError as Error;
 pub type Result<T> = std::result::Result<T, R2dbcError>;
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_error_categories() {
+    fn test_error_categories()
+    {
         let err = R2dbcError::sql("SELECT failed");
         assert_eq!(err.category(), "sql");
         assert!(err.is_sql());
@@ -224,7 +254,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let err = R2dbcError::sql("syntax error");
         assert_eq!(err.to_string(), "SQL error: syntax error");
 

@@ -19,7 +19,8 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ProducerConfig {
+pub struct ProducerConfig
+{
     /// Bootstrap servers
     /// 引导服务器
     pub bootstrap_servers: String,
@@ -70,8 +71,10 @@ pub struct ProducerConfig {
     pub ssl: bool,
 }
 
-impl Default for ProducerConfig {
-    fn default() -> Self {
+impl Default for ProducerConfig
+{
+    fn default() -> Self
+    {
         Self {
             bootstrap_servers: "localhost:9092".to_string(),
             client_id: default_client_id(),
@@ -87,37 +90,43 @@ impl Default for ProducerConfig {
     }
 }
 
-impl ProducerConfig {
+impl ProducerConfig
+{
     /// Create new producer config
     /// 创建新的生产者配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set bootstrap servers
     /// 设置引导服务器
-    pub fn with_bootstrap_servers(mut self, servers: impl Into<String>) -> Self {
+    pub fn with_bootstrap_servers(mut self, servers: impl Into<String>) -> Self
+    {
         self.bootstrap_servers = servers.into();
         self
     }
 
     /// Set client ID
     /// 设置客户端ID
-    pub fn with_client_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_client_id(mut self, id: impl Into<String>) -> Self
+    {
         self.client_id = id.into();
         self
     }
 
     /// Set acks
     /// 设置确认级别
-    pub fn with_acks(mut self, acks: impl Into<String>) -> Self {
+    pub fn with_acks(mut self, acks: impl Into<String>) -> Self
+    {
         self.acks = acks.into();
         self
     }
 
     /// Set compression type
     /// 设置压缩类型
-    pub fn with_compression(mut self, compression: CompressionType) -> Self {
+    pub fn with_compression(mut self, compression: CompressionType) -> Self
+    {
         self.compression_type = compression;
         self
     }
@@ -126,7 +135,8 @@ impl ProducerConfig {
 /// Compression type
 /// 压缩类型
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub enum CompressionType {
+pub enum CompressionType
+{
     #[default]
     None,
     Gzip,
@@ -152,7 +162,8 @@ pub enum CompressionType {
 /// }
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ConsumerConfig {
+pub struct ConsumerConfig
+{
     /// Bootstrap servers
     /// 引导服务器
     pub bootstrap_servers: String,
@@ -218,8 +229,10 @@ pub struct ConsumerConfig {
     pub ssl: bool,
 }
 
-impl Default for ConsumerConfig {
-    fn default() -> Self {
+impl Default for ConsumerConfig
+{
+    fn default() -> Self
+    {
         Self {
             bootstrap_servers: "localhost:9092".to_string(),
             group_id: default_group_id(),
@@ -238,10 +251,12 @@ impl Default for ConsumerConfig {
     }
 }
 
-impl ConsumerConfig {
+impl ConsumerConfig
+{
     /// Create new consumer config
     /// 创建新的消费者配置
-    pub fn new(group_id: impl Into<String>) -> Self {
+    pub fn new(group_id: impl Into<String>) -> Self
+    {
         Self {
             group_id: group_id.into(),
             ..Self::default()
@@ -250,7 +265,8 @@ impl ConsumerConfig {
 
     /// Set bootstrap servers
     /// 设置引导服务器
-    pub fn with_bootstrap_servers(mut self, servers: impl Into<String>) -> Self {
+    pub fn with_bootstrap_servers(mut self, servers: impl Into<String>) -> Self
+    {
         self.bootstrap_servers = servers.into();
         self
     }
@@ -259,7 +275,8 @@ impl ConsumerConfig {
 /// Auto offset reset policy
 /// 自动偏移重置策略
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub enum AutoOffsetReset {
+pub enum AutoOffsetReset
+{
     Earliest,
     #[default]
     Latest,
@@ -269,7 +286,8 @@ pub enum AutoOffsetReset {
 /// Consumer offset
 /// 消费者偏移
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ConsumerOffset {
+pub struct ConsumerOffset
+{
     /// Topic
     /// 主题
     pub topic: String,
@@ -283,10 +301,12 @@ pub struct ConsumerOffset {
     pub offset: i64,
 }
 
-impl ConsumerOffset {
+impl ConsumerOffset
+{
     /// Create new consumer offset
     /// 创建新的消费者偏移
-    pub fn new(topic: impl Into<String>, partition: i32, offset: i64) -> Self {
+    pub fn new(topic: impl Into<String>, partition: i32, offset: i64) -> Self
+    {
         Self {
             topic: topic.into(),
             partition,
@@ -295,76 +315,94 @@ impl ConsumerOffset {
     }
 }
 
-fn default_client_id() -> String {
+fn default_client_id() -> String
+{
     "hiver-kafka".to_string()
 }
 
-fn default_acks() -> String {
+fn default_acks() -> String
+{
     "all".to_string()
 }
 
-fn default_idempotent() -> bool {
+fn default_idempotent() -> bool
+{
     true
 }
 
-fn default_linger() -> u32 {
+fn default_linger() -> u32
+{
     0
 }
 
-fn default_batch_size() -> u32 {
+fn default_batch_size() -> u32
+{
     16384
 }
 
-fn default_request_timeout() -> u32 {
+fn default_request_timeout() -> u32
+{
     30000
 }
 
-fn default_max_in_flight() -> i32 {
+fn default_max_in_flight() -> i32
+{
     5
 }
 
-fn default_group_id() -> String {
+fn default_group_id() -> String
+{
     "hiver-consumer-group".to_string()
 }
 
-fn default_auto_commit() -> bool {
+fn default_auto_commit() -> bool
+{
     true
 }
 
-fn default_auto_commit_interval() -> u32 {
+fn default_auto_commit_interval() -> u32
+{
     5000
 }
 
-fn default_session_timeout() -> u32 {
+fn default_session_timeout() -> u32
+{
     30000
 }
 
-fn default_max_poll_records() -> i32 {
+fn default_max_poll_records() -> i32
+{
     500
 }
 
-fn default_max_poll_interval() -> u32 {
+fn default_max_poll_interval() -> u32
+{
     300_000
 }
 
-fn default_auto_offset_reset() -> AutoOffsetReset {
+fn default_auto_offset_reset() -> AutoOffsetReset
+{
     AutoOffsetReset::Latest
 }
 
-fn default_fetch_min_bytes() -> i32 {
+fn default_fetch_min_bytes() -> i32
+{
     1
 }
 
-fn default_fetch_max_bytes() -> i32 {
+fn default_fetch_max_bytes() -> i32
+{
     52_428_800
 }
 
-fn default_fetch_max_wait() -> u32 {
+fn default_fetch_max_wait() -> u32
+{
     500
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ── ProducerConfig tests ──────────────────────────────────────────
@@ -372,7 +410,8 @@ mod tests {
     /// Test default producer config values
     /// 测试默认生产者配置值
     #[test]
-    fn test_producer_config_default_values() {
+    fn test_producer_config_default_values()
+    {
         let config = ProducerConfig::default();
         assert_eq!(config.bootstrap_servers, "localhost:9092");
         assert_eq!(config.client_id, "hiver-kafka");
@@ -389,7 +428,8 @@ mod tests {
     /// Test producer config builder methods
     /// 测试生产者配置构建器方法
     #[test]
-    fn test_producer_config_builder() {
+    fn test_producer_config_builder()
+    {
         let config = ProducerConfig::new()
             .with_bootstrap_servers("kafka://broker1:9092,broker2:9092")
             .with_client_id("test-client")
@@ -405,7 +445,8 @@ mod tests {
     /// Test producer config serialization round-trip
     /// 测试生产者配置序列化往返
     #[test]
-    fn test_producer_config_serde_roundtrip() {
+    fn test_producer_config_serde_roundtrip()
+    {
         let config = ProducerConfig::new()
             .with_bootstrap_servers("localhost:9092")
             .with_compression(CompressionType::Lz4);
@@ -421,7 +462,8 @@ mod tests {
     /// Test consumer config with custom group id
     /// 测试带自定义组ID的消费者配置
     #[test]
-    fn test_consumer_config_custom_group() {
+    fn test_consumer_config_custom_group()
+    {
         let config = ConsumerConfig::new("my-group");
         assert_eq!(config.group_id, "my-group");
         assert_eq!(config.bootstrap_servers, "localhost:9092");
@@ -437,7 +479,8 @@ mod tests {
     /// Test consumer config builder methods
     /// 测试消费者配置构建器方法
     #[test]
-    fn test_consumer_config_builder() {
+    fn test_consumer_config_builder()
+    {
         let config =
             ConsumerConfig::new("test-group").with_bootstrap_servers("broker.example.com:9093");
         assert_eq!(config.group_id, "test-group");
@@ -447,7 +490,8 @@ mod tests {
     /// Test consumer config serialization round-trip
     /// 测试消费者配置序列化往返
     #[test]
-    fn test_consumer_config_serde_roundtrip() {
+    fn test_consumer_config_serde_roundtrip()
+    {
         let config = ConsumerConfig::new("serde-group");
         let json = serde_json::to_string(&config).expect("serialize failed");
         let deserialized: ConsumerConfig = serde_json::from_str(&json).expect("deserialize failed");
@@ -461,7 +505,8 @@ mod tests {
     /// Test all compression type variants
     /// 测试所有压缩类型变体
     #[test]
-    fn test_compression_type_variants() {
+    fn test_compression_type_variants()
+    {
         assert_eq!(CompressionType::default(), CompressionType::None);
 
         let variants = vec![
@@ -472,8 +517,10 @@ mod tests {
             CompressionType::Zstd,
         ];
         // Verify all are distinct
-        for i in 0..variants.len() {
-            for j in (i + 1)..variants.len() {
+        for i in 0..variants.len()
+        {
+            for j in (i + 1)..variants.len()
+            {
                 assert_ne!(variants[i], variants[j]);
             }
         }
@@ -484,7 +531,8 @@ mod tests {
     /// Test auto offset reset default and variants
     /// 测试自动偏移重置默认值和变体
     #[test]
-    fn test_auto_offset_reset_default() {
+    fn test_auto_offset_reset_default()
+    {
         assert_eq!(AutoOffsetReset::default(), AutoOffsetReset::Latest);
     }
 
@@ -493,7 +541,8 @@ mod tests {
     /// Test consumer offset construction
     /// 测试消费者偏移构造
     #[test]
-    fn test_consumer_offset_new() {
+    fn test_consumer_offset_new()
+    {
         let offset = ConsumerOffset::new("my-topic", 2, 42);
         assert_eq!(offset.topic, "my-topic");
         assert_eq!(offset.partition, 2);

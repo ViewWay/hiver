@@ -7,17 +7,20 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Getter] derive macro
 /// 实现 #[Getter] 派生宏
-pub fn impl_getter(input: DeriveInput) -> TokenStream {
+pub fn impl_getter(input: DeriveInput) -> TokenStream
+{
     let struct_name = &input.ident;
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data {
+    let fields = match &input.data
+    {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[Getter] can only be used on structs with named fields",
@@ -42,7 +45,8 @@ pub fn impl_getter(input: DeriveInput) -> TokenStream {
                 .any(|seg| seg.ident == "get" || seg.ident == "skip")
         });
 
-        if should_skip {
+        if should_skip
+        {
             return None;
         }
 

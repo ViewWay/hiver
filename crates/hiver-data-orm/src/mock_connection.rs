@@ -8,10 +8,14 @@
 //! 提供在内存中存储数据的桩数据库连接。
 //! 适用于在没有真实数据库的情况下进行测试和开发。
 
-use crate::Result;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
+
 use serde_json::Value;
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+
+use crate::Result;
 
 /// Row of data in a mock table.
 /// 模拟表中的数据行。
@@ -28,15 +32,18 @@ type TableStore = HashMap<String, Vec<RowData>>;
 /// Supports basic `execute` (DDL is a no-op, INSERT/DELETE/UPDATE are simulated)
 /// and `query` (returns the stored rows for a table name extracted from the SQL).
 #[derive(Clone)]
-pub struct Connection {
+pub struct Connection
+{
     url: String,
     tables: Arc<Mutex<TableStore>>,
 }
 
-impl Connection {
+impl Connection
+{
     /// Create a new mock connection from a URL.
     /// 从 URL 创建新的模拟连接。
-    pub fn new(url: &str) -> Result<Self> {
+    pub fn new(url: &str) -> Result<Self>
+    {
         Ok(Self {
             url: url.to_string(),
             tables: Arc::new(Mutex::new(HashMap::new())),
@@ -50,22 +57,29 @@ impl Connection {
     /// - INSERT INTO: adds a row (parsed from simple `VALUES ('k','v',...)` form).
     /// - DROP TABLE: removes the table.
     /// - Everything else is a no-op that returns `Ok(())`.
-    pub fn execute(&self, sql: &str) -> Result<()> {
+    pub fn execute(&self, sql: &str) -> Result<()>
+    {
         let normalized = sql.to_uppercase();
         let sql_trimmed = sql.trim();
 
-        if normalized.starts_with("CREATE TABLE") {
-            if let Some(table) = extract_table_name(sql_trimmed, "CREATE TABLE") {
+        if normalized.starts_with("CREATE TABLE")
+        {
+            if let Some(table) = extract_table_name(sql_trimmed, "CREATE TABLE")
+            {
                 let mut tables = self.tables.lock().unwrap();
                 tables.entry(table).or_default();
             }
-        } else if normalized.starts_with("INSERT INTO") {
-            if let Some(table) = extract_table_name(sql_trimmed, "INSERT INTO") {
+        }
+        else if normalized.starts_with("INSERT INTO")
+        {
+            if let Some(table) = extract_table_name(sql_trimmed, "INSERT INTO")
+            {
                 let row = parse_simple_insert(sql_trimmed);
                 let mut tables = self.tables.lock().unwrap();
                 tables.entry(table).or_default().push(row);
             }
-        } else if normalized.starts_with("DROP TABLE")
+        }
+        else if normalized.starts_with("DROP TABLE")
             && let Some(table) = extract_table_name(sql_trimmed, "DROP TABLE")
         {
             let mut tables = self.tables.lock().unwrap();
@@ -80,7 +94,8 @@ impl Connection {
     ///
     /// Only `SELECT * FROM <table>` style queries are handled by the mock.
     /// Returns an empty vec for unrecognised queries.
-    pub fn query(&self, sql: &str) -> Result<Vec<HashMap<String, Value>>> {
+    pub fn query(&self, sql: &str) -> Result<Vec<HashMap<String, Value>>>
+    {
         let normalized = sql.to_uppercase();
         if normalized.starts_with("SELECT")
             && let Some(table) = extract_table_after_from(sql)
@@ -93,19 +108,23 @@ impl Connection {
 
     /// Close the connection (no-op for the mock).
     /// 关闭连接（对模拟来说是空操作）。
-    pub fn close(&self) -> Result<()> {
+    pub fn close(&self) -> Result<()>
+    {
         Ok(())
     }
 
     /// Get the connection URL.
     /// 获取连接 URL。
-    pub fn url(&self) -> &str {
+    pub fn url(&self) -> &str
+    {
         &self.url
     }
 }
 
-impl std::fmt::Debug for Connection {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for Connection
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("Connection")
             .field("url", &self.url)
             .finish()
@@ -113,7 +132,8 @@ impl std::fmt::Debug for Connection {
 }
 
 /// Extract the table name that follows a keyword like `CREATE TABLE` or `INSERT INTO`.
-fn extract_table_name(sql: &str, prefix: &str) -> Option<String> {
+fn extract_table_name(sql: &str, prefix: &str) -> Option<String>
+{
     let rest = sql.strip_prefix(prefix)?;
     let rest = rest.trim_start();
     // Take the next identifier token
@@ -125,7 +145,8 @@ fn extract_table_name(sql: &str, prefix: &str) -> Option<String> {
 }
 
 /// Very small parser: extract table name after `FROM` in a SELECT.
-fn extract_table_after_from(sql: &str) -> Option<String> {
+fn extract_table_after_from(sql: &str) -> Option<String>
+{
     let upper = sql.to_uppercase();
     let idx = upper.find("FROM")?;
     let rest = sql[idx + 4..].trim_start();
@@ -138,55 +159,83 @@ fn extract_table_after_from(sql: &str) -> Option<String> {
 
 /// Best-effort parsing of `INSERT INTO <table> (col1, col2) VALUES ('v1','v2')`.
 /// Falls back to an empty row on failure.
-fn parse_simple_insert(sql: &str) -> HashMap<String, Value> {
+fn parse_simple_insert(sql: &str) -> HashMap<String, Value>
+{
     let mut row = HashMap::new();
 
     // Try to extract columns
-    let cols: Vec<String> = if let Some(start) = sql.find('(') {
-        if let Some(end) = sql[start..].find(')') {
+    let cols: Vec<String> = if let Some(start) = sql.find('(')
+    {
+        if let Some(end) = sql[start..].find(')')
+        {
             sql[start + 1..start + end]
                 .split(',')
                 .map(|s| s.trim().to_string())
                 .collect()
-        } else {
+        }
+        else
+        {
             return row;
         }
-    } else {
+    }
+    else
+    {
         return row;
     };
 
     // Try to extract VALUES (...)
-    let vals: Vec<String> = if let Some(idx) = sql.to_uppercase().find("VALUES") {
+    let vals: Vec<String> = if let Some(idx) = sql.to_uppercase().find("VALUES")
+    {
         let rest = &sql[idx + 6..];
-        if let Some(start) = rest.find('(') {
-            if let Some(end) = rest[start..].find(')') {
+        if let Some(start) = rest.find('(')
+        {
+            if let Some(end) = rest[start..].find(')')
+            {
                 rest[start + 1..start + end]
                     .split(',')
                     .map(|s| s.trim().trim_matches('\'').to_string())
                     .collect()
-            } else {
+            }
+            else
+            {
                 return row;
             }
-        } else {
+        }
+        else
+        {
             return row;
         }
-    } else {
+    }
+    else
+    {
         return row;
     };
 
-    for (col, val) in cols.iter().zip(vals.iter()) {
+    for (col, val) in cols.iter().zip(vals.iter())
+    {
         // Try to parse as number, fall back to string
-        if let Ok(n) = val.parse::<i64>() {
+        if let Ok(n) = val.parse::<i64>()
+        {
             row.insert(col.clone(), Value::from(n));
-        } else if let Ok(n) = val.parse::<f64>() {
+        }
+        else if let Ok(n) = val.parse::<f64>()
+        {
             row.insert(col.clone(), Value::from(n));
-        } else if val.eq_ignore_ascii_case("true") {
+        }
+        else if val.eq_ignore_ascii_case("true")
+        {
             row.insert(col.clone(), Value::from(true));
-        } else if val.eq_ignore_ascii_case("false") {
+        }
+        else if val.eq_ignore_ascii_case("false")
+        {
             row.insert(col.clone(), Value::from(false));
-        } else if val.eq_ignore_ascii_case("null") {
+        }
+        else if val.eq_ignore_ascii_case("null")
+        {
             row.insert(col.clone(), Value::Null);
-        } else {
+        }
+        else
+        {
             row.insert(col.clone(), Value::from(val.as_str()));
         }
     }
@@ -195,11 +244,13 @@ fn parse_simple_insert(sql: &str) -> HashMap<String, Value> {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_connection_lifecycle() {
+    fn test_connection_lifecycle()
+    {
         let conn = Connection::new("mock://test").unwrap();
         assert_eq!(conn.url(), "mock://test");
 
@@ -220,7 +271,8 @@ mod tests {
     }
 
     #[test]
-    fn test_drop_table() {
+    fn test_drop_table()
+    {
         let conn = Connection::new("mock://test").unwrap();
         conn.execute("CREATE TABLE temp (id INT)").unwrap();
         conn.execute("INSERT INTO temp (id) VALUES (1)").unwrap();
@@ -231,7 +283,8 @@ mod tests {
     }
 
     #[test]
-    fn test_empty_query() {
+    fn test_empty_query()
+    {
         let conn = Connection::new("mock://test").unwrap();
         let rows = conn.query("SELECT * FROM nonexistent").unwrap();
         assert!(rows.is_empty());

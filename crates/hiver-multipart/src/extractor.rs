@@ -20,16 +20,19 @@
 //! }
 //! ```
 
-use crate::{Multipart, MultipartFile, MultipartResult, error::MultipartError};
+use std::collections::HashSet;
+
 // Use hiver_http for Body type instead of http_body crate
 // 使用 hiver_http 的 Body 类型而不是 http_body crate
 use hiver_http::Request;
-use std::collections::HashSet;
+
+use crate::{Multipart, MultipartFile, MultipartResult, error::MultipartError};
 
 /// File type validator
 /// 文件类型验证器
 #[derive(Debug, Clone)]
-pub struct FileValidator {
+pub struct FileValidator
+{
     /// Allowed MIME types
     /// 允许的 MIME 类型
     allowed_types: Option<HashSet<String>>,
@@ -43,10 +46,12 @@ pub struct FileValidator {
     max_size: Option<usize>,
 }
 
-impl FileValidator {
+impl FileValidator
+{
     /// Create a new file validator
     /// 创建新的文件验证器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             allowed_types: None,
             allowed_extensions: None,
@@ -56,7 +61,8 @@ impl FileValidator {
 
     /// Set allowed MIME types
     /// 设置允许的 MIME 类型
-    pub fn allowed_types(mut self, types: impl IntoIterator<Item = impl Into<String>>) -> Self {
+    pub fn allowed_types(mut self, types: impl IntoIterator<Item = impl Into<String>>) -> Self
+    {
         self.allowed_types = Some(types.into_iter().map(Into::into).collect());
         self
     }
@@ -66,7 +72,8 @@ impl FileValidator {
     pub fn allowed_extensions(
         mut self,
         extensions: impl IntoIterator<Item = impl Into<String>>,
-    ) -> Self {
+    ) -> Self
+    {
         self.allowed_extensions = Some(
             extensions
                 .into_iter()
@@ -78,14 +85,16 @@ impl FileValidator {
 
     /// Set maximum file size
     /// 设置最大文件大小
-    pub fn max_size(mut self, size: usize) -> Self {
+    pub fn max_size(mut self, size: usize) -> Self
+    {
         self.max_size = Some(size);
         self
     }
 
     /// Validate a multipart file
     /// 验证 multipart 文件
-    pub fn validate(&self, file: &MultipartFile) -> MultipartResult<()> {
+    pub fn validate(&self, file: &MultipartFile) -> MultipartResult<()>
+    {
         // Check file size
         if let Some(max) = self.max_size
             && file.size() > max
@@ -107,7 +116,8 @@ impl FileValidator {
                 .unwrap_or(content_type)
                 .trim();
 
-            if !allowed.contains(mime) {
+            if !allowed.contains(mime)
+            {
                 return Err(MultipartError::InvalidType {
                     found: mime.to_string(),
                     allowed: allowed.iter().cloned().collect::<Vec<_>>().join(", "),
@@ -130,15 +140,18 @@ impl FileValidator {
     }
 }
 
-impl Default for FileValidator {
-    fn default() -> Self {
+impl Default for FileValidator
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// Common MIME type constants
 /// 常用 MIME 类型常量
-pub mod mime_types {
+pub mod mime_types
+{
     /// Image MIME types / 图片类型
 
     /// JPEG image format
@@ -204,12 +217,14 @@ pub mod mime_types {
     pub const AUDIO_WAV: &str = "audio/wav";
 
     /// Common image types set / 常用图片类型集合
-    pub fn image_types() -> Vec<&'static str> {
+    pub fn image_types() -> Vec<&'static str>
+    {
         vec![IMAGE_JPEG, IMAGE_PNG, IMAGE_GIF, IMAGE_WEBP, IMAGE_SVG]
     }
 
     /// Common document types set / 常用文档类型集合
-    pub fn document_types() -> Vec<&'static str> {
+    pub fn document_types() -> Vec<&'static str>
+    {
         vec![
             APPLICATION_PDF,
             APPLICATION_JSON,
@@ -223,7 +238,8 @@ pub mod mime_types {
 /// Multipart extractor configuration
 /// Multipart 提取器配置
 #[derive(Debug, Clone)]
-pub struct MultipartConfig {
+pub struct MultipartConfig
+{
     /// Maximum file size
     /// 最大文件大小
     pub max_file_size: usize,
@@ -237,8 +253,10 @@ pub struct MultipartConfig {
     pub file_validator: Option<FileValidator>,
 }
 
-impl Default for MultipartConfig {
-    fn default() -> Self {
+impl Default for MultipartConfig
+{
+    fn default() -> Self
+    {
         Self {
             max_file_size: crate::DEFAULT_MAX_FILE_SIZE,
             max_buffer_size: crate::DEFAULT_MAX_BUFFER_SIZE,
@@ -247,30 +265,35 @@ impl Default for MultipartConfig {
     }
 }
 
-impl MultipartConfig {
+impl MultipartConfig
+{
     /// Create a new multipart config
     /// 创建新的 multipart 配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set maximum file size
     /// 设置最大文件大小
-    pub fn max_file_size(mut self, size: usize) -> Self {
+    pub fn max_file_size(mut self, size: usize) -> Self
+    {
         self.max_file_size = size;
         self
     }
 
     /// Set maximum buffer size
     /// 设置最大缓冲区大小
-    pub fn max_buffer_size(mut self, size: usize) -> Self {
+    pub fn max_buffer_size(mut self, size: usize) -> Self
+    {
         self.max_buffer_size = size;
         self
     }
 
     /// Set file validator
     /// 设置文件验证器
-    pub fn file_validator(mut self, validator: FileValidator) -> Self {
+    pub fn file_validator(mut self, validator: FileValidator) -> Self
+    {
         self.file_validator = Some(validator);
         self
     }
@@ -282,7 +305,8 @@ impl MultipartConfig {
 /// Equivalent to Spring's `@RequestPart`.
 /// 等价于 Spring 的 `@RequestPart`。
 #[derive(Debug)]
-pub struct Part<T> {
+pub struct Part<T>
+{
     /// The extracted value
     /// 提取的值
     pub inner: T,
@@ -300,7 +324,8 @@ pub struct Part<T> {
     pub content_type: Option<String>,
 }
 
-impl<T> Part<T> {
+impl<T> Part<T>
+{
     /// Create a new part
     /// 创建新的 part
     pub fn new(
@@ -308,7 +333,8 @@ impl<T> Part<T> {
         name: String,
         filename: Option<String>,
         content_type: Option<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             inner,
             name,
@@ -333,13 +359,15 @@ impl<T> Part<T> {
 
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.inner
     }
 
     /// Get the inner value
     /// 获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.inner
     }
 }
@@ -352,10 +380,8 @@ impl<T> Part<T> {
 ///
 /// # Parameters / 参数
 ///
-/// * `req` - The HTTP request to extract multipart data from
-///          从中提取多部分数据的 HTTP 请求
-/// * `config` - Configuration for multipart processing
-///            多部分处理的配置
+/// * `req` - The HTTP request to extract multipart data from 从中提取多部分数据的 HTTP 请求
+/// * `config` - Configuration for multipart processing 多部分处理的配置
 ///
 /// # Returns / 返回
 ///
@@ -368,7 +394,8 @@ impl<T> Part<T> {
 pub async fn extract_multipart(
     req: &Request,
     config: &MultipartConfig,
-) -> MultipartResult<Multipart> {
+) -> MultipartResult<Multipart>
+{
     // Get content type header
     // 获取 content-type 头部
     let content_type = req
@@ -379,7 +406,8 @@ pub async fn extract_multipart(
 
     // Check if it's multipart
     // 检查是否为 multipart
-    if !content_type.starts_with("multipart/form-data") {
+    if !content_type.starts_with("multipart/form-data")
+    {
         return Err(MultipartError::InvalidRequest(
             "Invalid Content-Type, expected multipart/form-data".to_string(),
         ));
@@ -402,11 +430,13 @@ pub async fn extract_multipart(
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_file_validator_new() {
+    fn test_file_validator_new()
+    {
         let validator = FileValidator::new();
         assert!(validator.allowed_types.is_none());
         assert!(validator.allowed_extensions.is_none());
@@ -414,7 +444,8 @@ mod tests {
     }
 
     #[test]
-    fn test_file_validator_allowed_types() {
+    fn test_file_validator_allowed_types()
+    {
         let types = vec!["image/jpeg", "image/png"];
         let validator = FileValidator::new().allowed_types(types);
         assert!(validator.allowed_types.is_some());
@@ -424,7 +455,8 @@ mod tests {
     }
 
     #[test]
-    fn test_file_validator_allowed_extensions() {
+    fn test_file_validator_allowed_extensions()
+    {
         let extensions = vec!["jpg", "png", "gif"];
         let validator = FileValidator::new().allowed_extensions(extensions);
         assert!(validator.allowed_extensions.is_some());
@@ -434,20 +466,23 @@ mod tests {
     }
 
     #[test]
-    fn test_file_validator_max_size() {
+    fn test_file_validator_max_size()
+    {
         let validator = FileValidator::new().max_size(1024 * 1024);
         assert_eq!(validator.max_size, Some(1024 * 1024));
     }
 
     #[test]
-    fn test_mime_types_constants() {
+    fn test_mime_types_constants()
+    {
         assert_eq!(mime_types::IMAGE_JPEG, "image/jpeg");
         assert_eq!(mime_types::IMAGE_PNG, "image/png");
         assert_eq!(mime_types::APPLICATION_PDF, "application/pdf");
     }
 
     #[test]
-    fn test_mime_types_helpers() {
+    fn test_mime_types_helpers()
+    {
         let image_types = mime_types::image_types();
         assert!(image_types.contains(&mime_types::IMAGE_JPEG));
         assert!(image_types.contains(&mime_types::IMAGE_PNG));
@@ -457,7 +492,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multipart_config_default() {
+    fn test_multipart_config_default()
+    {
         let config = MultipartConfig::default();
         assert_eq!(config.max_file_size, crate::DEFAULT_MAX_FILE_SIZE);
         assert_eq!(config.max_buffer_size, crate::DEFAULT_MAX_BUFFER_SIZE);
@@ -465,7 +501,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multipart_config_builder() {
+    fn test_multipart_config_builder()
+    {
         let validator = FileValidator::new().max_size(1024);
         let config = MultipartConfig::new()
             .max_file_size(2048)
@@ -478,7 +515,8 @@ mod tests {
     }
 
     #[test]
-    fn test_part_new() {
+    fn test_part_new()
+    {
         let part = Part::new(
             "test data".to_string(),
             "field".to_string(),
@@ -493,7 +531,8 @@ mod tests {
     }
 
     #[test]
-    fn test_part_map() {
+    fn test_part_map()
+    {
         let part = Part::new(42, "num".to_string(), None, None);
         let mapped = part.map(|x| x * 2);
 
@@ -502,13 +541,15 @@ mod tests {
     }
 
     #[test]
-    fn test_part_get() {
+    fn test_part_get()
+    {
         let part = Part::new("value".to_string(), "key".to_string(), None, None);
         assert_eq!(part.get(), &"value".to_string());
     }
 
     #[test]
-    fn test_part_into_inner() {
+    fn test_part_into_inner()
+    {
         let part = Part::new("value".to_string(), "key".to_string(), None, None);
         assert_eq!(part.into_inner(), "value".to_string());
     }

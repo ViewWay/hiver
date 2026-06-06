@@ -27,7 +27,8 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CacheConfig {
+pub struct CacheConfig
+{
     /// Default cache names for methods in this class
     /// 此类中方法的默认缓存名称
     #[serde(default)]
@@ -54,14 +55,17 @@ pub struct CacheConfig {
     pub enable_cache: bool,
 }
 
-fn default_enable_cache() -> bool {
+fn default_enable_cache() -> bool
+{
     true
 }
 
-impl CacheConfig {
+impl CacheConfig
+{
     /// Create a new cache configuration
     /// 创建新的缓存配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             cache_names: Vec::new(),
             key_generator: None,
@@ -73,49 +77,57 @@ impl CacheConfig {
 
     /// Set cache names
     /// 设置缓存名称
-    pub fn cache_names(mut self, names: Vec<String>) -> Self {
+    pub fn cache_names(mut self, names: Vec<String>) -> Self
+    {
         self.cache_names = names;
         self
     }
 
     /// Add a cache name
     /// 添加缓存名称
-    pub fn add_cache_name(mut self, name: impl Into<String>) -> Self {
+    pub fn add_cache_name(mut self, name: impl Into<String>) -> Self
+    {
         self.cache_names.push(name.into());
         self
     }
 
     /// Set key generator
     /// 设置key生成器
-    pub fn key_generator(mut self, generator: impl Into<String>) -> Self {
+    pub fn key_generator(mut self, generator: impl Into<String>) -> Self
+    {
         self.key_generator = Some(generator.into());
         self
     }
 
     /// Set cache resolver
     /// 设置缓存解析器
-    pub fn cache_resolver(mut self, resolver: impl Into<String>) -> Self {
+    pub fn cache_resolver(mut self, resolver: impl Into<String>) -> Self
+    {
         self.cache_resolver = Some(resolver.into());
         self
     }
 
     /// Set cache manager
     /// 设置缓存管理器
-    pub fn cache_manager(mut self, manager: impl Into<String>) -> Self {
+    pub fn cache_manager(mut self, manager: impl Into<String>) -> Self
+    {
         self.cache_manager = Some(manager.into());
         self
     }
 
     /// Enable or disable caching
     /// 启用或禁用缓存
-    pub fn enable_cache(mut self, enable: bool) -> Self {
+    pub fn enable_cache(mut self, enable: bool) -> Self
+    {
         self.enable_cache = enable;
         self
     }
 }
 
-impl Default for CacheConfig {
-    fn default() -> Self {
+impl Default for CacheConfig
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -137,7 +149,8 @@ impl Default for CacheConfig {
 ///       spec: maximumSize=1000,expireAfterWrite=10m
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct CacheProperties {
+pub(crate) struct CacheProperties
+{
     /// Cache type (simple, caffeine, redis, etc.)
     /// 缓存类型（simple, caffeine, redis等）
     #[serde(default = "default_cache_type")]
@@ -164,18 +177,21 @@ pub(crate) struct CacheProperties {
     pub provider: Option<String>,
 }
 
-fn default_cache_type() -> String {
+fn default_cache_type() -> String
+{
     "simple".to_string()
 }
 
-fn default_cache_stats() -> bool {
+fn default_cache_stats() -> bool
+{
     true
 }
 
 /// Cache specification
 /// 缓存规范
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct CacheSpec {
+pub(crate) struct CacheSpec
+{
     /// Maximum cache size
     /// 最大缓存大小
     #[serde(default = "default_max_size")]
@@ -197,12 +213,15 @@ pub(crate) struct CacheSpec {
     pub key_prefix: Option<String>,
 }
 
-fn default_max_size() -> usize {
+fn default_max_size() -> usize
+{
     10_000
 }
 
-impl Default for CacheSpec {
-    fn default() -> Self {
+impl Default for CacheSpec
+{
+    fn default() -> Self
+    {
         Self {
             max_size: default_max_size(),
             ttl_secs: None,
@@ -212,8 +231,10 @@ impl Default for CacheSpec {
     }
 }
 
-impl Default for CacheProperties {
-    fn default() -> Self {
+impl Default for CacheProperties
+{
+    fn default() -> Self
+    {
         Self {
             r#type: default_cache_type(),
             cache_names: Vec::new(),
@@ -230,7 +251,8 @@ impl Default for CacheProperties {
 /// Equivalent to Spring Boot's `@EnableCaching` configuration.
 /// 等价于Spring Boot的`@EnableCaching`配置。
 #[derive(Debug, Clone, Default)]
-pub(crate) struct EnableCaching {
+pub(crate) struct EnableCaching
+{
     /// Cache manager to use
     /// 要使用的缓存管理器
     pub cache_manager: Option<String>,
@@ -251,7 +273,8 @@ pub(crate) struct EnableCaching {
 /// Cache error handling mode
 /// 缓存错误处理模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum CacheErrorHandler {
+pub(crate) enum CacheErrorHandler
+{
     /// Throw exception on error
     /// 错误时抛出异常
     Throw,
@@ -266,11 +289,13 @@ pub(crate) enum CacheErrorHandler {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_cache_config() {
+    fn test_cache_config()
+    {
         let config = CacheConfig::new()
             .add_cache_name("users")
             .add_cache_name("userProfiles")
@@ -283,13 +308,15 @@ mod tests {
     }
 
     #[test]
-    fn test_cache_spec_default() {
+    fn test_cache_spec_default()
+    {
         let spec = CacheSpec::default();
         assert_eq!(spec.max_size, 10_000);
     }
 
     #[test]
-    fn test_cache_properties_default() {
+    fn test_cache_properties_default()
+    {
         let props = CacheProperties::default();
         assert_eq!(props.r#type, "simple");
         assert!(props.cache_stats);

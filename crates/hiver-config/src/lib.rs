@@ -69,7 +69,8 @@ pub use value::{Value, ValueExtractor};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         Config, ConfigBuilder, Environment, Profile, PropertiesConfig, PropertySource, Value,
         ValueExtractor,

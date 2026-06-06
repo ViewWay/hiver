@@ -11,7 +11,8 @@ use crate::{Error, Result};
 /// Column type
 /// 列类型
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ColumnType {
+pub enum ColumnType
+{
     /// Boolean type
     Bool,
     /// 8-bit signed integer
@@ -62,10 +63,13 @@ pub enum ColumnType {
     Custom(String),
 }
 
-impl ColumnType {
+impl ColumnType
+{
     /// Get the SQL type name for a given database
-    pub fn as_sql(&self, dialect: SqlDialect) -> &str {
-        match (self, dialect) {
+    pub fn as_sql(&self, dialect: SqlDialect) -> &str
+    {
+        match (self, dialect)
+        {
             (ColumnType::Bool, _) => "BOOLEAN",
             (ColumnType::I32, SqlDialect::PostgreSQL) => "INTEGER",
             (ColumnType::I32, SqlDialect::MySQL) => "INT",
@@ -83,7 +87,8 @@ impl ColumnType {
 
 /// SQL dialect
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SqlDialect {
+pub enum SqlDialect
+{
     /// PostgreSQL dialect
     PostgreSQL,
     /// MySQL dialect
@@ -94,7 +99,8 @@ pub enum SqlDialect {
 
 /// Column metadata
 #[derive(Debug, Clone)]
-pub struct Column {
+pub struct Column
+{
     /// Column name
     pub name: String,
     /// Column type
@@ -111,9 +117,11 @@ pub struct Column {
     pub max_length: Option<usize>,
 }
 
-impl Column {
+impl Column
+{
     /// Create a new column definition
-    pub fn new(name: impl Into<String>, type_: ColumnType) -> Self {
+    pub fn new(name: impl Into<String>, type_: ColumnType) -> Self
+    {
         Self {
             name: name.into(),
             type_,
@@ -126,25 +134,29 @@ impl Column {
     }
 
     /// Mark this column as a primary key
-    pub fn primary_key(mut self) -> Self {
+    pub fn primary_key(mut self) -> Self
+    {
         self.is_primary_key = true;
         self
     }
 
     /// Mark this column as nullable
-    pub fn nullable(mut self) -> Self {
+    pub fn nullable(mut self) -> Self
+    {
         self.is_nullable = true;
         self
     }
 
     /// Mark this column as unique
-    pub fn unique(mut self) -> Self {
+    pub fn unique(mut self) -> Self
+    {
         self.is_unique = true;
         self
     }
 
     /// Set the default value for this column
-    pub fn with_default(mut self, default: impl Into<String>) -> Self {
+    pub fn with_default(mut self, default: impl Into<String>) -> Self
+    {
         self.default = Some(default.into());
         self
     }
@@ -152,16 +164,19 @@ impl Column {
 
 /// Model metadata
 #[derive(Debug, Clone)]
-pub struct ModelMeta {
+pub struct ModelMeta
+{
     /// Table name
     pub table_name: String,
     /// Column definitions
     pub columns: Vec<Column>,
 }
 
-impl ModelMeta {
+impl ModelMeta
+{
     /// Create new model metadata with the given table name
-    pub fn new(table_name: impl Into<String>) -> Self {
+    pub fn new(table_name: impl Into<String>) -> Self
+    {
         Self {
             table_name: table_name.into(),
             columns: Vec::new(),
@@ -169,20 +184,23 @@ impl ModelMeta {
     }
 
     /// Add a column to the model metadata
-    pub fn add_column(mut self, column: Column) -> Self {
+    pub fn add_column(mut self, column: Column) -> Self
+    {
         self.columns.push(column);
         self
     }
 
     /// Get the table name
-    pub fn table_name(&self) -> &str {
+    pub fn table_name(&self) -> &str
+    {
         &self.table_name
     }
 }
 
 /// Model trait
 /// Model trait
-pub trait Model: Send + Sync {
+pub trait Model: Send + Sync
+{
     /// Get the model metadata
     fn meta() -> ModelMeta;
 
@@ -195,17 +213,20 @@ pub trait Model: Send + Sync {
     }
 
     /// Get the primary key value (placeholder)
-    fn primary_key(&self) -> Result<String> {
+    fn primary_key(&self) -> Result<String>
+    {
         Err(Error::unknown("Primary key not implemented"))
     }
 
     /// Set the primary key value (placeholder)
-    fn set_primary_key(&mut self, _value: String) -> Result<()> {
+    fn set_primary_key(&mut self, _value: String) -> Result<()>
+    {
         Err(Error::unknown("Set primary key not implemented"))
     }
 
     /// Validate the model
-    fn validate(&self) -> Result<()> {
+    fn validate(&self) -> Result<()>
+    {
         Ok(())
     }
 
@@ -269,17 +290,20 @@ pub trait Model: Send + Sync {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_column_type_sql() {
+    fn test_column_type_sql()
+    {
         assert_eq!(ColumnType::I32.as_sql(SqlDialect::PostgreSQL), "INTEGER");
         assert_eq!(ColumnType::String.as_sql(SqlDialect::PostgreSQL), "VARCHAR");
     }
 
     #[test]
-    fn test_model_meta() {
+    fn test_model_meta()
+    {
         let meta =
             ModelMeta::new("users").add_column(Column::new("id", ColumnType::I64).primary_key());
 

@@ -4,8 +4,9 @@
 //! # Equivalent to Spring's @`ExceptionHandler`
 //! # 等价于 Spring 的 @`ExceptionHandler`
 
-use hiver_http::Response;
 use std::fmt::Debug;
+
+use hiver_http::Response;
 
 /// Result type for exception handlers
 /// 异常处理器的 Result 类型
@@ -32,7 +33,8 @@ pub type HandlerResult = Response;
 ///     }
 /// }
 /// ```
-pub trait ExceptionHandler<E>: Send + Sync {
+pub trait ExceptionHandler<E>: Send + Sync
+{
     /// Handle the exception and return a response
     /// 处理异常并返回响应
     ///
@@ -52,7 +54,8 @@ pub trait ExceptionHandler<E>: Send + Sync {
     /// Default is 100. Use lower values for more specific handlers.
     /// 默认为100。更具体的处理器使用更小的值。
     #[inline]
-    fn priority(&self) -> i32 {
+    fn priority(&self) -> i32
+    {
         100
     }
 }
@@ -64,25 +67,31 @@ where
     E: Debug + Clone + Send + 'static,
     F: Fn(E, &hiver_http::Request) -> HandlerResult + Send + Sync,
 {
-    fn handle(&self, error: E, request: &hiver_http::Request) -> HandlerResult {
+    fn handle(&self, error: E, request: &hiver_http::Request) -> HandlerResult
+    {
         self(error, request)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_exception_handler_trait_exists() {
+    fn test_exception_handler_trait_exists()
+    {
         // Verify the trait can be used as a bound
-        fn check<T: ExceptionHandler<String>>(_handler: &T) -> bool {
+        fn check<T: ExceptionHandler<String>>(_handler: &T) -> bool
+        {
             true
         }
 
         struct TestHandler;
-        impl ExceptionHandler<String> for TestHandler {
-            fn handle(&self, _error: String, _req: &hiver_http::Request) -> HandlerResult {
+        impl ExceptionHandler<String> for TestHandler
+        {
+            fn handle(&self, _error: String, _req: &hiver_http::Request) -> HandlerResult
+            {
                 Response::internal_server_error()
             }
         }

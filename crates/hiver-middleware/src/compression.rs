@@ -32,9 +32,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
+use std::{future::Future, pin::Pin, sync::Arc};
 
 use hiver_http::{Body, Response, Result};
 use hiver_router::{Middleware, Next};
@@ -42,7 +40,8 @@ use hiver_router::{Middleware, Next};
 /// Compression type
 /// 压缩类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CompressionType {
+pub enum CompressionType
+{
     /// Gzip compression
     /// Gzip压缩
     Gzip,
@@ -60,11 +59,14 @@ pub enum CompressionType {
     None,
 }
 
-impl CompressionType {
+impl CompressionType
+{
     /// Get the content encoding value
     /// 获取内容编码值
-    pub fn as_str(&self) -> &'static str {
-        match self {
+    pub fn as_str(&self) -> &'static str
+    {
+        match self
+        {
             CompressionType::Gzip => "gzip",
             CompressionType::Deflate => "deflate",
             CompressionType::Brotli => "br",
@@ -74,8 +76,10 @@ impl CompressionType {
 
     /// Parse from Accept-Encoding header value
     /// 从 Accept-Encoding 头部值解析
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s.trim() {
+    pub fn from_str(s: &str) -> Option<Self>
+    {
+        match s.trim()
+        {
             "gzip" => Some(CompressionType::Gzip),
             "deflate" => Some(CompressionType::Deflate),
             "br" => Some(CompressionType::Brotli),
@@ -86,17 +90,21 @@ impl CompressionType {
 
     /// Parse quality value from Accept-Encoding (e.g., "gzip; q=0.8")
     /// 从 Accept-Encoding 解析质量值（例如 "gzip; q=0.8"）
-    pub fn parse_with_quality(s: &str) -> (Option<Self>, f32) {
+    pub fn parse_with_quality(s: &str) -> (Option<Self>, f32)
+    {
         let parts: Vec<&str> = s.split(';').collect();
         let compression = Self::from_str(parts.first().unwrap_or(&""));
 
-        let quality = if parts.len() > 1 {
+        let quality = if parts.len() > 1
+        {
             parts[1]
                 .trim()
                 .strip_prefix("q=")
                 .and_then(|q| q.parse::<f32>().ok())
                 .unwrap_or(1.0)
-        } else {
+        }
+        else
+        {
             1.0
         };
 
@@ -117,7 +125,8 @@ impl CompressionType {
 /// - `GzipFilter`, `DeflateFilter`
 /// - `ContentEncodingFilter`
 #[derive(Clone)]
-pub struct CompressionMiddleware {
+pub struct CompressionMiddleware
+{
     /// Minimum response size to compress (bytes)
     /// 压缩的最小响应大小（字节）
     pub min_response_size: usize,
@@ -139,10 +148,12 @@ pub struct CompressionMiddleware {
     pub compression_level: u8,
 }
 
-impl CompressionMiddleware {
+impl CompressionMiddleware
+{
     /// Create a new compression middleware
     /// 创建新的压缩中间件
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             min_response_size: 1024,
             compression_types: vec![CompressionType::Gzip, CompressionType::Deflate],
@@ -163,53 +174,62 @@ impl CompressionMiddleware {
 
     /// Set minimum response size
     /// 设置最小响应大小
-    pub fn min_size(mut self, size: usize) -> Self {
+    pub fn min_size(mut self, size: usize) -> Self
+    {
         self.min_response_size = size;
         self
     }
 
     /// Add a compression type
     /// 添加压缩类型
-    pub fn add_compression(mut self, compression: CompressionType) -> Self {
+    pub fn add_compression(mut self, compression: CompressionType) -> Self
+    {
         self.compression_types.push(compression);
         self
     }
 
     /// Add MIME types to compress
     /// 添加要压缩的MIME类型
-    pub fn mime_type(mut self, mime: impl Into<String>) -> Self {
+    pub fn mime_type(mut self, mime: impl Into<String>) -> Self
+    {
         self.mime_types.push(mime.into());
         self
     }
 
     /// Add excluded user agent
     /// 添加排除的用户代理
-    pub fn exclude_agent(mut self, agent: impl Into<String>) -> Self {
+    pub fn exclude_agent(mut self, agent: impl Into<String>) -> Self
+    {
         self.excluded_agents.push(agent.into());
         self
     }
 
     /// Set compression level (0-9)
     /// 设置压缩级别（0-9）
-    pub fn level(mut self, level: u8) -> Self {
+    pub fn level(mut self, level: u8) -> Self
+    {
         self.compression_level = level.min(9);
         self
     }
 
     /// Select the best compression type based on Accept-Encoding header
     /// 根据 Accept-Encoding 头部选择最佳压缩类型
-    fn select_compression(&self, accept_encoding: &str) -> Option<CompressionType> {
-        if accept_encoding.is_empty() {
+    fn select_compression(&self, accept_encoding: &str) -> Option<CompressionType>
+    {
+        if accept_encoding.is_empty()
+        {
             return None;
         }
 
         let mut best_type: Option<CompressionType> = None;
         let mut best_quality = 0.0;
 
-        for encoding in accept_encoding.split(',') {
+        for encoding in accept_encoding.split(',')
+        {
             let (compression, quality) = CompressionType::parse_with_quality(encoding);
 
-            if let Some(comp) = compression {
+            if let Some(comp) = compression
+            {
                 // Check if we support this compression type
                 // Note: CompressionType::None is not in compression_types, but may be selected
                 // 检查我们是否支持这种压缩类型
@@ -217,7 +237,8 @@ impl CompressionMiddleware {
                 let is_supported =
                     comp == CompressionType::None || self.compression_types.contains(&comp);
 
-                if is_supported && quality > best_quality {
+                if is_supported && quality > best_quality
+                {
                     best_type = Some(comp);
                     best_quality = quality;
                 }
@@ -229,67 +250,82 @@ impl CompressionMiddleware {
 
     /// Check if response should be compressed based on MIME type
     /// 根据 MIME 类型检查是否应该压缩响应
-    fn should_compress_mime(&self, content_type: Option<&str>) -> bool {
-        if let Some(ct) = content_type {
+    fn should_compress_mime(&self, content_type: Option<&str>) -> bool
+    {
+        if let Some(ct) = content_type
+        {
             // Extract MIME type without charset (e.g., "text/html; charset=utf-8")
             // 提取不带字符集的 MIME 类型（例如 "text/html; charset=utf-8"）
             let mime = ct.split(';').next().unwrap_or(ct).trim();
             self.mime_types.iter().any(|m| m == mime)
-        } else {
+        }
+        else
+        {
             true // No content type header, attempt compression / 没有内容类型头部，尝试压缩
         }
     }
 
     /// Check if user agent is excluded
     /// 检查用户代理是否被排除
-    fn is_agent_excluded(&self, user_agent: Option<&str>) -> bool {
-        if let Some(ua) = user_agent {
+    fn is_agent_excluded(&self, user_agent: Option<&str>) -> bool
+    {
+        if let Some(ua) = user_agent
+        {
             self.excluded_agents
                 .iter()
                 .any(|excluded| ua.contains(excluded.as_str()))
-        } else {
+        }
+        else
+        {
             false
         }
     }
 
     /// Check if response body size meets minimum size requirement
     /// 检查响应体大小是否满足最小大小要求
-    fn meets_min_size(&self, body: &Body) -> bool {
+    fn meets_min_size(&self, body: &Body) -> bool
+    {
         body.data().len() >= self.min_response_size
     }
 
     /// Compress response body using the specified compression type
     /// 使用指定的压缩类型压缩响应体
     #[cfg(feature = "compression")]
-    fn compress_body(&self, body: Body, compression: CompressionType) -> Result<Body> {
+    fn compress_body(&self, body: Body, compression: CompressionType) -> Result<Body>
+    {
         let body_bytes = body.data();
 
         // Check if body is large enough to compress
         // 检查正文是否足够大以进行压缩
-        if body_bytes.len() < self.min_response_size {
+        if body_bytes.len() < self.min_response_size
+        {
             return Ok(Body::from_bytes(body_bytes.clone()));
         }
 
         // Compress based on type / 根据类型压缩
-        let compressed = match compression {
+        let compressed = match compression
+        {
             #[cfg(all(feature = "compression", feature = "gzip"))]
             CompressionType::Gzip => self.compress_gzip(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "gzip")))]
-            CompressionType::Gzip => {
+            CompressionType::Gzip =>
+            {
                 tracing::warn!("Gzip compression requested but feature not enabled");
                 body_bytes.clone()
             },
             #[cfg(all(feature = "compression", feature = "deflate"))]
             CompressionType::Deflate => self.compress_deflate(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "deflate")))]
-            CompressionType::Deflate => {
+            CompressionType::Deflate =>
+            {
                 tracing::warn!("Deflate compression requested but feature not enabled");
                 body_bytes.clone()
             },
             #[cfg(all(feature = "compression", feature = "brotli"))]
             CompressionType::Brotli => self.compress_brotli(body_bytes)?,
             #[cfg(all(feature = "compression", not(feature = "brotli")))]
-            CompressionType::Brotli => {
+            CompressionType::Brotli =>
+            {
                 tracing::warn!("Brotli compression requested but feature not enabled");
                 body_bytes.clone()
             },
@@ -302,10 +338,11 @@ impl CompressionMiddleware {
     /// Compress data using gzip
     /// 使用 gzip 压缩数据
     #[cfg(all(feature = "compression", feature = "gzip"))]
-    fn compress_gzip(&self, data: &Bytes) -> Result<Bytes> {
-        use flate2::Compression;
-        use flate2::write::GzEncoder;
+    fn compress_gzip(&self, data: &Bytes) -> Result<Bytes>
+    {
         use std::io::Write;
+
+        use flate2::{Compression, write::GzEncoder};
 
         let mut encoder =
             GzEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
@@ -322,10 +359,11 @@ impl CompressionMiddleware {
     /// Compress data using deflate
     /// 使用 deflate 压缩数据
     #[cfg(all(feature = "compression", feature = "deflate"))]
-    fn compress_deflate(&self, data: &Bytes) -> Result<Bytes> {
-        use flate2::Compression;
-        use flate2::write::ZlibEncoder;
+    fn compress_deflate(&self, data: &Bytes) -> Result<Bytes>
+    {
         use std::io::Write;
+
+        use flate2::{Compression, write::ZlibEncoder};
 
         let mut encoder =
             ZlibEncoder::new(Vec::new(), Compression::new(self.compression_level.into()));
@@ -342,9 +380,11 @@ impl CompressionMiddleware {
     /// Compress data using brotli
     /// 使用 brotli 压缩数据
     #[cfg(all(feature = "compression", feature = "brotli"))]
-    fn compress_brotli(&self, data: &Bytes) -> Result<Bytes> {
-        use brotli::CompressorWriter;
+    fn compress_brotli(&self, data: &Bytes) -> Result<Bytes>
+    {
         use std::io::Write;
+
+        use brotli::CompressorWriter;
 
         let mut compressed = Vec::new();
         {
@@ -366,13 +406,16 @@ impl CompressionMiddleware {
     /// No-op compression when feature is disabled
     /// 功能禁用时不压缩
     #[cfg(not(feature = "compression"))]
-    fn compress_body(&self, body: Body, _compression: CompressionType) -> Result<Body> {
+    fn compress_body(&self, body: Body, _compression: CompressionType) -> Result<Body>
+    {
         Ok(body)
     }
 }
 
-impl Default for CompressionMiddleware {
-    fn default() -> Self {
+impl Default for CompressionMiddleware
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -386,7 +429,8 @@ where
         req: hiver_http::Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
+    {
         let min_size = self.min_response_size;
         let compression_types = self.compression_types.clone();
         let mime_types = self.mime_types.clone();
@@ -408,16 +452,20 @@ where
                 compression_level,
             };
             let user_agent = req.header("User-Agent");
-            if middleware_check.is_agent_excluded(user_agent) {
+            if middleware_check.is_agent_excluded(user_agent)
+            {
                 tracing::debug!("User agent excluded from compression");
                 return next.call(req, state).await;
             }
 
             // Select compression type based on Accept-Encoding
             // 根据 Accept-Encoding 选择压缩类型
-            let compression_type = if compression_types.is_empty() {
+            let compression_type = if compression_types.is_empty()
+            {
                 None
-            } else {
+            }
+            else
+            {
                 Self {
                     min_response_size: min_size,
                     compression_types,
@@ -428,7 +476,8 @@ where
                 .select_compression(&accept_encoding)
             };
 
-            if compression_type.is_none() {
+            if compression_type.is_none()
+            {
                 return next.call(req, state).await;
             }
 
@@ -436,7 +485,8 @@ where
 
             // If client explicitly requested identity (no compression), skip
             // 如果客户端明确请求 identity（不压缩），则跳过
-            if compression == CompressionType::None {
+            if compression == CompressionType::None
+            {
                 return next.call(req, state).await;
             }
 
@@ -446,13 +496,15 @@ where
 
             // Check if response should be compressed
             // 检查响应是否应该被压缩
-            if !is_feature_enabled {
+            if !is_feature_enabled
+            {
                 return Ok(response);
             }
 
             // Don't compress if already has Content-Encoding
             // 如果已经有 Content-Encoding 则不压缩
-            if response.header("Content-Encoding").is_some() {
+            if response.header("Content-Encoding").is_some()
+            {
                 tracing::debug!("Response already has Content-Encoding, skipping compression");
                 return Ok(response);
             }
@@ -462,14 +514,16 @@ where
             let content_type = response.header("Content-Type").map(ToString::to_string);
             let should_compress = middleware_check.should_compress_mime(content_type.as_deref());
 
-            if !should_compress {
+            if !should_compress
+            {
                 tracing::debug!("Content type not in compressible list: {:?}", content_type);
                 return Ok(response);
             }
 
             // Check response size / 检查响应大小
             let body = response.body();
-            if !middleware_check.meets_min_size(body) {
+            if !middleware_check.meets_min_size(body)
+            {
                 tracing::debug!("Response too small to compress (min: {} bytes)", min_size);
                 return Ok(response);
             }
@@ -483,8 +537,10 @@ where
                 compression_level,
             };
 
-            match compression_middleware.compress_body(response.take_body(), compression) {
-                Ok(compressed_body) => {
+            match compression_middleware.compress_body(response.take_body(), compression)
+            {
+                Ok(compressed_body) =>
+                {
                     // Add Content-Encoding header
                     // 添加 Content-Encoding 头部
                     response.set_body(compressed_body);
@@ -502,7 +558,8 @@ where
 
                     Ok(response)
                 },
-                Err(e) => {
+                Err(e) =>
+                {
                     tracing::warn!("Compression failed, returning uncompressed: {}", e);
                     Ok(response)
                 },
@@ -512,11 +569,13 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_compression_creation() {
+    fn test_compression_creation()
+    {
         let compression = CompressionMiddleware::new();
         assert_eq!(compression.min_response_size, 1024);
         assert_eq!(compression.compression_types.len(), 2);
@@ -524,7 +583,8 @@ mod tests {
     }
 
     #[test]
-    fn test_compression_builder() {
+    fn test_compression_builder()
+    {
         let compression = CompressionMiddleware::new()
             .min_size(2048)
             .mime_type("application/xml")
@@ -540,7 +600,8 @@ mod tests {
     }
 
     #[test]
-    fn test_compression_type_from_str() {
+    fn test_compression_type_from_str()
+    {
         assert_eq!(CompressionType::from_str("gzip"), Some(CompressionType::Gzip));
         assert_eq!(CompressionType::from_str("deflate"), Some(CompressionType::Deflate));
         assert_eq!(CompressionType::from_str("br"), Some(CompressionType::Brotli));
@@ -549,7 +610,8 @@ mod tests {
     }
 
     #[test]
-    fn test_compression_type_as_str() {
+    fn test_compression_type_as_str()
+    {
         assert_eq!(CompressionType::Gzip.as_str(), "gzip");
         assert_eq!(CompressionType::Deflate.as_str(), "deflate");
         assert_eq!(CompressionType::Brotli.as_str(), "br");
@@ -557,7 +619,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_with_quality() {
+    fn test_parse_with_quality()
+    {
         let (comp, quality) = CompressionType::parse_with_quality("gzip");
         assert_eq!(comp, Some(CompressionType::Gzip));
         assert_eq!(quality, 1.0);
@@ -572,7 +635,8 @@ mod tests {
     }
 
     #[test]
-    fn test_select_compression() {
+    fn test_select_compression()
+    {
         let middleware = CompressionMiddleware::new();
 
         // Basic gzip
@@ -598,7 +662,8 @@ mod tests {
     }
 
     #[test]
-    fn test_should_compress_mime() {
+    fn test_should_compress_mime()
+    {
         let middleware = CompressionMiddleware::new();
 
         assert!(middleware.should_compress_mime(Some("text/html")));
@@ -612,7 +677,8 @@ mod tests {
     }
 
     #[test]
-    fn test_is_agent_excluded() {
+    fn test_is_agent_excluded()
+    {
         let middleware = CompressionMiddleware::new()
             .exclude_agent("MSIE 6.0")
             .exclude_agent("old-browser");

@@ -5,8 +5,10 @@
 //! Encrypts sensitive config values (passwords, API keys) using AES-256-GCM.
 //! Encrypted values are wrapped as `ENC(base64_nonce_and_ciphertext)`.
 
-use aes_gcm::aead::{Aead, KeyInit};
-use aes_gcm::{Aes256Gcm, Key, Nonce};
+use aes_gcm::{
+    Aes256Gcm, Key, Nonce,
+    aead::{Aead, KeyInit},
+};
 use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
@@ -15,29 +17,34 @@ type HmacSha256 = Hmac<Sha256>;
 
 /// Encryptor for configuration values.
 /// 配置值加密器。
-pub struct ConfigEncryptor {
+pub struct ConfigEncryptor
+{
     key: [u8; 32],
 }
 
-impl ConfigEncryptor {
+impl ConfigEncryptor
+{
     /// Create a new encryptor from a password string.
     /// 从密码字符串创建加密器。
     ///
     /// The password is derived into a 256-bit key via HMAC-SHA256.
-    pub fn new(password: &str) -> Self {
+    pub fn new(password: &str) -> Self
+    {
         let key = derive_key(password);
         Self { key }
     }
 
     /// Create from a raw 32-byte key.
     /// 从原始 32 字节密钥创建。
-    pub fn with_key(key: [u8; 32]) -> Self {
+    pub fn with_key(key: [u8; 32]) -> Self
+    {
         Self { key }
     }
 
     /// Encrypt a plaintext string and return `ENC(base64)`.
     /// 加密明文字符串并返回 `ENC(base64)` 格式。
-    pub fn encrypt(&self, plaintext: &str) -> Result<String, EncryptError> {
+    pub fn encrypt(&self, plaintext: &str) -> Result<String, EncryptError>
+    {
         let key = Key::<Aes256Gcm>::from_slice(&self.key);
         let cipher = Aes256Gcm::new(key);
         let nonce_bytes: [u8; 12] = rand::random();
@@ -55,10 +62,14 @@ impl ConfigEncryptor {
 
     /// Decrypt an encrypted value, handling both `ENC(...)` wrapped and raw base64.
     /// 解密加密值，支持 `ENC(...)` 包裹和纯 base64 格式。
-    pub fn decrypt(&self, encrypted: &str) -> Result<String, EncryptError> {
-        let payload = if let Some(inner) = extract_enc_value(encrypted) {
+    pub fn decrypt(&self, encrypted: &str) -> Result<String, EncryptError>
+    {
+        let payload = if let Some(inner) = extract_enc_value(encrypted)
+        {
             inner
-        } else {
+        }
+        else
+        {
             encrypted
         };
 
@@ -66,7 +77,8 @@ impl ConfigEncryptor {
             .decode(payload)
             .map_err(|e| EncryptError::Base64Error(e.to_string()))?;
 
-        if combined.len() < 13 {
+        if combined.len() < 13
+        {
             return Err(EncryptError::InvalidPayload);
         }
 
@@ -84,38 +96,51 @@ impl ConfigEncryptor {
 
     /// Check if a value looks like an encrypted `ENC(...)` value.
     /// 检查值是否为 `ENC(...)` 加密格式。
-    pub fn is_encrypted(value: &str) -> bool {
+    pub fn is_encrypted(value: &str) -> bool
+    {
         extract_enc_value(value).is_some()
     }
 
     /// Decrypt a value if it's `ENC(...)`, otherwise return as-is.
     /// 如果值是 `ENC(...)` 则解密，否则原样返回。
-    pub fn maybe_decrypt(&self, value: &str) -> Result<String, EncryptError> {
-        if Self::is_encrypted(value) {
+    pub fn maybe_decrypt(&self, value: &str) -> Result<String, EncryptError>
+    {
+        if Self::is_encrypted(value)
+        {
             self.decrypt(value)
-        } else {
+        }
+        else
+        {
             Ok(value.to_string())
         }
     }
 
     /// Recursively decrypt all `ENC(...)` values in a JSON value.
     /// 递归解密 JSON 值中的所有 `ENC(...)` 值。
-    pub fn decrypt_json_value(&self, value: &mut serde_json::Value) -> Result<(), EncryptError> {
-        match value {
-            serde_json::Value::String(s) if Self::is_encrypted(s) => {
+    pub fn decrypt_json_value(&self, value: &mut serde_json::Value) -> Result<(), EncryptError>
+    {
+        match value
+        {
+            serde_json::Value::String(s) if Self::is_encrypted(s) =>
+            {
                 *s = self.decrypt(s)?;
             },
-            serde_json::Value::Object(map) => {
-                for v in map.values_mut() {
+            serde_json::Value::Object(map) =>
+            {
+                for v in map.values_mut()
+                {
                     self.decrypt_json_value(v)?;
                 }
             },
-            serde_json::Value::Array(arr) => {
-                for v in arr.iter_mut() {
+            serde_json::Value::Array(arr) =>
+            {
+                for v in arr.iter_mut()
+                {
                     self.decrypt_json_value(v)?;
                 }
             },
-            _ => {},
+            _ =>
+            {},
         }
         Ok(())
     }
@@ -123,7 +148,8 @@ impl ConfigEncryptor {
 
 /// Derive a 256-bit key from a password using HMAC-SHA256.
 /// 使用 HMAC-SHA256 从密码派生 256 位密钥。
-fn derive_key(password: &str) -> [u8; 32] {
+fn derive_key(password: &str) -> [u8; 32]
+{
     let mut mac =
         <HmacSha256 as Mac>::new_from_slice(b"hiver-config-encryptor").expect("HMAC key is valid");
     mac.update(password.as_bytes());
@@ -136,11 +162,15 @@ fn derive_key(password: &str) -> [u8; 32] {
 
 /// Extract the inner value from `ENC(...)`.
 /// 从 `ENC(...)` 中提取内部值。
-fn extract_enc_value(value: &str) -> Option<&str> {
+fn extract_enc_value(value: &str) -> Option<&str>
+{
     let trimmed = value.trim();
-    if trimmed.starts_with("ENC(") && trimmed.ends_with(')') {
+    if trimmed.starts_with("ENC(") && trimmed.ends_with(')')
+    {
         Some(&trimmed[4..trimmed.len() - 1])
-    } else {
+    }
+    else
+    {
         None
     }
 }
@@ -148,7 +178,8 @@ fn extract_enc_value(value: &str) -> Option<&str> {
 /// Encryption errors.
 /// 加密错误。
 #[derive(Debug, thiserror::Error)]
-pub enum EncryptError {
+pub enum EncryptError
+{
     /// Invalid encryption key. / 无效加密密钥。
     #[error("Invalid encryption key")]
     InvalidKey,
@@ -170,11 +201,13 @@ pub enum EncryptError {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_encrypt_decrypt_roundtrip() {
+    fn test_encrypt_decrypt_roundtrip()
+    {
         let enc = ConfigEncryptor::new("my-secret-password");
         let original = "database-password-123";
         let encrypted = enc.encrypt(original).unwrap();
@@ -188,7 +221,8 @@ mod tests {
     }
 
     #[test]
-    fn test_encrypt_produces_different_ciphertexts() {
+    fn test_encrypt_produces_different_ciphertexts()
+    {
         let enc = ConfigEncryptor::new("password");
         let encrypted1 = enc.encrypt("same-value").unwrap();
         let encrypted2 = enc.encrypt("same-value").unwrap();
@@ -196,7 +230,8 @@ mod tests {
     }
 
     #[test]
-    fn test_wrong_password_fails() {
+    fn test_wrong_password_fails()
+    {
         let enc1 = ConfigEncryptor::new("correct-password");
         let enc2 = ConfigEncryptor::new("wrong-password");
         let encrypted = enc1.encrypt("secret").unwrap();
@@ -204,7 +239,8 @@ mod tests {
     }
 
     #[test]
-    fn test_is_encrypted() {
+    fn test_is_encrypted()
+    {
         assert!(ConfigEncryptor::is_encrypted("ENC(abc123)"));
         assert!(ConfigEncryptor::is_encrypted("  ENC(abc123)  "));
         assert!(!ConfigEncryptor::is_encrypted("plain-text"));
@@ -212,7 +248,8 @@ mod tests {
     }
 
     #[test]
-    fn test_maybe_decrypt() {
+    fn test_maybe_decrypt()
+    {
         let enc = ConfigEncryptor::new("pass");
         let encrypted = enc.encrypt("secret").unwrap();
 
@@ -221,7 +258,8 @@ mod tests {
     }
 
     #[test]
-    fn test_decrypt_json_value() {
+    fn test_decrypt_json_value()
+    {
         let enc = ConfigEncryptor::new("pass");
         let enc_db = enc.encrypt("db-password").unwrap();
         let enc_api = enc.encrypt("api-key").unwrap();
@@ -245,7 +283,8 @@ mod tests {
     }
 
     #[test]
-    fn test_with_raw_key() {
+    fn test_with_raw_key()
+    {
         let key = [42u8; 32];
         let enc = ConfigEncryptor::with_key(key);
         let encrypted = enc.encrypt("test").unwrap();

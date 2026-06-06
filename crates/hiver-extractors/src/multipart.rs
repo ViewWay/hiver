@@ -24,11 +24,11 @@
 //! }
 //! ```
 
-use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
+use std::{collections::HashMap, io, path::Path};
+
 use hiver_http::HttpBody;
-use std::collections::HashMap;
-use std::io;
-use std::path::Path;
+
+use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 
 // ============================================================================
 // UploadedFile - Uploaded File Representation
@@ -55,7 +55,8 @@ use std::path::Path;
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct UploadedFile {
+pub struct UploadedFile
+{
     /// Form field name.
     /// 表单字段名。
     pub name: String,
@@ -77,7 +78,8 @@ pub struct UploadedFile {
     pub data: Vec<u8>,
 }
 
-impl UploadedFile {
+impl UploadedFile
+{
     /// Create a new `UploadedFile`.
     /// 创建新的 `UploadedFile`。
     pub fn new(
@@ -85,7 +87,8 @@ impl UploadedFile {
         original_name: impl Into<String>,
         content_type: Option<String>,
         data: Vec<u8>,
-    ) -> Self {
+    ) -> Self
+    {
         let size = data.len();
         Self {
             name: name.into(),
@@ -107,9 +110,11 @@ impl UploadedFile {
     /// ```rust,no_run,ignore
     /// uploaded_file.save_to("./uploads/photo.jpg")?;
     /// ```
-    pub fn save_to(&self, path: impl AsRef<Path>) -> io::Result<()> {
+    pub fn save_to(&self, path: impl AsRef<Path>) -> io::Result<()>
+    {
         let path = path.as_ref();
-        if let Some(parent) = path.parent() {
+        if let Some(parent) = path.parent()
+        {
             std::fs::create_dir_all(parent)?;
         }
         std::fs::write(path, &self.data)
@@ -125,11 +130,13 @@ impl UploadedFile {
     ///     println!("Extension: {}", ext);
     /// }
     /// ```
-    pub fn extension(&self) -> Option<&str> {
+    pub fn extension(&self) -> Option<&str>
+    {
         // Find the last dot and ensure there is text both before and after it.
         // 找到最后一个点，并确保其前后都有文本。
         let pos = self.original_name.rfind('.')?;
-        if pos == 0 || pos + 1 >= self.original_name.len() {
+        if pos == 0 || pos + 1 >= self.original_name.len()
+        {
             return None;
         }
         Some(&self.original_name[pos + 1..])
@@ -137,14 +144,17 @@ impl UploadedFile {
 
     /// Check if the file is an image based on content type or extension.
     /// 根据内容类型或扩展名检查文件是否为图片。
-    pub fn is_image(&self) -> bool {
+    pub fn is_image(&self) -> bool
+    {
         const IMAGE_EXTENSIONS: &[&str] = &[
             "jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "tiff", "avif",
         ];
         const IMAGE_TYPES: &[&str] = &["image/"];
 
-        if let Some(ct) = &self.content_type {
-            if IMAGE_TYPES.iter().any(|t| ct.starts_with(t)) {
+        if let Some(ct) = &self.content_type
+        {
+            if IMAGE_TYPES.iter().any(|t| ct.starts_with(t))
+            {
                 return true;
             }
         }
@@ -157,7 +167,8 @@ impl UploadedFile {
 
     /// Check if the file is a document based on content type or extension.
     /// 根据内容类型或扩展名检查文件是否为文档。
-    pub fn is_document(&self) -> bool {
+    pub fn is_document(&self) -> bool
+    {
         const DOC_EXTENSIONS: &[&str] = &[
             "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "odt", "ods", "csv",
         ];
@@ -170,8 +181,10 @@ impl UploadedFile {
             "text/csv",
         ];
 
-        if let Some(ct) = &self.content_type {
-            if DOC_TYPES.iter().any(|t| ct.starts_with(t)) {
+        if let Some(ct) = &self.content_type
+        {
+            if DOC_TYPES.iter().any(|t| ct.starts_with(t))
+            {
                 return true;
             }
         }
@@ -181,13 +194,15 @@ impl UploadedFile {
 
     /// Get the file data as a byte slice.
     /// 获取文件数据的字节切片。
-    pub fn bytes(&self) -> &[u8] {
+    pub fn bytes(&self) -> &[u8]
+    {
         &self.data
     }
 
     /// Check if the file has a specific content type prefix.
     /// 检查文件是否具有特定的内容类型前缀。
-    pub fn has_content_type(&self, prefix: &str) -> bool {
+    pub fn has_content_type(&self, prefix: &str) -> bool
+    {
         self.content_type
             .as_ref()
             .is_some_and(|ct| ct.starts_with(prefix))
@@ -195,7 +210,8 @@ impl UploadedFile {
 
     /// Check if the file has a specific extension (case-insensitive).
     /// 检查文件是否具有特定扩展名（不区分大小写）。
-    pub fn has_extension(&self, ext: &str) -> bool {
+    pub fn has_extension(&self, ext: &str) -> bool
+    {
         self.extension()
             .is_some_and(|e| e.eq_ignore_ascii_case(ext))
     }
@@ -238,7 +254,8 @@ impl UploadedFile {
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct Multipart {
+pub struct Multipart
+{
     /// Text fields from the form.
     /// 表单中的文本字段。
     fields: HashMap<String, String>,
@@ -248,10 +265,12 @@ pub struct Multipart {
     files: HashMap<String, Vec<UploadedFile>>,
 }
 
-impl Multipart {
+impl Multipart
+{
     /// Create a new empty `Multipart`.
     /// 创建新的空 `Multipart`。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             fields: HashMap::new(),
             files: HashMap::new(),
@@ -260,73 +279,86 @@ impl Multipart {
 
     /// Add a text field.
     /// 添加文本字段。
-    pub fn add_field(&mut self, name: impl Into<String>, value: impl Into<String>) {
+    pub fn add_field(&mut self, name: impl Into<String>, value: impl Into<String>)
+    {
         self.fields.insert(name.into(), value.into());
     }
 
     /// Add an uploaded file.
     /// 添加上传文件。
-    pub fn add_file(&mut self, name: impl Into<String>, file: UploadedFile) {
+    pub fn add_file(&mut self, name: impl Into<String>, file: UploadedFile)
+    {
         self.files.entry(name.into()).or_default().push(file);
     }
 
     /// Get a text field value by name.
     /// 按名称获取文本字段值。
-    pub fn get_field(&self, name: &str) -> Option<&str> {
+    pub fn get_field(&self, name: &str) -> Option<&str>
+    {
         self.fields.get(name).map(String::as_str)
     }
 
     /// Get all text fields.
     /// 获取所有文本字段。
-    pub fn fields(&self) -> &HashMap<String, String> {
+    pub fn fields(&self) -> &HashMap<String, String>
+    {
         &self.fields
     }
 
     /// Get files by field name. Returns `None` if no files were uploaded under that name.
     /// 按字段名获取文件。如果该字段名下没有文件则返回 `None`。
-    pub fn get_file(&self, name: &str) -> Option<&Vec<UploadedFile>> {
+    pub fn get_file(&self, name: &str) -> Option<&Vec<UploadedFile>>
+    {
         self.files.get(name)
     }
 
     /// Get the first file for a given field name, if any.
     /// 获取给定字段名的第一个文件（如果有）。
-    pub fn first_file(&self, name: &str) -> Option<&UploadedFile> {
+    pub fn first_file(&self, name: &str) -> Option<&UploadedFile>
+    {
         self.files.get(name).and_then(|v| v.first())
     }
 
     /// Get all files.
     /// 获取所有文件。
-    pub fn files(&self) -> &HashMap<String, Vec<UploadedFile>> {
+    pub fn files(&self) -> &HashMap<String, Vec<UploadedFile>>
+    {
         &self.files
     }
 
     /// Get the total number of uploaded files across all fields.
     /// 获取所有字段中上传文件的总数量。
-    pub fn file_count(&self) -> usize {
+    pub fn file_count(&self) -> usize
+    {
         self.files.values().map(Vec::len).sum()
     }
 
     /// Get the number of text fields.
     /// 获取文本字段的数量。
-    pub fn field_count(&self) -> usize {
+    pub fn field_count(&self) -> usize
+    {
         self.fields.len()
     }
 
     /// Check if a file field exists.
     /// 检查文件字段是否存在。
-    pub fn has_file(&self, name: &str) -> bool {
+    pub fn has_file(&self, name: &str) -> bool
+    {
         self.files.contains_key(name)
     }
 
     /// Check if a text field exists.
     /// 检查文本字段是否存在。
-    pub fn has_field(&self, name: &str) -> bool {
+    pub fn has_field(&self, name: &str) -> bool
+    {
         self.fields.contains_key(name)
     }
 }
 
-impl Default for Multipart {
-    fn default() -> Self {
+impl Default for Multipart
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -356,7 +388,8 @@ impl Default for Multipart {
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct UploadConfig {
+pub struct UploadConfig
+{
     /// Maximum size of a single file in bytes. Default: 10MB.
     /// 单个文件的最大大小（字节）。默认：10MB。
     pub max_file_size: usize,
@@ -382,26 +415,25 @@ pub struct UploadConfig {
     pub upload_dir: String,
 }
 
-impl UploadConfig {
-    /// Default file size limit: 10MB.
-    /// 默认文件大小限制：10MB。
-    pub const DEFAULT_MAX_FILE_SIZE: usize = 10 * 1024 * 1024;
-
-    /// Default total size limit: 100MB.
-    /// 默认总大小限制：100MB。
-    pub const DEFAULT_MAX_TOTAL_SIZE: usize = 100 * 1024 * 1024;
-
+impl UploadConfig
+{
     /// Default max files per field: 10.
     /// 默认每个字段最大文件数：10。
     pub const DEFAULT_MAX_FILES_PER_FIELD: usize = 10;
-
+    /// Default file size limit: 10MB.
+    /// 默认文件大小限制：10MB。
+    pub const DEFAULT_MAX_FILE_SIZE: usize = 10 * 1024 * 1024;
+    /// Default total size limit: 100MB.
+    /// 默认总大小限制：100MB。
+    pub const DEFAULT_MAX_TOTAL_SIZE: usize = 100 * 1024 * 1024;
     /// Default upload directory.
     /// 默认上传目录。
     pub const DEFAULT_UPLOAD_DIR: &'static str = "./uploads";
 
     /// Create a new `UploadConfig` with default settings.
     /// 使用默认设置创建新的 `UploadConfig`。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             max_file_size: Self::DEFAULT_MAX_FILE_SIZE,
             max_total_size: Self::DEFAULT_MAX_TOTAL_SIZE,
@@ -414,7 +446,8 @@ impl UploadConfig {
 
     /// Create a builder for `UploadConfig`.
     /// 创建 `UploadConfig` 的构建器。
-    pub fn builder() -> UploadConfigBuilder {
+    pub fn builder() -> UploadConfigBuilder
+    {
         UploadConfigBuilder::new()
     }
 
@@ -423,10 +456,12 @@ impl UploadConfig {
     ///
     /// Returns `Ok(())` if the file passes all checks.
     /// 如果文件通过所有检查则返回 `Ok(())`。
-    pub fn validate_file(&self, file: &UploadedFile) -> Result<(), UploadError> {
+    pub fn validate_file(&self, file: &UploadedFile) -> Result<(), UploadError>
+    {
         // Check file size
         // 检查文件大小
-        if file.size > self.max_file_size {
+        if file.size > self.max_file_size
+        {
             return Err(UploadError::FileSizeExceeded {
                 name: file.original_name.clone(),
                 size: file.size,
@@ -436,8 +471,10 @@ impl UploadConfig {
 
         // Check extension
         // 检查扩展名
-        if !self.allowed_extensions.is_empty() {
-            if let Some(ext) = file.extension() {
+        if !self.allowed_extensions.is_empty()
+        {
+            if let Some(ext) = file.extension()
+            {
                 if !self
                     .allowed_extensions
                     .iter()
@@ -448,7 +485,9 @@ impl UploadConfig {
                         extension: ext.to_string(),
                     });
                 }
-            } else {
+            }
+            else
+            {
                 return Err(UploadError::ExtensionRequired {
                     name: file.original_name.clone(),
                 });
@@ -457,8 +496,10 @@ impl UploadConfig {
 
         // Check MIME type
         // 检查 MIME 类型
-        if !self.allowed_mime_types.is_empty() {
-            if let Some(ref ct) = file.content_type {
+        if !self.allowed_mime_types.is_empty()
+        {
+            if let Some(ref ct) = file.content_type
+            {
                 if !self
                     .allowed_mime_types
                     .iter()
@@ -469,7 +510,9 @@ impl UploadConfig {
                         content_type: ct.clone(),
                     });
                 }
-            } else {
+            }
+            else
+            {
                 return Err(UploadError::MimeTypeRequired {
                     name: file.original_name.clone(),
                 });
@@ -480,8 +523,10 @@ impl UploadConfig {
     }
 }
 
-impl Default for UploadConfig {
-    fn default() -> Self {
+impl Default for UploadConfig
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -494,7 +539,8 @@ impl Default for UploadConfig {
 /// Builder for `UploadConfig`.
 /// `UploadConfig` 的构建器。
 #[derive(Debug, Clone)]
-pub struct UploadConfigBuilder {
+pub struct UploadConfigBuilder
+{
     max_file_size: usize,
     max_total_size: usize,
     max_files_per_field: usize,
@@ -503,10 +549,12 @@ pub struct UploadConfigBuilder {
     upload_dir: String,
 }
 
-impl UploadConfigBuilder {
+impl UploadConfigBuilder
+{
     /// Create a new builder with default values.
     /// 使用默认值创建新的构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             max_file_size: UploadConfig::DEFAULT_MAX_FILE_SIZE,
             max_total_size: UploadConfig::DEFAULT_MAX_TOTAL_SIZE,
@@ -519,49 +567,56 @@ impl UploadConfigBuilder {
 
     /// Set the maximum file size in bytes.
     /// 设置最大文件大小（字节）。
-    pub fn max_file_size(mut self, size: usize) -> Self {
+    pub fn max_file_size(mut self, size: usize) -> Self
+    {
         self.max_file_size = size;
         self
     }
 
     /// Set the maximum total size in bytes.
     /// 设置最大总大小（字节）。
-    pub fn max_total_size(mut self, size: usize) -> Self {
+    pub fn max_total_size(mut self, size: usize) -> Self
+    {
         self.max_total_size = size;
         self
     }
 
     /// Set the maximum number of files per field.
     /// 设置每个字段的最大文件数量。
-    pub fn max_files_per_field(mut self, count: usize) -> Self {
+    pub fn max_files_per_field(mut self, count: usize) -> Self
+    {
         self.max_files_per_field = count;
         self
     }
 
     /// Set the allowed file extensions.
     /// 设置允许的文件扩展名。
-    pub fn allowed_extensions(mut self, extensions: Vec<String>) -> Self {
+    pub fn allowed_extensions(mut self, extensions: Vec<String>) -> Self
+    {
         self.allowed_extensions = extensions;
         self
     }
 
     /// Set the allowed MIME type prefixes.
     /// 设置允许的 MIME 类型前缀。
-    pub fn allowed_mime_types(mut self, types: Vec<String>) -> Self {
+    pub fn allowed_mime_types(mut self, types: Vec<String>) -> Self
+    {
         self.allowed_mime_types = types;
         self
     }
 
     /// Set the upload directory.
     /// 设置上传目录。
-    pub fn upload_dir(mut self, dir: impl Into<String>) -> Self {
+    pub fn upload_dir(mut self, dir: impl Into<String>) -> Self
+    {
         self.upload_dir = dir.into();
         self
     }
 
     /// Build the `UploadConfig`.
     /// 构建 `UploadConfig`。
-    pub fn build(self) -> UploadConfig {
+    pub fn build(self) -> UploadConfig
+    {
         UploadConfig {
             max_file_size: self.max_file_size,
             max_total_size: self.max_total_size,
@@ -573,8 +628,10 @@ impl UploadConfigBuilder {
     }
 }
 
-impl Default for UploadConfigBuilder {
-    fn default() -> Self {
+impl Default for UploadConfigBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -587,11 +644,13 @@ impl Default for UploadConfigBuilder {
 /// Errors that can occur during file upload validation.
 /// 文件上传验证过程中可能发生的错误。
 #[derive(Debug, thiserror::Error)]
-pub enum UploadError {
+pub enum UploadError
+{
     /// A single file exceeds the maximum allowed size.
     /// 单个文件超过最大允许大小。
     #[error("File '{name}' size ({size} bytes) exceeds maximum ({max} bytes)")]
-    FileSizeExceeded {
+    FileSizeExceeded
+    {
         /// File name.
         /// 文件名。
         name: String,
@@ -606,7 +665,8 @@ pub enum UploadError {
     /// Total upload size exceeds the maximum allowed.
     /// 总上传大小超过最大允许值。
     #[error("Total upload size ({size} bytes) exceeds maximum ({max} bytes)")]
-    TotalSizeExceeded {
+    TotalSizeExceeded
+    {
         /// Total size in bytes.
         /// 总大小（字节）。
         size: usize,
@@ -618,7 +678,8 @@ pub enum UploadError {
     /// Too many files for a single field.
     /// 单个字段的文件过多。
     #[error("Field '{name}' has {count} files, maximum is {max}")]
-    TooManyFiles {
+    TooManyFiles
+    {
         /// Field name.
         /// 字段名。
         name: String,
@@ -633,7 +694,8 @@ pub enum UploadError {
     /// File extension is not allowed.
     /// 文件扩展名不被允许。
     #[error("File '{name}' has disallowed extension: .{extension}")]
-    ExtensionNotAllowed {
+    ExtensionNotAllowed
+    {
         /// File name.
         /// 文件名。
         name: String,
@@ -645,7 +707,8 @@ pub enum UploadError {
     /// File has no extension but one is required.
     /// 文件没有扩展名但需要一个。
     #[error("File '{name}' has no extension, but one is required")]
-    ExtensionRequired {
+    ExtensionRequired
+    {
         /// File name.
         /// 文件名。
         name: String,
@@ -654,7 +717,8 @@ pub enum UploadError {
     /// File MIME type is not allowed.
     /// 文件 MIME 类型不被允许。
     #[error("File '{name}' has disallowed content type: {content_type}")]
-    MimeTypeNotAllowed {
+    MimeTypeNotAllowed
+    {
         /// File name.
         /// 文件名。
         name: String,
@@ -666,7 +730,8 @@ pub enum UploadError {
     /// File has no content type but one is required.
     /// 文件没有内容类型但需要一个。
     #[error("File '{name}' has no content type, but one is required")]
-    MimeTypeRequired {
+    MimeTypeRequired
+    {
         /// File name.
         /// 文件名。
         name: String,
@@ -715,26 +780,26 @@ pub enum UploadError {
 /// ```
 pub struct MultipartParser;
 
-impl MultipartParser {
+impl MultipartParser
+{
     /// Parse a multipart request body into a `Multipart` structure.
     /// 将 multipart 请求体解析为 `Multipart` 结构。
     ///
     /// # Arguments / 参数
     ///
-    /// - `content_type` - The value of the Content-Type header.
-    ///   Content-Type 头的值。
-    /// - `body` - The raw request body bytes.
-    ///   原始请求体字节。
-    /// - `config` - Upload configuration for validation.
-    ///   用于验证的上传配置。
+    /// - `content_type` - The value of the Content-Type header. Content-Type 头的值。
+    /// - `body` - The raw request body bytes. 原始请求体字节。
+    /// - `config` - Upload configuration for validation. 用于验证的上传配置。
     pub fn parse(
         content_type: &str,
         body: &[u8],
         config: &UploadConfig,
-    ) -> Result<Multipart, UploadError> {
+    ) -> Result<Multipart, UploadError>
+    {
         // Validate content type
         // 验证 content type
-        if !content_type.starts_with("multipart/form-data") {
+        if !content_type.starts_with("multipart/form-data")
+        {
             return Err(UploadError::InvalidContentType);
         }
 
@@ -750,7 +815,8 @@ impl MultipartParser {
         // 删除 boundary 末尾的分号或空格
         let boundary = boundary.split(';').next().unwrap_or(boundary).trim();
 
-        if boundary.is_empty() {
+        if boundary.is_empty()
+        {
             return Err(UploadError::MissingBoundary);
         }
 
@@ -765,10 +831,12 @@ impl MultipartParser {
         let body_str = String::from_utf8_lossy(body);
         let parts: Vec<&str> = body_str.split(&boundary_bytes).collect();
 
-        for part in parts.iter().skip(1) {
+        for part in parts.iter().skip(1)
+        {
             // Check for end boundary
             // 检查结束 boundary
-            if part.starts_with("--") {
+            if part.starts_with("--")
+            {
                 break;
             }
 
@@ -778,7 +846,8 @@ impl MultipartParser {
 
             // Split headers from body (separated by \r\n\r\n)
             // 分离头部和主体（以 \r\n\r\n 分隔）
-            let (header_section, body_content) = match part.split_once("\r\n\r\n") {
+            let (header_section, body_content) = match part.split_once("\r\n\r\n")
+            {
                 Some((h, b)) => (h, b),
                 None => continue,
             };
@@ -793,7 +862,8 @@ impl MultipartParser {
 
             // Check if this is a file (has filename) or a text field
             // 检查这是文件（有文件名）还是文本字段
-            if let Some(filename) = filename {
+            if let Some(filename) = filename
+            {
                 // Extract content type from headers
                 // 从头部提取 content type
                 let content_type_part = extract_header_value(header_section, "content-type");
@@ -803,7 +873,8 @@ impl MultipartParser {
 
                 // Check total size
                 // 检查总大小
-                if total_size > config.max_total_size {
+                if total_size > config.max_total_size
+                {
                     return Err(UploadError::TotalSizeExceeded {
                         size: total_size,
                         max: config.max_total_size,
@@ -824,7 +895,8 @@ impl MultipartParser {
                     .get(&field_name)
                     .map(Vec::len)
                     .unwrap_or(0);
-                if field_count >= config.max_files_per_field {
+                if field_count >= config.max_files_per_field
+                {
                     return Err(UploadError::TooManyFiles {
                         name: field_name,
                         count: field_count + 1,
@@ -833,7 +905,9 @@ impl MultipartParser {
                 }
 
                 multipart.add_file(&field_name, uploaded_file);
-            } else {
+            }
+            else
+            {
                 // Text field
                 // 文本字段
                 let value = body_content.to_string();
@@ -847,27 +921,36 @@ impl MultipartParser {
 
 /// Parse Content-Disposition header to extract field name and optional filename.
 /// 解析 Content-Disposition 头以提取字段名和可选的文件名。
-fn parse_content_disposition(header_section: &str) -> (String, Option<String>) {
+fn parse_content_disposition(header_section: &str) -> (String, Option<String>)
+{
     let mut field_name = String::new();
     let mut filename: Option<String> = None;
 
-    for line in header_section.lines() {
+    for line in header_section.lines()
+    {
         let line = line.trim();
         let lower = line.to_lowercase();
-        if !lower.starts_with("content-disposition:") {
+        if !lower.starts_with("content-disposition:")
+        {
             continue;
         }
         // Extract value from the original line (preserves case in quoted strings)
         // 从原始行提取值（保留引号内字符串的大小写）
         let value = line.splitn(2, ':').nth(1).unwrap_or("").trim();
 
-        for part in value.split(';') {
+        for part in value.split(';')
+        {
             let part = part.trim();
-            if let Some(name) = part.strip_prefix("name=") {
+            if let Some(name) = part.strip_prefix("name=")
+            {
                 field_name = unquote(name).to_string();
-            } else if let Some(name) = part.strip_prefix("filename=") {
+            }
+            else if let Some(name) = part.strip_prefix("filename=")
+            {
                 filename = Some(unquote(name).to_string());
-            } else if let Some(name) = part.strip_prefix("filename*=") {
+            }
+            else if let Some(name) = part.strip_prefix("filename*=")
+            {
                 // RFC 5987 encoded filename
                 // RFC 5987 编码的文件名
                 filename = Some(unquote(name).to_string());
@@ -880,11 +963,15 @@ fn parse_content_disposition(header_section: &str) -> (String, Option<String>) {
 
 /// Extract a header value by name (case-insensitive).
 /// 按名称提取头部值（不区分大小写）。
-fn extract_header_value(header_section: &str, header_name: &str) -> Option<String> {
-    for line in header_section.lines() {
+fn extract_header_value(header_section: &str, header_name: &str) -> Option<String>
+{
+    for line in header_section.lines()
+    {
         let line = line.trim();
-        if let Some(value) = line.split_once(':') {
-            if value.0.trim().eq_ignore_ascii_case(header_name) {
+        if let Some(value) = line.split_once(':')
+        {
+            if value.0.trim().eq_ignore_ascii_case(header_name)
+            {
                 return Some(value.1.trim().to_string());
             }
         }
@@ -894,7 +981,8 @@ fn extract_header_value(header_section: &str, header_name: &str) -> Option<Strin
 
 /// Remove surrounding quotes from a string.
 /// 删除字符串周围的引号。
-fn unquote(s: &str) -> &str {
+fn unquote(s: &str) -> &str
+{
     s.strip_prefix('"')
         .and_then(|s| s.strip_suffix('"'))
         .unwrap_or(s)
@@ -905,8 +993,10 @@ fn unquote(s: &str) -> &str {
 // Multipart 的 FromRequest 实现
 // ============================================================================
 
-impl FromRequest for Multipart {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+impl FromRequest for Multipart
+{
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let content_type = req.header("content-type").unwrap_or("").to_string();
         let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
 
@@ -929,8 +1019,10 @@ impl FromRequest for Multipart {
 
 /// Get common media type by extension.
 /// 根据扩展名获取常见媒体类型。
-pub fn media_type_for_extension(extension: &str) -> Option<&'static str> {
-    match extension.to_lowercase().as_str() {
+pub fn media_type_for_extension(extension: &str) -> Option<&'static str>
+{
+    match extension.to_lowercase().as_str()
+    {
         "jpg" | "jpeg" => Some("image/jpeg"),
         "png" => Some("image/png"),
         "gif" => Some("image/gif"),
@@ -967,13 +1059,15 @@ pub fn media_type_for_extension(extension: &str) -> Option<&'static str> {
 // ============================================================================
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // -- UploadedFile tests --
 
     #[test]
-    fn test_uploaded_file_creation() {
+    fn test_uploaded_file_creation()
+    {
         let file = UploadedFile::new(
             "photo",
             "landscape.jpg",
@@ -988,7 +1082,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uploaded_file_extension() {
+    fn test_uploaded_file_extension()
+    {
         let file = UploadedFile::new("f", "photo.jpg", None, vec![]);
         assert_eq!(file.extension(), Some("jpg"));
 
@@ -1000,7 +1095,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uploaded_file_is_image() {
+    fn test_uploaded_file_is_image()
+    {
         let by_ext = UploadedFile::new("f", "photo.png", None, vec![]);
         assert!(by_ext.is_image());
 
@@ -1013,7 +1109,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uploaded_file_is_document() {
+    fn test_uploaded_file_is_document()
+    {
         let by_ext = UploadedFile::new("f", "report.pdf", None, vec![]);
         assert!(by_ext.is_document());
 
@@ -1025,7 +1122,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uploaded_file_save_to() {
+    fn test_uploaded_file_save_to()
+    {
         let dir = std::env::temp_dir().join("hiver_test_upload");
         let file = UploadedFile::new("f", "test.txt", None, b"hello".to_vec());
         let path = dir.join("subdir").join("test.txt");
@@ -1041,7 +1139,8 @@ mod tests {
     // -- Multipart tests --
 
     #[test]
-    fn test_multipart_empty() {
+    fn test_multipart_empty()
+    {
         let m = Multipart::new();
         assert_eq!(m.file_count(), 0);
         assert_eq!(m.field_count(), 0);
@@ -1050,7 +1149,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multipart_fields_and_files() {
+    fn test_multipart_fields_and_files()
+    {
         let mut m = Multipart::new();
         m.add_field("title", "Hello");
         m.add_file("avatar", UploadedFile::new("avatar", "a.jpg", None, vec![]));
@@ -1069,7 +1169,8 @@ mod tests {
     // -- UploadConfig tests --
 
     #[test]
-    fn test_upload_config_defaults() {
+    fn test_upload_config_defaults()
+    {
         let config = UploadConfig::new();
         assert_eq!(config.max_file_size, 10 * 1024 * 1024);
         assert_eq!(config.max_total_size, 100 * 1024 * 1024);
@@ -1080,7 +1181,8 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_config_builder() {
+    fn test_upload_config_builder()
+    {
         let config = UploadConfig::builder()
             .max_file_size(1024)
             .max_total_size(2048)
@@ -1099,7 +1201,8 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_config_validate_file_size() {
+    fn test_upload_config_validate_file_size()
+    {
         let config = UploadConfig::builder().max_file_size(10).build();
         let file = UploadedFile::new("f", "big.txt", None, vec![0u8; 20]);
         let result = config.validate_file(&file);
@@ -1107,7 +1210,8 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_config_validate_extension() {
+    fn test_upload_config_validate_extension()
+    {
         let config = UploadConfig::builder()
             .allowed_extensions(vec!["jpg".to_string(), "png".to_string()])
             .build();
@@ -1123,7 +1227,8 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_config_validate_mime_type() {
+    fn test_upload_config_validate_mime_type()
+    {
         let config = UploadConfig::builder()
             .allowed_mime_types(vec!["image/".to_string()])
             .build();
@@ -1146,19 +1251,22 @@ mod tests {
     // -- MultipartParser tests --
 
     #[test]
-    fn test_parser_invalid_content_type() {
+    fn test_parser_invalid_content_type()
+    {
         let result = MultipartParser::parse("application/json", &[], &UploadConfig::new());
         assert!(matches!(result, Err(UploadError::InvalidContentType)));
     }
 
     #[test]
-    fn test_parser_missing_boundary() {
+    fn test_parser_missing_boundary()
+    {
         let result = MultipartParser::parse("multipart/form-data", &[], &UploadConfig::new());
         assert!(matches!(result, Err(UploadError::MissingBoundary)));
     }
 
     #[test]
-    fn test_parser_text_fields_only() {
+    fn test_parser_text_fields_only()
+    {
         let body = concat!(
             "------Boundary\r\n",
             "Content-Disposition: form-data; name=\"title\"\r\n",
@@ -1184,7 +1292,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_file_upload() {
+    fn test_parser_file_upload()
+    {
         let body = concat!(
             "------Boundary\r\n",
             "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\n",
@@ -1216,17 +1325,15 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_total_size_limit() {
+    fn test_parser_total_size_limit()
+    {
         let config = UploadConfig::builder().max_total_size(20).build();
 
         let big_data = "x".repeat(50);
         let body = format!(
-            "------Boundary\r\n\
-Content-Disposition: form-data; name=\"file\"; filename=\"big.txt\"\r\n\
-Content-Type: text/plain\r\n\
-\r\n\
-{big_data}\r\n\
-------Boundary--\r\n"
+            "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; \
+             filename=\"big.txt\"\r\nContent-Type: \
+             text/plain\r\n\r\n{big_data}\r\n------Boundary--\r\n"
         );
 
         let result = MultipartParser::parse(
@@ -1241,7 +1348,8 @@ Content-Type: text/plain\r\n\
     // -- Utility tests --
 
     #[test]
-    fn test_media_type_for_extension() {
+    fn test_media_type_for_extension()
+    {
         assert_eq!(media_type_for_extension("jpg"), Some("image/jpeg"));
         assert_eq!(media_type_for_extension("png"), Some("image/png"));
         assert_eq!(media_type_for_extension("pdf"), Some("application/pdf"));
@@ -1249,7 +1357,8 @@ Content-Type: text/plain\r\n\
     }
 
     #[test]
-    fn test_unquote() {
+    fn test_unquote()
+    {
         assert_eq!(unquote("\"hello.txt\""), "hello.txt");
         assert_eq!(unquote("hello.txt"), "hello.txt");
     }

@@ -42,11 +42,15 @@
 //! }
 //! ```
 
-use crate::form::{parse_form_data, url_decode};
-use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
+use std::collections::HashMap;
+
 use hiver_http::HttpBody;
 use serde::Deserialize;
-use std::collections::HashMap;
+
+use crate::{
+    ExtractorError, ExtractorFuture, FromRequest, Request,
+    form::{parse_form_data, url_decode},
+};
 
 /// Model attribute extractor
 /// 模型属性提取器
@@ -62,8 +66,8 @@ use std::collections::HashMap;
 ///
 /// # Type Parameters / 类型参数
 ///
-/// - `T` - The type to deserialize. Must implement `Deserialize`.
-///   要反序列化的类型。必须实现 `Deserialize`。
+/// - `T` - The type to deserialize. Must implement `Deserialize`. 要反序列化的类型。必须实现
+///   `Deserialize`。
 ///
 /// # Example / 示例
 ///
@@ -83,22 +87,26 @@ use std::collections::HashMap;
 /// ```
 pub struct ModelAttribute<T>(pub T);
 
-impl<T> ModelAttribute<T> {
+impl<T> ModelAttribute<T>
+{
     /// Consume the extractor and get the inner value
     /// 消耗提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.0
     }
 }
@@ -107,7 +115,8 @@ impl<T> std::fmt::Debug for ModelAttribute<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("ModelAttribute").field(&self.0).finish()
     }
 }
@@ -116,7 +125,8 @@ impl<T> Clone for ModelAttribute<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -126,7 +136,8 @@ impl<T> FromRequest for ModelAttribute<T>
 where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         // Extract query parameters
         let uri = req.uri().to_string();
         let query_params = parse_query_params(&uri);
@@ -140,12 +151,14 @@ where
             let mut merged_params = query_params;
 
             // Merge form data if present (form data takes precedence)
-            if has_form_body && let Some(body) = body_bytes {
+            if has_form_body && let Some(body) = body_bytes
+            {
                 let body_str = String::from_utf8(body)
                     .map_err(|_| ExtractorError::Invalid("Invalid UTF-8 in body".to_string()))?;
 
                 let form_params = parse_form_data(&body_str);
-                for (key, value) in form_params {
+                for (key, value) in form_params
+                {
                     merged_params.insert(key, value);
                 }
             }
@@ -161,21 +174,26 @@ where
 
 /// Parse query parameters from URI
 /// 从URI解析查询参数
-pub fn parse_query_params(uri: &str) -> HashMap<String, String> {
+pub fn parse_query_params(uri: &str) -> HashMap<String, String>
+{
     let mut params = HashMap::new();
 
-    if let Some(query_start) = uri.find('?') {
+    if let Some(query_start) = uri.find('?')
+    {
         let query = &uri[query_start + 1..];
         // Strip fragment if present
         let query = query.split('#').next().unwrap_or(query);
 
-        for pair in query.split('&') {
+        for pair in query.split('&')
+        {
             let pair = pair.trim();
-            if pair.is_empty() {
+            if pair.is_empty()
+            {
                 continue;
             }
 
-            let (key, value) = match pair.split_once('=') {
+            let (key, value) = match pair.split_once('=')
+            {
                 Some((k, v)) => (k, v),
                 None => (pair, ""),
             };
@@ -223,22 +241,26 @@ pub fn parse_query_params(uri: &str) -> HashMap<String, String> {
 /// ```
 pub struct QueryParams<T>(pub T);
 
-impl<T> QueryParams<T> {
+impl<T> QueryParams<T>
+{
     /// Consume the extractor and get the inner value
     /// 消耗提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.0
     }
 }
@@ -247,7 +269,8 @@ impl<T> std::fmt::Debug for QueryParams<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("QueryParams").field(&self.0).finish()
     }
 }
@@ -256,7 +279,8 @@ impl<T> Clone for QueryParams<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -265,7 +289,8 @@ impl<T> FromRequest for QueryParams<T>
 where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let uri = req.uri().to_string();
 
         Box::pin(async move {
@@ -280,11 +305,13 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_parse_query_params() {
+    fn test_parse_query_params()
+    {
         let uri = "/search?q=rust&page=1&sort=desc";
         let params = parse_query_params(uri);
 
@@ -294,7 +321,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_query_params_empty() {
+    fn test_parse_query_params_empty()
+    {
         let uri = "/search";
         let params = parse_query_params(uri);
 
@@ -302,7 +330,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_query_params_with_fragment() {
+    fn test_parse_query_params_with_fragment()
+    {
         let uri = "/search?q=rust#section";
         let params = parse_query_params(uri);
 
@@ -310,7 +339,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_query_params_encoded() {
+    fn test_parse_query_params_encoded()
+    {
         let uri = "/search?q=hello%20world&email=user%40example.com";
         let params = parse_query_params(uri);
 
@@ -319,7 +349,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_query_params_empty_value() {
+    fn test_parse_query_params_empty_value()
+    {
         let uri = "/search?q=&page=1";
         let params = parse_query_params(uri);
 
@@ -328,7 +359,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_query_params_no_value() {
+    fn test_parse_query_params_no_value()
+    {
         let uri = "/search?q&flag";
         let params = parse_query_params(uri);
 

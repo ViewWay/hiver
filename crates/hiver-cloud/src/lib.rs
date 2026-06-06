@@ -38,21 +38,19 @@ pub mod load_balancer_ext;
 /// Re-export async_trait for use by generated feign client code.
 /// 为生成的 feign 客户端代码重新导出 async_trait。
 pub use async_trait;
-
 pub use circuit_breaker::{CircuitBreaker, CircuitState};
 pub use config::{ConfigClient, ConfigServerClient, RemoteConfigSource};
 pub use config_client::{
     CompositeConfigSource, ConfigClientError, ConfigProvider,
     ConfigServerClient as EnhancedConfigClient, ConfigSource, PollingConfigRefresher,
 };
+#[cfg(feature = "consul")]
+pub use discovery::consul::{ConsulConfig, ConsulServiceRegistry};
 pub use discovery::{
     AlwaysHealthyChecker, HealthCheckResult, HealthChecker, HeartbeatConfig, HttpHealthChecker,
     InMemoryServiceRegistry, InstanceStatus, ServiceDiscovery, ServiceDiscoveryClient,
     ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
 };
-
-#[cfg(feature = "consul")]
-pub use discovery::consul::{ConsulConfig, ConsulServiceRegistry};
 pub use feign::{
     BearerTokenInterceptor, DefaultFallback, FeignClientConfig, FeignError, FeignFallback,
     FeignRequestInterceptor, FeignResult, HeaderInterceptor, RetryConfig,
@@ -73,7 +71,8 @@ pub use load_balancer_ext::{
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         AlwaysHealthyChecker, CircuitBreaker, CircuitState, CompositeConfigSource, ConfigClient,
         ConfigClientError, ConfigProvider, ConfigServerClient, ConfigSource, EnhancedConfigClient,
@@ -84,7 +83,6 @@ pub mod prelude {
         RoundRobinLoadBalancer, Route, RouteLocator, ServiceDiscovery, ServiceDiscoveryClient,
         ServiceInstance, ServiceRegistry, SimpleDiscoveryClient,
     };
-
     #[cfg(feature = "consul")]
     pub use super::{ConsulConfig, ConsulServiceRegistry};
 }

@@ -31,39 +31,50 @@
 //! }
 //! ```
 
-use std::collections::VecDeque;
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex};
-use std::task::{Context, Poll, Waker};
+use std::{
+    collections::VecDeque,
+    future::Future,
+    pin::Pin,
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+    },
+    task::{Context, Poll, Waker},
+};
 
 /// Error type for channel operations
 /// 通道操作的错误类型
-pub enum SendError<T> {
+pub enum SendError<T>
+{
     /// The channel is closed
     /// 通道已关闭
     Closed(T),
 }
 
-impl<T> std::fmt::Debug for SendError<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<T> std::fmt::Debug for SendError<T>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("SendError::Closed")
             .field(&format_args!("_"))
             .finish()
     }
 }
 
-impl<T> PartialEq for SendError<T> {
-    fn eq(&self, _other: &Self) -> bool {
+impl<T> PartialEq for SendError<T>
+{
+    fn eq(&self, _other: &Self) -> bool
+    {
         true
     }
 }
 
 impl<T> Eq for SendError<T> {}
 
-impl<T> std::fmt::Display for SendError<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<T> std::fmt::Display for SendError<T>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         write!(f, "Channel closed")
     }
 }
@@ -73,15 +84,19 @@ impl<T> std::error::Error for SendError<T> {}
 /// Error type for receiving
 /// 接收错误类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RecvError {
+pub enum RecvError
+{
     /// The channel is empty and closed
     /// 通道为空且已关闭
     Closed,
 }
 
-impl std::fmt::Display for RecvError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for RecvError
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             RecvError::Closed => write!(f, "Channel closed"),
         }
     }
@@ -103,7 +118,8 @@ impl std::error::Error for RecvError {}
 /// let (tx, rx) = unbounded::<i32>();
 /// ```
 #[must_use]
-pub fn unbounded<T>() -> (Sender<T>, Receiver<T>) {
+pub fn unbounded<T>() -> (Sender<T>, Receiver<T>)
+{
     let shared = Arc::new(ChannelShared {
         buffer: Mutex::new(VecDeque::new()),
         sender_count: AtomicUsize::new(1),
@@ -133,7 +149,8 @@ pub fn unbounded<T>() -> (Sender<T>, Receiver<T>) {
 /// let (tx, rx) = bounded::<i32>(16);
 /// ```
 #[must_use]
-pub fn bounded<T>(cap: usize) -> (Sender<T>, Receiver<T>) {
+pub fn bounded<T>(cap: usize) -> (Sender<T>, Receiver<T>)
+{
     let shared = Arc::new(ChannelShared {
         buffer: Mutex::new(VecDeque::with_capacity(cap)),
         sender_count: AtomicUsize::new(1),
@@ -151,7 +168,8 @@ pub fn bounded<T>(cap: usize) -> (Sender<T>, Receiver<T>) {
 
 /// Shared state for the channel
 /// 通道的共享状态
-struct ChannelShared<T> {
+struct ChannelShared<T>
+{
     /// Message buffer
     /// 消息缓冲区
     buffer: Mutex<VecDeque<T>>,
@@ -171,12 +189,15 @@ struct ChannelShared<T> {
 ///
 /// Can be cloned to create multiple senders.
 /// 可以克隆以创建多个发送器。
-pub struct Sender<T> {
+pub struct Sender<T>
+{
     shared: Arc<ChannelShared<T>>,
 }
 
-impl<T> Clone for Sender<T> {
-    fn clone(&self) -> Self {
+impl<T> Clone for Sender<T>
+{
+    fn clone(&self) -> Self
+    {
         // Increment sender count
         // 增加发送器计数
         self.shared.sender_count.fetch_add(1, Ordering::Relaxed);
@@ -186,7 +207,8 @@ impl<T> Clone for Sender<T> {
     }
 }
 
-impl<T> Sender<T> {
+impl<T> Sender<T>
+{
     /// Send a value synchronously to the channel
     /// 向通道同步发送值
     ///
@@ -199,8 +221,10 @@ impl<T> Sender<T> {
     ///
     /// Panics if the internal mutex is poisoned (should never happen in normal operation).
     /// 如果内部互斥锁被污染则恐慌（正常操作中不应发生）。
-    pub fn send(&self, value: T) -> Result<(), SendError<T>> {
-        if !self.shared.is_receiver_alive.load(Ordering::Acquire) {
+    pub fn send(&self, value: T) -> Result<(), SendError<T>>
+    {
+        if !self.shared.is_receiver_alive.load(Ordering::Acquire)
+        {
             return Err(SendError::Closed(value));
         }
 
@@ -209,7 +233,8 @@ impl<T> Sender<T> {
 
         // Wake the receiver if it's waiting
         // 如果接收器在等待，唤醒它
-        if let Some(waker) = self.shared.recv_waker.lock().unwrap().take() {
+        if let Some(waker) = self.shared.recv_waker.lock().unwrap().take()
+        {
             drop(buffer);
             waker.wake();
         }
@@ -220,28 +245,34 @@ impl<T> Sender<T> {
     /// Check if the channel is closed (receiver dropped)
     /// 检查通道是否已关闭（接收器已丢弃）
     #[must_use]
-    pub fn is_closed(&self) -> bool {
+    pub fn is_closed(&self) -> bool
+    {
         !self.shared.is_receiver_alive.load(Ordering::Acquire)
     }
 
     /// Get the number of active senders
     /// 获取活跃发送器数量
     #[must_use]
-    pub fn sender_count(&self) -> usize {
+    pub fn sender_count(&self) -> usize
+    {
         self.shared.sender_count.load(Ordering::Acquire)
     }
 }
 
-impl<T> Drop for Sender<T> {
-    fn drop(&mut self) {
+impl<T> Drop for Sender<T>
+{
+    fn drop(&mut self)
+    {
         // Decrease sender count
         // 减少发送器计数
         let prev = self.shared.sender_count.fetch_sub(1, Ordering::AcqRel);
 
-        if prev == 1 {
+        if prev == 1
+        {
             // Last sender dropped, wake the receiver
             // 最后一个发送器丢弃，唤醒接收器
-            if let Some(waker) = self.shared.recv_waker.lock().unwrap().take() {
+            if let Some(waker) = self.shared.recv_waker.lock().unwrap().take()
+            {
                 waker.wake();
             }
         }
@@ -250,14 +281,17 @@ impl<T> Drop for Sender<T> {
 
 /// Receiver side of the channel
 /// 通道的接收端
-pub struct Receiver<T> {
+pub struct Receiver<T>
+{
     shared: Arc<ChannelShared<T>>,
 }
 
-impl<T> Receiver<T> {
+impl<T> Receiver<T>
+{
     /// Receive a value from the channel
     /// 从通道接收值
-    pub fn recv(&mut self) -> RecvFuture<'_, T> {
+    pub fn recv(&mut self) -> RecvFuture<'_, T>
+    {
         RecvFuture::new(self)
     }
 
@@ -276,16 +310,22 @@ impl<T> Receiver<T> {
     ///
     /// Panics if the internal mutex is poisoned (should never happen in normal operation).
     /// 如果内部互斥锁被污染则恐慌（正常操作中不应发生）。
-    pub fn try_recv(&mut self) -> Result<T, RecvError> {
+    pub fn try_recv(&mut self) -> Result<T, RecvError>
+    {
         let mut buffer = self.shared.buffer.lock().unwrap();
 
-        if let Some(value) = buffer.pop_front() {
+        if let Some(value) = buffer.pop_front()
+        {
             Ok(value)
-        } else if self.shared.sender_count.load(Ordering::Acquire) == 0 {
+        }
+        else if self.shared.sender_count.load(Ordering::Acquire) == 0
+        {
             // No senders left
             // 没有发送器了
             Err(RecvError::Closed)
-        } else {
+        }
+        else
+        {
             // Channel empty but senders still exist
             // 通道为空但发送器仍然存在
             Err(RecvError::Closed)
@@ -300,20 +340,24 @@ impl<T> Receiver<T> {
     /// Panics if the internal mutex is poisoned (should never happen in normal operation).
     /// 如果内部互斥锁被污染则恐慌（正常操作中不应发生）。
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.shared.buffer.lock().unwrap().len()
     }
 
     /// Check if the channel is empty
     /// 检查通道是否为空
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.len() == 0
     }
 }
 
-impl<T> Drop for Receiver<T> {
-    fn drop(&mut self) {
+impl<T> Drop for Receiver<T>
+{
+    fn drop(&mut self)
+    {
         // Mark receiver as dropped
         // 标记接收器已丢弃
         self.shared
@@ -324,7 +368,8 @@ impl<T> Drop for Receiver<T> {
 
 /// Receive future
 /// 接收future
-pub struct RecvFuture<'a, T> {
+pub struct RecvFuture<'a, T>
+{
     /// Reference to the receiver's shared state
     /// 接收器共享状态的引用
     shared: Arc<ChannelShared<T>>,
@@ -333,9 +378,11 @@ pub struct RecvFuture<'a, T> {
     _marker: std::marker::PhantomData<&'a mut Receiver<T>>,
 }
 
-impl<'a, T> RecvFuture<'a, T> {
+impl<'a, T> RecvFuture<'a, T>
+{
     /// Create a new receive future
-    fn new(receiver: &'a mut Receiver<T>) -> Self {
+    fn new(receiver: &'a mut Receiver<T>) -> Self
+    {
         // We extract the Arc since the receiver only holds it
         // This is safe because the future borrows the receiver mutably
         Self {
@@ -348,19 +395,26 @@ impl<'a, T> RecvFuture<'a, T> {
 unsafe impl<T: Send> Send for RecvFuture<'_, T> {}
 unsafe impl<T: Sync> Sync for RecvFuture<'_, T> {}
 
-impl<T> Future for RecvFuture<'_, T> {
+impl<T> Future for RecvFuture<'_, T>
+{
     type Output = Option<T>;
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         let mut buffer = self.shared.buffer.lock().unwrap();
 
-        if let Some(value) = buffer.pop_front() {
+        if let Some(value) = buffer.pop_front()
+        {
             Poll::Ready(Some(value))
-        } else if self.shared.sender_count.load(Ordering::Acquire) == 0 {
+        }
+        else if self.shared.sender_count.load(Ordering::Acquire) == 0
+        {
             // No senders left and buffer empty
             // 没有发送器了且缓冲区为空
             Poll::Ready(None)
-        } else {
+        }
+        else
+        {
             // No value available, register waker
             // 没有可用值，注册waker
             *self.shared.recv_waker.lock().unwrap() = Some(cx.waker().clone());
@@ -370,25 +424,29 @@ impl<T> Future for RecvFuture<'_, T> {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_unbounded_channel_creation() {
+    fn test_unbounded_channel_creation()
+    {
         let (tx, _rx) = unbounded::<i32>();
         assert!(!tx.is_closed());
         assert_eq!(tx.sender_count(), 1);
     }
 
     #[test]
-    fn test_bounded_channel_creation() {
+    fn test_bounded_channel_creation()
+    {
         let (tx, _rx) = bounded::<i32>(16);
         assert!(!tx.is_closed());
         assert_eq!(tx.sender_count(), 1);
     }
 
     #[test]
-    fn test_sender_clone() {
+    fn test_sender_clone()
+    {
         let (tx, _rx) = unbounded::<i32>();
         let tx2 = tx.clone();
         assert_eq!(tx.sender_count(), 2);
@@ -398,14 +456,16 @@ mod tests {
     }
 
     #[test]
-    fn test_receiver_empty() {
+    fn test_receiver_empty()
+    {
         let (_tx, rx) = unbounded::<i32>();
         assert!(rx.is_empty());
         assert_eq!(rx.len(), 0);
     }
 
     #[test]
-    fn test_sync_send() {
+    fn test_sync_send()
+    {
         let (tx, mut rx) = unbounded::<i32>();
 
         assert!(tx.send(42).is_ok());
@@ -421,7 +481,8 @@ mod tests {
     }
 
     #[test]
-    fn test_send_after_receiver_drop() {
+    fn test_send_after_receiver_drop()
+    {
         let (tx, rx) = unbounded::<i32>();
         drop(rx);
         assert!(tx.is_closed());
@@ -432,25 +493,30 @@ mod tests {
     }
 
     #[test]
-    fn test_recv_error() {
+    fn test_recv_error()
+    {
         let err = RecvError::Closed;
 
         assert_eq!(err.to_string(), "Channel closed");
     }
 
     #[test]
-    fn test_unbounded_send_recv_order() {
+    fn test_unbounded_send_recv_order()
+    {
         let (tx, mut rx) = unbounded::<String>();
-        for i in 0..10 {
+        for i in 0..10
+        {
             tx.send(format!("msg-{i}")).unwrap();
         }
-        for i in 0..10 {
+        for i in 0..10
+        {
             assert_eq!(rx.try_recv().unwrap(), format!("msg-{i}"));
         }
     }
 
     #[test]
-    fn test_bounded_channel_full() {
+    fn test_bounded_channel_full()
+    {
         let (tx, rx) = bounded::<i32>(2);
         assert!(tx.send(1).is_ok());
         assert!(tx.send(2).is_ok());
@@ -460,7 +526,8 @@ mod tests {
     }
 
     #[test]
-    fn test_close_after_all_senders_drop() {
+    fn test_close_after_all_senders_drop()
+    {
         let (tx, mut rx) = unbounded::<i32>();
         let tx2 = tx.clone();
         tx.send(1).unwrap();

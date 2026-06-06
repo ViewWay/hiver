@@ -4,10 +4,12 @@
 //! This module provides Request-based `TransactionContext` that works across async boundaries.
 //! 本模块提供基于Request的TransactionContext，可在异步边界间工作。
 
-use crate::{Transaction, TransactionStatus};
-use hiver_http::Request;
 use std::sync::Arc;
+
+use hiver_http::Request;
 use tokio::sync::RwLock;
+
+use crate::{Transaction, TransactionStatus};
 
 /// `TransactionContext` extension for Request
 /// `Request的TransactionContext扩展`
@@ -32,7 +34,8 @@ use tokio::sync::RwLock;
 /// }
 /// ```
 #[derive(Clone)]
-pub struct TransactionContextExt {
+pub struct TransactionContextExt
+{
     /// Current transaction
     /// 当前事务
     current: Arc<RwLock<Option<Transaction>>>,
@@ -42,10 +45,12 @@ pub struct TransactionContextExt {
     stack: Arc<RwLock<Vec<Transaction>>>,
 }
 
-impl TransactionContextExt {
+impl TransactionContextExt
+{
     /// Create a new `TransactionContext` extension
     /// `创建新的TransactionContext扩展`
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             current: Arc::new(RwLock::new(None)),
             stack: Arc::new(RwLock::new(Vec::new())),
@@ -57,13 +62,15 @@ impl TransactionContextExt {
     ///
     /// Returns None if `TransactionContext` is not found in the request.
     /// 如果请求中未找到TransactionContext，则返回None。
-    pub fn from_request(req: &Request) -> Option<Arc<Self>> {
+    pub fn from_request(req: &Request) -> Option<Arc<Self>>
+    {
         req.extensions().get::<Arc<Self>>().cloned()
     }
 
     /// Set `TransactionContext` to Request extensions
     /// `将TransactionContext设置到Request扩展`
-    pub fn set_to_request(req: &mut Request) -> Arc<Self> {
+    pub fn set_to_request(req: &mut Request) -> Arc<Self>
+    {
         let ctx = Arc::new(Self::new());
         req.extensions_mut().insert(ctx.clone());
         ctx
@@ -71,47 +78,54 @@ impl TransactionContextExt {
 
     /// Get current transaction
     /// 获取当前事务
-    pub async fn current_transaction(&self) -> Option<Transaction> {
+    pub async fn current_transaction(&self) -> Option<Transaction>
+    {
         self.current.read().await.clone()
     }
 
     /// Set current transaction
     /// 设置当前事务
-    pub async fn set_current_transaction(&self, tx: Transaction) {
+    pub async fn set_current_transaction(&self, tx: Transaction)
+    {
         let mut current = self.current.write().await;
         *current = Some(tx);
     }
 
     /// Clear current transaction
     /// 清除当前事务
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         let mut current = self.current.write().await;
         *current = None;
     }
 
     /// Push transaction onto stack (for nested transactions)
     /// 将事务压入栈（用于嵌套事务）
-    pub async fn push_transaction(&self, tx: Transaction) {
+    pub async fn push_transaction(&self, tx: Transaction)
+    {
         let mut stack = self.stack.write().await;
         stack.push(tx);
     }
 
     /// Pop transaction from stack
     /// 从栈弹出事务
-    pub async fn pop_transaction(&self) -> Option<Transaction> {
+    pub async fn pop_transaction(&self) -> Option<Transaction>
+    {
         let mut stack = self.stack.write().await;
         stack.pop()
     }
 
     /// Get stack depth
     /// 获取栈深度
-    pub async fn stack_depth(&self) -> usize {
+    pub async fn stack_depth(&self) -> usize
+    {
         self.stack.read().await.len()
     }
 
     /// Check if there is an active transaction
     /// 检查是否有活动事务
-    pub async fn has_active_transaction(&self) -> bool {
+    pub async fn has_active_transaction(&self) -> bool
+    {
         self.current
             .read()
             .await
@@ -121,7 +135,8 @@ impl TransactionContextExt {
 
     /// Get transaction status
     /// 获取事务状态
-    pub async fn transaction_status(&self) -> Option<TransactionStatus> {
+    pub async fn transaction_status(&self) -> Option<TransactionStatus>
+    {
         self.current
             .read()
             .await
@@ -130,8 +145,10 @@ impl TransactionContextExt {
     }
 }
 
-impl Default for TransactionContextExt {
-    fn default() -> Self {
+impl Default for TransactionContextExt
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -150,7 +167,8 @@ impl Default for TransactionContextExt {
 ///     Ok(Response::json(tx))
 /// }
 /// ```
-pub async fn get_transaction_from_request(req: &Request) -> Option<Transaction> {
+pub async fn get_transaction_from_request(req: &Request) -> Option<Transaction>
+{
     TransactionContextExt::from_request(req)?
         .current_transaction()
         .await
@@ -158,22 +176,29 @@ pub async fn get_transaction_from_request(req: &Request) -> Option<Transaction> 
 
 /// Convenience function: Check if request has active transaction
 /// 便捷函数：检查请求是否有活动事务
-pub async fn has_active_transaction_in_request(req: &Request) -> bool {
-    if let Some(ctx) = TransactionContextExt::from_request(req) {
+pub async fn has_active_transaction_in_request(req: &Request) -> bool
+{
+    if let Some(ctx) = TransactionContextExt::from_request(req)
+    {
         ctx.has_active_transaction().await
-    } else {
+    }
+    else
+    {
         false
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::Transaction;
+mod tests
+{
     use hiver_http::{Method, Request};
 
+    use super::*;
+    use crate::Transaction;
+
     #[tokio::test]
-    async fn test_transaction_context_ext() {
+    async fn test_transaction_context_ext()
+    {
         let mut req = Request::from_method_uri(Method::GET, "/test");
 
         // Set TransactionContext

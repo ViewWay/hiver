@@ -3,19 +3,24 @@
 
 use serde_json::Value;
 
-use crate::context::SpelContext;
-use crate::parser::{self, CmpOp, SpelError, SpelExpr};
+use crate::{
+    context::SpelContext,
+    parser::{self, CmpOp, SpelError, SpelExpr},
+};
 
 /// Compiles and evaluates a SpEL expression against a context.
 /// 编译并针对上下文求值 SpEL 表达式。
-pub struct SpelEvaluator {
+pub struct SpelEvaluator
+{
     expr: Result<SpelExpr, SpelError>,
 }
 
-impl SpelEvaluator {
+impl SpelEvaluator
+{
     /// Creates a new evaluator from an expression string.
     /// 从表达式字符串创建新的求值器。
-    pub fn new(expression: &str) -> Self {
+    pub fn new(expression: &str) -> Self
+    {
         Self {
             expr: parser::parse(expression),
         }
@@ -23,7 +28,8 @@ impl SpelEvaluator {
 
     /// Evaluates the expression against the given context.
     /// 针对给定上下文求值表达式。
-    pub fn evaluate(&self, ctx: &SpelContext) -> Result<bool, SpelError> {
+    pub fn evaluate(&self, ctx: &SpelContext) -> Result<bool, SpelError>
+    {
         let expr = self
             .expr
             .as_ref()
@@ -32,8 +38,10 @@ impl SpelEvaluator {
     }
 }
 
-fn eval_bool(expr: &SpelExpr, ctx: &SpelContext) -> Result<bool, SpelError> {
-    match expr {
+fn eval_bool(expr: &SpelExpr, ctx: &SpelContext) -> Result<bool, SpelError>
+{
+    match expr
+    {
         SpelExpr::HasRole(role) => Ok(ctx.has_role(role)),
         SpelExpr::HasAuthority(auth) => Ok(ctx.has_authority(auth)),
         SpelExpr::HasAnyRole(roles) => Ok(ctx.has_any_role(roles)),
@@ -42,7 +50,8 @@ fn eval_bool(expr: &SpelExpr, ctx: &SpelContext) -> Result<bool, SpelError> {
         SpelExpr::And(a, b) => Ok(eval_bool(a, ctx)? && eval_bool(b, ctx)?),
         SpelExpr::Or(a, b) => Ok(eval_bool(a, ctx)? || eval_bool(b, ctx)?),
         SpelExpr::Not(e) => Ok(!eval_bool(e, ctx)?),
-        SpelExpr::Compare(left, op, right) => {
+        SpelExpr::Compare(left, op, right) =>
+        {
             let lv = eval_value(left, ctx)?;
             let rv = eval_value(right, ctx)?;
             compare(&lv, &rv, *op)
@@ -52,8 +61,10 @@ fn eval_bool(expr: &SpelExpr, ctx: &SpelContext) -> Result<bool, SpelError> {
     }
 }
 
-fn eval_value(expr: &SpelExpr, ctx: &SpelContext) -> Result<Value, SpelError> {
-    match expr {
+fn eval_value(expr: &SpelExpr, ctx: &SpelContext) -> Result<Value, SpelError>
+{
+    match expr
+    {
         SpelExpr::Variable(name) => ctx
             .get_variable(name)
             .cloned()
@@ -65,11 +76,14 @@ fn eval_value(expr: &SpelExpr, ctx: &SpelContext) -> Result<Value, SpelError> {
 }
 
 #[allow(clippy::float_cmp)]
-fn compare(l: &Value, r: &Value, op: CmpOp) -> Result<bool, SpelError> {
+fn compare(l: &Value, r: &Value, op: CmpOp) -> Result<bool, SpelError>
+{
     let ln = l.as_f64();
     let rn = r.as_f64();
-    if let (Some(lv), Some(rv)) = (ln, rn) {
-        return Ok(match op {
+    if let (Some(lv), Some(rv)) = (ln, rn)
+    {
+        return Ok(match op
+        {
             CmpOp::Eq => lv == rv,
             CmpOp::NotEq => lv != rv,
             CmpOp::Gt => lv > rv,
@@ -80,11 +94,14 @@ fn compare(l: &Value, r: &Value, op: CmpOp) -> Result<bool, SpelError> {
     }
     let ls = l.as_str();
     let rs = r.as_str();
-    if let (Some(lv), Some(rv)) = (ls, rs) {
-        return Ok(match op {
+    if let (Some(lv), Some(rv)) = (ls, rs)
+    {
+        return Ok(match op
+        {
             CmpOp::Eq => lv == rv,
             CmpOp::NotEq => lv != rv,
-            _ => {
+            _ =>
+            {
                 return Err(SpelError::Evaluation(
                     "ordered comparison not supported for strings".into(),
                 ));

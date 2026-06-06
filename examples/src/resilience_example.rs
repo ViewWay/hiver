@@ -12,12 +12,13 @@
 //! - `RetryPolicy` → Resilience4j Retry
 //! - `ServiceDiscovery` → Spring Cloud Service Discovery
 
+use std::{sync::Arc, time::Duration};
+
 use hiver_resilience::{CircuitBreaker, CircuitBreakerConfig, CircuitState, RetryPolicy};
-use std::sync::Arc;
-use std::time::Duration;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>>
+{
     println!("=== Hiver Resilience Example / Hiver弹性示例 ===\n");
 
     // 1. Circuit Breaker / 熔断器
@@ -49,7 +50,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ///
 /// Equivalent to Resilience4j's `CircuitBreaker`.
 /// 等价于 Resilience4j 的熔断器。
-async fn circuit_breaker_example() {
+async fn circuit_breaker_example()
+{
     println!("  Creating circuit breaker:");
     println!("    Failure threshold: 5 failures");
     println!("    Success threshold: 3 successes");
@@ -75,10 +77,14 @@ async fn circuit_breaker_example() {
     // Simulate some calls / 模拟一些调用
     println!();
     println!("  Simulating calls:");
-    for i in 1..=5 {
-        if breaker.is_request_permitted() {
+    for i in 1..=5
+    {
+        if breaker.is_request_permitted()
+        {
             println!("    Call {}: Allowed - State: {:?}", i, breaker.state());
-        } else {
+        }
+        else
+        {
             println!("    Call {}: Blocked - Circuit is OPEN", i);
         }
         tokio::time::sleep(Duration::from_millis(100)).await;
@@ -93,7 +99,8 @@ async fn circuit_breaker_example() {
 ///
 /// Demonstrates retry logic with backoff strategies.
 /// 演示带退避策略的重试逻辑。
-fn retry_policy_example() {
+fn retry_policy_example()
+{
     println!("  Backoff strategies:");
     println!();
 
@@ -124,7 +131,8 @@ fn retry_policy_example() {
 ///
 /// Demonstrates using multiple resilience patterns together.
 /// 演示组合使用多种弹性模式。
-fn combined_patterns_example() {
+fn combined_patterns_example()
+{
     println!("  Combining patterns for production-grade resilience:");
     println!();
     println!("  API call with:");
@@ -148,12 +156,15 @@ fn combined_patterns_example() {
 ///
 /// Demonstrates how to protect an external API call.
 /// 演示如何保护外部API调用。
-struct UserService {
+struct UserService
+{
     circuit_breaker: Arc<CircuitBreaker>,
 }
 
-impl UserService {
-    fn new() -> Self {
+impl UserService
+{
+    fn new() -> Self
+    {
         let cb_config = CircuitBreakerConfig::new();
 
         Self {
@@ -177,10 +188,12 @@ impl UserService {
     ///     return new User(id, "Unknown", "unknown@example.com");
     /// }
     /// ```
-    fn get_user_protected(&self, _id: &str) -> Result<String, String> {
+    fn get_user_protected(&self, _id: &str) -> Result<String, String>
+    {
         // Check circuit breaker / 检查熔断器
         let state = self.circuit_breaker.state();
-        if state == CircuitState::Open {
+        if state == CircuitState::Open
+        {
             return Err("Circuit breaker is OPEN - service unavailable".to_string());
         }
 

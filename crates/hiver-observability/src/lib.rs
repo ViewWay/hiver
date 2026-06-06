@@ -13,11 +13,16 @@
 //!
 //! # Features / 功能
 //!
-//! - **Distributed Tracing** - OpenTelemetry-compatible span propagation and context management / 分布式追踪 - 兼容OpenTelemetry的span传播和上下文管理
-//! - **Metrics** - Counters, gauges, and histograms with a pluggable registry / 指标 - 计数器、仪表盘和直方图，支持可插拔注册表
-//! - **Structured Logging** - JSON/text output with log levels, rotation, and configurable formatting / 结构化日志 - 支持JSON/文本输出，包含日志级别、轮转和可配置格式化
-//! - **Hiver Format** - Branded startup banner and colored console output (feature-gated) / Hiver格式 - 品牌化启动横幅和彩色控制台输出（特性门控）
-//! - **Zipkin Export** - Send trace data to Zipkin collectors (feature-gated) / Zipkin导出 - 将追踪数据发送到Zipkin收集器（特性门控）
+//! - **Distributed Tracing** - OpenTelemetry-compatible span propagation and context management /
+//!   分布式追踪 - 兼容OpenTelemetry的span传播和上下文管理
+//! - **Metrics** - Counters, gauges, and histograms with a pluggable registry / 指标 -
+//!   计数器、仪表盘和直方图，支持可插拔注册表
+//! - **Structured Logging** - JSON/text output with log levels, rotation, and configurable
+//!   formatting / 结构化日志 - 支持JSON/文本输出，包含日志级别、轮转和可配置格式化
+//! - **Hiver Format** - Branded startup banner and colored console output (feature-gated) /
+//!   Hiver格式 - 品牌化启动横幅和彩色控制台输出（特性门控）
+//! - **Zipkin Export** - Send trace data to Zipkin collectors (feature-gated) / Zipkin导出 -
+//!   将追踪数据发送到Zipkin收集器（特性门控）
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
 //!
@@ -29,10 +34,10 @@
 //! # Module Organization / 模块组织
 //!
 //! | Module | Purpose / 用途 |
-//!|--------|---------------|
-//!| [`log`] | Structured logging with levels, rotation, and multiple output formats / 结构化日志，支持级别、轮转和多种输出格式 |
-//!| [`metrics`] | Counters, gauges, histograms, and the central metrics registry / 计数器、仪表盘、直方图及中央指标注册表 |
-//!| [`mod@trace`] | Distributed tracing with spans, trace IDs, and context propagation / 分布式追踪，包含span、追踪ID和上下文传播 |
+//! |--------|---------------|
+//! | [`log`] | Structured logging with levels, rotation, and multiple output formats / 结构化日志，支持级别、轮转和多种输出格式 |
+//! | [`metrics`] | Counters, gauges, histograms, and the central metrics registry / 计数器、仪表盘、直方图及中央指标注册表 |
+//! | [`mod@trace`] | Distributed tracing with spans, trace IDs, and context propagation / 分布式追踪，包含span、追踪ID和上下文传播 |
 //!
 //! # Example / 示例
 //!
@@ -82,20 +87,16 @@ pub mod hiver_format;
 pub mod zipkin;
 
 // Re-exports from the log module / 从日志模块重新导出
-pub use log::{
-    LogFormat, LogLevel, LogMode, LogRotation, Logger, LoggerConfig, LoggerFactory, LoggerHandle,
-};
-
-// Re-exports from the metrics module / 从指标模块重新导出
-pub use metrics::{Counter, Gauge, Histogram, MetricsRegistry};
-
-// Re-exports from the trace module / 从追踪模块重新导出
-pub use trace::{Span, SpanId, TraceContext, TraceId, Tracer};
-
 // Re-exports from the hiver-format module / 从hiver-format模块重新导出
 #[cfg(feature = "hiver-format")]
 pub use hiver_format::{Banner, SimpleFormatter, StartupLogger};
-
+pub use log::{
+    LogFormat, LogLevel, LogMode, LogRotation, Logger, LoggerConfig, LoggerFactory, LoggerHandle,
+};
+// Re-exports from the metrics module / 从指标模块重新导出
+pub use metrics::{Counter, Gauge, Histogram, MetricsRegistry};
+// Re-exports from the trace module / 从追踪模块重新导出
+pub use trace::{Span, SpanId, TraceContext, TraceId, Tracer};
 /// Re-export the `tracing` crate for convenience.
 /// 重新导出 `tracing` crate 以便使用。
 pub use tracing::{self, debug, error, info, trace, warn};

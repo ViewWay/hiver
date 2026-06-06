@@ -9,7 +9,8 @@ use thiserror::Error;
 /// Equivalent to Spring's various security exceptions.
 /// 等价于Spring的各种安全异常。
 #[derive(Error, Debug)]
-pub enum SecurityError {
+pub enum SecurityError
+{
     /// Authentication failed
     /// 认证失败
     #[error("Authentication failed: {0}")]
@@ -53,7 +54,8 @@ pub enum SecurityError {
     /// Insufficient permissions
     /// 权限不足
     #[error("Insufficient permissions: required {required}, but has {has}")]
-    InsufficientPermissions {
+    InsufficientPermissions
+    {
         /// Required permissions
         /// 所需权限
         required: String,
@@ -104,28 +106,33 @@ pub enum SecurityError {
     Other(String),
 }
 
-impl SecurityError {
+impl SecurityError
+{
     /// Create an IO error from a message
     /// 从消息创建IO错误
-    pub fn io_error(msg: impl Into<String>) -> Self {
+    pub fn io_error(msg: impl Into<String>) -> Self
+    {
         SecurityError::Other(msg.into())
     }
 
     /// Create an authentication error from a message
     /// 从消息创建认证错误
-    pub fn authentication_error(msg: impl Into<String>) -> Self {
+    pub fn authentication_error(msg: impl Into<String>) -> Self
+    {
         SecurityError::AuthenticationFailed(msg.into())
     }
 
     /// Create an invalid token error
     /// 创建无效令牌错误
-    pub fn invalid_token(msg: impl Into<String>) -> Self {
+    pub fn invalid_token(msg: impl Into<String>) -> Self
+    {
         SecurityError::InvalidToken(msg.into())
     }
 
     /// Create an expired token error
     /// 创建过期令牌错误
-    pub fn expired_token(msg: impl Into<String>) -> Self {
+    pub fn expired_token(msg: impl Into<String>) -> Self
+    {
         SecurityError::TokenExpired(msg.into())
     }
 }
@@ -141,16 +148,19 @@ pub type SecurityResult<T> = Result<T, SecurityError>;
 /// `等价于Spring的AccessDeniedException`。
 #[derive(Error, Debug)]
 #[error("Access denied: {message}")]
-pub struct AccessDeniedException {
+pub struct AccessDeniedException
+{
     /// Error message
     /// 错误消息
     pub message: String,
 }
 
-impl AccessDeniedException {
+impl AccessDeniedException
+{
     /// Create a new access denied exception
     /// 创建新的访问被拒绝异常
-    pub fn new(message: impl Into<String>) -> Self {
+    pub fn new(message: impl Into<String>) -> Self
+    {
         Self {
             message: message.into(),
         }
@@ -158,7 +168,8 @@ impl AccessDeniedException {
 
     /// Create with insufficient permissions
     /// 使用权限不足创建
-    pub fn insufficient_permissions(required: &str, has: &str) -> Self {
+    pub fn insufficient_permissions(required: &str, has: &str) -> Self
+    {
         Self {
             message: format!("Insufficient permissions: required {}, but has {}", required, has),
         }
@@ -172,16 +183,19 @@ impl AccessDeniedException {
 /// `等价于Spring的AuthenticationException`。
 #[derive(Error, Debug)]
 #[error("Authentication failed: {message}")]
-pub struct AuthenticationException {
+pub struct AuthenticationException
+{
     /// Error message
     /// 错误消息
     pub message: String,
 }
 
-impl AuthenticationException {
+impl AuthenticationException
+{
     /// Create a new authentication exception
     /// 创建新的认证异常
-    pub fn new(message: impl Into<String>) -> Self {
+    pub fn new(message: impl Into<String>) -> Self
+    {
         Self {
             message: message.into(),
         }
@@ -189,7 +203,8 @@ impl AuthenticationException {
 
     /// Create with bad credentials
     /// 使用错误凭据创建
-    pub fn bad_credentials() -> Self {
+    pub fn bad_credentials() -> Self
+    {
         Self {
             message: "Bad credentials".to_string(),
         }

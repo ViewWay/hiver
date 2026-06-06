@@ -8,11 +8,15 @@
 //! | `ApplicationEventPublisher` | `ApplicationEventPublisher` |
 //! | `PublishStrategy` | - (sync/async execution) |
 
-use crate::event::{ApplicationEvent, EventError};
-use crate::listener::EventConsumer;
-use crate::registry::{EventFilter, EventRegistry};
 use std::sync::Arc;
+
 use tokio::sync::RwLock;
+
+use crate::{
+    event::{ApplicationEvent, EventError},
+    listener::EventConsumer,
+    registry::{EventFilter, EventRegistry},
+};
 
 /// Publish strategy
 /// 发布策略
@@ -37,7 +41,8 @@ use tokio::sync::RwLock;
 /// }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PublishStrategy {
+pub enum PublishStrategy
+{
     /// Sync: process listeners sequentially on the calling thread
     /// 同步：在调用线程上顺序处理监听器
     Sync,
@@ -71,7 +76,8 @@ pub enum PublishStrategy {
 ///
 /// publisher.publishEvent(new CustomEvent("data"));
 /// ```
-pub struct ApplicationEventPublisher {
+pub struct ApplicationEventPublisher
+{
     /// Event registry
     /// 事件注册表
     registry: Arc<RwLock<EventRegistry>>,
@@ -81,10 +87,12 @@ pub struct ApplicationEventPublisher {
     default_strategy: PublishStrategy,
 }
 
-impl ApplicationEventPublisher {
+impl ApplicationEventPublisher
+{
     /// Create new event publisher
     /// 创建新事件发布器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             registry: Arc::new(RwLock::new(EventRegistry::new())),
             default_strategy: PublishStrategy::Async,
@@ -93,7 +101,8 @@ impl ApplicationEventPublisher {
 
     /// Create with custom strategy
     /// 使用自定义策略创建
-    pub fn with_strategy(strategy: PublishStrategy) -> Self {
+    pub fn with_strategy(strategy: PublishStrategy) -> Self
+    {
         Self {
             registry: Arc::new(RwLock::new(EventRegistry::new())),
             default_strategy: strategy,
@@ -102,7 +111,8 @@ impl ApplicationEventPublisher {
 
     /// Get event registry
     /// 获取事件注册表
-    pub fn registry(&self) -> Arc<RwLock<EventRegistry>> {
+    pub fn registry(&self) -> Arc<RwLock<EventRegistry>>
+    {
         self.registry.clone()
     }
 
@@ -132,10 +142,12 @@ impl ApplicationEventPublisher {
     where
         E: ApplicationEvent + Clone + Send + Sync + 'static,
     {
-        match strategy {
+        match strategy
+        {
             PublishStrategy::Sync => self.publish_sync(event).await,
             PublishStrategy::Async => self.publish_async(event).await,
-            PublishStrategy::Transactional => {
+            PublishStrategy::Transactional =>
+            {
                 // For now, treat transactional as sync
                 // In a full implementation, this would integrate with a transaction manager
                 self.publish_sync(event).await
@@ -153,11 +165,13 @@ impl ApplicationEventPublisher {
         let registry = self.registry.read().await;
 
         let consumers = registry.get_consumers(type_name).await;
-        if consumers.is_empty() {
+        if consumers.is_empty()
+        {
             return Err(EventError::NoListener(type_name.to_string()));
         }
 
-        for consumer in consumers {
+        for consumer in consumers
+        {
             if let Err(e) = consumer
                 .call_event(&event as &(dyn std::any::Any + Send + Sync))
                 .await
@@ -180,7 +194,8 @@ impl ApplicationEventPublisher {
         let registry = self.registry.read().await;
 
         let consumers = registry.get_consumers(type_name).await;
-        if consumers.is_empty() {
+        if consumers.is_empty()
+        {
             return Err(EventError::NoListener(type_name.to_string()));
         }
 
@@ -189,7 +204,8 @@ impl ApplicationEventPublisher {
 
         // Spawn tasks for each consumer
         let mut tasks = Vec::new();
-        for consumer in consumers {
+        for consumer in consumers
+        {
             let event_arc_clone = event_arc.clone();
             let consumer_clone = consumer.clone();
             let handle = tokio::task::spawn_blocking(move || {
@@ -212,14 +228,19 @@ impl ApplicationEventPublisher {
         }
 
         // Wait for all consumers
-        for handle in tasks {
-            match handle.await {
-                Ok(Ok(())) => {},
-                Ok(Err(e)) => {
+        for handle in tasks
+        {
+            match handle.await
+            {
+                Ok(Ok(())) =>
+                {},
+                Ok(Err(e)) =>
+                {
                     tracing::error!("Event listener error: {:?}", e);
                     return Err(EventError::ListenerFailed("Listener failed".to_string()));
                 },
-                Err(e) => {
+                Err(e) =>
+                {
                     tracing::error!("Event listener task failed: {}", e);
                     return Err(EventError::ListenerFailed("Task failed".to_string()));
                 },
@@ -293,14 +314,18 @@ impl ApplicationEventPublisher {
     }
 }
 
-impl Default for ApplicationEventPublisher {
-    fn default() -> Self {
+impl Default for ApplicationEventPublisher
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl Clone for ApplicationEventPublisher {
-    fn clone(&self) -> Self {
+impl Clone for ApplicationEventPublisher
+{
+    fn clone(&self) -> Self
+    {
         Self {
             registry: self.registry.clone(),
             default_strategy: self.default_strategy,
@@ -325,14 +350,17 @@ impl Clone for ApplicationEventPublisher {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct SimpleEventPublisher {
+pub struct SimpleEventPublisher
+{
     inner: Arc<ApplicationEventPublisher>,
 }
 
-impl SimpleEventPublisher {
+impl SimpleEventPublisher
+{
     /// Create new simple event publisher
     /// 创建新的简单事件发布器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             inner: Arc::new(ApplicationEventPublisher::new()),
         }
@@ -352,57 +380,71 @@ impl SimpleEventPublisher {
 
     /// Get inner publisher
     /// 获取内部发布器
-    pub fn inner(&self) -> &ApplicationEventPublisher {
+    pub fn inner(&self) -> &ApplicationEventPublisher
+    {
         &self.inner
     }
 }
 
-impl Default for SimpleEventPublisher {
-    fn default() -> Self {
+impl Default for SimpleEventPublisher
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::event::ContextRefreshedEvent;
 
     #[derive(Clone, Debug)]
-    struct TestEvent {
+    struct TestEvent
+    {
         data: String,
     }
 
-    impl ApplicationEvent for TestEvent {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+    impl ApplicationEvent for TestEvent
+    {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
+        {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn std::any::Any {
+        fn as_any(&self) -> &dyn std::any::Any
+        {
             self
         }
     }
 
     #[derive(Clone)]
-    struct TestListener {
+    struct TestListener
+    {
         call_count: Arc<std::sync::atomic::AtomicU32>,
     }
 
-    impl TestListener {
-        fn new() -> Self {
+    impl TestListener
+    {
+        fn new() -> Self
+        {
             Self {
                 call_count: Arc::new(std::sync::atomic::AtomicU32::new(0)),
             }
         }
 
-        fn count(&self) -> u32 {
+        fn count(&self) -> u32
+        {
             self.call_count.load(std::sync::atomic::Ordering::Relaxed)
         }
     }
 
     #[async_trait::async_trait]
-    impl crate::listener::AsyncEventListener<TestEvent> for TestListener {
-        async fn on_event(&self, event: &TestEvent) -> Result<(), String> {
+    impl crate::listener::AsyncEventListener<TestEvent> for TestListener
+    {
+        async fn on_event(&self, event: &TestEvent) -> Result<(), String>
+        {
             self.call_count
                 .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             println!("Received event: {}", event.data);
@@ -411,14 +453,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_publisher_creation() {
+    async fn test_publisher_creation()
+    {
         let publisher = ApplicationEventPublisher::new();
         assert_eq!(publisher.consumer_count::<TestEvent>().await, 0);
         assert!(!publisher.has_listeners::<TestEvent>().await);
     }
 
     #[tokio::test]
-    async fn test_register_consumer() {
+    async fn test_register_consumer()
+    {
         let publisher = ApplicationEventPublisher::new();
         let listener = TestListener::new();
         let adapter = crate::listener::AsyncListenerAdapter::new(listener.clone());
@@ -430,7 +474,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_publish_sync() {
+    async fn test_publish_sync()
+    {
         let publisher = ApplicationEventPublisher::with_strategy(PublishStrategy::Sync);
         let listener = TestListener::new();
         let adapter = crate::listener::AsyncListenerAdapter::new(listener.clone());
@@ -452,7 +497,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_publish_async() {
+    async fn test_publish_async()
+    {
         let publisher = ApplicationEventPublisher::with_strategy(PublishStrategy::Async);
         let listener = TestListener::new();
         let adapter = crate::listener::AsyncListenerAdapter::new(listener.clone());
@@ -471,7 +517,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_unregister() {
+    async fn test_unregister()
+    {
         let publisher = ApplicationEventPublisher::new();
         let listener = TestListener::new();
         let adapter = crate::listener::AsyncListenerAdapter::new(listener);
@@ -484,7 +531,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_no_listener_error() {
+    async fn test_no_listener_error()
+    {
         let publisher = ApplicationEventPublisher::new();
 
         let event = TestEvent {
@@ -496,20 +544,24 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_context_event() {
+    async fn test_context_event()
+    {
         let publisher = ApplicationEventPublisher::new();
 
         let call_count = Arc::new(std::sync::atomic::AtomicU32::new(0));
         let call_count_clone = call_count.clone();
 
         #[derive(Clone)]
-        struct ContextListener {
+        struct ContextListener
+        {
             count: Arc<std::sync::atomic::AtomicU32>,
         }
 
         #[async_trait::async_trait]
-        impl crate::listener::AsyncEventListener<ContextRefreshedEvent> for ContextListener {
-            async fn on_event(&self, _event: &ContextRefreshedEvent) -> Result<(), String> {
+        impl crate::listener::AsyncEventListener<ContextRefreshedEvent> for ContextListener
+        {
+            async fn on_event(&self, _event: &ContextRefreshedEvent) -> Result<(), String>
+            {
                 self.count
                     .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                 Ok(())

@@ -43,18 +43,22 @@ pub type Result<T> = anyhow::Result<T>;
 /// ```
 /// use hiver_core::lifecycle::InitializingBean;
 ///
-/// struct MyService {
+/// struct MyService
+/// {
 ///     initialized: bool,
 /// }
 ///
-/// impl InitializingBean for MyService {
-///     fn after_properties_set(&mut self) -> hiver_core::lifecycle::Result<()> {
+/// impl InitializingBean for MyService
+/// {
+///     fn after_properties_set(&mut self) -> hiver_core::lifecycle::Result<()>
+///     {
 ///         self.initialized = true;
 ///         Ok(())
 ///     }
 /// }
 /// ```
-pub trait InitializingBean {
+pub trait InitializingBean
+{
     /// Called after all bean properties have been set.
     /// 在所有Bean属性设置完毕后调用。
     ///
@@ -79,18 +83,22 @@ pub trait InitializingBean {
 /// ```
 /// use hiver_core::lifecycle::DisposableBean;
 ///
-/// struct ConnectionPool {
+/// struct ConnectionPool
+/// {
 ///     active_connections: usize,
 /// }
 ///
-/// impl DisposableBean for ConnectionPool {
-///     fn destroy(&mut self) -> hiver_core::lifecycle::Result<()> {
+/// impl DisposableBean for ConnectionPool
+/// {
+///     fn destroy(&mut self) -> hiver_core::lifecycle::Result<()>
+///     {
 ///         self.active_connections = 0;
 ///         Ok(())
 ///     }
 /// }
 /// ```
-pub trait DisposableBean {
+pub trait DisposableBean
+{
     /// Called before the bean is destroyed by the container.
     /// 在容器销毁Bean之前调用。
     ///
@@ -114,7 +122,8 @@ pub trait DisposableBean {
 ///
 /// 1. `post_process_before_initialization` — runs before `InitializingBean::after_properties_set`
 /// 2. `post_process_after_initialization` — runs after `InitializingBean::after_properties_set`
-pub trait BeanPostProcessor: Send + Sync {
+pub trait BeanPostProcessor: Send + Sync
+{
     /// Apply this processor before the bean's initialization callback.
     /// 在Bean的初始化回调之前应用此处理器。
     ///
@@ -123,10 +132,8 @@ pub trait BeanPostProcessor: Send + Sync {
     ///
     /// # Arguments / 参数
     ///
-    /// * `bean` — The raw bean instance to process.
-    ///   要处理的原始Bean实例。
-    /// * `bean_name` — The name of the bean.
-    ///   Bean的名称。
+    /// * `bean` — The raw bean instance to process. 要处理的原始Bean实例。
+    /// * `bean_name` — The name of the bean. Bean的名称。
     fn post_process_before_initialization(&self, bean: &mut dyn Any, bean_name: &str)
     -> Result<()>;
 
@@ -138,10 +145,8 @@ pub trait BeanPostProcessor: Send + Sync {
     ///
     /// # Arguments / 参数
     ///
-    /// * `bean` — The raw bean instance to process.
-    ///   要处理的原始Bean实例。
-    /// * `bean_name` — The name of the bean.
-    ///   Bean的名称。
+    /// * `bean` — The raw bean instance to process. 要处理的原始Bean实例。
+    /// * `bean_name` — The name of the bean. Bean的名称。
     fn post_process_after_initialization(&self, bean: &mut dyn Any, bean_name: &str) -> Result<()>;
 }
 
@@ -169,14 +174,15 @@ pub trait BeanPostProcessor: Send + Sync {
 ///     }
 /// }
 /// ```
-pub trait BeanFactoryPostProcessor: Send + Sync {
+pub trait BeanFactoryPostProcessor: Send + Sync
+{
     /// Modify the bean factory's internal state before any beans are created.
     /// `在创建任何Bean之前修改Bean工厂的内部状态`。
     ///
     /// # Arguments / 参数
     ///
-    /// * `factory` — The bean factory (passed as `&mut dyn Any` for flexibility).
-    ///   Bean工厂（以 `&mut dyn Any` 传递以提供灵活性）。
+    /// * `factory` — The bean factory (passed as `&mut dyn Any` for flexibility). Bean工厂（以
+    ///   `&mut dyn Any` 传递以提供灵活性）。
     fn post_process_bean_factory(&self, factory: &mut dyn Any);
 }
 
@@ -192,20 +198,20 @@ pub trait BeanFactoryPostProcessor: Send + Sync {
 /// 可用作基类或测试。
 pub struct NoOpBeanPostProcessor;
 
-impl BeanPostProcessor for NoOpBeanPostProcessor {
+impl BeanPostProcessor for NoOpBeanPostProcessor
+{
     fn post_process_before_initialization(
         &self,
         _bean: &mut dyn Any,
         _bean_name: &str,
-    ) -> Result<()> {
+    ) -> Result<()>
+    {
         Ok(())
     }
 
-    fn post_process_after_initialization(
-        &self,
-        _bean: &mut dyn Any,
-        _bean_name: &str,
-    ) -> Result<()> {
+    fn post_process_after_initialization(&self, _bean: &mut dyn Any, _bean_name: &str)
+    -> Result<()>
+    {
         Ok(())
     }
 }
@@ -214,8 +220,10 @@ impl BeanPostProcessor for NoOpBeanPostProcessor {
 /// 不执行任何操作的空 `BeanFactoryPostProcessor`。
 pub struct NoOpBeanFactoryPostProcessor;
 
-impl BeanFactoryPostProcessor for NoOpBeanFactoryPostProcessor {
-    fn post_process_bean_factory(&self, _factory: &mut dyn Any) {
+impl BeanFactoryPostProcessor for NoOpBeanFactoryPostProcessor
+{
+    fn post_process_bean_factory(&self, _factory: &mut dyn Any)
+    {
         // no-op
     }
 }
@@ -235,19 +243,18 @@ impl BeanFactoryPostProcessor for NoOpBeanFactoryPostProcessor {
 ///
 /// # Arguments / 参数
 ///
-/// * `bean` — The bean instance to initialize.
-///   要初始化的Bean实例。
-/// * `bean_name` — The name of the bean.
-///   Bean的名称。
-/// * `processors` — Slice of `BeanPostProcessor`s to apply.
-///   要应用的 `BeanPostProcessor` 切片。
+/// * `bean` — The bean instance to initialize. 要初始化的Bean实例。
+/// * `bean_name` — The name of the bean. Bean的名称。
+/// * `processors` — Slice of `BeanPostProcessor`s to apply. 要应用的 `BeanPostProcessor` 切片。
 pub fn initialize_bean(
     bean: &mut dyn Any,
     bean_name: &str,
     processors: &[&dyn BeanPostProcessor],
-) -> Result<()> {
+) -> Result<()>
+{
     // Phase 1: before initialization / 初始化前
-    for processor in processors {
+    for processor in processors
+    {
         processor.post_process_before_initialization(bean, bean_name)?;
     }
 
@@ -260,7 +267,8 @@ pub fn initialize_bean(
     // For the general case, this function focuses on processor invocation only.
 
     // Phase 3: after initialization / 初始化后
-    for processor in processors {
+    for processor in processors
+    {
         processor.post_process_after_initialization(bean, bean_name)?;
     }
 
@@ -279,7 +287,8 @@ pub fn initialize_bean(
 ///
 /// 注意：调用者负责向下转型并在具体类型上调用trait方法，
 /// 因为 `dyn Any` 不能直接向下转型为 `dyn DisposableBean`。
-pub fn destroy_bean<T: DisposableBean>(bean: &mut T) -> Result<()> {
+pub fn destroy_bean<T: DisposableBean>(bean: &mut T) -> Result<()>
+{
     bean.destroy()
 }
 
@@ -289,21 +298,28 @@ pub fn destroy_bean<T: DisposableBean>(bean: &mut T) -> Result<()> {
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    };
+
     use super::*;
-    use std::sync::Arc;
-    use std::sync::atomic::{AtomicBool, Ordering};
 
     /// A sample bean that tracks whether `after_properties_set` was called.
     /// 一个示例Bean，跟踪 `after_properties_set` 是否被调用。
-    struct SampleBean {
+    struct SampleBean
+    {
         initialized: bool,
         destroyed: bool,
         flag: Arc<AtomicBool>,
     }
 
-    impl SampleBean {
-        fn new(flag: Arc<AtomicBool>) -> Self {
+    impl SampleBean
+    {
+        fn new(flag: Arc<AtomicBool>) -> Self
+        {
             Self {
                 initialized: false,
                 destroyed: false,
@@ -312,23 +328,28 @@ mod tests {
         }
     }
 
-    impl InitializingBean for SampleBean {
-        fn after_properties_set(&mut self) -> Result<()> {
+    impl InitializingBean for SampleBean
+    {
+        fn after_properties_set(&mut self) -> Result<()>
+        {
             self.initialized = true;
             self.flag.store(true, Ordering::SeqCst);
             Ok(())
         }
     }
 
-    impl DisposableBean for SampleBean {
-        fn destroy(&mut self) -> Result<()> {
+    impl DisposableBean for SampleBean
+    {
+        fn destroy(&mut self) -> Result<()>
+        {
             self.destroyed = true;
             Ok(())
         }
     }
 
     #[test]
-    fn test_initializing_bean_callback_fires() {
+    fn test_initializing_bean_callback_fires()
+    {
         let flag = Arc::new(AtomicBool::new(false));
         let mut bean = SampleBean::new(Arc::clone(&flag));
 
@@ -343,7 +364,8 @@ mod tests {
     }
 
     #[test]
-    fn test_disposable_bean_callback_fires() {
+    fn test_disposable_bean_callback_fires()
+    {
         let flag = Arc::new(AtomicBool::new(false));
         let mut bean = SampleBean::new(flag);
 
@@ -355,7 +377,8 @@ mod tests {
     }
 
     #[test]
-    fn test_full_lifecycle() {
+    fn test_full_lifecycle()
+    {
         let flag = Arc::new(AtomicBool::new(false));
         let mut bean = SampleBean::new(Arc::clone(&flag));
 
@@ -369,7 +392,8 @@ mod tests {
     }
 
     #[test]
-    fn test_destroy_bean_helper() {
+    fn test_destroy_bean_helper()
+    {
         let flag = Arc::new(AtomicBool::new(false));
         let mut bean = SampleBean::new(flag);
 
@@ -379,7 +403,8 @@ mod tests {
     }
 
     #[test]
-    fn test_no_op_bean_post_processor() {
+    fn test_no_op_bean_post_processor()
+    {
         let processor = NoOpBeanPostProcessor;
         let mut data: Box<dyn Any> = Box::new(42i32);
 
@@ -396,14 +421,16 @@ mod tests {
     }
 
     #[test]
-    fn test_no_op_bean_factory_post_processor() {
+    fn test_no_op_bean_factory_post_processor()
+    {
         let processor = NoOpBeanFactoryPostProcessor;
         let mut factory: Box<dyn Any> = Box::new("factory" as &str);
         processor.post_process_bean_factory(&mut *factory);
     }
 
     #[test]
-    fn test_initialize_bean_with_processors() {
+    fn test_initialize_bean_with_processors()
+    {
         let processor = NoOpBeanPostProcessor;
         let mut data: Box<dyn Any> = Box::new(99u64);
         let result = initialize_bean(&mut *data, "myBean", &[&processor]);
@@ -411,13 +438,16 @@ mod tests {
     }
 
     /// A `BeanPostProcessor` that sets a flag when called, for verification.
-    struct TrackingPostProcessor {
+    struct TrackingPostProcessor
+    {
         before_called: AtomicBool,
         after_called: AtomicBool,
     }
 
-    impl TrackingPostProcessor {
-        fn new() -> Self {
+    impl TrackingPostProcessor
+    {
+        fn new() -> Self
+        {
             Self {
                 before_called: AtomicBool::new(false),
                 after_called: AtomicBool::new(false),
@@ -425,12 +455,14 @@ mod tests {
         }
     }
 
-    impl BeanPostProcessor for TrackingPostProcessor {
+    impl BeanPostProcessor for TrackingPostProcessor
+    {
         fn post_process_before_initialization(
             &self,
             _bean: &mut dyn Any,
             _bean_name: &str,
-        ) -> Result<()> {
+        ) -> Result<()>
+        {
             self.before_called.store(true, Ordering::SeqCst);
             Ok(())
         }
@@ -439,14 +471,16 @@ mod tests {
             &self,
             _bean: &mut dyn Any,
             _bean_name: &str,
-        ) -> Result<()> {
+        ) -> Result<()>
+        {
             self.after_called.store(true, Ordering::SeqCst);
             Ok(())
         }
     }
 
     #[test]
-    fn test_tracking_post_processor_both_hooks_fire() {
+    fn test_tracking_post_processor_both_hooks_fire()
+    {
         let processor = TrackingPostProcessor::new();
         let mut data: Box<dyn Any> = Box::new("hello");
 

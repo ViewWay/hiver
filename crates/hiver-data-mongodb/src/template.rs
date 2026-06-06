@@ -1,22 +1,26 @@
 //! MongoDB reactive template
 //! MongoDB 响应式模板
 
-use crate::{MongoResult, client::MongoClient, error::MongoError};
 use futures_util::stream::StreamExt;
 use mongodb::bson::{Document, doc};
 use serde::{Serialize, de::DeserializeOwned};
 
+use crate::{MongoResult, client::MongoClient, error::MongoError};
+
 /// MongoDB reactive template similar to Spring Data's MongoTemplate
 /// MongoDB 响应式模板，类似于 Spring Data 的 MongoTemplate
 #[derive(Debug, Clone)]
-pub struct MongoTemplate {
+pub struct MongoTemplate
+{
     client: MongoClient,
     database_name: String,
 }
 
-impl MongoTemplate {
+impl MongoTemplate
+{
     /// Create a new MongoTemplate / 创建新的 MongoTemplate
-    pub fn new(client: mongodb::Client, database_name: &str) -> Self {
+    pub fn new(client: mongodb::Client, database_name: &str) -> Self
+    {
         Self {
             client: MongoClient::from_client(client, database_name),
             database_name: database_name.to_string(),
@@ -24,12 +28,14 @@ impl MongoTemplate {
     }
 
     /// Get the underlying client / 获取底层客户端
-    pub fn client(&self) -> &MongoClient {
+    pub fn client(&self) -> &MongoClient
+    {
         &self.client
     }
 
     /// Get the database name / 获取数据库名称
-    pub fn database_name(&self) -> &str {
+    pub fn database_name(&self) -> &str
+    {
         &self.database_name
     }
 
@@ -84,7 +90,8 @@ impl MongoTemplate {
         let mut cursor = collection.find(doc! {}).await?;
 
         let mut results = Vec::new();
-        while let Some(result) = cursor.next().await {
+        while let Some(result) = cursor.next().await
+        {
             results.push(result.map_err(MongoError::from)?);
         }
 
@@ -92,7 +99,8 @@ impl MongoTemplate {
     }
 
     /// Count all documents / 统计所有文档
-    pub async fn count_all(&self, collection_name: &str) -> MongoResult<u64> {
+    pub async fn count_all(&self, collection_name: &str) -> MongoResult<u64>
+    {
         let collection = self.client.collection::<Document>(collection_name);
         let count = collection.count_documents(doc! {}).await?;
         Ok(count)
@@ -104,7 +112,8 @@ impl MongoTemplate {
         collection_name: &str,
         id: mongodb::bson::Bson,
         update: Document,
-    ) -> MongoResult<u64> {
+    ) -> MongoResult<u64>
+    {
         let collection = self.client.collection::<Document>(collection_name);
         let result = collection.update_one(doc! {"_id": id}, update).await?;
         Ok(result.modified_count)
@@ -115,14 +124,16 @@ impl MongoTemplate {
         &self,
         collection_name: &str,
         id: mongodb::bson::Bson,
-    ) -> MongoResult<u64> {
+    ) -> MongoResult<u64>
+    {
         let collection = self.client.collection::<Document>(collection_name);
         let result = collection.delete_one(doc! {"_id": id}).await?;
         Ok(result.deleted_count)
     }
 
     /// Delete all documents / 删除所有文档
-    pub async fn delete_all(&self, collection_name: &str) -> MongoResult<u64> {
+    pub async fn delete_all(&self, collection_name: &str) -> MongoResult<u64>
+    {
         let collection = self.client.collection::<Document>(collection_name);
         let result = collection.delete_many(doc! {}).await?;
         Ok(result.deleted_count)
@@ -130,10 +141,12 @@ impl MongoTemplate {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
 
     #[test]
-    fn test_template_database_name() {
+    fn test_template_database_name()
+    {
         // Just verify the struct works
         assert_eq!("test_db", "test_db");
     }

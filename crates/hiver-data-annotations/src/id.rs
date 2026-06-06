@@ -24,7 +24,8 @@ use proc_macro::TokenStream;
 ///     pub id: i64,
 /// }
 /// ```
-pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }
 
@@ -39,8 +40,8 @@ pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Attributes / 属性
 ///
-/// - `strategy` - Generation strategy: "AUTO", "IDENTITY", "SEQUENCE", "TABLE"
-///   生成策略："AUTO", "IDENTITY", "SEQUENCE", "TABLE"
+/// - `strategy` - Generation strategy: "AUTO", "IDENTITY", "SEQUENCE", "TABLE" 生成策略："AUTO",
+///   "IDENTITY", "SEQUENCE", "TABLE"
 ///
 /// # Example / 示例
 ///
@@ -54,6 +55,7 @@ pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     pub id: i64,
 /// }
 /// ```
-pub(crate) fn impl_generated_value(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_generated_value(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }

@@ -19,7 +19,8 @@ use crate::chat_model::ModelError;
 /// JSON Schema representation for tool parameter definitions.
 /// 工具参数定义的 JSON Schema 表示。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ToolParameterSchema {
+pub struct ToolParameterSchema
+{
     /// The JSON type of the parameter (e.g., "string", "number", "boolean").
     /// 参数的 JSON 类型（例如 "string"、"number"、"boolean"）。
     #[serde(rename = "type")]
@@ -42,11 +43,13 @@ pub struct ToolParameterSchema {
     pub enum_values: Option<Vec<String>>,
 }
 
-impl ToolParameterSchema {
+impl ToolParameterSchema
+{
     /// Creates a new required parameter schema.
     /// 创建新的必需参数 schema。
     #[must_use]
-    pub fn required(param_type: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn required(param_type: impl Into<String>, description: impl Into<String>) -> Self
+    {
         Self {
             param_type: param_type.into(),
             description: Some(description.into()),
@@ -59,7 +62,8 @@ impl ToolParameterSchema {
     /// Creates a new optional parameter schema.
     /// 创建新的可选参数 schema。
     #[must_use]
-    pub fn optional(param_type: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn optional(param_type: impl Into<String>, description: impl Into<String>) -> Self
+    {
         Self {
             param_type: param_type.into(),
             description: Some(description.into()),
@@ -72,7 +76,8 @@ impl ToolParameterSchema {
     /// Sets the default value for the parameter.
     /// 设置参数的默认值。
     #[must_use]
-    pub fn default_value(mut self, value: Value) -> Self {
+    pub fn default_value(mut self, value: Value) -> Self
+    {
         self.default = Some(value);
         self
     }
@@ -80,7 +85,8 @@ impl ToolParameterSchema {
     /// Sets the allowed enum values for the parameter.
     /// 设置参数允许的枚举值。
     #[must_use]
-    pub fn enum_values(mut self, values: Vec<String>) -> Self {
+    pub fn enum_values(mut self, values: Vec<String>) -> Self
+    {
         self.enum_values = Some(values);
         self
     }
@@ -89,7 +95,8 @@ impl ToolParameterSchema {
 /// Definition of a tool that can be called by an AI model.
 /// AI 模型可以调用的工具定义。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ToolDefinition {
+pub struct ToolDefinition
+{
     /// The unique name of the tool.
     /// 工具的唯一名称。
     pub name: String,
@@ -102,11 +109,13 @@ pub struct ToolDefinition {
     pub parameters: HashMap<String, ToolParameterSchema>,
 }
 
-impl ToolDefinition {
+impl ToolDefinition
+{
     /// Creates a new tool definition.
     /// 创建新的工具定义。
     #[must_use]
-    pub fn new(name: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>, description: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             description: description.into(),
@@ -117,7 +126,8 @@ impl ToolDefinition {
     /// Adds a parameter to the tool definition.
     /// 向工具定义添加参数。
     #[must_use]
-    pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self {
+    pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self
+    {
         self.parameters.insert(name.into(), schema);
         self
     }
@@ -131,7 +141,8 @@ impl ToolDefinition {
 ///
 /// 工具实现此 trait 以定义在对话中被 AI 模型调用时的行为。
 #[async_trait::async_trait]
-pub trait ToolCallback: Send + Sync {
+pub trait ToolCallback: Send + Sync
+{
     /// Returns the name of this tool.
     /// 返回此工具的名称。
     fn name(&self) -> &str;
@@ -173,17 +184,20 @@ pub trait ToolCallback: Send + Sync {
 /// let result = registry.execute_by_name("search", json!({"query": "rust"})).await?;
 /// ```
 #[derive(Default)]
-pub struct ToolRegistry {
+pub struct ToolRegistry
+{
     /// Registered tools indexed by name.
     /// 按名称索引的已注册工具。
     tools: RwLock<HashMap<String, Arc<dyn ToolCallback>>>,
 }
 
-impl ToolRegistry {
+impl ToolRegistry
+{
     /// Creates a new empty tool registry.
     /// 创建新的空工具注册表。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
@@ -192,7 +206,8 @@ impl ToolRegistry {
     ///
     /// If a tool with the same name already exists, it will be replaced.
     /// 如果已存在同名工具，将被替换。
-    pub async fn register(&self, tool: impl ToolCallback + 'static) {
+    pub async fn register(&self, tool: impl ToolCallback + 'static)
+    {
         let name = tool.name().to_string();
         let mut guard = self.tools.write().await;
         guard.insert(name, Arc::new(tool));
@@ -200,21 +215,24 @@ impl ToolRegistry {
 
     /// Unregisters a tool by name.
     /// 按名称注销工具。
-    pub async fn unregister(&self, name: &str) {
+    pub async fn unregister(&self, name: &str)
+    {
         let mut guard = self.tools.write().await;
         guard.remove(name);
     }
 
     /// Checks if a tool with the given name is registered.
     /// 检查是否注册了给定名称的工具。
-    pub async fn contains(&self, name: &str) -> bool {
+    pub async fn contains(&self, name: &str) -> bool
+    {
         let guard = self.tools.read().await;
         guard.contains_key(name)
     }
 
     /// Executes a registered tool by name with the given arguments.
     /// 使用给定参数按名称执行已注册的工具。
-    pub async fn execute_by_name(&self, name: &str, args: Value) -> Result<String, ModelError> {
+    pub async fn execute_by_name(&self, name: &str, args: Value) -> Result<String, ModelError>
+    {
         let guard = self.tools.read().await;
         let tool = guard
             .get(name)
@@ -224,34 +242,39 @@ impl ToolRegistry {
 
     /// Returns the definitions of all registered tools.
     /// 返回所有已注册工具的定义。
-    pub async fn list_definitions(&self) -> Vec<ToolDefinition> {
+    pub async fn list_definitions(&self) -> Vec<ToolDefinition>
+    {
         let guard = self.tools.read().await;
         guard.values().map(|t| t.definition()).collect()
     }
 
     /// Returns the names of all registered tools.
     /// 返回所有已注册工具的名称。
-    pub async fn list_names(&self) -> Vec<String> {
+    pub async fn list_names(&self) -> Vec<String>
+    {
         let guard = self.tools.read().await;
         guard.keys().cloned().collect()
     }
 
     /// Returns the number of registered tools.
     /// 返回已注册工具的数量。
-    pub async fn len(&self) -> usize {
+    pub async fn len(&self) -> usize
+    {
         let guard = self.tools.read().await;
         guard.len()
     }
 
     /// Returns true if no tools are registered.
     /// 如果没有注册工具则返回 true。
-    pub async fn is_empty(&self) -> bool {
+    pub async fn is_empty(&self) -> bool
+    {
         self.len().await == 0
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// A simple test tool that echoes its input.
@@ -259,21 +282,26 @@ mod tests {
     struct EchoTool;
 
     #[async_trait::async_trait]
-    impl ToolCallback for EchoTool {
-        fn name(&self) -> &str {
+    impl ToolCallback for EchoTool
+    {
+        fn name(&self) -> &str
+        {
             "echo"
         }
 
-        fn description(&self) -> &str {
+        fn description(&self) -> &str
+        {
             "Echoes the input text back to the user."
         }
 
-        fn definition(&self) -> ToolDefinition {
+        fn definition(&self) -> ToolDefinition
+        {
             ToolDefinition::new("echo", "Echoes the input text back to the user.")
                 .parameter("text", ToolParameterSchema::required("string", "Text to echo"))
         }
 
-        async fn execute(&self, args: Value) -> Result<String, ModelError> {
+        async fn execute(&self, args: Value) -> Result<String, ModelError>
+        {
             let text = args["text"]
                 .as_str()
                 .ok_or_else(|| ModelError::ParseError("Missing 'text' parameter".to_string()))?;
@@ -286,22 +314,27 @@ mod tests {
     struct AddTool;
 
     #[async_trait::async_trait]
-    impl ToolCallback for AddTool {
-        fn name(&self) -> &str {
+    impl ToolCallback for AddTool
+    {
+        fn name(&self) -> &str
+        {
             "add"
         }
 
-        fn description(&self) -> &str {
+        fn description(&self) -> &str
+        {
             "Adds two numbers together."
         }
 
-        fn definition(&self) -> ToolDefinition {
+        fn definition(&self) -> ToolDefinition
+        {
             ToolDefinition::new("add", "Adds two numbers together.")
                 .parameter("a", ToolParameterSchema::required("number", "First number"))
                 .parameter("b", ToolParameterSchema::required("number", "Second number"))
         }
 
-        async fn execute(&self, args: Value) -> Result<String, ModelError> {
+        async fn execute(&self, args: Value) -> Result<String, ModelError>
+        {
             let a = args["a"]
                 .as_f64()
                 .ok_or_else(|| ModelError::ParseError("Missing 'a' parameter".to_string()))?;
@@ -313,7 +346,8 @@ mod tests {
     }
 
     #[test]
-    fn test_tool_parameter_schema() {
+    fn test_tool_parameter_schema()
+    {
         let param = ToolParameterSchema::required("string", "The name");
         assert_eq!(param.param_type, "string");
         assert!(param.required);
@@ -321,20 +355,23 @@ mod tests {
     }
 
     #[test]
-    fn test_tool_parameter_optional() {
+    fn test_tool_parameter_optional()
+    {
         let param = ToolParameterSchema::optional("number", "A number");
         assert!(!param.required);
     }
 
     #[test]
-    fn test_tool_parameter_with_default() {
+    fn test_tool_parameter_with_default()
+    {
         let param = ToolParameterSchema::optional("string", "A value")
             .default_value(Value::String("default".to_string()));
         assert_eq!(param.default, Some(Value::String("default".to_string())));
     }
 
     #[test]
-    fn test_tool_parameter_with_enum() {
+    fn test_tool_parameter_with_enum()
+    {
         let param = ToolParameterSchema::required("string", "A color").enum_values(vec![
             "red".to_string(),
             "green".to_string(),
@@ -344,7 +381,8 @@ mod tests {
     }
 
     #[test]
-    fn test_tool_definition() {
+    fn test_tool_definition()
+    {
         let def = ToolDefinition::new("search", "Search for documents")
             .parameter("query", ToolParameterSchema::required("string", "Search query"))
             .parameter("limit", ToolParameterSchema::optional("number", "Max results"));
@@ -356,7 +394,8 @@ mod tests {
     }
 
     #[test]
-    fn test_tool_definition_serde() {
+    fn test_tool_definition_serde()
+    {
         let def = ToolDefinition::new("test", "A test tool")
             .parameter("input", ToolParameterSchema::required("string", "Input value"));
 
@@ -366,7 +405,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_register_and_execute() {
+    async fn test_tool_registry_register_and_execute()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
 
@@ -379,7 +419,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_add_tool() {
+    async fn test_tool_registry_add_tool()
+    {
         let registry = ToolRegistry::new();
         registry.register(AddTool).await;
 
@@ -392,7 +433,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_not_found() {
+    async fn test_tool_registry_not_found()
+    {
         let registry = ToolRegistry::new();
         let result = registry
             .execute_by_name("nonexistent", serde_json::json!({}))
@@ -403,7 +445,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_contains() {
+    async fn test_tool_registry_contains()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
 
@@ -412,7 +455,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_unregister() {
+    async fn test_tool_registry_unregister()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
         assert!(registry.contains("echo").await);
@@ -422,7 +466,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_list() {
+    async fn test_tool_registry_list()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
         registry.register(AddTool).await;
@@ -438,14 +483,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_registry_empty() {
+    async fn test_tool_registry_empty()
+    {
         let registry = ToolRegistry::new();
         assert!(registry.is_empty().await);
         assert_eq!(registry.len().await, 0);
     }
 
     #[tokio::test]
-    async fn test_tool_registry_replace() {
+    async fn test_tool_registry_replace()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
         registry.register(EchoTool).await; // Replace / 替换
@@ -454,7 +501,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_tool_execute_missing_param() {
+    async fn test_tool_execute_missing_param()
+    {
         let registry = ToolRegistry::new();
         registry.register(EchoTool).await;
 
@@ -468,8 +516,10 @@ mod tests {
 
 // Manual Debug impl for ToolRegistry since dyn ToolCallback doesn't impl Debug
 // ToolRegistry 的手动 Debug 实现，因为 dyn ToolCallback 不实现 Debug
-impl std::fmt::Debug for ToolRegistry {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for ToolRegistry
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("ToolRegistry").finish_non_exhaustive()
     }
 }
@@ -477,7 +527,8 @@ impl std::fmt::Debug for ToolRegistry {
 /// A tool call request from the LLM, specifying which tool to invoke and with what arguments.
 /// 来自 LLM 的工具调用请求，指定要调用的工具及其参数。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ToolCall {
+pub struct ToolCall
+{
     /// Unique identifier for this tool call.
     /// 此工具调用的唯一标识符。
     pub id: String,
@@ -489,11 +540,13 @@ pub struct ToolCall {
     pub arguments: Value,
 }
 
-impl ToolCall {
+impl ToolCall
+{
     /// Creates a new tool call.
     /// 创建新的工具调用。
     #[must_use]
-    pub fn new(id: impl Into<String>, name: impl Into<String>, arguments: Value) -> Self {
+    pub fn new(id: impl Into<String>, name: impl Into<String>, arguments: Value) -> Self
+    {
         Self {
             id: id.into(),
             name: name.into(),
@@ -505,7 +558,8 @@ impl ToolCall {
 /// The result of executing a tool call.
 /// 执行工具调用的结果。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ToolResult {
+pub struct ToolResult
+{
     /// The ID of the tool call this result corresponds to.
     /// 此结果对应的工具调用 ID。
     pub call_id: String,
@@ -520,7 +574,8 @@ pub struct ToolResult {
     pub elapsed_ms: u64,
 }
 
-impl ToolResult {
+impl ToolResult
+{
     /// Creates a new successful tool result.
     /// 创建新的成功工具结果。
     #[must_use]
@@ -528,7 +583,8 @@ impl ToolResult {
         call_id: impl Into<String>,
         tool_name: impl Into<String>,
         output: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             call_id: call_id.into(),
             tool_name: tool_name.into(),
@@ -544,7 +600,8 @@ impl ToolResult {
         call_id: impl Into<String>,
         tool_name: impl Into<String>,
         error: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             call_id: call_id.into(),
             tool_name: tool_name.into(),
@@ -556,7 +613,8 @@ impl ToolResult {
     /// Sets the elapsed execution time.
     /// 设置已用执行时间。
     #[must_use]
-    pub fn elapsed_ms(mut self, ms: u64) -> Self {
+    pub fn elapsed_ms(mut self, ms: u64) -> Self
+    {
         self.elapsed_ms = ms;
         self
     }
@@ -564,7 +622,8 @@ impl ToolResult {
     /// Returns true if the tool execution was successful.
     /// 如果工具执行成功则返回 true。
     #[must_use]
-    pub fn is_ok(&self) -> bool {
+    pub fn is_ok(&self) -> bool
+    {
         self.output.is_ok()
     }
 }
@@ -572,7 +631,8 @@ impl ToolResult {
 /// Configuration for tool execution behavior.
 /// 工具执行行为的配置。
 #[derive(Debug, Clone)]
-pub struct ToolExecutorConfig {
+pub struct ToolExecutorConfig
+{
     /// Maximum execution time per tool call in milliseconds (0 = no timeout).
     /// 每次工具调用的最大执行时间（毫秒）（0 = 无超时）。
     pub timeout_ms: u64,
@@ -584,8 +644,10 @@ pub struct ToolExecutorConfig {
     pub continue_on_error: bool,
 }
 
-impl Default for ToolExecutorConfig {
-    fn default() -> Self {
+impl Default for ToolExecutorConfig
+{
+    fn default() -> Self
+    {
         Self {
             timeout_ms: 30_000,
             max_iterations: 10,
@@ -594,18 +656,21 @@ impl Default for ToolExecutorConfig {
     }
 }
 
-impl ToolExecutorConfig {
+impl ToolExecutorConfig
+{
     /// Creates a new executor config with default values.
     /// 使用默认值创建新的执行器配置。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Sets the timeout per tool call.
     /// 设置每次工具调用的超时时间。
     #[must_use]
-    pub fn timeout_ms(mut self, ms: u64) -> Self {
+    pub fn timeout_ms(mut self, ms: u64) -> Self
+    {
         self.timeout_ms = ms;
         self
     }
@@ -613,7 +678,8 @@ impl ToolExecutorConfig {
     /// Sets the maximum number of iterations.
     /// 设置最大迭代次数。
     #[must_use]
-    pub fn max_iterations(mut self, n: usize) -> Self {
+    pub fn max_iterations(mut self, n: usize) -> Self
+    {
         self.max_iterations = n;
         self
     }
@@ -621,7 +687,8 @@ impl ToolExecutorConfig {
     /// Sets whether to continue on error.
     /// 设置出错时是否继续。
     #[must_use]
-    pub fn continue_on_error(mut self, continue_on: bool) -> Self {
+    pub fn continue_on_error(mut self, continue_on: bool) -> Self
+    {
         self.continue_on_error = continue_on;
         self
     }
@@ -649,7 +716,8 @@ impl ToolExecutorConfig {
 /// let calls = vec![ToolCall::new("call-1", "search", json!({"query": "rust"}))];
 /// let results = executor.execute_all(calls).await;
 /// ```
-pub struct ToolExecutor {
+pub struct ToolExecutor
+{
     /// The tool registry to look up tools from.
     /// 用于查找工具的工具注册表。
     registry: Arc<ToolRegistry>,
@@ -658,19 +726,23 @@ pub struct ToolExecutor {
     config: ToolExecutorConfig,
 }
 
-impl std::fmt::Debug for ToolExecutor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for ToolExecutor
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("ToolExecutor")
             .field("config", &self.config)
             .finish_non_exhaustive()
     }
 }
 
-impl ToolExecutor {
+impl ToolExecutor
+{
     /// Creates a new tool executor with the given registry.
     /// 使用给定的注册表创建新的工具执行器。
     #[must_use]
-    pub fn new(registry: ToolRegistry) -> Self {
+    pub fn new(registry: ToolRegistry) -> Self
+    {
         Self {
             registry: Arc::new(registry),
             config: ToolExecutorConfig::default(),
@@ -680,7 +752,8 @@ impl ToolExecutor {
     /// Creates a new tool executor from an Arc registry.
     /// 从 Arc 注册表创建新的工具执行器。
     #[must_use]
-    pub fn from_arc(registry: Arc<ToolRegistry>) -> Self {
+    pub fn from_arc(registry: Arc<ToolRegistry>) -> Self
+    {
         Self {
             registry,
             config: ToolExecutorConfig::default(),
@@ -690,7 +763,8 @@ impl ToolExecutor {
     /// Sets the executor configuration.
     /// 设置执行器配置。
     #[must_use]
-    pub fn with_config(mut self, config: ToolExecutorConfig) -> Self {
+    pub fn with_config(mut self, config: ToolExecutorConfig) -> Self
+    {
         self.config = config;
         self
     }
@@ -698,16 +772,19 @@ impl ToolExecutor {
     /// Returns a reference to the tool registry.
     /// 返回工具注册表的引用。
     #[must_use]
-    pub fn registry(&self) -> &ToolRegistry {
+    pub fn registry(&self) -> &ToolRegistry
+    {
         &self.registry
     }
 
     /// Executes a single tool call with timeout and error handling.
     /// 执行单个工具调用，带超时和错误处理。
-    pub async fn execute(&self, call: ToolCall) -> ToolResult {
+    pub async fn execute(&self, call: ToolCall) -> ToolResult
+    {
         let start = std::time::Instant::now();
 
-        let result = if self.config.timeout_ms > 0 {
+        let result = if self.config.timeout_ms > 0
+        {
             match tokio::time::timeout(
                 std::time::Duration::from_millis(self.config.timeout_ms),
                 self.registry
@@ -722,7 +799,9 @@ impl ToolExecutor {
                     call.name, self.config.timeout_ms
                 )),
             }
-        } else {
+        }
+        else
+        {
             match self
                 .registry
                 .execute_by_name(&call.name, call.arguments.clone())
@@ -735,7 +814,8 @@ impl ToolExecutor {
 
         let elapsed = start.elapsed().as_millis() as u64;
 
-        match result {
+        match result
+        {
             Ok(output) => ToolResult::ok(&call.id, &call.name, output).elapsed_ms(elapsed),
             Err(e) => ToolResult::err(&call.id, &call.name, e).elapsed_ms(elapsed),
         }
@@ -743,19 +823,25 @@ impl ToolExecutor {
 
     /// Executes multiple tool calls in sequence, respecting max_iterations.
     /// 按顺序执行多个工具调用，遵守最大迭代次数。
-    pub async fn execute_all(&self, calls: Vec<ToolCall>) -> Vec<ToolResult> {
-        let max = if self.config.max_iterations > 0 {
+    pub async fn execute_all(&self, calls: Vec<ToolCall>) -> Vec<ToolResult>
+    {
+        let max = if self.config.max_iterations > 0
+        {
             self.config.max_iterations.min(calls.len())
-        } else {
+        }
+        else
+        {
             calls.len()
         };
 
         let mut results = Vec::with_capacity(max);
-        for call in calls.into_iter().take(max) {
+        for call in calls.into_iter().take(max)
+        {
             let result = self.execute(call).await;
             let should_stop = !result.is_ok() && !self.config.continue_on_error;
             results.push(result);
-            if should_stop {
+            if should_stop
+            {
                 break;
             }
         }
@@ -764,7 +850,8 @@ impl ToolExecutor {
 
     /// Returns the tool definitions for all registered tools.
     /// 返回所有已注册工具的定义。
-    pub async fn tool_definitions(&self) -> Vec<ToolDefinition> {
+    pub async fn tool_definitions(&self) -> Vec<ToolDefinition>
+    {
         self.registry.list_definitions().await
     }
 }
@@ -816,7 +903,8 @@ where
     F: Fn(Value) -> Fut + Send + Sync,
     Fut: Future<Output = Result<String, ModelError>> + Send,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("FunctionTool")
             .field("name", &self.name)
             .field("description", &self.description)
@@ -831,7 +919,8 @@ where
 {
     /// Creates a new function tool with the given name, description, and function.
     /// 使用给定的名称、描述和函数创建新的函数工具。
-    pub fn new(name: impl Into<String>, description: impl Into<String>, func: F) -> Self {
+    pub fn new(name: impl Into<String>, description: impl Into<String>, func: F) -> Self
+    {
         let name_str = name.into();
         let desc_str = description.into();
         let definition = ToolDefinition::new(&name_str, &desc_str);
@@ -846,7 +935,8 @@ where
     /// Adds a parameter to the function tool's schema.
     /// 向函数工具的 schema 添加参数。
     #[must_use]
-    pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self {
+    pub fn parameter(mut self, name: impl Into<String>, schema: ToolParameterSchema) -> Self
+    {
         self.definition = self.definition.parameter(name, schema);
         self
     }
@@ -858,19 +948,23 @@ where
     F: Fn(Value) -> Fut + Send + Sync,
     Fut: Future<Output = Result<String, ModelError>> + Send,
 {
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         &self.name
     }
 
-    fn description(&self) -> &str {
+    fn description(&self) -> &str
+    {
         &self.description
     }
 
-    fn definition(&self) -> ToolDefinition {
+    fn definition(&self) -> ToolDefinition
+    {
         self.definition.clone()
     }
 
-    async fn execute(&self, args: Value) -> Result<String, ModelError> {
+    async fn execute(&self, args: Value) -> Result<String, ModelError>
+    {
         (self.func)(args).await
     }
 }

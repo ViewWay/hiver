@@ -2,30 +2,35 @@
 //! 测试模块
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
 
-    use crate::manager::TransactionDefinition;
-    use crate::registry::TransactionManagerRegistry;
-    use crate::status::TransactionStatus;
-    use crate::{NoopTransactionManager, TransactionManager};
     use std::sync::Arc;
+
+    use crate::{
+        NoopTransactionManager, TransactionManager, manager::TransactionDefinition,
+        registry::TransactionManagerRegistry, status::TransactionStatus,
+    };
 
     // ------------------------------------------------------------------
     // Basic smoke tests
     // ------------------------------------------------------------------
 
     #[test]
-    fn smoke_test() {
+    fn smoke_test()
+    {
         assert!(true, "hiver-tx test infrastructure is working");
     }
 
     #[test]
-    fn test_basic_math() {
+    fn test_basic_math()
+    {
         assert_eq!(2 + 2, 4);
     }
 
     #[test]
-    fn test_vec_operations() {
+    fn test_vec_operations()
+    {
         let v: Vec<i32> = vec![1, 2, 3];
         assert_eq!(v.len(), 3);
         assert_eq!(v.iter().sum::<i32>(), 6);
@@ -36,7 +41,8 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_noop_begin_commit() {
+    async fn test_noop_begin_commit()
+    {
         let mgr = NoopTransactionManager;
         let def = TransactionDefinition::new("noop-tx");
 
@@ -48,7 +54,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_noop_begin_rollback() {
+    async fn test_noop_begin_rollback()
+    {
         let mgr = NoopTransactionManager;
         let def = TransactionDefinition::new("noop-tx");
 
@@ -59,7 +66,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_noop_name() {
+    async fn test_noop_name()
+    {
         let mgr = NoopTransactionManager;
         assert_eq!(mgr.name(), "noop");
     }
@@ -69,7 +77,8 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[test]
-    fn test_registry_empty() {
+    fn test_registry_empty()
+    {
         let registry = TransactionManagerRegistry::new();
         assert!(registry.is_empty());
         assert_eq!(registry.len(), 0);
@@ -78,7 +87,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_register_single() {
+    fn test_registry_register_single()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
 
@@ -89,7 +99,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_register_multiple() {
+    fn test_registry_register_multiple()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("pg", Arc::new(NoopTransactionManager));
         registry.register("mysql", Arc::new(NoopTransactionManager));
@@ -102,7 +113,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_register_default_explicit() {
+    fn test_registry_register_default_explicit()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("a", Arc::new(NoopTransactionManager));
         registry.register("b", Arc::new(NoopTransactionManager));
@@ -115,13 +127,15 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_get_nonexistent() {
+    fn test_registry_get_nonexistent()
+    {
         let registry = TransactionManagerRegistry::new();
         assert!(registry.get("missing").is_none());
     }
 
     #[test]
-    fn test_registry_remove() {
+    fn test_registry_remove()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
         registry.register("secondary", Arc::new(NoopTransactionManager));
@@ -136,14 +150,16 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_remove_nonexistent() {
+    fn test_registry_remove_nonexistent()
+    {
         let mut registry = TransactionManagerRegistry::new();
         let result = registry.remove("ghost");
         assert!(result.is_none());
     }
 
     #[test]
-    fn test_registry_manager_names() {
+    fn test_registry_manager_names()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("alpha", Arc::new(NoopTransactionManager));
         registry.register("beta", Arc::new(NoopTransactionManager));
@@ -159,7 +175,8 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_delegate_begin_commit_default() {
+    async fn test_delegate_begin_commit_default()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
 
@@ -173,7 +190,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delegate_begin_rollback_default() {
+    async fn test_delegate_begin_rollback_default()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
 
@@ -185,7 +203,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delegate_begin_for_named_source() {
+    async fn test_delegate_begin_for_named_source()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("orders", Arc::new(NoopTransactionManager));
         registry.register("inventory", Arc::new(NoopTransactionManager));
@@ -205,7 +224,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delegate_begin_for_unknown_returns_not_found() {
+    async fn test_delegate_begin_for_unknown_returns_not_found()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
 
@@ -213,8 +233,10 @@ mod tests {
         let def = TransactionDefinition::new("test");
 
         let err = delegate.begin_for("nonexistent", &def).await.unwrap_err();
-        match err {
-            crate::TransactionError::NotFound(msg) => {
+        match err
+        {
+            crate::TransactionError::NotFound(msg) =>
+            {
                 assert!(msg.contains("nonexistent"));
             },
             other => panic!("Expected NotFound, got: {:?}", other),
@@ -222,13 +244,15 @@ mod tests {
     }
 
     #[test]
-    fn test_delegate_empty_registry_fails() {
+    fn test_delegate_empty_registry_fails()
+    {
         let registry = TransactionManagerRegistry::new();
         assert!(registry.into_delegate().is_err());
     }
 
     #[tokio::test]
-    async fn test_delegate_name() {
+    async fn test_delegate_name()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("primary", Arc::new(NoopTransactionManager));
 
@@ -243,42 +267,51 @@ mod tests {
     /// A recording transaction manager that tracks begin/commit/rollback calls.
     /// 一个记录事务管理器，跟踪 begin/commit/rollback 调用。
     #[derive(Debug)]
-    struct RecordingManager {
+    struct RecordingManager
+    {
         name: String,
     }
 
-    impl RecordingManager {
-        fn new(name: impl Into<String>) -> Self {
+    impl RecordingManager
+    {
+        fn new(name: impl Into<String>) -> Self
+        {
             Self { name: name.into() }
         }
     }
 
     #[async_trait::async_trait]
-    impl TransactionManager for RecordingManager {
+    impl TransactionManager for RecordingManager
+    {
         async fn begin(
             &self,
             definition: &TransactionDefinition,
-        ) -> crate::TransactionResult<TransactionStatus> {
+        ) -> crate::TransactionResult<TransactionStatus>
+        {
             Ok(TransactionStatus::new(format!("{}::{}", self.name, definition.name)))
         }
 
-        async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+        async fn commit(&self, status: TransactionStatus) -> crate::TransactionResult<()>
+        {
             status.mark_completed();
             Ok(())
         }
 
-        async fn rollback(&self, status: TransactionStatus) -> crate::TransactionResult<()> {
+        async fn rollback(&self, status: TransactionStatus) -> crate::TransactionResult<()>
+        {
             status.mark_completed();
             Ok(())
         }
 
-        fn name(&self) -> &str {
+        fn name(&self) -> &str
+        {
             &self.name
         }
     }
 
     #[tokio::test]
-    async fn test_multi_source_distinct_managers() {
+    async fn test_multi_source_distinct_managers()
+    {
         let mut registry = TransactionManagerRegistry::new();
         registry.register("pg", Arc::new(RecordingManager::new("pg")));
         registry.register("mysql", Arc::new(RecordingManager::new("mysql")));
@@ -307,7 +340,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_multi_source_cross_commit_independent() {
+    async fn test_multi_source_cross_commit_independent()
+    {
         // Two independent data sources: committing one does not affect the other.
         // 两个独立数据源：提交一个不影响另一个。
         let mut registry = TransactionManagerRegistry::new();
@@ -334,12 +368,15 @@ mod tests {
     // ------------------------------------------------------------------
 
     #[cfg(feature = "sqlx")]
-    mod sqlx_tests {
-        use crate::sqlx_manager::DatabaseType;
+    mod sqlx_tests
+    {
         use std::str::FromStr;
 
+        use crate::sqlx_manager::DatabaseType;
+
         #[test]
-        fn test_database_type_from_str() {
+        fn test_database_type_from_str()
+        {
             assert_eq!(DatabaseType::from_str("postgres").unwrap(), DatabaseType::Postgres);
             assert_eq!(DatabaseType::from_str("postgresql").unwrap(), DatabaseType::Postgres);
             assert_eq!(DatabaseType::from_str("pg").unwrap(), DatabaseType::Postgres);
@@ -349,14 +386,16 @@ mod tests {
         }
 
         #[test]
-        fn test_database_type_display() {
+        fn test_database_type_display()
+        {
             assert_eq!(DatabaseType::Postgres.to_string(), "postgresql");
             assert_eq!(DatabaseType::MySql.to_string(), "mysql");
             assert_eq!(DatabaseType::Sqlite.to_string(), "sqlite");
         }
 
         #[test]
-        fn test_type_aliases_exist() {
+        fn test_type_aliases_exist()
+        {
             // Verify the type aliases compile correctly.
             // 验证类型别名可以正确编译。
             fn _assert_postgres(_: crate::PostgresTransactionManager) {}

@@ -18,7 +18,8 @@ use crate::{AmqpConnection, AmqpMessage};
 ///     // Process message
 /// }
 /// ```
-pub struct ListenerContainer {
+pub struct ListenerContainer
+{
     /// Connection
     /// 连接
     connection: Arc<AmqpConnection>,
@@ -36,10 +37,12 @@ pub struct ListenerContainer {
     running: Arc<RwLock<bool>>,
 }
 
-impl ListenerContainer {
+impl ListenerContainer
+{
     /// Create new listener container
     /// 创建新的监听器容器
-    pub fn new(connection: Arc<AmqpConnection>, queue: impl Into<String>) -> Self {
+    pub fn new(connection: Arc<AmqpConnection>, queue: impl Into<String>) -> Self
+    {
         Self {
             connection,
             queue: queue.into(),
@@ -50,7 +53,8 @@ impl ListenerContainer {
 
     /// Start consuming
     /// 开始消费
-    pub async fn start(&self) -> Result<(), String> {
+    pub async fn start(&self) -> Result<(), String>
+    {
         let mut running = self.running.write().await;
         *running = true;
         tracing::info!("Starting listener for queue: {}", self.queue);
@@ -59,7 +63,8 @@ impl ListenerContainer {
 
     /// Stop consuming
     /// 停止消费
-    pub async fn stop(&self) -> Result<(), String> {
+    pub async fn stop(&self) -> Result<(), String>
+    {
         let mut running = self.running.write().await;
         *running = false;
         tracing::info!("Stopping listener for queue: {}", self.queue);
@@ -68,13 +73,15 @@ impl ListenerContainer {
 
     /// Check if running
     /// 检查是否正在运行
-    pub async fn is_running(&self) -> bool {
+    pub async fn is_running(&self) -> bool
+    {
         *self.running.read().await
     }
 
     /// Get queue name
     /// 获取队列名称
-    pub fn queue(&self) -> &str {
+    pub fn queue(&self) -> &str
+    {
         &self.queue
     }
 }
@@ -91,7 +98,8 @@ impl ListenerContainer {
 ///     // Process message
 /// }
 /// ```
-pub trait MessageHandler: Send + Sync {
+pub trait MessageHandler: Send + Sync
+{
     /// Handle message
     /// 处理消息
     fn handle(&self, message: AmqpMessage) -> Result<(), String>;
@@ -110,7 +118,8 @@ impl<F> MessageHandler for FnHandler<F>
 where
     F: Fn(AmqpMessage) -> Result<(), String> + Send + Sync,
 {
-    fn handle(&self, message: AmqpMessage) -> Result<(), String> {
+    fn handle(&self, message: AmqpMessage) -> Result<(), String>
+    {
         (self.handler)(message)
     }
 }
@@ -131,7 +140,8 @@ where
 /// }
 /// ```
 #[derive(Clone)]
-pub struct Listener {
+pub struct Listener
+{
     /// Connection
     /// 连接
     connection: Arc<AmqpConnection>,
@@ -141,10 +151,12 @@ pub struct Listener {
     containers: Arc<RwLock<Vec<ListenerContainer>>>,
 }
 
-impl Listener {
+impl Listener
+{
     /// Create new listener
     /// 创建新的监听器
-    pub fn new(connection: Arc<AmqpConnection>) -> Self {
+    pub fn new(connection: Arc<AmqpConnection>) -> Self
+    {
         Self {
             connection,
             containers: Arc::new(RwLock::new(Vec::new())),
@@ -153,7 +165,8 @@ impl Listener {
 
     /// Add listener container
     /// 添加监听器容器
-    pub async fn add_container(&self, container: ListenerContainer) {
+    pub async fn add_container(&self, container: ListenerContainer)
+    {
         let mut containers = self.containers.write().await;
         containers.push(container);
     }
@@ -187,9 +200,11 @@ impl Listener {
 
     /// Stop all listeners
     /// 停止所有监听器
-    pub async fn stop_all(&self) -> Result<(), String> {
+    pub async fn stop_all(&self) -> Result<(), String>
+    {
         let containers = self.containers.read().await;
-        for container in containers.iter() {
+        for container in containers.iter()
+        {
             container.stop().await?;
         }
         Ok(())
@@ -197,27 +212,31 @@ impl Listener {
 
     /// Get listener count
     /// 获取监听器数量
-    pub async fn listener_count(&self) -> usize {
+    pub async fn listener_count(&self) -> usize
+    {
         self.containers.read().await.len()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use std::sync::Arc;
 
     use super::*;
     use crate::{AmqpConfig, AmqpConnection, AmqpMessage, Message};
 
     /// Helper to create a Listener for testing / 创建测试用 Listener 的辅助函数
-    fn create_listener() -> Listener {
+    fn create_listener() -> Listener
+    {
         let config = AmqpConfig::default();
         let conn = AmqpConnection::new(config);
         Listener::new(Arc::new(conn))
     }
 
     /// Helper to create a ListenerContainer for testing / 创建测试用 ListenerContainer 的辅助函数
-    fn create_container(queue: &str) -> ListenerContainer {
+    fn create_container(queue: &str) -> ListenerContainer
+    {
         let config = AmqpConfig::default();
         let conn = AmqpConnection::new(config);
         ListenerContainer::new(Arc::new(conn), queue)
@@ -225,7 +244,8 @@ mod tests {
 
     /// Test ListenerContainer starts and stops / 测试 ListenerContainer 启动和停止
     #[tokio::test]
-    async fn test_container_start_stop() {
+    async fn test_container_start_stop()
+    {
         let container = create_container("test_queue");
         assert!(!container.is_running().await);
         assert_eq!(container.queue(), "test_queue");
@@ -239,14 +259,16 @@ mod tests {
 
     /// Test ListenerContainer queue accessor / 测试 ListenerContainer queue 访问器
     #[tokio::test]
-    async fn test_container_queue_accessor() {
+    async fn test_container_queue_accessor()
+    {
         let container = create_container("orders_queue");
         assert_eq!(container.queue(), "orders_queue");
     }
 
     /// Test Listener::listen_fn registers a container / 测试 Listener::listen_fn 注册监听器
     #[tokio::test]
-    async fn test_listener_listen_fn() {
+    async fn test_listener_listen_fn()
+    {
         let listener = create_listener();
         assert_eq!(listener.listener_count().await, 0);
 
@@ -256,7 +278,8 @@ mod tests {
 
     /// Test Listener::stop_all stops all containers / 测试 Listener::stop_all 停止所有容器
     #[tokio::test]
-    async fn test_listener_stop_all() {
+    async fn test_listener_stop_all()
+    {
         let listener = create_listener();
         listener.listen_fn("queue_a", |_msg| Ok(())).await.unwrap();
         listener.listen_fn("queue_b", |_msg| Ok(())).await.unwrap();
@@ -267,13 +290,17 @@ mod tests {
 
     /// Test FnHandler delegates to closure / 测试 FnHandler 委托给闭包
     #[test]
-    fn test_fn_handler_delegates() {
+    fn test_fn_handler_delegates()
+    {
         let handler = FnHandler {
             handler: |msg: AmqpMessage| {
                 let body = msg.payload_as_string();
-                if body.contains("error") {
+                if body.contains("error")
+                {
                     Err("simulated error".to_string())
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             },

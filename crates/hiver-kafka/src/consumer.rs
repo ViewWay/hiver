@@ -1,9 +1,11 @@
 //! Kafka consumer
 //! Kafka消费者
 
-use crate::{ConsumerConfig, ConsumerOffset, KafkaMessage};
 use std::sync::Arc;
+
 use tokio::sync::RwLock;
+
+use crate::{ConsumerConfig, ConsumerOffset, KafkaMessage};
 
 /// Kafka consumer
 /// Kafka消费者
@@ -17,7 +19,8 @@ use tokio::sync::RwLock;
 /// }
 /// ```
 #[derive(Clone)]
-pub struct Consumer {
+pub struct Consumer
+{
     /// Configuration
     /// 配置
     config: ConsumerConfig,
@@ -27,10 +30,12 @@ pub struct Consumer {
     topics: Arc<RwLock<Vec<String>>>,
 }
 
-impl Consumer {
+impl Consumer
+{
     /// Create new consumer
     /// 创建新的消费者
-    pub fn new(_bootstrap_servers: impl Into<String>, config: &ConsumerConfig) -> Self {
+    pub fn new(_bootstrap_servers: impl Into<String>, config: &ConsumerConfig) -> Self
+    {
         Self {
             config: config.clone(),
             topics: Arc::new(RwLock::new(Vec::new())),
@@ -39,16 +44,20 @@ impl Consumer {
 
     /// Get configuration
     /// 获取配置
-    pub fn config(&self) -> &ConsumerConfig {
+    pub fn config(&self) -> &ConsumerConfig
+    {
         &self.config
     }
 
     /// Subscribe to topics
     /// 订阅主题
-    pub async fn subscribe(&self, topics: &[&str]) -> Result<(), String> {
+    pub async fn subscribe(&self, topics: &[&str]) -> Result<(), String>
+    {
         let mut subscribed = self.topics.write().await;
-        for topic in topics {
-            if !subscribed.contains(&topic.to_string()) {
+        for topic in topics
+        {
+            if !subscribed.contains(&topic.to_string())
+            {
                 subscribed.push(topic.to_string());
                 tracing::info!("Subscribed to topic: {}", topic);
             }
@@ -58,7 +67,8 @@ impl Consumer {
 
     /// Unsubscribe from topics
     /// 取消订阅主题
-    pub async fn unsubscribe(&self) -> Result<(), String> {
+    pub async fn unsubscribe(&self) -> Result<(), String>
+    {
         let mut subscribed = self.topics.write().await;
         subscribed.clear();
         tracing::info!("Unsubscribed from all topics");
@@ -67,7 +77,8 @@ impl Consumer {
 
     /// Poll for messages
     /// 轮询消息
-    pub fn poll(&self, _timeout_ms: u32) -> Result<Option<KafkaMessage>, String> {
+    pub fn poll(&self, _timeout_ms: u32) -> Result<Option<KafkaMessage>, String>
+    {
         // Mock implementation
         // 模拟实现
         Ok(None)
@@ -75,8 +86,10 @@ impl Consumer {
 
     /// Commit offsets
     /// 提交偏移
-    pub fn commit(&self, offsets: &[ConsumerOffset]) -> Result<(), String> {
-        for offset in offsets {
+    pub fn commit(&self, offsets: &[ConsumerOffset]) -> Result<(), String>
+    {
+        for offset in offsets
+        {
             tracing::debug!(
                 "Committed offset: topic={}, partition={}, offset={}",
                 offset.topic,
@@ -89,7 +102,8 @@ impl Consumer {
 
     /// Seek to offset
     /// 跳转到偏移
-    pub fn seek(&self, offset: &ConsumerOffset) -> Result<(), String> {
+    pub fn seek(&self, offset: &ConsumerOffset) -> Result<(), String>
+    {
         tracing::debug!(
             "Seeking: topic={}, partition={}, offset={}",
             offset.topic,
@@ -101,7 +115,8 @@ impl Consumer {
 
     /// Get subscription
     /// 获取订阅
-    pub async fn subscription(&self) -> Vec<String> {
+    pub async fn subscription(&self) -> Vec<String>
+    {
         self.topics.read().await.clone()
     }
 }
@@ -118,7 +133,8 @@ impl Consumer {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct ConsumerGroup {
+pub struct ConsumerGroup
+{
     /// Group ID
     /// 组ID
     pub group_id: String,
@@ -128,10 +144,12 @@ pub struct ConsumerGroup {
     pub members: Vec<String>,
 }
 
-impl ConsumerGroup {
+impl ConsumerGroup
+{
     /// Create new consumer group
     /// 创建新的消费者组
-    pub fn new(group_id: impl Into<String>) -> Self {
+    pub fn new(group_id: impl Into<String>) -> Self
+    {
         Self {
             group_id: group_id.into(),
             members: Vec::new(),
@@ -140,7 +158,8 @@ impl ConsumerGroup {
 
     /// Add member
     /// 添加成员
-    pub fn with_member(mut self, member: impl Into<String>) -> Self {
+    pub fn with_member(mut self, member: impl Into<String>) -> Self
+    {
         self.members.push(member.into());
         self
     }
@@ -160,7 +179,8 @@ impl ConsumerGroup {
 /// )
 /// ```
 #[derive(Clone)]
-pub struct ConsumerListener {
+pub struct ConsumerListener
+{
     /// Topics
     /// 主题
     pub topics: Vec<String>,
@@ -178,10 +198,12 @@ pub struct ConsumerListener {
     running: Arc<RwLock<bool>>,
 }
 
-impl ConsumerListener {
+impl ConsumerListener
+{
     /// Create new listener
     /// 创建新的监听器
-    pub fn new(id: impl Into<String>, topics: Vec<String>, group_id: impl Into<String>) -> Self {
+    pub fn new(id: impl Into<String>, topics: Vec<String>, group_id: impl Into<String>) -> Self
+    {
         Self {
             topics,
             group_id: group_id.into(),
@@ -192,7 +214,8 @@ impl ConsumerListener {
 
     /// Start listening
     /// 开始监听
-    pub async fn start(&self) -> Result<(), String> {
+    pub async fn start(&self) -> Result<(), String>
+    {
         let mut running = self.running.write().await;
         *running = true;
         tracing::info!("Starting listener: {} (group: {})", self.id, self.group_id);
@@ -201,7 +224,8 @@ impl ConsumerListener {
 
     /// Stop listening
     /// 停止监听
-    pub async fn stop(&self) -> Result<(), String> {
+    pub async fn stop(&self) -> Result<(), String>
+    {
         let mut running = self.running.write().await;
         *running = false;
         tracing::info!("Stopping listener: {}", self.id);
@@ -210,14 +234,16 @@ impl ConsumerListener {
 
     /// Check if running
     /// 检查是否正在运行
-    pub async fn is_running(&self) -> bool {
+    pub async fn is_running(&self) -> bool
+    {
         *self.running.read().await
     }
 }
 
 /// Message handler trait
 /// 消息处理器trait
-pub trait MessageHandler: Send + Sync {
+pub trait MessageHandler: Send + Sync
+{
     /// Handle message
     /// 处理消息
     fn handle(&self, message: KafkaMessage) -> Result<(), String>;
@@ -236,20 +262,23 @@ impl<F> MessageHandler for FnHandler<F>
 where
     F: Fn(KafkaMessage) -> Result<(), String> + Send + Sync,
 {
-    fn handle(&self, message: KafkaMessage) -> Result<(), String> {
+    fn handle(&self, message: KafkaMessage) -> Result<(), String>
+    {
         (self.handler)(message)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::message::MessageValue;
 
     /// Test consumer creation with config
     /// 测试使用配置创建消费者
     #[tokio::test]
-    async fn test_consumer_new() {
+    async fn test_consumer_new()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
         assert_eq!(consumer.config().group_id, "test-group");
@@ -258,7 +287,8 @@ mod tests {
     /// Test consumer subscribe and subscription tracking
     /// 测试消费者订阅和订阅跟踪
     #[tokio::test]
-    async fn test_consumer_subscribe() {
+    async fn test_consumer_subscribe()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
 
@@ -272,7 +302,8 @@ mod tests {
     /// Test consumer duplicate subscription is idempotent
     /// 测试消费者重复订阅是幂等的
     #[tokio::test]
-    async fn test_consumer_subscribe_idempotent() {
+    async fn test_consumer_subscribe_idempotent()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
 
@@ -285,7 +316,8 @@ mod tests {
     /// Test consumer unsubscribe clears all topics
     /// 测试消费者取消订阅清除所有主题
     #[tokio::test]
-    async fn test_consumer_unsubscribe() {
+    async fn test_consumer_unsubscribe()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
 
@@ -299,7 +331,8 @@ mod tests {
     /// Test consumer poll returns None (mock)
     /// 测试消费者轮询返回空（模拟）
     #[test]
-    fn test_consumer_poll_returns_none() {
+    fn test_consumer_poll_returns_none()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
         let result = consumer.poll(1000).unwrap();
@@ -309,7 +342,8 @@ mod tests {
     /// Test consumer commit offsets
     /// 测试消费者提交偏移
     #[test]
-    fn test_consumer_commit() {
+    fn test_consumer_commit()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
         let offsets = vec![
@@ -323,7 +357,8 @@ mod tests {
     /// Test consumer seek to offset
     /// 测试消费者跳转到偏移
     #[test]
-    fn test_consumer_seek() {
+    fn test_consumer_seek()
+    {
         let config = ConsumerConfig::new("test-group");
         let consumer = Consumer::new("localhost:9092", &config);
         let offset = ConsumerOffset::new("topic-a", 0, 50);
@@ -336,7 +371,8 @@ mod tests {
     /// Test consumer group creation and member management
     /// 测试消费者组创建和成员管理
     #[test]
-    fn test_consumer_group_with_members() {
+    fn test_consumer_group_with_members()
+    {
         let group = ConsumerGroup::new("my-group")
             .with_member("consumer-1")
             .with_member("consumer-2");
@@ -349,7 +385,8 @@ mod tests {
     /// Test consumer group clone
     /// 测试消费者组克隆
     #[test]
-    fn test_consumer_group_clone() {
+    fn test_consumer_group_clone()
+    {
         let group = ConsumerGroup::new("group-1").with_member("c1");
         let cloned = group.clone();
         assert_eq!(cloned.group_id, group.group_id);
@@ -361,7 +398,8 @@ mod tests {
     /// Test listener start and stop lifecycle
     /// 测试监听器启动和停止生命周期
     #[tokio::test]
-    async fn test_listener_lifecycle() {
+    async fn test_listener_lifecycle()
+    {
         let listener = ConsumerListener::new("listener-1", vec!["topic-a".to_string()], "my-group");
         assert!(!listener.is_running().await);
 
@@ -375,7 +413,8 @@ mod tests {
     /// Test listener properties
     /// 测试监听器属性
     #[test]
-    fn test_listener_properties() {
+    fn test_listener_properties()
+    {
         let listener = ConsumerListener::new(
             "my-listener",
             vec!["t1".to_string(), "t2".to_string()],
@@ -391,7 +430,8 @@ mod tests {
     /// Test function-based message handler
     /// 测试基于函数的消息处理器
     #[test]
-    fn test_fn_handler_success() {
+    fn test_fn_handler_success()
+    {
         let handler = FnHandler {
             handler: |_msg: KafkaMessage| Ok(()),
         };
@@ -402,7 +442,8 @@ mod tests {
     /// Test function-based message handler returns error
     /// 测试基于函数的消息处理器返回错误
     #[test]
-    fn test_fn_handler_error() {
+    fn test_fn_handler_error()
+    {
         let handler = FnHandler {
             handler: |_msg: KafkaMessage| Err("processing failed".to_string()),
         };

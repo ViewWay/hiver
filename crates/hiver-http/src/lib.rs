@@ -14,18 +14,17 @@
 //! 本 crate 是 Hiver 框架的核心 HTTP 层，负责：
 //!
 //! - **Request / Response types** — Type-safe wrappers around `http::Request` and `http::Response`
-//!   with path variables, query parameters, and extensions.
-//!   类型安全的 `http::Request` 和 `http::Response` 包装器，支持路径变量、查询参数和扩展。
+//!   with path variables, query parameters, and extensions. 类型安全的 `http::Request` 和
+//!   `http::Response` 包装器，支持路径变量、查询参数和扩展。
 //! - **Server** — Configurable TCP server with keep-alive, timeouts, and connection management.
 //!   可配置的 TCP 服务器，支持保活、超时和连接管理。
-//! - **JSON / SSE / WebSocket** — Built-in support for JSON serialization, Server-Sent Events,
-//!   and WebSocket upgrade handshakes.
-//!   内置 JSON 序列化、服务器发送事件和 WebSocket 升级握手支持。
-//! - **Error handling** — Global `@ControllerAdvice`-style exception handling with
-//!   `ErrorResponse`, `ExceptionHandlerRegistry`, and built-in handlers.
-//!   全局 `@ControllerAdvice` 风格的异常处理，包含 `ErrorResponse`、`ExceptionHandlerRegistry` 和内置处理器。
-//! - **Validation** — `Validatable` trait and `ValidationHelpers` for declarative request validation.
-//!   用于声明式请求验证的 `Validatable` trait 和 `ValidationHelpers`。
+//! - **JSON / SSE / WebSocket** — Built-in support for JSON serialization, Server-Sent Events, and
+//!   WebSocket upgrade handshakes. 内置 JSON 序列化、服务器发送事件和 WebSocket 升级握手支持。
+//! - **Error handling** — Global `@ControllerAdvice`-style exception handling with `ErrorResponse`,
+//!   `ExceptionHandlerRegistry`, and built-in handlers. 全局 `@ControllerAdvice`
+//!   风格的异常处理，包含 `ErrorResponse`、`ExceptionHandlerRegistry` 和内置处理器。
+//! - **Validation** — `Validatable` trait and `ValidationHelpers` for declarative request
+//!   validation. 用于声明式请求验证的 `Validatable` trait 和 `ValidationHelpers`。
 //! - **Multipart** — File upload handling with `MultipartFile`, `MultipartForm`, and size limits.
 //!   带有 `MultipartFile`、`MultipartForm` 和大小限制的文件上传处理。
 //! - **HTTP/2** — Frame types, settings, stream management, and connection state.
@@ -80,19 +79,17 @@
 //!
 //! ## Module Layout / 模块布局
 //!
-//! - [`request`] — HTTP request type with path/query parameter extraction
-//!   HTTP 请求类型，带路径/查询参数提取
-//! - [`response`] — HTTP response type with builder pattern
-//!   HTTP 响应类型，带构建器模式
+//! - [`request`] — HTTP request type with path/query parameter extraction HTTP
+//!   请求类型，带路径/查询参数提取
+//! - [`response`] — HTTP response type with builder pattern HTTP 响应类型，带构建器模式
 //! - [`server`] — Configurable HTTP server / 可配置的 HTTP 服务器
 //! - [`service`] — `HttpService` trait for request handling / 请求处理的 `HttpService` trait
-//! - [`body`] — HTTP body types (`FullBody`, `EmptyBody`, `Body` alias)
-//!   HTTP body 类型
+//! - [`body`] — HTTP body types (`FullBody`, `EmptyBody`, `Body` alias) HTTP body 类型
 //! - [`status`] — HTTP status codes / HTTP 状态码
 //! - [`method`] — HTTP methods / HTTP 方法
 //! - [`error`] — Error types and `Result` / 错误类型和 `Result`
-//! - [`api_response`] — Unified `ApiResponse<T>` and `PageResponse<T>`
-//!   统一的 `ApiResponse<T>` 和 `PageResponse<T>`
+//! - [`api_response`] — Unified `ApiResponse<T>` and `PageResponse<T>` 统一的 `ApiResponse<T>` 和
+//!   `PageResponse<T>`
 //! - [`exception`] — Application exceptions and `ErrorResponse` / 应用异常和 `ErrorResponse`
 //! - [`controller_advice`] — Global exception handler / 全局异常处理器
 //! - [`validation`] — Request validation / 请求验证
@@ -136,8 +133,7 @@ pub mod websocket;
 
 // Re-exports for convenience
 // 重新导出以便使用
-pub use api_response::ApiResponse;
-pub use api_response::{IntoApiResponse, PageResponse, ResultCode};
+pub use api_response::{ApiResponse, IntoApiResponse, PageResponse, ResultCode};
 pub use body::{Body, EmptyBody, FullBody, HttpBody};
 pub use builder::{Uri, UriBuilder};
 pub use conn::{Connection, ConnectionState};
@@ -151,13 +147,13 @@ pub use exception::{
     ApplicationException, ErrorResponse, ExceptionHandlerRegistry, FieldError, IntoErrorResponse,
     ResourceNotFoundException, ValidationException,
 };
+// Re-export http2::ConnectionState with a different name to avoid conflict
+// 使用不同的名称重新导出 http2::ConnectionState 以避免冲突
+pub use http2::ConnectionState as Http2ConnectionState;
 pub use http2::{
     ErrorCode, FrameType, Http2Config, Http2Error, Priority, SettingsParameter, StreamId,
     StreamReset, StreamState,
 };
-// Re-export http2::ConnectionState with a different name to avoid conflict
-// 使用不同的名称重新导出 http2::ConnectionState 以避免冲突
-pub use http2::ConnectionState as Http2ConnectionState;
 pub use method::Method;
 pub use multipart::{
     FileSizeLimits, FromMultipart, MultipartData, MultipartFile, MultipartForm,
@@ -184,7 +180,8 @@ pub use websocket::{
 ///
 /// 这些常量涵盖 Web 应用中最常用的 MIME 类型。
 /// 等价于 Spring 的 `MediaType` 常量。
-pub mod content_type {
+pub mod content_type
+{
     /// JSON content type / JSON 内容类型
     ///
     /// Used for API responses and request bodies.
@@ -223,7 +220,8 @@ pub mod content_type {
 ///
 /// 这些常量提供 HTTP/2 规范要求的 小写头名称。
 /// 等价于 Spring 的 `HttpHeaders` 常量。
-pub mod header {
+pub mod header
+{
     /// Content-Type header name / Content-Type 头名称
     pub const CONTENT_TYPE: &str = "content-type";
     /// Content-Length header name / Content-Length 头名称
@@ -254,8 +252,7 @@ pub mod header {
 ///
 /// - `@ResponseBody` — Marks a return value as the HTTP response body, auto-serialized to JSON.
 ///   标记返回值为 HTTP 响应体，自动序列化为 JSON。
-/// - `ResponseEntity<T>` — Wraps response data with status and headers.
-///   用状态和头包装响应数据。
+/// - `ResponseEntity<T>` — Wraps response data with status and headers. 用状态和头包装响应数据。
 ///
 /// # Example / 示例
 ///
@@ -270,34 +267,41 @@ pub mod header {
 #[derive(Debug, Clone)]
 pub struct Json<T>(pub T);
 
-impl<T> Json<T> {
+impl<T> Json<T>
+{
     /// Create a new JSON wrapper
     /// 创建新的JSON包装器
-    pub fn new(value: T) -> Self {
+    pub fn new(value: T) -> Self
+    {
         Self(value)
     }
 
     /// Get the inner value
     /// 获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 
     /// Get a mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.0
     }
 }
 
-impl<T> From<T> for Json<T> {
-    fn from(value: T) -> Self {
+impl<T> From<T> for Json<T>
+{
+    fn from(value: T) -> Self
+    {
         Self(value)
     }
 }
@@ -314,7 +318,8 @@ impl<T> From<T> for Json<T> {
 /// annotated with `@ResponseBody`.
 ///
 /// 这等价于Spring的`ResponseEntity`或使用`@ResponseBody`注解的方法。
-pub trait IntoResponse {
+pub trait IntoResponse
+{
     /// Convert self into a Response
     /// 将self转换为Response
     fn into_response(self) -> Response;
@@ -322,8 +327,10 @@ pub trait IntoResponse {
 
 // Implement IntoResponse for common types
 // 为常见类型实现IntoResponse
-impl IntoResponse for String {
-    fn into_response(self) -> Response {
+impl IntoResponse for String
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -332,8 +339,10 @@ impl IntoResponse for String {
     }
 }
 
-impl IntoResponse for &'static str {
-    fn into_response(self) -> Response {
+impl IntoResponse for &'static str
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -342,8 +351,10 @@ impl IntoResponse for &'static str {
     }
 }
 
-impl IntoResponse for () {
-    fn into_response(self) -> Response {
+impl IntoResponse for ()
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(StatusCode::NO_CONTENT)
             .body(Body::empty())
@@ -351,8 +362,10 @@ impl IntoResponse for () {
     }
 }
 
-impl IntoResponse for std::borrow::Cow<'static, str> {
-    fn into_response(self) -> Response {
+impl IntoResponse for std::borrow::Cow<'static, str>
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -361,8 +374,10 @@ impl IntoResponse for std::borrow::Cow<'static, str> {
     }
 }
 
-impl IntoResponse for Vec<u8> {
-    fn into_response(self) -> Response {
+impl IntoResponse for Vec<u8>
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, "application/octet-stream")
@@ -371,8 +386,10 @@ impl IntoResponse for Vec<u8> {
     }
 }
 
-impl IntoResponse for StatusCode {
-    fn into_response(self) -> Response {
+impl IntoResponse for StatusCode
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(self)
             .body(Body::empty())
@@ -385,20 +402,26 @@ impl IntoResponse for StatusCode {
 // 异常处理（等价于 Spring @ControllerAdvice/@ExceptionHandler）
 // ============================================================================
 
-impl IntoResponse for ErrorResponse {
-    fn into_response(self) -> Response {
+impl IntoResponse for ErrorResponse
+{
+    fn into_response(self) -> Response
+    {
         self.to_response()
     }
 }
 
-impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E {
-    fn into_response(self) -> Response {
+impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E
+{
+    fn into_response(self) -> Response
+    {
         self.to_error_response().to_response()
     }
 }
 
-impl IntoResponse for error::ResponseStatusException {
-    fn into_response(self) -> Response {
+impl IntoResponse for error::ResponseStatusException
+{
+    fn into_response(self) -> Response
+    {
         ErrorResponse::new(self.status.as_u16(), "STATUS_EXCEPTION", &self.reason).to_response()
     }
 }
@@ -422,7 +445,8 @@ impl IntoResponse for error::ResponseStatusException {
 /// - `@PathVariable` → 提取路径参数
 /// - `@RequestBody` → 提取请求体
 /// - `@RequestHeader` → 提取请求头
-pub trait FromRequest: Sized {
+pub trait FromRequest: Sized
+{
     /// Extract this type from the request
     /// 从请求中提取此类型
     async fn from_request(req: &Request) -> Result<Self>;
@@ -430,14 +454,18 @@ pub trait FromRequest: Sized {
 
 // Implement FromRequest for common types
 // 为常见类型实现FromRequest
-impl FromRequest for () {
-    async fn from_request(_req: &Request) -> Result<Self> {
+impl FromRequest for ()
+{
+    async fn from_request(_req: &Request) -> Result<Self>
+    {
         Ok(())
     }
 }
 
-impl FromRequest for String {
-    async fn from_request(req: &Request) -> Result<Self> {
+impl FromRequest for String
+{
+    async fn from_request(req: &Request) -> Result<Self>
+    {
         let body = req
             .body()
             .as_bytes()
@@ -448,8 +476,10 @@ impl FromRequest for String {
     }
 }
 
-impl FromRequest for Vec<u8> {
-    async fn from_request(req: &Request) -> Result<Self> {
+impl FromRequest for Vec<u8>
+{
+    async fn from_request(req: &Request) -> Result<Self>
+    {
         Ok(req
             .body()
             .as_bytes()
@@ -458,8 +488,10 @@ impl FromRequest for Vec<u8> {
     }
 }
 
-impl<T: serde::de::DeserializeOwned> FromRequest for Json<T> {
-    async fn from_request(req: &Request) -> Result<Self> {
+impl<T: serde::de::DeserializeOwned> FromRequest for Json<T>
+{
+    async fn from_request(req: &Request) -> Result<Self>
+    {
         let body = req
             .body()
             .as_bytes()
@@ -471,8 +503,10 @@ impl<T: serde::de::DeserializeOwned> FromRequest for Json<T> {
     }
 }
 
-impl FromRequest for Method {
-    async fn from_request(req: &Request) -> Result<Self> {
+impl FromRequest for Method
+{
+    async fn from_request(req: &Request) -> Result<Self>
+    {
         Ok(req.method().clone())
     }
 }

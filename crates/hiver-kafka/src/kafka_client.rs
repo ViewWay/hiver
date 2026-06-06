@@ -26,7 +26,10 @@
 //! ```
 
 #[cfg(feature = "rdkafka")]
-mod inner {
+mod inner
+{
+    use std::{sync::Arc, time::Duration};
+
     use rdkafka::{
         Message,
         config::ClientConfig,
@@ -34,14 +37,13 @@ mod inner {
         message::OwnedHeaders,
         producer::{FutureProducer, FutureRecord},
     };
-    use std::sync::Arc;
-    use std::time::Duration;
     use tracing::{debug, error, info};
 
     /// Error type for Kafka operations.
     /// Kafka 操作错误类型。
     #[derive(Debug, thiserror::Error)]
-    pub enum KafkaError {
+    pub enum KafkaError
+    {
         /// rdkafka library error. / rdkafka 库错误。
         #[error("rdkafka error: {0}")]
         RdKafka(#[from] rdkafka::error::KafkaError),
@@ -65,15 +67,18 @@ mod inner {
     /// Equivalent to Spring's `KafkaTemplate`.
     /// 等价于 Spring 的 `KafkaTemplate`。
     #[derive(Clone)]
-    pub struct KafkaProducer {
+    pub struct KafkaProducer
+    {
         inner: Arc<FutureProducer>,
         default_topic: Option<String>,
     }
 
-    impl KafkaProducer {
+    impl KafkaProducer
+    {
         /// Create a producer connecting to the given brokers.
         /// 创建连接到指定 broker 的生产者。
-        pub fn new(brokers: &str) -> Result<Self> {
+        pub fn new(brokers: &str) -> Result<Self>
+        {
             let producer: FutureProducer = ClientConfig::new()
                 .set("bootstrap.servers", brokers)
                 .set("message.timeout.ms", "5000")
@@ -88,9 +93,11 @@ mod inner {
 
         /// Create a producer with explicit config entries.
         /// 使用显式配置条目创建生产者。
-        pub fn with_config(config: &[(&str, &str)]) -> Result<Self> {
+        pub fn with_config(config: &[(&str, &str)]) -> Result<Self>
+        {
             let mut client_config = ClientConfig::new();
-            for (k, v) in config {
+            for (k, v) in config
+            {
                 client_config.set(*k, *v);
             }
             let producer: FutureProducer = client_config.create()?;
@@ -102,14 +109,16 @@ mod inner {
 
         /// Set a default topic for `send_default`.
         /// 为 `send_default` 设置默认主题。
-        pub fn with_default_topic(mut self, topic: &str) -> Self {
+        pub fn with_default_topic(mut self, topic: &str) -> Self
+        {
             self.default_topic = Some(topic.to_string());
             self
         }
 
         /// Send a message to a topic.
         /// 向主题发送消息。
-        pub async fn send(&self, topic: &str, key: &str, payload: &[u8]) -> Result<()> {
+        pub async fn send(&self, topic: &str, key: &str, payload: &[u8]) -> Result<()>
+        {
             let record = FutureRecord::to(topic)
                 .key(key)
                 .payload(payload)
@@ -129,7 +138,8 @@ mod inner {
             topic: &str,
             key: &str,
             value: &T,
-        ) -> Result<()> {
+        ) -> Result<()>
+        {
             let json = serde_json::to_vec(value)
                 .map_err(|e| KafkaError::Config(format!("serialize: {e}")))?;
             self.send(topic, key, &json).await
@@ -137,7 +147,8 @@ mod inner {
 
         /// Send to the default topic (must have been set with `with_default_topic`).
         /// 向默认主题发送（必须先设置 `with_default_topic`）。
-        pub async fn send_default(&self, key: &str, payload: &[u8]) -> Result<()> {
+        pub async fn send_default(&self, key: &str, payload: &[u8]) -> Result<()>
+        {
             let topic = self
                 .default_topic
                 .as_deref()
@@ -155,14 +166,17 @@ mod inner {
     ///
     /// Equivalent to Spring's `@KafkaListener` / `KafkaMessageListenerContainer`.
     /// 等价于 Spring 的 `@KafkaListener` / `KafkaMessageListenerContainer`。
-    pub struct KafkaConsumer {
+    pub struct KafkaConsumer
+    {
         inner: Arc<StreamConsumer>,
     }
 
-    impl KafkaConsumer {
+    impl KafkaConsumer
+    {
         /// Create a consumer in the given group.
         /// 在给定消费者组中创建消费者。
-        pub fn new(brokers: &str, group_id: &str) -> Result<Self> {
+        pub fn new(brokers: &str, group_id: &str) -> Result<Self>
+        {
             let consumer: StreamConsumer = ClientConfig::new()
                 .set("bootstrap.servers", brokers)
                 .set("group.id", group_id)
@@ -177,7 +191,8 @@ mod inner {
 
         /// Subscribe to topics.
         /// 订阅主题列表。
-        pub fn subscribe(&self, topics: &[&str]) -> Result<()> {
+        pub fn subscribe(&self, topics: &[&str]) -> Result<()>
+        {
             self.inner.subscribe(topics)?;
             info!("Subscribed to topics: {:?}", topics);
             Ok(())
@@ -201,26 +216,33 @@ mod inner {
             tokio::spawn(async move {
                 let stream = consumer.stream();
                 futures::pin_mut!(stream);
-                while let Some(result) = stream.next().await {
-                    match result {
-                        Ok(msg) => {
+                while let Some(result) = stream.next().await
+                {
+                    match result
+                    {
+                        Ok(msg) =>
+                        {
                             let topic = msg.topic().to_string();
                             let partition = msg.partition();
                             let key = msg.key().map(<[u8]>::to_vec);
                             let payload = msg.payload().unwrap_or(&[]).to_vec();
-                            match handler(topic.clone(), partition, key, payload).await {
-                                Ok(()) => {
+                            match handler(topic.clone(), partition, key, payload).await
+                            {
+                                Ok(()) =>
+                                {
                                     if let Err(e) = consumer.commit_message(&msg, CommitMode::Async)
                                     {
                                         error!("commit failed: {e}");
                                     }
                                 },
-                                Err(e) => {
+                                Err(e) =>
+                                {
                                     error!("handler error for topic={}: {}", topic, e);
                                 },
                             }
                         },
-                        Err(e) => {
+                        Err(e) =>
+                        {
                             error!("Kafka stream error: {e}");
                         },
                     }
@@ -235,17 +257,22 @@ mod inner {
 pub use inner::{KafkaConsumer, KafkaError, KafkaProducer};
 
 #[cfg(not(feature = "rdkafka"))]
-mod stub {
+mod stub
+{
     /// Stub when rdkafka feature is disabled.
     pub struct KafkaProducer;
     pub struct KafkaConsumer;
-    impl KafkaProducer {
-        pub fn new(_brokers: &str) -> Result<Self, String> {
+    impl KafkaProducer
+    {
+        pub fn new(_brokers: &str) -> Result<Self, String>
+        {
             Err("hiver-kafka rdkafka feature not enabled".to_string())
         }
     }
-    impl KafkaConsumer {
-        pub fn new(_brokers: &str, _group: &str) -> Result<Self, String> {
+    impl KafkaConsumer
+    {
+        pub fn new(_brokers: &str, _group: &str) -> Result<Self, String>
+        {
             Err("hiver-kafka rdkafka feature not enabled".to_string())
         }
     }

@@ -1,14 +1,17 @@
 //! Migration information and history
 //! 迁移信息和历史
 
-use crate::{Checksum, Description, MigratedVersion, MigrationType, Version};
-use chrono::{DateTime, Utc};
 use std::collections::HashMap;
+
+use chrono::{DateTime, Utc};
+
+use crate::{Checksum, Description, MigratedVersion, MigrationType, Version};
 
 /// Migration entry in history
 /// 历史中的迁移条目
 #[derive(Debug, Clone, PartialEq)]
-pub struct MigrationEntry {
+pub struct MigrationEntry
+{
     /// Installed rank
     /// 安装排名
     pub installed_rank: i32,
@@ -46,7 +49,8 @@ pub struct MigrationEntry {
     pub success: bool,
 }
 
-impl MigrationEntry {
+impl MigrationEntry
+{
     /// Create a new migration entry
     /// 创建新的迁移条目
     pub fn new(
@@ -54,7 +58,8 @@ impl MigrationEntry {
         description: Description,
         migration_type: MigrationType,
         checksum: Option<Checksum>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             installed_rank: 0,
             version,
@@ -72,7 +77,8 @@ impl MigrationEntry {
 /// Migration information
 /// 迁移信息
 #[derive(Debug, Clone)]
-pub struct Info {
+pub struct Info
+{
     /// Schema history table exists
     /// 历史表是否存在
     pub schema_exists: bool,
@@ -94,10 +100,12 @@ pub struct Info {
     pub applied: HashMap<Version, MigrationEntry>,
 }
 
-impl Info {
+impl Info
+{
     /// Create new info
     /// 创建新信息
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             schema_exists: false,
             current_version: None,
@@ -109,49 +117,58 @@ impl Info {
 
     /// Get all migrations
     /// 获取所有迁移
-    pub fn all(&self) -> &[MigrationEntry] {
+    pub fn all(&self) -> &[MigrationEntry]
+    {
         &self.all
     }
 
     /// Get pending migrations
     /// 获取待执行迁移
-    pub fn pending(&self) -> &[MigrationEntry] {
+    pub fn pending(&self) -> &[MigrationEntry]
+    {
         &self.pending
     }
 
     /// Get applied migrations
     /// 获取已应用迁移
-    pub fn applied(&self) -> Vec<&MigrationEntry> {
+    pub fn applied(&self) -> Vec<&MigrationEntry>
+    {
         self.applied.values().collect()
     }
 
     /// Check if migration is applied
     /// 检查迁移是否已应用
-    pub fn is_applied(&self, version: &Version) -> bool {
+    pub fn is_applied(&self, version: &Version) -> bool
+    {
         self.applied.contains_key(version)
     }
 
     /// Get current version
     /// 获取当前版本
-    pub fn current_version(&self) -> Option<&Version> {
+    pub fn current_version(&self) -> Option<&Version>
+    {
         self.current_version.as_ref()
     }
 
     /// Get number of pending migrations
     /// 获取待执行迁移数量
-    pub fn pending_count(&self) -> usize {
+    pub fn pending_count(&self) -> usize
+    {
         self.pending.len()
     }
 
     /// Get number of applied migrations
     /// 获取已应用迁移数量
-    pub fn applied_count(&self) -> usize {
+    pub fn applied_count(&self) -> usize
+    {
         self.applied.len()
     }
 }
 
-impl Default for Info {
-    fn default() -> Self {
+impl Default for Info
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -159,7 +176,8 @@ impl Default for Info {
 /// Migration result after execution
 /// 迁移执行结果
 #[derive(Debug, Clone)]
-pub struct MigrationResult {
+pub struct MigrationResult
+{
     /// Migrations executed
     /// 执行的迁移
     pub migrations_executed: Vec<MigratedVersion>,
@@ -181,14 +199,13 @@ pub struct MigrationResult {
     pub warnings: Vec<String>,
 }
 
-impl MigrationResult {
+impl MigrationResult
+{
     /// Create a new successful result
     /// 创建新的成功结果
-    pub fn success(
-        migrations: Vec<MigratedVersion>,
-        target: Option<Version>,
-        time_ms: i64,
-    ) -> Self {
+    pub fn success(migrations: Vec<MigratedVersion>, target: Option<Version>, time_ms: i64)
+    -> Self
+    {
         Self {
             migrations_executed: migrations,
             target_version: target,
@@ -200,7 +217,8 @@ impl MigrationResult {
 
     /// Create a new failed result
     /// 创建新的失败结果
-    pub fn failed(error: String) -> Self {
+    pub fn failed(error: String) -> Self
+    {
         Self {
             migrations_executed: Vec::new(),
             target_version: None,
@@ -212,19 +230,22 @@ impl MigrationResult {
 
     /// Add a warning
     /// 添加警告
-    pub fn add_warning(&mut self, warning: String) {
+    pub fn add_warning(&mut self, warning: String)
+    {
         self.warnings.push(warning);
     }
 
     /// Get number of executed migrations
     /// 获取执行的迁移数量
-    pub fn executed_count(&self) -> usize {
+    pub fn executed_count(&self) -> usize
+    {
         self.migrations_executed.len()
     }
 
     /// Check if warnings exist
     /// 检查是否有警告
-    pub fn has_warnings(&self) -> bool {
+    pub fn has_warnings(&self) -> bool
+    {
         !self.warnings.is_empty()
     }
 }
@@ -232,7 +253,8 @@ impl MigrationResult {
 /// Baseline information
 /// 基线信息
 #[derive(Debug, Clone)]
-pub struct BaselineInfo {
+pub struct BaselineInfo
+{
     /// Baseline version
     /// 基线版本
     pub version: Version,
@@ -246,10 +268,12 @@ pub struct BaselineInfo {
     pub applied_at: Option<DateTime<Utc>>,
 }
 
-impl BaselineInfo {
+impl BaselineInfo
+{
     /// Create new baseline info
     /// 创建新的基线信息
-    pub fn new(version: Version) -> Self {
+    pub fn new(version: Version) -> Self
+    {
         Self {
             version,
             description: None,
@@ -259,11 +283,13 @@ impl BaselineInfo {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_migration_entry_creation() {
+    fn test_migration_entry_creation()
+    {
         let entry = MigrationEntry::new(
             "V1".to_string(),
             "Create users table".to_string(),
@@ -278,7 +304,8 @@ mod tests {
     }
 
     #[test]
-    fn test_info_pending_count() {
+    fn test_info_pending_count()
+    {
         let mut info = Info::new();
         info.pending.push(MigrationEntry::new(
             "V2".to_string(),
@@ -292,7 +319,8 @@ mod tests {
     }
 
     #[test]
-    fn test_migration_result_success() {
+    fn test_migration_result_success()
+    {
         let migrations = vec![MigratedVersion {
             version: "V1".to_string(),
             description: "Initial schema".to_string(),
@@ -308,7 +336,8 @@ mod tests {
     }
 
     #[test]
-    fn test_migration_result_failed() {
+    fn test_migration_result_failed()
+    {
         let result = MigrationResult::failed("Connection lost".to_string());
 
         assert!(!result.success);
@@ -317,7 +346,8 @@ mod tests {
     }
 
     #[test]
-    fn test_baseline_info() {
+    fn test_baseline_info()
+    {
         let baseline = BaselineInfo::new("V0".to_string());
         assert_eq!(baseline.version, "V0");
         assert!(baseline.description.is_none());

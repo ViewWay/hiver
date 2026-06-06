@@ -10,10 +10,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
-use std::time::Duration;
+use std::{future::Future, pin::Pin, sync::Arc, time::Duration};
 
 use hiver_http::{Request, Response, Result};
 use hiver_router::{Middleware, Next};
@@ -45,22 +42,26 @@ use hiver_router::{Middleware, Next};
 ///     .get("/", handler);
 /// ```
 #[derive(Clone)]
-pub struct TimeoutMiddleware {
+pub struct TimeoutMiddleware
+{
     /// Request timeout duration
     /// 请求超时时长
     pub timeout: Duration,
 }
 
-impl TimeoutMiddleware {
+impl TimeoutMiddleware
+{
     /// Create a new timeout middleware
     /// 创建新的超时中间件
-    pub fn new(timeout: Duration) -> Self {
+    pub fn new(timeout: Duration) -> Self
+    {
         Self { timeout }
     }
 
     /// Set the timeout duration
     /// 设置超时时长
-    pub fn with_timeout(mut self, timeout: Duration) -> Self {
+    pub fn with_timeout(mut self, timeout: Duration) -> Self
+    {
         self.timeout = timeout;
         self
     }
@@ -75,15 +76,19 @@ where
         req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
+    {
         let timeout = self.timeout;
 
         Box::pin(async move {
             // Use tokio::time::timeout for the timeout functionality
             // 使用tokio::time::timeout实现超时功能
-            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await {
+            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await
+            {
                 response
-            } else {
+            }
+            else
+            {
                 tracing::warn!("Request timed out after {:?}", timeout);
                 Err(hiver_http::Error::Timeout(format!("Request timed out after {:?}", timeout)))
             }
@@ -92,17 +97,20 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_timeout_creation() {
+    fn test_timeout_creation()
+    {
         let timeout = TimeoutMiddleware::new(Duration::from_secs(30));
         assert_eq!(timeout.timeout, Duration::from_secs(30));
     }
 
     #[test]
-    fn test_timeout_builder() {
+    fn test_timeout_builder()
+    {
         let timeout =
             TimeoutMiddleware::new(Duration::from_secs(10)).with_timeout(Duration::from_secs(60));
         assert_eq!(timeout.timeout, Duration::from_secs(60));

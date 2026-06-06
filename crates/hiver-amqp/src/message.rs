@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 /// Delivery mode
 /// 传递模式
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub enum DeliveryMode {
+pub enum DeliveryMode
+{
     /// Transient (not persisted)
     /// 瞬态（不持久化）
     #[default]
@@ -30,7 +31,8 @@ pub enum DeliveryMode {
 ///     .build();
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
-pub struct MessageProperties {
+pub struct MessageProperties
+{
     /// Content type
     /// 内容类型
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -97,58 +99,67 @@ pub struct MessageProperties {
     pub headers: std::collections::HashMap<String, serde_json::Value>,
 }
 
-impl MessageProperties {
+impl MessageProperties
+{
     /// Create new message properties
     /// 创建新的消息属性
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set content type
     /// 设置内容类型
-    pub fn with_content_type(mut self, content_type: impl Into<String>) -> Self {
+    pub fn with_content_type(mut self, content_type: impl Into<String>) -> Self
+    {
         self.content_type = Some(content_type.into());
         self
     }
 
     /// Set content encoding
     /// 设置内容编码
-    pub fn with_content_encoding(mut self, encoding: impl Into<String>) -> Self {
+    pub fn with_content_encoding(mut self, encoding: impl Into<String>) -> Self
+    {
         self.content_encoding = Some(encoding.into());
         self
     }
 
     /// Set delivery mode
     /// 设置传递模式
-    pub fn with_delivery_mode(mut self, mode: DeliveryMode) -> Self {
+    pub fn with_delivery_mode(mut self, mode: DeliveryMode) -> Self
+    {
         self.delivery_mode = mode;
         self
     }
 
     /// Set priority
     /// 设置优先级
-    pub fn with_priority(mut self, priority: u8) -> Self {
+    pub fn with_priority(mut self, priority: u8) -> Self
+    {
         self.priority = Some(priority.min(9));
         self
     }
 
     /// Set correlation ID
     /// 设置关联ID
-    pub fn with_correlation_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_correlation_id(mut self, id: impl Into<String>) -> Self
+    {
         self.correlation_id = Some(id.into());
         self
     }
 
     /// Set reply to
     /// 设置回复到
-    pub fn with_reply_to(mut self, reply_to: impl Into<String>) -> Self {
+    pub fn with_reply_to(mut self, reply_to: impl Into<String>) -> Self
+    {
         self.reply_to = Some(reply_to.into());
         self
     }
 
     /// Set expiration
     /// 设置过期时间
-    pub fn with_expiration(mut self, expiration: impl Into<String>) -> Self {
+    pub fn with_expiration(mut self, expiration: impl Into<String>) -> Self
+    {
         self.expiration = Some(expiration.into());
         self
     }
@@ -159,7 +170,8 @@ impl MessageProperties {
         mut self,
         key: impl Into<String>,
         value: impl Into<serde_json::Value>,
-    ) -> Self {
+    ) -> Self
+    {
         self.headers.insert(key.into(), value.into());
         self
     }
@@ -177,7 +189,8 @@ impl MessageProperties {
 ///     .build();
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Message {
+pub struct Message
+{
     /// Payload
     /// 有效载荷
     pub payload: Vec<u8>,
@@ -188,10 +201,12 @@ pub struct Message {
     pub properties: MessageProperties,
 }
 
-impl Message {
+impl Message
+{
     /// Create new message
     /// 创建新消息
-    pub fn new(payload: Vec<u8>) -> Self {
+    pub fn new(payload: Vec<u8>) -> Self
+    {
         Self {
             payload,
             properties: MessageProperties::default(),
@@ -200,38 +215,47 @@ impl Message {
 
     /// Create from string
     /// 从字符串创建
-    pub fn from_string(s: impl Into<String>) -> Self {
+    pub fn from_string(s: impl Into<String>) -> Self
+    {
         Self::new(s.into().into_bytes())
     }
 
     /// Create with properties
     /// 使用属性创建
-    pub fn with_properties(mut self, properties: MessageProperties) -> Self {
+    pub fn with_properties(mut self, properties: MessageProperties) -> Self
+    {
         self.properties = properties;
         self
     }
 
     /// Get payload as string
     /// 获取payload的字符串表示
-    pub fn payload_as_string(&self) -> String {
+    pub fn payload_as_string(&self) -> String
+    {
         String::from_utf8_lossy(&self.payload).to_string()
     }
 }
 
-impl From<Vec<u8>> for Message {
-    fn from(payload: Vec<u8>) -> Self {
+impl From<Vec<u8>> for Message
+{
+    fn from(payload: Vec<u8>) -> Self
+    {
         Self::new(payload)
     }
 }
 
-impl From<String> for Message {
-    fn from(s: String) -> Self {
+impl From<String> for Message
+{
+    fn from(s: String) -> Self
+    {
         Self::from_string(s)
     }
 }
 
-impl From<&str> for Message {
-    fn from(s: &str) -> Self {
+impl From<&str> for Message
+{
+    fn from(s: &str) -> Self
+    {
         Self::from_string(s)
     }
 }
@@ -249,7 +273,8 @@ impl From<&str> for Message {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct AmqpMessage {
+pub struct AmqpMessage
+{
     /// Message
     /// 消息
     pub message: Message,
@@ -271,10 +296,12 @@ pub struct AmqpMessage {
     pub redelivered: bool,
 }
 
-impl AmqpMessage {
+impl AmqpMessage
+{
     /// Create new AMQP message
     /// 创建新的AMQP消息
-    pub fn new(message: Message) -> Self {
+    pub fn new(message: Message) -> Self
+    {
         Self {
             message,
             exchange: String::new(),
@@ -286,19 +313,22 @@ impl AmqpMessage {
 
     /// Get payload
     /// 获取payload
-    pub fn payload(&self) -> &[u8] {
+    pub fn payload(&self) -> &[u8]
+    {
         &self.message.payload
     }
 
     /// Get payload as string
     /// 获取payload的字符串表示
-    pub fn payload_as_string(&self) -> String {
+    pub fn payload_as_string(&self) -> String
+    {
         self.message.payload_as_string()
     }
 
     /// Acknowledge the message
     /// 确认消息
-    pub fn ack(&self) -> Result<(), String> {
+    pub fn ack(&self) -> Result<(), String>
+    {
         // Mock implementation
         // 模拟实现
         tracing::debug!("Acknowledging message with delivery tag: {}", self.delivery_tag);
@@ -307,7 +337,8 @@ impl AmqpMessage {
 
     /// Reject the message
     /// 拒绝消息
-    pub fn reject(&self, requeue: bool) -> Result<(), String> {
+    pub fn reject(&self, requeue: bool) -> Result<(), String>
+    {
         // Mock implementation
         // 模拟实现
         tracing::debug!(
@@ -320,24 +351,29 @@ impl AmqpMessage {
 
     /// Negative acknowledgement
     /// 负向确认
-    pub fn nack(&self, requeue: bool) -> Result<(), String> {
+    pub fn nack(&self, requeue: bool) -> Result<(), String>
+    {
         self.reject(requeue)
     }
 }
 
-impl From<Message> for AmqpMessage {
-    fn from(message: Message) -> Self {
+impl From<Message> for AmqpMessage
+{
+    fn from(message: Message) -> Self
+    {
         Self::new(message)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test DeliveryMode default is Transient / 测试 DeliveryMode 默认为 Transient
     #[test]
-    fn test_delivery_mode_default() {
+    fn test_delivery_mode_default()
+    {
         assert_eq!(DeliveryMode::default(), DeliveryMode::Transient);
         assert_eq!(DeliveryMode::Transient as u8, 1);
         assert_eq!(DeliveryMode::Persistent as u8, 2);
@@ -345,7 +381,8 @@ mod tests {
 
     /// Test MessageProperties builder chain / 测试 MessageProperties 构建器链式调用
     #[test]
-    fn test_message_properties_builder() {
+    fn test_message_properties_builder()
+    {
         let props = MessageProperties::new()
             .with_content_type("application/json")
             .with_content_encoding("utf-8")
@@ -368,14 +405,16 @@ mod tests {
 
     /// Test MessageProperties priority is clamped to 9 / 测试优先级最大值为 9
     #[test]
-    fn test_message_properties_priority_clamped() {
+    fn test_message_properties_priority_clamped()
+    {
         let props = MessageProperties::new().with_priority(15);
         assert_eq!(props.priority, Some(9));
     }
 
     /// Test Message::new and payload_as_string / 测试 Message::new 和 payload_as_string
     #[test]
-    fn test_message_new_and_payload_string() {
+    fn test_message_new_and_payload_string()
+    {
         let msg = Message::new(b"hello world".to_vec());
         assert_eq!(msg.payload, b"hello world");
         assert_eq!(msg.payload_as_string(), "hello world");
@@ -383,14 +422,16 @@ mod tests {
 
     /// Test Message::from_string / 测试 Message::from_string
     #[test]
-    fn test_message_from_string() {
+    fn test_message_from_string()
+    {
         let msg = Message::from_string("test payload");
         assert_eq!(msg.payload_as_string(), "test payload");
     }
 
     /// Test Message::with_properties / 测试 Message::with_properties
     #[test]
-    fn test_message_with_properties() {
+    fn test_message_with_properties()
+    {
         let props = MessageProperties::new()
             .with_content_type("text/plain")
             .with_delivery_mode(DeliveryMode::Persistent);
@@ -401,7 +442,8 @@ mod tests {
 
     /// Test Message From conversions / 测试 Message 的 From 转换
     #[test]
-    fn test_message_from_conversions() {
+    fn test_message_from_conversions()
+    {
         let from_vec: Message = b"bytes".to_vec().into();
         assert_eq!(from_vec.payload_as_string(), "bytes");
 
@@ -414,7 +456,8 @@ mod tests {
 
     /// Test AmqpMessage ack and reject / 测试 AmqpMessage 确认和拒绝
     #[test]
-    fn test_amqp_message_ack_reject() {
+    fn test_amqp_message_ack_reject()
+    {
         let inner = Message::from_string("test");
         let msg = AmqpMessage {
             message: inner,
@@ -430,7 +473,8 @@ mod tests {
 
     /// Test AmqpMessage::new defaults / 测试 AmqpMessage::new 默认值
     #[test]
-    fn test_amqp_message_new_defaults() {
+    fn test_amqp_message_new_defaults()
+    {
         let msg = AmqpMessage::new(Message::from_string("body"));
         assert!(msg.exchange.is_empty());
         assert!(msg.routing_key.is_empty());
@@ -440,7 +484,8 @@ mod tests {
 
     /// Test AmqpMessage::payload and payload_as_string / 测试 AmqpMessage 的 payload 方法
     #[test]
-    fn test_amqp_message_payload_accessors() {
+    fn test_amqp_message_payload_accessors()
+    {
         let msg = AmqpMessage::new(Message::from_string("content"));
         assert_eq!(msg.payload(), b"content");
         assert_eq!(msg.payload_as_string(), "content");
@@ -448,14 +493,16 @@ mod tests {
 
     /// Test AmqpMessage From<Message> conversion / 测试 AmqpMessage 从 Message 转换
     #[test]
-    fn test_amqp_message_from_message() {
+    fn test_amqp_message_from_message()
+    {
         let msg: AmqpMessage = Message::from_string("converted").into();
         assert_eq!(msg.payload_as_string(), "converted");
     }
 
     /// Test Message serialization round-trip / 测试 Message 序列化往返
     #[test]
-    fn test_message_serde_roundtrip() {
+    fn test_message_serde_roundtrip()
+    {
         let msg = Message::from_string("hello").with_properties(
             MessageProperties::new()
                 .with_content_type("text/plain")
@@ -470,7 +517,8 @@ mod tests {
     /// Test MessageProperties serialization skips None fields / 测试 MessageProperties 序列化跳过
     /// None 字段
     #[test]
-    fn test_message_properties_skip_none_serialization() {
+    fn test_message_properties_skip_none_serialization()
+    {
         let props = MessageProperties::new().with_content_type("application/json");
         let json = serde_json::to_string(&props).unwrap();
         assert!(json.contains("content_type"));

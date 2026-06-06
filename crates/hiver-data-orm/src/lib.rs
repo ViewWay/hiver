@@ -81,24 +81,23 @@ pub mod specification;
 pub mod sqlx;
 
 // Re-export the Model derive macro
-pub use hiver_data_macros::Model;
-
 pub use active_record::{ActiveRecord, Count, Delete, OptimisticLock, Refresh, Save};
 pub use error::{Error, OrmError, OrmResult, Result};
 pub use hiver_data_commons::ToSql;
+pub use hiver_data_macros::Model;
 pub use hiver_data_rdbc::QueryParam;
 pub use migrations::{Migration, MigrationDirection, Migrator, Schema};
 pub use mock_connection::Connection;
 pub use model::{Column, ColumnType, Model, ModelMeta, SqlDialect};
 pub use query::{Limit, OrderBy, QueryBuilder, WhereClause};
-pub use relationships::{
-    BelongsTo, BelongsToMany, EagerLoad, EagerQueryBuilder, HasMany, HasOne, OnDelete, Relation,
-    RelationType, WithRelations,
-};
 // query_runtime re-exports from the split modules (query_metadata, mapper, executor)
 pub use query_runtime::{
     AnnotatedQueryExecutor, BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor,
     ParamStyle, QueryExecutor, QueryMetadata, QueryType, ResultSetExtractor, RowMapper,
+};
+pub use relationships::{
+    BelongsTo, BelongsToMany, EagerLoad, EagerQueryBuilder, HasMany, HasOne, OnDelete, Relation,
+    RelationType, WithRelations,
 };
 
 /// Version of the data-orm module
@@ -106,18 +105,17 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
+    #[cfg(feature = "diesel")]
+    pub use super::diesel::{DieselColumnType, DieselQuery, DieselSchema, OrderDirection};
+    #[cfg(feature = "sqlx")]
+    pub use super::sqlx::{FromRow, SqlxOrder, SqlxQuery, VerifiedQuery};
     pub use super::{
         ActiveRecord, AnnotatedQueryExecutor, BeanRowMapper, Delete, Error, Model, ParamStyle,
         QueryBuilder, QueryExecutor, QueryMetadata, QueryType, Refresh, Result, ResultSetExtractor,
         RowMapper, Save, WhereClause,
     };
-
-    #[cfg(feature = "diesel")]
-    pub use super::diesel::{DieselColumnType, DieselQuery, DieselSchema, OrderDirection};
-
-    #[cfg(feature = "sqlx")]
-    pub use super::sqlx::{FromRow, SqlxOrder, SqlxQuery, VerifiedQuery};
 }
 
 // Re-export hiver-data-commons for convenience

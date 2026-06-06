@@ -16,7 +16,8 @@ use serde::{Deserialize, Serialize};
 /// public void transferMoney() { ... }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
-pub enum IsolationLevel {
+pub enum IsolationLevel
+{
     /// Read uncommitted
     /// 读未提交
     ///
@@ -54,11 +55,14 @@ pub enum IsolationLevel {
     Default = 0,
 }
 
-impl IsolationLevel {
+impl IsolationLevel
+{
     /// Get isolation level from value
     /// 从值获取隔离级别
-    pub fn from_value(value: i32) -> Option<Self> {
-        match value {
+    pub fn from_value(value: i32) -> Option<Self>
+    {
+        match value
+        {
             0 => Some(IsolationLevel::Default),
             1 => Some(IsolationLevel::ReadUncommitted),
             2 => Some(IsolationLevel::ReadCommitted),
@@ -70,23 +74,28 @@ impl IsolationLevel {
 
     /// Get the numeric value
     /// 获取数字值
-    pub fn value(&self) -> i32 {
+    pub fn value(&self) -> i32
+    {
         *self as i32
     }
 
     /// Check if this is the default isolation level
     /// 检查是否为默认隔离级别
-    pub fn is_default(&self) -> bool {
+    pub fn is_default(&self) -> bool
+    {
         matches!(self, IsolationLevel::Default)
     }
 
     /// Get description
     /// 获取描述
-    pub fn description(&self) -> &'static str {
-        match self {
+    pub fn description(&self) -> &'static str
+    {
+        match self
+        {
             IsolationLevel::ReadUncommitted => "Read Uncommitted - allows dirty reads",
             IsolationLevel::ReadCommitted => "Read Committed - prevents dirty reads",
-            IsolationLevel::RepeatableRead => {
+            IsolationLevel::RepeatableRead =>
+            {
                 "Repeatable Read - prevents dirty and non-repeatable reads"
             },
             IsolationLevel::Serializable => "Serializable - full isolation",
@@ -95,9 +104,12 @@ impl IsolationLevel {
     }
 }
 
-impl std::fmt::Display for IsolationLevel {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for IsolationLevel
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             IsolationLevel::ReadUncommitted => write!(f, "READ_UNCOMMITTED"),
             IsolationLevel::ReadCommitted => write!(f, "READ_COMMITTED"),
             IsolationLevel::RepeatableRead => write!(f, "REPEATABLE_READ"),
@@ -107,11 +119,14 @@ impl std::fmt::Display for IsolationLevel {
     }
 }
 
-impl std::str::FromStr for IsolationLevel {
+impl std::str::FromStr for IsolationLevel
+{
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_uppercase().as_str() {
+    fn from_str(s: &str) -> Result<Self, Self::Err>
+    {
+        match s.to_uppercase().as_str()
+        {
             "READ_UNCOMMITTED" | "READ-UNCOMMITTED" => Ok(IsolationLevel::ReadUncommitted),
             "READ_COMMITTED" | "READ-COMMITTED" => Ok(IsolationLevel::ReadCommitted),
             "REPEATABLE_READ" | "REPEATABLE-READ" => Ok(IsolationLevel::RepeatableRead),
@@ -123,11 +138,13 @@ impl std::str::FromStr for IsolationLevel {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_isolation_from_str() {
+    fn test_isolation_from_str()
+    {
         assert_eq!("SERIALIZABLE".parse::<IsolationLevel>().unwrap(), IsolationLevel::Serializable);
         assert_eq!(
             "read_committed".parse::<IsolationLevel>().unwrap(),
@@ -136,7 +153,8 @@ mod tests {
     }
 
     #[test]
-    fn test_isolation_display() {
+    fn test_isolation_display()
+    {
         assert_eq!(IsolationLevel::Serializable.to_string(), "SERIALIZABLE");
         assert_eq!(IsolationLevel::Default.to_string(), "DEFAULT");
     }

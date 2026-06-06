@@ -28,11 +28,12 @@
 //! publisher.emit_created(session_id.clone(), "user123").await;
 //! ```
 
-use crate::SessionId;
+use std::{collections::HashMap, sync::Arc};
+
 use async_trait::async_trait;
-use std::collections::HashMap;
-use std::sync::Arc;
 use tokio::sync::RwLock;
+
+use crate::SessionId;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Session Event
@@ -54,10 +55,12 @@ use tokio::sync::RwLock;
 /// SessionDeletedEvent
 /// ```
 #[derive(Debug, Clone)]
-pub enum SessionEvent {
+pub enum SessionEvent
+{
     /// A new session was created.
     /// 新会话已创建。
-    Created {
+    Created
+    {
         /// The session ID.
         /// 会话 ID。
         session_id: SessionId,
@@ -68,7 +71,8 @@ pub enum SessionEvent {
 
     /// A session has expired due to inactivity.
     /// 会话因不活动而过期。
-    Expired {
+    Expired
+    {
         /// The session ID.
         /// 会话 ID。
         session_id: SessionId,
@@ -79,7 +83,8 @@ pub enum SessionEvent {
 
     /// A session was explicitly destroyed (invalidated).
     /// 会话被显式销毁（失效）。
-    Destroyed {
+    Destroyed
+    {
         /// The session ID.
         /// 会话 ID。
         session_id: SessionId,
@@ -90,7 +95,8 @@ pub enum SessionEvent {
 
     /// A session attribute was changed.
     /// 会话属性已更改。
-    AttributeChanged {
+    AttributeChanged
+    {
         /// The session ID.
         /// 会话 ID。
         session_id: SessionId,
@@ -101,7 +107,8 @@ pub enum SessionEvent {
 
     /// The maximum number of concurrent sessions for a user was exceeded.
     /// 超出了用户的最大并发会话数。
-    MaxSessionsExceeded {
+    MaxSessionsExceeded
+    {
         /// The user principal.
         /// 用户主体。
         principal: String,
@@ -114,11 +121,14 @@ pub enum SessionEvent {
     },
 }
 
-impl SessionEvent {
+impl SessionEvent
+{
     /// Get the session ID associated with this event, if any.
     /// 获取与此事件关联的会话 ID（如果有）。
-    pub fn session_id(&self) -> Option<&SessionId> {
-        match self {
+    pub fn session_id(&self) -> Option<&SessionId>
+    {
+        match self
+        {
             SessionEvent::Created { session_id, .. }
             | SessionEvent::Expired { session_id, .. }
             | SessionEvent::Destroyed { session_id, .. }
@@ -129,8 +139,10 @@ impl SessionEvent {
 
     /// Get the principal associated with this event, if any.
     /// 获取与此事件关联的主体（如果有）。
-    pub fn principal(&self) -> Option<&str> {
-        match self {
+    pub fn principal(&self) -> Option<&str>
+    {
+        match self
+        {
             SessionEvent::Created { principal, .. }
             | SessionEvent::Expired { principal, .. }
             | SessionEvent::Destroyed { principal, .. } => principal.as_deref(),
@@ -141,8 +153,10 @@ impl SessionEvent {
 
     /// Get a human-readable event name.
     /// 获取人类可读的事件名称。
-    pub fn event_name(&self) -> &'static str {
-        match self {
+    pub fn event_name(&self) -> &'static str
+    {
+        match self
+        {
             SessionEvent::Created { .. } => "SessionCreated",
             SessionEvent::Expired { .. } => "SessionExpired",
             SessionEvent::Destroyed { .. } => "SessionDestroyed",
@@ -177,7 +191,8 @@ impl SessionEvent {
 /// }
 /// ```
 #[async_trait]
-pub trait SessionEventListener: Send + Sync {
+pub trait SessionEventListener: Send + Sync
+{
     /// Called when a session event occurs.
     /// 当会话事件发生时调用。
     async fn on_event(&self, event: &SessionEvent);
@@ -204,55 +219,66 @@ pub trait SessionEventListener: Send + Sync {
 /// publisher.emit_created(session_id, Some("user123".to_string())).await;
 /// ```
 #[derive(Clone, Default)]
-pub struct SessionEventPublisher {
+pub struct SessionEventPublisher
+{
     listeners: Arc<RwLock<Vec<Arc<dyn SessionEventListener>>>>,
 }
 
-impl SessionEventPublisher {
+impl SessionEventPublisher
+{
     /// Create a new event publisher with no listeners.
     /// 创建没有监听器的新事件发布器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Add a listener to the publisher.
     /// 向发布器添加监听器。
-    pub fn add_listener(&self, listener: Arc<dyn SessionEventListener>) {
+    pub fn add_listener(&self, listener: Arc<dyn SessionEventListener>)
+    {
         // We need to block on this since it's a sync method adding to an async structure.
         // In practice this is called during setup, not in hot paths.
         let listeners = self.listeners.clone();
         // Use try_write to avoid blocking; if we can't write, we log and skip.
-        if let Ok(mut guard) = listeners.try_write() {
+        if let Ok(mut guard) = listeners.try_write()
+        {
             guard.push(listener);
         }
     }
 
     /// Remove all listeners.
     /// 移除所有监听器。
-    pub fn clear_listeners(&self) {
-        if let Ok(mut guard) = self.listeners.try_write() {
+    pub fn clear_listeners(&self)
+    {
+        if let Ok(mut guard) = self.listeners.try_write()
+        {
             guard.clear();
         }
     }
 
     /// Get the number of registered listeners.
     /// 获取已注册的监听器数量。
-    pub fn listener_count(&self) -> usize {
+    pub fn listener_count(&self) -> usize
+    {
         self.listeners.try_read().map_or(0, |g| g.len())
     }
 
     /// Emit a session event to all registered listeners.
     /// 向所有已注册的监听器发出会话事件。
-    pub async fn emit(&self, event: SessionEvent) {
+    pub async fn emit(&self, event: SessionEvent)
+    {
         let listeners = self.listeners.read().await;
-        for listener in listeners.iter() {
+        for listener in listeners.iter()
+        {
             listener.on_event(&event).await;
         }
     }
 
     /// Emit a session created event.
     /// 发出会话创建事件。
-    pub async fn emit_created(&self, session_id: SessionId, principal: Option<String>) {
+    pub async fn emit_created(&self, session_id: SessionId, principal: Option<String>)
+    {
         self.emit(SessionEvent::Created {
             session_id,
             principal,
@@ -262,7 +288,8 @@ impl SessionEventPublisher {
 
     /// Emit a session expired event.
     /// 发出会话过期事件。
-    pub async fn emit_expired(&self, session_id: SessionId, principal: Option<String>) {
+    pub async fn emit_expired(&self, session_id: SessionId, principal: Option<String>)
+    {
         self.emit(SessionEvent::Expired {
             session_id,
             principal,
@@ -272,7 +299,8 @@ impl SessionEventPublisher {
 
     /// Emit a session destroyed event.
     /// 发出会话销毁事件。
-    pub async fn emit_destroyed(&self, session_id: SessionId, principal: Option<String>) {
+    pub async fn emit_destroyed(&self, session_id: SessionId, principal: Option<String>)
+    {
         self.emit(SessionEvent::Destroyed {
             session_id,
             principal,
@@ -282,7 +310,8 @@ impl SessionEventPublisher {
 
     /// Emit an attribute changed event.
     /// 发出属性更改事件。
-    pub async fn emit_attribute_changed(&self, session_id: SessionId, attribute_name: String) {
+    pub async fn emit_attribute_changed(&self, session_id: SessionId, attribute_name: String)
+    {
         self.emit(SessionEvent::AttributeChanged {
             session_id,
             attribute_name,
@@ -297,7 +326,8 @@ impl SessionEventPublisher {
         principal: String,
         current_count: usize,
         max_allowed: usize,
-    ) {
+    )
+    {
         self.emit(SessionEvent::MaxSessionsExceeded {
             principal,
             current_count,
@@ -319,13 +349,17 @@ impl SessionEventPublisher {
 pub struct LoggingSessionListener;
 
 #[async_trait]
-impl SessionEventListener for LoggingSessionListener {
-    async fn on_event(&self, event: &SessionEvent) {
-        match event {
+impl SessionEventListener for LoggingSessionListener
+{
+    async fn on_event(&self, event: &SessionEvent)
+    {
+        match event
+        {
             SessionEvent::Created {
                 session_id,
                 principal,
-            } => {
+            } =>
+            {
                 println!(
                     "[Session] Created: {} (principal: {})",
                     session_id,
@@ -335,7 +369,8 @@ impl SessionEventListener for LoggingSessionListener {
             SessionEvent::Expired {
                 session_id,
                 principal,
-            } => {
+            } =>
+            {
                 println!(
                     "[Session] Expired: {} (principal: {})",
                     session_id,
@@ -345,7 +380,8 @@ impl SessionEventListener for LoggingSessionListener {
             SessionEvent::Destroyed {
                 session_id,
                 principal,
-            } => {
+            } =>
+            {
                 println!(
                     "[Session] Destroyed: {} (principal: {})",
                     session_id,
@@ -355,14 +391,16 @@ impl SessionEventListener for LoggingSessionListener {
             SessionEvent::AttributeChanged {
                 session_id,
                 attribute_name,
-            } => {
+            } =>
+            {
                 println!("[Session] Attribute changed: {} [{}]", session_id, attribute_name);
             },
             SessionEvent::MaxSessionsExceeded {
                 principal,
                 current_count,
                 max_allowed,
-            } => {
+            } =>
+            {
                 println!(
                     "[Session] Max sessions exceeded for {}: {}/{}",
                     principal, current_count, max_allowed
@@ -379,7 +417,8 @@ impl SessionEventListener for LoggingSessionListener {
 /// Strategy for handling concurrent session limits.
 /// 处理并发会话限制的策略。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ConcurrentSessionStrategy {
+pub enum ConcurrentSessionStrategy
+{
     /// Prevent new session creation when limit is reached.
     /// 达到限制时阻止创建新会话。
     PreventNew,
@@ -424,7 +463,8 @@ pub enum ConcurrentSessionStrategy {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct ConcurrentSessionControl {
+pub struct ConcurrentSessionControl
+{
     /// Maximum sessions per user.
     /// 每个用户的最大会话数。
     max_sessions: usize,
@@ -442,10 +482,12 @@ pub struct ConcurrentSessionControl {
     publisher: Option<SessionEventPublisher>,
 }
 
-impl ConcurrentSessionControl {
+impl ConcurrentSessionControl
+{
     /// Create a new concurrent session control with the given max sessions.
     /// 创建具有给定最大会话数的并发会话控制。
-    pub fn new(max_sessions: usize) -> Self {
+    pub fn new(max_sessions: usize) -> Self
+    {
         Self {
             max_sessions,
             strategy: ConcurrentSessionStrategy::PreventNew,
@@ -456,34 +498,39 @@ impl ConcurrentSessionControl {
 
     /// Set the concurrent session strategy.
     /// 设置并发会话策略。
-    pub fn with_strategy(mut self, strategy: ConcurrentSessionStrategy) -> Self {
+    pub fn with_strategy(mut self, strategy: ConcurrentSessionStrategy) -> Self
+    {
         self.strategy = strategy;
         self
     }
 
     /// Set the event publisher.
     /// 设置事件发布器。
-    pub fn with_publisher(mut self, publisher: SessionEventPublisher) -> Self {
+    pub fn with_publisher(mut self, publisher: SessionEventPublisher) -> Self
+    {
         self.publisher = Some(publisher);
         self
     }
 
     /// Get the max sessions limit.
     /// 获取最大会话限制。
-    pub fn max_sessions(&self) -> usize {
+    pub fn max_sessions(&self) -> usize
+    {
         self.max_sessions
     }
 
     /// Get the current session count for a user.
     /// 获取用户的当前会话数。
-    pub async fn session_count(&self, principal: &str) -> usize {
+    pub async fn session_count(&self, principal: &str) -> usize
+    {
         let sessions = self.user_sessions.read().await;
         sessions.get(principal).map_or(0, Vec::len)
     }
 
     /// Get all session IDs for a user.
     /// 获取用户的所有会话 ID。
-    pub async fn sessions_for(&self, principal: &str) -> Vec<SessionId> {
+    pub async fn sessions_for(&self, principal: &str) -> Vec<SessionId>
+    {
         let sessions = self.user_sessions.read().await;
         sessions.get(principal).cloned().unwrap_or_default()
     }
@@ -495,18 +542,23 @@ impl ConcurrentSessionControl {
     /// was reached and the strategy is `PreventNew`.
     ///
     /// 如果会话已注册则返回 `true`，如果达到限制且策略为 `PreventNew` 则返回 `false`。
-    pub async fn check_and_register(&self, principal: &str, new_session_id: SessionId) -> bool {
+    pub async fn check_and_register(&self, principal: &str, new_session_id: SessionId) -> bool
+    {
         // Phase 1: Determine action under lock
         let action = {
             let mut sessions = self.user_sessions.write().await;
             let user_sessions = sessions.entry(principal.to_string()).or_default();
 
-            if user_sessions.len() >= self.max_sessions {
-                match self.strategy {
-                    ConcurrentSessionStrategy::PreventNew => {
+            if user_sessions.len() >= self.max_sessions
+            {
+                match self.strategy
+                {
+                    ConcurrentSessionStrategy::PreventNew =>
+                    {
                         let current_count = user_sessions.len();
                         drop(sessions);
-                        if let Some(ref publisher) = self.publisher {
+                        if let Some(ref publisher) = self.publisher
+                        {
                             publisher
                                 .emit_max_sessions_exceeded(
                                     principal.to_string(),
@@ -517,11 +569,15 @@ impl ConcurrentSessionControl {
                         }
                         return false;
                     },
-                    ConcurrentSessionStrategy::ExpireOldest => {
+                    ConcurrentSessionStrategy::ExpireOldest =>
+                    {
                         // Remove the oldest session
-                        let expired = if user_sessions.is_empty() {
+                        let expired = if user_sessions.is_empty()
+                        {
                             None
-                        } else {
+                        }
+                        else
+                        {
                             let oldest = user_sessions.remove(0);
                             Some(oldest)
                         };
@@ -529,7 +585,9 @@ impl ConcurrentSessionControl {
                         expired
                     },
                 }
-            } else {
+            }
+            else
+            {
                 user_sessions.push(new_session_id);
                 None
             }
@@ -549,11 +607,14 @@ impl ConcurrentSessionControl {
 
     /// Remove a session for a user (e.g., on logout or expiration).
     /// 移除用户的会话（例如注销或过期时）。
-    pub async fn remove_session(&self, principal: &str, session_id: &SessionId) {
+    pub async fn remove_session(&self, principal: &str, session_id: &SessionId)
+    {
         let mut sessions = self.user_sessions.write().await;
-        if let Some(user_sessions) = sessions.get_mut(principal) {
+        if let Some(user_sessions) = sessions.get_mut(principal)
+        {
             user_sessions.retain(|id| id != session_id);
-            if user_sessions.is_empty() {
+            if user_sessions.is_empty()
+            {
                 sessions.remove(principal);
             }
         }
@@ -561,25 +622,29 @@ impl ConcurrentSessionControl {
 
     /// Clean up all sessions for a user.
     /// 清理用户的所有会话。
-    pub async fn clear_user(&self, principal: &str) {
+    pub async fn clear_user(&self, principal: &str)
+    {
         let mut sessions = self.user_sessions.write().await;
         sessions.remove(principal);
     }
 
     /// Get the total number of tracked users.
     /// 获取跟踪的用户总数。
-    pub async fn tracked_user_count(&self) -> usize {
+    pub async fn tracked_user_count(&self) -> usize
+    {
         let sessions = self.user_sessions.read().await;
         sessions.len()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_session_event_name() {
+    fn test_session_event_name()
+    {
         let id = SessionId::new();
         assert_eq!(
             SessionEvent::Created {
@@ -625,7 +690,8 @@ mod tests {
     }
 
     #[test]
-    fn test_session_event_principal() {
+    fn test_session_event_principal()
+    {
         let id = SessionId::new();
         let event = SessionEvent::Created {
             session_id: id,
@@ -635,7 +701,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_event_publisher() {
+    async fn test_event_publisher()
+    {
         let publisher = SessionEventPublisher::new();
         assert_eq!(publisher.listener_count(), 0);
 
@@ -649,7 +716,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_concurrent_session_control_prevent_new() {
+    async fn test_concurrent_session_control_prevent_new()
+    {
         let control =
             ConcurrentSessionControl::new(2).with_strategy(ConcurrentSessionStrategy::PreventNew);
 
@@ -665,7 +733,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_concurrent_session_control_expire_oldest() {
+    async fn test_concurrent_session_control_expire_oldest()
+    {
         let control =
             ConcurrentSessionControl::new(2).with_strategy(ConcurrentSessionStrategy::ExpireOldest);
 
@@ -685,7 +754,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_concurrent_session_remove() {
+    async fn test_concurrent_session_remove()
+    {
         let control = ConcurrentSessionControl::new(5);
 
         let s1 = SessionId::new();
@@ -704,7 +774,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_concurrent_session_multiple_users() {
+    async fn test_concurrent_session_multiple_users()
+    {
         let control = ConcurrentSessionControl::new(1);
 
         let s1 = SessionId::new();
@@ -719,7 +790,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_concurrent_session_with_publisher() {
+    async fn test_concurrent_session_with_publisher()
+    {
         let publisher = SessionEventPublisher::new();
         publisher.add_listener(Arc::new(LoggingSessionListener));
 

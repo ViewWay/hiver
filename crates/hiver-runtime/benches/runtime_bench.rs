@@ -18,7 +18,8 @@ use hiver_runtime::{
 // Spawn Benchmarks / 任务生成基准测试
 // ============================================================================
 
-fn bench_spawn_single(c: &mut Criterion) {
+fn bench_spawn_single(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("spawn_single");
 
     group.bench_function("hiver", |b| {
@@ -34,20 +35,24 @@ fn bench_spawn_single(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_spawn_many(c: &mut Criterion) {
+fn bench_spawn_many(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("spawn_many");
 
-    for count in [100usize, 1000, 10000].iter() {
+    for count in [100usize, 1000, 10000].iter()
+    {
         group.throughput(Throughput::Elements(*count as u64));
         group.bench_with_input(BenchmarkId::from_parameter(count), count, |b, count| {
             let mut runtime = Runtime::new().unwrap();
             b.iter(|| {
                 let _ = runtime.block_on(async {
                     let mut handles = Vec::with_capacity(*count);
-                    for _ in 0..*count {
+                    for _ in 0..*count
+                    {
                         handles.push(spawn(async { 42i32 }));
                     }
-                    for handle in handles {
+                    for handle in handles
+                    {
                         std::hint::black_box(handle.wait().await.unwrap());
                     }
                 });
@@ -62,7 +67,8 @@ fn bench_spawn_many(c: &mut Criterion) {
 // Channel Benchmarks / 通道基准测试
 // ============================================================================
 
-fn bench_channel_unbounded(c: &mut Criterion) {
+fn bench_channel_unbounded(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("channel_unbounded");
 
     group.bench_function("single_send_recv", |b| {
@@ -76,7 +82,8 @@ fn bench_channel_unbounded(c: &mut Criterion) {
         });
     });
 
-    for count in [100usize, 1000, 10000].iter() {
+    for count in [100usize, 1000, 10000].iter()
+    {
         group.throughput(Throughput::Elements(*count as u64));
         group.bench_with_input(BenchmarkId::new("bulk_send_recv", count), count, |b, count| {
             let mut runtime = Runtime::new().unwrap();
@@ -85,14 +92,17 @@ fn bench_channel_unbounded(c: &mut Criterion) {
                 let _ = runtime.block_on(async {
                     let (tx, mut rx) = channel::unbounded::<i32>();
                     let sender = spawn(async move {
-                        for i in 0..count_val {
+                        for i in 0..count_val
+                        {
                             tx.send(i as i32).unwrap();
                         }
                     });
                     let receiver = spawn(async move {
                         let mut sum = 0i32;
-                        for _ in 0..count_val {
-                            if let Some(v) = rx.recv().await {
+                        for _ in 0..count_val
+                        {
+                            if let Some(v) = rx.recv().await
+                            {
                                 sum += v;
                             }
                         }
@@ -108,10 +118,12 @@ fn bench_channel_unbounded(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_channel_bounded(c: &mut Criterion) {
+fn bench_channel_bounded(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("channel_bounded");
 
-    for buffer in [0usize, 1, 10, 100].iter() {
+    for buffer in [0usize, 1, 10, 100].iter()
+    {
         group.bench_with_input(
             BenchmarkId::new("single_send_recv", buffer),
             buffer,
@@ -131,10 +143,12 @@ fn bench_channel_bounded(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_channel_throughput(c: &mut Criterion) {
+fn bench_channel_throughput(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("channel_throughput");
 
-    for buffer in [1usize, 10, 100, 1000].iter() {
+    for buffer in [1usize, 10, 100, 1000].iter()
+    {
         group.throughput(Throughput::Elements(*buffer as u64));
         group.bench_with_input(
             BenchmarkId::new("bounded_throughput", buffer),
@@ -146,13 +160,16 @@ fn bench_channel_throughput(c: &mut Criterion) {
                     let _ = runtime.block_on(async {
                         let (tx, mut rx) = bounded::<i32>(buffer_size);
                         let sender = spawn(async move {
-                            for i in 0..buffer_size {
+                            for i in 0..buffer_size
+                            {
                                 let _ = tx.send(i as i32);
                             }
                         });
                         let mut received = 0;
-                        for _ in 0..buffer_size {
-                            if let Some(_v) = rx.recv().await {
+                        for _ in 0..buffer_size
+                        {
+                            if let Some(_v) = rx.recv().await
+                            {
                                 received += 1;
                             }
                         }
@@ -167,10 +184,12 @@ fn bench_channel_throughput(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_channel_contention(c: &mut Criterion) {
+fn bench_channel_contention(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("channel_contention");
 
-    for producers in [1usize, 2, 4, 8].iter() {
+    for producers in [1usize, 2, 4, 8].iter()
+    {
         group.throughput(Throughput::Elements(*producers as u64));
         group.bench_with_input(
             BenchmarkId::new("multi_producer", producers),
@@ -187,10 +206,12 @@ fn bench_channel_contention(c: &mut Criterion) {
                         let tx = Arc::new(tx);
 
                         let mut handles = Vec::with_capacity(num_producers);
-                        for p in 0..num_producers {
+                        for p in 0..num_producers
+                        {
                             let tx = Arc::clone(&tx);
                             handles.push(spawn(async move {
-                                for i in 0..items_per_producer {
+                                for i in 0..items_per_producer
+                                {
                                     let _ = tx.send((p * items_per_producer + i) as i32);
                                 }
                             }));
@@ -198,13 +219,15 @@ fn bench_channel_contention(c: &mut Criterion) {
 
                         let receiver = spawn(async move {
                             let mut count = 0;
-                            while let Some(_) = rx.recv().await {
+                            while let Some(_) = rx.recv().await
+                            {
                                 count += 1;
                             }
                             count
                         });
 
-                        for handle in handles {
+                        for handle in handles
+                        {
                             handle.wait().await.unwrap();
                         }
                         let received = receiver.wait().await.unwrap();
@@ -222,7 +245,8 @@ fn bench_channel_contention(c: &mut Criterion) {
 // Select Benchmarks / Select 基准测试
 // ============================================================================
 
-fn bench_select_two(c: &mut Criterion) {
+fn bench_select_two(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("select_two");
 
     group.bench_function("select_two_async", |b| {
@@ -251,7 +275,8 @@ fn bench_select_two(c: &mut Criterion) {
 // Timer Benchmarks / 时间轮基准测试
 // ============================================================================
 
-fn bench_sleep_zero(c: &mut Criterion) {
+fn bench_sleep_zero(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("sleep");
 
     group.bench_function("zero_duration", |b| {
@@ -266,10 +291,12 @@ fn bench_sleep_zero(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_sleep_short(c: &mut Criterion) {
+fn bench_sleep_short(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("sleep");
 
-    for ms in [1u64, 5, 10, 50].iter() {
+    for ms in [1u64, 5, 10, 50].iter()
+    {
         group.bench_with_input(BenchmarkId::new("short_ms", ms), ms, |b, ms| {
             let mut runtime = Runtime::new().unwrap();
             b.iter(|| {
@@ -283,10 +310,12 @@ fn bench_sleep_short(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_sleep_medium(c: &mut Criterion) {
+fn bench_sleep_medium(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("sleep");
 
-    for ms in [100u64, 250, 500].iter() {
+    for ms in [100u64, 250, 500].iter()
+    {
         group.bench_with_input(BenchmarkId::new("medium_ms", ms), ms, |b, ms| {
             let mut runtime = Runtime::new().unwrap();
             b.iter(|| {
@@ -300,23 +329,27 @@ fn bench_sleep_medium(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_sleep_concurrent(c: &mut Criterion) {
+fn bench_sleep_concurrent(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("sleep");
 
-    for count in [10usize, 50, 100].iter() {
+    for count in [10usize, 50, 100].iter()
+    {
         group.bench_with_input(BenchmarkId::new("concurrent", count), count, |b, count| {
             let mut runtime = Runtime::new().unwrap();
             b.iter(|| {
                 let _ = runtime.block_on(async {
                     let mut handles = Vec::with_capacity(*count);
-                    for _ in 0..*count {
+                    for _ in 0..*count
+                    {
                         handles.push(spawn(async {
                             sleep(Duration::from_millis(10)).await;
                             42i32
                         }));
                     }
                     let mut sum = 0i32;
-                    for handle in handles {
+                    for handle in handles
+                    {
                         sum += handle.wait().await.unwrap();
                     }
                     std::hint::black_box(sum);
@@ -332,27 +365,32 @@ fn bench_sleep_concurrent(c: &mut Criterion) {
 // Scheduler Benchmarks / 调度器基准测试
 // ============================================================================
 
-fn bench_scheduler_throughput(c: &mut Criterion) {
+fn bench_scheduler_throughput(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("scheduler");
 
-    for tasks in [10usize, 100, 1000].iter() {
+    for tasks in [10usize, 100, 1000].iter()
+    {
         group.throughput(Throughput::Elements(*tasks as u64));
         group.bench_with_input(BenchmarkId::new("spawn_and_await", tasks), tasks, |b, tasks| {
             let mut runtime = Runtime::new().unwrap();
             b.iter(|| {
                 let _ = runtime.block_on(async {
                     let mut handles = Vec::new();
-                    for i in 0..*tasks {
+                    for i in 0..*tasks
+                    {
                         handles.push(spawn(async move {
                             let mut sum = 0i64;
-                            for j in 0..100 {
+                            for j in 0..100
+                            {
                                 sum += i as i64 * j as i64;
                             }
                             sum
                         }));
                     }
                     let mut total = 0i64;
-                    for handle in handles {
+                    for handle in handles
+                    {
                         total += handle.wait().await.unwrap();
                     }
                     std::hint::black_box(total);
@@ -364,7 +402,8 @@ fn bench_scheduler_throughput(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_runtime_creation(c: &mut Criterion) {
+fn bench_runtime_creation(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("runtime");
 
     group.bench_function("new", |b| {
@@ -390,10 +429,12 @@ fn bench_runtime_creation(c: &mut Criterion) {
 // Work-Stealing Scheduler Benchmarks / 工作窃取调度器基准测试
 // ============================================================================
 
-fn bench_work_stealing_scheduler(c: &mut Criterion) {
+fn bench_work_stealing_scheduler(c: &mut Criterion)
+{
     let mut group = c.benchmark_group("work_stealing");
 
-    for tasks in [100usize, 1000].iter() {
+    for tasks in [100usize, 1000].iter()
+    {
         group.throughput(Throughput::Elements(*tasks as u64));
         group.bench_with_input(BenchmarkId::new("throughput", tasks), tasks, |b, tasks| {
             b.iter(|| {

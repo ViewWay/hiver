@@ -1,8 +1,9 @@
 //! Transaction template
 //! 事务模板
 
-use crate::{IsolationLevel, Propagation, TransactionError, TransactionManager, TransactionResult};
 use std::sync::Arc;
+
+use crate::{IsolationLevel, Propagation, TransactionError, TransactionManager, TransactionResult};
 
 /// Transaction template
 /// 事务模板
@@ -37,7 +38,8 @@ use std::sync::Arc;
 /// }
 /// ```
 #[derive(Clone)]
-pub struct TransactionTemplate {
+pub struct TransactionTemplate
+{
     /// Transaction manager
     /// 事务管理器
     manager: Arc<dyn TransactionManager>,
@@ -59,8 +61,10 @@ pub struct TransactionTemplate {
     timeout_secs: Option<u64>,
 }
 
-impl std::fmt::Debug for TransactionTemplate {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for TransactionTemplate
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("TransactionTemplate")
             .field("propagation", &self.propagation)
             .field("isolation", &self.isolation)
@@ -70,10 +74,12 @@ impl std::fmt::Debug for TransactionTemplate {
     }
 }
 
-impl TransactionTemplate {
+impl TransactionTemplate
+{
     /// Create a new transaction template
     /// 创建新的事务模板
-    pub fn new(manager: Arc<dyn TransactionManager>) -> Self {
+    pub fn new(manager: Arc<dyn TransactionManager>) -> Self
+    {
         Self {
             manager,
             propagation: Propagation::default(),
@@ -85,28 +91,32 @@ impl TransactionTemplate {
 
     /// Set propagation
     /// 设置传播行为
-    pub fn propagation(mut self, propagation: Propagation) -> Self {
+    pub fn propagation(mut self, propagation: Propagation) -> Self
+    {
         self.propagation = propagation;
         self
     }
 
     /// Set isolation
     /// 设置隔离级别
-    pub fn isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub fn isolation(mut self, isolation: IsolationLevel) -> Self
+    {
         self.isolation = isolation;
         self
     }
 
     /// Set read-only
     /// 设置只读
-    pub fn read_only(mut self, read_only: bool) -> Self {
+    pub fn read_only(mut self, read_only: bool) -> Self
+    {
         self.read_only = read_only;
         self
     }
 
     /// Set timeout
     /// 设置超时
-    pub fn timeout_secs(mut self, timeout: u64) -> Self {
+    pub fn timeout_secs(mut self, timeout: u64) -> Self
+    {
         self.timeout_secs = Some(timeout);
         self
     }
@@ -133,7 +143,8 @@ impl TransactionTemplate {
             .isolation(self.isolation)
             .read_only(self.read_only);
 
-        if let Some(timeout) = self.timeout_secs {
+        if let Some(timeout) = self.timeout_secs
+        {
             def.timeout_secs = Some(timeout);
         }
 
@@ -144,12 +155,15 @@ impl TransactionTemplate {
         let result = f().await;
 
         // Commit or rollback
-        match result {
-            Ok(value) => {
+        match result
+        {
+            Ok(value) =>
+            {
                 self.manager.commit(status).await?;
                 Ok(value)
             },
-            Err(e) => {
+            Err(e) =>
+            {
                 self.manager.rollback(status).await?;
                 Err(e.into())
             },
@@ -184,7 +198,8 @@ impl TransactionTemplate {
 ///
 /// Equivalent to Spring's `TransactionCallback`.
 /// `等价于Spring的TransactionCallback`。
-pub(crate) trait TransactionCallback<T>: Send {
+pub(crate) trait TransactionCallback<T>: Send
+{
     /// Execute within transaction
     /// 在事务内执行
     fn execute(&self) -> futures::future::BoxFuture<'_, TransactionResult<T>>;
@@ -195,19 +210,22 @@ pub(crate) trait TransactionCallback<T>: Send {
 ///
 /// Equivalent to Spring's `TransactionCallbackWithoutResult`.
 /// `等价于Spring的TransactionCallbackWithoutResult`。
-pub(crate) trait TransactionCallbackWithoutResult: Send {
+pub(crate) trait TransactionCallbackWithoutResult: Send
+{
     /// Execute within transaction
     /// 在事务内执行
     fn execute(&self) -> futures::future::BoxFuture<'_, TransactionResult<()>>;
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::manager::SimpleTransactionManager;
 
     #[tokio::test]
-    async fn test_transaction_template() {
+    async fn test_transaction_template()
+    {
         let manager = Arc::new(SimpleTransactionManager::new());
         let template = TransactionTemplate::new(manager);
 
@@ -220,7 +238,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_transaction_template_rollback() {
+    async fn test_transaction_template_rollback()
+    {
         let manager = Arc::new(SimpleTransactionManager::new());
         let template = TransactionTemplate::new(manager);
 

@@ -43,11 +43,15 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::fmt;
-use std::future::Future;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use std::time::{Duration, Instant};
+use std::{
+    fmt,
+    future::Future,
+    sync::{
+        Arc,
+        atomic::{AtomicU64, AtomicUsize, Ordering},
+    },
+    time::{Duration, Instant},
+};
 
 /// Circuit breaker state
 /// 熔断器状态
@@ -55,7 +59,8 @@ use std::time::{Duration, Instant};
 /// The three states of the circuit breaker pattern.
 /// 熔断器模式的三种状态。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CircuitState {
+pub enum CircuitState
+{
     /// Closed - normal operation, requests pass through
     /// 关闭 - 正常操作，请求通过
     Closed,
@@ -69,17 +74,22 @@ pub enum CircuitState {
     HalfOpen,
 }
 
-impl CircuitState {
+impl CircuitState
+{
     /// Check if requests are allowed
     /// 检查是否允许请求
-    pub fn allows_requests(&self) -> bool {
+    pub fn allows_requests(&self) -> bool
+    {
         matches!(self, Self::Closed | Self::HalfOpen)
     }
 }
 
-impl fmt::Display for CircuitState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for CircuitState
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Closed => write!(f, "Closed"),
             Self::Open => write!(f, "Open"),
             Self::HalfOpen => write!(f, "HalfOpen"),
@@ -90,7 +100,8 @@ impl fmt::Display for CircuitState {
 /// Circuit breaker error
 /// 熔断器错误
 #[derive(Debug, Clone)]
-pub enum CircuitBreakerError {
+pub enum CircuitBreakerError
+{
     /// Circuit is open, request not permitted
     /// 电路已打开，不允许请求
     Open(String),
@@ -104,9 +115,12 @@ pub enum CircuitBreakerError {
     ServiceFailed(String),
 }
 
-impl fmt::Display for CircuitBreakerError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for CircuitBreakerError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Open(msg) => write!(f, "Circuit open: {}", msg),
             Self::ThresholdExceeded(msg) => write!(f, "Threshold exceeded: {}", msg),
             Self::ServiceFailed(msg) => write!(f, "Service failed: {}", msg),
@@ -123,7 +137,8 @@ pub type Result<T> = std::result::Result<T, CircuitBreakerError>;
 /// Sliding window metrics for circuit breaker
 /// 熔断器滑动窗口指标
 #[derive(Debug)]
-struct Metrics {
+struct Metrics
+{
     /// Total requests in current window
     /// 当前窗口中的总请求数
     total_requests: AtomicUsize,
@@ -141,10 +156,12 @@ struct Metrics {
     window_duration: Duration,
 }
 
-impl Metrics {
+impl Metrics
+{
     /// Create new metrics
     /// 创建新指标
-    fn new(duration: Duration) -> Self {
+    fn new(duration: Duration) -> Self
+    {
         Self {
             total_requests: AtomicUsize::new(0),
             failed_requests: AtomicUsize::new(0),
@@ -155,14 +172,16 @@ impl Metrics {
 
     /// Record a successful request
     /// 记录成功请求
-    fn record_success(&self) {
+    fn record_success(&self)
+    {
         self.total_requests.fetch_add(1, Ordering::Relaxed);
         self.reset_if_expired();
     }
 
     /// Record a failed request
     /// 记录失败请求
-    fn record_failure(&self) {
+    fn record_failure(&self)
+    {
         self.total_requests.fetch_add(1, Ordering::Relaxed);
         self.failed_requests.fetch_add(1, Ordering::Relaxed);
         self.reset_if_expired();
@@ -170,9 +189,11 @@ impl Metrics {
 
     /// Reset window if expired
     /// 如果窗口过期则重置
-    fn reset_if_expired(&self) {
+    fn reset_if_expired(&self)
+    {
         let mut start = self.window_start.lock().expect("lock poisoned");
-        if start.elapsed() >= self.window_duration {
+        if start.elapsed() >= self.window_duration
+        {
             self.total_requests.store(0, Ordering::Relaxed);
             self.failed_requests.store(0, Ordering::Relaxed);
             *start = Instant::now();
@@ -181,10 +202,12 @@ impl Metrics {
 
     /// Get current failure rate
     /// 获取当前失败率
-    fn failure_rate(&self) -> f64 {
+    fn failure_rate(&self) -> f64
+    {
         self.reset_if_expired();
         let total = self.total_requests.load(Ordering::Relaxed);
-        if total == 0 {
+        if total == 0
+        {
             return 0.0;
         }
         let failed = self.failed_requests.load(Ordering::Relaxed);
@@ -193,7 +216,8 @@ impl Metrics {
 
     /// Get total request count
     /// 获取总请求数
-    fn request_count(&self) -> usize {
+    fn request_count(&self) -> usize
+    {
         self.reset_if_expired();
         self.total_requests.load(Ordering::Relaxed)
     }
@@ -205,7 +229,8 @@ impl Metrics {
 /// Configuration for circuit breaker behavior.
 /// 熔断器行为的配置。
 #[derive(Debug, Clone)]
-pub struct CircuitBreakerConfig {
+pub struct CircuitBreakerConfig
+{
     /// Error rate threshold (0.0 - 1.0) to trip the circuit
     /// 触发熔断的错误率阈值（0.0 - 1.0）
     error_threshold: f64,
@@ -231,8 +256,10 @@ pub struct CircuitBreakerConfig {
     max_calls_in_half_open: usize,
 }
 
-impl Default for CircuitBreakerConfig {
-    fn default() -> Self {
+impl Default for CircuitBreakerConfig
+{
+    fn default() -> Self
+    {
         Self {
             error_threshold: 0.5,
             min_requests: 10,
@@ -244,10 +271,12 @@ impl Default for CircuitBreakerConfig {
     }
 }
 
-impl CircuitBreakerConfig {
+impl CircuitBreakerConfig
+{
     /// Create a new circuit breaker configuration
     /// 创建新的熔断器配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
@@ -258,7 +287,8 @@ impl CircuitBreakerConfig {
     ///
     /// Panics if threshold is not between 0.0 and 1.0
     /// 如果阈值不在0.0和1.0之间则恐慌
-    pub fn with_error_threshold(mut self, threshold: f64) -> Self {
+    pub fn with_error_threshold(mut self, threshold: f64) -> Self
+    {
         assert!((0.0..=1.0).contains(&threshold), "Error threshold must be between 0.0 and 1.0");
         self.error_threshold = threshold;
         self
@@ -266,35 +296,40 @@ impl CircuitBreakerConfig {
 
     /// Set minimum requests before calculating error rate
     /// 设置计算错误率前的最小请求数
-    pub fn with_min_requests(mut self, min: usize) -> Self {
+    pub fn with_min_requests(mut self, min: usize) -> Self
+    {
         self.min_requests = min;
         self
     }
 
     /// Set duration to stay open
     /// 设置保持打开状态的持续时间
-    pub fn with_open_duration(mut self, duration: Duration) -> Self {
+    pub fn with_open_duration(mut self, duration: Duration) -> Self
+    {
         self.open_duration = duration;
         self
     }
 
     /// Set number of successful calls in `HalfOpen` to close circuit
     /// `设置HalfOpen状态下关闭电路的成功调用数`
-    pub fn with_permitted_calls_in_half_open(mut self, count: usize) -> Self {
+    pub fn with_permitted_calls_in_half_open(mut self, count: usize) -> Self
+    {
         self.permitted_calls_in_half_open = count;
         self
     }
 
     /// Set sliding window size
     /// 设置滑动窗口大小
-    pub fn with_sliding_window_size(mut self, size: Duration) -> Self {
+    pub fn with_sliding_window_size(mut self, size: Duration) -> Self
+    {
         self.sliding_window_size = size;
         self
     }
 
     /// Set maximum calls in `HalfOpen` state
     /// `设置HalfOpen状态下的最大调用数`
-    pub fn with_max_calls_in_half_open(mut self, max: usize) -> Self {
+    pub fn with_max_calls_in_half_open(mut self, max: usize) -> Self
+    {
         self.max_calls_in_half_open = max;
         self
     }
@@ -303,7 +338,8 @@ impl CircuitBreakerConfig {
 /// Circuit breaker state machine data
 /// 熔断器状态机数据
 #[derive(Debug)]
-struct StateData {
+struct StateData
+{
     /// Current circuit state
     /// 当前电路状态
     state: AtomicU64, // Stored as u64: 0=Closed, 1=Open, 2=HalfOpen
@@ -321,8 +357,10 @@ struct StateData {
     half_open_total_count: usize,
 }
 
-impl StateData {
-    fn new() -> Self {
+impl StateData
+{
+    fn new() -> Self
+    {
         Self {
             state: AtomicU64::new(0), // Closed
             opened_at: None,
@@ -331,8 +369,10 @@ impl StateData {
         }
     }
 
-    fn get_state(&self) -> CircuitState {
-        match self.state.load(Ordering::Acquire) {
+    fn get_state(&self) -> CircuitState
+    {
+        match self.state.load(Ordering::Acquire)
+        {
             0 => CircuitState::Closed,
             1 => CircuitState::Open,
             2 => CircuitState::HalfOpen,
@@ -340,22 +380,29 @@ impl StateData {
         }
     }
 
-    fn set_state(&mut self, state: CircuitState) {
-        let value = match state {
+    fn set_state(&mut self, state: CircuitState)
+    {
+        let value = match state
+        {
             CircuitState::Closed => 0,
             CircuitState::Open => 1,
             CircuitState::HalfOpen => 2,
         };
         self.state.store(value, Ordering::Release);
-        if state == CircuitState::Open {
+        if state == CircuitState::Open
+        {
             self.opened_at = Some(Instant::now());
         }
     }
 
-    fn should_attempt_reset(&self, open_duration: Duration) -> bool {
-        if let Some(opened) = self.opened_at {
+    fn should_attempt_reset(&self, open_duration: Duration) -> bool
+    {
+        if let Some(opened) = self.opened_at
+        {
             opened.elapsed() >= open_duration
-        } else {
+        }
+        else
+        {
             false
         }
     }
@@ -367,7 +414,8 @@ impl StateData {
 /// Prevents cascading failures by detecting when a service is failing.
 /// 通过检测服务何时失败来防止级联故障。
 #[derive(Debug, Clone)]
-pub struct CircuitBreaker {
+pub struct CircuitBreaker
+{
     /// Circuit breaker name
     /// 熔断器名称
     name: String,
@@ -385,10 +433,12 @@ pub struct CircuitBreaker {
     metrics: Arc<Metrics>,
 }
 
-impl CircuitBreaker {
+impl CircuitBreaker
+{
     /// Create a new circuit breaker
     /// 创建新的熔断器
-    pub fn new(name: impl Into<String>, config: CircuitBreakerConfig) -> Self {
+    pub fn new(name: impl Into<String>, config: CircuitBreakerConfig) -> Self
+    {
         let name = name.into();
         let window_size = config.sliding_window_size;
 
@@ -402,36 +452,43 @@ impl CircuitBreaker {
 
     /// Create with default configuration
     /// 使用默认配置创建
-    pub fn with_defaults(name: impl Into<String>) -> Self {
+    pub fn with_defaults(name: impl Into<String>) -> Self
+    {
         Self::new(name, CircuitBreakerConfig::default())
     }
 
     /// Get the circuit breaker name
     /// 获取熔断器名称
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.name
     }
 
     /// Get current state
     /// 获取当前状态
-    pub fn state(&self) -> CircuitState {
+    pub fn state(&self) -> CircuitState
+    {
         let mut data = self.state_data.lock().expect("lock poisoned");
         let current = data.get_state();
 
         // Auto-transition from Open to HalfOpen after duration
-        if current == CircuitState::Open && data.should_attempt_reset(self.config.open_duration) {
+        if current == CircuitState::Open && data.should_attempt_reset(self.config.open_duration)
+        {
             data.set_state(CircuitState::HalfOpen);
             data.half_open_success_count = 0;
             data.half_open_total_count = 0;
             CircuitState::HalfOpen
-        } else {
+        }
+        else
+        {
             current
         }
     }
 
     /// Check if a request is permitted
     /// 检查是否允许请求
-    pub fn is_request_permitted(&self) -> bool {
+    pub fn is_request_permitted(&self) -> bool
+    {
         self.state().allows_requests()
     }
 
@@ -443,7 +500,8 @@ impl CircuitBreaker {
         E: std::error::Error,
     {
         // Check if request is permitted
-        if !self.is_request_permitted() {
+        if !self.is_request_permitted()
+        {
             return Err(CircuitBreakerError::Open(format!(
                 "Circuit breaker '{}' is open",
                 self.name
@@ -451,12 +509,15 @@ impl CircuitBreaker {
         }
 
         // Execute the function
-        match f().await {
-            Ok(result) => {
+        match f().await
+        {
+            Ok(result) =>
+            {
                 self.on_success();
                 Ok(result)
             },
-            Err(err) => {
+            Err(err) =>
+            {
                 self.on_error();
                 Err(CircuitBreakerError::ServiceFailed(err.to_string()))
             },
@@ -465,27 +526,36 @@ impl CircuitBreaker {
 
     /// Record a successful call
     /// 记录成功调用
-    fn on_success(&self) {
+    fn on_success(&self)
+    {
         self.metrics.record_success();
 
         let mut data = self.state_data.lock().expect("lock poisoned");
-        match data.get_state() {
-            CircuitState::Closed => {
+        match data.get_state()
+        {
+            CircuitState::Closed =>
+            {
                 // Stay in Closed state
             },
-            CircuitState::Open => {
+            CircuitState::Open =>
+            {
                 // Should not happen, but handle it
-                if data.should_attempt_reset(self.config.open_duration) {
+                if data.should_attempt_reset(self.config.open_duration)
+                {
                     data.set_state(CircuitState::HalfOpen);
                 }
             },
-            CircuitState::HalfOpen => {
+            CircuitState::HalfOpen =>
+            {
                 data.half_open_success_count += 1;
                 data.half_open_total_count += 1;
 
-                if data.half_open_success_count >= self.config.permitted_calls_in_half_open {
+                if data.half_open_success_count >= self.config.permitted_calls_in_half_open
+                {
                     data.set_state(CircuitState::Closed);
-                } else if data.half_open_total_count >= self.config.max_calls_in_half_open {
+                }
+                else if data.half_open_total_count >= self.config.max_calls_in_half_open
+                {
                     data.set_state(CircuitState::Open);
                 }
             },
@@ -494,25 +564,32 @@ impl CircuitBreaker {
 
     /// Record a failed call
     /// 记录失败调用
-    fn on_error(&self) {
+    fn on_error(&self)
+    {
         self.metrics.record_failure();
 
         let mut data = self.state_data.lock().expect("lock poisoned");
-        match data.get_state() {
-            CircuitState::Closed => {
+        match data.get_state()
+        {
+            CircuitState::Closed =>
+            {
                 // Check if we should trip the circuit
                 let request_count = self.metrics.request_count();
-                if request_count >= self.config.min_requests {
+                if request_count >= self.config.min_requests
+                {
                     let failure_rate = self.metrics.failure_rate();
-                    if failure_rate >= self.config.error_threshold {
+                    if failure_rate >= self.config.error_threshold
+                    {
                         data.set_state(CircuitState::Open);
                     }
                 }
             },
-            CircuitState::Open => {
+            CircuitState::Open =>
+            {
                 // Stay in Open state
             },
-            CircuitState::HalfOpen => {
+            CircuitState::HalfOpen =>
+            {
                 data.half_open_total_count += 1;
                 // Any failure in HalfOpen trips back to Open
                 data.set_state(CircuitState::Open);
@@ -522,14 +599,16 @@ impl CircuitBreaker {
 
     /// Manually open the circuit
     /// 手动打开电路
-    pub fn open(&self) {
+    pub fn open(&self)
+    {
         let mut data = self.state_data.lock().expect("lock poisoned");
         data.set_state(CircuitState::Open);
     }
 
     /// Manually close the circuit
     /// 手动关闭电路
-    pub fn close(&self) {
+    pub fn close(&self)
+    {
         let mut data = self.state_data.lock().expect("lock poisoned");
         data.set_state(CircuitState::Closed);
         data.half_open_success_count = 0;
@@ -538,7 +617,8 @@ impl CircuitBreaker {
 
     /// Get current metrics
     /// 获取当前指标
-    pub fn metrics(&self) -> CircuitMetrics {
+    pub fn metrics(&self) -> CircuitMetrics
+    {
         let data = self.state_data.lock().expect("lock poisoned");
         CircuitMetrics {
             state: data.get_state(),
@@ -552,7 +632,8 @@ impl CircuitBreaker {
 /// Circuit breaker metrics snapshot
 /// 熔断器指标快照
 #[derive(Debug, Clone)]
-pub struct CircuitMetrics {
+pub struct CircuitMetrics
+{
     /// Current state
     /// 当前状态
     pub state: CircuitState,
@@ -573,43 +654,50 @@ pub struct CircuitMetrics {
 /// Circuit breaker registry for managing multiple circuit breakers
 /// 熔断器注册表，用于管理多个熔断器
 #[derive(Debug, Default)]
-pub struct CircuitBreakerRegistry {
+pub struct CircuitBreakerRegistry
+{
     /// Circuit breakers by name
     /// 按名称索引的熔断器
     breakers: std::sync::RwLock<std::collections::HashMap<String, CircuitBreaker>>,
 }
 
-impl CircuitBreakerRegistry {
+impl CircuitBreakerRegistry
+{
     /// Create a new registry
     /// 创建新注册表
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Register a circuit breaker
     /// 注册熔断器
-    pub fn register(&self, breaker: CircuitBreaker) {
+    pub fn register(&self, breaker: CircuitBreaker)
+    {
         let mut breakers = self.breakers.write().expect("lock poisoned");
         breakers.insert(breaker.name().to_string(), breaker);
     }
 
     /// Get a circuit breaker by name
     /// 按名称获取熔断器
-    pub fn get(&self, name: &str) -> Option<CircuitBreaker> {
+    pub fn get(&self, name: &str) -> Option<CircuitBreaker>
+    {
         let breakers = self.breakers.read().expect("lock poisoned");
         breakers.get(name).cloned()
     }
 
     /// Get all circuit breakers
     /// 获取所有熔断器
-    pub fn all(&self) -> Vec<CircuitBreaker> {
+    pub fn all(&self) -> Vec<CircuitBreaker>
+    {
         let breakers = self.breakers.read().expect("lock poisoned");
         breakers.values().cloned().collect()
     }
 
     /// Get all circuit breaker states
     /// 获取所有熔断器状态
-    pub fn states(&self) -> Vec<(String, CircuitState)> {
+    pub fn states(&self) -> Vec<(String, CircuitState)>
+    {
         let breakers = self.breakers.read().expect("lock poisoned");
         breakers
             .values()
@@ -619,25 +707,29 @@ impl CircuitBreakerRegistry {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_circuit_state_allows_requests() {
+    fn test_circuit_state_allows_requests()
+    {
         assert!(CircuitState::Closed.allows_requests());
         assert!(CircuitState::HalfOpen.allows_requests());
         assert!(!CircuitState::Open.allows_requests());
     }
 
     #[test]
-    fn test_circuit_state_display() {
+    fn test_circuit_state_display()
+    {
         assert_eq!(CircuitState::Closed.to_string(), "Closed");
         assert_eq!(CircuitState::Open.to_string(), "Open");
         assert_eq!(CircuitState::HalfOpen.to_string(), "HalfOpen");
     }
 
     #[test]
-    fn test_config_default() {
+    fn test_config_default()
+    {
         let config = CircuitBreakerConfig::default();
         assert_eq!(config.error_threshold, 0.5);
         assert_eq!(config.min_requests, 10);
@@ -645,7 +737,8 @@ mod tests {
     }
 
     #[test]
-    fn test_config_builder() {
+    fn test_config_builder()
+    {
         let config = CircuitBreakerConfig::new()
             .with_error_threshold(0.3)
             .with_min_requests(20)
@@ -660,12 +753,14 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "Error threshold must be between 0.0 and 1.0")]
-    fn test_config_invalid_threshold() {
+    fn test_config_invalid_threshold()
+    {
         CircuitBreakerConfig::new().with_error_threshold(1.5);
     }
 
     #[test]
-    fn test_circuit_breaker_creation() {
+    fn test_circuit_breaker_creation()
+    {
         let breaker = CircuitBreaker::with_defaults("test");
         assert_eq!(breaker.name(), "test");
         assert_eq!(breaker.state(), CircuitState::Closed);
@@ -673,7 +768,8 @@ mod tests {
     }
 
     #[test]
-    fn test_circuit_breaker_manual_open_close() {
+    fn test_circuit_breaker_manual_open_close()
+    {
         let breaker = CircuitBreaker::with_defaults("test");
         assert_eq!(breaker.state(), CircuitState::Closed);
 
@@ -687,7 +783,8 @@ mod tests {
     }
 
     #[test]
-    fn test_circuit_breaker_metrics() {
+    fn test_circuit_breaker_metrics()
+    {
         let breaker = CircuitBreaker::with_defaults("test");
         let metrics = breaker.metrics();
 
@@ -698,7 +795,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry() {
+    fn test_registry()
+    {
         let registry = CircuitBreakerRegistry::new();
         let breaker1 = CircuitBreaker::with_defaults("service-a");
         let breaker2 = CircuitBreaker::with_defaults("service-b");
@@ -718,7 +816,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let err = CircuitBreakerError::Open("Service unavailable".to_string());
         assert!(err.to_string().contains("Circuit open"));
         assert!(err.to_string().contains("Service unavailable"));

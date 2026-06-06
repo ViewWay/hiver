@@ -18,11 +18,11 @@
 //! exporter.export(&spans).await?;
 //! ```
 
-use crate::trace::{Span, SpanKind, SpanStatus};
+use std::{collections::HashMap, fmt, sync::Arc};
+
 use serde::Serialize;
-use std::collections::HashMap;
-use std::fmt;
-use std::sync::Arc;
+
+use crate::trace::{Span, SpanKind, SpanStatus};
 
 /// Zipkin v2 API span path
 /// Zipkin v2 API span 路径
@@ -31,7 +31,8 @@ const ZIPKIN_API_PATH: &str = "/api/v2/spans";
 /// Configuration for Zipkin exporter
 /// Zipkin 导出器配置
 #[derive(Clone, Debug)]
-pub struct ZipkinConfig {
+pub struct ZipkinConfig
+{
     /// Zipkin server base URL (e.g. "http://localhost:9411")
     /// Zipkin 服务器基础 URL
     pub endpoint: String,
@@ -43,10 +44,12 @@ pub struct ZipkinConfig {
     pub timeout_ms: u64,
 }
 
-impl ZipkinConfig {
+impl ZipkinConfig
+{
     /// Create a new Zipkin config
     /// 创建新的 Zipkin 配置
-    pub fn new(endpoint: impl Into<String>, service_name: impl Into<String>) -> Self {
+    pub fn new(endpoint: impl Into<String>, service_name: impl Into<String>) -> Self
+    {
         Self {
             endpoint: endpoint.into(),
             service_name: service_name.into(),
@@ -56,14 +59,16 @@ impl ZipkinConfig {
 
     /// Set connection timeout
     /// 设置连接超时
-    pub fn timeout(mut self, ms: u64) -> Self {
+    pub fn timeout(mut self, ms: u64) -> Self
+    {
         self.timeout_ms = ms;
         self
     }
 
     /// Full spans API URL
     /// 完整的 spans API URL
-    pub fn spans_url(&self) -> String {
+    pub fn spans_url(&self) -> String
+    {
         format!("{}{}", self.endpoint.trim_end_matches('/'), ZIPKIN_API_PATH)
     }
 }
@@ -71,7 +76,8 @@ impl ZipkinConfig {
 /// Error type for Zipkin export operations
 /// Zipkin 导出操作错误类型
 #[derive(Debug)]
-pub enum ZipkinError {
+pub enum ZipkinError
+{
     /// HTTP request failed
     /// HTTP 请求失败
     Http(String),
@@ -83,9 +89,12 @@ pub enum ZipkinError {
     Config(String),
 }
 
-impl fmt::Display for ZipkinError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for ZipkinError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Http(msg) => write!(f, "Zipkin HTTP error: {}", msg),
             Self::Serialization(msg) => write!(f, "Zipkin serialization error: {}", msg),
             Self::Config(msg) => write!(f, "Zipkin config error: {}", msg),
@@ -102,7 +111,8 @@ pub type Result<T> = std::result::Result<T, ZipkinError>;
 /// Zipkin v2 endpoint (service identity)
 /// Zipkin v2 端点（服务标识）
 #[derive(Debug, Clone, Serialize)]
-pub struct ZipkinEndpoint {
+pub struct ZipkinEndpoint
+{
     /// Service name
     /// 服务名称
     #[serde(rename = "serviceName")]
@@ -112,7 +122,8 @@ pub struct ZipkinEndpoint {
 /// Zipkin v2 annotation
 /// Zipkin v2 注解
 #[derive(Debug, Clone, Serialize)]
-pub struct ZipkinAnnotation {
+pub struct ZipkinAnnotation
+{
     /// Timestamp in microseconds
     /// 时间戳（微秒）
     pub timestamp: u64,
@@ -124,7 +135,8 @@ pub struct ZipkinAnnotation {
 /// Zipkin v2 span format
 /// Zipkin v2 span 格式
 #[derive(Debug, Clone, Serialize)]
-pub struct ZipkinSpan {
+pub struct ZipkinSpan
+{
     /// Trace ID (hex, 16 or 32 chars)
     /// 追踪 ID（十六进制，16 或 32 字符）
     #[serde(rename = "traceId")]
@@ -165,12 +177,15 @@ pub struct ZipkinSpan {
     pub annotations: Option<Vec<ZipkinAnnotation>>,
 }
 
-impl ZipkinSpan {
+impl ZipkinSpan
+{
     /// Convert a Hiver Span to a Zipkin Span
     /// 将 Hiver Span 转换为 Zipkin Span
-    pub fn from_hiver(span: &Span, service_name: &str) -> Self {
+    pub fn from_hiver(span: &Span, service_name: &str) -> Self
+    {
         let ctx = span.context();
-        let kind = match span.kind() {
+        let kind = match span.kind()
+        {
             SpanKind::Server => Some("SERVER".to_string()),
             SpanKind::Client => Some("CLIENT".to_string()),
             SpanKind::Producer => Some("PRODUCER".to_string()),
@@ -187,25 +202,33 @@ impl ZipkinSpan {
             .map(|(k, v)| (k.clone(), v.clone()))
             .collect();
 
-        if let Some(status) = span.status() {
-            match status {
-                SpanStatus::Ok => {
+        if let Some(status) = span.status()
+        {
+            match status
+            {
+                SpanStatus::Ok =>
+                {
                     tags.insert("otel.status_code".to_string(), "OK".to_string());
                 },
-                SpanStatus::UnknownError => {
+                SpanStatus::UnknownError =>
+                {
                     tags.insert("otel.status_code".to_string(), "ERROR".to_string());
                     tags.insert("error".to_string(), "true".to_string());
                 },
-                SpanStatus::Cancelled => {
+                SpanStatus::Cancelled =>
+                {
                     tags.insert("otel.status_code".to_string(), "ERROR".to_string());
                     tags.insert("error".to_string(), "cancelled".to_string());
                 },
             }
         }
 
-        let annotations = if span.events().is_empty() {
+        let annotations = if span.events().is_empty()
+        {
             None
-        } else {
+        }
+        else
+        {
             Some(
                 span.events()
                     .iter()
@@ -236,7 +259,8 @@ impl ZipkinSpan {
 
 /// Span reporter that collects spans for batch export
 /// Span 报告器，收集 span 用于批量导出
-pub trait SpanReporter: Send + Sync {
+pub trait SpanReporter: Send + Sync
+{
     /// Report a span
     /// 报告 span
     fn report(&self, span: ZipkinSpan);
@@ -247,14 +271,17 @@ pub trait SpanReporter: Send + Sync {
 
 /// In-memory span reporter for testing
 /// 内存 span 报告器，用于测试
-pub struct InMemoryReporter {
+pub struct InMemoryReporter
+{
     spans: std::sync::Mutex<Vec<ZipkinSpan>>,
 }
 
-impl InMemoryReporter {
+impl InMemoryReporter
+{
     /// Create a new in-memory reporter
     /// 创建新的内存报告器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             spans: std::sync::Mutex::new(Vec::new()),
         }
@@ -262,25 +289,31 @@ impl InMemoryReporter {
 
     /// Get all reported spans
     /// 获取所有已报告的 span
-    pub fn spans(&self) -> Vec<ZipkinSpan> {
+    pub fn spans(&self) -> Vec<ZipkinSpan>
+    {
         self.spans.lock().unwrap().clone()
     }
 
     /// Clear all reported spans
     /// 清除所有已报告的 span
-    pub fn clear(&self) {
+    pub fn clear(&self)
+    {
         self.spans.lock().unwrap().clear();
     }
 }
 
-impl Default for InMemoryReporter {
-    fn default() -> Self {
+impl Default for InMemoryReporter
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl SpanReporter for InMemoryReporter {
-    fn report(&self, span: ZipkinSpan) {
+impl SpanReporter for InMemoryReporter
+{
+    fn report(&self, span: ZipkinSpan)
+    {
         self.spans.lock().unwrap().push(span);
     }
 
@@ -289,40 +322,47 @@ impl SpanReporter for InMemoryReporter {
 
 /// Zipkin exporter that sends spans to a Zipkin server
 /// Zipkin 导出器，将 span 发送到 Zipkin 服务器
-pub struct ZipkinExporter {
+pub struct ZipkinExporter
+{
     config: ZipkinConfig,
     reporter: Arc<dyn SpanReporter>,
 }
 
-impl ZipkinExporter {
+impl ZipkinExporter
+{
     /// Create a new Zipkin exporter
     /// 创建新的 Zipkin 导出器
-    pub fn new(config: ZipkinConfig) -> Self {
+    pub fn new(config: ZipkinConfig) -> Self
+    {
         let reporter = Arc::new(InMemoryReporter::new());
         Self { config, reporter }
     }
 
     /// Create exporter with a custom reporter
     /// 使用自定义报告器创建导出器
-    pub fn with_reporter(config: ZipkinConfig, reporter: Arc<dyn SpanReporter>) -> Self {
+    pub fn with_reporter(config: ZipkinConfig, reporter: Arc<dyn SpanReporter>) -> Self
+    {
         Self { config, reporter }
     }
 
     /// Get the exporter config
     /// 获取导出器配置
-    pub fn config(&self) -> &ZipkinConfig {
+    pub fn config(&self) -> &ZipkinConfig
+    {
         &self.config
     }
 
     /// Convert and export a batch of Hiver spans
     /// 转换并导出一批 Hiver span
-    pub fn export(&self, spans: &[Span]) -> Result<()> {
+    pub fn export(&self, spans: &[Span]) -> Result<()>
+    {
         let zipkin_spans: Vec<ZipkinSpan> = spans
             .iter()
             .map(|s| ZipkinSpan::from_hiver(s, &self.config.service_name))
             .collect();
 
-        for span in zipkin_spans {
+        for span in zipkin_spans
+        {
             self.reporter.report(span);
         }
 
@@ -331,25 +371,30 @@ impl ZipkinExporter {
 
     /// Export a single span
     /// 导出单个 span
-    pub fn export_one(&self, span: &Span) -> Result<()> {
+    pub fn export_one(&self, span: &Span) -> Result<()>
+    {
         self.export(&[span.clone()])
     }
 
     /// Serialize spans to Zipkin v2 JSON
     /// 将 span 序列化为 Zipkin v2 JSON
-    pub fn serialize_spans(spans: &[ZipkinSpan]) -> Result<String> {
+    pub fn serialize_spans(spans: &[ZipkinSpan]) -> Result<String>
+    {
         serde_json::to_string(spans).map_err(|e| ZipkinError::Serialization(e.to_string()))
     }
 
     /// Flush pending spans
     /// 刷新待处理 span
-    pub fn flush(&self) {
+    pub fn flush(&self)
+    {
         self.reporter.flush();
     }
 }
 
-impl fmt::Debug for ZipkinExporter {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for ZipkinExporter
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("ZipkinExporter")
             .field("config", &self.config)
             .finish()
@@ -357,12 +402,14 @@ impl fmt::Debug for ZipkinExporter {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::trace::{Span, SpanBuilder, SpanKind, TraceContext};
 
     #[test]
-    fn test_zipkin_config_url() {
+    fn test_zipkin_config_url()
+    {
         let config = ZipkinConfig::new("http://localhost:9411", "my-service");
         assert_eq!(config.spans_url(), "http://localhost:9411/api/v2/spans");
 
@@ -371,13 +418,15 @@ mod tests {
     }
 
     #[test]
-    fn test_zipkin_config_timeout() {
+    fn test_zipkin_config_timeout()
+    {
         let config = ZipkinConfig::new("http://localhost:9411", "svc").timeout(10000);
         assert_eq!(config.timeout_ms, 10000);
     }
 
     #[test]
-    fn test_from_hiver_span_server() {
+    fn test_from_hiver_span_server()
+    {
         let mut span = SpanBuilder::new("handle_request")
             .with_kind(SpanKind::Server)
             .with_attribute("http.method", "GET")
@@ -395,7 +444,8 @@ mod tests {
     }
 
     #[test]
-    fn test_from_hiver_span_internal() {
+    fn test_from_hiver_span_internal()
+    {
         let mut span = Span::new("internal_op");
         span.add_attribute("key", "value");
         span.end();
@@ -406,7 +456,8 @@ mod tests {
     }
 
     #[test]
-    fn test_from_hiver_span_with_parent() {
+    fn test_from_hiver_span_with_parent()
+    {
         let parent_ctx = TraceContext::new();
         let child = Span::with_context("child", parent_ctx.child());
 
@@ -415,7 +466,8 @@ mod tests {
     }
 
     #[test]
-    fn test_from_hiver_span_with_events() {
+    fn test_from_hiver_span_with_events()
+    {
         let mut span = Span::new("op");
         span.add_event("cache_miss");
         span.end();
@@ -427,7 +479,8 @@ mod tests {
     }
 
     #[test]
-    fn test_export_batch() {
+    fn test_export_batch()
+    {
         let exporter = ZipkinExporter::new(ZipkinConfig::new("http://localhost:9411", "svc"));
 
         let mut span1 = Span::new("op1");
@@ -440,7 +493,8 @@ mod tests {
     }
 
     #[test]
-    fn test_serialize_spans() {
+    fn test_serialize_spans()
+    {
         let mut span = Span::new("test");
         span.end();
         let zipkin = ZipkinSpan::from_hiver(&span, "svc");
@@ -454,7 +508,8 @@ mod tests {
     }
 
     #[test]
-    fn test_in_memory_reporter() {
+    fn test_in_memory_reporter()
+    {
         let reporter = InMemoryReporter::new();
         let mut span = Span::new("test");
         span.end();

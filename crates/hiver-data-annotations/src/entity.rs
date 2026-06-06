@@ -38,10 +38,12 @@ const HELPER_ATTRS: &[&str] = &[
 
 /// Parse key=value pairs from an attribute like #[Attr(key = "val", flag = true)]
 /// 从属性中解析 key=value 对，如 #[Attr(key = "val", flag = true)]
-fn parse_attr_args(attr: &syn::Attribute) -> Vec<(String, syn::Expr)> {
+fn parse_attr_args(attr: &syn::Attribute) -> Vec<(String, syn::Expr)>
+{
     let mut args = Vec::new();
     let _ = attr.parse_nested_meta(|meta| {
-        if let Some(id) = meta.path.get_ident() {
+        if let Some(id) = meta.path.get_ident()
+        {
             let value: syn::Expr = meta.value()?.parse()?;
             args.push((id.to_string(), value));
         }
@@ -50,7 +52,8 @@ fn parse_attr_args(attr: &syn::Attribute) -> Vec<(String, syn::Expr)> {
     args
 }
 
-fn extract_string(args: &[(String, syn::Expr)], key: &str) -> Option<String> {
+fn extract_string(args: &[(String, syn::Expr)], key: &str) -> Option<String>
+{
     args.iter().find(|(k, _)| k == key).and_then(|(_, v)| {
         if let syn::Expr::Lit(syn::ExprLit {
             lit: syn::Lit::Str(s),
@@ -58,13 +61,16 @@ fn extract_string(args: &[(String, syn::Expr)], key: &str) -> Option<String> {
         }) = v
         {
             Some(s.value())
-        } else {
+        }
+        else
+        {
             None
         }
     })
 }
 
-fn extract_bool(args: &[(String, syn::Expr)], key: &str) -> Option<bool> {
+fn extract_bool(args: &[(String, syn::Expr)], key: &str) -> Option<bool>
+{
     args.iter().find(|(k, _)| k == key).and_then(|(_, v)| {
         if let syn::Expr::Lit(syn::ExprLit {
             lit: syn::Lit::Bool(b),
@@ -72,13 +78,16 @@ fn extract_bool(args: &[(String, syn::Expr)], key: &str) -> Option<bool> {
         }) = v
         {
             Some(b.value)
-        } else {
+        }
+        else
+        {
             None
         }
     })
 }
 
-fn extract_usize(args: &[(String, syn::Expr)], key: &str) -> Option<usize> {
+fn extract_usize(args: &[(String, syn::Expr)], key: &str) -> Option<usize>
+{
     args.iter().find(|(k, _)| k == key).and_then(|(_, v)| {
         if let syn::Expr::Lit(syn::ExprLit {
             lit: syn::Lit::Int(i),
@@ -86,7 +95,9 @@ fn extract_usize(args: &[(String, syn::Expr)], key: &str) -> Option<usize> {
         }) = v
         {
             i.base10_parse::<usize>().ok()
-        } else {
+        }
+        else
+        {
             None
         }
     })
@@ -97,7 +108,8 @@ fn extract_usize(args: &[(String, syn::Expr)], key: &str) -> Option<usize> {
 // 字段元数据提取
 // ============================================================
 
-struct FieldMeta {
+struct FieldMeta
+{
     name: String,
     ty: String,
     is_id: bool,
@@ -114,8 +126,10 @@ struct FieldMeta {
     join_table: Option<String>,
 }
 
-impl FieldMeta {
-    fn resolved_column(&self) -> String {
+impl FieldMeta
+{
+    fn resolved_column(&self) -> String
+    {
         self.column_name
             .clone()
             .unwrap_or_else(|| self.name.clone())
@@ -124,7 +138,8 @@ impl FieldMeta {
 
 /// Extract metadata from a struct field by reading helper attributes.
 /// 通过读取辅助属性从结构体字段提取元数据。
-fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
+fn extract_field_meta(field: &Field) -> Option<FieldMeta>
+{
     let name = field.ident.as_ref()?.to_string();
     let ty = quote!(#field.ty).to_string().replace(' ', "");
     let mut meta = FieldMeta {
@@ -144,69 +159,85 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
         join_table: None,
     };
 
-    for attr in &field.attrs {
-        let id = match attr.path().get_ident() {
+    for attr in &field.attrs
+    {
+        let id = match attr.path().get_ident()
+        {
             Some(id) => id.to_string(),
             None => continue,
         };
 
-        match id.as_str() {
-            "Id" => {
+        match id.as_str()
+        {
+            "Id" =>
+            {
                 meta.is_id = true;
                 meta.nullable = false;
             },
-            "GeneratedValue" => {
+            "GeneratedValue" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.id_strategy =
                     Some(extract_string(&args, "strategy").unwrap_or_else(|| "AUTO".into()));
             },
-            "Column" => {
+            "Column" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.column_name = extract_string(&args, "name");
-                if let Some(n) = extract_bool(&args, "nullable") {
+                if let Some(n) = extract_bool(&args, "nullable")
+                {
                     meta.nullable = n;
                 }
-                if let Some(u) = extract_bool(&args, "unique") {
+                if let Some(u) = extract_bool(&args, "unique")
+                {
                     meta.unique = u;
                 }
                 meta.length = extract_usize(&args, "length");
             },
-            "Transient" => {
+            "Transient" =>
+            {
                 meta.is_transient = true;
             },
-            "OneToMany" => {
+            "OneToMany" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("one_to_many".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
             },
-            "OneToOne" => {
+            "OneToOne" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("one_to_one".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
             },
-            "ManyToOne" => {
+            "ManyToOne" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("many_to_one".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
             },
-            "ManyToMany" => {
+            "ManyToMany" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.relation_kind = Some("many_to_many".to_string());
                 meta.relation_target = extract_string(&args, "target_entity");
                 meta.relation_mapped_by = extract_string(&args, "mapped_by");
             },
-            "JoinColumn" => {
+            "JoinColumn" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.join_column = extract_string(&args, "name");
             },
-            "JoinTable" => {
+            "JoinTable" =>
+            {
                 let args = parse_attr_args(attr);
                 meta.join_table = extract_string(&args, "name");
             },
-            _ => {},
+            _ =>
+            {},
         }
     }
 
@@ -215,15 +246,21 @@ fn extract_field_meta(field: &Field) -> Option<FieldMeta> {
 
 /// Convert CamelCase to snake_case for default table names.
 /// 将 CamelCase 转换为 snake_case 用于默认表名。
-fn to_snake_case(s: &str) -> String {
+fn to_snake_case(s: &str) -> String
+{
     let mut result = String::with_capacity(s.len() + 4);
-    for (i, c) in s.chars().enumerate() {
-        if c.is_uppercase() {
-            if i > 0 {
+    for (i, c) in s.chars().enumerate()
+    {
+        if c.is_uppercase()
+        {
+            if i > 0
+            {
                 result.push('_');
             }
             result.extend(c.to_lowercase());
-        } else {
+        }
+        else
+        {
             result.push(c);
         }
     }
@@ -252,7 +289,8 @@ fn to_snake_case(s: &str) -> String {
 /// - `id_field_name() -> Option<&'static str>`
 /// - `id_generation_strategy() -> Option<&'static str>`
 /// - `relations() -> &'static [(&'static str, &'static str, Option<&'static str>)]`
-pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let mut input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;
 
@@ -262,7 +300,8 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .iter()
         .find_map(|attr| {
             let id = attr.path().get_ident()?;
-            if id != "Table" {
+            if id != "Table"
+            {
                 return None;
             }
             let args = parse_attr_args(attr);
@@ -273,15 +312,18 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
     let table_name = LitStr::new(&table_name_str, Span::call_site());
 
     // Extract field metadata
-    let fields: Vec<FieldMeta> = match &input.data {
-        syn::Data::Struct(data) => match &data.fields {
+    let fields: Vec<FieldMeta> = match &input.data
+    {
+        syn::Data::Struct(data) => match &data.fields
+        {
             syn::Fields::Named(f) => f
                 .named
                 .iter()
                 .filter_map(extract_field_meta)
                 .filter(|m| !m.is_transient)
                 .collect(),
-            _ => {
+            _ =>
+            {
                 return syn::Error::new_spanned(
                     name,
                     "Entity only supports structs with named fields",
@@ -290,14 +332,16 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
                 .into();
             },
         },
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(name, "Entity can only be applied to structs")
                 .to_compile_error()
                 .into();
         },
     };
 
-    if fields.is_empty() {
+    if fields.is_empty()
+    {
         return syn::Error::new_spanned(
             name,
             "Entity struct must have at least one non-transient field",
@@ -310,7 +354,8 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
     if let syn::Data::Struct(data) = &mut input.data
         && let syn::Fields::Named(named) = &mut data.fields
     {
-        for field in &mut named.named {
+        for field in &mut named.named
+        {
             field.attrs.retain(|attr| {
                 attr.path()
                     .get_ident()
@@ -383,10 +428,13 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .map(|f| {
             let field = LitStr::new(&f.name, Span::call_site());
             let kind = LitStr::new(f.relation_kind.as_ref().unwrap(), Span::call_site());
-            if let Some(t) = &f.relation_target {
+            if let Some(t) = &f.relation_target
+            {
                 let target = LitStr::new(t, Span::call_site());
                 quote! { (#field, #kind, Some(#target)) }
-            } else {
+            }
+            else
+            {
                 quote! { (#field, #kind, None) }
             }
         })
@@ -420,9 +468,12 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
         .iter()
         .map(|f| {
             let fname = LitStr::new(&f.name, Span::call_site());
-            if let Some(l) = f.length {
+            if let Some(l) = f.length
+            {
                 quote! { #fname => Some(#l) }
-            } else {
+            }
+            else
+            {
                 quote! { #fname => None }
             }
         })
@@ -542,17 +593,24 @@ pub(crate) fn impl_entity(_attr: TokenStream, item: TokenStream) -> TokenStream 
 /// and generates `table_name()` automatically. This standalone version
 /// is for cases where only #[Table] is used.
 #[allow(clippy::needless_pass_by_value)]
-pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_table(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;
 
-    let table_name = if attr.is_empty() {
+    let table_name = if attr.is_empty()
+    {
         to_snake_case(&name.to_string())
-    } else {
+    }
+    else
+    {
         let attr_str = attr.to_string();
-        if let Some(eq_pos) = attr_str.find('=') {
+        if let Some(eq_pos) = attr_str.find('=')
+        {
             attr_str[eq_pos + 1..].trim().trim_matches('"').to_string()
-        } else {
+        }
+        else
+        {
             attr_str.trim_matches('"').to_string()
         }
     };

@@ -12,7 +12,8 @@ type HmacSha256 = Hmac<Sha256>;
 
 /// WS-Security header / WS-Security头部
 #[derive(Debug, Clone)]
-pub struct WsSecurityHeader {
+pub struct WsSecurityHeader
+{
     /// Username token / 用户名令牌
     pub username: Option<String>,
     /// Password token / 密码令牌
@@ -25,7 +26,8 @@ pub struct WsSecurityHeader {
 
 /// Timestamp token for message freshness / 消息新鲜度的时间戳令牌
 #[derive(Debug, Clone)]
-pub struct TimestampToken {
+pub struct TimestampToken
+{
     /// Creation time in RFC 3339 / 创建时间（RFC 3339格式）
     pub created: String,
     /// Expiration time in RFC 3339 / 过期时间（RFC 3339格式）
@@ -34,7 +36,8 @@ pub struct TimestampToken {
 
 /// Security configuration / 安全配置
 #[derive(Debug, Clone)]
-pub struct SecurityConfig {
+pub struct SecurityConfig
+{
     /// Username for authentication / 认证用户名
     pub username: Option<String>,
     /// Password for authentication / 认证密码
@@ -43,9 +46,11 @@ pub struct SecurityConfig {
     pub signing_key: Option<Vec<u8>>,
 }
 
-impl SecurityConfig {
+impl SecurityConfig
+{
     /// Create a new default security config / 创建默认安全配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             username: None,
             password: None,
@@ -54,20 +59,23 @@ impl SecurityConfig {
     }
 
     /// Set username and password credentials / 设置用户名和密码凭据
-    pub fn with_credentials(mut self, user: &str, pass: &str) -> Self {
+    pub fn with_credentials(mut self, user: &str, pass: &str) -> Self
+    {
         self.username = Some(user.to_string());
         self.password = Some(pass.to_string());
         self
     }
 
     /// Set the HMAC signing key / 设置HMAC签名密钥
-    pub fn with_signing_key(mut self, key: &[u8]) -> Self {
+    pub fn with_signing_key(mut self, key: &[u8]) -> Self
+    {
         self.signing_key = Some(key.to_vec());
         self
     }
 
     /// Sign a message / 签名消息
-    pub fn sign(&self, body: &str) -> Option<String> {
+    pub fn sign(&self, body: &str) -> Option<String>
+    {
         self.signing_key.as_ref().map(|key| {
             #[allow(clippy::expect_used)]
             let mut mac = HmacSha256::new_from_slice(key).expect("HMAC key");
@@ -77,7 +85,8 @@ impl SecurityConfig {
     }
 
     /// Create WS-Security header from config / 从配置创建WS-Security头部
-    pub fn create_security_header(&self, body: &str) -> WsSecurityHeader {
+    pub fn create_security_header(&self, body: &str) -> WsSecurityHeader
+    {
         WsSecurityHeader {
             username: self.username.clone(),
             password: self.password.clone(),
@@ -90,18 +99,22 @@ impl SecurityConfig {
     }
 }
 
-impl Default for SecurityConfig {
-    fn default() -> Self {
+impl Default for SecurityConfig
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_security_config() {
+    fn test_security_config()
+    {
         let config = SecurityConfig::new()
             .with_credentials("test-user", "test-password-not-real")
             .with_signing_key(b"test-signing-key-not-for-production");
@@ -110,7 +123,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sign_message() {
+    fn test_sign_message()
+    {
         let config = SecurityConfig::new().with_signing_key(b"test-key");
         let sig = config.sign("hello").unwrap();
         assert!(!sig.is_empty());

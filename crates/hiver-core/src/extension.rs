@@ -10,8 +10,10 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+};
 
 /// Extensions for storing request-scoped data
 /// 用于存储请求范围数据的扩展
@@ -19,26 +21,31 @@ use std::collections::HashMap;
 /// This is equivalent to Spring's Model or request attributes.
 /// `这等价于Spring的Model或请求属性`。
 #[derive(Default)]
-pub struct Extensions {
+pub struct Extensions
+{
     inner: HashMap<TypeId, Box<dyn Any + Send + Sync>>,
 }
 
-impl Extensions {
+impl Extensions
+{
     /// Create a new extensions
     /// 创建新扩展
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Insert a value
     /// 插入值
-    pub fn insert<T: Send + Sync + 'static>(&mut self, val: T) {
+    pub fn insert<T: Send + Sync + 'static>(&mut self, val: T)
+    {
         self.inner.insert(TypeId::of::<T>(), Box::new(val));
     }
 
     /// Get a reference to a value
     /// 获取值的引用
-    pub fn get<T: Send + Sync + 'static>(&self) -> Option<&T> {
+    pub fn get<T: Send + Sync + 'static>(&self) -> Option<&T>
+    {
         self.inner
             .get(&TypeId::of::<T>())
             .and_then(|val| val.downcast_ref::<T>())
@@ -46,7 +53,8 @@ impl Extensions {
 
     /// Get a mutable reference to a value
     /// 获取值的可变引用
-    pub fn get_mut<T: Send + Sync + 'static>(&mut self) -> Option<&mut T> {
+    pub fn get_mut<T: Send + Sync + 'static>(&mut self) -> Option<&mut T>
+    {
         self.inner
             .get_mut(&TypeId::of::<T>())
             .and_then(|val| val.downcast_mut::<T>())
@@ -54,7 +62,8 @@ impl Extensions {
 
     /// Remove a value
     /// 移除值
-    pub fn remove<T: Send + Sync + 'static>(&mut self) -> Option<T> {
+    pub fn remove<T: Send + Sync + 'static>(&mut self) -> Option<T>
+    {
         self.inner
             .remove(&TypeId::of::<T>())
             .and_then(|val| val.downcast::<T>().ok().map(|b| *b))
@@ -62,21 +71,25 @@ impl Extensions {
 
     /// Check if a value exists
     /// 检查值是否存在
-    pub fn contains<T: Send + Sync + 'static>(&self) -> bool {
+    pub fn contains<T: Send + Sync + 'static>(&self) -> bool
+    {
         self.inner.contains_key(&TypeId::of::<T>())
     }
 
     /// Clear all extensions
     /// 清除所有扩展
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self)
+    {
         self.inner.clear();
     }
 }
 
-impl Clone for Extensions {
-    fn clone(&self) -> Self {
+impl Clone for Extensions
+{
+    fn clone(&self) -> Self
+    {
         // Note: This is a shallow clone - only the HashMap is cloned
-        //注意：这是浅拷贝 - 只复制HashMap
+        // 注意：这是浅拷贝 - 只复制HashMap
         Self {
             inner: HashMap::new(),
         }
@@ -85,7 +98,8 @@ impl Clone for Extensions {
 
 /// Extension trait for types that can hold extensions
 /// 可持有扩展的类型的trait
-pub trait HasExtensions {
+pub trait HasExtensions
+{
     /// Get the extensions
     /// 获取扩展
     fn extensions(&self) -> &Extensions;
@@ -96,55 +110,64 @@ pub trait HasExtensions {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ── Extensions basic operations / Extensions基本操作 ─────────────────
 
     #[test]
-    fn test_extensions_new() {
+    fn test_extensions_new()
+    {
         let ext = Extensions::new();
         assert!(!ext.contains::<i32>());
     }
 
     #[test]
-    fn test_extensions_default() {
+    fn test_extensions_default()
+    {
         let ext = Extensions::default();
         assert!(!ext.contains::<String>());
     }
 
     #[test]
-    fn test_extensions_insert_and_get() {
+    fn test_extensions_insert_and_get()
+    {
         let mut ext = Extensions::new();
         ext.insert(42i32);
         assert_eq!(ext.get::<i32>(), Some(&42));
     }
 
     #[test]
-    fn test_extensions_get_missing_type() {
+    fn test_extensions_get_missing_type()
+    {
         let mut ext = Extensions::new();
         ext.insert(42i32);
         assert_eq!(ext.get::<String>(), None);
     }
 
     #[test]
-    fn test_extensions_get_mut() {
+    fn test_extensions_get_mut()
+    {
         let mut ext = Extensions::new();
         ext.insert(100i32);
-        if let Some(v) = ext.get_mut::<i32>() {
+        if let Some(v) = ext.get_mut::<i32>()
+        {
             *v = 200;
         }
         assert_eq!(ext.get::<i32>(), Some(&200));
     }
 
     #[test]
-    fn test_extensions_get_mut_missing() {
+    fn test_extensions_get_mut_missing()
+    {
         let mut ext = Extensions::new();
         assert!(ext.get_mut::<String>().is_none());
     }
 
     #[test]
-    fn test_extensions_remove() {
+    fn test_extensions_remove()
+    {
         let mut ext = Extensions::new();
         ext.insert("hello".to_string());
         let removed = ext.remove::<String>();
@@ -153,14 +176,16 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_remove_missing() {
+    fn test_extensions_remove_missing()
+    {
         let mut ext = Extensions::new();
         let removed: Option<i32> = ext.remove::<i32>();
         assert!(removed.is_none());
     }
 
     #[test]
-    fn test_extensions_contains() {
+    fn test_extensions_contains()
+    {
         let mut ext = Extensions::new();
         assert!(!ext.contains::<i32>());
         ext.insert(1i32);
@@ -168,7 +193,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_clear() {
+    fn test_extensions_clear()
+    {
         let mut ext = Extensions::new();
         ext.insert(1i32);
         ext.insert("hello".to_string());
@@ -183,7 +209,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_overwrite_same_type() {
+    fn test_extensions_overwrite_same_type()
+    {
         let mut ext = Extensions::new();
         ext.insert(1i32);
         ext.insert(2i32); // Overwrites / 覆盖
@@ -191,7 +218,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_multiple_types() {
+    fn test_extensions_multiple_types()
+    {
         let mut ext = Extensions::new();
         ext.insert(42i32);
         ext.insert("text".to_string());
@@ -202,7 +230,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_clone_is_empty() {
+    fn test_extensions_clone_is_empty()
+    {
         // Clone creates empty HashMap per implementation / Clone创建空HashMap（按实现）
         let mut ext = Extensions::new();
         ext.insert(99i32);
@@ -213,7 +242,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_insert_and_remove_cycle() {
+    fn test_extensions_insert_and_remove_cycle()
+    {
         let mut ext = Extensions::new();
         ext.insert(10i32);
         assert!(ext.contains::<i32>());
@@ -224,7 +254,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_type_isolation() {
+    fn test_extensions_type_isolation()
+    {
         // Different types with same value / 不同类型但相同值
         let mut ext = Extensions::new();
         ext.insert(42i32);
@@ -241,9 +272,11 @@ mod tests {
     }
 
     #[test]
-    fn test_extensions_custom_type() {
+    fn test_extensions_custom_type()
+    {
         #[derive(Debug, PartialEq)]
-        struct Config {
+        struct Config
+        {
             host: String,
             port: u16,
         }
@@ -263,21 +296,27 @@ mod tests {
 
     // ── HasExtensions trait tests / HasExtensions trait测试 ─────────────
 
-    struct MockHolder {
+    struct MockHolder
+    {
         extensions: Extensions,
     }
 
-    impl HasExtensions for MockHolder {
-        fn extensions(&self) -> &Extensions {
+    impl HasExtensions for MockHolder
+    {
+        fn extensions(&self) -> &Extensions
+        {
             &self.extensions
         }
-        fn extensions_mut(&mut self) -> &mut Extensions {
+
+        fn extensions_mut(&mut self) -> &mut Extensions
+        {
             &mut self.extensions
         }
     }
 
     #[test]
-    fn test_has_extensions_trait() {
+    fn test_has_extensions_trait()
+    {
         let mut holder = MockHolder {
             extensions: Extensions::new(),
         };
@@ -286,12 +325,14 @@ mod tests {
     }
 
     #[test]
-    fn test_has_extensions_modify_via_trait() {
+    fn test_has_extensions_modify_via_trait()
+    {
         let mut holder = MockHolder {
             extensions: Extensions::new(),
         };
         holder.extensions_mut().insert("initial".to_string());
-        if let Some(s) = holder.extensions_mut().get_mut::<String>() {
+        if let Some(s) = holder.extensions_mut().get_mut::<String>()
+        {
             s.push_str("-modified");
         }
         assert_eq!(holder.extensions().get::<String>().unwrap(), "initial-modified");

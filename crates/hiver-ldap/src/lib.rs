@@ -8,8 +8,8 @@
 //! object-directory mapping, query builder, and Spring Data style repositories.
 //! Equivalent to: Spring LDAP
 //!
-//! `hiver-ldap` 提供LDAP目录服务集成，包括模板模式、对象目录映射、查询构建器和Spring Data风格的仓库。
-//! 等价于: Spring LDAP
+//! `hiver-ldap` 提供LDAP目录服务集成，包括模板模式、对象目录映射、查询构建器和Spring
+//! Data风格的仓库。 等价于: Spring LDAP
 //!
 //! # Features / 功能
 //!
@@ -20,11 +20,10 @@
 //!
 //! # Feature flags / 功能标志
 //!
-//! - `ldap`: Enables real LDAP connectivity via the `ldap3` crate.
-//!   Without this flag, all operations return safe defaults (stubs).
+//! - `ldap`: Enables real LDAP connectivity via the `ldap3` crate. Without this flag, all
+//!   operations return safe defaults (stubs).
 //!
-//! - `ldap`: 通过 `ldap3` crate 启用真实LDAP连接。
-//!   没有此标志时，所有操作返回安全的默认值（存根）。
+//! - `ldap`: 通过 `ldap3` crate 启用真实LDAP连接。 没有此标志时，所有操作返回安全的默认值（存根）。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]

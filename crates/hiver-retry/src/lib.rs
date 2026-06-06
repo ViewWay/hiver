@@ -50,9 +50,8 @@ mod tests;
 
 mod template;
 
+// Re-export from hiver-resilience
+pub use hiver_resilience::retry::{BackoffType, RetryAll, RetryError, RetryPolicy, ShouldRetry};
 pub use template::{
     NoOpCallback, RetryCallback, RetryContext, RetryTemplate, RetryTemplateBuilder,
 };
-
-// Re-export from hiver-resilience
-pub use hiver_resilience::retry::{BackoffType, RetryAll, RetryError, RetryPolicy, ShouldRetry};

@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /tmp/hiver.wiki && git checkout --ours Home.md && git add Home.md && git rebase --continue --no-edit && git push -u origin master 2>&1\",\"description\":\"Resolve conflict and push wiki\"}",
-  "error": "Exit code 129\nzoxide: detected a possible configuration issue.\nPlease ensure that zoxide is initialized right at the end of your shell configuration file (usually ~/.zshrc).\n\nIf the issue persists, consider filing an issue at:\nhttps://github.com/ajeetdsouza/zoxide/issues\n\nDisable this message by setting _ZO_DOCTOR=0.\n\nUpdated 1 path from the index\nerror: unknown option `no-edit'\nusage: git rebase [-i] [options] [--exec <cmd>] [--onto <newbase> | --keep-base] [<upstream> [<branch>]]\n   or: git re...",
-  "timestamp": "2026-06-06T00:54:05.335Z",
-  "retry_count": 3
-}

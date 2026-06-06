@@ -31,21 +31,18 @@ pub mod wallet;
 
 pub use chain::{Block, BlockNumber, ChainConfig, ChainId, Eip155Chain};
 pub use contract::{CallParams, ContractError, FunctionSelector};
+#[cfg(feature = "rpc")]
+pub use contract::{Contract, ContractCall, ERC20, ERC721};
 pub use defi::{DeFiError, Erc20, Erc721, Erc1155, UniswapV2Router};
 pub use hd_wallet::{DerivedAccount, HdWallet, HdWalletError, MultiSigWallet, WordCount};
 pub use multichain::{BridgeError, ChainRegistry, GasFeeEstimate, GasOracle};
-pub use rpc::RpcError;
-pub use tx::{Transaction, TransactionBuilder, TxHash, TxType};
-pub use wallet::{Address, LocalWallet, Wallet};
-
 #[cfg(feature = "rpc")]
 pub use rpc::RpcClient;
-
-#[cfg(feature = "rpc")]
-pub use contract::{Contract, ContractCall, ERC20, ERC721};
-
+pub use rpc::RpcError;
 #[cfg(feature = "ws")]
 pub use subscribe::{
     LogFilter, LogNotification, NewBlockHeader, PendingTransaction, SubscriptionId,
     SubscriptionManager, SubscriptionNotification, SubscriptionType, WsClient, WsError,
 };
+pub use tx::{Transaction, TransactionBuilder, TxHash, TxType};
+pub use wallet::{Address, LocalWallet, Wallet};

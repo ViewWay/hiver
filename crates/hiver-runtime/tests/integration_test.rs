@@ -4,11 +4,14 @@
 //! These tests verify the core functionality of the async runtime.
 //! 这些测试验证异步运行时的核心功能。
 
-use hiver_runtime::driver::{DriverFactory, DriverType};
-use hiver_runtime::time::Duration;
+use hiver_runtime::{
+    driver::{DriverFactory, DriverType},
+    time::Duration,
+};
 
 #[test]
-fn test_driver_factory_auto() {
+fn test_driver_factory_auto()
+{
     // Test that the driver factory can create a driver with Auto type
     // 测试driver工厂可以使用Auto类型创建driver
     #[cfg(any(
@@ -26,7 +29,8 @@ fn test_driver_factory_auto() {
 }
 
 #[test]
-fn test_driver_factory_kqueue() {
+fn test_driver_factory_kqueue()
+{
     #[cfg(any(
         target_os = "macos",
         target_os = "freebsd",
@@ -41,7 +45,8 @@ fn test_driver_factory_kqueue() {
 }
 
 #[test]
-fn test_driver_factory_epoll() {
+fn test_driver_factory_epoll()
+{
     #[cfg(target_os = "linux")]
     {
         let driver = DriverFactory::create(DriverType::Epoll);
@@ -50,7 +55,8 @@ fn test_driver_factory_epoll() {
 }
 
 #[test]
-fn test_driver_factory_iouring() {
+fn test_driver_factory_iouring()
+{
     #[cfg(target_os = "linux")]
     {
         let driver = DriverFactory::create(DriverType::IOUring);
@@ -61,7 +67,8 @@ fn test_driver_factory_iouring() {
 }
 
 #[test]
-fn test_timer_wheel_advance() {
+fn test_timer_wheel_advance()
+{
     use hiver_runtime::time::TimerWheel;
 
     let wheel = TimerWheel::new();
@@ -75,7 +82,8 @@ fn test_timer_wheel_advance() {
 }
 
 #[test]
-fn test_timer_wheel_cascade() {
+fn test_timer_wheel_cascade()
+{
     use hiver_runtime::time::TimerWheel;
 
     let wheel = TimerWheel::new();
@@ -88,7 +96,8 @@ fn test_timer_wheel_cascade() {
 }
 
 #[test]
-fn test_sleep_duration() {
+fn test_sleep_duration()
+{
     use std::time::Instant;
 
     let start = Instant::now();
@@ -100,24 +109,33 @@ fn test_sleep_duration() {
 }
 
 #[test]
-fn test_future_polling() {
-    use std::future::Future;
-    use std::pin::Pin;
-    use std::task::{Context, Poll};
+fn test_future_polling()
+{
+    use std::{
+        future::Future,
+        pin::Pin,
+        task::{Context, Poll},
+    };
 
     // Create a simple future
     // 创建一个简单的future
-    struct SimpleFuture {
+    struct SimpleFuture
+    {
         completed: bool,
     }
 
-    impl Future for SimpleFuture {
+    impl Future for SimpleFuture
+    {
         type Output = u32;
 
-        fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
-            if self.completed {
+        fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+        {
+            if self.completed
+            {
                 Poll::Ready(42)
-            } else {
+            }
+            else
+            {
                 self.completed = true;
                 Poll::Pending
             }
@@ -141,7 +159,8 @@ fn test_future_polling() {
     let result = Pin::new(&mut future).poll(&mut context);
     assert!(result.is_ready());
     assert_eq!(
-        match result {
+        match result
+        {
             Poll::Ready(v) => v,
             Poll::Pending => unreachable!(),
         },
@@ -150,7 +169,8 @@ fn test_future_polling() {
 }
 
 #[test]
-fn test_atomic_operations() {
+fn test_atomic_operations()
+{
     use std::sync::atomic::{AtomicU64, Ordering};
 
     let atomic = AtomicU64::new(0);
@@ -167,7 +187,8 @@ fn test_atomic_operations() {
 }
 
 #[test]
-fn test_arc_clone() {
+fn test_arc_clone()
+{
     use std::sync::Arc;
 
     let data = Arc::new(42);
@@ -179,7 +200,8 @@ fn test_arc_clone() {
 }
 
 #[test]
-fn test_duration_conversions() {
+fn test_duration_conversions()
+{
     use hiver_runtime::time::Duration;
 
     // Test from_millis
@@ -197,7 +219,8 @@ fn test_duration_conversions() {
 }
 
 #[test]
-fn test_ring_buffer_indices() {
+fn test_ring_buffer_indices()
+{
     // Test ring buffer index calculation
     // 测试环形缓冲区索引计算
     const CAPACITY: usize = 256; // Must be power of 2 / 必须是2的幂
@@ -213,7 +236,8 @@ fn test_ring_buffer_indices() {
 }
 
 #[test]
-fn test_scheduler_config() {
+fn test_scheduler_config()
+{
     use hiver_runtime::scheduler::SchedulerConfig;
 
     let config = SchedulerConfig::default();
@@ -221,7 +245,8 @@ fn test_scheduler_config() {
 }
 
 #[test]
-fn test_bind_future_tcp() {
+fn test_bind_future_tcp()
+{
     use hiver_runtime::io::TcpListener;
 
     // Test that bind creates a valid future
@@ -230,14 +255,18 @@ fn test_bind_future_tcp() {
 
     // Should be Error variant
     // 应该是Error变体
-    match future {
-        hiver_runtime::io::BindFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::BindFuture::Error(_) =>
+        {
             // Expected / 符合预期
         },
-        hiver_runtime::io::BindFuture::Done => {
+        hiver_runtime::io::BindFuture::Done =>
+        {
             panic!("Expected Error future for invalid address");
         },
-        _ => {
+        _ =>
+        {
             // Binding state is also valid for valid addresses
             // Binding状态对有效地址也是有效的
         },
@@ -247,18 +276,22 @@ fn test_bind_future_tcp() {
 
     // Should not be Error variant for valid address
     // 有效地址不应该返回Error变体
-    match future {
-        hiver_runtime::io::BindFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::BindFuture::Error(_) =>
+        {
             panic!("Expected non-Error future for valid address");
         },
-        _ => {
+        _ =>
+        {
             // Expected / 符合预期
         },
     }
 }
 
 #[test]
-fn test_bind_future_udp() {
+fn test_bind_future_udp()
+{
     use hiver_runtime::io::UdpSocket;
 
     // Test that bind creates a valid future
@@ -267,14 +300,18 @@ fn test_bind_future_udp() {
 
     // Should be Error variant
     // 应该是Error变体
-    match future {
-        hiver_runtime::io::BindUdpFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::BindUdpFuture::Error(_) =>
+        {
             // Expected / 符合预期
         },
-        hiver_runtime::io::BindUdpFuture::Done => {
+        hiver_runtime::io::BindUdpFuture::Done =>
+        {
             panic!("Expected Error future for invalid address");
         },
-        _ => {
+        _ =>
+        {
             // Binding state is also valid for valid addresses
             // Binding状态对有效地址也是有效的
         },
@@ -284,32 +321,40 @@ fn test_bind_future_udp() {
 
     // Should not be Error variant for valid address
     // 有效地址不应该返回Error变体
-    match future {
-        hiver_runtime::io::BindUdpFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::BindUdpFuture::Error(_) =>
+        {
             panic!("Expected non-Error future for valid address");
         },
-        _ => {
+        _ =>
+        {
             // Expected / 符合预期
         },
     }
 }
 
 #[test]
-fn test_connect_future() {
+fn test_connect_future()
+{
     use hiver_runtime::io::TcpStream;
 
     // Test invalid address
     // 测试无效地址
     let future = TcpStream::connect("not_an_address");
 
-    match future {
-        hiver_runtime::io::ConnectFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::ConnectFuture::Error(_) =>
+        {
             // Expected / 符合预期
         },
-        hiver_runtime::io::ConnectFuture::Done => {
+        hiver_runtime::io::ConnectFuture::Done =>
+        {
             panic!("Expected Error future for invalid address");
         },
-        _ => {
+        _ =>
+        {
             // Connecting state is also valid for valid addresses
             // Connecting状态对有效地址也是有效的
         },
@@ -319,18 +364,22 @@ fn test_connect_future() {
     // 测试有效地址格式
     let future = TcpStream::connect("127.0.0.1:8080");
 
-    match future {
-        hiver_runtime::io::ConnectFuture::Error(_) => {
+    match future
+    {
+        hiver_runtime::io::ConnectFuture::Error(_) =>
+        {
             panic!("Expected non-Error future for valid address");
         },
-        _ => {
+        _ =>
+        {
             // Expected / 符合预期
         },
     }
 }
 
 #[test]
-fn test_interest_builder() {
+fn test_interest_builder()
+{
     use hiver_runtime::driver::Interest;
 
     // Test readable
@@ -369,7 +418,8 @@ fn test_interest_builder() {
 }
 
 #[test]
-fn test_driver_config_builder() {
+fn test_driver_config_builder()
+{
     use hiver_runtime::driver::DriverConfigBuilder;
 
     let config = DriverConfigBuilder::new()
@@ -388,7 +438,8 @@ fn test_driver_config_builder() {
 }
 
 #[test]
-fn test_driver_config_default() {
+fn test_driver_config_default()
+{
     use hiver_runtime::driver::DriverConfig;
 
     let config = DriverConfig::default();
@@ -403,15 +454,19 @@ fn test_driver_config_default() {
 // 基准测试风格的测试
 
 #[test]
-fn benchmark_atomic_fetch_add() {
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::time::Instant;
+fn benchmark_atomic_fetch_add()
+{
+    use std::{
+        sync::atomic::{AtomicUsize, Ordering},
+        time::Instant,
+    };
 
     let atomic = AtomicUsize::new(0);
     let iterations = 1_000_000;
 
     let start = Instant::now();
-    for _ in 0..iterations {
+    for _ in 0..iterations
+    {
         atomic.fetch_add(1, Ordering::Relaxed);
     }
     let elapsed = start.elapsed();
@@ -421,15 +476,18 @@ fn benchmark_atomic_fetch_add() {
 }
 
 #[test]
-fn benchmark_timer_wheel_advance() {
-    use hiver_runtime::time::TimerWheel;
+fn benchmark_timer_wheel_advance()
+{
     use std::time::Instant;
+
+    use hiver_runtime::time::TimerWheel;
 
     let wheel = TimerWheel::new();
     let iterations = 10_000;
 
     let start = Instant::now();
-    for _ in 0..iterations {
+    for _ in 0..iterations
+    {
         wheel.advance(1);
     }
     let elapsed = start.elapsed();
@@ -442,25 +500,33 @@ fn benchmark_timer_wheel_advance() {
 // 线程安全测试
 
 #[test]
-fn test_arc_atomic_counter() {
-    use std::sync::Arc;
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::thread;
+fn test_arc_atomic_counter()
+{
+    use std::{
+        sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        },
+        thread,
+    };
 
     let counter = Arc::new(AtomicUsize::new(0));
     let mut handles = vec![];
 
-    for _ in 0..4 {
+    for _ in 0..4
+    {
         let counter_clone = Arc::clone(&counter);
         let handle = thread::spawn(move || {
-            for _ in 0..1000 {
+            for _ in 0..1000
+            {
                 counter_clone.fetch_add(1, Ordering::Relaxed);
             }
         });
         handles.push(handle);
     }
 
-    for handle in handles {
+    for handle in handles
+    {
         handle.join().unwrap();
     }
 

@@ -79,21 +79,20 @@ pub use caching::{Caching, CachingBuilder, CachingExec};
 pub use condition_evaluator::evaluate_cache_condition;
 pub use global_cache::{cache_evict_key, cache_get, cache_put, global_cache_manager};
 pub use key_generator::{DefaultKeyGenerator, HashKeyGenerator, KeyGenerator};
-pub use resolver::{CacheResolver, SimpleCacheResolver};
-
 #[cfg(feature = "redis")]
 pub use redis_cache::{RedisCache, RedisConfig, SerializationFormat};
 #[cfg(feature = "redis")]
 pub use redis_cache_manager::{RedisCacheManager, RedisCacheWorker};
+pub use resolver::{CacheResolver, SimpleCacheResolver};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         Cache, CacheBuilder, CacheConfig, CacheEvict, CacheManager, CacheManagerBuilder, CachePut,
         Cacheable, Cached,
     };
-
     #[cfg(feature = "redis")]
     pub use super::{RedisCache, RedisCacheManager, RedisConfig};
 }

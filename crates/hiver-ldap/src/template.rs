@@ -9,11 +9,13 @@
 //! 启用 `ldap` feature 时，操作会连接到真实的LDAP服务器。
 //! 否则返回安全的默认值以支持API兼容性测试。
 
-use crate::context::LdapContextSource;
 #[cfg(feature = "ldap")]
 use crate::error::LdapError;
-use crate::error::LdapResult;
-use crate::mapper::{AttrMap, AttributesMapper, ContextMapper};
+use crate::{
+    context::LdapContextSource,
+    error::LdapResult,
+    mapper::{AttrMap, AttributesMapper, ContextMapper},
+};
 
 /// Central class for LDAP operations, wrapping a `ContextSource`.
 /// LDAP操作的中心类，包装 `ContextSource`。
@@ -27,18 +29,22 @@ use crate::mapper::{AttrMap, AttributesMapper, ContextMapper};
 /// let template = LdapTemplate::new(context_source);
 /// ```
 #[derive(Debug, Clone)]
-pub struct LdapTemplate {
+pub struct LdapTemplate
+{
     context_source: LdapContextSource,
 }
 
-impl LdapTemplate {
+impl LdapTemplate
+{
     /// Create a new `LdapTemplate` / 创建新的 `LdapTemplate`
-    pub fn new(context_source: LdapContextSource) -> Self {
+    pub fn new(context_source: LdapContextSource) -> Self
+    {
         Self { context_source }
     }
 
     /// Get the underlying context source / 获取底层的上下文源
-    pub fn context_source(&self) -> &LdapContextSource {
+    pub fn context_source(&self) -> &LdapContextSource
+    {
         &self.context_source
     }
 
@@ -47,11 +53,13 @@ impl LdapTemplate {
     /// Performs a simple bind to verify credentials.
     /// 执行简单绑定以验证凭据。
     #[allow(clippy::unused_async)]
-    pub async fn authenticate(&self, user_dn: &str, password: &str) -> LdapResult<bool> {
+    pub async fn authenticate(&self, user_dn: &str, password: &str) -> LdapResult<bool>
+    {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.context_source.get_context().await?;
-            match conn.simple_bind(user_dn, password).await {
+            match conn.simple_bind(user_dn, password).await
+            {
                 Ok(()) => Ok(true),
                 Err(LdapError::Authentication(_)) => Ok(false),
                 Err(e) => Err(e),
@@ -74,7 +82,8 @@ impl LdapTemplate {
         base: &str,
         filter: &str,
         mapper: &M,
-    ) -> LdapResult<Vec<T>> {
+    ) -> LdapResult<Vec<T>>
+    {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Subtree;
@@ -108,7 +117,8 @@ impl LdapTemplate {
     /// Convenience method that returns attribute maps instead of requiring a mapper.
     /// 便捷方法，返回属性映射而不需要提供mapper。
     #[allow(clippy::unused_async)]
-    pub async fn search_attrs(&self, base: &str, filter: &str) -> LdapResult<Vec<AttrMap>> {
+    pub async fn search_attrs(&self, base: &str, filter: &str) -> LdapResult<Vec<AttrMap>>
+    {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Subtree;
@@ -118,7 +128,8 @@ impl LdapTemplate {
                 .into_iter()
                 .map(|(_dn, attrs)| {
                     let mut map = AttrMap::new();
-                    for (key, values) in attrs {
+                    for (key, values) in attrs
+                    {
                         let refs: Vec<&str> = values.iter().map(String::as_str).collect();
                         map.add(&key, &refs);
                     }
@@ -140,15 +151,19 @@ impl LdapTemplate {
         &self,
         dn: &str,
         mapper: &M,
-    ) -> LdapResult<Option<T>> {
+    ) -> LdapResult<Option<T>>
+    {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Base;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(dn, scope, "(objectClass=*)", &["*"]).await?;
-            if let Some((_dn, _attrs)) = results.into_iter().next() {
+            if let Some((_dn, _attrs)) = results.into_iter().next()
+            {
                 Ok(Some(mapper.map_from_context(dn)))
-            } else {
+            }
+            else
+            {
                 Ok(None)
             }
         }
@@ -164,7 +179,8 @@ impl LdapTemplate {
     /// `attrs` is a list of `(attribute_name, values)` pairs.
     /// `attrs` 是 `(属性名, 值列表)` 对的列表。
     #[allow(clippy::unused_async)]
-    pub async fn bind(&self, dn: &str, attrs: &[(&str, &[&str])]) -> LdapResult<()> {
+    pub async fn bind(&self, dn: &str, attrs: &[(&str, &[&str])]) -> LdapResult<()>
+    {
         #[cfg(feature = "ldap")]
         {
             use std::collections::HashSet;
@@ -186,7 +202,8 @@ impl LdapTemplate {
 
     /// Unbind (delete) an LDAP entry / 解绑（删除）LDAP条目
     #[allow(clippy::unused_async)]
-    pub async fn unbind(&self, dn: &str) -> LdapResult<()> {
+    pub async fn unbind(&self, dn: &str) -> LdapResult<()>
+    {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.context_source.get_context().await?;
@@ -207,7 +224,8 @@ impl LdapTemplate {
     /// `modifications` 是 `(属性名, 新值列表)` 对的列表。
     /// 每对将属性替换为给定的值。
     #[allow(clippy::unused_async)]
-    pub async fn modify(&self, dn: &str, modifications: &[(&str, &[&str])]) -> LdapResult<()> {
+    pub async fn modify(&self, dn: &str, modifications: &[(&str, &[&str])]) -> LdapResult<()>
+    {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.context_source.get_context().await?;
@@ -231,7 +249,8 @@ impl LdapTemplate {
 
     /// Check if an entry exists by performing a base search / 通过基础搜索检查条目是否存在
     #[allow(clippy::unused_async)]
-    pub async fn exists(&self, dn: &str) -> LdapResult<bool> {
+    pub async fn exists(&self, dn: &str) -> LdapResult<bool>
+    {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Base;
@@ -248,7 +267,8 @@ impl LdapTemplate {
 
     /// Count entries matching a filter / 统计匹配过滤器的条目数
     #[allow(clippy::unused_async)]
-    pub async fn count(&self, base: &str, filter: &str) -> LdapResult<usize> {
+    pub async fn count(&self, base: &str, filter: &str) -> LdapResult<usize>
+    {
         #[cfg(feature = "ldap")]
         {
             let scope = ldap3::SearchScope::Subtree;
@@ -265,19 +285,22 @@ impl LdapTemplate {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::mapper::AttrMap;
 
     #[test]
-    fn test_template_creation() {
+    fn test_template_creation()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx.clone());
         assert!(template.context_source().url().contains("localhost"));
     }
 
     #[tokio::test]
-    async fn test_authenticate_stub() {
+    async fn test_authenticate_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template
@@ -288,12 +311,15 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_search_stub() {
+    async fn test_search_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         struct IdentMapper;
-        impl AttributesMapper<String> for IdentMapper {
-            fn map_attributes(&self, _attrs: &[(&str, &[&str])]) -> String {
+        impl AttributesMapper<String> for IdentMapper
+        {
+            fn map_attributes(&self, _attrs: &[(&str, &[&str])]) -> String
+            {
                 "mapped".to_string()
             }
         }
@@ -305,7 +331,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_search_attrs_stub() {
+    async fn test_search_attrs_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template
@@ -316,12 +343,15 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_lookup_stub() {
+    async fn test_lookup_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         struct IdentCtxMapper;
-        impl ContextMapper<String> for IdentCtxMapper {
-            fn map_from_context(&self, ctx: &str) -> String {
+        impl ContextMapper<String> for IdentCtxMapper
+        {
+            fn map_from_context(&self, ctx: &str) -> String
+            {
                 ctx.to_string()
             }
         }
@@ -333,7 +363,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_bind_stub() {
+    async fn test_bind_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template
@@ -343,7 +374,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_unbind_stub() {
+    async fn test_unbind_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template.unbind("cn=user,dc=example,dc=com").await;
@@ -351,7 +383,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_modify_stub() {
+    async fn test_modify_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template
@@ -361,7 +394,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_exists_stub() {
+    async fn test_exists_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template.exists("cn=user,dc=example,dc=com").await;
@@ -369,7 +403,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_count_stub() {
+    async fn test_count_stub()
+    {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let result = template.count("dc=example,dc=com", "(objectClass=*)").await;

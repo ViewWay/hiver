@@ -1,9 +1,11 @@
 //! User and `UserDetails` module
 //! `用户和UserDetails模块`
 
-use crate::{Authority, PasswordEncoder, Role, SecurityError, SecurityResult};
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+
+use serde::{Deserialize, Serialize};
+
+use crate::{Authority, PasswordEncoder, Role, SecurityError, SecurityResult};
 
 /// User
 /// 用户
@@ -21,7 +23,8 @@ use std::sync::Arc;
 ///     .build();
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct User {
+pub struct User
+{
     /// Username
     /// 用户名
     pub username: String,
@@ -52,10 +55,12 @@ pub struct User {
     pub account_non_locked: bool,
 }
 
-impl User {
+impl User
+{
     /// Create a new user
     /// 创建新用户
-    pub fn new(username: impl Into<String>, password: impl Into<String>) -> Self {
+    pub fn new(username: impl Into<String>, password: impl Into<String>) -> Self
+    {
         Self {
             username: username.into(),
             password: password.into(),
@@ -73,7 +78,8 @@ impl User {
         username: impl Into<String>,
         password: impl Into<String>,
         roles: &[Role],
-    ) -> Self {
+    ) -> Self
+    {
         let authorities = roles.iter().map(|r| Authority::Role(r.clone())).collect();
         Self {
             username: username.into(),
@@ -88,34 +94,39 @@ impl User {
 
     /// Add authority
     /// 添加权限
-    pub fn add_authority(mut self, authority: Authority) -> Self {
+    pub fn add_authority(mut self, authority: Authority) -> Self
+    {
         self.authorities.push(authority);
         self
     }
 
     /// Add role
     /// 添加角色
-    pub fn add_role(mut self, role: Role) -> Self {
+    pub fn add_role(mut self, role: Role) -> Self
+    {
         self.authorities.push(Authority::Role(role));
         self
     }
 
     /// Set enabled
     /// 设置启用
-    pub fn enabled(mut self, enabled: bool) -> Self {
+    pub fn enabled(mut self, enabled: bool) -> Self
+    {
         self.enabled = enabled;
         self
     }
 
     /// Check if user has authority
     /// 检查用户是否有权限
-    pub fn has_authority(&self, authority: &Authority) -> bool {
+    pub fn has_authority(&self, authority: &Authority) -> bool
+    {
         self.authorities.contains(authority)
     }
 
     /// Check if user has role
     /// 检查用户是否有角色
-    pub fn has_role(&self, role: &Role) -> bool {
+    pub fn has_role(&self, role: &Role) -> bool
+    {
         self.authorities.contains(&Authority::Role(role.clone()))
     }
 }
@@ -126,7 +137,8 @@ impl User {
 /// Equivalent to Spring's `UserBuilder`.
 /// `等价于Spring的UserBuilder`。
 #[derive(Debug, Clone)]
-pub struct UserBuilder {
+pub struct UserBuilder
+{
     username: Option<String>,
     password: Option<String>,
     authorities: Vec<Authority>,
@@ -136,10 +148,12 @@ pub struct UserBuilder {
     account_non_locked: bool,
 }
 
-impl UserBuilder {
+impl UserBuilder
+{
     /// Create a new user builder
     /// 创建新的用户构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             username: None,
             password: None,
@@ -153,14 +167,16 @@ impl UserBuilder {
 
     /// Set username
     /// 设置用户名
-    pub fn username(mut self, username: impl Into<String>) -> Self {
+    pub fn username(mut self, username: impl Into<String>) -> Self
+    {
         self.username = Some(username.into());
         self
     }
 
     /// Set password
     /// 设置密码
-    pub fn password(mut self, password: impl Into<String>) -> Self {
+    pub fn password(mut self, password: impl Into<String>) -> Self
+    {
         self.password = Some(password.into());
         self
     }
@@ -171,7 +187,8 @@ impl UserBuilder {
         mut self,
         password: impl Into<String>,
         encoder: &dyn PasswordEncoder,
-    ) -> Self {
+    ) -> Self
+    {
         let raw = password.into();
         self.password = Some(encoder.encode(&raw));
         self
@@ -179,8 +196,10 @@ impl UserBuilder {
 
     /// Add roles
     /// 添加角色
-    pub fn roles(mut self, roles: &[Role]) -> Self {
-        for role in roles {
+    pub fn roles(mut self, roles: &[Role]) -> Self
+    {
+        for role in roles
+        {
             self.authorities.push(Authority::Role(role.clone()));
         }
         self
@@ -188,42 +207,48 @@ impl UserBuilder {
 
     /// Add authorities
     /// 添加权限
-    pub fn authorities(mut self, authorities: &[Authority]) -> Self {
+    pub fn authorities(mut self, authorities: &[Authority]) -> Self
+    {
         self.authorities.extend(authorities.iter().cloned());
         self
     }
 
     /// Set enabled
     /// 设置启用
-    pub fn enabled(mut self, enabled: bool) -> Self {
+    pub fn enabled(mut self, enabled: bool) -> Self
+    {
         self.enabled = enabled;
         self
     }
 
     /// Set account non expired
     /// 设置账户未过期
-    pub fn account_non_expired(mut self, non_expired: bool) -> Self {
+    pub fn account_non_expired(mut self, non_expired: bool) -> Self
+    {
         self.account_non_expired = non_expired;
         self
     }
 
     /// Set credentials non expired
     /// 设置凭据未过期
-    pub fn credentials_non_expired(mut self, non_expired: bool) -> Self {
+    pub fn credentials_non_expired(mut self, non_expired: bool) -> Self
+    {
         self.credentials_non_expired = non_expired;
         self
     }
 
     /// Set account non locked
     /// 设置账户未锁定
-    pub fn account_non_locked(mut self, non_locked: bool) -> Self {
+    pub fn account_non_locked(mut self, non_locked: bool) -> Self
+    {
         self.account_non_locked = non_locked;
         self
     }
 
     /// Build the user
     /// 构建用户
-    pub fn build(self) -> SecurityResult<User> {
+    pub fn build(self) -> SecurityResult<User>
+    {
         Ok(User {
             username: self
                 .username
@@ -240,8 +265,10 @@ impl UserBuilder {
     }
 }
 
-impl Default for UserBuilder {
-    fn default() -> Self {
+impl Default for UserBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -265,7 +292,8 @@ impl Default for UserBuilder {
 ///     boolean isEnabled();
 /// }
 /// ```
-pub trait UserDetails: Send + Sync {
+pub trait UserDetails: Send + Sync
+{
     /// Get authorities
     /// 获取权限
     fn authorities(&self) -> Vec<Authority>;
@@ -296,32 +324,40 @@ pub trait UserDetails: Send + Sync {
 }
 
 /// Implement `UserDetails` for User
-impl UserDetails for User {
-    fn authorities(&self) -> Vec<Authority> {
+impl UserDetails for User
+{
+    fn authorities(&self) -> Vec<Authority>
+    {
         self.authorities.clone()
     }
 
-    fn password(&self) -> &str {
+    fn password(&self) -> &str
+    {
         &self.password
     }
 
-    fn username(&self) -> &str {
+    fn username(&self) -> &str
+    {
         &self.username
     }
 
-    fn is_account_non_expired(&self) -> bool {
+    fn is_account_non_expired(&self) -> bool
+    {
         self.account_non_expired
     }
 
-    fn is_account_non_locked(&self) -> bool {
+    fn is_account_non_locked(&self) -> bool
+    {
         self.account_non_locked
     }
 
-    fn is_credentials_non_expired(&self) -> bool {
+    fn is_credentials_non_expired(&self) -> bool
+    {
         self.credentials_non_expired
     }
 
-    fn is_enabled(&self) -> bool {
+    fn is_enabled(&self) -> bool
+    {
         self.enabled
     }
 }
@@ -340,7 +376,8 @@ impl UserDetails for User {
 /// }
 /// ```
 #[async_trait::async_trait]
-pub trait UserService: Send + Sync {
+pub trait UserService: Send + Sync
+{
     /// Load user by username
     /// 按用户名加载用户
     async fn load_user_by_username(&self, username: &str) -> SecurityResult<Arc<dyn UserDetails>>;
@@ -368,14 +405,17 @@ pub trait UserService: Send + Sync {
 /// Equivalent to Spring's `InMemoryUserDetailsManager`.
 /// `等价于Spring的InMemoryUserDetailsManager`。
 #[derive(Debug)]
-pub struct InMemoryUserService {
+pub struct InMemoryUserService
+{
     users: Arc<tokio::sync::RwLock<std::collections::HashMap<String, User>>>,
 }
 
-impl InMemoryUserService {
+impl InMemoryUserService
+{
     /// Create a new in-memory user service
     /// 创建新的内存用户服务
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             users: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
@@ -383,14 +423,16 @@ impl InMemoryUserService {
 
     /// Add a user
     /// 添加用户
-    pub async fn add_user(&self, user: User) {
+    pub async fn add_user(&self, user: User)
+    {
         let mut users = self.users.write().await;
         users.insert(user.username.clone(), user);
     }
 
     /// Create with users
     /// 使用用户创建
-    pub async fn with_users(users: Vec<User>) -> Self {
+    pub async fn with_users(users: Vec<User>) -> Self
+    {
         let service = Self::new();
         let users_map: std::collections::HashMap<_, _> =
             users.into_iter().map(|u| (u.username.clone(), u)).collect();
@@ -401,15 +443,19 @@ impl InMemoryUserService {
     }
 }
 
-impl Default for InMemoryUserService {
-    fn default() -> Self {
+impl Default for InMemoryUserService
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[async_trait::async_trait]
-impl UserService for InMemoryUserService {
-    async fn load_user_by_username(&self, username: &str) -> SecurityResult<Arc<dyn UserDetails>> {
+impl UserService for InMemoryUserService
+{
+    async fn load_user_by_username(&self, username: &str) -> SecurityResult<Arc<dyn UserDetails>>
+    {
         let users: tokio::sync::RwLockReadGuard<'_, std::collections::HashMap<String, User>> =
             self.users.read().await;
         users
@@ -418,21 +464,24 @@ impl UserService for InMemoryUserService {
             .ok_or_else(|| SecurityError::UserNotFound(username.to_string()))
     }
 
-    async fn create_user(&self, user: User) -> SecurityResult<()> {
+    async fn create_user(&self, user: User) -> SecurityResult<()>
+    {
         let mut users: tokio::sync::RwLockWriteGuard<'_, std::collections::HashMap<String, User>> =
             self.users.write().await;
         users.insert(user.username.clone(), user);
         Ok(())
     }
 
-    async fn update_user(&self, user: User) -> SecurityResult<()> {
+    async fn update_user(&self, user: User) -> SecurityResult<()>
+    {
         let mut users: tokio::sync::RwLockWriteGuard<'_, std::collections::HashMap<String, User>> =
             self.users.write().await;
         users.insert(user.username.clone(), user);
         Ok(())
     }
 
-    async fn delete_user(&self, username: &str) -> SecurityResult<()> {
+    async fn delete_user(&self, username: &str) -> SecurityResult<()>
+    {
         let mut users: tokio::sync::RwLockWriteGuard<'_, std::collections::HashMap<String, User>> =
             self.users.write().await;
         users
@@ -441,7 +490,8 @@ impl UserService for InMemoryUserService {
         Ok(())
     }
 
-    async fn user_exists(&self, username: &str) -> bool {
+    async fn user_exists(&self, username: &str) -> bool
+    {
         let users: tokio::sync::RwLockReadGuard<'_, std::collections::HashMap<String, User>> =
             self.users.read().await;
         users.contains_key(username)
@@ -449,11 +499,13 @@ impl UserService for InMemoryUserService {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_user_builder() {
+    fn test_user_builder()
+    {
         let user = UserBuilder::new()
             .username("john")
             .password("secret")
@@ -467,19 +519,19 @@ mod tests {
     }
 
     #[test]
-    fn test_user_with_roles() {
+    fn test_user_with_roles()
+    {
         let user = User::with_roles("john", "secret", &[Role::User, Role::Admin]);
         assert!(user.has_role(&Role::User));
         assert!(user.has_role(&Role::Admin));
     }
 
     #[tokio::test]
-    async fn test_in_memory_user_service() {
-        let service = InMemoryUserService::with_users(vec![User::with_roles(
-            "john",
-            "secret",
-            &[Role::User],
-        )])
+    async fn test_in_memory_user_service()
+    {
+        let service = InMemoryUserService::with_users(vec![User::with_roles("john", "secret", &[
+            Role::User,
+        ])])
         .await;
 
         assert!(service.user_exists("john").await);

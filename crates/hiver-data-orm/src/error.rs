@@ -6,8 +6,9 @@
 //! This module defines error types specific to ORM operations.
 //! 本模块定义 ORM 操作特定的错误类型。
 
-use hiver_data_commons::Error as DataError;
 use std::fmt;
+
+use hiver_data_commons::Error as DataError;
 
 /// ORM error
 /// ORM 错误
@@ -15,7 +16,8 @@ use std::fmt;
 /// Errors that can occur during ORM operations.
 /// ORM 操作期间可能发生的错误。
 #[derive(Debug)]
-pub enum OrmError {
+pub enum OrmError
+{
     /// Model validation error
     /// 模型验证错误
     Validation(String),
@@ -57,83 +59,98 @@ pub enum OrmError {
     Unknown(String),
 }
 
-impl OrmError {
+impl OrmError
+{
     /// Create a validation error
     /// 创建验证错误
-    pub fn validation(msg: impl Into<String>) -> Self {
+    pub fn validation(msg: impl Into<String>) -> Self
+    {
         Self::Validation(msg.into())
     }
 
     /// Create a query build error
     /// 创建查询构建错误
-    pub fn query_build(msg: impl Into<String>) -> Self {
+    pub fn query_build(msg: impl Into<String>) -> Self
+    {
         Self::QueryBuild(msg.into())
     }
 
     /// Create a relationship error
     /// 创建关系错误
-    pub fn relationship(msg: impl Into<String>) -> Self {
+    pub fn relationship(msg: impl Into<String>) -> Self
+    {
         Self::Relationship(msg.into())
     }
 
     /// Create a migration error
     /// 创建迁移错误
-    pub fn migration(msg: impl Into<String>) -> Self {
+    pub fn migration(msg: impl Into<String>) -> Self
+    {
         Self::Migration(msg.into())
     }
 
     /// Create a not found error
     /// 创建未找到错误
-    pub fn not_found(msg: impl Into<String>) -> Self {
+    pub fn not_found(msg: impl Into<String>) -> Self
+    {
         Self::NotFound(msg.into())
     }
 
     /// Create a duplicate error
     /// 创建重复错误
-    pub fn duplicate(msg: impl Into<String>) -> Self {
+    pub fn duplicate(msg: impl Into<String>) -> Self
+    {
         Self::Duplicate(msg.into())
     }
 
     /// Create an optimistic lock conflict error
     /// 创建乐观锁冲突错误
-    pub fn optimistic_lock_conflict(msg: impl Into<String>) -> Self {
+    pub fn optimistic_lock_conflict(msg: impl Into<String>) -> Self
+    {
         Self::OptimisticLockConflict(msg.into())
     }
 
     /// Check if this is an optimistic lock conflict
     /// 检查是否为乐观锁冲突
-    pub fn is_optimistic_lock_conflict(&self) -> bool {
+    pub fn is_optimistic_lock_conflict(&self) -> bool
+    {
         matches!(self, Self::OptimisticLockConflict(_))
     }
 
     /// Create an unknown error
     /// 创建未知错误
-    pub fn unknown(msg: impl Into<String>) -> Self {
+    pub fn unknown(msg: impl Into<String>) -> Self
+    {
         Self::Unknown(msg.into())
     }
 
     /// Check if this is a validation error
     /// 检查是否为验证错误
-    pub fn is_validation(&self) -> bool {
+    pub fn is_validation(&self) -> bool
+    {
         matches!(self, Self::Validation(_))
     }
 
     /// Check if this is a not found error
     /// 检查是否为未找到错误
-    pub fn is_not_found(&self) -> bool {
+    pub fn is_not_found(&self) -> bool
+    {
         matches!(self, Self::NotFound(_))
     }
 
     /// Check if this is a duplicate error
     /// 检查是否为重复错误
-    pub fn is_duplicate(&self) -> bool {
+    pub fn is_duplicate(&self) -> bool
+    {
         matches!(self, Self::Duplicate(_))
     }
 
     /// Get the error category for logging/metrics
     /// 获取错误类别用于日志/指标
-    pub fn category(&self) -> &str {
-        match self {
+    pub fn category(&self) -> &str
+    {
+        match self
+        {
             Self::Validation(_) => "validation",
             Self::QueryBuild(_) => "query_build",
             Self::Relationship(_) => "relationship",
@@ -148,9 +165,12 @@ impl OrmError {
     }
 }
 
-impl fmt::Display for OrmError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for OrmError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Validation(msg) => write!(f, "Validation error: {}", msg),
             Self::QueryBuild(msg) => write!(f, "Query build error: {}", msg),
             Self::Relationship(msg) => write!(f, "Relationship error: {}", msg),
@@ -165,26 +185,34 @@ impl fmt::Display for OrmError {
     }
 }
 
-impl std::error::Error for OrmError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
+impl std::error::Error for OrmError
+{
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+    {
+        match self
+        {
             Self::DataCommons(err) => Some(err),
             _ => None,
         }
     }
 }
 
-impl From<DataError> for OrmError {
-    fn from(err: DataError) -> Self {
+impl From<DataError> for OrmError
+{
+    fn from(err: DataError) -> Self
+    {
         Self::DataCommons(err)
     }
 }
 
-impl From<hiver_data_rdbc::R2dbcError> for OrmError {
+impl From<hiver_data_rdbc::R2dbcError> for OrmError
+{
     /// Convert R2DBC errors into ORM errors with semantic mapping.
     /// 将 R2DBC 错误语义映射转换为 ORM 错误。
-    fn from(err: hiver_data_rdbc::R2dbcError) -> Self {
-        match err {
+    fn from(err: hiver_data_rdbc::R2dbcError) -> Self
+    {
+        match err
+        {
             hiver_data_rdbc::R2dbcError::Sql(msg) => Self::QueryBuild(msg),
             hiver_data_rdbc::R2dbcError::Connection(msg) => Self::Database(msg.into()),
             hiver_data_rdbc::R2dbcError::Pool(msg) => Self::Database(msg.into()),
@@ -210,11 +238,13 @@ pub use OrmError as Error;
 pub type Result<T> = std::result::Result<T, OrmError>;
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_error_categories() {
+    fn test_error_categories()
+    {
         let err = OrmError::validation("Invalid email");
         assert_eq!(err.category(), "validation");
         assert!(err.is_validation());
@@ -229,7 +259,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let err = OrmError::validation("name is required");
         assert_eq!(err.to_string(), "Validation error: name is required");
 
@@ -238,7 +269,8 @@ mod tests {
     }
 
     #[test]
-    fn test_from_r2dbc_error() {
+    fn test_from_r2dbc_error()
+    {
         let r2dbc_err = hiver_data_rdbc::R2dbcError::Sql("syntax error".into());
         let orm_err: OrmError = r2dbc_err.into();
         assert_eq!(orm_err.category(), "query_build");

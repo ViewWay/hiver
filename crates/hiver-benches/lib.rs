@@ -9,7 +9,8 @@
 
 /// Benchmark utilities
 /// 基准测试工具
-pub mod util {
+pub mod util
+{
     /// Re-export criterion for benchmark use
     /// 重新导出 criterion 供基准测试使用
     pub use criterion;

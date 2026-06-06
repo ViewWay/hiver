@@ -3,12 +3,16 @@
 
 /// Generate Cargo.toml content.
 /// 生成 Cargo.toml 内容。
-pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
+pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String
+{
     let mut deps = vec![("hiver-runtime", r#""0.1""#)];
 
-    for module in modules {
-        match module.as_str() {
-            "web" => {
+    for module in modules
+    {
+        match module.as_str()
+        {
+            "web" =>
+            {
                 deps.push(("hiver-http", r#""0.1""#));
                 deps.push(("hiver-router", r#""0.1""#));
                 deps.push(("hiver-middleware", r#""0.1""#));
@@ -18,7 +22,8 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
                 deps.push(("serde_json", r#""0.1""#));
             },
             "security" => deps.push(("hiver-security", r#""0.1""#)),
-            "data" => {
+            "data" =>
+            {
                 deps.push(("hiver-data-rdbc", r#""0.1""#));
                 deps.push(("hiver-data-orm", r#""0.1""#));
                 deps.push(("hiver-tx", r#""0.1""#));
@@ -30,11 +35,13 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
             "graphql" => deps.push(("hiver-graphql", r#""0.1""#)),
             "grpc" => deps.push(("hiver-grpc", r#""0.1""#)),
             "ai" => deps.push(("hiver-ai", r#""0.1""#)),
-            _ => {},
+            _ =>
+            {},
         }
     }
 
-    if !modules.contains(&"web".to_string()) {
+    if !modules.contains(&"web".to_string())
+    {
         deps.push(("serde", r#"{ version = "1", features = ["derive"] }"#));
     }
 
@@ -45,14 +52,17 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
         .join("\n");
 
     format!(
-        "[package]\nname = \"{}\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.85\"\n\n[dependencies]\n{}\n\ntracing = \"0.1\"\ntracing-subscriber = {{ version = \"0.3\", features = [\"env-filter\"] }}\n",
+        "[package]\nname = \"{}\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \
+         \"1.85\"\n\n[dependencies]\n{}\n\ntracing = \"0.1\"\ntracing-subscriber = {{ version = \
+         \"0.3\", features = [\"env-filter\"] }}\n",
         name, deps_str
     )
 }
 
 /// Generate main.rs content for web projects.
 /// 为 Web 项目生成 main.rs 内容。
-fn web_main_rs() -> String {
+fn web_main_rs() -> String
+{
     r##"//! Hiver application entry point.
 //! Hiver 应用程序入口。
 
@@ -98,7 +108,8 @@ async fn hello(_req: hiver_http::Request) -> Result<Response, hiver_http::Error>
 
 /// Generate main.rs content for non-web projects.
 /// 为非 Web 项目生成 main.rs 内容。
-fn simple_main_rs() -> String {
+fn simple_main_rs() -> String
+{
     r#"//! Hiver application entry point.
 //! Hiver 应用程序入口。
 
@@ -124,17 +135,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 /// Generate main.rs content.
 /// 生成 main.rs 内容。
-pub fn generate_main_rs(modules: &[String]) -> String {
-    if modules.contains(&"web".to_string()) {
+pub fn generate_main_rs(modules: &[String]) -> String
+{
+    if modules.contains(&"web".to_string())
+    {
         web_main_rs()
-    } else {
+    }
+    else
+    {
         simple_main_rs()
     }
 }
 
 /// Generate application.toml content.
 /// 生成 application.toml 内容。
-pub fn generate_application_toml(modules: &[String]) -> String {
+pub fn generate_application_toml(modules: &[String]) -> String
+{
     let mut config = String::from(
         r##"# Hiver Application Configuration
 # Hiver 应用配置
@@ -151,7 +167,8 @@ mode = "verbose"  # verbose for dev, simple for prod
 "##,
     );
 
-    if modules.contains(&"data".to_string()) {
+    if modules.contains(&"data".to_string())
+    {
         config.push_str(
             r##"[data.source]
 url = "postgresql://localhost:5432/mydb"
@@ -163,7 +180,8 @@ max_connections = 20
         );
     }
 
-    if modules.contains(&"cache".to_string()) {
+    if modules.contains(&"cache".to_string())
+    {
         config.push_str(
             r##"[cache]
 type = "redis"
@@ -173,7 +191,8 @@ url = "redis://localhost:6379"
         );
     }
 
-    if modules.contains(&"security".to_string()) {
+    if modules.contains(&"security".to_string())
+    {
         config.push_str(
             r##"[security]
 jwt_secret = "change-me-in-production"

@@ -24,9 +24,11 @@
 //! }
 //! ```
 
-use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
-use serde::Deserialize;
 use std::collections::HashMap;
+
+use serde::Deserialize;
+
+use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 
 /// Query parameter extractor
 /// 查询参数提取器
@@ -61,16 +63,19 @@ use std::collections::HashMap;
 /// ```
 pub struct Query<T>(pub T);
 
-impl<T> Query<T> {
+impl<T> Query<T>
+{
     /// Consume the query extractor and get the inner value
     /// 消耗查询提取器并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 }
@@ -79,7 +84,8 @@ impl<T> std::fmt::Debug for Query<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("Query").field(&self.0).finish()
     }
 }
@@ -88,7 +94,8 @@ impl<T> Clone for Query<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -98,7 +105,8 @@ impl<T> FromRequest for Query<T>
 where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self> {
+    fn from_request(req: &Request) -> ExtractorFuture<Self>
+    {
         let query_params = req.params().clone();
 
         Box::pin(async move {
@@ -112,16 +120,20 @@ where
 
 /// Parse query string into a map
 /// 将查询字符串解析为映射
-pub fn parse_query_string(query: &str) -> HashMap<String, String> {
+pub fn parse_query_string(query: &str) -> HashMap<String, String>
+{
     let mut params = HashMap::new();
 
-    for pair in query.split('&') {
+    for pair in query.split('&')
+    {
         let pair = pair.trim();
-        if pair.is_empty() {
+        if pair.is_empty()
+        {
             continue;
         }
 
-        let (key, value) = match pair.split_once('=') {
+        let (key, value) = match pair.split_once('=')
+        {
             Some((k, v)) => (k, v),
             None => (pair, ""),
         };
@@ -138,14 +150,19 @@ pub fn parse_query_string(query: &str) -> HashMap<String, String> {
 
 /// Simple URL decode
 /// 简单的URL解码
-pub fn url_decode(input: &str) -> String {
+pub fn url_decode(input: &str) -> String
+{
     let mut result = String::new();
     let mut chars = input.chars().peekable();
 
-    while let Some(c) = chars.next() {
-        if c == '+' {
+    while let Some(c) = chars.next()
+    {
+        if c == '+'
+        {
             result.push(' ');
-        } else if c == '%' {
+        }
+        else if c == '%'
+        {
             let hex: String = chars.by_ref().take(2).collect();
             if hex.len() == 2
                 && let Ok(byte) = u8::from_str_radix(&hex, 16)
@@ -153,7 +170,9 @@ pub fn url_decode(input: &str) -> String {
             {
                 result.push(decoded);
             }
-        } else {
+        }
+        else
+        {
             result.push(c);
         }
     }
@@ -169,8 +188,7 @@ pub fn url_decode(input: &str) -> String {
 ///
 /// # Type Parameters / 类型参数
 ///
-/// - `T` - The type to deserialize the parameter value into.
-///   要将参数值反序列化成的类型。
+/// - `T` - The type to deserialize the parameter value into. 要将参数值反序列化成的类型。
 ///
 /// # Example / 示例
 ///
@@ -183,16 +201,19 @@ pub fn url_decode(input: &str) -> String {
 /// ```
 pub struct Param<T>(pub T);
 
-impl<T> Param<T> {
+impl<T> Param<T>
+{
     /// Consume and get inner value
     /// 消耗并获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.0
     }
 }
@@ -201,7 +222,8 @@ impl<T> std::fmt::Debug for Param<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("Param").field(&self.0).finish()
     }
 }
@@ -210,7 +232,8 @@ impl<T> Clone for Param<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -223,20 +246,22 @@ where
 ///
 /// # Type Parameters / 类型参数
 ///
-/// - `T` - The type to deserialize the parameter value into.
-///   要将参数值反序列化成的类型。
+/// - `T` - The type to deserialize the parameter value into. 要将参数值反序列化成的类型。
 pub struct ParamOption<T>(pub Option<T>);
 
-impl<T> ParamOption<T> {
+impl<T> ParamOption<T>
+{
     /// Consume and get inner value
     /// 消耗并获取内部值
-    pub fn into_inner(self) -> Option<T> {
+    pub fn into_inner(self) -> Option<T>
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> Option<&T> {
+    pub fn get(&self) -> Option<&T>
+    {
         self.0.as_ref()
     }
 }
@@ -245,7 +270,8 @@ impl<T> std::fmt::Debug for ParamOption<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("ParamOption").field(&self.0).finish()
     }
 }
@@ -254,7 +280,8 @@ impl<T> Clone for ParamOption<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self(self.0.clone())
     }
 }
@@ -264,28 +291,33 @@ where
 ///
 /// Equivalent to Spring's `@RequestParam("name")`.
 /// 等价于Spring的`@RequestParam("name")`。
-pub fn get_param(req: &Request, name: &str) -> Option<String> {
+pub fn get_param(req: &Request, name: &str) -> Option<String>
+{
     req.param(name).map(ToString::to_string)
 }
 
 /// Get all query parameters
 /// 获取所有查询参数
-pub fn get_all_params(req: &Request) -> HashMap<String, String> {
+pub fn get_all_params(req: &Request) -> HashMap<String, String>
+{
     req.params().clone()
 }
 
 /// Check if a query parameter exists
 /// 检查查询参数是否存在
-pub fn has_param(req: &Request, name: &str) -> bool {
+pub fn has_param(req: &Request, name: &str) -> bool
+{
     req.param(name).is_some()
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_parse_query_string() {
+    fn test_parse_query_string()
+    {
         let query = "name=John&age=30&city=";
         let params = parse_query_string(query);
 
@@ -295,7 +327,8 @@ mod tests {
     }
 
     #[test]
-    fn test_url_decode() {
+    fn test_url_decode()
+    {
         assert_eq!(url_decode("hello%20world"), "hello world");
         assert_eq!(url_decode("a%2Bb"), "a+b");
         assert_eq!(url_decode("test%3F"), "test?");

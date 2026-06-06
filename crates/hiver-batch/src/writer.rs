@@ -48,7 +48,8 @@ use crate::error::BatchResult;
 /// }
 /// ```
 #[async_trait]
-pub trait ItemWriter: Send + Sync {
+pub trait ItemWriter: Send + Sync
+{
     /// Item type
     /// 项目类型
     type Item: Send + Sync;
@@ -65,7 +66,8 @@ pub trait ItemWriter: Send + Sync {
     ///
     /// Called before any write operations.
     /// 在任何写入操作之前调用。
-    async fn open(&mut self) -> BatchResult<()> {
+    async fn open(&mut self) -> BatchResult<()>
+    {
         Ok(())
     }
 
@@ -74,7 +76,8 @@ pub trait ItemWriter: Send + Sync {
     ///
     /// Called after all write operations are complete.
     /// 在所有写入操作完成后调用。
-    async fn close(&mut self) -> BatchResult<()> {
+    async fn close(&mut self) -> BatchResult<()>
+    {
         Ok(())
     }
 }
@@ -93,44 +96,53 @@ pub trait ItemWriter: Send + Sync {
 /// let writer = ItemStreamWriter::new();
 /// ```
 #[derive(Debug, Clone)]
-pub struct ItemStreamWriter<T> {
+pub struct ItemStreamWriter<T>
+{
     items: Vec<T>,
 }
 
-impl<T> Default for ItemStreamWriter<T> {
-    fn default() -> Self {
+impl<T> Default for ItemStreamWriter<T>
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl<T> ItemStreamWriter<T> {
+impl<T> ItemStreamWriter<T>
+{
     /// Create new stream writer
     /// 创建新流写入器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self { items: Vec::new() }
     }
 
     /// Get all written items
     /// 获取所有已写入项目
-    pub fn items(&self) -> &[T] {
+    pub fn items(&self) -> &[T]
+    {
         &self.items
     }
 
     /// Take items, leaving the writer empty
     /// 获取项目，清空写入器
-    pub fn take_items(&mut self) -> Vec<T> {
+    pub fn take_items(&mut self) -> Vec<T>
+    {
         std::mem::take(&mut self.items)
     }
 
     /// Get count of written items
     /// 获取已写入项目计数
-    pub fn count(&self) -> usize {
+    pub fn count(&self) -> usize
+    {
         self.items.len()
     }
 
     /// Clear all items
     /// 清除所有项目
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self)
+    {
         self.items.clear();
     }
 }
@@ -142,7 +154,8 @@ where
 {
     type Item = T;
 
-    async fn write(&mut self, items: Vec<T>) -> BatchResult<()> {
+    async fn write(&mut self, items: Vec<T>) -> BatchResult<()>
+    {
         self.items.extend(items);
         Ok(())
     }
@@ -160,20 +173,25 @@ where
 /// // NullItemWriter - discards all items
 /// ```
 #[derive(Debug, Clone, Copy)]
-pub struct NoOpWriter<T> {
+pub struct NoOpWriter<T>
+{
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T> Default for NoOpWriter<T> {
-    fn default() -> Self {
+impl<T> Default for NoOpWriter<T>
+{
+    fn default() -> Self
+    {
         Self {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<T> NoOpWriter<T> {
-    pub fn new() -> Self {
+impl<T> NoOpWriter<T>
+{
+    pub fn new() -> Self
+    {
         Self {
             _phantom: std::marker::PhantomData,
         }
@@ -181,10 +199,12 @@ impl<T> NoOpWriter<T> {
 }
 
 #[async_trait]
-impl<T: Send + Sync> ItemWriter for NoOpWriter<T> {
+impl<T: Send + Sync> ItemWriter for NoOpWriter<T>
+{
     type Item = T;
 
-    async fn write(&mut self, _items: Vec<T>) -> BatchResult<()> {
+    async fn write(&mut self, _items: Vec<T>) -> BatchResult<()>
+    {
         Ok(())
     }
 }
@@ -209,7 +229,8 @@ where
 {
     /// Create new console writer
     /// 创建新控制台写入器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             prefix: None,
             _phantom: std::marker::PhantomData,
@@ -218,7 +239,8 @@ where
 
     /// Set prefix for each line
     /// 设置每行前缀
-    pub fn with_prefix(mut self, prefix: impl Into<String>) -> Self {
+    pub fn with_prefix(mut self, prefix: impl Into<String>) -> Self
+    {
         self.prefix = Some(prefix.into());
         self
     }
@@ -228,7 +250,8 @@ impl<T> Default for ConsoleWriter<T>
 where
     T: std::fmt::Display + Send + Sync,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -237,7 +260,8 @@ impl<T> Clone for ConsoleWriter<T>
 where
     T: std::fmt::Display + Send + Sync,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             prefix: self.prefix.clone(),
             _phantom: std::marker::PhantomData,
@@ -252,11 +276,16 @@ where
 {
     type Item = T;
 
-    async fn write(&mut self, items: Vec<T>) -> BatchResult<()> {
-        for item in items {
-            if let Some(prefix) = &self.prefix {
+    async fn write(&mut self, items: Vec<T>) -> BatchResult<()>
+    {
+        for item in items
+        {
+            if let Some(prefix) = &self.prefix
+            {
                 println!("{}: {}", prefix, item);
-            } else {
+            }
+            else
+            {
                 println!("{}", item);
             }
         }
@@ -330,7 +359,8 @@ where
             .await?;
 
         use tokio::io::AsyncWriteExt;
-        for item in items {
+        for item in items
+        {
             let line = (self.formatter)(&item);
             file.write_all(line.as_bytes()).await?;
             file.write_all(b"\n").await?;
@@ -349,7 +379,8 @@ where
         let mut file = tokio::fs::File::create(&self.file_path).await?;
 
         use tokio::io::AsyncWriteExt;
-        for item in items {
+        for item in items
+        {
             let line = (self.formatter)(&item);
             file.write_all(line.as_bytes()).await?;
             file.write_all(b"\n").await?;
@@ -367,7 +398,8 @@ where
 {
     type Item = T;
 
-    async fn write(&mut self, items: Vec<T>) -> BatchResult<()> {
+    async fn write(&mut self, items: Vec<T>) -> BatchResult<()>
+    {
         self.append(items).await
     }
 }
@@ -395,7 +427,8 @@ where
 {
     /// Create new CSV writer
     /// 创建新CSV写入器
-    pub fn new(file_path: impl Into<String>) -> Self {
+    pub fn new(file_path: impl Into<String>) -> Self
+    {
         Self {
             file_path: file_path.into(),
             headers: None,
@@ -407,7 +440,8 @@ where
 
     /// Set headers
     /// 设置标题
-    pub fn with_headers(mut self, headers: Vec<String>) -> Self {
+    pub fn with_headers(mut self, headers: Vec<String>) -> Self
+    {
         self.headers = Some(headers);
         self
     }
@@ -424,22 +458,28 @@ where
 
     /// Set whether to write headers
     /// 设置是否写入标题
-    pub fn with_write_headers(mut self, write: bool) -> Self {
+    pub fn with_write_headers(mut self, write: bool) -> Self
+    {
         self.write_headers = write;
         self
     }
 
     /// Escape CSV value
     /// 转义CSV值
-    fn escape_csv(value: &str) -> String {
-        if value.contains(',') || value.contains('"') || value.contains('\n') {
+    fn escape_csv(value: &str) -> String
+    {
+        if value.contains(',') || value.contains('"') || value.contains('\n')
+        {
             format!("\"{}\"", value.replace("\"", "\"\""))
-        } else {
+        }
+        else
+        {
             value.to_string()
         }
     }
 
-    async fn write_line(&mut self, values: Vec<String>) -> BatchResult<()> {
+    async fn write_line(&mut self, values: Vec<String>) -> BatchResult<()>
+    {
         let line = values
             .iter()
             .map(|v| Self::escape_csv(v))
@@ -468,7 +508,8 @@ where
 {
     type Item = T;
 
-    async fn open(&mut self) -> BatchResult<()> {
+    async fn open(&mut self) -> BatchResult<()>
+    {
         // Clear file if exists
         if self.write_headers
             && let Some(headers) = &self.headers
@@ -478,8 +519,10 @@ where
         Ok(())
     }
 
-    async fn write(&mut self, items: Vec<T>) -> BatchResult<()> {
-        for item in items {
+    async fn write(&mut self, items: Vec<T>) -> BatchResult<()>
+    {
+        for item in items
+        {
             let values = (self.formatter)(&item);
             self.write_line(values).await?;
         }
@@ -517,7 +560,8 @@ where
 {
     /// Create new composite writer
     /// 创建新组合写入器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             writers: Vec::new(),
             _phantom: std::marker::PhantomData,
@@ -540,7 +584,8 @@ impl<T> Default for CompositeWriter<T>
 where
     T: Send + Sync + 'static,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -552,22 +597,28 @@ where
 {
     type Item = T;
 
-    async fn write(&mut self, items: Vec<T>) -> BatchResult<()> {
-        for writer in &mut self.writers {
+    async fn write(&mut self, items: Vec<T>) -> BatchResult<()>
+    {
+        for writer in &mut self.writers
+        {
             writer.write(items.clone()).await?;
         }
         Ok(())
     }
 
-    async fn open(&mut self) -> BatchResult<()> {
-        for writer in &mut self.writers {
+    async fn open(&mut self) -> BatchResult<()>
+    {
+        for writer in &mut self.writers
+        {
             writer.open().await?;
         }
         Ok(())
     }
 
-    async fn close(&mut self) -> BatchResult<()> {
-        for writer in &mut self.writers {
+    async fn close(&mut self) -> BatchResult<()>
+    {
+        for writer in &mut self.writers
+        {
             writer.close().await?;
         }
         Ok(())
@@ -575,11 +626,13 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_item_stream_writer() {
+    async fn test_item_stream_writer()
+    {
         let mut writer = ItemStreamWriter::new();
 
         writer.write(vec![1, 2, 3]).await.unwrap();
@@ -595,7 +648,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_noop_writer() {
+    async fn test_noop_writer()
+    {
         let mut writer = NoOpWriter::<i32>::new();
 
         writer.write(vec![1, 2, 3]).await.unwrap();
@@ -603,7 +657,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_console_writer() {
+    async fn test_console_writer()
+    {
         let mut writer = ConsoleWriter::new().with_prefix("[TEST]");
 
         // Should not error
@@ -611,7 +666,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_composite_writer() {
+    async fn test_composite_writer()
+    {
         let mut writer = CompositeWriter::new()
             .add(ItemStreamWriter::<i32>::new())
             .add(NoOpWriter::<i32>::new());
@@ -620,7 +676,8 @@ mod tests {
     }
 
     #[test]
-    fn test_csv_escape() {
+    fn test_csv_escape()
+    {
         assert_eq!(CsvWriter::<String>::escape_csv("simple"), "simple");
         assert_eq!(CsvWriter::<String>::escape_csv("with,comma"), "\"with,comma\"");
         assert_eq!(CsvWriter::<String>::escape_csv("with\"quote"), "\"with\"\"quote\"");

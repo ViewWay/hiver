@@ -15,15 +15,18 @@ use std::fmt;
 /// Framework error type
 /// 框架错误类型
 #[derive(Debug)]
-pub struct Error {
+pub struct Error
+{
     kind: ErrorKind,
     message: String,
 }
 
-impl Error {
+impl Error
+{
     /// Create a new error
     /// 创建新错误
-    pub fn new(kind: ErrorKind) -> Self {
+    pub fn new(kind: ErrorKind) -> Self
+    {
         Self {
             kind,
             message: String::new(),
@@ -32,7 +35,8 @@ impl Error {
 
     /// Create a new error with a message
     /// 创建带消息的新错误
-    pub fn with_message(kind: ErrorKind, message: impl Into<String>) -> Self {
+    pub fn with_message(kind: ErrorKind, message: impl Into<String>) -> Self
+    {
         Self {
             kind,
             message: message.into(),
@@ -44,8 +48,10 @@ impl Error {
     ///
     /// When `ErrorKind` already contains a message (like `NotFound` or Internal),
     /// that message is extracted and used as the error message.
-    pub fn from_kind(kind: ErrorKind) -> Self {
-        let message = match &kind {
+    pub fn from_kind(kind: ErrorKind) -> Self
+    {
+        let message = match &kind
+        {
             ErrorKind::NotFound(s) | ErrorKind::Internal(s) => Some(s.clone()),
             _ => None,
         };
@@ -57,7 +63,8 @@ impl Error {
 
     /// Create an internal error with a message
     /// 创建带消息的内部错误
-    pub fn internal(msg: impl Into<String>) -> Self {
+    pub fn internal(msg: impl Into<String>) -> Self
+    {
         Self {
             kind: ErrorKind::Internal(String::new()),
             message: msg.into(),
@@ -66,7 +73,8 @@ impl Error {
 
     /// Create a not found error with a message
     /// 创建未找到错误
-    pub fn not_found(msg: impl Into<String>) -> Self {
+    pub fn not_found(msg: impl Into<String>) -> Self
+    {
         Self {
             kind: ErrorKind::NotFound(String::new()),
             message: msg.into(),
@@ -75,22 +83,29 @@ impl Error {
 
     /// Get the error kind
     /// 获取错误类型
-    pub fn kind(&self) -> &ErrorKind {
+    pub fn kind(&self) -> &ErrorKind
+    {
         &self.kind
     }
 
     /// Get the error message
     /// 获取错误消息
-    pub fn message(&self) -> &str {
+    pub fn message(&self) -> &str
+    {
         &self.message
     }
 }
 
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.message.is_empty() {
+impl fmt::Display for Error
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        if self.message.is_empty()
+        {
             write!(f, "{:?}", self.kind)
-        } else {
+        }
+        else
+        {
             write!(f, "{}: {}", self.kind, self.message)
         }
     }
@@ -101,7 +116,8 @@ impl std::error::Error for Error {}
 /// Error kind
 /// 错误类型
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ErrorKind {
+pub enum ErrorKind
+{
     /// Bad request (400)
     /// 错误请求 (400)
     BadRequest,
@@ -139,9 +155,12 @@ pub enum ErrorKind {
     Custom(u16, String),
 }
 
-impl fmt::Display for ErrorKind {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for ErrorKind
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             ErrorKind::BadRequest => write!(f, "Bad Request"),
             ErrorKind::Unauthorized => write!(f, "Unauthorized"),
             ErrorKind::Forbidden => write!(f, "Forbidden"),
@@ -155,11 +174,14 @@ impl fmt::Display for ErrorKind {
     }
 }
 
-impl ErrorKind {
+impl ErrorKind
+{
     /// Get the HTTP status code for this error
     /// 获取此错误的HTTP状态码
-    pub fn status_code(&self) -> u16 {
-        match self {
+    pub fn status_code(&self) -> u16
+    {
+        match self
+        {
             ErrorKind::BadRequest => 400,
             ErrorKind::Unauthorized => 401,
             ErrorKind::Forbidden => 403,

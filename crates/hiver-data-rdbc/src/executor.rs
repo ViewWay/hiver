@@ -9,28 +9,35 @@
 //! SQL generation is delegated to the `sql_builder` module.
 //! SQL 生成委托给 `sql_builder` 模块。
 
-use crate::client::{DatabaseClient, QueryParam};
-use crate::error::{Error, Result};
-use crate::row::Row;
-use crate::sql_builder;
 use hiver_data_commons::{Page, PageRequest, QueryWrapper, UpdateWrapper};
+
+use crate::{
+    client::{DatabaseClient, QueryParam},
+    error::{Error, Result},
+    row::Row,
+    sql_builder,
+};
 
 /// Query executor — wraps a DatabaseClient for MyBatis-Plus style query execution.
 /// 查询执行器 — 包装 DatabaseClient 用于 MyBatis-Plus 风格查询执行。
-pub struct QueryExecutor<C: DatabaseClient> {
+pub struct QueryExecutor<C: DatabaseClient>
+{
     client: C,
 }
 
-impl<C: DatabaseClient> QueryExecutor<C> {
+impl<C: DatabaseClient> QueryExecutor<C>
+{
     /// Create a new query executor
     /// 创建新的查询执行器
-    pub fn new(client: C) -> Self {
+    pub fn new(client: C) -> Self
+    {
         Self { client }
     }
 
     /// Get a reference to the underlying client
     /// 获取底层客户端的引用
-    pub fn client(&self) -> &C {
+    pub fn client(&self) -> &C
+    {
         &self.client
     }
 
@@ -42,7 +49,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> Result<Vec<T>> {
+    ) -> Result<Vec<T>>
+    {
         let (sql, params) = sql_builder::build_select_query(wrapper, table);
         let rows = self.client.fetch_all_params(&sql, &params).await?;
         self.map_rows(rows)
@@ -54,9 +62,11 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         &self,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> Result<Option<T>> {
+    ) -> Result<Option<T>>
+    {
         let (sql, params) = sql_builder::build_select_query(wrapper, table);
-        match self.client.fetch_one_params(&sql, &params).await? {
+        match self.client.fetch_one_params(&sql, &params).await?
+        {
             Some(r) => Ok(Some(self.map_row(r)?)),
             None => Ok(None),
         }
@@ -64,7 +74,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Count entities by wrapper
     /// 通过包装器计数实体
-    pub async fn count(&self, wrapper: &QueryWrapper, table: &str) -> Result<i64> {
+    pub async fn count(&self, wrapper: &QueryWrapper, table: &str) -> Result<i64>
+    {
         let (sql, params) = sql_builder::build_count_query(wrapper, table);
         let rows = self.client.fetch_all_params(&sql, &params).await?;
         let count = rows
@@ -81,7 +92,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
         page: &PageRequest,
         wrapper: &QueryWrapper,
         table: &str,
-    ) -> Result<Page<T>> {
+    ) -> Result<Page<T>>
+    {
         let total = self.count(wrapper, table).await?;
         let (sql, params) = sql_builder::build_page_query(page, wrapper, table);
         let rows = self.client.fetch_all_params(&sql, &params).await?;
@@ -92,7 +104,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Execute a raw select query
     /// 执行原始 SELECT 查询
-    pub async fn select<T: serde::de::DeserializeOwned>(&self, sql: &str) -> Result<Vec<T>> {
+    pub async fn select<T: serde::de::DeserializeOwned>(&self, sql: &str) -> Result<Vec<T>>
+    {
         let rows = self.client.fetch_all(sql).await?;
         self.map_rows(rows)
     }
@@ -101,7 +114,8 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Insert an entity
     /// 插入实体
-    pub async fn insert<T: serde::Serialize>(&self, entity: &T, table: &str) -> Result<u64> {
+    pub async fn insert<T: serde::Serialize>(&self, entity: &T, table: &str) -> Result<u64>
+    {
         let json =
             serde_json::to_value(entity).map_err(|e| Error::Deserialization(e.to_string()))?;
         let map = json
@@ -131,14 +145,16 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Update by wrapper
     /// 通过包装器更新
-    pub async fn update(&self, wrapper: &UpdateWrapper, table: &str) -> Result<u64> {
+    pub async fn update(&self, wrapper: &UpdateWrapper, table: &str) -> Result<u64>
+    {
         let (sql, params) = sql_builder::build_update_query(wrapper, table);
         self.client.execute_params(&sql, &params).await
     }
 
     /// Execute a raw update/delete command
     /// 执行原始更新/删除命令
-    pub async fn execute(&self, sql: &str) -> Result<u64> {
+    pub async fn execute(&self, sql: &str) -> Result<u64>
+    {
         self.client.execute_cmd(sql).await
     }
 
@@ -146,18 +162,21 @@ impl<C: DatabaseClient> QueryExecutor<C> {
 
     /// Delete by wrapper
     /// 通过包装器删除
-    pub async fn delete(&self, wrapper: &QueryWrapper, table: &str) -> Result<u64> {
+    pub async fn delete(&self, wrapper: &QueryWrapper, table: &str) -> Result<u64>
+    {
         let (sql, params) = sql_builder::build_delete_query(wrapper, table);
         self.client.execute_params(&sql, &params).await
     }
 
     // ── Row mapping helpers ──────────────────────────────────────────
 
-    fn map_row<T: serde::de::DeserializeOwned>(&self, row: Row) -> Result<T> {
+    fn map_row<T: serde::de::DeserializeOwned>(&self, row: Row) -> Result<T>
+    {
         row.deserialize()
     }
 
-    fn map_rows<T: serde::de::DeserializeOwned>(&self, rows: Vec<Row>) -> Result<Vec<T>> {
+    fn map_rows<T: serde::de::DeserializeOwned>(&self, rows: Vec<Row>) -> Result<Vec<T>>
+    {
         rows.into_iter().map(|r| self.map_row(r)).collect()
     }
 }

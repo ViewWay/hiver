@@ -16,16 +16,19 @@
 //! ```
 
 #[cfg(feature = "sqlx")]
-mod imp {
+mod imp
+{
     use std::sync::Arc;
 
     use async_trait::async_trait;
     use sqlx::Database;
 
-    use crate::manager::{TransactionDefinition, TransactionManager};
-    use crate::status::TransactionStatus;
-    use crate::synchronization::{self, LiveTransaction};
-    use crate::{Propagation, TransactionError, TransactionResult};
+    use crate::{
+        Propagation, TransactionError, TransactionResult,
+        manager::{TransactionDefinition, TransactionManager},
+        status::TransactionStatus,
+        synchronization::{self, LiveTransaction},
+    };
 
     // -----------------------------------------------------------------------
     // LiveTransaction wrapper
@@ -34,7 +37,8 @@ mod imp {
     /// Wraps a `PoolConnection<DB>` so it can be stored inside the
     /// task-local synchronization map.
     /// 包装 `PoolConnection<DB>`，以便存储在任务本地同步映射中。
-    struct SqlxLiveTx<DB: Database> {
+    struct SqlxLiveTx<DB: Database>
+    {
         conn: sqlx::pool::PoolConnection<DB>,
     }
 
@@ -100,7 +104,8 @@ mod imp {
     /// manager.commit(status).await?;
     /// ```
     #[derive(Clone)]
-    pub struct SqlxTransactionManager<DB: Database> {
+    pub struct SqlxTransactionManager<DB: Database>
+    {
         pool: Arc<sqlx::Pool<DB>>,
         name: &'static str,
     }
@@ -111,7 +116,8 @@ mod imp {
     {
         /// Create from an existing pool.
         /// 从已有连接池创建。
-        pub fn new(pool: sqlx::Pool<DB>) -> Self {
+        pub fn new(pool: sqlx::Pool<DB>) -> Self
+        {
             Self {
                 pool: Arc::new(pool),
                 name: "sqlx-generic",
@@ -120,14 +126,16 @@ mod imp {
 
         /// Set a human-readable name for this manager.
         /// 为此管理器设置人类可读的名称。
-        pub fn with_name(mut self, name: &'static str) -> Self {
+        pub fn with_name(mut self, name: &'static str) -> Self
+        {
             self.name = name;
             self
         }
 
         /// Connect to the database and create a manager.
         /// 连接数据库并创建管理器。
-        pub async fn connect(url: &str) -> TransactionResult<Self> {
+        pub async fn connect(url: &str) -> TransactionResult<Self>
+        {
             let pool = sqlx::Pool::<DB>::connect(url)
                 .await
                 .map_err(|e| TransactionError::CreationFailed(e.to_string()))?;
@@ -136,7 +144,8 @@ mod imp {
 
         /// Get a reference to the underlying pool.
         /// 获取底层连接池的引用。
-        pub fn pool(&self) -> &sqlx::Pool<DB> {
+        pub fn pool(&self) -> &sqlx::Pool<DB>
+        {
             &self.pool
         }
     }
@@ -154,11 +163,14 @@ mod imp {
         async fn begin(
             &self,
             definition: &TransactionDefinition,
-        ) -> TransactionResult<TransactionStatus> {
+        ) -> TransactionResult<TransactionStatus>
+        {
             // Reuse an existing transaction when propagation allows it.
             // 当传播行为允许时，复用现有事务。
-            if matches!(definition.propagation, Propagation::Required | Propagation::Supports) {
-                if let Some(existing) = synchronization::current_status().await {
+            if matches!(definition.propagation, Propagation::Required | Propagation::Supports)
+            {
+                if let Some(existing) = synchronization::current_status().await
+                {
                     return Ok(existing);
                 }
             }
@@ -179,23 +191,28 @@ mod imp {
             Ok(status)
         }
 
-        async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
-            if let Some(tx) = synchronization::take_transaction(&status).await {
+        async fn commit(&self, status: TransactionStatus) -> TransactionResult<()>
+        {
+            if let Some(tx) = synchronization::take_transaction(&status).await
+            {
                 tx.commit_boxed().await?;
             }
             status.mark_completed();
             Ok(())
         }
 
-        async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
-            if let Some(tx) = synchronization::take_transaction(&status).await {
+        async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()>
+        {
+            if let Some(tx) = synchronization::take_transaction(&status).await
+            {
                 tx.rollback_boxed().await?;
             }
             status.mark_completed();
             Ok(())
         }
 
-        fn name(&self) -> &str {
+        fn name(&self) -> &str
+        {
             self.name
         }
     }
@@ -220,28 +237,34 @@ mod imp {
     // Backward-compatible constructor helpers
     // -----------------------------------------------------------------------
 
-    impl PostgresTransactionManager {
+    impl PostgresTransactionManager
+    {
         /// Connect to a PostgreSQL database.
         /// 连接 PostgreSQL 数据库。
-        pub async fn connect_postgres(url: &str) -> TransactionResult<Self> {
+        pub async fn connect_postgres(url: &str) -> TransactionResult<Self>
+        {
             Self::connect(url)
                 .await
                 .map(|m| m.with_name("sqlx-postgres"))
         }
     }
 
-    impl MySqlTransactionManager {
+    impl MySqlTransactionManager
+    {
         /// Connect to a MySQL database.
         /// 连接 MySQL 数据库。
-        pub async fn connect_mysql(url: &str) -> TransactionResult<Self> {
+        pub async fn connect_mysql(url: &str) -> TransactionResult<Self>
+        {
             Self::connect(url).await.map(|m| m.with_name("sqlx-mysql"))
         }
     }
 
-    impl SqliteTransactionManager {
+    impl SqliteTransactionManager
+    {
         /// Connect to a SQLite database.
         /// 连接 SQLite 数据库。
-        pub async fn connect_sqlite(url: &str) -> TransactionResult<Self> {
+        pub async fn connect_sqlite(url: &str) -> TransactionResult<Self>
+        {
             Self::connect(url).await.map(|m| m.with_name("sqlx-sqlite"))
         }
     }
@@ -253,7 +276,8 @@ mod imp {
     /// Identifies the kind of database a transaction manager is connected to.
     /// 标识事务管理器连接的数据库类型。
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-    pub enum DatabaseType {
+    pub enum DatabaseType
+    {
         /// PostgreSQL
         Postgres,
         /// MySQL
@@ -262,9 +286,12 @@ mod imp {
         Sqlite,
     }
 
-    impl std::fmt::Display for DatabaseType {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            match self {
+    impl std::fmt::Display for DatabaseType
+    {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+        {
+            match self
+            {
                 DatabaseType::Postgres => write!(f, "postgresql"),
                 DatabaseType::MySql => write!(f, "mysql"),
                 DatabaseType::Sqlite => write!(f, "sqlite"),
@@ -272,11 +299,14 @@ mod imp {
         }
     }
 
-    impl std::str::FromStr for DatabaseType {
+    impl std::str::FromStr for DatabaseType
+    {
         type Err = String;
 
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
-            match s.to_lowercase().as_str() {
+        fn from_str(s: &str) -> Result<Self, Self::Err>
+        {
+            match s.to_lowercase().as_str()
+            {
                 "postgres" | "postgresql" | "pg" => Ok(DatabaseType::Postgres),
                 "mysql" => Ok(DatabaseType::MySql),
                 "sqlite" => Ok(DatabaseType::Sqlite),

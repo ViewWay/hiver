@@ -39,122 +39,144 @@ use std::fmt;
 /// Query condition from method name parsing
 /// 方法名解析产生的查询条件
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Condition {
+pub enum Condition
+{
     /// Equality: field = value
     /// 等于
-    Equals {
+    Equals
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Like: field LIKE value
     /// 模糊匹配
-    Like {
+    Like
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Starting with: field LIKE 'value%'
     /// 以...开头
-    StartingWith {
+    StartingWith
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Ending with: field LIKE '%value'
     /// 以...结尾
-    EndingWith {
+    EndingWith
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Containing: field LIKE '%value%'
     /// 包含
-    Containing {
+    Containing
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Not equal: field != value
     /// 不等于
-    NotEquals {
+    NotEquals
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Greater than: field > value
     /// 大于
-    GreaterThan {
+    GreaterThan
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Less than: field < value
     /// 小于
-    LessThan {
+    LessThan
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Between: field BETWEEN value1 AND value2
     /// 范围
-    Between {
+    Between
+    {
         /// Field name / 字段名
         field: String,
     },
     /// In: field IN (values)
     /// 包含于
-    In {
+    In
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Not like: field NOT LIKE value
     /// 不匹配
-    NotLike {
+    NotLike
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Not in: field NOT IN (values)
     /// 不包含于
-    NotIn {
+    NotIn
+    {
         /// Field name / 字段名
         field: String,
     },
     /// IS NULL: field IS NULL
     /// 为空
-    IsNull {
+    IsNull
+    {
         /// Field name / 字段名
         field: String,
     },
     /// IS NOT NULL: field IS NOT NULL
     /// 非空
-    IsNotNull {
+    IsNotNull
+    {
         /// Field name / 字段名
         field: String,
     },
     /// True: field = true
     /// 为真
-    True {
+    True
+    {
         /// Field name / 字段名
         field: String,
     },
     /// False: field = false
     /// 为假
-    False {
+    False
+    {
         /// Field name / 字段名
         field: String,
     },
     /// Before (date): field < value
     /// 日期之前
-    Before {
+    Before
+    {
         /// Field name / 字段名
         field: String,
     },
     /// After (date): field > value
     /// 日期之后
-    After {
+    After
+    {
         /// Field name / 字段名
         field: String,
     },
 }
 
-impl Condition {
+impl Condition
+{
     /// Get the field name for this condition
     /// 获取此条件的字段名
-    pub fn field(&self) -> &str {
-        match self {
+    pub fn field(&self) -> &str
+    {
+        match self
+        {
             Condition::Equals { field }
             | Condition::Like { field }
             | Condition::StartingWith { field }
@@ -178,8 +200,10 @@ impl Condition {
 
     /// Get the operator SQL fragment for this condition
     /// 获取此条件的 SQL 运算符片段
-    pub fn operator_sql(&self) -> &'static str {
-        match self {
+    pub fn operator_sql(&self) -> &'static str
+    {
+        match self
+        {
             Condition::Equals { .. } => "=",
             Condition::Like { .. } => "LIKE",
             Condition::StartingWith { .. } => "LIKE",
@@ -203,7 +227,8 @@ impl Condition {
 
     /// Whether this condition requires no parameter value
     /// 此条件是否需要参数值
-    pub fn needs_no_value(&self) -> bool {
+    pub fn needs_no_value(&self) -> bool
+    {
         matches!(
             self,
             Condition::IsNull { .. }
@@ -215,7 +240,8 @@ impl Condition {
 
     /// Whether this condition requires two parameter values
     /// 此条件是否需要两个参数值
-    pub fn needs_two_values(&self) -> bool {
+    pub fn needs_two_values(&self) -> bool
+    {
         matches!(self, Condition::Between { .. })
     }
 }
@@ -223,7 +249,8 @@ impl Condition {
 /// Logical connector between conditions
 /// 条件之间的逻辑连接符
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Connector {
+pub enum Connector
+{
     /// AND
     And,
     /// OR
@@ -237,7 +264,8 @@ pub enum Connector {
 /// the list of parsed conditions with their connectors.
 /// 包含查询前缀和解析后的条件列表及其连接符。
 #[derive(Debug, Clone)]
-pub struct ParsedMethodName {
+pub struct ParsedMethodName
+{
     /// Query prefix (find, read, query, get, count, delete, exists)
     /// 查询前缀
     pub prefix: QueryPrefix,
@@ -258,7 +286,8 @@ pub struct ParsedMethodName {
 /// Query prefix enum
 /// 查询前缀枚举
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum QueryPrefix {
+pub enum QueryPrefix
+{
     /// find, find...By
     Find,
     /// read, read...By
@@ -280,7 +309,8 @@ pub enum QueryPrefix {
 /// ORDER BY clause
 /// 排序子句
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct OrderByClause {
+pub struct OrderByClause
+{
     /// Field name to sort by
     /// 排序字段名
     pub field: String,
@@ -292,16 +322,20 @@ pub struct OrderByClause {
 /// Sort direction
 /// 排序方向
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum OrderDirection {
+pub enum OrderDirection
+{
     /// Ascending / 升序
     Asc,
     /// Descending / 降序
     Desc,
 }
 
-impl fmt::Display for OrderDirection {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for OrderDirection
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             OrderDirection::Asc => write!(f, "ASC"),
             OrderDirection::Desc => write!(f, "DESC"),
         }
@@ -326,7 +360,8 @@ impl fmt::Display for OrderDirection {
 #[derive(Debug, Clone)]
 pub struct MethodName;
 
-impl MethodName {
+impl MethodName
+{
     /// Parse a method name into query conditions
     /// 将方法名解析为查询条件
     ///
@@ -338,10 +373,12 @@ impl MethodName {
     ///
     /// - `Ok(ParsedMethodName)` on success
     /// - `Err(String)` with error description on parse failure
-    pub fn parse(name: &str) -> Result<ParsedMethodName, String> {
+    pub fn parse(name: &str) -> Result<ParsedMethodName, String>
+    {
         let name = name.trim();
 
-        if name.is_empty() {
+        if name.is_empty()
+        {
             return Err("Empty method name".to_string());
         }
 
@@ -357,7 +394,8 @@ impl MethodName {
         // Step 4: Extract "By" keyword
         let remaining = Self::extract_by_keyword(remaining)?;
 
-        if remaining.is_empty() {
+        if remaining.is_empty()
+        {
             return Err(format!("Method name '{}' has no conditions after 'By'", name));
         }
 
@@ -377,7 +415,8 @@ impl MethodName {
     }
 
     /// Extract the query prefix from the beginning of the method name
-    fn extract_prefix(name: &str) -> Result<(QueryPrefix, &str), String> {
+    fn extract_prefix(name: &str) -> Result<(QueryPrefix, &str), String>
+    {
         let prefixes: &[(&str, QueryPrefix, usize)] = &[
             ("find", QueryPrefix::Find, 4),
             ("read", QueryPrefix::Read, 4),
@@ -392,8 +431,10 @@ impl MethodName {
 
         let name_lower = name.to_lowercase();
 
-        for &(prefix_str, prefix, len) in prefixes {
-            if name_lower.starts_with(prefix_str) {
+        for &(prefix_str, prefix, len) in prefixes
+        {
+            if name_lower.starts_with(prefix_str)
+            {
                 // Verify this is a complete word boundary
                 // Prefix must be followed by uppercase, "By", "First", "Top", "Distinct", or end
                 let after = &name[len..];
@@ -410,19 +451,23 @@ impl MethodName {
         }
 
         Err(format!(
-            "Method name '{}' must start with a valid query prefix (find, read, query, get, count, delete, exists)",
+            "Method name '{}' must start with a valid query prefix (find, read, query, get, \
+             count, delete, exists)",
             name
         ))
     }
 
     /// Extract First/Top limit modifier
-    fn extract_first_top(name: &str) -> (Option<u32>, &str) {
+    fn extract_first_top(name: &str) -> (Option<u32>, &str)
+    {
         let name_lower = name.to_lowercase();
 
         // Try "First<number>" pattern
-        if let Some(rest) = name_lower.strip_prefix("first") {
+        if let Some(rest) = name_lower.strip_prefix("first")
+        {
             let (num_str, _remaining) = Self::take_digits(rest);
-            if let Ok(num) = num_str.parse::<u32>() {
+            if let Ok(num) = num_str.parse::<u32>()
+            {
                 return (Some(num), &name[5 + num_str.len()..]);
             }
             // Just "First" without number = First1
@@ -430,9 +475,11 @@ impl MethodName {
         }
 
         // Try "Top<number>" pattern
-        if let Some(rest) = name_lower.strip_prefix("top") {
+        if let Some(rest) = name_lower.strip_prefix("top")
+        {
             let (num_str, _remaining) = Self::take_digits(rest);
-            if let Ok(num) = num_str.parse::<u32>() {
+            if let Ok(num) = num_str.parse::<u32>()
+            {
                 return (Some(num), &name[3 + num_str.len()..]);
             }
             // Just "Top" without number = Top1
@@ -443,21 +490,29 @@ impl MethodName {
     }
 
     /// Extract Distinct modifier
-    fn extract_distinct(name: &str) -> (bool, &str) {
+    fn extract_distinct(name: &str) -> (bool, &str)
+    {
         let name_lower = name.to_lowercase();
-        if name_lower.starts_with("distinct") {
+        if name_lower.starts_with("distinct")
+        {
             (true, &name[8..])
-        } else {
+        }
+        else
+        {
             (false, name)
         }
     }
 
     /// Extract and strip the "By" keyword
-    fn extract_by_keyword(name: &str) -> Result<&str, String> {
+    fn extract_by_keyword(name: &str) -> Result<&str, String>
+    {
         let name_lower = name.to_lowercase();
-        if name_lower.starts_with("by") {
+        if name_lower.starts_with("by")
+        {
             Ok(&name[2..])
-        } else {
+        }
+        else
+        {
             Err(format!(
                 "Method name must contain 'By' keyword before conditions, got: '{}'",
                 name
@@ -466,24 +521,30 @@ impl MethodName {
     }
 
     /// Split the method name at OrderBy clause
-    fn split_order_by(name: &str) -> (&str, Vec<OrderByClause>) {
+    fn split_order_by(name: &str) -> (&str, Vec<OrderByClause>)
+    {
         // Find the last "OrderBy" occurrence
         let name_lower = name.to_lowercase();
-        if let Some(pos) = name_lower.rfind("orderby") {
+        if let Some(pos) = name_lower.rfind("orderby")
+        {
             let condition_part = &name[..pos];
             let order_part = &name[pos + 7..]; // skip "OrderBy"
 
             // Parse order by fields
             let orders = Self::parse_order_fields(order_part);
             (condition_part, orders)
-        } else {
+        }
+        else
+        {
             (name, Vec::new())
         }
     }
 
     /// Parse ORDER BY fields
-    fn parse_order_fields(order_part: &str) -> Vec<OrderByClause> {
-        if order_part.is_empty() {
+    fn parse_order_fields(order_part: &str) -> Vec<OrderByClause>
+    {
+        if order_part.is_empty()
+        {
             return Vec::new();
         }
 
@@ -491,13 +552,16 @@ impl MethodName {
         let mut current = String::new();
         let mut chars = order_part.chars().peekable();
 
-        while let Some(c) = chars.next() {
-            if c.is_uppercase() && !current.is_empty() {
+        while let Some(c) = chars.next()
+        {
+            if c.is_uppercase() && !current.is_empty()
+            {
                 // Check if this is "Asc" or "Desc"
                 let rest: String = std::iter::once(c).chain(chars.clone()).collect();
                 let rest_lower = rest.to_lowercase();
 
-                if rest_lower.starts_with("asc") {
+                if rest_lower.starts_with("asc")
+                {
                     let field = current.clone();
                     current.clear();
                     // Field name: convert first char to lowercase
@@ -507,13 +571,15 @@ impl MethodName {
                         direction: OrderDirection::Asc,
                     });
                     // Skip "Asc" characters (c already consumed 'A')
-                    for _ in 0..2 {
+                    for _ in 0..2
+                    {
                         chars.next();
                     }
                     continue;
                 }
 
-                if rest_lower.starts_with("desc") {
+                if rest_lower.starts_with("desc")
+                {
                     let field = current.clone();
                     current.clear();
                     let field_name = Self::first_char_to_lower(&field);
@@ -522,7 +588,8 @@ impl MethodName {
                         direction: OrderDirection::Desc,
                     });
                     // Skip "Desc" characters (c already consumed 'D')
-                    for _ in 0..3 {
+                    for _ in 0..3
+                    {
                         chars.next();
                     }
                     continue;
@@ -532,7 +599,8 @@ impl MethodName {
         }
 
         // Last field (default Asc)
-        if !current.is_empty() {
+        if !current.is_empty()
+        {
             let field_name = Self::first_char_to_lower(&current);
             orders.push(OrderByClause {
                 field: field_name,
@@ -544,10 +612,11 @@ impl MethodName {
     }
 
     /// Parse conditions from the condition part of the method name
-    fn parse_conditions(
-        condition_part: &str,
-    ) -> Result<Vec<(Condition, Option<Connector>)>, String> {
-        if condition_part.is_empty() {
+    fn parse_conditions(condition_part: &str)
+    -> Result<Vec<(Condition, Option<Connector>)>, String>
+    {
+        if condition_part.is_empty()
+        {
             return Ok(Vec::new());
         }
 
@@ -556,15 +625,21 @@ impl MethodName {
         let mut current_connector: Option<Connector> = None;
         let mut chars = condition_part.chars().peekable();
 
-        while let Some(c) = chars.next() {
-            if c.is_uppercase() && !current_field.is_empty() {
+        while let Some(c) = chars.next()
+        {
+            if c.is_uppercase() && !current_field.is_empty()
+            {
                 // Check if current_field is itself a connector (Or/And)
                 let current_lower = current_field.to_lowercase();
-                if current_lower == "and" || current_lower == "or" {
+                if current_lower == "and" || current_lower == "or"
+                {
                     // Current field is a connector — consume it and continue with new field
-                    current_connector = if current_lower == "and" {
+                    current_connector = if current_lower == "and"
+                    {
                         Some(Connector::And)
-                    } else {
+                    }
+                    else
+                    {
                         Some(Connector::Or)
                     };
                     current_field.clear();
@@ -576,10 +651,13 @@ impl MethodName {
                 let rest: String = std::iter::once(c).chain(chars.clone()).collect();
                 let rest_lower = rest.to_lowercase();
 
-                // Check for logical connectors: And, Or in the rest (NOT when current_field was the connector)
-                if rest_lower.starts_with("and") && rest.len() > 3 {
+                // Check for logical connectors: And, Or in the rest (NOT when current_field was the
+                // connector)
+                if rest_lower.starts_with("and") && rest.len() > 3
+                {
                     let next_char = rest.chars().nth(3).unwrap_or('\0');
-                    if next_char.is_uppercase() || next_char == '\0' {
+                    if next_char.is_uppercase() || next_char == '\0'
+                    {
                         // Save current field as Equals condition
                         let field = current_field.clone();
                         current_field.clear();
@@ -588,16 +666,19 @@ impl MethodName {
                             .push((Condition::Equals { field: field_name }, current_connector));
                         current_connector = Some(Connector::And);
                         // Skip "And" (2 chars, 'A' already consumed)
-                        for _ in 0..2 {
+                        for _ in 0..2
+                        {
                             chars.next();
                         }
                         continue;
                     }
                 }
 
-                if rest_lower.starts_with("or") && rest.len() > 2 {
+                if rest_lower.starts_with("or") && rest.len() > 2
+                {
                     let next_char = rest.chars().nth(2).unwrap_or('\0');
-                    if next_char.is_uppercase() || next_char == '\0' {
+                    if next_char.is_uppercase() || next_char == '\0'
+                    {
                         let field = current_field.clone();
                         current_field.clear();
                         let field_name = Self::first_char_to_lower(&field);
@@ -605,7 +686,8 @@ impl MethodName {
                             .push((Condition::Equals { field: field_name }, current_connector));
                         current_connector = Some(Connector::Or);
                         // Skip "Or" (1 chars, 'O' already consumed)
-                        for _ in 0..1 {
+                        for _ in 0..1
+                        {
                             chars.next();
                         }
                         continue;
@@ -614,7 +696,8 @@ impl MethodName {
 
                 // Check for condition keywords
                 let (condition_type, skip_len) = Self::detect_condition_keyword(&rest_lower);
-                if let Some(ct) = condition_type {
+                if let Some(ct) = condition_type
+                {
                     let field = current_field.clone();
                     current_field.clear();
                     let field_name = Self::first_char_to_lower(&field);
@@ -622,7 +705,8 @@ impl MethodName {
                     conditions.push((cond, current_connector));
                     current_connector = None;
                     // Skip the keyword characters (minus 1, first char already consumed)
-                    for _ in 0..(skip_len - 1) {
+                    for _ in 0..(skip_len - 1)
+                    {
                         chars.next();
                     }
                     continue;
@@ -633,7 +717,8 @@ impl MethodName {
         }
 
         // Last field (defaults to Equals)
-        if !current_field.is_empty() {
+        if !current_field.is_empty()
+        {
             let field_name = Self::first_char_to_lower(&current_field);
             conditions.push((Condition::Equals { field: field_name }, current_connector));
         }
@@ -642,7 +727,8 @@ impl MethodName {
     }
 
     /// Detect a condition keyword from the start of a string
-    fn detect_condition_keyword(word: &str) -> (Option<ConditionType>, usize) {
+    fn detect_condition_keyword(word: &str) -> (Option<ConditionType>, usize)
+    {
         let keywords: &[(&str, ConditionType, usize)] = &[
             // Longer patterns first to avoid partial matches
             ("isnotnull", ConditionType::IsNotNull, 9),
@@ -668,10 +754,13 @@ impl MethodName {
             ("is", ConditionType::Equals, 2),
         ];
 
-        for (keyword, cond_type, len) in keywords {
-            if word.starts_with(keyword) {
+        for (keyword, cond_type, len) in keywords
+        {
+            if word.starts_with(keyword)
+            {
                 // Verify it's a complete word boundary
-                if word.len() > *len {
+                if word.len() > *len
+                {
                     let next = word.chars().nth(*len).unwrap();
                     // Accept: uppercase start of next field, or continuation as And/Or connector
                     if next.is_uppercase()
@@ -680,7 +769,9 @@ impl MethodName {
                     {
                         return (Some(*cond_type), *len);
                     }
-                } else {
+                }
+                else
+                {
                     return (Some(*cond_type), *len);
                 }
             }
@@ -690,8 +781,10 @@ impl MethodName {
     }
 
     /// Build a Condition from a condition type and field name
-    fn build_condition(cond_type: ConditionType, field: &str) -> Condition {
-        match cond_type {
+    fn build_condition(cond_type: ConditionType, field: &str) -> Condition
+    {
+        match cond_type
+        {
             ConditionType::Equals => Condition::Equals {
                 field: field.to_string(),
             },
@@ -756,14 +849,17 @@ impl MethodName {
     }
 
     /// Take leading digits from a string
-    fn take_digits(s: &str) -> (&str, &str) {
+    fn take_digits(s: &str) -> (&str, &str)
+    {
         let end = s.chars().take_while(|c| c.is_ascii_digit()).count();
         (&s[..end], &s[end..])
     }
 
     /// Convert the first character to lowercase
-    fn first_char_to_lower(s: &str) -> String {
-        if s.is_empty() {
+    fn first_char_to_lower(s: &str) -> String
+    {
+        if s.is_empty()
+        {
             return String::new();
         }
         let mut chars = s.chars();
@@ -775,7 +871,8 @@ impl MethodName {
 
 /// Internal condition type enum for keyword matching
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ConditionType {
+enum ConditionType
+{
     Equals,
     Like,
     NotLike,
@@ -799,31 +896,32 @@ enum ConditionType {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Helper: parse and check no error
-    fn parse(name: &str) -> ParsedMethodName {
+    fn parse(name: &str) -> ParsedMethodName
+    {
         MethodName::parse(name).unwrap_or_else(|e| {
             panic!("Failed to parse '{}': {}", name, e);
         })
     }
 
     #[test]
-    fn test_simple_find_by() {
+    fn test_simple_find_by()
+    {
         let result = parse("findByName");
         assert_eq!(result.prefix, QueryPrefix::Find);
         assert_eq!(result.conditions.len(), 1);
-        assert_eq!(
-            result.conditions[0].0,
-            Condition::Equals {
-                field: "name".into()
-            }
-        );
+        assert_eq!(result.conditions[0].0, Condition::Equals {
+            field: "name".into()
+        });
     }
 
     #[test]
-    fn test_find_by_and() {
+    fn test_find_by_and()
+    {
         let result = parse("findByNameAndAge");
         assert_eq!(result.conditions.len(), 2);
         assert!(matches!(result.conditions[0].0, Condition::Equals { .. }));
@@ -832,14 +930,16 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_or() {
+    fn test_find_by_or()
+    {
         let result = parse("findByNameOrEmail");
         assert_eq!(result.conditions.len(), 2);
         assert_eq!(result.conditions[1].1, Some(Connector::Or));
     }
 
     #[test]
-    fn test_condition_keywords() {
+    fn test_condition_keywords()
+    {
         let result = parse("findByNameLike");
         assert!(matches!(result.conditions[0].0, Condition::Like { .. }));
 
@@ -869,7 +969,8 @@ mod tests {
     }
 
     #[test]
-    fn test_order_by() {
+    fn test_order_by()
+    {
         let result = parse("findByNameOrderByAgeAsc");
         assert_eq!(result.order_by.len(), 1);
         assert_eq!(result.order_by[0].field, "age");
@@ -887,7 +988,8 @@ mod tests {
     }
 
     #[test]
-    fn test_first_top() {
+    fn test_first_top()
+    {
         let result = parse("findFirst10ByName");
         assert_eq!(result.first_top, Some(10));
 
@@ -899,13 +1001,15 @@ mod tests {
     }
 
     #[test]
-    fn test_distinct() {
+    fn test_distinct()
+    {
         let result = parse("findDistinctByName");
         assert!(result.distinct);
     }
 
     #[test]
-    fn test_query_prefixes() {
+    fn test_query_prefixes()
+    {
         assert_eq!(parse("readByName").prefix, QueryPrefix::Read);
         assert_eq!(parse("queryByName").prefix, QueryPrefix::Query);
         assert_eq!(parse("getByName").prefix, QueryPrefix::Get);
@@ -915,7 +1019,8 @@ mod tests {
     }
 
     #[test]
-    fn test_complex_query() {
+    fn test_complex_query()
+    {
         let result = parse("findByNameAndAgeGreaterThanOrEmailLikeOrderByCreatedAtDesc");
         assert_eq!(result.prefix, QueryPrefix::Find);
         assert_eq!(result.conditions.len(), 3);
@@ -929,7 +1034,8 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_method_names() {
+    fn test_invalid_method_names()
+    {
         assert!(MethodName::parse("").is_err());
         assert!(MethodName::parse("doSomething").is_err());
         assert!(MethodName::parse("find").is_err()); // No By clause

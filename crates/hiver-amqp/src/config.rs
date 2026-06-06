@@ -23,7 +23,8 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AmqpConfig {
+pub struct AmqpConfig
+{
     /// Connection URL
     /// 连接URL
     pub url: String,
@@ -86,8 +87,10 @@ pub struct AmqpConfig {
     pub network_recovery_interval_ms: u64,
 }
 
-impl Default for AmqpConfig {
-    fn default() -> Self {
+impl Default for AmqpConfig
+{
+    fn default() -> Self
+    {
         Self {
             url: "amqp://localhost:5672".to_string(),
             host: "localhost".to_string(),
@@ -106,23 +109,27 @@ impl Default for AmqpConfig {
     }
 }
 
-impl AmqpConfig {
+impl AmqpConfig
+{
     /// Create new AMQP configuration
     /// 创建新的AMQP配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set connection URL
     /// 设置连接URL
-    pub fn with_url(mut self, url: impl Into<String>) -> Self {
+    pub fn with_url(mut self, url: impl Into<String>) -> Self
+    {
         self.url = url.into();
         self
     }
 
     /// Set host and port
     /// 设置主机和端口
-    pub fn with_host(mut self, host: impl Into<String>, port: u16) -> Self {
+    pub fn with_host(mut self, host: impl Into<String>, port: u16) -> Self
+    {
         self.host = host.into();
         self.port = port;
         self.url.clear();
@@ -135,7 +142,8 @@ impl AmqpConfig {
         mut self,
         username: impl Into<String>,
         password: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         self.username = username.into();
         self.password = password.into();
         self.url.clear();
@@ -144,16 +152,19 @@ impl AmqpConfig {
 
     /// Set virtual host
     /// 设置虚拟主机
-    pub fn with_vhost(mut self, vhost: impl Into<String>) -> Self {
+    pub fn with_vhost(mut self, vhost: impl Into<String>) -> Self
+    {
         self.vhost = vhost.into();
         self
     }
 
     /// Enable SSL
     /// 启用SSL
-    pub fn with_ssl(mut self, ssl: bool) -> Self {
+    pub fn with_ssl(mut self, ssl: bool) -> Self
+    {
         self.ssl = ssl;
-        if ssl && self.port == 5672 {
+        if ssl && self.port == 5672
+        {
             self.port = 5671;
         }
         self.url.clear();
@@ -162,8 +173,10 @@ impl AmqpConfig {
 
     /// Build connection URL
     /// 构建连接URL
-    pub fn build_url(&self) -> String {
-        if !self.url.is_empty() && self.url.starts_with("amqp") {
+    pub fn build_url(&self) -> String
+    {
+        if !self.url.is_empty() && self.url.starts_with("amqp")
+        {
             return self.url.clone();
         }
 
@@ -180,7 +193,8 @@ impl AmqpConfig {
 /// Connection configuration
 /// 连接配置
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ConnectionConfig {
+pub struct ConnectionConfig
+{
     /// Prefetch count (`QoS`)
     /// 预取数量（QoS）
     #[serde(default = "default_prefetch")]
@@ -197,8 +211,10 @@ pub struct ConnectionConfig {
     pub confirm_timeout_secs: u64,
 }
 
-impl Default for ConnectionConfig {
-    fn default() -> Self {
+impl Default for ConnectionConfig
+{
+    fn default() -> Self
+    {
         Self {
             prefetch_count: default_prefetch(),
             publisher_confirms: false,
@@ -207,75 +223,91 @@ impl Default for ConnectionConfig {
     }
 }
 
-impl ConnectionConfig {
+impl ConnectionConfig
+{
     /// Create new connection configuration
     /// 创建新的连接配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set prefetch count
     /// 设置预取数量
-    pub fn with_prefetch(mut self, count: u16) -> Self {
+    pub fn with_prefetch(mut self, count: u16) -> Self
+    {
         self.prefetch_count = count;
         self
     }
 
     /// Enable publisher confirms
     /// 启用发布者确认
-    pub fn with_publisher_confirms(mut self, enabled: bool) -> Self {
+    pub fn with_publisher_confirms(mut self, enabled: bool) -> Self
+    {
         self.publisher_confirms = enabled;
         self
     }
 }
 
-fn default_port() -> u16 {
+fn default_port() -> u16
+{
     5672
 }
 
-fn default_vhost() -> String {
+fn default_vhost() -> String
+{
     "/".to_string()
 }
 
-fn default_timeout() -> u64 {
+fn default_timeout() -> u64
+{
     10
 }
 
-fn default_heartbeat() -> u16 {
+fn default_heartbeat() -> u16
+{
     60
 }
 
-fn default_channel_max() -> u16 {
+fn default_channel_max() -> u16
+{
     2047
 }
 
-fn default_frame_max() -> u32 {
+fn default_frame_max() -> u32
+{
     131_072
 }
 
-fn default_auto_recovery() -> bool {
+fn default_auto_recovery() -> bool
+{
     true
 }
 
-fn default_recovery_interval() -> u64 {
+fn default_recovery_interval() -> u64
+{
     5000
 }
 
-fn default_prefetch() -> u16 {
+fn default_prefetch() -> u16
+{
     1
 }
 
-fn default_confirm_timeout() -> u64 {
+fn default_confirm_timeout() -> u64
+{
     30
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test default AmqpConfig values / 测试默认 AmqpConfig 值
     #[test]
-    fn test_amqp_config_defaults() {
+    fn test_amqp_config_defaults()
+    {
         let config = AmqpConfig::default();
         assert_eq!(config.host, "localhost");
         assert_eq!(config.port, 5672);
@@ -293,7 +325,8 @@ mod tests {
 
     /// Test AmqpConfig builder pattern / 测试 AmqpConfig 构建器模式
     #[test]
-    fn test_amqp_config_builder() {
+    fn test_amqp_config_builder()
+    {
         let config = AmqpConfig::new()
             .with_host("rabbit.example.com", 5673)
             .with_credentials("admin", "secret")
@@ -308,7 +341,8 @@ mod tests {
 
     /// Test build_url generates correct AMQP URL / 测试 build_url 生成正确的 AMQP URL
     #[test]
-    fn test_amqp_config_build_url() {
+    fn test_amqp_config_build_url()
+    {
         let config = AmqpConfig::new()
             .with_host("rabbit.example.com", 5672)
             .with_credentials("admin", "secret");
@@ -322,7 +356,8 @@ mod tests {
     /// Test SSL changes protocol to amqps and port to 5671 / 测试 SSL 将协议改为 amqps 并将端口改为
     /// 5671
     #[test]
-    fn test_amqp_config_ssl() {
+    fn test_amqp_config_ssl()
+    {
         let config = AmqpConfig::default().with_ssl(true);
         assert!(config.ssl);
         assert_eq!(config.port, 5671);
@@ -333,7 +368,8 @@ mod tests {
 
     /// Test build_url returns raw URL when already amqp:// / 测试已有 amqp:// URL 时直接返回
     #[test]
-    fn test_amqp_config_build_url_passthrough() {
+    fn test_amqp_config_build_url_passthrough()
+    {
         let config = AmqpConfig::default().with_url("amqp://custom:9999/vhost");
         assert_eq!(config.build_url(), "amqp://custom:9999/vhost");
     }
@@ -341,7 +377,8 @@ mod tests {
     /// Test build_url URL-encodes special characters in credentials / 测试 build_url
     /// 对凭据中的特殊字符进行 URL 编码
     #[test]
-    fn test_amqp_config_build_url_encodes_credentials() {
+    fn test_amqp_config_build_url_encodes_credentials()
+    {
         let config = AmqpConfig::new().with_credentials("user@domain", "p@ss:w0rd");
         let url = config.build_url();
         // '@' and ':' should be percent-encoded in the user/password portion
@@ -351,7 +388,8 @@ mod tests {
 
     /// Test ConnectionConfig defaults / 测试 ConnectionConfig 默认值
     #[test]
-    fn test_connection_config_defaults() {
+    fn test_connection_config_defaults()
+    {
         let config = ConnectionConfig::default();
         assert_eq!(config.prefetch_count, 1);
         assert!(!config.publisher_confirms);
@@ -360,7 +398,8 @@ mod tests {
 
     /// Test ConnectionConfig builder / 测试 ConnectionConfig 构建器
     #[test]
-    fn test_connection_config_builder() {
+    fn test_connection_config_builder()
+    {
         let config = ConnectionConfig::new()
             .with_prefetch(10)
             .with_publisher_confirms(true);
@@ -370,7 +409,8 @@ mod tests {
 
     /// Test AmqpConfig serialization round-trip / 测试 AmqpConfig 序列化往返
     #[test]
-    fn test_amqp_config_serde_roundtrip() {
+    fn test_amqp_config_serde_roundtrip()
+    {
         let config = AmqpConfig::new()
             .with_host("broker.local", 5672)
             .with_credentials("user", "pass")

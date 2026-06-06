@@ -22,19 +22,26 @@
 //! guard.release().await?;
 //! ```
 
-use crate::{RedisClient, RedisError, RedisResult};
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::{Duration, Instant},
+};
+
 use redis::AsyncCommands;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::{Duration, Instant};
 use uuid::Uuid;
+
+use crate::{RedisClient, RedisError, RedisResult};
 
 /// A Redis-based distributed lock. / 基于 Redis 的分布式锁。
 ///
 /// Uses the `SET key value NX EX seconds` pattern for safe locking.
 /// 使用 `SET key value NX EX seconds` 模式进行安全锁定。
 #[derive(Debug, Clone)]
-pub struct RedisLock {
+pub struct RedisLock
+{
     client: RedisClient,
     /// Lock key in Redis / Redis 中的锁键
     key: String,
@@ -46,14 +53,16 @@ pub struct RedisLock {
     renew_interval_secs: Option<u64>,
 }
 
-impl RedisLock {
+impl RedisLock
+{
     /// Create a new distributed lock. / 创建新的分布式锁。
     ///
     /// # Arguments / 参数
     /// * `client` - Redis client / Redis 客户端
     /// * `key` - Lock key / 锁键
     /// * `ttl_secs` - Time-to-live in seconds (prevents deadlocks) / TTL 秒数（防止死锁）
-    pub fn new(client: RedisClient, key: String, ttl_secs: u64) -> Self {
+    pub fn new(client: RedisClient, key: String, ttl_secs: u64) -> Self
+    {
         let token = Uuid::new_v4().to_string();
         Self {
             client,
@@ -78,25 +87,29 @@ impl RedisLock {
     /// 定期调用 `EXPIRE`（通过 Lua 验证令牌）来延长 TTL。
     /// 如果续期失败（锁被抢占），看门狗将停止并将守卫标记为已丢失。
     #[must_use]
-    pub fn with_auto_renewal(mut self, interval_secs: u64) -> Self {
+    pub fn with_auto_renewal(mut self, interval_secs: u64) -> Self
+    {
         self.renew_interval_secs = Some(interval_secs.min(self.ttl_secs / 2));
         self
     }
 
     /// Set a custom token for this lock instance. / 为此锁实例设置自定义令牌。
     #[must_use]
-    pub fn with_token(mut self, token: String) -> Self {
+    pub fn with_token(mut self, token: String) -> Self
+    {
         self.token = token;
         self
     }
 
     /// Get the lock key. / 获取锁键。
-    pub fn key(&self) -> &str {
+    pub fn key(&self) -> &str
+    {
         &self.key
     }
 
     /// Get the lock token. / 获取锁令牌。
-    pub fn token(&self) -> &str {
+    pub fn token(&self) -> &str
+    {
         &self.token
     }
 
@@ -105,7 +118,8 @@ impl RedisLock {
     ///
     /// Returns `Some(guard)` if acquired, `None` if already held.
     /// 如果获取成功返回 `Some(guard)`，如果已被持有则返回 `None`。
-    pub async fn acquire(&self) -> RedisResult<Option<RedisLockGuard>> {
+    pub async fn acquire(&self) -> RedisResult<Option<RedisLockGuard>>
+    {
         let mut conn = self.client.get_connection().await?;
 
         // SET key token NX EX ttl_secs
@@ -118,7 +132,8 @@ impl RedisLock {
             .query_async(&mut conn)
             .await?;
 
-        match result {
+        match result
+        {
             Some(ref s) if s == "OK" => Ok(Some(RedisLockGuard::new(
                 self.client.clone(),
                 self.key.clone(),
@@ -136,15 +151,20 @@ impl RedisLock {
         &self,
         timeout: Duration,
         retry_interval_ms: u64,
-    ) -> RedisResult<Option<RedisLockGuard>> {
+    ) -> RedisResult<Option<RedisLockGuard>>
+    {
         let deadline = Instant::now() + timeout;
         let retry = Duration::from_millis(retry_interval_ms.min(1000));
 
-        loop {
-            match self.acquire().await? {
+        loop
+        {
+            match self.acquire().await?
+            {
                 Some(guard) => return Ok(Some(guard)),
-                None => {
-                    if Instant::now() >= deadline {
+                None =>
+                {
+                    if Instant::now() >= deadline
+                    {
                         return Ok(None);
                     }
                     tokio::time::sleep(retry).await;
@@ -155,11 +175,14 @@ impl RedisLock {
 
     /// Attempt to acquire the lock, blocking indefinitely.
     /// 尝试获取锁，无限阻塞。
-    pub async fn acquire_blocking(&self, retry_interval_ms: u64) -> RedisResult<RedisLockGuard> {
+    pub async fn acquire_blocking(&self, retry_interval_ms: u64) -> RedisResult<RedisLockGuard>
+    {
         let retry = Duration::from_millis(retry_interval_ms.min(1000));
         let max_retries: u32 = 30;
-        for _ in 0..max_retries {
-            if let Some(guard) = self.acquire().await? {
+        for _ in 0..max_retries
+        {
+            if let Some(guard) = self.acquire().await?
+            {
                 return Ok(guard);
             }
             tokio::time::sleep(retry).await;
@@ -180,7 +203,8 @@ impl RedisLock {
 ///
 /// Recommended to explicitly call `release()` for reliability.
 /// 建议显式调用 `release()` 以确保可靠性。
-pub struct RedisLockGuard {
+pub struct RedisLockGuard
+{
     client: RedisClient,
     key: String,
     token: String,
@@ -195,8 +219,10 @@ pub struct RedisLockGuard {
     lock_lost: Arc<AtomicBool>,
 }
 
-impl std::fmt::Debug for RedisLockGuard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for RedisLockGuard
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("RedisLockGuard")
             .field("key", &self.key)
             .field("token", &self.token)
@@ -208,14 +234,16 @@ impl std::fmt::Debug for RedisLockGuard {
     }
 }
 
-impl RedisLockGuard {
+impl RedisLockGuard
+{
     fn new(
         client: RedisClient,
         key: String,
         token: String,
         ttl_secs: u64,
         renew_interval_secs: Option<u64>,
-    ) -> Self {
+    ) -> Self
+    {
         let lock_lost = Arc::new(AtomicBool::new(false));
 
         let watchdog_handle = renew_interval_secs.map(|interval_secs| {
@@ -226,19 +254,23 @@ impl RedisLockGuard {
             let interval = Duration::from_secs(interval_secs);
 
             let handle = tokio::spawn(async move {
-                loop {
+                loop
+                {
                     tokio::time::sleep(interval).await;
                     let renewed =
                         Self::renew_static(&wd_client, &wd_key, &wd_token, ttl_secs).await;
-                    match renewed {
-                        Ok(true) => {
+                    match renewed
+                    {
+                        Ok(true) =>
+                        {
                             tracing::trace!(
                                 key = %wd_key,
                                 "watchdog: renewed TTL +{}s / 看门狗: 续期 TTL +{}s",
                                 ttl_secs, ttl_secs
                             );
                         },
-                        Ok(false) => {
+                        Ok(false) =>
+                        {
                             tracing::warn!(
                                 key = %wd_key,
                                 "watchdog: lock lost (renewal failed, token mismatch) \
@@ -247,7 +279,8 @@ impl RedisLockGuard {
                             wd_lock_lost.store(true, Ordering::Relaxed);
                             break;
                         },
-                        Err(e) => {
+                        Err(e) =>
+                        {
                             tracing::error!(
                                 key = %wd_key,
                                 error = %e,
@@ -282,7 +315,8 @@ impl RedisLockGuard {
         key: &str,
         token: &str,
         ttl_secs: u64,
-    ) -> RedisResult<bool> {
+    ) -> RedisResult<bool>
+    {
         let mut conn = client.get_connection().await?;
 
         let script = redis::Script::new(
@@ -305,23 +339,27 @@ impl RedisLockGuard {
     }
 
     /// Get the lock key. / 获取锁键。
-    pub fn key(&self) -> &str {
+    pub fn key(&self) -> &str
+    {
         &self.key
     }
 
     /// Get the lock token. / 获取锁令牌。
-    pub fn token(&self) -> &str {
+    pub fn token(&self) -> &str
+    {
         &self.token
     }
 
     /// Get the time when the lock was acquired. / 获取锁的获取时间。
-    pub fn acquired_at(&self) -> Instant {
+    pub fn acquired_at(&self) -> Instant
+    {
         self.acquired_at
     }
 
     /// Check whether this guard has an active watchdog.
     /// 检查此守卫是否有活跃的看门狗。
-    pub fn has_watchdog(&self) -> bool {
+    pub fn has_watchdog(&self) -> bool
+    {
         self.watchdog_handle.is_some()
     }
 
@@ -330,7 +368,8 @@ impl RedisLockGuard {
     ///
     /// Returns `false` if auto-renewal is not enabled or the lock is still held.
     /// 如果未启用自动续期或锁仍被持有，则返回 `false`。
-    pub fn is_lock_lost(&self) -> bool {
+    pub fn is_lock_lost(&self) -> bool
+    {
         self.lock_lost.load(Ordering::Relaxed)
     }
 
@@ -338,7 +377,8 @@ impl RedisLockGuard {
     ///
     /// Resets the TTL to `ttl_secs` from now.
     /// 从现在起将 TTL 重置为 `ttl_secs`。
-    pub async fn renew(&self) -> RedisResult<bool> {
+    pub async fn renew(&self) -> RedisResult<bool>
+    {
         Self::renew_static(&self.client, &self.key, &self.token, self.ttl_secs).await
     }
 
@@ -349,7 +389,8 @@ impl RedisLockGuard {
     /// preventing accidental release of another client's lock.
     /// 使用 Lua 脚本在删除前原子性地检查令牌，
     /// 防止意外释放其他客户端的锁。
-    pub async fn release(mut self) -> RedisResult<bool> {
+    pub async fn release(mut self) -> RedisResult<bool>
+    {
         // Stop the watchdog first / 先停止看门狗
         self.stop_watchdog();
 
@@ -374,7 +415,8 @@ impl RedisLockGuard {
     }
 
     /// Get remaining TTL. / 获取剩余 TTL。
-    pub async fn ttl(&self) -> RedisResult<i64> {
+    pub async fn ttl(&self) -> RedisResult<i64>
+    {
         let mut conn = self.client.get_connection().await?;
         let result: i64 = conn.ttl(&self.key).await?;
         Ok(result)
@@ -382,8 +424,10 @@ impl RedisLockGuard {
 
     /// Stop the watchdog without releasing the lock.
     /// 停止看门狗但不释放锁。
-    pub fn stop_watchdog(&mut self) {
-        if let Some(handle) = self.watchdog_handle.take() {
+    pub fn stop_watchdog(&mut self)
+    {
+        if let Some(handle) = self.watchdog_handle.take()
+        {
             handle.abort();
             tracing::trace!(
                 key = %self.key,
@@ -393,10 +437,13 @@ impl RedisLockGuard {
     }
 }
 
-impl Drop for RedisLockGuard {
-    fn drop(&mut self) {
+impl Drop for RedisLockGuard
+{
+    fn drop(&mut self)
+    {
         // Stop the watchdog first / 先停止看门狗
-        if let Some(handle) = self.watchdog_handle.take() {
+        if let Some(handle) = self.watchdog_handle.take()
+        {
             handle.abort();
         }
 
@@ -410,7 +457,8 @@ impl Drop for RedisLockGuard {
         // discarded because we don't need to await it (fire-and-forget).
         #[allow(clippy::let_underscore_future)]
         let _ = tokio::spawn(async move {
-            let mut conn = match client.get_connection().await {
+            let mut conn = match client.get_connection().await
+            {
                 Ok(c) => c,
                 Err(_) => return,
             };
@@ -442,16 +490,19 @@ impl Drop for RedisLockGuard {
 /// Equivalent to Redisson's `RLock` (reentrant mode).
 /// 等价于 Redisson 的 `RLock`（可重入模式）。
 #[derive(Debug, Clone)]
-pub struct ReentrantRedisLock {
+pub struct ReentrantRedisLock
+{
     client: RedisClient,
     key: String,
     ttl_secs: u64,
 }
 
-impl ReentrantRedisLock {
+impl ReentrantRedisLock
+{
     /// Create a new reentrant lock.
     /// 创建新的可重入锁。
-    pub fn new(client: RedisClient, key: impl Into<String>, ttl_secs: u64) -> Self {
+    pub fn new(client: RedisClient, key: impl Into<String>, ttl_secs: u64) -> Self
+    {
         Self {
             client,
             key: key.into(),
@@ -464,7 +515,8 @@ impl ReentrantRedisLock {
     ///
     /// Returns the reentry count (≥ 1) on success, `None` if held by another.
     /// 成功时返回重入计数（≥ 1），如果被其他持有者持有则返回 `None`。
-    pub async fn acquire(&self, holder_id: &str) -> RedisResult<Option<u32>> {
+    pub async fn acquire(&self, holder_id: &str) -> RedisResult<Option<u32>>
+    {
         let mut conn = self.client.get_connection().await?;
         let result: i64 = redis::Script::new(REENTRANT_ACQUIRE_LUA)
             .key(&self.key)
@@ -472,9 +524,12 @@ impl ReentrantRedisLock {
             .arg(self.ttl_secs)
             .invoke_async(&mut conn)
             .await?;
-        if result > 0 {
+        if result > 0
+        {
             Ok(Some(result as u32))
-        } else {
+        }
+        else
+        {
             Ok(None)
         }
     }
@@ -486,13 +541,17 @@ impl ReentrantRedisLock {
         holder_id: &str,
         timeout: Duration,
         retry_interval: Duration,
-    ) -> RedisResult<Option<u32>> {
+    ) -> RedisResult<Option<u32>>
+    {
         let deadline = Instant::now() + timeout;
-        loop {
-            if let Some(count) = self.acquire(holder_id).await? {
+        loop
+        {
+            if let Some(count) = self.acquire(holder_id).await?
+            {
                 return Ok(Some(count));
             }
-            if Instant::now() >= deadline {
+            if Instant::now() >= deadline
+            {
                 return Ok(None);
             }
             tokio::time::sleep(retry_interval).await;
@@ -504,7 +563,8 @@ impl ReentrantRedisLock {
     ///
     /// Returns the remaining count (0 = fully released).
     /// 返回剩余计数（0 = 完全释放）。
-    pub async fn release(&self, holder_id: &str) -> RedisResult<i64> {
+    pub async fn release(&self, holder_id: &str) -> RedisResult<i64>
+    {
         let mut conn = self.client.get_connection().await?;
         let result: i64 = redis::Script::new(REENTRANT_RELEASE_LUA)
             .key(&self.key)
@@ -516,7 +576,8 @@ impl ReentrantRedisLock {
 
     /// Renew the TTL (only if still owned by `holder_id`).
     /// 续期 TTL（仅在仍由 `holder_id` 持有时）。
-    pub async fn renew(&self, holder_id: &str) -> RedisResult<bool> {
+    pub async fn renew(&self, holder_id: &str) -> RedisResult<bool>
+    {
         let mut conn = self.client.get_connection().await?;
         let result: i64 = redis::Script::new(REENTRANT_RENEW_LUA)
             .key(&self.key)
@@ -536,8 +597,11 @@ impl ReentrantRedisLock {
         &self,
         holder_id: &str,
         watchdog_interval: Option<Duration>,
-    ) -> RedisResult<Option<WatchdogGuard>> {
-        let Some(count) = self.acquire(holder_id).await? else {
+    ) -> RedisResult<Option<WatchdogGuard>>
+    {
+        let Some(count) = self.acquire(holder_id).await?
+        else
+        {
             return Ok(None);
         };
         let interval =
@@ -607,7 +671,8 @@ return 0
 ///
 /// Created by [`ReentrantRedisLock::acquire_with_watchdog`].
 /// Stopping the watchdog (via drop or explicit [`WatchdogGuard::release`]) is safe.
-pub struct WatchdogGuard {
+pub struct WatchdogGuard
+{
     client: RedisClient,
     key: String,
     holder_id: String,
@@ -616,8 +681,10 @@ pub struct WatchdogGuard {
     watchdog_handle: tokio::task::AbortHandle,
 }
 
-impl std::fmt::Debug for WatchdogGuard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for WatchdogGuard
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("WatchdogGuard")
             .field("key", &self.key)
             .field("holder_id", &self.holder_id)
@@ -626,7 +693,8 @@ impl std::fmt::Debug for WatchdogGuard {
     }
 }
 
-impl WatchdogGuard {
+impl WatchdogGuard
+{
     fn new(
         client: RedisClient,
         key: String,
@@ -634,18 +702,22 @@ impl WatchdogGuard {
         ttl_secs: u64,
         reentry_count: u32,
         interval: Duration,
-    ) -> Self {
+    ) -> Self
+    {
         let renew_client = client.clone();
         let renew_key = key.clone();
         let renew_holder = holder_id.clone();
 
         let handle = tokio::spawn(async move {
-            loop {
+            loop
+            {
                 tokio::time::sleep(interval).await;
                 let renew_lock =
                     ReentrantRedisLock::new(renew_client.clone(), &renew_key, ttl_secs);
-                if let Ok(renewed) = renew_lock.renew(&renew_holder).await {
-                    if !renewed {
+                if let Ok(renewed) = renew_lock.renew(&renew_holder).await
+                {
+                    if !renewed
+                    {
                         tracing::warn!(key = %renew_key, "watchdog: lock expired before renewal");
                         break;
                     }
@@ -666,40 +738,47 @@ impl WatchdogGuard {
 
     /// Lock key.
     /// 锁键。
-    pub fn key(&self) -> &str {
+    pub fn key(&self) -> &str
+    {
         &self.key
     }
 
     /// Holder identifier.
     /// 持有者标识符。
-    pub fn holder_id(&self) -> &str {
+    pub fn holder_id(&self) -> &str
+    {
         &self.holder_id
     }
 
     /// Current reentry count.
     /// 当前重入计数。
-    pub fn reentry_count(&self) -> u32 {
+    pub fn reentry_count(&self) -> u32
+    {
         self.reentry_count
     }
 
     /// Manually renew the TTL.
     /// 手动续期 TTL。
-    pub async fn renew(&self) -> RedisResult<bool> {
+    pub async fn renew(&self) -> RedisResult<bool>
+    {
         let lock = ReentrantRedisLock::new(self.client.clone(), &self.key, self.ttl_secs);
         lock.renew(&self.holder_id).await
     }
 
     /// Release the lock and stop the watchdog.
     /// 释放锁并停止看门狗。
-    pub async fn release(self) -> RedisResult<i64> {
+    pub async fn release(self) -> RedisResult<i64>
+    {
         self.watchdog_handle.abort();
         let lock = ReentrantRedisLock::new(self.client.clone(), &self.key, self.ttl_secs);
         lock.release(&self.holder_id).await
     }
 }
 
-impl Drop for WatchdogGuard {
-    fn drop(&mut self) {
+impl Drop for WatchdogGuard
+{
+    fn drop(&mut self)
+    {
         self.watchdog_handle.abort();
         let client = self.client.clone();
         let key = std::mem::take(&mut self.key);
@@ -716,11 +795,14 @@ impl Drop for WatchdogGuard {
 // ── Tests ──
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod tests
+{
     use redis::Client;
 
-    fn make_client() -> RedisClient {
+    use super::*;
+
+    fn make_client() -> RedisClient
+    {
         let client = Client::open("redis://127.0.0.1").unwrap();
         RedisClient::from_client(client)
     }
@@ -728,7 +810,8 @@ mod tests {
     // ── Unit tests (no Redis connection required) ───────────────────────────
 
     #[test]
-    fn test_lock_creation() {
+    fn test_lock_creation()
+    {
         let client = make_client();
         let lock = RedisLock::new(client, "test:lock".to_string(), 30);
         assert_eq!(lock.key(), "test:lock");
@@ -736,7 +819,8 @@ mod tests {
     }
 
     #[test]
-    fn test_lock_with_token() {
+    fn test_lock_with_token()
+    {
         let client = make_client();
         let lock = RedisLock::new(client, "test:lock".to_string(), 30)
             .with_token("my-custom-token".to_string());
@@ -744,7 +828,8 @@ mod tests {
     }
 
     #[test]
-    fn test_lock_with_auto_renewal_capped_interval() {
+    fn test_lock_with_auto_renewal_capped_interval()
+    {
         let client = make_client();
         // ttl_secs=30, ttl/2=15, request 10 → stays 10
         let lock = RedisLock::new(client, "test:lock".to_string(), 30).with_auto_renewal(10);
@@ -752,7 +837,8 @@ mod tests {
     }
 
     #[test]
-    fn test_lock_with_auto_renewal_caps_at_half_ttl() {
+    fn test_lock_with_auto_renewal_caps_at_half_ttl()
+    {
         let client = make_client();
         // ttl_secs=30, ttl/2=15, request 20 → capped to 15
         let lock = RedisLock::new(client, "test:lock".to_string(), 30).with_auto_renewal(20);
@@ -760,14 +846,16 @@ mod tests {
     }
 
     #[test]
-    fn test_lock_without_auto_renewal() {
+    fn test_lock_without_auto_renewal()
+    {
         let client = make_client();
         let lock = RedisLock::new(client, "test:lock".to_string(), 30);
         assert!(lock.renew_interval_secs.is_none());
     }
 
     #[test]
-    fn test_reentrant_lock_creation() {
+    fn test_reentrant_lock_creation()
+    {
         let client = make_client();
         let lock = ReentrantRedisLock::new(client, "reentrant:key", 60);
         assert_eq!(lock.key, "reentrant:key");
@@ -775,7 +863,8 @@ mod tests {
     }
 
     #[test]
-    fn test_reentrant_lua_scripts_are_valid() {
+    fn test_reentrant_lua_scripts_are_valid()
+    {
         assert!(!REENTRANT_ACQUIRE_LUA.is_empty());
         assert!(!REENTRANT_RELEASE_LUA.is_empty());
         assert!(!REENTRANT_RENEW_LUA.is_empty());
@@ -784,7 +873,8 @@ mod tests {
     /// Verify RedisLockGuard::new spawns a watchdog when interval is set.
     /// 验证当间隔设置时 RedisLockGuard::new 会生成看门狗。
     #[tokio::test]
-    async fn test_guard_has_watchdog_when_interval_set() {
+    async fn test_guard_has_watchdog_when_interval_set()
+    {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -800,7 +890,8 @@ mod tests {
     /// Verify RedisLockGuard::new does NOT spawn a watchdog without interval.
     /// 验证没有间隔时 RedisLockGuard::new 不会生成看门狗。
     #[tokio::test]
-    async fn test_guard_no_watchdog_without_interval() {
+    async fn test_guard_no_watchdog_without_interval()
+    {
         let client = make_client();
         let guard =
             RedisLockGuard::new(client, "no-wd:key".to_string(), "token-xyz".to_string(), 30, None);
@@ -811,7 +902,8 @@ mod tests {
     /// Verify lock_lost flag can be set (simulating watchdog detection).
     /// 验证 lock_lost 标志可以被设置（模拟看门狗检测）。
     #[test]
-    fn test_guard_lock_lost_flag() {
+    fn test_guard_lock_lost_flag()
+    {
         let flag = Arc::new(AtomicBool::new(false));
         assert!(!flag.load(Ordering::Relaxed));
 
@@ -822,7 +914,8 @@ mod tests {
     /// Verify stop_watchdog aborts the background task.
     /// 验证 stop_watchdog 会中止后台任务。
     #[tokio::test]
-    async fn test_stop_watchdog_aborts_task() {
+    async fn test_stop_watchdog_aborts_task()
+    {
         let client = make_client();
         let mut guard = RedisLockGuard::new(
             client,
@@ -844,7 +937,8 @@ mod tests {
     /// Verify Drop cancels the watchdog task without panic.
     /// 验证 Drop 取消看门狗任务不会引发 panic。
     #[tokio::test]
-    async fn test_guard_drop_cancels_watchdog() {
+    async fn test_guard_drop_cancels_watchdog()
+    {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -861,7 +955,8 @@ mod tests {
     /// Verify guard without watchdog drops cleanly.
     /// 验证没有看门狗的守卫可以正常丢弃。
     #[tokio::test]
-    async fn test_guard_drop_without_watchdog() {
+    async fn test_guard_drop_without_watchdog()
+    {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -877,7 +972,8 @@ mod tests {
     /// Verify Debug output includes key, token, and watchdog state.
     /// 验证 Debug 输出包含 key、token 和看门狗状态。
     #[tokio::test]
-    async fn test_guard_debug_format() {
+    async fn test_guard_debug_format()
+    {
         let client = make_client();
         let guard = RedisLockGuard::new(
             client,
@@ -895,7 +991,8 @@ mod tests {
     /// Verify multiple guards with the same key can be created (different tokens).
     /// 验证可以用相同的 key 创建多个守卫（不同令牌）。
     #[tokio::test]
-    async fn test_multiple_guards_same_key() {
+    async fn test_multiple_guards_same_key()
+    {
         let client1 = make_client();
         let client2 = make_client();
         let guard1 = RedisLockGuard::new(
@@ -924,7 +1021,8 @@ mod tests {
     /// 获取锁，验证其存在，然后释放它。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_acquire_and_release() {
+    async fn test_acquire_and_release()
+    {
         let client = make_client();
         let key = format!("test:acquire:{}", Uuid::new_v4());
         let lock = RedisLock::new(client.clone(), key.clone(), 30);
@@ -948,7 +1046,8 @@ mod tests {
     /// 使用看门狗获取锁，验证守卫报告拥有看门狗。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_acquire_with_watchdog() {
+    async fn test_acquire_with_watchdog()
+    {
         let client = make_client();
         let key = format!("test:wd:{}", Uuid::new_v4());
         let lock = RedisLock::new(client.clone(), key.clone(), 30).with_auto_renewal(10);
@@ -965,7 +1064,8 @@ mod tests {
     /// 验证锁释放会取消看门狗（TTL 应停止延长）。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_release_cancels_watchdog() {
+    async fn test_release_cancels_watchdog()
+    {
         let client = make_client();
         let key = format!("test:release-wd:{}", Uuid::new_v4());
         let lock = RedisLock::new(client.clone(), key.clone(), 10).with_auto_renewal(3);
@@ -986,7 +1086,8 @@ mod tests {
     /// 两个锁实例竞争同一个键；第二个获取应该失败。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_concurrent_lock_competition() {
+    async fn test_concurrent_lock_competition()
+    {
         let client = make_client();
         let key = format!("test:compete:{}", Uuid::new_v4());
 
@@ -1012,7 +1113,8 @@ mod tests {
     /// 验证手动续期延长了 TTL。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_manual_renewal() {
+    async fn test_manual_renewal()
+    {
         let client = make_client();
         let key = format!("test:renew:{}", Uuid::new_v4());
         let lock = RedisLock::new(client.clone(), key.clone(), 10);
@@ -1042,7 +1144,8 @@ mod tests {
     /// 验证 TTL 过期后，其他客户端可以获取锁。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_expired_lock_without_watchdog() {
+    async fn test_expired_lock_without_watchdog()
+    {
         let client = make_client();
         let key = format!("test:expire:{}", Uuid::new_v4());
 
@@ -1069,7 +1172,8 @@ mod tests {
     /// 验证可重入锁的获取/释放循环。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_reentrant_acquire_release() {
+    async fn test_reentrant_acquire_release()
+    {
         let client = make_client();
         let key = format!("test:reentrant:{}", Uuid::new_v4());
         let lock = ReentrantRedisLock::new(client.clone(), key.clone(), 30);
@@ -1120,7 +1224,8 @@ mod tests {
     /// 验证可重入锁的看门狗续期 TTL。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_reentrant_watchdog_renewal() {
+    async fn test_reentrant_watchdog_renewal()
+    {
         let client = make_client();
         let key = format!("test:wd-reentrant:{}", Uuid::new_v4());
         let lock = ReentrantRedisLock::new(client.clone(), key.clone(), 6);
@@ -1150,7 +1255,8 @@ mod tests {
     /// 验证 acquire_timeout 重试后最终成功。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_acquire_timeout_success() {
+    async fn test_acquire_timeout_success()
+    {
         let client = make_client();
         let key = format!("test:timeout:{}", Uuid::new_v4());
         let lock = RedisLock::new(client.clone(), key.clone(), 5);
@@ -1166,7 +1272,8 @@ mod tests {
     /// 验证当锁被持有时 acquire_timeout 返回 None。
     #[tokio::test]
     #[ignore = "requires Redis at 127.0.0.1:6379"]
-    async fn test_acquire_timeout_fails_when_held() {
+    async fn test_acquire_timeout_fails_when_held()
+    {
         let client = make_client();
         let key = format!("test:timeout-fail:{}", Uuid::new_v4());
         let lock1 = RedisLock::new(client.clone(), key.clone(), 30);

@@ -5,48 +5,61 @@ use quote::{format_ident, quote};
 use syn::{Field, Fields, ItemStruct, Type};
 
 /// Extract inner type `T` from `Arc<T>` / `std::sync::Arc<T>`.
-fn extract_arc_inner(ty: &Type) -> Option<&Type> {
-    let Type::Path(type_path) = ty else {
+fn extract_arc_inner(ty: &Type) -> Option<&Type>
+{
+    let Type::Path(type_path) = ty
+    else
+    {
         return None;
     };
     let seg = type_path.path.segments.last()?;
-    if seg.ident != "Arc" {
+    if seg.ident != "Arc"
+    {
         return None;
     }
-    let syn::PathArguments::AngleBracketed(args) = &seg.arguments else {
+    let syn::PathArguments::AngleBracketed(args) = &seg.arguments
+    else
+    {
         return None;
     };
-    match args.args.first()? {
+    match args.args.first()?
+    {
         syn::GenericArgument::Type(inner) => Some(inner),
         _ => None,
     }
 }
 
-fn field_is_autowired(field: &Field) -> bool {
+fn field_is_autowired(field: &Field) -> bool
+{
     field.attrs.iter().any(|a| {
         a.path().is_ident("autowired") || a.path().get_ident().is_some_and(|i| i == "Autowired")
     })
 }
 
-fn inject_type_for_field(field: &Field) -> Option<&Type> {
-    if let Some(inner) = extract_arc_inner(&field.ty) {
+fn inject_type_for_field(field: &Field) -> Option<&Type>
+{
+    if let Some(inner) = extract_arc_inner(&field.ty)
+    {
         return Some(inner);
     }
-    if field_is_autowired(field) {
+    if field_is_autowired(field)
+    {
         return Some(&field.ty);
     }
     None
 }
 
 /// Generate inventory bean registration for a struct stereotype (`#[service]`, etc.).
-fn extract_condition_fn(
-    input: &ItemStruct,
-) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn extract_condition_fn(input: &ItemStruct)
+-> (proc_macro2::TokenStream, proc_macro2::TokenStream)
+{
     use quote::format_ident;
     let cond_fn = format_ident!("__hiver_condition_{}", input.ident);
 
-    for attr in &input.attrs {
-        if attr.path().is_ident("conditional_on_property") {
+    for attr in &input.attrs
+    {
+        if attr.path().is_ident("conditional_on_property")
+        {
             let mut key = String::new();
             let mut value: Option<String> = None;
             let _ = attr.parse_nested_meta(|meta| {
@@ -64,8 +77,10 @@ fn extract_condition_fn(
                 }
                 Ok(())
             });
-            if !key.is_empty() {
-                if let Some(ref v) = value {
+            if !key.is_empty()
+            {
+                if let Some(ref v) = value
+                {
                     let def = quote! {
                         fn #cond_fn(ctx: &::hiver_starter::core::ApplicationContext) -> bool {
                             ctx.get_property(#key).as_deref() == Some(#v)
@@ -84,15 +99,18 @@ fn extract_condition_fn(
     }
 
     // @ConditionalOnMissingBean — register only if no bean of the given type is in the container
-    for attr in &input.attrs {
-        if attr.path().is_ident("conditional_on_missing_bean") {
+    for attr in &input.attrs
+    {
+        if attr.path().is_ident("conditional_on_missing_bean")
+        {
             let mut target_type: Option<Type> = None;
             let _ = attr.parse_nested_meta(|meta| {
                 let path = meta.path.clone();
                 target_type = Some(Type::Path(syn::TypePath { qself: None, path }));
                 Ok(())
             });
-            if let Some(ty) = target_type {
+            if let Some(ty) = target_type
+            {
                 let def = quote! {
                     fn #cond_fn(ctx: &::hiver_starter::core::ApplicationContext) -> bool {
                         !ctx.has_bean::<#ty>()
@@ -114,7 +132,8 @@ fn extract_condition_fn(
     (quote! {}, quote! { ::hiver_starter::core::registry::always_true })
 }
 
-pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> TokenStream2 {
+pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> TokenStream2
+{
     let struct_name = &input.ident;
     let factory_fn = format_ident!("__hiver_factory_{}", struct_name);
     let deps_static = format_ident!("__HIVER_DEPS_{}", struct_name.to_string().to_uppercase());
@@ -122,52 +141,69 @@ pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> To
     let bean_name_camel = to_camel_case(&bean_name_lit);
     let (condition_def, condition_fn) = extract_condition_fn(input);
 
-    let Fields::Named(fields) = &input.fields else {
+    let Fields::Named(fields) = &input.fields
+    else
+    {
         return quote! {};
     };
 
     let mut dep_type_fns: Vec<TokenStream2> = Vec::new();
     let mut field_inits: Vec<TokenStream2> = Vec::new();
 
-    for field in &fields.named {
+    for field in &fields.named
+    {
         let field_name = field
             .ident
             .as_ref()
             .expect("Fields::Named always have idents");
         let field_ty = &field.ty;
 
-        if let Some(dep_ty) = inject_type_for_field(field) {
+        if let Some(dep_ty) = inject_type_for_field(field)
+        {
             dep_type_fns.push(quote! { || ::std::any::TypeId::of::<#dep_ty>() });
-            if extract_arc_inner(field_ty).is_some() {
+            if extract_arc_inner(field_ty).is_some()
+            {
                 field_inits.push(quote! {
                     #field_name: ctx.get_required_bean::<#dep_ty>()
                         .unwrap_or_else(|e| panic!("failed to inject {}: {e}", stringify!(#dep_ty)))
                 });
-            } else {
+            }
+            else
+            {
                 field_inits.push(quote! {
                     #field_name: ctx.get_required_bean::<#dep_ty>()
                         .map(|arc| (*arc).clone())
                         .unwrap_or_else(|e| panic!("failed to inject {}: {e}", stringify!(#dep_ty)))
                 });
             }
-        } else if let Type::Path(p) = field_ty {
-            if p.path.segments.last().is_some_and(|s| s.ident == "String") {
+        }
+        else if let Type::Path(p) = field_ty
+        {
+            if p.path.segments.last().is_some_and(|s| s.ident == "String")
+            {
                 field_inits.push(quote! { #field_name: ::std::string::String::new() });
-            } else {
+            }
+            else
+            {
                 field_inits.push(quote! {
                     #field_name: ::std::default::Default::default()
                 });
             }
-        } else {
+        }
+        else
+        {
             field_inits.push(quote! {
                 #field_name: ::std::default::Default::default()
             });
         }
     }
 
-    let dep_array = if dep_type_fns.is_empty() {
+    let dep_array = if dep_type_fns.is_empty()
+    {
         quote! { &[] as &[fn() -> ::std::any::TypeId] }
-    } else {
+    }
+    else
+    {
         quote! {
             {
                 static #deps_static: &[fn() -> ::std::any::TypeId] = &[#(#dep_type_fns),*];
@@ -198,9 +234,11 @@ pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> To
     }
 }
 
-fn to_camel_case(name: &str) -> String {
+fn to_camel_case(name: &str) -> String
+{
     let mut chars = name.chars();
-    match chars.next() {
+    match chars.next()
+    {
         Some(c) => c.to_ascii_lowercase().to_string() + chars.as_str(),
         None => String::new(),
     }

@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build",
-    "testCommand": "cargo test --workspace --lib --exclude hiver-benches 2>&1 | tail -10",
+    "buildCommand": "cargo build --workspace 2>&1 | tail -5",
+    "testCommand": "cargo clippy --workspace --exclude hiver-benches 2>&1 | grep -E \"warning:.*generated\" | sort -u; cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"FAILED\" | head -5; echo \"---\"; cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"test result:\" | grep -v \"ok.\" | head -5; echo \"DONE\"",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -155,9 +155,81 @@
   },
   "hotPaths": [
     {
+      "path": "crates/hiver-http/src/client.rs",
+      "accessCount": 13,
+      "lastAccessed": 1780708962342,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-middleware/src/request_id.rs",
+      "accessCount": 11,
+      "lastAccessed": 1780709071857,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-response/src/pdf.rs",
+      "accessCount": 10,
+      "lastAccessed": 1780708912734,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-security/src/authorization_server.rs",
+      "accessCount": 6,
+      "lastAccessed": 1780708633580,
+      "type": "file"
+    },
+    {
       "path": "publish_resume.sh",
       "accessCount": 4,
       "lastAccessed": 1780674463884,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-resilience/src/bulkhead.rs",
+      "accessCount": 4,
+      "lastAccessed": 1780708595319,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/lib.rs",
+      "accessCount": 4,
+      "lastAccessed": 1780708702678,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-validation-annotations/src/lib.rs",
+      "accessCount": 4,
+      "lastAccessed": 1780708932853,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-runtime/src/time.rs",
+      "accessCount": 3,
+      "lastAccessed": 1780708413228,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-http/src/conn.rs",
+      "accessCount": 3,
+      "lastAccessed": 1780708612710,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/query.rs",
+      "accessCount": 3,
+      "lastAccessed": 1780708698966,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-cloud/src/circuit_breaker.rs",
+      "accessCount": 2,
+      "lastAccessed": 1780708631667,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-resilience/src/circuit.rs",
+      "accessCount": 2,
+      "lastAccessed": 1780708900272,
       "type": "file"
     },
     {
@@ -176,6 +248,48 @@
       "path": "crates/hiver-core/README.md",
       "accessCount": 1,
       "lastAccessed": 1780674115114,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/mapper.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780709212111,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/executor.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780709212621,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/query_runtime.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780709213341,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-events/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780710228509,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-macros/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780710229086,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-test/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780710229992,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-core/src/conditional.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780710385608,
       "type": "file"
     }
   ],

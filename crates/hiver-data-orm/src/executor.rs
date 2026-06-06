@@ -10,24 +10,27 @@ use std::collections::HashMap;
 
 use hiver_data_rdbc::{DatabaseClient, Result as R2dbcResult};
 
-use crate::mapper::{
-    BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor,
+use crate::{
+    mapper::{BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor},
+    query_metadata::QueryMetadata,
 };
-use crate::query_metadata::QueryMetadata;
 
 /// Query executor for annotated queries.
 /// 注解查询的执行器。
 ///
 /// Equivalent to Spring's `JdbcTemplate` combined with `JpaQueryMethod`.
 /// 等价于 Spring 的 `JdbcTemplate` 结合 `JpaQueryMethod`。
-pub struct QueryExecutor<E: DatabaseClient> {
+pub struct QueryExecutor<E: DatabaseClient>
+{
     client: E,
 }
 
-impl<E: DatabaseClient> QueryExecutor<E> {
+impl<E: DatabaseClient> QueryExecutor<E>
+{
     /// Create a new query executor.
     /// 创建新的查询执行器。
-    pub fn new(client: E) -> Self {
+    pub fn new(client: E) -> Self
+    {
         Self { client }
     }
 
@@ -37,7 +40,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         &self,
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
-    ) -> R2dbcResult<Option<T>> {
+    ) -> R2dbcResult<Option<T>>
+    {
         let m = BeanRowMapper::<T>::new();
         self.fetch_one_with_mapper(meta, params, &m).await
     }
@@ -49,7 +53,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
         mapper: &M,
-    ) -> R2dbcResult<Option<T>> {
+    ) -> R2dbcResult<Option<T>>
+    {
         let (sql, vals) = meta.bind_params(params)?;
         let rows = self.client.fetch_all_params(&sql, &vals).await?;
         FirstRowExtractor::new(mapper).extract(&rows)
@@ -61,7 +66,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         &self,
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
-    ) -> R2dbcResult<Vec<T>> {
+    ) -> R2dbcResult<Vec<T>>
+    {
         let m = BeanRowMapper::<T>::new();
         self.fetch_all_with_mapper(meta, params, &m).await
     }
@@ -73,7 +79,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
         mapper: &M,
-    ) -> R2dbcResult<Vec<T>> {
+    ) -> R2dbcResult<Vec<T>>
+    {
         let (sql, vals) = meta.bind_params(params)?;
         let rows = self.client.fetch_all_params(&sql, &vals).await?;
         MappingResultSetExtractor::new(mapper).extract(&rows)
@@ -86,7 +93,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
         extractor: &X,
-    ) -> R2dbcResult<T> {
+    ) -> R2dbcResult<T>
+    {
         let (sql, vals) = meta.bind_params(params)?;
         let rows = self.client.fetch_all_params(&sql, &vals).await?;
         extractor.extract(&rows)
@@ -98,7 +106,8 @@ impl<E: DatabaseClient> QueryExecutor<E> {
         &self,
         meta: &QueryMetadata,
         params: &HashMap<String, serde_json::Value>,
-    ) -> R2dbcResult<u64> {
+    ) -> R2dbcResult<u64>
+    {
         let (sql, vals) = meta.bind_params(params)?;
         self.client.execute_params(&sql, &vals).await
     }
@@ -109,12 +118,15 @@ impl<E: DatabaseClient> QueryExecutor<E> {
 pub type AnnotatedQueryExecutor<E> = QueryExecutor<E>;
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_type_alias() {
-        fn _check<E: DatabaseClient>(c: E) -> AnnotatedQueryExecutor<E> {
+    fn test_type_alias()
+    {
+        fn _check<E: DatabaseClient>(c: E) -> AnnotatedQueryExecutor<E>
+        {
             QueryExecutor::new(c)
         }
     }

@@ -111,10 +111,18 @@ mod user;
 
 pub use auth::{Authentication, AuthenticationManager};
 pub use authority::{Authority, GrantedAuthority};
+pub use authorization_server::{
+    AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse, DeviceCodeStatus,
+    GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
+};
 pub use context::{SecurityContext, SecurityContextGuard};
 pub use csrf::{CsrfProtectionConfig, CsrfToken, CsrfTokenRepository, InMemoryCsrfTokenRepository};
 pub use data_scope::{
     DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule, DataScopeType,
+};
+pub use email::{
+    Attachment, EmailConfig, EmailError, EmailMessage, EmailQueue, EmailResult, EmailSender,
+    EmailTemplate, SmtpEmailSender,
 };
 pub use encoder::{
     BcryptPasswordEncoder, NoOpPasswordEncoder, PasswordEncoder, Pbkdf2PasswordEncoder,
@@ -129,6 +137,10 @@ pub use oauth2::{
     PkceParams, StateManager, TokenEndpointAuthMethod, TokenResponse, TokenResponseWithTimestamp,
     UserInfo,
 };
+pub use permission::{
+    InMemoryPermissionAuditLogger, PermissionAuditEntry, PermissionAuditLog, PermissionAuditLogger,
+    PermissionDef, PermissionEvaluator, PermissionRegistry,
+};
 pub use post_authorize::{PostAuthorize, PostAuthorizeOptions};
 pub use pre_authorize::{PreAuthorize, SecurityExpression};
 pub use rbac::{
@@ -140,22 +152,11 @@ pub use role::{Permission, Role, Role as RoleEnum, Roles};
 pub use secured::{Secured, SecuredHelper, SecurityMetadata};
 pub use user::{InMemoryUserService, User, UserDetails, UserService};
 
-pub use authorization_server::{
-    AuthorizationServer, AuthorizationServerBuilder, DeviceAuthorizationResponse, DeviceCodeStatus,
-    GrantType, IntrospectionResult, IssuedTokenResponse, RegisteredClient,
-};
-pub use email::{
-    Attachment, EmailConfig, EmailError, EmailMessage, EmailQueue, EmailResult, EmailSender,
-    EmailTemplate, SmtpEmailSender,
-};
-pub use permission::{
-    InMemoryPermissionAuditLogger, PermissionAuditEntry, PermissionAuditLog, PermissionAuditLogger,
-    PermissionDef, PermissionEvaluator, PermissionRegistry,
-};
-
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
+    // CSRF re-exports / CSRF重新导出
     pub use super::{
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,
         DataScope, DataScopeApply, DataScopeContext, DataScopeMiddleware, DataScopeRule,
@@ -165,12 +166,10 @@ pub mod prelude {
         PermissionRegistry, PreAuthorize, RbacConfig, RbacManager, RoleEnum, RolePermission, Roles,
         Secured, SecurityContext, SecurityContextGuard, SecurityExpression, User, UserDetails,
         UserRole, UserService,
-    };
-
-    // CSRF re-exports / CSRF重新导出
-    pub use super::csrf::{
-        CookieCsrfTokenRepository, CsrfProtectionConfig, CsrfToken, CsrfTokenRepository,
-        CsrfValidator, InMemoryCsrfTokenRepository,
+        csrf::{
+            CookieCsrfTokenRepository, CsrfProtectionConfig, CsrfToken, CsrfTokenRepository,
+            CsrfValidator, InMemoryCsrfTokenRepository,
+        },
     };
 }
 

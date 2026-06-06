@@ -41,9 +41,9 @@
 //! }
 //! ```
 
+use std::{collections::HashSet, fmt};
+
 use crate::ValidationError;
-use std::collections::HashSet;
-use std::fmt;
 
 /// Validation group marker / 验证分组标记
 ///
@@ -62,7 +62,8 @@ use std::fmt;
 /// @NotNull(groups = CreateGroup.class)
 /// private String username;
 /// ```
-pub trait ValidationGroup: std::any::Any + Send + Sync {
+pub trait ValidationGroup: std::any::Any + Send + Sync
+{
     /// Get the group name / 获取分组名称
     fn group_name() -> &'static str
     where
@@ -76,15 +77,18 @@ pub trait ValidationGroup: std::any::Any + Send + Sync {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DefaultGroup;
 
-impl ValidationGroup for DefaultGroup {
-    fn group_name() -> &'static str {
+impl ValidationGroup for DefaultGroup
+{
+    fn group_name() -> &'static str
+    {
         "Default"
     }
 }
 
 /// Validation metadata for a field / 字段验证元数据
 #[derive(Clone)]
-pub struct FieldValidation {
+pub struct FieldValidation
+{
     /// Field name / 字段名
     pub field: String,
     /// Validation rules / 验证规则
@@ -93,9 +97,11 @@ pub struct FieldValidation {
     pub groups: HashSet<String>,
 }
 
-impl FieldValidation {
+impl FieldValidation
+{
     /// Create new field validation / 创建新的字段验证
-    pub fn new(field: impl Into<String>) -> Self {
+    pub fn new(field: impl Into<String>) -> Self
+    {
         Self {
             field: field.into(),
             rules: Vec::new(),
@@ -104,13 +110,15 @@ impl FieldValidation {
     }
 
     /// Add validation rule / 添加验证规则
-    pub fn with_rule(mut self, rule: ValidationRule) -> Self {
+    pub fn with_rule(mut self, rule: ValidationRule) -> Self
+    {
         self.rules.push(rule);
         self
     }
 
     /// Add group / 添加分组
-    pub fn with_group(mut self, group: impl Into<String>) -> Self {
+    pub fn with_group(mut self, group: impl Into<String>) -> Self
+    {
         self.groups.insert(group.into());
         self
     }
@@ -120,20 +128,24 @@ impl FieldValidation {
         &self,
         value: &str,
         active_groups: &HashSet<String>,
-    ) -> Result<(), ValidationError> {
+    ) -> Result<(), ValidationError>
+    {
         // Check if this field should be validated based on groups
         // 检查是否应根据分组验证此字段
-        if !self.groups.is_empty() && !active_groups.is_empty() {
+        if !self.groups.is_empty() && !active_groups.is_empty()
+        {
             // Field has group restrictions - check if any active group matches
             // 字段有分组限制 - 检查是否有活跃分组匹配
             let should_validate = self.groups.intersection(active_groups).next().is_some();
-            if !should_validate {
+            if !should_validate
+            {
                 return Ok(());
             }
         }
 
         // Apply all rules / 应用所有规则
-        for rule in &self.rules {
+        for rule in &self.rules
+        {
             rule.validate(&self.field, value)?;
         }
 
@@ -143,7 +155,8 @@ impl FieldValidation {
 
 /// Validation rule / 验证规则
 #[derive(Clone)]
-pub enum ValidationRule {
+pub enum ValidationRule
+{
     /// Not null - value cannot be empty/null
     /// 非空 - 值不能为空/null
     NotNull,
@@ -157,7 +170,8 @@ pub enum ValidationRule {
     NotBlank,
 
     /// Size validation / 大小验证
-    Size {
+    Size
+    {
         /// Minimum size / 最小大小
         min: Option<usize>,
         /// Maximum size / 最大大小
@@ -177,7 +191,8 @@ pub enum ValidationRule {
     DecimalMax(f64),
 
     /// Digits validation / 数字位数验证
-    Digits {
+    Digits
+    {
         /// Maximum integer digits / 最大整数位数
         integer: usize,
         /// Maximum fraction digits / 最大小数位数
@@ -191,7 +206,8 @@ pub enum ValidationRule {
     Url,
 
     /// Pattern validation / 模式验证
-    Pattern {
+    Pattern
+    {
         /// Regular expression pattern / 正则表达式模式
         regex: String,
     },
@@ -230,27 +246,37 @@ pub enum ValidationRule {
     CreditCardNumber,
 }
 
-impl ValidationRule {
+impl ValidationRule
+{
     /// Validate a value / 验证值
     #[allow(clippy::indexing_slicing)]
-    pub fn validate(&self, field: &str, value: &str) -> Result<(), ValidationError> {
-        match self {
-            ValidationRule::NotNull => {
-                if value.is_empty() {
+    pub fn validate(&self, field: &str, value: &str) -> Result<(), ValidationError>
+    {
+        match self
+        {
+            ValidationRule::NotNull =>
+            {
+                if value.is_empty()
+                {
                     return Err(ValidationError::new(field, "Cannot be null"));
                 }
             },
-            ValidationRule::NotEmpty => {
-                if value.is_empty() {
+            ValidationRule::NotEmpty =>
+            {
+                if value.is_empty()
+                {
                     return Err(ValidationError::new(field, "Cannot be empty"));
                 }
             },
-            ValidationRule::NotBlank => {
-                if value.trim().is_empty() {
+            ValidationRule::NotBlank =>
+            {
+                if value.trim().is_empty()
+                {
                     return Err(ValidationError::new(field, "Cannot be blank"));
                 }
             },
-            ValidationRule::Size { min, max } => {
+            ValidationRule::Size { min, max } =>
+            {
                 let len = value.len();
                 if let Some(min_val) = min
                     && len < *min_val
@@ -269,223 +295,311 @@ impl ValidationRule {
                     ));
                 }
             },
-            ValidationRule::Min(min) => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num < *min {
+            ValidationRule::Min(min) =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num < *min
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at least {}", min),
                         ));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if (num as i64) < *min {
+                }
+                else if let Ok(num) = value.parse::<f64>()
+                {
+                    if (num as i64) < *min
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at least {}", min),
                         ));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a number"));
                 }
             },
-            ValidationRule::Max(max) => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num > *max {
+            ValidationRule::Max(max) =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num > *max
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at most {}", max),
                         ));
                     }
-                } else if let Ok(num) = value.parse::<f64>() {
-                    if (num as i64) > *max {
+                }
+                else if let Ok(num) = value.parse::<f64>()
+                {
+                    if (num as i64) > *max
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at most {}", max),
                         ));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a number"));
                 }
             },
-            ValidationRule::DecimalMin(min) => {
-                if let Ok(num) = value.parse::<f64>() {
-                    if num < *min {
+            ValidationRule::DecimalMin(min) =>
+            {
+                if let Ok(num) = value.parse::<f64>()
+                {
+                    if num < *min
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at least {}", min),
                         ));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a number"));
                 }
             },
-            ValidationRule::DecimalMax(max) => {
-                if let Ok(num) = value.parse::<f64>() {
-                    if num > *max {
+            ValidationRule::DecimalMax(max) =>
+            {
+                if let Ok(num) = value.parse::<f64>()
+                {
+                    if num > *max
+                    {
                         return Err(ValidationError::new(
                             field,
                             format!("Must be at most {}", max),
                         ));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a number"));
                 }
             },
-            ValidationRule::Digits { integer, fraction } => {
+            ValidationRule::Digits { integer, fraction } =>
+            {
                 let parts: Vec<&str> = value.split('.').collect();
-                match parts.len() {
-                    1 => {
-                        if parts[0].len() > *integer {
+                match parts.len()
+                {
+                    1 =>
+                    {
+                        if parts[0].len() > *integer
+                        {
                             return Err(ValidationError::new(
                                 field,
                                 format!("Integer part must have at most {} digits", integer),
                             ));
                         }
                     },
-                    2 => {
-                        if parts[0].len() > *integer {
+                    2 =>
+                    {
+                        if parts[0].len() > *integer
+                        {
                             return Err(ValidationError::new(
                                 field,
                                 format!("Integer part must have at most {} digits", integer),
                             ));
                         }
-                        if parts[1].len() > *fraction {
+                        if parts[1].len() > *fraction
+                        {
                             return Err(ValidationError::new(
                                 field,
                                 format!("Fraction part must have at most {} digits", fraction),
                             ));
                         }
                     },
-                    _ => {
+                    _ =>
+                    {
                         return Err(ValidationError::new(field, "Invalid number format"));
                     },
                 }
             },
-            ValidationRule::Email => {
+            ValidationRule::Email =>
+            {
                 use crate::validators::EMAIL_REGEX;
-                if !EMAIL_REGEX.is_match(value) {
+                if !EMAIL_REGEX.is_match(value)
+                {
                     return Err(ValidationError::invalid_email(field));
                 }
             },
-            ValidationRule::Url => {
+            ValidationRule::Url =>
+            {
                 use crate::validators::URL_REGEX;
-                if !URL_REGEX.is_match(value) {
+                if !URL_REGEX.is_match(value)
+                {
                     return Err(ValidationError::new(field, "Invalid URL format"));
                 }
             },
-            ValidationRule::Pattern { regex } => {
+            ValidationRule::Pattern { regex } =>
+            {
                 use regex::Regex;
                 let re = Regex::new(regex)
                     .map_err(|_| ValidationError::new(field, "Invalid regex pattern"))?;
-                if !re.is_match(value) {
+                if !re.is_match(value)
+                {
                     return Err(ValidationError::pattern_mismatch(field, regex));
                 }
             },
-            ValidationRule::Negative => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num >= 0 {
+            ValidationRule::Negative =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num >= 0
+                    {
                         return Err(ValidationError::new(field, "Must be negative"));
                     }
-                } else if let Ok(num) = value.parse::<f64>()
+                }
+                else if let Ok(num) = value.parse::<f64>()
                     && num >= 0.0
                 {
                     return Err(ValidationError::new(field, "Must be negative"));
                 }
             },
-            ValidationRule::Positive => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num <= 0 {
+            ValidationRule::Positive =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num <= 0
+                    {
                         return Err(ValidationError::new(field, "Must be positive"));
                     }
-                } else if let Ok(num) = value.parse::<f64>()
+                }
+                else if let Ok(num) = value.parse::<f64>()
                     && num <= 0.0
                 {
                     return Err(ValidationError::new(field, "Must be positive"));
                 }
             },
-            ValidationRule::NegativeOrZero => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num > 0 {
+            ValidationRule::NegativeOrZero =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num > 0
+                    {
                         return Err(ValidationError::new(field, "Must be negative or zero"));
                     }
-                } else if let Ok(num) = value.parse::<f64>()
+                }
+                else if let Ok(num) = value.parse::<f64>()
                     && num > 0.0
                 {
                     return Err(ValidationError::new(field, "Must be negative or zero"));
                 }
             },
-            ValidationRule::PositiveOrZero => {
-                if let Ok(num) = value.parse::<i64>() {
-                    if num < 0 {
+            ValidationRule::PositiveOrZero =>
+            {
+                if let Ok(num) = value.parse::<i64>()
+                {
+                    if num < 0
+                    {
                         return Err(ValidationError::new(field, "Must be positive or zero"));
                     }
-                } else if let Ok(num) = value.parse::<f64>()
+                }
+                else if let Ok(num) = value.parse::<f64>()
                     && num < 0.0
                 {
                     return Err(ValidationError::new(field, "Must be positive or zero"));
                 }
             },
-            ValidationRule::Past => {
-                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
-                    if dt > chrono::Utc::now() {
+            ValidationRule::Past =>
+            {
+                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value)
+                {
+                    if dt > chrono::Utc::now()
+                    {
                         return Err(ValidationError::new(field, "Must be in the past"));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Invalid date format"));
                 }
             },
-            ValidationRule::Future => {
-                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
-                    if dt < chrono::Utc::now() {
+            ValidationRule::Future =>
+            {
+                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value)
+                {
+                    if dt < chrono::Utc::now()
+                    {
                         return Err(ValidationError::new(field, "Must be in the future"));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Invalid date format"));
                 }
             },
-            ValidationRule::PastOrPresent => {
-                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
-                    if dt > chrono::Utc::now() {
+            ValidationRule::PastOrPresent =>
+            {
+                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value)
+                {
+                    if dt > chrono::Utc::now()
+                    {
                         return Err(ValidationError::new(field, "Must be in the past or present"));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Invalid date format"));
                 }
             },
-            ValidationRule::FutureOrPresent => {
-                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value) {
-                    if dt < chrono::Utc::now() {
+            ValidationRule::FutureOrPresent =>
+            {
+                if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(value)
+                {
+                    if dt < chrono::Utc::now()
+                    {
                         return Err(ValidationError::new(
                             field,
                             "Must be in the future or present",
                         ));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Invalid date format"));
                 }
             },
-            ValidationRule::AssertTrue => {
-                if let Ok(b) = value.parse::<bool>() {
-                    if !b {
+            ValidationRule::AssertTrue =>
+            {
+                if let Ok(b) = value.parse::<bool>()
+                {
+                    if !b
+                    {
                         return Err(ValidationError::new(field, "Must be true"));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a boolean"));
                 }
             },
-            ValidationRule::AssertFalse => {
-                if let Ok(b) = value.parse::<bool>() {
-                    if b {
+            ValidationRule::AssertFalse =>
+            {
+                if let Ok(b) = value.parse::<bool>()
+                {
+                    if b
+                    {
                         return Err(ValidationError::new(field, "Must be false"));
                     }
-                } else {
+                }
+                else
+                {
                     return Err(ValidationError::new(field, "Must be a boolean"));
                 }
             },
-            ValidationRule::CreditCardNumber => {
+            ValidationRule::CreditCardNumber =>
+            {
                 // Basic Luhn algorithm for credit card validation
                 // 基本的Luhn算法用于信用卡验证
-                if !is_valid_credit_card(value) {
+                if !is_valid_credit_card(value)
+                {
                     return Err(ValidationError::new(field, "Invalid credit card number"));
                 }
             },
@@ -494,9 +608,12 @@ impl ValidationRule {
     }
 }
 
-impl fmt::Debug for ValidationRule {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Debug for ValidationRule
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             ValidationRule::NotNull => write!(f, "NotNull"),
             ValidationRule::NotEmpty => write!(f, "NotEmpty"),
             ValidationRule::NotBlank => write!(f, "NotBlank"),
@@ -505,7 +622,8 @@ impl fmt::Debug for ValidationRule {
             ValidationRule::Max(n) => write!(f, "Max({})", n),
             ValidationRule::DecimalMin(n) => write!(f, "DecimalMin({})", n),
             ValidationRule::DecimalMax(n) => write!(f, "DecimalMax({})", n),
-            ValidationRule::Digits { integer, fraction } => {
+            ValidationRule::Digits { integer, fraction } =>
+            {
                 write!(f, "Digits(integer={}, fraction={})", integer, fraction)
             },
             ValidationRule::Email => write!(f, "Email"),
@@ -528,21 +646,26 @@ impl fmt::Debug for ValidationRule {
 
 /// Check if a credit card number is valid using Luhn algorithm
 /// 使用Luhn算法检查信用卡号是否有效
-fn is_valid_credit_card(number: &str) -> bool {
+fn is_valid_credit_card(number: &str) -> bool
+{
     let digits: Vec<u32> = number.chars().filter_map(|c| c.to_digit(10)).collect();
 
-    if digits.len() < 13 || digits.len() > 19 {
+    if digits.len() < 13 || digits.len() > 19
+    {
         return false;
     }
 
     let mut sum = 0u32;
     let mut double = false; // Start with false so rightmost digit is NOT doubled
 
-    for digit in digits.iter().rev() {
+    for digit in digits.iter().rev()
+    {
         let mut d = *digit;
-        if double {
+        if double
+        {
             d *= 2;
-            if d > 9 {
+            if d > 9
+            {
                 d -= 9;
             }
         }
@@ -609,7 +732,8 @@ pub struct NotBlank;
 ///     username: String,
 /// }
 /// ```
-pub struct Size {
+pub struct Size
+{
     /// Minimum size / 最小大小
     pub min: Option<usize>,
     /// Maximum size / 最大大小
@@ -644,7 +768,8 @@ pub struct DecimalMax(pub f64);
 ///
 /// Validates the number of integer and fraction digits.
 /// 验证整数和小数部分的位数。
-pub struct Digits {
+pub struct Digits
+{
     /// Maximum integer digits / 最大整数位数
     pub integer: usize,
     /// Maximum fraction digits / 最大小数位数
@@ -677,7 +802,8 @@ pub struct Url;
 ///     username: String,
 /// }
 /// ```
-pub struct Pattern {
+pub struct Pattern
+{
     /// Regex pattern / 正则表达式模式
     pub regex: &'static str,
 }
@@ -752,7 +878,8 @@ pub struct CreditCardNumber;
 ///
 /// Validates the length of a string.
 /// 验证字符串的长度。
-pub struct Length {
+pub struct Length
+{
     /// Minimum length / 最小长度
     pub min: Option<usize>,
     /// Maximum length / 最大长度
@@ -760,18 +887,21 @@ pub struct Length {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_not_null_validation() {
+    fn test_not_null_validation()
+    {
         let rule = ValidationRule::NotNull;
         assert!(rule.validate("field", "value").is_ok());
         assert!(rule.validate("field", "").is_err());
     }
 
     #[test]
-    fn test_not_blank_validation() {
+    fn test_not_blank_validation()
+    {
         let rule = ValidationRule::NotBlank;
         assert!(rule.validate("field", "value").is_ok());
         assert!(rule.validate("field", "").is_err());
@@ -779,7 +909,8 @@ mod tests {
     }
 
     #[test]
-    fn test_size_validation() {
+    fn test_size_validation()
+    {
         let rule = ValidationRule::Size {
             min: Some(3),
             max: Some(10),
@@ -790,7 +921,8 @@ mod tests {
     }
 
     #[test]
-    fn test_min_max_validation() {
+    fn test_min_max_validation()
+    {
         let min_rule = ValidationRule::Min(18);
         let max_rule = ValidationRule::Max(120);
 
@@ -802,14 +934,16 @@ mod tests {
     }
 
     #[test]
-    fn test_email_validation() {
+    fn test_email_validation()
+    {
         let rule = ValidationRule::Email;
         assert!(rule.validate("email", "test@example.com").is_ok());
         assert!(rule.validate("email", "invalid").is_err());
     }
 
     #[test]
-    fn test_pattern_validation() {
+    fn test_pattern_validation()
+    {
         let rule = ValidationRule::Pattern {
             regex: "^[a-z]+$".to_string(),
         };
@@ -819,7 +953,8 @@ mod tests {
     }
 
     #[test]
-    fn test_positive_negative_validation() {
+    fn test_positive_negative_validation()
+    {
         let pos_rule = ValidationRule::Positive;
         let neg_rule = ValidationRule::Negative;
 
@@ -833,7 +968,8 @@ mod tests {
     }
 
     #[test]
-    fn test_credit_card_validation() {
+    fn test_credit_card_validation()
+    {
         let rule = ValidationRule::CreditCardNumber;
         // Valid test card numbers (using Luhn algorithm)
         // 有效的测试卡号（使用Luhn算法）
@@ -845,7 +981,8 @@ mod tests {
     }
 
     #[test]
-    fn test_group_name() {
+    fn test_group_name()
+    {
         assert_eq!(DefaultGroup::group_name(), "Default");
     }
 }

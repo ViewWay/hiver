@@ -23,7 +23,8 @@ use crate::{Exchange, Queue};
 /// )
 /// ```
 #[derive(Clone, Debug)]
-pub struct Binding {
+pub struct Binding
+{
     /// Destination (queue or exchange)
     /// 目标（队列或交换机）
     pub destination: BindingDestination,
@@ -44,7 +45,8 @@ pub struct Binding {
 /// Binding destination
 /// 绑定目标
 #[derive(Clone, Debug)]
-pub enum BindingDestination {
+pub enum BindingDestination
+{
     /// Queue destination
     /// 队列目标
     Queue(Queue),
@@ -54,14 +56,16 @@ pub enum BindingDestination {
     Exchange(String),
 }
 
-impl Binding {
+impl Binding
+{
     /// Create new binding
     /// 创建新绑定
     pub fn new(
         destination: BindingDestination,
         source: Exchange,
         routing_key: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             destination,
             source,
@@ -72,7 +76,8 @@ impl Binding {
 
     /// Bind queue to exchange
     /// 将队列绑定到交换机
-    pub fn bind_queue(queue: Queue, exchange: Exchange, routing_key: impl Into<String>) -> Self {
+    pub fn bind_queue(queue: Queue, exchange: Exchange, routing_key: impl Into<String>) -> Self
+    {
         Self::new(BindingDestination::Queue(queue), exchange, routing_key)
     }
 
@@ -82,7 +87,8 @@ impl Binding {
         destination: impl Into<String>,
         source: Exchange,
         routing_key: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self::new(BindingDestination::Exchange(destination.into()), source, routing_key)
     }
 
@@ -92,15 +98,18 @@ impl Binding {
         mut self,
         key: impl Into<String>,
         value: impl Into<serde_json::Value>,
-    ) -> Self {
+    ) -> Self
+    {
         self.arguments.insert(key.into(), value.into());
         self
     }
 
     /// Get destination name
     /// 获取目标名称
-    pub fn destination_name(&self) -> String {
-        match &self.destination {
+    pub fn destination_name(&self) -> String
+    {
+        match &self.destination
+        {
             BindingDestination::Queue(q) => q.name.clone(),
             BindingDestination::Exchange(e) => e.clone(),
         }
@@ -108,7 +117,8 @@ impl Binding {
 
     /// Get source name
     /// 获取源名称
-    pub fn source_name(&self) -> String {
+    pub fn source_name(&self) -> String
+    {
         self.source.name.clone()
     }
 }
@@ -124,14 +134,17 @@ impl Binding {
 ///     .with("routing.key")
 ///     .withArgument("key", "value");
 /// ```
-pub struct BindingBuilder {
+pub struct BindingBuilder
+{
     binding: Binding,
 }
 
-impl BindingBuilder {
+impl BindingBuilder
+{
     /// Bind destination
     /// 绑定目标
-    pub fn bind(destination: BindingDestination) -> Self {
+    pub fn bind(destination: BindingDestination) -> Self
+    {
         Self {
             binding: Binding {
                 destination,
@@ -144,26 +157,30 @@ impl BindingBuilder {
 
     /// Bind queue
     /// 绑定队列
-    pub fn bind_queue(queue: Queue) -> Self {
+    pub fn bind_queue(queue: Queue) -> Self
+    {
         Self::bind(BindingDestination::Queue(queue))
     }
 
     /// Bind exchange
     /// 绑定交换机
-    pub fn bind_exchange(exchange: impl Into<String>) -> Self {
+    pub fn bind_exchange(exchange: impl Into<String>) -> Self
+    {
         Self::bind(BindingDestination::Exchange(exchange.into()))
     }
 
     /// Set source exchange
     /// 设置源交换机
-    pub fn to(mut self, exchange: Exchange) -> Self {
+    pub fn to(mut self, exchange: Exchange) -> Self
+    {
         self.binding.source = exchange;
         self
     }
 
     /// Set routing key
     /// 设置路由键
-    pub fn with(mut self, routing_key: impl Into<String>) -> Self {
+    pub fn with(mut self, routing_key: impl Into<String>) -> Self
+    {
         self.binding.routing_key = routing_key.into();
         self
     }
@@ -174,26 +191,30 @@ impl BindingBuilder {
         mut self,
         key: impl Into<String>,
         value: impl Into<serde_json::Value>,
-    ) -> Self {
+    ) -> Self
+    {
         self.binding = self.binding.with_argument(key, value);
         self
     }
 
     /// Build the binding
     /// 构建绑定
-    pub fn build(self) -> Binding {
+    pub fn build(self) -> Binding
+    {
         self.binding
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::ExchangeType;
 
     /// Test Binding::bind_queue creates correct binding / 测试 Binding::bind_queue 创建正确的绑定
     #[test]
-    fn test_binding_bind_queue() {
+    fn test_binding_bind_queue()
+    {
         let queue = crate::Queue::durable("my_queue");
         let exchange = Exchange::direct("my_exchange");
         let binding = Binding::bind_queue(queue, exchange, "orders.create");
@@ -207,7 +228,8 @@ mod tests {
     /// Test Binding::bind_exchange creates correct binding / 测试 Binding::bind_exchange
     /// 创建正确的绑定
     #[test]
-    fn test_binding_bind_exchange() {
+    fn test_binding_bind_exchange()
+    {
         let source = Exchange::fanout("main_exchange");
         let binding = Binding::bind_exchange("child_exchange", source, "events.#");
 
@@ -218,15 +240,18 @@ mod tests {
 
     /// Test BindingDestination matches / 测试 BindingDestination 匹配
     #[test]
-    fn test_binding_destination_variants() {
+    fn test_binding_destination_variants()
+    {
         let queue_dest = BindingDestination::Queue(crate::Queue::durable("q"));
-        match &queue_dest {
+        match &queue_dest
+        {
             BindingDestination::Queue(q) => assert_eq!(q.name, "q"),
             BindingDestination::Exchange(_) => panic!("Expected Queue variant"),
         }
 
         let exchange_dest = BindingDestination::Exchange("ex".to_string());
-        match &exchange_dest {
+        match &exchange_dest
+        {
             BindingDestination::Queue(_) => panic!("Expected Exchange variant"),
             BindingDestination::Exchange(name) => assert_eq!(name, "ex"),
         }
@@ -234,7 +259,8 @@ mod tests {
 
     /// Test Binding::with_argument / 测试 Binding::with_argument
     #[test]
-    fn test_binding_with_argument() {
+    fn test_binding_with_argument()
+    {
         let queue = crate::Queue::durable("q");
         let exchange = Exchange::topic("ex");
         let binding = Binding::bind_queue(queue, exchange, "rk")
@@ -247,7 +273,8 @@ mod tests {
 
     /// Test BindingBuilder full chain / 测试 BindingBuilder 完整链式调用
     #[test]
-    fn test_binding_builder_queue() {
+    fn test_binding_builder_queue()
+    {
         let binding = BindingBuilder::bind_queue(crate::Queue::durable("orders"))
             .to(Exchange::topic("events"))
             .with("order.created")
@@ -262,7 +289,8 @@ mod tests {
 
     /// Test BindingBuilder for exchange-to-exchange / 测试 BindingBuilder 交换机到交换机绑定
     #[test]
-    fn test_binding_builder_exchange() {
+    fn test_binding_builder_exchange()
+    {
         let binding = BindingBuilder::bind_exchange("target_exchange")
             .to(Exchange::fanout("source_exchange"))
             .with("routing.key")
@@ -274,7 +302,8 @@ mod tests {
 
     /// Test source_name and destination_name / 测试 source_name 和 destination_name
     #[test]
-    fn test_binding_name_accessors() {
+    fn test_binding_name_accessors()
+    {
         let binding = Binding::bind_queue(
             crate::Queue::new("q1"),
             Exchange::new("e1", ExchangeType::Direct),

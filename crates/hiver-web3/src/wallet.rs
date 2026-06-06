@@ -32,18 +32,18 @@
 // Address module is defined inline below
 // pub use address::{Address, AddressError, H160};
 
+use std::{fmt, str::FromStr};
+
 use rand::RngCore;
-use serde::de::Error as SerdeError;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::fmt;
-use std::str::FromStr;
+use serde::{Deserialize, Deserializer, Serialize, Serializer, de::Error as SerdeError};
 
 /// Wallet trait
 /// 钱包trait
 ///
 /// Defines the interface for wallet implementations.
 /// 定义钱包实现的接口。
-pub trait Wallet: Send + Sync {
+pub trait Wallet: Send + Sync
+{
     /// Get wallet address
     /// 获取钱包地址
     fn address(&self) -> Address;
@@ -68,7 +68,8 @@ pub trait Wallet: Send + Sync {
 /// Signer reference for low-level operations
 /// 签名者引用，用于底层操作
 #[derive(Clone, Debug)]
-pub struct Signer {
+pub struct Signer
+{
     /// Signing key bytes
     /// 签名密钥字节
     pub bytes: [u8; 32],
@@ -78,10 +79,12 @@ pub struct Signer {
     pub chain_id: Option<u64>,
 }
 
-impl Signer {
+impl Signer
+{
     /// Create a new signer
     /// 创建新的签名者
-    pub fn new(bytes: [u8; 32]) -> Self {
+    pub fn new(bytes: [u8; 32]) -> Self
+    {
         Self {
             bytes,
             chain_id: None,
@@ -90,14 +93,16 @@ impl Signer {
 
     /// Set chain ID
     /// 设置链ID
-    pub fn with_chain_id(mut self, chain_id: u64) -> Self {
+    pub fn with_chain_id(mut self, chain_id: u64) -> Self
+    {
         self.chain_id = Some(chain_id);
         self
     }
 
     /// Get the address derived from this signer
     /// 获取从此签名者派生的地址
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         Address::from_private_key(&self.bytes)
     }
 }
@@ -108,16 +113,19 @@ impl Signer {
 /// A wallet backed by a private key stored in memory.
 /// 由内存中存储的私钥支持的钱包。
 #[derive(Clone)]
-pub struct LocalWallet {
+pub struct LocalWallet
+{
     /// Signing key
     /// 签名密钥
     signer: Signer,
 }
 
-impl LocalWallet {
+impl LocalWallet
+{
     /// Create a new random wallet
     /// 创建新的随机钱包
-    pub fn random() -> Self {
+    pub fn random() -> Self
+    {
         let mut bytes = [0u8; 32];
         rand::rng().fill_bytes(&mut bytes);
         Self {
@@ -127,7 +135,8 @@ impl LocalWallet {
 
     /// Create from private key bytes
     /// 从私钥字节创建
-    pub fn from_bytes(bytes: [u8; 32]) -> Self {
+    pub fn from_bytes(bytes: [u8; 32]) -> Self
+    {
         Self {
             signer: Signer::new(bytes),
         }
@@ -135,9 +144,11 @@ impl LocalWallet {
 
     /// Create from hex private key
     /// 从十六进制私钥创建
-    pub fn from_private_key(hex: &str) -> Result<Self, WalletError> {
+    pub fn from_private_key(hex: &str) -> Result<Self, WalletError>
+    {
         let hex = hex.strip_prefix("0x").unwrap_or(hex);
-        if hex.len() != 64 {
+        if hex.len() != 64
+        {
             return Err(WalletError::InvalidPrivateKey);
         }
 
@@ -152,7 +163,8 @@ impl LocalWallet {
     /// Create from mnemonic phrase
     /// 从助记词短语创建
     #[cfg(feature = "wallet")]
-    pub fn from_mnemonic(phrase: &str) -> Result<Self, WalletError> {
+    pub fn from_mnemonic(phrase: &str) -> Result<Self, WalletError>
+    {
         use bip39::Mnemonic;
 
         // bip39 2.x uses Mnemonic::parse for existing mnemonic phrases
@@ -170,20 +182,25 @@ impl LocalWallet {
 
     /// Create with chain ID
     /// 使用链ID创建
-    pub fn with_chain_id(mut self, chain_id: u64) -> Self {
+    pub fn with_chain_id(mut self, chain_id: u64) -> Self
+    {
         self.signer = self.signer.with_chain_id(chain_id);
         self
     }
 }
 
-impl Default for LocalWallet {
-    fn default() -> Self {
+impl Default for LocalWallet
+{
+    fn default() -> Self
+    {
         Self::random()
     }
 }
 
-impl fmt::Debug for LocalWallet {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for LocalWallet
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("LocalWallet")
             .field("address", &self.address())
             .field("chain_id", &self.signer.chain_id)
@@ -191,21 +208,26 @@ impl fmt::Debug for LocalWallet {
     }
 }
 
-impl Wallet for LocalWallet {
-    fn address(&self) -> Address {
+impl Wallet for LocalWallet
+{
+    fn address(&self) -> Address
+    {
         self.signer.address()
     }
 
-    fn chain_id(&self) -> Option<u64> {
+    fn chain_id(&self) -> Option<u64>
+    {
         self.signer.chain_id
     }
 
-    fn sign(&self, data: &[u8]) -> Result<Signature, WalletError> {
+    fn sign(&self, data: &[u8]) -> Result<Signature, WalletError>
+    {
         let hash = keccak256(data);
         self.sign_hash(&hash)
     }
 
-    fn sign_hash(&self, _hash: &[u8; 32]) -> Result<Signature, WalletError> {
+    fn sign_hash(&self, _hash: &[u8; 32]) -> Result<Signature, WalletError>
+    {
         // In production, this would use secp256k1 signing
         // For now, return a placeholder signature
         Ok(Signature {
@@ -215,7 +237,8 @@ impl Wallet for LocalWallet {
         })
     }
 
-    fn signer(&self) -> Signer {
+    fn signer(&self) -> Signer
+    {
         self.signer.clone()
     }
 }
@@ -226,7 +249,8 @@ impl Wallet for LocalWallet {
 /// Represents an ECDSA signature with recovery ID.
 /// 表示带有恢复ID的ECDSA签名。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Signature {
+pub struct Signature
+{
     /// R value
     /// R值
     pub r: [u8; 32],
@@ -240,24 +264,29 @@ pub struct Signature {
     pub v: u8,
 }
 
-impl Signature {
+impl Signature
+{
     /// Create a new signature
     /// 创建新签名
-    pub fn new(r: [u8; 32], s: [u8; 32], v: u8) -> Self {
+    pub fn new(r: [u8; 32], s: [u8; 32], v: u8) -> Self
+    {
         Self { r, s, v }
     }
 
     /// Convert to hex string
     /// 转换为十六进制字符串
-    pub fn to_hex(&self) -> String {
+    pub fn to_hex(&self) -> String
+    {
         format!("{}{}{:02x}", hex::encode(self.r), hex::encode(self.s), self.v)
     }
 
     /// Parse from hex string
     /// 从十六进制字符串解析
-    pub fn from_hex(hex: &str) -> Result<Self, SignatureError> {
+    pub fn from_hex(hex: &str) -> Result<Self, SignatureError>
+    {
         let hex = hex.strip_prefix("0x").unwrap_or(hex);
-        if hex.len() != 130 {
+        if hex.len() != 130
+        {
             return Err(SignatureError::InvalidLength);
         }
 
@@ -278,7 +307,8 @@ impl Signature {
 
     /// Get the compact signature (65 bytes)
     /// 获取紧凑签名（65字节）
-    pub fn to_bytes(&self) -> [u8; 65] {
+    pub fn to_bytes(&self) -> [u8; 65]
+    {
         let mut bytes = [0u8; 65];
         bytes[0..32].copy_from_slice(&self.r);
         bytes[32..64].copy_from_slice(&self.s);
@@ -288,13 +318,16 @@ impl Signature {
 
     /// Get signature as tuple
     /// 获取签名的元组形式
-    pub fn as_tuple(&self) -> ([u8; 32], [u8; 32], u8) {
+    pub fn as_tuple(&self) -> ([u8; 32], [u8; 32], u8)
+    {
         (self.r, self.s, self.v)
     }
 }
 
-impl fmt::Display for Signature {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Signature
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "0x{}", self.to_hex())
     }
 }
@@ -302,7 +335,8 @@ impl fmt::Display for Signature {
 /// Signature error
 /// 签名错误
 #[derive(Debug, Clone)]
-pub enum SignatureError {
+pub enum SignatureError
+{
     /// Invalid length
     /// 无效长度
     InvalidLength,
@@ -312,9 +346,12 @@ pub enum SignatureError {
     InvalidHex,
 }
 
-impl fmt::Display for SignatureError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for SignatureError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::InvalidLength => write!(f, "Invalid signature length"),
             Self::InvalidHex => write!(f, "Invalid hex encoding"),
         }
@@ -326,7 +363,8 @@ impl std::error::Error for SignatureError {}
 /// Wallet error
 /// 钱包错误
 #[derive(Debug, Clone)]
-pub enum WalletError {
+pub enum WalletError
+{
     /// Invalid private key
     /// 无效的私钥
     InvalidPrivateKey,
@@ -344,9 +382,12 @@ pub enum WalletError {
     InvalidSignature,
 }
 
-impl fmt::Display for WalletError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for WalletError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::InvalidPrivateKey => write!(f, "Invalid private key"),
             Self::InvalidMnemonic => write!(f, "Invalid mnemonic phrase"),
             Self::SigningError(msg) => write!(f, "Signing error: {}", msg),
@@ -359,7 +400,8 @@ impl std::error::Error for WalletError {}
 
 /// Compute Keccak256 hash
 /// 计算Keccak256哈希
-pub fn keccak256(data: &[u8]) -> [u8; 32] {
+pub fn keccak256(data: &[u8]) -> [u8; 32]
+{
     use sha3::{Digest, Keccak256};
     let mut hasher = Keccak256::new();
     hasher.update(data);
@@ -368,7 +410,8 @@ pub fn keccak256(data: &[u8]) -> [u8; 32] {
 
 /// Address module
 /// 地址模块
-pub mod address {
+pub mod address
+{
     use super::{
         Deserialize, Deserializer, FromStr, SerdeError, Serialize, Serializer, fmt, keccak256,
     };
@@ -381,16 +424,19 @@ pub mod address {
     #[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
     pub struct Address(pub [u8; 20]);
 
-    impl Address {
+    impl Address
+    {
         /// Create a new zero address
         /// 创建新的零地址
-        pub const fn zero() -> Self {
+        pub const fn zero() -> Self
+        {
             Self([0u8; 20])
         }
 
         /// Check if this is the zero address
         /// 检查这是否是零地址
-        pub const fn is_zero(&self) -> bool {
+        pub const fn is_zero(&self) -> bool
+        {
             self.0[0] == 0
                 && self.0[1] == 0
                 && self.0[2] == 0
@@ -415,13 +461,15 @@ pub mod address {
 
         /// Create from 20-byte array
         /// 从20字节数组创建
-        pub const fn from_bytes(bytes: [u8; 20]) -> Self {
+        pub const fn from_bytes(bytes: [u8; 20]) -> Self
+        {
             Self(bytes)
         }
 
         /// Create from private key (computes address)
         /// 从私钥创建（计算地址）
-        pub fn from_private_key(private_key: &[u8; 32]) -> Self {
+        pub fn from_private_key(private_key: &[u8; 32]) -> Self
+        {
             // Derive public key (simplified - in production use secp256k1)
             let pub_key = derive_public_key(private_key);
             let hash = keccak256(&pub_key[1..]); // Skip uncompressed prefix
@@ -433,15 +481,20 @@ pub mod address {
         /// Convert to checksummed address (EIP-55)
         /// 转换为校验和地址（EIP-55）
         #[allow(clippy::indexing_slicing)]
-        pub fn checksum(&self) -> String {
+        pub fn checksum(&self) -> String
+        {
             let addr_hex = hex::encode(self.0);
             let hash = keccak256(addr_hex.as_bytes());
             let mut result = String::from("0x");
 
-            for (i, c) in addr_hex.chars().enumerate() {
-                if hash[i / 2] >> (4 - (i % 2) * 4) & 0x0f >= 8 {
+            for (i, c) in addr_hex.chars().enumerate()
+            {
+                if hash[i / 2] >> (4 - (i % 2) * 4) & 0x0f >= 8
+                {
                     result.extend(c.to_uppercase());
-                } else {
+                }
+                else
+                {
                     result.extend(c.to_lowercase());
                 }
             }
@@ -450,15 +503,18 @@ pub mod address {
 
         /// Get the address as hex string (non-checksummed)
         /// 获取地址为十六进制字符串（非校验和）
-        pub fn to_hex(&self) -> String {
+        pub fn to_hex(&self) -> String
+        {
             format!("0x{}", hex::encode(self.0))
         }
 
         /// Parse from hex string
         /// 从十六进制字符串解析
-        pub fn from_hex(hex: &str) -> Result<Self, AddressError> {
+        pub fn from_hex(hex: &str) -> Result<Self, AddressError>
+        {
             let hex = hex.strip_prefix("0x").unwrap_or(hex);
-            if hex.len() != 40 {
+            if hex.len() != 40
+            {
                 return Err(AddressError::InvalidLength);
             }
 
@@ -470,27 +526,34 @@ pub mod address {
         }
     }
 
-    impl fmt::Debug for Address {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    impl fmt::Debug for Address
+    {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+        {
             write!(f, "Address({})", self.checksum())
         }
     }
 
-    impl fmt::Display for Address {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    impl fmt::Display for Address
+    {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+        {
             write!(f, "{}", self.checksum())
         }
     }
 
-    impl FromStr for Address {
+    impl FromStr for Address
+    {
         type Err = AddressError;
 
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn from_str(s: &str) -> Result<Self, Self::Err>
+        {
             Self::from_hex(s)
         }
     }
 
-    impl Serialize for Address {
+    impl Serialize for Address
+    {
         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: Serializer,
@@ -499,7 +562,8 @@ pub mod address {
         }
     }
 
-    impl<'de> Deserialize<'de> for Address {
+    impl<'de> Deserialize<'de> for Address
+    {
         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where
             D: Deserializer<'de>,
@@ -512,7 +576,8 @@ pub mod address {
     /// Address error
     /// 地址错误
     #[derive(Debug, Clone)]
-    pub enum AddressError {
+    pub enum AddressError
+    {
         /// Invalid length
         /// 无效长度
         InvalidLength,
@@ -522,9 +587,12 @@ pub mod address {
         InvalidHex,
     }
 
-    impl fmt::Display for AddressError {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            match self {
+    impl fmt::Display for AddressError
+    {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+        {
+            match self
+            {
                 Self::InvalidLength => write!(f, "Invalid address length (expected 40 hex chars)"),
                 Self::InvalidHex => write!(f, "Invalid hex encoding"),
             }
@@ -539,7 +607,8 @@ pub mod address {
 
     /// Derive public key from private key (simplified placeholder)
     /// 从私钥派生公钥（简化的占位符）
-    fn derive_public_key(private_key: &[u8; 32]) -> [u8; 65] {
+    fn derive_public_key(private_key: &[u8; 32]) -> [u8; 65]
+    {
         // SECURITY: Do NOT use this in production — this is a deterministic
         // but cryptographically incorrect placeholder used only for testing.
         // Use the `secp256k1` crate for real key derivation.
@@ -552,57 +621,68 @@ pub mod address {
     }
 
     #[cfg(test)]
-    mod tests {
-        use super::super::{LocalWallet, Signature, Wallet, WalletError};
-        use super::*;
+    mod tests
+    {
+        use super::{
+            super::{LocalWallet, Signature, Wallet, WalletError},
+            *,
+        };
 
         #[test]
-        fn test_address_zero() {
+        fn test_address_zero()
+        {
             let addr = Address::zero();
             assert!(addr.is_zero());
             assert_eq!(addr.to_hex(), "0x0000000000000000000000000000000000000000");
         }
 
         #[test]
-        fn test_address_from_hex() {
+        fn test_address_from_hex()
+        {
             let hex = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
             let addr = Address::from_hex(hex).unwrap();
             assert_eq!(addr.to_hex(), hex.to_lowercase());
         }
 
         #[test]
-        fn test_address_display() {
+        fn test_address_display()
+        {
             let addr = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
             assert_eq!(addr.to_string(), "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
         }
 
         #[test]
-        fn test_address_from_str() {
+        fn test_address_from_str()
+        {
             let hex = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
             let addr: Address = hex.parse().unwrap();
             assert_eq!(addr.to_hex(), hex.to_lowercase());
         }
 
         #[test]
-        fn test_address_invalid_length() {
+        fn test_address_invalid_length()
+        {
             let result = Address::from_hex("0x1234");
             assert!(matches!(result, Err(AddressError::InvalidLength)));
         }
 
         #[test]
-        fn test_address_invalid_hex() {
+        fn test_address_invalid_hex()
+        {
             let result = Address::from_hex("0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
             assert!(matches!(result, Err(AddressError::InvalidHex)));
         }
 
         #[test]
-        fn test_local_wallet_random() {
+        fn test_local_wallet_random()
+        {
             let wallet = LocalWallet::random();
             assert!(!wallet.address().is_zero());
         }
 
         #[test]
-        fn test_local_wallet_from_private_key() {
+        fn test_local_wallet_from_private_key()
+        {
             let hex = "0x0000000000000000000000000000000000000000000000000000000000000001";
             let wallet = LocalWallet::from_private_key(hex).unwrap();
             // The address should be deterministic
@@ -610,7 +690,8 @@ pub mod address {
         }
 
         #[test]
-        fn test_signature_to_hex() {
+        fn test_signature_to_hex()
+        {
             let sig = Signature {
                 r: [1u8; 32],
                 s: [2u8; 32],
@@ -622,7 +703,8 @@ pub mod address {
         }
 
         #[test]
-        fn test_signature_from_hex() {
+        fn test_signature_from_hex()
+        {
             let sig = Signature {
                 r: [1u8; 32],
                 s: [2u8; 32],
@@ -636,7 +718,8 @@ pub mod address {
         }
 
         #[test]
-        fn test_wallet_error_display() {
+        fn test_wallet_error_display()
+        {
             let err = WalletError::InvalidPrivateKey;
             assert_eq!(err.to_string(), "Invalid private key");
 
@@ -647,17 +730,20 @@ pub mod address {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_local_wallet_default() {
+    fn test_local_wallet_default()
+    {
         let wallet = LocalWallet::default();
         assert!(!wallet.address().is_zero());
     }
 
     #[test]
-    fn test_local_wallet_with_chain_id() {
+    fn test_local_wallet_with_chain_id()
+    {
         let wallet = LocalWallet::random().with_chain_id(1);
         assert_eq!(wallet.chain_id(), Some(1));
     }

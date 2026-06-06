@@ -13,7 +13,8 @@ pub type MultipartResult<T> = Result<T, MultipartError>;
 /// Equivalent to Spring's `MultipartException`.
 /// `等价于Spring的MultipartException`。
 #[derive(Debug)]
-pub enum MultipartError {
+pub enum MultipartError
+{
     /// Invalid multipart request
     /// 无效的 multipart 请求
     InvalidRequest(String),
@@ -24,7 +25,8 @@ pub enum MultipartError {
 
     /// File too large
     /// 文件过大
-    FileTooLarge {
+    FileTooLarge
+    {
         /// File size / 文件大小
         size: usize,
         /// Max allowed size / 最大允许大小
@@ -33,7 +35,8 @@ pub enum MultipartError {
 
     /// Invalid file type / MIME type
     /// 无效的文件类型 / MIME 类型
-    InvalidType {
+    InvalidType
+    {
         /// Found type / 发现的类型
         found: String,
         /// Allowed types / 允许的类型
@@ -42,7 +45,8 @@ pub enum MultipartError {
 
     /// Invalid file extension
     /// 无效的文件扩展名
-    InvalidExtension {
+    InvalidExtension
+    {
         /// Found extension / 发现的扩展名
         found: String,
         /// Allowed extensions / 允许的扩展名
@@ -62,18 +66,24 @@ pub enum MultipartError {
     UnknownField(String),
 }
 
-impl fmt::Display for MultipartError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for MultipartError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::InvalidRequest(msg) => write!(f, "Invalid multipart request: {}", msg),
             Self::FieldNotFound(name) => write!(f, "Field not found: {}", name),
-            Self::FileTooLarge { size, max } => {
+            Self::FileTooLarge { size, max } =>
+            {
                 write!(f, "File too large: size={} (max: {})", size, max)
             },
-            Self::InvalidType { found, allowed } => {
+            Self::InvalidType { found, allowed } =>
+            {
                 write!(f, "Invalid file type: found='{}', allowed=[{}]", found, allowed)
             },
-            Self::InvalidExtension { found, allowed } => {
+            Self::InvalidExtension { found, allowed } =>
+            {
                 write!(f, "Invalid file extension: found='{}', allowed=[{}]", found, allowed)
             },
             Self::Io(err) => write!(f, "IO error: {}", err),
@@ -83,22 +93,30 @@ impl fmt::Display for MultipartError {
     }
 }
 
-impl std::error::Error for MultipartError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
+impl std::error::Error for MultipartError
+{
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+    {
+        match self
+        {
             Self::Io(err) => Some(err),
             _ => None,
         }
     }
 }
 
-impl From<multer::Error> for MultipartError {
-    fn from(err: multer::Error) -> Self {
-        match err {
-            multer::Error::UnknownField { field_name } => {
+impl From<multer::Error> for MultipartError
+{
+    fn from(err: multer::Error) -> Self
+    {
+        match err
+        {
+            multer::Error::UnknownField { field_name } =>
+            {
                 Self::UnknownField(field_name.unwrap_or_else(|| "unknown".to_string()))
             },
-            multer::Error::IncompleteFieldData { .. } => {
+            multer::Error::IncompleteFieldData { .. } =>
+            {
                 Self::InvalidRequest("Incomplete field data".to_string())
             },
             _ => Self::InvalidRequest(err.to_string()),
@@ -106,18 +124,22 @@ impl From<multer::Error> for MultipartError {
     }
 }
 
-impl From<std::io::Error> for MultipartError {
-    fn from(err: std::io::Error) -> Self {
+impl From<std::io::Error> for MultipartError
+{
+    fn from(err: std::io::Error) -> Self
+    {
         Self::Io(err)
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_error_display() {
+    fn test_error_display()
+    {
         let err = MultipartError::FieldNotFound("file".to_string());
         assert_eq!(err.to_string(), "Field not found: file");
 

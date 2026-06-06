@@ -8,8 +8,6 @@ pub mod loader;
 pub mod properties;
 
 // 重新导出常用类型
-pub use loader::{ConfigFormat, ConfigSource, ConfigurationLoader};
-
-pub use properties::{ConfigurationProperties, PropertyResolver};
-
 pub use environment::{Environment, Profile};
+pub use loader::{ConfigFormat, ConfigSource, ConfigurationLoader};
+pub use properties::{ConfigurationProperties, PropertyResolver};

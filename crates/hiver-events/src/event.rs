@@ -10,9 +10,9 @@
 //! | `PayloadApplicationEvent` | `PayloadApplicationEvent` |
 //! | `Event` | `generic ApplicationEvent` |
 
+use std::{any::Any, fmt};
+
 use chrono::{DateTime, Utc};
-use std::any::Any;
-use std::fmt;
 
 /// Application event trait
 /// 应用事件trait
@@ -27,20 +27,23 @@ use std::fmt;
 ///     private final long timestamp;
 /// }
 /// ```
-pub trait ApplicationEvent: Any + Send + Sync {
+pub trait ApplicationEvent: Any + Send + Sync
+{
     /// Get event timestamp
     /// 获取事件时间戳
     fn timestamp(&self) -> DateTime<Utc>;
 
     /// Get event source (optional)
     /// 获取事件源（可选）
-    fn source(&self) -> Option<String> {
+    fn source(&self) -> Option<String>
+    {
         None
     }
 
     /// Get event type name
     /// 获取事件类型名称
-    fn type_name(&self) -> &str {
+    fn type_name(&self) -> &str
+    {
         std::any::type_name::<Self>()
     }
 
@@ -62,7 +65,8 @@ pub trait ApplicationEvent: Any + Send + Sync {
 /// }
 /// ```
 #[derive(Clone, Debug)]
-pub struct Event<T> {
+pub struct Event<T>
+{
     /// Event payload
     /// 事件负载
     pub payload: T,
@@ -76,10 +80,12 @@ pub struct Event<T> {
     pub source: Option<String>,
 }
 
-impl<T> Event<T> {
+impl<T> Event<T>
+{
     /// Create new event
     /// 创建新事件
-    pub fn new(payload: T) -> Self {
+    pub fn new(payload: T) -> Self
+    {
         Self {
             payload,
             timestamp: Utc::now(),
@@ -89,7 +95,8 @@ impl<T> Event<T> {
 
     /// Create event with source
     /// 创建带源的事件
-    pub fn with_source(mut self, source: impl Into<String>) -> Self {
+    pub fn with_source(mut self, source: impl Into<String>) -> Self
+    {
         self.source = Some(source.into());
         self
     }
@@ -108,26 +115,32 @@ impl<T> Event<T> {
     }
 }
 
-impl<T: Any + Send + Sync> ApplicationEvent for Event<T> {
-    fn timestamp(&self) -> DateTime<Utc> {
+impl<T: Any + Send + Sync> ApplicationEvent for Event<T>
+{
+    fn timestamp(&self) -> DateTime<Utc>
+    {
         self.timestamp
     }
 
-    fn source(&self) -> Option<String> {
+    fn source(&self) -> Option<String>
+    {
         self.source.clone()
     }
 
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&self) -> &dyn Any
+    {
         &self.payload
     }
 }
 
 /// Event payload trait
 /// 事件负载trait
-pub trait EventPayload: Any + Send + Sync + fmt::Debug {
+pub trait EventPayload: Any + Send + Sync + fmt::Debug
+{
     /// Get payload type name
     /// 获取负载类型名称
-    fn payload_type(&self) -> &str {
+    fn payload_type(&self) -> &str
+    {
         std::any::type_name::<Self>()
     }
 }
@@ -141,7 +154,8 @@ pub type EventResult<T> = Result<T, EventError>;
 /// Event error
 /// 事件错误
 #[derive(Debug, thiserror::Error)]
-pub enum EventError {
+pub enum EventError
+{
     /// No listener registered for this event type
     /// 没有为该事件类型注册监听器
     #[error("No listener registered for event: {0}")]
@@ -184,7 +198,8 @@ pub enum EventError {
 /// }
 /// ```
 #[derive(Clone, Debug)]
-pub struct ContextRefreshedEvent {
+pub struct ContextRefreshedEvent
+{
     /// Event timestamp
     /// 事件时间戳
     pub timestamp: DateTime<Utc>,
@@ -194,10 +209,12 @@ pub struct ContextRefreshedEvent {
     pub context_name: String,
 }
 
-impl ContextRefreshedEvent {
+impl ContextRefreshedEvent
+{
     /// Create new context refreshed event
     /// 创建新的上下文刷新事件
-    pub fn new(context_name: impl Into<String>) -> Self {
+    pub fn new(context_name: impl Into<String>) -> Self
+    {
         Self {
             timestamp: Utc::now(),
             context_name: context_name.into(),
@@ -205,16 +222,20 @@ impl ContextRefreshedEvent {
     }
 }
 
-impl ApplicationEvent for ContextRefreshedEvent {
-    fn timestamp(&self) -> DateTime<Utc> {
+impl ApplicationEvent for ContextRefreshedEvent
+{
+    fn timestamp(&self) -> DateTime<Utc>
+    {
         self.timestamp
     }
 
-    fn source(&self) -> Option<String> {
+    fn source(&self) -> Option<String>
+    {
         Some(self.context_name.clone())
     }
 
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&self) -> &dyn Any
+    {
         self
     }
 }
@@ -235,7 +256,8 @@ impl ApplicationEvent for ContextRefreshedEvent {
 /// }
 /// ```
 #[derive(Clone, Debug)]
-pub struct ContextClosedEvent {
+pub struct ContextClosedEvent
+{
     /// Event timestamp
     /// 事件时间戳
     pub timestamp: DateTime<Utc>,
@@ -245,10 +267,12 @@ pub struct ContextClosedEvent {
     pub context_name: String,
 }
 
-impl ContextClosedEvent {
+impl ContextClosedEvent
+{
     /// Create new context closed event
     /// 创建新的上下文关闭事件
-    pub fn new(context_name: impl Into<String>) -> Self {
+    pub fn new(context_name: impl Into<String>) -> Self
+    {
         Self {
             timestamp: Utc::now(),
             context_name: context_name.into(),
@@ -256,16 +280,20 @@ impl ContextClosedEvent {
     }
 }
 
-impl ApplicationEvent for ContextClosedEvent {
-    fn timestamp(&self) -> DateTime<Utc> {
+impl ApplicationEvent for ContextClosedEvent
+{
+    fn timestamp(&self) -> DateTime<Utc>
+    {
         self.timestamp
     }
 
-    fn source(&self) -> Option<String> {
+    fn source(&self) -> Option<String>
+    {
         Some(self.context_name.clone())
     }
 
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&self) -> &dyn Any
+    {
         self
     }
 }
@@ -285,7 +313,8 @@ impl ApplicationEvent for ContextClosedEvent {
 /// }
 /// ```
 #[derive(Clone, Debug)]
-pub struct RequestHandledEvent {
+pub struct RequestHandledEvent
+{
     /// Event timestamp
     /// 事件时间戳
     pub timestamp: DateTime<Utc>,
@@ -307,7 +336,8 @@ pub struct RequestHandledEvent {
     pub processing_time_ms: u64,
 }
 
-impl RequestHandledEvent {
+impl RequestHandledEvent
+{
     /// Create new request handled event
     /// 创建新的请求处理完成事件
     pub fn new(
@@ -315,7 +345,8 @@ impl RequestHandledEvent {
         method: impl Into<String>,
         status_code: u16,
         processing_time_ms: u64,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             timestamp: Utc::now(),
             request_url: request_url.into(),
@@ -326,16 +357,20 @@ impl RequestHandledEvent {
     }
 }
 
-impl ApplicationEvent for RequestHandledEvent {
-    fn timestamp(&self) -> DateTime<Utc> {
+impl ApplicationEvent for RequestHandledEvent
+{
+    fn timestamp(&self) -> DateTime<Utc>
+    {
         self.timestamp
     }
 
-    fn source(&self) -> Option<String> {
+    fn source(&self) -> Option<String>
+    {
         Some(format!("{} {}", self.method, self.request_url))
     }
 
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&self) -> &dyn Any
+    {
         self
     }
 }
@@ -354,7 +389,8 @@ impl ApplicationEvent for RequestHandledEvent {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct PayloadApplicationEvent<T> {
+pub struct PayloadApplicationEvent<T>
+{
     /// Event payload
     /// 事件负载
     pub payload: T,
@@ -364,10 +400,12 @@ pub struct PayloadApplicationEvent<T> {
     pub timestamp: DateTime<Utc>,
 }
 
-impl<T> PayloadApplicationEvent<T> {
+impl<T> PayloadApplicationEvent<T>
+{
     /// Create new payload application event
     /// 创建新的负载应用事件
-    pub fn new(payload: T) -> Self {
+    pub fn new(payload: T) -> Self
+    {
         Self {
             payload,
             timestamp: Utc::now(),
@@ -375,8 +413,10 @@ impl<T> PayloadApplicationEvent<T> {
     }
 }
 
-impl<T: fmt::Debug> fmt::Debug for PayloadApplicationEvent<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<T: fmt::Debug> fmt::Debug for PayloadApplicationEvent<T>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("PayloadApplicationEvent")
             .field("payload", &self.payload)
             .field("timestamp", &self.timestamp)
@@ -384,12 +424,15 @@ impl<T: fmt::Debug> fmt::Debug for PayloadApplicationEvent<T> {
     }
 }
 
-impl<T: Any + Send + Sync> ApplicationEvent for PayloadApplicationEvent<T> {
-    fn timestamp(&self) -> DateTime<Utc> {
+impl<T: Any + Send + Sync> ApplicationEvent for PayloadApplicationEvent<T>
+{
+    fn timestamp(&self) -> DateTime<Utc>
+    {
         self.timestamp
     }
 
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&self) -> &dyn Any
+    {
         self
     }
 }
@@ -400,7 +443,8 @@ impl<T: Any + Send + Sync> ApplicationEvent for PayloadApplicationEvent<T> {
 /// Provides context information during event processing.
 /// 在事件处理期间提供上下文信息。
 #[derive(Clone, Debug)]
-pub struct EventContext {
+pub struct EventContext
+{
     /// Event ID
     /// 事件ID
     pub event_id: String,
@@ -422,10 +466,12 @@ pub struct EventContext {
     pub causation_id: Option<String>,
 }
 
-impl EventContext {
+impl EventContext
+{
     /// Create new event context
     /// 创建新事件上下文
-    pub fn new(event_type: impl Into<String>) -> Self {
+    pub fn new(event_type: impl Into<String>) -> Self
+    {
         Self {
             event_id: uuid::Uuid::new_v4().to_string(),
             event_type: event_type.into(),
@@ -437,31 +483,37 @@ impl EventContext {
 
     /// Set correlation ID
     /// 设置关联ID
-    pub fn with_correlation_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_correlation_id(mut self, id: impl Into<String>) -> Self
+    {
         self.correlation_id = Some(id.into());
         self
     }
 
     /// Set causation ID
     /// 设置因果ID
-    pub fn with_causation_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_causation_id(mut self, id: impl Into<String>) -> Self
+    {
         self.causation_id = Some(id.into());
         self
     }
 }
 
-impl Default for EventContext {
-    fn default() -> Self {
+impl Default for EventContext
+{
+    fn default() -> Self
+    {
         Self::new("unknown")
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_event_creation() {
+    fn test_event_creation()
+    {
         let event: Event<String> =
             Event::new("test payload".to_string()).with_source("test_source");
 
@@ -470,7 +522,8 @@ mod tests {
     }
 
     #[test]
-    fn test_event_map() {
+    fn test_event_map()
+    {
         let event: Event<String> = Event::new("123".to_string());
         let mapped = event.map(|s| s.len());
 
@@ -478,20 +531,23 @@ mod tests {
     }
 
     #[test]
-    fn test_context_refreshed_event() {
+    fn test_context_refreshed_event()
+    {
         let event = ContextRefreshedEvent::new("app_context");
         assert_eq!(event.context_name, "app_context");
         assert_eq!(event.source(), Some("app_context".to_string()));
     }
 
     #[test]
-    fn test_context_closed_event() {
+    fn test_context_closed_event()
+    {
         let event = ContextClosedEvent::new("app_context");
         assert_eq!(event.context_name, "app_context");
     }
 
     #[test]
-    fn test_request_handled_event() {
+    fn test_request_handled_event()
+    {
         let event = RequestHandledEvent::new("/api/test", "GET", 200, 50);
         assert_eq!(event.request_url, "/api/test");
         assert_eq!(event.method, "GET");
@@ -500,13 +556,15 @@ mod tests {
     }
 
     #[test]
-    fn test_payload_application_event() {
+    fn test_payload_application_event()
+    {
         let event = PayloadApplicationEvent::new(42);
         assert_eq!(event.payload, 42);
     }
 
     #[test]
-    fn test_event_context() {
+    fn test_event_context()
+    {
         let context = EventContext::new("test_event")
             .with_correlation_id("corr-123")
             .with_causation_id("cause-456");

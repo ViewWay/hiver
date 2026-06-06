@@ -73,22 +73,26 @@ use std::sync::Arc;
 /// ```
 pub struct State<T>(pub Arc<T>);
 
-impl<T> State<T> {
+impl<T> State<T>
+{
     /// Consume the state extractor and get the inner Arc
     /// 消耗状态提取器并获取内部Arc
-    pub fn into_inner(self) -> Arc<T> {
+    pub fn into_inner(self) -> Arc<T>
+    {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         self.0.as_ref()
     }
 
     /// Clone the Arc
     /// 克隆Arc
-    pub fn clone(&self) -> Arc<T> {
+    pub fn clone(&self) -> Arc<T>
+    {
         Arc::clone(&self.0)
     }
 }
@@ -97,13 +101,16 @@ impl<T> std::fmt::Debug for State<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_tuple("State").field(&self.0).finish()
     }
 }
 
-impl<T> Clone for State<T> {
-    fn clone(&self) -> Self {
+impl<T> Clone for State<T>
+{
+    fn clone(&self) -> Self
+    {
         Self(Arc::clone(&self.0))
     }
 }
@@ -120,7 +127,8 @@ impl<T> Clone for State<T> {
 /// Use Router's `with_state()` method instead.
 ///
 /// 注意：目前不支持 `hiver_http::Request`。请改用 Router 的 `with_state()` 方法。
-pub trait AddState {
+pub trait AddState
+{
     /// Add state to the request
     /// 向请求添加状态
     fn add_state<T>(&mut self, state: Arc<T>)
@@ -134,11 +142,13 @@ pub trait AddState {
 // 请改用Router的有状态处理程序。
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_state_clone() {
+    fn test_state_clone()
+    {
         let value = Arc::new("test".to_string());
         let state: State<String> = State(value.clone());
         // Explicitly call Clone trait to avoid Arc::clone

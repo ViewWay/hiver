@@ -44,10 +44,9 @@
 //! assert!(result.is_err());
 //! ```
 
+use std::{any::Any, collections::HashMap, fmt};
+
 use crate::error::ValidationError;
-use std::any::Any;
-use std::collections::HashMap;
-use std::fmt;
 
 // ---------------------------------------------------------------------------
 // CustomValidator trait
@@ -70,7 +69,8 @@ use std::fmt;
 ///     boolean isValid(T value, ConstraintValidatorContext context);
 /// }
 /// ```
-pub trait CustomValidator<T: ?Sized>: Send + Sync {
+pub trait CustomValidator<T: ?Sized>: Send + Sync
+{
     /// Validate the given value.
     /// 验证给定值。
     ///
@@ -87,7 +87,8 @@ impl<T, F> CustomValidator<T> for F
 where
     F: Fn(&T) -> Result<(), ValidationError> + Send + Sync,
 {
-    fn validate(&self, value: &T) -> Result<(), ValidationError> {
+    fn validate(&self, value: &T) -> Result<(), ValidationError>
+    {
         self(value)
     }
 }
@@ -109,14 +110,17 @@ where
 ///
 /// In Spring this is handled implicitly by the `ConstraintValidatorFactory`.
 /// 在 Spring 中这由 `ConstraintValidatorFactory` 隐式处理。
-pub struct ValidatorRegistry {
+pub struct ValidatorRegistry
+{
     validators: HashMap<String, Box<dyn Any + Send + Sync>>,
 }
 
-impl ValidatorRegistry {
+impl ValidatorRegistry
+{
     /// Create a new empty registry.
     /// 创建一个新的空注册表。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             validators: HashMap::new(),
         }
@@ -131,7 +135,8 @@ impl ValidatorRegistry {
         &mut self,
         name: &str,
         validator: V,
-    ) {
+    )
+    {
         // Double-box: outer Box<dyn Any> for type-erased storage,
         // inner Box<dyn CustomValidator<T>> for downcasting in validate().
         self.validators
@@ -151,7 +156,8 @@ impl ValidatorRegistry {
     ///     }
     /// }
     /// ```
-    pub fn get(&self, name: &str) -> Option<&(dyn Any + Send + Sync)> {
+    pub fn get(&self, name: &str) -> Option<&(dyn Any + Send + Sync)>
+    {
         self.validators.get(name).map(|v| &**v)
     }
 
@@ -166,7 +172,8 @@ impl ValidatorRegistry {
     /// no validator is registered under `name`, or if the type does not match.
     /// 如果未注册该名称的验证器或类型不匹配，则返回带有 `"validator_not_found"`
     /// 错误代码的 `Err(ValidationError)`。
-    pub fn validate<T: 'static>(&self, name: &str, value: &T) -> Result<(), ValidationError> {
+    pub fn validate<T: 'static>(&self, name: &str, value: &T) -> Result<(), ValidationError>
+    {
         let boxed = self.validators.get(name).ok_or_else(|| {
             ValidationError::new("validator", format!("Validator '{}' not found", name))
                 .with_code("validator_not_found")
@@ -195,37 +202,45 @@ impl ValidatorRegistry {
 
     /// Check whether a validator with the given name exists.
     /// 检查是否存在具有给定名称的验证器。
-    pub fn contains(&self, name: &str) -> bool {
+    pub fn contains(&self, name: &str) -> bool
+    {
         self.validators.contains_key(name)
     }
 
     /// Return the number of registered validators.
     /// 返回已注册验证器的数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.validators.len()
     }
 
     /// Return whether the registry is empty.
     /// 返回注册表是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.validators.is_empty()
     }
 
     /// Remove a validator by name and return it.
     /// 按名称移除验证器并返回。
-    pub fn remove(&mut self, name: &str) -> Option<Box<dyn Any + Send + Sync>> {
+    pub fn remove(&mut self, name: &str) -> Option<Box<dyn Any + Send + Sync>>
+    {
         self.validators.remove(name)
     }
 }
 
-impl Default for ValidatorRegistry {
-    fn default() -> Self {
+impl Default for ValidatorRegistry
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl fmt::Debug for ValidatorRegistry {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for ValidatorRegistry
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("ValidatorRegistry")
             .field("validators", &self.validators.keys().collect::<Vec<_>>())
             .finish()
@@ -245,7 +260,8 @@ impl fmt::Debug for ValidatorRegistry {
 #[allow(clippy::module_name_repetitions)]
 /// Extension methods for `ValidationError` from the custom module.
 /// custom 模块中 `ValidationError` 的扩展方法。
-pub trait ValidationErrorExt {
+pub trait ValidationErrorExt
+{
     /// Set the nested field path (e.g. `"address.street"`).
     /// 设置嵌套字段路径（例如 `"address.street"`）。
     fn with_field_path(self, path: impl Into<String>) -> Self;
@@ -288,35 +304,42 @@ pub trait ValidationErrorExt {
 // encoding extra info into the `value` field for backward compat, but
 // the proper approach is to add fields. We add them now.
 
-impl ValidationErrorExt for ValidationError {
-    fn with_field_path(self, path: impl Into<String>) -> Self {
+impl ValidationErrorExt for ValidationError
+{
+    fn with_field_path(self, path: impl Into<String>) -> Self
+    {
         // field_path is stored via a dedicated field added to the struct
         let mut s = self;
         s.field_path = Some(path.into());
         s
     }
 
-    fn with_rejected_value(self, value: impl fmt::Display) -> Self {
+    fn with_rejected_value(self, value: impl fmt::Display) -> Self
+    {
         let mut s = self;
         s.rejected_value = Some(value.to_string());
         s
     }
 
-    fn with_constraint_name(self, name: impl Into<String>) -> Self {
+    fn with_constraint_name(self, name: impl Into<String>) -> Self
+    {
         let mut s = self;
         s.constraint_name = Some(name.into());
         s
     }
 
-    fn constraint_name(&self) -> Option<&str> {
+    fn constraint_name(&self) -> Option<&str>
+    {
         self.constraint_name.as_deref()
     }
 
-    fn field_path(&self) -> Option<&str> {
+    fn field_path(&self) -> Option<&str>
+    {
         self.field_path.as_deref()
     }
 
-    fn rejected_value(&self) -> Option<&str> {
+    fn rejected_value(&self) -> Option<&str>
+    {
         self.rejected_value.as_deref()
     }
 }
@@ -334,71 +357,88 @@ impl ValidationErrorExt for ValidationError {
 /// 这与 `ValidationErrors`（按字段名分组）和 `ValidationResult<T>` 类型别名不同。
 /// `ValidationReport` 是验证过程中收集的错误的平面列表。
 #[derive(Debug, Clone, Default)]
-pub struct ValidationReport {
+pub struct ValidationReport
+{
     errors: Vec<ValidationError>,
 }
 
-impl ValidationReport {
+impl ValidationReport
+{
     /// Create an empty report.
     /// 创建一个空报告。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Return `true` if there are no errors (validation passed).
     /// 如果没有错误（验证通过），返回 `true`。
-    pub fn is_valid(&self) -> bool {
+    pub fn is_valid(&self) -> bool
+    {
         self.errors.is_empty()
     }
 
     /// Return all collected errors.
     /// 返回所有收集的错误。
-    pub fn errors(&self) -> &[ValidationError] {
+    pub fn errors(&self) -> &[ValidationError]
+    {
         &self.errors
     }
 
     /// Add a single error to the report.
     /// 向报告添加单个错误。
-    pub fn add_error(&mut self, error: ValidationError) {
+    pub fn add_error(&mut self, error: ValidationError)
+    {
         self.errors.push(error);
     }
 
     /// Merge another report's errors into this one.
     /// 将另一个报告的错误合并到这个报告中。
-    pub fn merge(&mut self, other: ValidationReport) {
+    pub fn merge(&mut self, other: ValidationReport)
+    {
         self.errors.extend(other.errors);
     }
 
     /// Return the number of errors.
     /// 返回错误数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.errors.len()
     }
 
     /// Return `true` if there are no errors.
     /// 如果没有错误则返回 `true`。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.errors.is_empty()
     }
 
     /// Convert to `crate::ValidationErrors` (grouped by field).
     /// 转换为 `crate::ValidationErrors`（按字段分组）。
-    pub fn into_validation_errors(self) -> crate::error::ValidationErrors {
+    pub fn into_validation_errors(self) -> crate::error::ValidationErrors
+    {
         let mut errors = crate::error::ValidationErrors::new();
-        for e in self.errors {
+        for e in self.errors
+        {
             errors.add_error(e);
         }
         errors
     }
 }
 
-impl fmt::Display for ValidationReport {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.errors.is_empty() {
+impl fmt::Display for ValidationReport
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        if self.errors.is_empty()
+        {
             write!(f, "Validation passed")
-        } else {
+        }
+        else
+        {
             write!(f, "Validation failed ({} error(s)):", self.errors.len())?;
-            for e in &self.errors {
+            for e in &self.errors
+            {
                 write!(f, "\n  - {}", e)?;
             }
             Ok(())
@@ -420,7 +460,8 @@ impl std::error::Error for ValidationReport {}
 /// ```java
 /// @FieldMatch(first = "password", second = "confirmPassword")
 /// ```
-pub struct FieldMatchValidator {
+pub struct FieldMatchValidator
+{
     /// Name of the first field / 第一个字段名称
     pub first_field: String,
     /// Name of the second field / 第二个字段名称
@@ -429,10 +470,12 @@ pub struct FieldMatchValidator {
     pub message: String,
 }
 
-impl FieldMatchValidator {
+impl FieldMatchValidator
+{
     /// Create a new `FieldMatchValidator`.
     /// 创建新的 `FieldMatchValidator`。
-    pub fn new(first_field: impl Into<String>, second_field: impl Into<String>) -> Self {
+    pub fn new(first_field: impl Into<String>, second_field: impl Into<String>) -> Self
+    {
         let first = first_field.into();
         let second = second_field.into();
         Self {
@@ -444,7 +487,8 @@ impl FieldMatchValidator {
 
     /// Override the default error message.
     /// 覆盖默认错误消息。
-    pub fn with_message(mut self, msg: impl Into<String>) -> Self {
+    pub fn with_message(mut self, msg: impl Into<String>) -> Self
+    {
         self.message = msg.into();
         self
     }
@@ -456,14 +500,17 @@ impl FieldMatchValidator {
 /// Implement this trait on your struct so that `FieldMatchValidator` can
 /// read the two fields by name.
 /// 在你的结构体上实现此 trait，以便 `FieldMatchValidator` 可以按名称读取两个字段。
-pub trait FieldProvider: Send + Sync + 'static {
+pub trait FieldProvider: Send + Sync + 'static
+{
     /// Return the string representation of a field by name.
     /// 按名称返回字段的字符串表示。
     fn get_field_value(&self, field: &str) -> Option<String>;
 }
 
-impl CustomValidator<dyn FieldProvider> for FieldMatchValidator {
-    fn validate(&self, value: &(dyn FieldProvider + 'static)) -> Result<(), ValidationError> {
+impl CustomValidator<dyn FieldProvider> for FieldMatchValidator
+{
+    fn validate(&self, value: &(dyn FieldProvider + 'static)) -> Result<(), ValidationError>
+    {
         let v1 = value.get_field_value(&self.first_field).ok_or_else(|| {
             ValidationError::new(&self.first_field, "Field not found")
                 .with_code("field_not_found")
@@ -475,7 +522,8 @@ impl CustomValidator<dyn FieldProvider> for FieldMatchValidator {
                 .with_constraint_name("FieldMatch")
         })?;
 
-        if v1 != v2 {
+        if v1 != v2
+        {
             return Err(ValidationError::new(&self.second_field, &self.message)
                 .with_code("field_mismatch")
                 .with_rejected_value(&v2)
@@ -487,8 +535,10 @@ impl CustomValidator<dyn FieldProvider> for FieldMatchValidator {
 
 /// Convenience function: validate two raw string values match.
 /// 便捷函数：验证两个原始字符串值匹配。
-pub fn field_match(first: &str, second: &str, field_name: &str) -> Result<(), ValidationError> {
-    if first != second {
+pub fn field_match(first: &str, second: &str, field_name: &str) -> Result<(), ValidationError>
+{
+    if first != second
+    {
         return Err(ValidationError::new(field_name, "Fields must match")
             .with_code("field_mismatch")
             .with_rejected_value(second)
@@ -512,7 +562,8 @@ pub fn field_match(first: &str, second: &str, field_name: &str) -> Result<(), Va
 ///     MyAdultValidator::new(),
 /// );
 /// ```
-pub struct ConditionalValidator<C, V, T> {
+pub struct ConditionalValidator<C, V, T>
+{
     /// Condition function / 条件函数
     condition: C,
     /// Inner validator / 内部验证器
@@ -528,7 +579,8 @@ where
 {
     /// Create a new conditional validator.
     /// 创建新的条件验证器。
-    pub fn new(condition: C, inner: V) -> Self {
+    pub fn new(condition: C, inner: V) -> Self
+    {
         Self {
             condition,
             inner,
@@ -543,17 +595,23 @@ where
     V: CustomValidator<T> + Send + Sync,
     T: Send + Sync,
 {
-    fn validate(&self, value: &T) -> Result<(), ValidationError> {
-        if (self.condition)() {
+    fn validate(&self, value: &T) -> Result<(), ValidationError>
+    {
+        if (self.condition)()
+        {
             self.inner.validate(value)
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
 }
 
-impl<C, V, T> fmt::Debug for ConditionalValidator<C, V, T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<C, V, T> fmt::Debug for ConditionalValidator<C, V, T>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("ConditionalValidator")
             .finish_non_exhaustive()
     }
@@ -573,14 +631,17 @@ impl<C, V, T> fmt::Debug for ConditionalValidator<C, V, T> {
 /// ```java
 /// @NotNull @Size(min=3, max=20) @Pattern(regexp="...")
 /// ```
-pub struct CompositeValidator<T> {
+pub struct CompositeValidator<T>
+{
     validators: Vec<Box<dyn CustomValidator<T> + Send + Sync>>,
 }
 
-impl<T> CompositeValidator<T> {
+impl<T> CompositeValidator<T>
+{
     /// Create an empty composite validator.
     /// 创建一个空的组合验证器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             validators: Vec::new(),
         }
@@ -588,47 +649,58 @@ impl<T> CompositeValidator<T> {
 
     /// Add a validator to the chain.
     /// 向链中添加验证器。
-    pub fn add<V: CustomValidator<T> + Send + Sync + 'static>(mut self, validator: V) -> Self {
+    pub fn add<V: CustomValidator<T> + Send + Sync + 'static>(mut self, validator: V) -> Self
+    {
         self.validators.push(Box::new(validator));
         self
     }
 
     /// Add a validator mutably.
     /// 以可变方式添加验证器。
-    pub fn push<V: CustomValidator<T> + Send + Sync + 'static>(&mut self, validator: V) {
+    pub fn push<V: CustomValidator<T> + Send + Sync + 'static>(&mut self, validator: V)
+    {
         self.validators.push(Box::new(validator));
     }
 
     /// Return the number of validators in the chain.
     /// 返回链中验证器的数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.validators.len()
     }
 
     /// Return `true` if no validators are registered.
     /// 如果没有注册验证器，返回 `true`。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.validators.is_empty()
     }
 }
 
-impl<T> Default for CompositeValidator<T> {
-    fn default() -> Self {
+impl<T> Default for CompositeValidator<T>
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl<T> CustomValidator<T> for CompositeValidator<T> {
-    fn validate(&self, value: &T) -> Result<(), ValidationError> {
-        for validator in &self.validators {
+impl<T> CustomValidator<T> for CompositeValidator<T>
+{
+    fn validate(&self, value: &T) -> Result<(), ValidationError>
+    {
+        for validator in &self.validators
+        {
             validator.validate(value)?;
         }
         Ok(())
     }
 }
 
-impl<T> fmt::Debug for CompositeValidator<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<T> fmt::Debug for CompositeValidator<T>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("CompositeValidator")
             .field("validators_count", &self.validators.len())
             .finish()
@@ -640,16 +712,20 @@ impl<T> fmt::Debug for CompositeValidator<T> {
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // -- CustomValidator basic test --
 
     struct NoWhitespaceValidator;
 
-    impl CustomValidator<String> for NoWhitespaceValidator {
-        fn validate(&self, value: &String) -> Result<(), ValidationError> {
-            if value.contains(' ') {
+    impl CustomValidator<String> for NoWhitespaceValidator
+    {
+        fn validate(&self, value: &String) -> Result<(), ValidationError>
+        {
+            if value.contains(' ')
+            {
                 return Err(ValidationError::new("field", "Must not contain whitespace"));
             }
             Ok(())
@@ -658,9 +734,12 @@ mod tests {
 
     struct PositiveValidator;
 
-    impl CustomValidator<i32> for PositiveValidator {
-        fn validate(&self, value: &i32) -> Result<(), ValidationError> {
-            if *value <= 0 {
+    impl CustomValidator<i32> for PositiveValidator
+    {
+        fn validate(&self, value: &i32) -> Result<(), ValidationError>
+        {
+            if *value <= 0
+            {
                 return Err(ValidationError::new("value", "Must be positive"));
             }
             Ok(())
@@ -668,13 +747,15 @@ mod tests {
     }
 
     #[test]
-    fn test_custom_validator_success() {
+    fn test_custom_validator_success()
+    {
         let v = NoWhitespaceValidator;
         assert!(v.validate(&"hello".to_string()).is_ok());
     }
 
     #[test]
-    fn test_custom_validator_failure() {
+    fn test_custom_validator_failure()
+    {
         let v = NoWhitespaceValidator;
         let result = v.validate(&"hello world".to_string());
         assert!(result.is_err());
@@ -682,11 +763,15 @@ mod tests {
     }
 
     #[test]
-    fn test_fn_pointer_as_validator() {
+    fn test_fn_pointer_as_validator()
+    {
         let check_len = |s: &String| {
-            if s.len() < 5 {
+            if s.len() < 5
+            {
                 Err(ValidationError::new("field", "Too short"))
-            } else {
+            }
+            else
+            {
                 Ok(())
             }
         };
@@ -697,7 +782,8 @@ mod tests {
     // -- ValidatorRegistry tests --
 
     #[test]
-    fn test_registry_register_and_validate() {
+    fn test_registry_register_and_validate()
+    {
         let mut registry = ValidatorRegistry::new();
         registry.register("no_ws", NoWhitespaceValidator);
 
@@ -708,7 +794,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_validator_not_found() {
+    fn test_registry_validator_not_found()
+    {
         let registry = ValidatorRegistry::new();
         let result = registry.validate("nonexistent", &42_i32);
         assert!(result.is_err());
@@ -716,7 +803,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_get_any() {
+    fn test_registry_get_any()
+    {
         let mut registry = ValidatorRegistry::new();
         registry.register("positive", PositiveValidator);
 
@@ -725,7 +813,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_contains() {
+    fn test_registry_contains()
+    {
         let mut registry = ValidatorRegistry::new();
         registry.register("no_ws", NoWhitespaceValidator);
         assert!(registry.contains("no_ws"));
@@ -733,7 +822,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_len() {
+    fn test_registry_len()
+    {
         let mut registry = ValidatorRegistry::new();
         assert_eq!(registry.len(), 0);
         registry.register("a", NoWhitespaceValidator);
@@ -743,7 +833,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_remove() {
+    fn test_registry_remove()
+    {
         let mut registry = ValidatorRegistry::new();
         registry.register("no_ws", NoWhitespaceValidator);
         assert!(registry.contains("no_ws"));
@@ -752,7 +843,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_debug() {
+    fn test_registry_debug()
+    {
         let mut registry = ValidatorRegistry::new();
         registry.register("no_ws", NoWhitespaceValidator);
         let debug_str = format!("{:?}", registry);
@@ -763,7 +855,8 @@ mod tests {
     // -- ValidationErrorExt tests --
 
     #[test]
-    fn test_validation_error_ext() {
+    fn test_validation_error_ext()
+    {
         let err = ValidationError::new("email", "Invalid email")
             .with_field_path("user.contact.email")
             .with_rejected_value("bad")
@@ -777,7 +870,8 @@ mod tests {
     // -- ValidationReport tests --
 
     #[test]
-    fn test_report_valid() {
+    fn test_report_valid()
+    {
         let report = ValidationReport::new();
         assert!(report.is_valid());
         assert!(report.is_empty());
@@ -785,7 +879,8 @@ mod tests {
     }
 
     #[test]
-    fn test_report_add_error() {
+    fn test_report_add_error()
+    {
         let mut report = ValidationReport::new();
         report.add_error(ValidationError::new("a", "error a"));
         report.add_error(ValidationError::new("b", "error b"));
@@ -797,7 +892,8 @@ mod tests {
     }
 
     #[test]
-    fn test_report_merge() {
+    fn test_report_merge()
+    {
         let mut r1 = ValidationReport::new();
         r1.add_error(ValidationError::new("x", "err1"));
 
@@ -809,7 +905,8 @@ mod tests {
     }
 
     #[test]
-    fn test_report_display() {
+    fn test_report_display()
+    {
         let report = ValidationReport::new();
         assert_eq!(format!("{}", report), "Validation passed");
 
@@ -821,7 +918,8 @@ mod tests {
     }
 
     #[test]
-    fn test_report_into_validation_errors() {
+    fn test_report_into_validation_errors()
+    {
         let mut report = ValidationReport::new();
         report.add_error(ValidationError::new("a", "error a"));
         report.add_error(ValidationError::new("b", "error b"));
@@ -835,14 +933,18 @@ mod tests {
 
     // -- FieldMatchValidator tests --
 
-    struct TestForm {
+    struct TestForm
+    {
         password: String,
         confirm: String,
     }
 
-    impl FieldProvider for TestForm {
-        fn get_field_value(&self, field: &str) -> Option<String> {
-            match field {
+    impl FieldProvider for TestForm
+    {
+        fn get_field_value(&self, field: &str) -> Option<String>
+        {
+            match field
+            {
                 "password" => Some(self.password.clone()),
                 "confirm" => Some(self.confirm.clone()),
                 _ => None,
@@ -851,7 +953,8 @@ mod tests {
     }
 
     #[test]
-    fn test_field_match_success() {
+    fn test_field_match_success()
+    {
         let form = TestForm {
             password: "secret".to_string(),
             confirm: "secret".to_string(),
@@ -861,7 +964,8 @@ mod tests {
     }
 
     #[test]
-    fn test_field_match_failure() {
+    fn test_field_match_failure()
+    {
         let form = TestForm {
             password: "secret".to_string(),
             confirm: "different".to_string(),
@@ -875,7 +979,8 @@ mod tests {
     }
 
     #[test]
-    fn test_field_match_fn() {
+    fn test_field_match_fn()
+    {
         assert!(field_match("abc", "abc", "pw").is_ok());
         assert!(field_match("abc", "xyz", "pw").is_err());
     }
@@ -884,20 +989,24 @@ mod tests {
 
     struct AlwaysFail;
 
-    impl CustomValidator<i32> for AlwaysFail {
-        fn validate(&self, _value: &i32) -> Result<(), ValidationError> {
+    impl CustomValidator<i32> for AlwaysFail
+    {
+        fn validate(&self, _value: &i32) -> Result<(), ValidationError>
+        {
             Err(ValidationError::new("v", "always fails"))
         }
     }
 
     #[test]
-    fn test_conditional_validator_active() {
+    fn test_conditional_validator_active()
+    {
         let cv: ConditionalValidator<_, _, i32> = ConditionalValidator::new(|| true, AlwaysFail);
         assert!(cv.validate(&42).is_err());
     }
 
     #[test]
-    fn test_conditional_validator_inactive() {
+    fn test_conditional_validator_inactive()
+    {
         let cv: ConditionalValidator<_, _, i32> = ConditionalValidator::new(|| false, AlwaysFail);
         assert!(cv.validate(&42).is_ok());
     }
@@ -905,19 +1014,26 @@ mod tests {
     // -- CompositeValidator tests --
 
     #[test]
-    fn test_composite_all_pass() {
+    fn test_composite_all_pass()
+    {
         let composite = CompositeValidator::<i32>::new()
             .add(|v: &i32| {
-                if *v < 0 {
+                if *v < 0
+                {
                     Err(ValidationError::new("v", "negative"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             })
             .add(|v: &i32| {
-                if *v > 100 {
+                if *v > 100
+                {
                     Err(ValidationError::new("v", "too large"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             });
@@ -926,19 +1042,26 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_first_fail() {
+    fn test_composite_first_fail()
+    {
         let composite = CompositeValidator::<i32>::new()
             .add(|v: &i32| {
-                if *v < 0 {
+                if *v < 0
+                {
                     Err(ValidationError::new("v", "negative"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             })
             .add(|v: &i32| {
-                if *v > 100 {
+                if *v > 100
+                {
                     Err(ValidationError::new("v", "too large"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             });
@@ -949,19 +1072,26 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_second_fail() {
+    fn test_composite_second_fail()
+    {
         let composite = CompositeValidator::<i32>::new()
             .add(|v: &i32| {
-                if *v < 0 {
+                if *v < 0
+                {
                     Err(ValidationError::new("v", "negative"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             })
             .add(|v: &i32| {
-                if *v > 100 {
+                if *v > 100
+                {
                     Err(ValidationError::new("v", "too large"))
-                } else {
+                }
+                else
+                {
                     Ok(())
                 }
             });
@@ -972,14 +1102,16 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_empty() {
+    fn test_composite_empty()
+    {
         let composite: CompositeValidator<i32> = CompositeValidator::new();
         assert!(composite.validate(&999).is_ok());
         assert_eq!(composite.len(), 0);
     }
 
     #[test]
-    fn test_composite_debug() {
+    fn test_composite_debug()
+    {
         let composite: CompositeValidator<i32> = CompositeValidator::new().add(|_v: &i32| Ok(()));
         let debug_str = format!("{:?}", composite);
         assert!(debug_str.contains("CompositeValidator"));

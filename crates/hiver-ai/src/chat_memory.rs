@@ -28,7 +28,8 @@ use crate::chat_model::{ChatMessage, ChatModel, ChatRequest, Role};
 ///
 /// 所有记忆策略都实现此 trait，提供添加消息、获取当前上下文和清除历史的统一接口。
 #[async_trait::async_trait]
-pub trait ConversationMemory: Send + Sync {
+pub trait ConversationMemory: Send + Sync
+{
     /// Adds a message to the conversation memory.
     /// 将消息添加到对话记忆中。
     async fn add_message(&self, message: ChatMessage);
@@ -43,7 +44,8 @@ pub trait ConversationMemory: Send + Sync {
 
     /// Returns the number of messages currently stored.
     /// 返回当前存储的消息数量。
-    async fn message_count(&self) -> usize {
+    async fn message_count(&self) -> usize
+    {
         self.get_messages().await.len()
     }
 }
@@ -71,22 +73,26 @@ pub trait ConversationMemory: Send + Sync {
 /// assert_eq!(messages.len(), 2);
 /// ```
 #[derive(Debug, Default)]
-pub struct ConversationBufferMemory {
+pub struct ConversationBufferMemory
+{
     messages: RwLock<Vec<ChatMessage>>,
 }
 
-impl ConversationBufferMemory {
+impl ConversationBufferMemory
+{
     /// Creates a new empty buffer memory.
     /// 创建新的空缓冲区记忆。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Creates a buffer memory pre-loaded with initial messages.
     /// 创建预加载初始消息的缓冲区记忆。
     #[must_use]
-    pub fn with_messages(messages: Vec<ChatMessage>) -> Self {
+    pub fn with_messages(messages: Vec<ChatMessage>) -> Self
+    {
         Self {
             messages: RwLock::new(messages),
         }
@@ -94,17 +100,21 @@ impl ConversationBufferMemory {
 }
 
 #[async_trait::async_trait]
-impl ConversationMemory for ConversationBufferMemory {
-    async fn add_message(&self, message: ChatMessage) {
+impl ConversationMemory for ConversationBufferMemory
+{
+    async fn add_message(&self, message: ChatMessage)
+    {
         let mut guard = self.messages.write().await;
         guard.push(message);
     }
 
-    async fn get_messages(&self) -> Vec<ChatMessage> {
+    async fn get_messages(&self) -> Vec<ChatMessage>
+    {
         self.messages.read().await.clone()
     }
 
-    async fn clear(&self) {
+    async fn clear(&self)
+    {
         self.messages.write().await.clear();
     }
 }
@@ -127,7 +137,8 @@ impl ConversationMemory for ConversationBufferMemory {
 /// let memory = ConversationSummaryMemory::new(chat_model, 10);
 /// // Messages beyond 10 will be summarized / 超过 10 条的消息将被总结
 /// ```
-pub struct ConversationSummaryMemory {
+pub struct ConversationSummaryMemory
+{
     /// The chat model used for summarization.
     /// 用于总结的聊天模型。
     chat_model: Arc<dyn ChatModel>,
@@ -145,8 +156,10 @@ pub struct ConversationSummaryMemory {
     max_summarization_rounds: usize,
 }
 
-impl std::fmt::Debug for ConversationSummaryMemory {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for ConversationSummaryMemory
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("ConversationSummaryMemory")
             .field("keep_recent", &self.keep_recent)
             .field("max_summarization_rounds", &self.max_summarization_rounds)
@@ -154,10 +167,12 @@ impl std::fmt::Debug for ConversationSummaryMemory {
     }
 }
 
-impl ConversationSummaryMemory {
+impl ConversationSummaryMemory
+{
     /// Creates a new summary memory with the given chat model and threshold.
     /// 使用给定的聊天模型和阈值创建新的总结记忆。
-    pub fn new(chat_model: impl ChatModel + 'static, keep_recent: usize) -> Self {
+    pub fn new(chat_model: impl ChatModel + 'static, keep_recent: usize) -> Self
+    {
         Self {
             chat_model: Arc::new(chat_model),
             messages: RwLock::new(Vec::new()),
@@ -169,7 +184,8 @@ impl ConversationSummaryMemory {
 
     /// Creates a new summary memory from an Arc chat model.
     /// 从 Arc 聊天模型创建新的总结记忆。
-    pub fn from_arc(chat_model: Arc<dyn ChatModel>, keep_recent: usize) -> Self {
+    pub fn from_arc(chat_model: Arc<dyn ChatModel>, keep_recent: usize) -> Self
+    {
         Self {
             chat_model,
             messages: RwLock::new(Vec::new()),
@@ -182,28 +198,33 @@ impl ConversationSummaryMemory {
     /// Sets the maximum number of summarization rounds.
     /// 设置最大总结迭代次数。
     #[must_use]
-    pub fn max_summarization_rounds(mut self, rounds: usize) -> Self {
+    pub fn max_summarization_rounds(mut self, rounds: usize) -> Self
+    {
         self.max_summarization_rounds = rounds;
         self
     }
 
     /// Returns the current summary text.
     /// 返回当前的总结文本。
-    pub async fn summary(&self) -> String {
+    pub async fn summary(&self) -> String
+    {
         self.summary.read().await.clone()
     }
 
     /// Triggers summarization of old messages if needed.
     /// 如有需要，触发旧消息的总结。
-    async fn maybe_summarize(&self) {
+    async fn maybe_summarize(&self)
+    {
         let messages = self.messages.read().await;
-        if messages.len() <= self.keep_recent {
+        if messages.len() <= self.keep_recent
+        {
             return;
         }
         drop(messages);
 
         let mut messages = self.messages.write().await;
-        if messages.len() <= self.keep_recent {
+        if messages.len() <= self.keep_recent
+        {
             return;
         }
 
@@ -212,7 +233,8 @@ impl ConversationSummaryMemory {
 
         // Build summary text from old messages
         let mut old_text = self.summary.read().await.clone();
-        for msg in old_messages {
+        for msg in old_messages
+        {
             let _ = writeln!(old_text, "{}: {}", msg.role, msg.content);
         }
 
@@ -228,7 +250,8 @@ impl ConversationSummaryMemory {
             ))
             .message(ChatMessage::user(&summary_prompt));
 
-        if let Ok(response) = self.chat_model.complete(request).await {
+        if let Ok(response) = self.chat_model.complete(request).await
+        {
             *self.summary.write().await = response.content;
         }
 
@@ -238,16 +261,20 @@ impl ConversationSummaryMemory {
 }
 
 #[async_trait::async_trait]
-impl ConversationMemory for ConversationSummaryMemory {
-    async fn add_message(&self, message: ChatMessage) {
+impl ConversationMemory for ConversationSummaryMemory
+{
+    async fn add_message(&self, message: ChatMessage)
+    {
         self.messages.write().await.push(message);
         self.maybe_summarize().await;
     }
 
-    async fn get_messages(&self) -> Vec<ChatMessage> {
+    async fn get_messages(&self) -> Vec<ChatMessage>
+    {
         let mut result = Vec::new();
         let summary = self.summary.read().await;
-        if !summary.is_empty() {
+        if !summary.is_empty()
+        {
             result.push(ChatMessage::system(format!("Summary of earlier conversation: {summary}")));
         }
         let messages = self.messages.read().await;
@@ -255,7 +282,8 @@ impl ConversationMemory for ConversationSummaryMemory {
         result
     }
 
-    async fn clear(&self) {
+    async fn clear(&self)
+    {
         self.messages.write().await.clear();
         self.summary.write().await.clear();
     }
@@ -288,18 +316,21 @@ impl ConversationMemory for ConversationSummaryMemory {
 /// assert_eq!(messages.len(), 3);
 /// ```
 #[derive(Debug)]
-pub struct ConversationBufferWindowMemory {
+pub struct ConversationBufferWindowMemory
+{
     messages: RwLock<Vec<ChatMessage>>,
     /// Maximum number of non-system messages to keep.
     /// 保留的非系统消息的最大数量。
     window_size: usize,
 }
 
-impl ConversationBufferWindowMemory {
+impl ConversationBufferWindowMemory
+{
     /// Creates a new window memory with the specified window size.
     /// 使用指定的窗口大小创建新的窗口记忆。
     #[must_use]
-    pub fn new(window_size: usize) -> Self {
+    pub fn new(window_size: usize) -> Self
+    {
         Self {
             messages: RwLock::new(Vec::new()),
             window_size,
@@ -309,44 +340,53 @@ impl ConversationBufferWindowMemory {
     /// Returns the configured window size.
     /// 返回配置的窗口大小。
     #[must_use]
-    pub fn window_size(&self) -> usize {
+    pub fn window_size(&self) -> usize
+    {
         self.window_size
     }
 }
 
 #[async_trait::async_trait]
-impl ConversationMemory for ConversationBufferWindowMemory {
-    async fn add_message(&self, message: ChatMessage) {
+impl ConversationMemory for ConversationBufferWindowMemory
+{
+    async fn add_message(&self, message: ChatMessage)
+    {
         let mut guard = self.messages.write().await;
         guard.push(message);
 
         // Evict oldest non-system messages if window is exceeded
         // 如果超过窗口大小，移除最旧的非系统消息
         let non_system_count = guard.iter().filter(|m| m.role != Role::System).count();
-        if non_system_count > self.window_size {
+        if non_system_count > self.window_size
+        {
             // Find and remove the first non-system message
-            if let Some(pos) = guard.iter().position(|m| m.role != Role::System) {
+            if let Some(pos) = guard.iter().position(|m| m.role != Role::System)
+            {
                 guard.remove(pos);
             }
         }
     }
 
-    async fn get_messages(&self) -> Vec<ChatMessage> {
+    async fn get_messages(&self) -> Vec<ChatMessage>
+    {
         self.messages.read().await.clone()
     }
 
-    async fn clear(&self) {
+    async fn clear(&self)
+    {
         self.messages.write().await.clear();
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::chat_model::ModelError;
 
     #[tokio::test]
-    async fn test_buffer_memory_add_and_get() {
+    async fn test_buffer_memory_add_and_get()
+    {
         let memory = ConversationBufferMemory::new();
         memory.add_message(ChatMessage::user("Hello")).await;
         memory
@@ -362,7 +402,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_buffer_memory_clear() {
+    async fn test_buffer_memory_clear()
+    {
         let memory = ConversationBufferMemory::new();
         memory.add_message(ChatMessage::user("Hello")).await;
         assert_eq!(memory.message_count().await, 1);
@@ -372,7 +413,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_buffer_memory_with_initial_messages() {
+    async fn test_buffer_memory_with_initial_messages()
+    {
         let memory = ConversationBufferMemory::with_messages(vec![
             ChatMessage::system("You are helpful."),
             ChatMessage::user("Hello"),
@@ -384,7 +426,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_window_memory_basic() {
+    async fn test_window_memory_basic()
+    {
         let memory = ConversationBufferWindowMemory::new(3);
         memory.add_message(ChatMessage::user("Msg 1")).await;
         memory.add_message(ChatMessage::user("Msg 2")).await;
@@ -395,7 +438,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_window_memory_eviction() {
+    async fn test_window_memory_eviction()
+    {
         let memory = ConversationBufferWindowMemory::new(2);
         memory.add_message(ChatMessage::user("Msg 1")).await;
         memory.add_message(ChatMessage::user("Msg 2")).await;
@@ -409,7 +453,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_window_memory_preserves_system_messages() {
+    async fn test_window_memory_preserves_system_messages()
+    {
         let memory = ConversationBufferWindowMemory::new(2);
         memory
             .add_message(ChatMessage::system("System instruction"))
@@ -426,7 +471,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_window_memory_clear() {
+    async fn test_window_memory_clear()
+    {
         let memory = ConversationBufferWindowMemory::new(5);
         memory.add_message(ChatMessage::user("Hello")).await;
         assert_eq!(memory.message_count().await, 1);
@@ -436,7 +482,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_window_memory_window_size() {
+    async fn test_window_memory_window_size()
+    {
         let memory = ConversationBufferWindowMemory::new(10);
         assert_eq!(memory.window_size(), 10);
     }
@@ -446,11 +493,13 @@ mod tests {
     struct MockSummaryModel;
 
     #[async_trait::async_trait]
-    impl ChatModel for MockSummaryModel {
+    impl ChatModel for MockSummaryModel
+    {
         async fn complete(
             &self,
             _request: ChatRequest,
-        ) -> Result<crate::chat_model::ChatResponse, ModelError> {
+        ) -> Result<crate::chat_model::ChatResponse, ModelError>
+        {
             Ok(crate::chat_model::ChatResponse::new(
                 "This is a summary of the conversation.",
                 "mock-model",
@@ -460,13 +509,15 @@ mod tests {
         async fn stream(
             &self,
             _request: ChatRequest,
-        ) -> Result<crate::chat_model::ChatStream, ModelError> {
+        ) -> Result<crate::chat_model::ChatStream, ModelError>
+        {
             Err(ModelError::Custom("Not implemented".to_string()))
         }
     }
 
     #[tokio::test]
-    async fn test_summary_memory_no_summarization_needed() {
+    async fn test_summary_memory_no_summarization_needed()
+    {
         let memory = ConversationSummaryMemory::new(MockSummaryModel, 5);
         memory.add_message(ChatMessage::user("Msg 1")).await;
         memory.add_message(ChatMessage::user("Msg 2")).await;
@@ -477,7 +528,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_summary_memory_triggers_summarization() {
+    async fn test_summary_memory_triggers_summarization()
+    {
         let memory = ConversationSummaryMemory::new(MockSummaryModel, 2);
         // Add 3 messages to trigger summarization (keep_recent = 2)
         memory.add_message(ChatMessage::user("Msg 1")).await;
@@ -494,7 +546,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_summary_memory_clear() {
+    async fn test_summary_memory_clear()
+    {
         let memory = ConversationSummaryMemory::new(MockSummaryModel, 1);
         memory.add_message(ChatMessage::user("Msg 1")).await;
         memory.add_message(ChatMessage::user("Msg 2")).await;

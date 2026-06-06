@@ -2,12 +2,14 @@
 //! Flyway 错误类型
 
 use std::path::PathBuf;
+
 use thiserror::Error;
 
 /// Flyway error type
 /// Flyway 错误类型
 #[derive(Error, Debug)]
-pub enum FlywayError {
+pub enum FlywayError
+{
     /// Configuration error
     /// 配置错误
     #[error("Configuration error: {0}")]
@@ -41,7 +43,8 @@ pub enum FlywayError {
     /// Checksum mismatch
     /// 校验和不匹配
     #[error("Checksum mismatch for version {version}: expected {expected}, got {actual}")]
-    ChecksumMismatch {
+    ChecksumMismatch
+    {
         version: String,
         expected: i64,
         actual: i64,
@@ -50,7 +53,10 @@ pub enum FlywayError {
     /// Migration already applied
     /// 迁移已应用
     #[error("Migration {version} already applied")]
-    AlreadyApplied { version: String },
+    AlreadyApplied
+    {
+        version: String
+    },
 
     /// Out of order migration
     /// 无序迁移

@@ -22,39 +22,33 @@ pub mod sql_builder;
 pub mod tx_bridge;
 
 // Error types
-pub use error::{Error, R2dbcError, R2dbcResult, Result};
-
+// Client types
+pub use client::{DatabaseClient, QueryParam, ToSql};
 // Config types
 pub use config::{DatabaseConfig, MySqlConfig, PostgresConfig, SqliteConfig, SslMode};
-
-// Row types
-pub use row::{Column, ColumnType, ColumnValue, FromRowValue, Row};
-
 // Connection types
 #[allow(deprecated)]
 pub use connection::Connection;
 pub use connection::PoolConfig;
-
-// Transaction types
-pub use transaction::{IsolationLevel, Transaction, TransactionManager};
-
-// Client types
-pub use client::{DatabaseClient, QueryParam, ToSql};
-
+pub use error::{Error, R2dbcError, R2dbcResult, Result};
+// Executor types
+pub use executor::QueryExecutor;
 // Pool types
 #[cfg(any(feature = "mysql", feature = "all"))]
 pub use pool::MySqlPoolClient;
 #[cfg(any(feature = "sqlite", feature = "all"))]
 pub use pool::SqlitePoolClient;
 pub use pool::{PgPoolClient, SqlxPoolClient};
-
-// Executor types
-pub use executor::QueryExecutor;
+// Row types
+pub use row::{Column, ColumnType, ColumnValue, FromRowValue, Row};
+// Transaction types
+pub use transaction::{IsolationLevel, Transaction, TransactionManager};
 
 /// Database type enum
 /// 数据库类型枚举
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DatabaseType {
+pub enum DatabaseType
+{
     /// PostgreSQL database
     PostgreSQL,
     /// MySQL database
@@ -69,7 +63,8 @@ pub enum DatabaseType {
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Commonly used types re-exported for convenience
-pub mod prelude {
+pub mod prelude
+{
     #[cfg(any(feature = "mysql", feature = "all"))]
     pub use super::MySqlPoolClient;
     #[cfg(any(feature = "sqlite", feature = "all"))]

@@ -2,7 +2,6 @@
 //! 属性配置模块
 //!
 //! # Equivalent to Spring Boot / 等价于 Spring Boot
-//!
 
 //! - `@ConfigurationProperties` - `PropertiesConfig` trait
 //! - `@ConfigurationPropertiesScan` - `PropertiesConfigRegistry`
@@ -35,10 +34,13 @@
 //! fn default_port() -> u16 { 8080 }
 //! ```
 
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+    sync::RwLock,
+};
+
 use crate::{Config, ConfigError, ConfigResult};
-use std::any::{Any, TypeId};
-use std::collections::HashMap;
-use std::sync::RwLock;
 
 /// Properties configuration trait
 /// 属性配置trait
@@ -48,7 +50,8 @@ use std::sync::RwLock;
 ///
 /// This trait should be derived using the `PropertiesConfig` derive macro.
 /// 此trait应该使用`PropertiesConfig`派生宏来派生。
-pub trait PropertiesConfig: Any + Send + Sync {
+pub trait PropertiesConfig: Any + Send + Sync
+{
     /// Get the prefix for these properties
     /// 获取这些属性的前缀
     fn prefix() -> &'static str
@@ -64,7 +67,8 @@ pub trait PropertiesConfig: Any + Send + Sync {
         let prefix = Self::prefix();
         let map = config.get_prefix(prefix);
 
-        if map.is_empty() {
+        if map.is_empty()
+        {
             return Err(ConfigError::MissingProperty(prefix.to_string()));
         }
 
@@ -93,7 +97,8 @@ pub trait PropertiesConfig: Any + Send + Sync {
 
     /// Validate the configuration
     /// 验证配置
-    fn validate(&self) -> ConfigResult<()> {
+    fn validate(&self) -> ConfigResult<()>
+    {
         // Default implementation does nothing
         // Override for custom validation
         Ok(())
@@ -109,16 +114,19 @@ pub trait PropertiesConfig: Any + Send + Sync {
 /// Manages all properties-configured types in the application.
 /// 管理应用程序中所有属性配置的类型。
 #[derive(Debug)]
-pub struct PropertiesConfigRegistry {
+pub struct PropertiesConfigRegistry
+{
     /// Registered config types
     /// 已注册的配置类型
     configs: RwLock<HashMap<TypeId, Box<dyn Any + Send + Sync>>>,
 }
 
-impl PropertiesConfigRegistry {
+impl PropertiesConfigRegistry
+{
     /// Create a new registry
     /// 创建新的注册表
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             configs: RwLock::new(HashMap::new()),
         }
@@ -171,7 +179,8 @@ impl PropertiesConfigRegistry {
     where
         T: PropertiesConfig + serde::de::DeserializeOwned + Clone + 'static,
     {
-        if let Some(value) = self.get::<T>() {
+        if let Some(value) = self.get::<T>()
+        {
             return Ok(value);
         }
 
@@ -209,7 +218,8 @@ impl PropertiesConfigRegistry {
 
     /// Clear all registered configs
     /// 清除所有已注册的配置
-    pub fn clear(&self) {
+    pub fn clear(&self)
+    {
         let mut configs = self
             .configs
             .write()
@@ -219,7 +229,8 @@ impl PropertiesConfigRegistry {
 
     /// Get count of registered configs
     /// 获取已注册配置的数量
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         let configs = self
             .configs
             .read()
@@ -229,13 +240,16 @@ impl PropertiesConfigRegistry {
 
     /// Check if empty
     /// 检查是否为空
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.len() == 0
     }
 }
 
-impl Default for PropertiesConfigRegistry {
-    fn default() -> Self {
+impl Default for PropertiesConfigRegistry
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -247,31 +261,39 @@ impl Default for PropertiesConfigRegistry {
 /// 用于处理嵌套属性结构的助手。
 pub(crate) struct NestedProperties;
 
-impl NestedProperties {
+impl NestedProperties
+{
     /// Flatten nested keys (e.g., "server.port" to "`server_port`" or vice versa)
     /// 展平嵌套键
-    pub(crate) fn flatten_key(key: &str) -> String {
+    pub(crate) fn flatten_key(key: &str) -> String
+    {
         key.replace('.', "_")
     }
 
     /// Nest flat keys
     /// 嵌套扁平键
-    pub(crate) fn nest_key(key: &str) -> String {
+    pub(crate) fn nest_key(key: &str) -> String
+    {
         key.replace('_', ".")
     }
 
     /// Extract prefix from key
     /// 从键中提取前缀
-    pub(crate) fn extract_prefix(key: &str) -> Option<String> {
+    pub(crate) fn extract_prefix(key: &str) -> Option<String>
+    {
         key.rfind('.').map(|pos| key[..pos].to_string())
     }
 
     /// Extract suffix from key
     /// 从键中提取后缀
-    pub(crate) fn extract_suffix(key: &str) -> Option<String> {
-        if let Some(pos) = key.rfind('.') {
+    pub(crate) fn extract_suffix(key: &str) -> Option<String>
+    {
+        if let Some(pos) = key.rfind('.')
+        {
             Some(key[pos + 1..].to_string())
-        } else {
+        }
+        else
+        {
             Some(key.to_string())
         }
     }
@@ -279,7 +301,8 @@ impl NestedProperties {
 
 /// Builder pattern helper for `PropertiesConfig`
 /// `PropertiesConfig的构建器模式助手`
-pub(crate) struct PropertiesConfigBuilder<T> {
+pub(crate) struct PropertiesConfigBuilder<T>
+{
     _phantom: std::marker::PhantomData<T>,
 }
 
@@ -289,7 +312,8 @@ where
 {
     /// Create a new builder
     /// 创建新的构建器
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new() -> Self
+    {
         Self {
             _phantom: std::marker::PhantomData,
         }
@@ -297,7 +321,8 @@ where
 
     /// Load from config
     /// 从配置加载
-    pub(crate) fn load(&self, config: &Config) -> ConfigResult<T> {
+    pub(crate) fn load(&self, config: &Config) -> ConfigResult<T>
+    {
         T::load_from_config(config)
     }
 
@@ -312,7 +337,8 @@ where
 
     /// Load and validate
     /// 加载并验证
-    pub(crate) fn load_and_validate(&self, config: &Config) -> ConfigResult<T> {
+    pub(crate) fn load_and_validate(&self, config: &Config) -> ConfigResult<T>
+    {
         let value = T::load_from_config(config)?;
         value.validate()?;
         Ok(value)
@@ -323,7 +349,8 @@ impl<T> Default for PropertiesConfigBuilder<T>
 where
     T: PropertiesConfig + serde::de::DeserializeOwned,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -338,8 +365,10 @@ where
 #[macro_export]
 macro_rules! impl_properties_config {
     ($type:ty, $prefix:expr) => {
-        impl $crate::PropertiesConfig for $type {
-            fn prefix() -> &'static str {
+        impl $crate::PropertiesConfig for $type
+        {
+            fn prefix() -> &'static str
+            {
                 $prefix
             }
         }
@@ -368,24 +397,29 @@ macro_rules! properties_config {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     // Test config type for registry tests
     // 用于注册表测试的配置类型
     #[derive(Debug, Clone, serde::Deserialize)]
-    struct TestConfig {
+    struct TestConfig
+    {
         value: String,
     }
 
-    impl PropertiesConfig for TestConfig {
-        fn prefix() -> &'static str {
+    impl PropertiesConfig for TestConfig
+    {
+        fn prefix() -> &'static str
+        {
             "test"
         }
     }
 
     #[test]
-    fn test_registry() {
+    fn test_registry()
+    {
         let registry = PropertiesConfigRegistry::new();
         assert!(registry.is_empty());
 
@@ -403,7 +437,8 @@ mod tests {
     /// Test registry get returns registered config
     /// 测试注册表get返回已注册的配置
     #[test]
-    fn test_registry_get() {
+    fn test_registry_get()
+    {
         let registry = PropertiesConfigRegistry::new();
         let config = TestConfig {
             value: "hello".to_string(),
@@ -418,7 +453,8 @@ mod tests {
     /// Test registry get returns None for unregistered type
     /// 测试注册表get对未注册类型返回None
     #[test]
-    fn test_registry_get_unregistered() {
+    fn test_registry_get_unregistered()
+    {
         let registry = PropertiesConfigRegistry::new();
         assert!(registry.get::<TestConfig>().is_none());
     }
@@ -426,7 +462,8 @@ mod tests {
     /// Test registry remove
     /// 测试注册表移除
     #[test]
-    fn test_registry_remove() {
+    fn test_registry_remove()
+    {
         let registry = PropertiesConfigRegistry::new();
         registry.register(TestConfig {
             value: "to_remove".to_string(),
@@ -439,7 +476,8 @@ mod tests {
     /// Test registry remove returns false for absent type
     /// 测试注册表移除不存在的类型返回false
     #[test]
-    fn test_registry_remove_absent() {
+    fn test_registry_remove_absent()
+    {
         let registry = PropertiesConfigRegistry::new();
         assert!(!registry.remove::<TestConfig>());
     }
@@ -447,7 +485,8 @@ mod tests {
     /// Test registry len and is_empty
     /// 测试注册表len和is_empty
     #[test]
-    fn test_registry_len_and_empty() {
+    fn test_registry_len_and_empty()
+    {
         let registry = PropertiesConfigRegistry::new();
         assert!(registry.is_empty());
         assert_eq!(registry.len(), 0);
@@ -468,13 +507,15 @@ mod tests {
     /// Test registry default trait
     /// 测试注册表Default trait
     #[test]
-    fn test_registry_default() {
+    fn test_registry_default()
+    {
         let registry = PropertiesConfigRegistry::default();
         assert!(registry.is_empty());
     }
 
     #[test]
-    fn test_nested_properties() {
+    fn test_nested_properties()
+    {
         assert_eq!(NestedProperties::flatten_key("server.port"), "server_port");
         assert_eq!(NestedProperties::nest_key("server_port"), "server.port");
         assert_eq!(NestedProperties::extract_prefix("server.port"), Some("server".to_string()));
@@ -484,7 +525,8 @@ mod tests {
     /// Test NestedProperties::extract_prefix on key without dot
     /// 测试NestedProperties::extract_prefix对无点号键的处理
     #[test]
-    fn test_nested_properties_no_dot() {
+    fn test_nested_properties_no_dot()
+    {
         assert_eq!(NestedProperties::extract_prefix("simple"), None);
         assert_eq!(NestedProperties::extract_suffix("simple"), Some("simple".to_string()));
     }
@@ -492,7 +534,8 @@ mod tests {
     /// Test NestedProperties with deeply nested keys
     /// 测试NestedProperties对深层嵌套键的处理
     #[test]
-    fn test_nested_properties_deep() {
+    fn test_nested_properties_deep()
+    {
         assert_eq!(NestedProperties::extract_prefix("a.b.c"), Some("a.b".to_string()));
         assert_eq!(NestedProperties::extract_suffix("a.b.c"), Some("c".to_string()));
         assert_eq!(NestedProperties::flatten_key("a.b.c"), "a_b_c".to_string());
@@ -501,7 +544,8 @@ mod tests {
     /// Test PropertiesConfigBuilder::new and default
     /// 测试PropertiesConfigBuilder::new和default
     #[test]
-    fn test_properties_config_builder_new() {
+    fn test_properties_config_builder_new()
+    {
         let builder: PropertiesConfigBuilder<TestConfig> = PropertiesConfigBuilder::new();
         // Just verify construction succeeds
         assert!(
@@ -512,7 +556,8 @@ mod tests {
     /// Test PropertiesConfig load_from_config returns error for empty config
     /// 测试空配置时PropertiesConfig load_from_config返回错误
     #[test]
-    fn test_properties_config_load_from_config_empty() {
+    fn test_properties_config_load_from_config_empty()
+    {
         let config = Config::new();
         let result = TestConfig::load_from_config(&config);
         assert!(result.is_err());
@@ -521,14 +566,18 @@ mod tests {
     /// Test PropertiesConfig load_or_default with a Default-able type
     /// 测试带Default能力的类型的PropertiesConfig load_or_default
     #[test]
-    fn test_properties_config_load_or_default_with_default() {
+    fn test_properties_config_load_or_default_with_default()
+    {
         #[derive(Debug, Clone, Default, serde::Deserialize)]
-        struct DefaultableConfig {
+        struct DefaultableConfig
+        {
             name: String,
         }
 
-        impl PropertiesConfig for DefaultableConfig {
-            fn prefix() -> &'static str {
+        impl PropertiesConfig for DefaultableConfig
+        {
+            fn prefix() -> &'static str
+            {
                 "defaultable"
             }
         }
@@ -541,7 +590,8 @@ mod tests {
     /// Test PropertiesConfig validate default implementation returns Ok
     /// 测试PropertiesConfig validate默认实现返回Ok
     #[test]
-    fn test_properties_config_validate() {
+    fn test_properties_config_validate()
+    {
         let tc = TestConfig {
             value: "test".to_string(),
         };

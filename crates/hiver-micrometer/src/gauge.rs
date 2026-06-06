@@ -1,28 +1,35 @@
 //! Gauge metric
 //! 仪表盘指标
 
+use std::sync::{
+    Arc,
+    atomic::{AtomicU64, Ordering},
+};
+
 use crate::metric::{MetricId, Tags};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Convert f64 to u64 bits
-fn f64_to_u64(value: f64) -> u64 {
+fn f64_to_u64(value: f64) -> u64
+{
     value.to_bits()
 }
 
 /// Convert u64 bits to f64
-fn u64_to_f64(bits: u64) -> f64 {
+fn u64_to_f64(bits: u64) -> f64
+{
     f64::from_bits(bits)
 }
 
 /// Gauge metric - can go up or down
 /// 仪表盘指标 - 可增可减
 #[derive(Clone)]
-pub struct Gauge {
+pub struct Gauge
+{
     inner: Arc<GaugeInner>,
 }
 
-struct GaugeInner {
+struct GaugeInner
+{
     /// Metric ID
     /// 指标 ID
     id: MetricId,
@@ -36,10 +43,12 @@ struct GaugeInner {
     description: Option<String>,
 }
 
-impl Gauge {
+impl Gauge
+{
     /// Create a new gauge
     /// 创建新仪表盘
-    pub fn new(id: MetricId) -> Self {
+    pub fn new(id: MetricId) -> Self
+    {
         Self {
             inner: Arc::new(GaugeInner {
                 id,
@@ -51,7 +60,8 @@ impl Gauge {
 
     /// Create with initial value
     /// 创建带初始值的仪表盘
-    pub fn with_value(id: MetricId, initial: f64) -> Self {
+    pub fn with_value(id: MetricId, initial: f64) -> Self
+    {
         Self {
             inner: Arc::new(GaugeInner {
                 id,
@@ -63,7 +73,8 @@ impl Gauge {
 
     /// Create with description
     /// 创建带描述的仪表盘
-    pub fn with_description(id: MetricId, description: impl Into<String>) -> Self {
+    pub fn with_description(id: MetricId, description: impl Into<String>) -> Self
+    {
         Self {
             inner: Arc::new(GaugeInner {
                 id,
@@ -75,21 +86,25 @@ impl Gauge {
 
     /// Set the value
     /// 设置值
-    pub fn set(&self, value: f64) {
+    pub fn set(&self, value: f64)
+    {
         self.inner.value.store(f64_to_u64(value), Ordering::Relaxed);
     }
 
     /// Get current value
     /// 获取当前值
-    pub fn value(&self) -> f64 {
+    pub fn value(&self) -> f64
+    {
         u64_to_f64(self.inner.value.load(Ordering::Relaxed))
     }
 
     /// Increment by amount
     /// 递增指定值
-    pub fn increment(&self, amount: f64) -> f64 {
+    pub fn increment(&self, amount: f64) -> f64
+    {
         let mut current = self.inner.value.load(Ordering::Relaxed);
-        loop {
+        loop
+        {
             let new_value = u64_to_f64(current) + amount;
             let new_bits = f64_to_u64(new_value);
             match self.inner.value.compare_exchange_weak(
@@ -97,7 +112,8 @@ impl Gauge {
                 new_bits,
                 Ordering::Relaxed,
                 Ordering::Relaxed,
-            ) {
+            )
+            {
                 Ok(_) => return new_value,
                 Err(actual) => current = actual,
             }
@@ -106,35 +122,41 @@ impl Gauge {
 
     /// Decrement by amount
     /// 递减指定值
-    pub fn decrement(&self, amount: f64) -> f64 {
+    pub fn decrement(&self, amount: f64) -> f64
+    {
         self.increment(-amount)
     }
 
     /// Get metric ID
     /// 获取指标 ID
-    pub fn id(&self) -> &MetricId {
+    pub fn id(&self) -> &MetricId
+    {
         &self.inner.id
     }
 
     /// Get description
     /// 获取描述
-    pub fn description(&self) -> Option<&str> {
+    pub fn description(&self) -> Option<&str>
+    {
         self.inner.description.as_deref()
     }
 }
 
 /// Gauge builder
 /// 仪表盘构建器
-pub struct GaugeBuilder {
+pub struct GaugeBuilder
+{
     id: MetricId,
     description: Option<String>,
     initial_value: Option<f64>,
 }
 
-impl GaugeBuilder {
+impl GaugeBuilder
+{
     /// Create a new builder
     /// 创建新构建器
-    pub fn new(name: impl AsRef<str>) -> Self {
+    pub fn new(name: impl AsRef<str>) -> Self
+    {
         Self {
             id: MetricId::from_name(
                 crate::metric::MetricName::new(name.as_ref()).expect("Invalid metric name"),
@@ -146,38 +168,48 @@ impl GaugeBuilder {
 
     /// Set tags
     /// 设置标签
-    pub fn tags(mut self, tags: Tags) -> Self {
+    pub fn tags(mut self, tags: Tags) -> Self
+    {
         self.id.tags = tags;
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self {
+    pub fn description(mut self, desc: impl Into<String>) -> Self
+    {
         self.description = Some(desc.into());
         self
     }
 
     /// Set initial value
     /// 设置初始值
-    pub fn initial_value(mut self, value: f64) -> Self {
+    pub fn initial_value(mut self, value: f64) -> Self
+    {
         self.initial_value = Some(value);
         self
     }
 
     /// Build the gauge
     /// 构建仪表盘
-    pub fn build(self) -> Gauge {
-        if let Some(initial) = self.initial_value {
+    pub fn build(self) -> Gauge
+    {
+        if let Some(initial) = self.initial_value
+        {
             let mut gauge = Gauge::with_value(self.id.clone(), initial);
-            if let Some(desc) = self.description {
+            if let Some(desc) = self.description
+            {
                 gauge = Gauge::with_description(self.id, desc);
                 gauge.set(initial);
             }
             gauge
-        } else if let Some(desc) = self.description {
+        }
+        else if let Some(desc) = self.description
+        {
             Gauge::with_description(self.id, desc)
-        } else {
+        }
+        else
+        {
             Gauge::new(self.id)
         }
     }
@@ -200,7 +232,8 @@ where
 {
     /// Create a new function gauge
     /// 创建新的函数仪表盘
-    pub fn new(id: MetricId, f: F) -> Self {
+    pub fn new(id: MetricId, f: F) -> Self
+    {
         Self {
             id,
             f: Arc::new(f),
@@ -210,7 +243,8 @@ where
 
     /// Create with description
     /// 创建带描述的函数仪表盘
-    pub fn with_description(id: MetricId, f: F, description: impl Into<String>) -> Self {
+    pub fn with_description(id: MetricId, f: F, description: impl Into<String>) -> Self
+    {
         Self {
             id,
             f: Arc::new(f),
@@ -220,19 +254,22 @@ where
 
     /// Get current value by calling the function
     /// 通过调用函数获取当前值
-    pub fn value(&self) -> f64 {
+    pub fn value(&self) -> f64
+    {
         (self.f)()
     }
 
     /// Get metric ID
     /// 获取指标 ID
-    pub fn id(&self) -> &MetricId {
+    pub fn id(&self) -> &MetricId
+    {
         &self.id
     }
 
     /// Get description
     /// 获取描述
-    pub fn description(&self) -> Option<&str> {
+    pub fn description(&self) -> Option<&str>
+    {
         self.description.as_deref()
     }
 }
@@ -241,7 +278,8 @@ impl<F> Clone for FunctionGauge<F>
 where
     F: Fn() -> f64 + Send + Sync,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             id: self.id.clone(),
             f: Arc::clone(&self.f),
@@ -251,11 +289,13 @@ where
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_gauge_set() {
+    fn test_gauge_set()
+    {
         let gauge =
             Gauge::new(MetricId::from_name(crate::metric::MetricName::new("test_gauge").unwrap()));
 
@@ -267,7 +307,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gauge_increment_decrement() {
+    fn test_gauge_increment_decrement()
+    {
         let gauge = Gauge::with_value(
             MetricId::from_name(crate::metric::MetricName::new("test_gauge").unwrap()),
             10.0,
@@ -281,7 +322,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gauge_builder() {
+    fn test_gauge_builder()
+    {
         let gauge = GaugeBuilder::new("my_gauge")
             .description("A test gauge")
             .initial_value(25.0)
@@ -293,7 +335,8 @@ mod tests {
     }
 
     #[test]
-    fn test_function_gauge() {
+    fn test_function_gauge()
+    {
         let value = Arc::new(std::sync::atomic::AtomicU64::new(f64_to_u64(42.0)));
 
         let gauge = FunctionGauge::new(

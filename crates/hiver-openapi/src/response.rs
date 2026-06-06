@@ -1,8 +1,9 @@
 //! `OpenAPI` response definitions
 //! `OpenAPI响应定义`
 
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 /// Response definition
 /// 响应定义
@@ -20,7 +21,8 @@ use std::collections::HashMap;
 /// )
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Response {
+pub struct Response
+{
     /// Description
     /// 描述
     pub description: String,
@@ -41,10 +43,12 @@ pub struct Response {
     pub links: Option<HashMap<String, serde_json::Value>>,
 }
 
-impl Response {
+impl Response
+{
     /// Create a new response
     /// 创建新响应
-    pub fn new(description: impl Into<String>) -> Self {
+    pub fn new(description: impl Into<String>) -> Self
+    {
         Self {
             description: description.into(),
             headers: None,
@@ -55,55 +59,64 @@ impl Response {
 
     /// Create a 200 OK response
     /// 创建200 OK响应
-    pub fn ok(description: impl Into<String>) -> Self {
+    pub fn ok(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 201 Created response
     /// 创建201 Created响应
-    pub fn created(description: impl Into<String>) -> Self {
+    pub fn created(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 204 No Content response
     /// 创建204 No Content响应
-    pub fn no_content() -> Self {
+    pub fn no_content() -> Self
+    {
         Self::new("No content")
     }
 
     /// Create a 400 Bad Request response
     /// 创建400 Bad Request响应
-    pub fn bad_request(description: impl Into<String>) -> Self {
+    pub fn bad_request(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 401 Unauthorized response
     /// 创建401 Unauthorized响应
-    pub fn unauthorized(description: impl Into<String>) -> Self {
+    pub fn unauthorized(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 403 Forbidden response
     /// 创建403 Forbidden响应
-    pub fn forbidden(description: impl Into<String>) -> Self {
+    pub fn forbidden(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 404 Not Found response
     /// 创建404 Not Found响应
-    pub fn not_found(description: impl Into<String>) -> Self {
+    pub fn not_found(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Create a 500 Internal Server Error response
     /// 创建500 Internal Server Error响应
-    pub fn internal_error(description: impl Into<String>) -> Self {
+    pub fn internal_error(description: impl Into<String>) -> Self
+    {
         Self::new(description)
     }
 
     /// Add header
     /// 添加头
-    pub fn add_header(mut self, name: impl Into<String>, header: Header) -> Self {
+    pub fn add_header(mut self, name: impl Into<String>, header: Header) -> Self
+    {
         self.headers
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), header);
@@ -112,11 +125,9 @@ impl Response {
 
     /// Add content
     /// 添加内容
-    pub fn add_content(
-        mut self,
-        content_type: impl Into<String>,
-        content: ResponseContent,
-    ) -> Self {
+    pub fn add_content(mut self, content_type: impl Into<String>, content: ResponseContent)
+    -> Self
+    {
         self.content
             .get_or_insert_with(HashMap::new)
             .insert(content_type.into(), content);
@@ -125,7 +136,8 @@ impl Response {
 
     /// Set content with JSON schema
     /// 设置带JSON模式的内容
-    pub fn json(mut self, schema: crate::Schema) -> Self {
+    pub fn json(mut self, schema: crate::Schema) -> Self
+    {
         self.content
             .get_or_insert_with(HashMap::new)
             .insert("application/json".to_string(), ResponseContent::new(schema));
@@ -136,7 +148,8 @@ impl Response {
 /// Header definition
 /// 头定义
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct Header {
+pub struct Header
+{
     /// Description
     /// 描述
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -163,23 +176,27 @@ pub struct Header {
     pub allow_empty_value: bool,
 }
 
-impl Header {
+impl Header
+{
     /// Create a new header
     /// 创建新头
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self {
+    pub fn description(mut self, description: impl Into<String>) -> Self
+    {
         self.description = Some(description.into());
         self
     }
 
     /// Set schema
     /// 设置模式
-    pub fn schema(mut self, schema: crate::Schema) -> Self {
+    pub fn schema(mut self, schema: crate::Schema) -> Self
+    {
         self.schema = Some(schema);
         self
     }
@@ -188,7 +205,8 @@ impl Header {
 /// Response content
 /// 响应内容
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ResponseContent {
+pub struct ResponseContent
+{
     /// Schema
     /// 模式
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -210,10 +228,12 @@ pub struct ResponseContent {
     pub encoding: Option<HashMap<String, super::operation::Encoding>>,
 }
 
-impl ResponseContent {
+impl ResponseContent
+{
     /// Create a new response content
     /// 创建新响应内容
-    pub fn new(schema: crate::Schema) -> Self {
+    pub fn new(schema: crate::Schema) -> Self
+    {
         Self {
             schema: Some(schema),
             example: None,
@@ -224,7 +244,8 @@ impl ResponseContent {
 
     /// Set example
     /// 设置示例
-    pub fn example(mut self, example: impl Into<serde_json::Value>) -> Self {
+    pub fn example(mut self, example: impl Into<serde_json::Value>) -> Self
+    {
         self.example = Some(example.into());
         self
     }
@@ -237,10 +258,12 @@ impl ResponseContent {
 /// 用于创建常见响应模式的助手。
 pub struct ApiResponse;
 
-impl ApiResponse {
+impl ApiResponse
+{
     /// Create a success response with data
     /// 创建带数据的成功响应
-    pub fn success(data_type: impl Into<String>) -> Response {
+    pub fn success(data_type: impl Into<String>) -> Response
+    {
         Response::ok("Successful operation").json(
             crate::Schema::object()
                 .add_property("code", crate::Schema::integer().description("Response code").into())
@@ -266,7 +289,8 @@ impl ApiResponse {
 
     /// Create a paginated response
     /// 创建分页响应
-    pub fn page(data_type: impl Into<String>) -> Response {
+    pub fn page(data_type: impl Into<String>) -> Response
+    {
         Response::ok("Paginated response").json(
             crate::Schema::object()
                 .add_property(
@@ -292,7 +316,8 @@ impl ApiResponse {
 
     /// Create an error response
     /// 创建错误响应
-    pub fn error() -> Response {
+    pub fn error() -> Response
+    {
         Response::internal_error("Error occurred").json(
             crate::Schema::object()
                 .add_property("code", crate::Schema::integer().description("Error code").into())
@@ -310,7 +335,8 @@ impl ApiResponse {
 
     /// Create a validation error response
     /// 创建验证错误响应
-    pub fn validation_error() -> Response {
+    pub fn validation_error() -> Response
+    {
         Response::bad_request("Validation failed").json(
             crate::Schema::object()
                 .add_property("code", crate::Schema::integer().description("Error code").into())
@@ -326,17 +352,20 @@ impl ApiResponse {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_response() {
+    fn test_response()
+    {
         let response = Response::ok("Success");
         assert_eq!(response.description, "Success");
     }
 
     #[test]
-    fn test_response_json() {
+    fn test_response_json()
+    {
         let response = Response::ok("Success").json(
             crate::Schema::object()
                 .add_property("id", crate::Schema::integer().into())
@@ -349,13 +378,15 @@ mod tests {
     }
 
     #[test]
-    fn test_api_response_success() {
+    fn test_api_response_success()
+    {
         let response = ApiResponse::success("User");
         assert!(response.content.is_some());
     }
 
     #[test]
-    fn test_api_response_page() {
+    fn test_api_response_page()
+    {
         let response = ApiResponse::page("User");
         assert!(response.content.is_some());
     }

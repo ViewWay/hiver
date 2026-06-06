@@ -20,33 +20,40 @@
 //! let users = SeaOrmBridge::<User>::find_all("users", &client).await?;
 //! ```
 
-use crate::{Model, Result};
-use hiver_data_rdbc::DatabaseClient;
 use std::marker::PhantomData;
+
+use hiver_data_rdbc::DatabaseClient;
+
+use crate::{Model, Result};
 
 /// SeaORM Bridge for Hiver models.
 /// Hiver 模型的 SeaORM 桥接。
 ///
 /// Delegates to QueryBuilder and DatabaseClient for actual operations.
-pub struct SeaOrmBridge<M: Model + serde::de::DeserializeOwned> {
+pub struct SeaOrmBridge<M: Model + serde::de::DeserializeOwned>
+{
     _phantom: PhantomData<M>,
 }
 
-impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
-    pub fn new() -> Self {
+impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M>
+{
+    pub fn new() -> Self
+    {
         Self {
             _phantom: PhantomData,
         }
     }
 
-    pub async fn find_all<C: DatabaseClient>(_table: &str, client: &C) -> Result<Vec<M>> {
+    pub async fn find_all<C: DatabaseClient>(_table: &str, client: &C) -> Result<Vec<M>>
+    {
         let sql = format!("SELECT * FROM {}", M::table_name());
         let rows = client
             .fetch_all(&sql)
             .await
             .map_err(|e| crate::Error::unknown(format!("find_all failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows {
+        for row in &rows
+        {
             results.push(
                 row.deserialize()
                     .map_err(|e| crate::Error::validation(format!("deserialize: {e}")))?,
@@ -59,14 +66,18 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
         id: impl ToString,
         _table: &str,
         client: &C,
-    ) -> Result<Option<M>> {
+    ) -> Result<Option<M>>
+    {
         // SECURITY: Use parameterized query placeholder — the DatabaseClient is responsible
         // for binding the value safely.  We embed the escaped value as a fallback for mock
         // clients that do not support bind parameters.
         let id_str = id.to_string();
-        let escaped = if id_str.parse::<i64>().is_ok() {
+        let escaped = if id_str.parse::<i64>().is_ok()
+        {
             id_str.clone()
-        } else {
+        }
+        else
+        {
             format!("'{}'", id_str.replace('\'', "''").replace('\0', ""))
         };
         let sql = format!("SELECT * FROM {} WHERE id = {} LIMIT 1", M::table_name(), escaped);
@@ -89,7 +100,8 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
     {
         let json = serde_json::to_value(entity)
             .map_err(|e| crate::Error::unknown(format!("serialize: {e}")))?;
-        if let serde_json::Value::Object(map) = &json {
+        if let serde_json::Value::Object(map) = &json
+        {
             let cols: Vec<String> = map.keys().cloned().collect();
             // SECURITY: Use ? placeholders instead of interpolating values directly.
             // Values are collected separately for parameterized binding.
@@ -116,12 +128,16 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
         id: impl ToString,
         _table: &str,
         client: &C,
-    ) -> Result<()> {
+    ) -> Result<()>
+    {
         // SECURITY: Escape the id value to prevent SQL injection.
         let id_str = id.to_string();
-        let escaped = if id_str.parse::<i64>().is_ok() {
+        let escaped = if id_str.parse::<i64>().is_ok()
+        {
             id_str.clone()
-        } else {
+        }
+        else
+        {
             format!("'{}'", id_str.replace('\'', "''").replace('\0', ""))
         };
         let sql = format!("DELETE FROM {} WHERE id = {}", M::table_name(), escaped);
@@ -133,52 +149,65 @@ impl<M: Model + serde::de::DeserializeOwned> SeaOrmBridge<M> {
     }
 }
 
-impl<M: Model + serde::de::DeserializeOwned> Default for SeaOrmBridge<M> {
-    fn default() -> Self {
+impl<M: Model + serde::de::DeserializeOwned> Default for SeaOrmBridge<M>
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// Convert a Hiver Model to a SeaORM ActiveModel (requires sea-orm feature)
 #[cfg(feature = "sea-orm")]
-pub trait IntoSeaOrmEntity {
+pub trait IntoSeaOrmEntity
+{
     type Entity: sea_orm::EntityTrait;
     fn into_active_model(self) -> sea_orm::ActiveModel<Self::Entity>;
 }
 
 /// Convert a SeaORM Model to a Hiver Model (requires sea-orm feature)
 #[cfg(feature = "sea-orm")]
-pub trait FromSeaOrmEntity: Sized {
+pub trait FromSeaOrmEntity: Sized
+{
     type Entity: sea_orm::EntityTrait;
     fn from_sea_orm_model(model: <Self::Entity as sea_orm::EntityTrait>::Model) -> Self;
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[derive(Debug, Clone, serde::Deserialize)]
     struct MockModel;
 
-    impl Model for MockModel {
-        fn meta() -> crate::ModelMeta {
+    impl Model for MockModel
+    {
+        fn meta() -> crate::ModelMeta
+        {
             crate::ModelMeta::new("mock_table")
         }
-        fn primary_key(&self) -> Result<String> {
+
+        fn primary_key(&self) -> Result<String>
+        {
             Ok("1".to_string())
         }
-        fn set_primary_key(&mut self, _value: String) -> Result<()> {
+
+        fn set_primary_key(&mut self, _value: String) -> Result<()>
+        {
             Ok(())
         }
     }
 
     #[test]
-    fn test_bridge_creation() {
+    fn test_bridge_creation()
+    {
         let _bridge = SeaOrmBridge::<MockModel>::new();
     }
 
     #[test]
-    fn test_bridge_default() {
+    fn test_bridge_default()
+    {
         let _bridge: SeaOrmBridge<MockModel> = SeaOrmBridge::default();
     }
 }

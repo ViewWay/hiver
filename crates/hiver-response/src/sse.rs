@@ -45,8 +45,9 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use bytes::Bytes;
 use std::fmt;
+
+use bytes::Bytes;
 
 /// Default SSE channel buffer size.
 /// 默认 SSE 通道缓冲区大小。
@@ -69,7 +70,8 @@ const DEFAULT_BUFFER_SIZE: usize = 32;
 /// - `retry:` 重连时间（毫秒）
 /// - `:` 注释行——客户端忽略，用于保持连接
 #[derive(Debug, Clone)]
-pub struct SseEvent {
+pub struct SseEvent
+{
     /// Optional event ID.
     /// 可选事件 ID。
     pub id: Option<String>,
@@ -92,10 +94,12 @@ pub struct SseEvent {
     pub comment: Option<String>,
 }
 
-impl SseEvent {
+impl SseEvent
+{
     /// Create a new SSE event with the given data.
     /// 创建具有给定数据的新 SSE 事件。
-    pub fn new(data: impl Into<String>) -> Self {
+    pub fn new(data: impl Into<String>) -> Self
+    {
         Self {
             id: None,
             event: None,
@@ -107,37 +111,45 @@ impl SseEvent {
 
     /// Create a new SSE event builder.
     /// 创建新的 SSE 事件构建器。
-    pub fn builder() -> SseEventBuilder {
+    pub fn builder() -> SseEventBuilder
+    {
         SseEventBuilder::new()
     }
 
     /// Serialize this event to SSE wire format bytes.
     /// Appends a terminating empty line per SSE spec.
     /// 将此事件序列化为 SSE 传输格式字节。按规范追加终止空行。
-    pub fn to_wire(&self) -> Bytes {
+    pub fn to_wire(&self) -> Bytes
+    {
         let mut s = String::new();
 
         // Comments go first (keep-alive idiom)
-        if let Some(ref comment) = self.comment {
-            for line in comment.lines() {
+        if let Some(ref comment) = self.comment
+        {
+            for line in comment.lines()
+            {
                 s.push_str(&format!(":{}\n", line));
             }
         }
 
-        if let Some(ref id) = self.id {
+        if let Some(ref id) = self.id
+        {
             s.push_str(&format!("id:{}\n", id));
         }
 
-        if let Some(ref event) = self.event {
+        if let Some(ref event) = self.event
+        {
             s.push_str(&format!("event:{}\n", event));
         }
 
         // Multi-line data: each line gets its own `data:` prefix
-        for line in self.data.lines() {
+        for line in self.data.lines()
+        {
             s.push_str(&format!("data:{}\n", line));
         }
 
-        if let Some(retry) = self.retry {
+        if let Some(retry) = self.retry
+        {
             s.push_str(&format!("retry:{}\n", retry));
         }
 
@@ -148,8 +160,10 @@ impl SseEvent {
     }
 }
 
-impl fmt::Display for SseEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for SseEvent
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{}", String::from_utf8_lossy(&self.to_wire()))
     }
 }
@@ -157,7 +171,8 @@ impl fmt::Display for SseEvent {
 /// Builder for constructing `SseEvent` instances.
 /// 用于构造 `SseEvent` 实例的构建器。
 #[derive(Debug, Default)]
-pub struct SseEventBuilder {
+pub struct SseEventBuilder
+{
     id: Option<String>,
     event: Option<String>,
     data: Option<String>,
@@ -165,51 +180,59 @@ pub struct SseEventBuilder {
     comment: Option<String>,
 }
 
-impl SseEventBuilder {
+impl SseEventBuilder
+{
     /// Create a new builder.
     /// 创建新的构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the event ID for `Last-Event-ID` reconnection support.
     /// 设置事件 ID，支持 `Last-Event-ID` 重连。
-    pub fn id(mut self, id: impl Into<String>) -> Self {
+    pub fn id(mut self, id: impl Into<String>) -> Self
+    {
         self.id = Some(id.into());
         self
     }
 
     /// Set the event type name for `addEventListener` dispatching.
     /// 设置事件类型名称，用于 `addEventListener` 分发。
-    pub fn event(mut self, event: impl Into<String>) -> Self {
+    pub fn event(mut self, event: impl Into<String>) -> Self
+    {
         self.event = Some(event.into());
         self
     }
 
     /// Set the event data payload (required).
     /// 设置事件数据负载（必填）。
-    pub fn data(mut self, data: impl Into<String>) -> Self {
+    pub fn data(mut self, data: impl Into<String>) -> Self
+    {
         self.data = Some(data.into());
         self
     }
 
     /// Set the reconnection retry interval in milliseconds.
     /// 设置重连重试间隔（毫秒）。
-    pub fn retry(mut self, retry_ms: u64) -> Self {
+    pub fn retry(mut self, retry_ms: u64) -> Self
+    {
         self.retry = Some(retry_ms);
         self
     }
 
     /// Add a comment (sent as `: comment`). Commonly used for heartbeat.
     /// 添加注释（作为 `: comment` 发送）。常用于心跳。
-    pub fn comment(mut self, comment: impl Into<String>) -> Self {
+    pub fn comment(mut self, comment: impl Into<String>) -> Self
+    {
         self.comment = Some(comment.into());
         self
     }
 
     /// Build the SSE event.
     /// 构建 SSE 事件。
-    pub fn build(self) -> SseEvent {
+    pub fn build(self) -> SseEvent
+    {
         SseEvent {
             id: self.id,
             event: self.event,
@@ -222,16 +245,20 @@ impl SseEventBuilder {
 
 /// Convenience conversion from `String`.
 /// 从 `String` 的便捷转换。
-impl From<String> for SseEvent {
-    fn from(data: String) -> Self {
+impl From<String> for SseEvent
+{
+    fn from(data: String) -> Self
+    {
         SseEvent::new(data)
     }
 }
 
 /// Convenience conversion from `&str`.
 /// 从 `&str` 的便捷转换。
-impl From<&str> for SseEvent {
-    fn from(data: &str) -> Self {
+impl From<&str> for SseEvent
+{
+    fn from(data: &str) -> Self
+    {
         SseEvent::new(data)
     }
 }
@@ -239,15 +266,19 @@ impl From<&str> for SseEvent {
 /// Error type for SSE operations.
 /// SSE 操作的错误类型。
 #[derive(Debug)]
-pub enum SseError {
+pub enum SseError
+{
     /// Channel was closed (client disconnected or receiver dropped).
     /// 通道已关闭（客户端断开连接或接收方已丢弃）。
     ChannelClosed,
 }
 
-impl fmt::Display for SseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for SseError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::ChannelClosed => write!(f, "SSE channel closed"),
         }
     }
@@ -262,14 +293,17 @@ impl std::error::Error for SseError {}
 /// on the same SSE stream.
 /// 多个任务可以持有克隆并在同一 SSE 流上并发发送事件。
 #[derive(Debug, Clone)]
-pub struct SseSender {
+pub struct SseSender
+{
     pub(crate) tx: tokio::sync::mpsc::Sender<std::result::Result<SseEvent, SseError>>,
 }
 
-impl SseSender {
+impl SseSender
+{
     /// Send an event on this stream. Returns error if the client disconnected.
     /// 在此流上发送事件。如果客户端断开连接则返回错误。
-    pub async fn send(&self, event: SseEvent) -> Result<(), SseError> {
+    pub async fn send(&self, event: SseEvent) -> Result<(), SseError>
+    {
         self.tx
             .send(Ok(event))
             .await
@@ -280,7 +314,8 @@ impl SseSender {
     /// Browsers typically time out idle SSE connections after ~45-60 seconds.
     /// 发送心跳注释以保持连接活跃。
     /// 浏览器通常在约 45-60 秒后超时空闲的 SSE 连接。
-    pub async fn heartbeat(&self) -> Result<(), SseError> {
+    pub async fn heartbeat(&self) -> Result<(), SseError>
+    {
         let event = SseEvent {
             id: None,
             event: None,
@@ -293,7 +328,8 @@ impl SseSender {
 
     /// Signal stream completion. The SSE connection closes gracefully.
     /// 表示流完成。SSE 连接优雅关闭。
-    pub async fn close(self) -> Result<(), SseError> {
+    pub async fn close(self) -> Result<(), SseError>
+    {
         self.tx
             .send(Err(SseError::ChannelClosed))
             .await
@@ -307,14 +343,16 @@ impl SseSender {
 /// The emitter owns the receive side of an mpsc channel. Events are serialized
 /// to SSE wire format and streamed to the client as they arrive.
 /// 发射器拥有 mpsc 通道的接收端。事件到达时序列化为 SSE 格式并流式传输给客户端。
-pub struct SseEmitter {
+pub struct SseEmitter
+{
     /// Channel receiver for incoming events
     pub(crate) rx: tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
     /// Whether the stream has ended
     terminated: bool,
 }
 
-impl SseEmitter {
+impl SseEmitter
+{
     /// Create a new SSE emitter. The factory function `f` receives an `SseSender`
     /// and runs in a spawned Tokio task. The returned emitter can be used as an
     /// HTTP response body.
@@ -362,7 +400,8 @@ impl SseEmitter {
     /// 当事件由外部产生时有用（例如，通过共享通道）。
     pub fn from_channel(
         rx: tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             rx,
             terminated: false,
@@ -371,7 +410,8 @@ impl SseEmitter {
 
     /// Check whether the stream has terminated.
     /// 检查流是否已终止。
-    pub fn is_terminated(&self) -> bool {
+    pub fn is_terminated(&self) -> bool
+    {
         self.terminated
     }
 
@@ -380,7 +420,8 @@ impl SseEmitter {
     /// 将此发射器转换为其原始通道部分，用于自定义运行时集成。
     pub fn into_parts(
         self,
-    ) -> (tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>, bool) {
+    ) -> (tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>, bool)
+    {
         (self.rx, self.terminated)
     }
 
@@ -388,13 +429,17 @@ impl SseEmitter {
     /// 尝试不阻塞地接收下一个事件。
     pub fn try_recv(
         &mut self,
-    ) -> std::result::Result<Option<SseEvent>, tokio::sync::mpsc::error::TryRecvError> {
-        if self.terminated {
+    ) -> std::result::Result<Option<SseEvent>, tokio::sync::mpsc::error::TryRecvError>
+    {
+        if self.terminated
+        {
             return Ok(None);
         }
-        match self.rx.try_recv() {
+        match self.rx.try_recv()
+        {
             Ok(Ok(event)) => Ok(Some(event)),
-            Ok(Err(_)) => {
+            Ok(Err(_)) =>
+            {
                 self.terminated = true;
                 Ok(None)
             },
@@ -407,17 +452,21 @@ impl SseEmitter {
     pub fn poll_recv(
         &mut self,
         cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<std::result::Result<SseEvent, SseError>>> {
+    ) -> std::task::Poll<Option<std::result::Result<SseEvent, SseError>>>
+    {
         use std::task::Poll;
 
-        if self.terminated {
+        if self.terminated
+        {
             return Poll::Ready(None);
         }
 
-        match self.rx.poll_recv(cx) {
+        match self.rx.poll_recv(cx)
+        {
             Poll::Ready(Some(Ok(event))) => Poll::Ready(Some(Ok(event))),
             Poll::Ready(Some(Err(e))) => Poll::Ready(Some(Err(e))),
-            Poll::Ready(None) => {
+            Poll::Ready(None) =>
+            {
                 self.terminated = true;
                 Poll::Ready(None)
             },
@@ -434,17 +483,20 @@ impl SseEmitter {
 /// 当事件来自多个来源时很有用：后台任务、其他请求的响应、共享事件总线等。
 pub fn sse_channel(
     buffer_size: Option<usize>,
-) -> (SseSender, tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>) {
+) -> (SseSender, tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>)
+{
     let (tx, rx) = tokio::sync::mpsc::channel(buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE));
     (SseSender { tx }, rx)
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_sse_event_basic() {
+    fn test_sse_event_basic()
+    {
         let event = SseEvent::new("hello world");
         assert_eq!(event.data, "hello world");
         assert!(event.id.is_none());
@@ -452,7 +504,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_event_wire_format() {
+    fn test_sse_event_wire_format()
+    {
         let event = SseEvent::builder()
             .id("1")
             .event("update")
@@ -471,7 +524,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_event_multiline_data() {
+    fn test_sse_event_multiline_data()
+    {
         let event = SseEvent::builder().data("line1\nline2\nline3").build();
 
         let wire = event.to_wire();
@@ -483,7 +537,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_event_comment() {
+    fn test_sse_event_comment()
+    {
         let event = SseEvent::builder()
             .comment("keepalive")
             .data("ping")
@@ -495,7 +550,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_event_from_string() {
+    fn test_sse_event_from_string()
+    {
         let event: SseEvent = "hello".to_string().into();
         assert_eq!(event.data, "hello");
 
@@ -504,7 +560,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_event_display() {
+    fn test_sse_event_display()
+    {
         let event = SseEvent::builder().id("5").data("test").build();
 
         let display = format!("{}", event);
@@ -513,7 +570,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sse_sender_and_channel() {
+    async fn test_sse_sender_and_channel()
+    {
         let event = SseEvent::new("test");
         let (sender, mut rx) = sse_channel(None);
 
@@ -525,7 +583,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sse_sender_clone() {
+    async fn test_sse_sender_clone()
+    {
         let (sender1, mut rx) = sse_channel(None);
         let sender2 = sender1.clone();
 
@@ -535,7 +594,8 @@ mod tests {
         drop(sender2);
 
         let mut results = Vec::new();
-        while let Ok(Ok(event)) = rx.try_recv() {
+        while let Ok(Ok(event)) = rx.try_recv()
+        {
             results.push(event.data);
         }
         assert!(results.contains(&"one".to_string()));
@@ -543,7 +603,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sse_heartbeat() {
+    async fn test_sse_heartbeat()
+    {
         let (sender, mut rx) = sse_channel(None);
 
         sender.heartbeat().await.unwrap();
@@ -554,7 +615,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sse_emitter_send_receive() {
+    async fn test_sse_emitter_send_receive()
+    {
         let emitter = SseEmitter::new(|tx| async move {
             tx.send(SseEvent::new("event1")).await.ok();
             tx.send(SseEvent::new("event2")).await.ok();
@@ -566,7 +628,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sse_emitter_try_recv() {
+    async fn test_sse_emitter_try_recv()
+    {
         let mut emitter = SseEmitter::new(|tx| async move {
             tx.send(SseEvent::new("hello")).await.ok();
         });
@@ -579,12 +642,14 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_channel_custom_buffer() {
+    fn test_sse_channel_custom_buffer()
+    {
         let (_tx, _rx) = sse_channel(Some(64));
     }
 
     #[test]
-    fn test_sse_error_display() {
+    fn test_sse_error_display()
+    {
         let err = SseError::ChannelClosed;
         assert!(format!("{}", err).contains("closed"));
     }

@@ -27,9 +27,7 @@
 //! }
 //! ```
 
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
+use std::{future::Future, pin::Pin, sync::Arc};
 
 /// Transactional configuration
 /// 事务配置
@@ -38,7 +36,8 @@ use std::sync::Arc;
 ///
 /// @Transactional 行为的配置。
 #[derive(Debug, Clone)]
-pub(crate) struct TransactionalConfig {
+pub(crate) struct TransactionalConfig
+{
     /// Isolation level
     /// 隔离级别
     pub isolation: IsolationLevel,
@@ -63,7 +62,8 @@ pub(crate) struct TransactionalConfig {
 /// Transaction isolation level
 /// 事务隔离级别
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(crate) enum IsolationLevel {
+pub(crate) enum IsolationLevel
+{
     /// Use the default isolation level
     /// 使用默认隔离级别
     #[default]
@@ -95,7 +95,8 @@ pub(crate) enum IsolationLevel {
 /// 定义当一个 @Transactional 方法从另一个 @Transactional 方法调用时
 /// 事务应该如何传播。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(crate) enum Propagation {
+pub(crate) enum Propagation
+{
     /// Support a current transaction, create a new one if none exists
     /// 支持当前事务，如果没有则创建新事务
     #[default]
@@ -126,8 +127,10 @@ pub(crate) enum Propagation {
     Nested,
 }
 
-impl Default for TransactionalConfig {
-    fn default() -> Self {
+impl Default for TransactionalConfig
+{
+    fn default() -> Self
+    {
         Self {
             isolation: IsolationLevel::default(),
             timeout: None,
@@ -138,44 +141,51 @@ impl Default for TransactionalConfig {
     }
 }
 
-impl TransactionalConfig {
+impl TransactionalConfig
+{
     /// Create a new transactional config
     /// 创建新的事务配置
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the isolation level
     /// 设置隔离级别
-    pub(crate) fn isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub(crate) fn isolation(mut self, isolation: IsolationLevel) -> Self
+    {
         self.isolation = isolation;
         self
     }
 
     /// Set the timeout in seconds
     /// 设置超时时间（秒）
-    pub(crate) fn timeout(mut self, timeout: u64) -> Self {
+    pub(crate) fn timeout(mut self, timeout: u64) -> Self
+    {
         self.timeout = Some(timeout);
         self
     }
 
     /// Set the propagation behavior
     /// 设置传播行为
-    pub(crate) fn propagation(mut self, propagation: Propagation) -> Self {
+    pub(crate) fn propagation(mut self, propagation: Propagation) -> Self
+    {
         self.propagation = propagation;
         self
     }
 
     /// Set the read-only flag
     /// 设置只读标志
-    pub(crate) fn read_only(mut self, read_only: bool) -> Self {
+    pub(crate) fn read_only(mut self, read_only: bool) -> Self
+    {
         self.read_only = read_only;
         self
     }
 
     /// Set the max retries
     /// 设置最大重试次数
-    pub(crate) fn max_retries(mut self, max_retries: u32) -> Self {
+    pub(crate) fn max_retries(mut self, max_retries: u32) -> Self
+    {
         self.max_retries = max_retries;
         self
     }
@@ -205,7 +215,8 @@ impl TransactionalConfig {
 ///     Ok(())
 /// }).await?;
 /// ```
-pub(crate) struct TransactionalExecutor {
+pub(crate) struct TransactionalExecutor
+{
     /// Transaction manager
     /// 事务管理器
     transaction_manager: Arc<dyn TransactionManager>,
@@ -218,7 +229,8 @@ pub(crate) struct TransactionalExecutor {
 /// Transaction context
 /// 事务上下文
 #[derive(Debug, Clone)]
-struct TransactionContext {
+struct TransactionContext
+{
     /// Transaction ID
     /// 事务 ID
     id: u64,
@@ -232,10 +244,12 @@ struct TransactionContext {
     level: u32,
 }
 
-impl TransactionalExecutor {
+impl TransactionalExecutor
+{
     /// Create a new transactional executor
     /// 创建新的事务执行器
-    pub(crate) fn new(transaction_manager: Arc<dyn TransactionManager>) -> Self {
+    pub(crate) fn new(transaction_manager: Arc<dyn TransactionManager>) -> Self
+    {
         Self {
             transaction_manager,
             current_context: Arc::new(tokio::sync::RwLock::new(None)),
@@ -261,7 +275,8 @@ impl TransactionalExecutor {
         // Handle propagation
         // 处理传播
         let context = self.current_context.read().await;
-        let should_create_new = match (&*context, config.propagation) {
+        let should_create_new = match (&*context, config.propagation)
+        {
             (None, Propagation::Required | Propagation::RequiresNew)
             | (Some(_), Propagation::RequiresNew) => true,
             (None, Propagation::Supports | Propagation::NotSupported | Propagation::Never)
@@ -272,10 +287,12 @@ impl TransactionalExecutor {
                 | Propagation::Mandatory
                 | Propagation::Nested,
             ) => false,
-            (None, Propagation::Mandatory | Propagation::Nested) => {
+            (None, Propagation::Mandatory | Propagation::Nested) =>
+            {
                 return Err(TransactionError::NoExistingTransaction);
             },
-            (Some(_), Propagation::NotSupported | Propagation::Never) => {
+            (Some(_), Propagation::NotSupported | Propagation::Never) =>
+            {
                 return Err(TransactionError::ExistingTransaction);
             },
         };
@@ -283,9 +300,12 @@ impl TransactionalExecutor {
 
         let mut f = f;
 
-        if should_create_new {
+        if should_create_new
+        {
             self.execute_in_new_transaction(config, &mut f).await
-        } else {
+        }
+        else
+        {
             self.execute_in_existing_transaction(&mut f).await
         }
     }
@@ -335,12 +355,15 @@ impl TransactionalExecutor {
 
         // Commit or rollback
         // 提交或回滚
-        match &result {
-            Ok(_) => {
+        match &result
+        {
+            Ok(_) =>
+            {
                 tx.commit()
                     .map_err(|e| TransactionError::CommitFailed(e.to_string()))?;
             },
-            Err(_) => {
+            Err(_) =>
+            {
                 tx.rollback()
                     .map_err(|e| TransactionError::RollbackFailed(e.to_string()))?;
             },
@@ -379,18 +402,22 @@ impl TransactionalExecutor {
         let mut attempt = 0;
         let max_attempts = config.max_retries + 1;
 
-        loop {
+        loop
+        {
             attempt += 1;
 
             let result = f().await;
 
-            match &result {
-                Err(e) if attempt < max_attempts && self.is_retryable_error(e) => {
+            match &result
+            {
+                Err(e) if attempt < max_attempts && self.is_retryable_error(e) =>
+                {
                     // Retry
                     // 重试
                     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                 },
-                _ => {
+                _ =>
+                {
                     return result.map_err(TransactionError::ExecutionFailed);
                 },
             }
@@ -443,9 +470,12 @@ where
     ExecutionFailed(E),
 }
 
-impl<E: std::error::Error> std::fmt::Display for TransactionError<E> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl<E: std::error::Error> std::fmt::Display for TransactionError<E>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             Self::NoExistingTransaction => write!(f, "No existing transaction"),
             Self::ExistingTransaction => write!(f, "Existing transaction when none expected"),
             Self::BeginFailed(msg) => write!(f, "Begin transaction failed: {}", msg),
@@ -460,7 +490,8 @@ impl<E: std::error::Error + 'static> std::error::Error for TransactionError<E> {
 
 /// Transaction manager trait
 /// 事务管理器 trait
-pub(crate) trait TransactionManager: Send + Sync {
+pub(crate) trait TransactionManager: Send + Sync
+{
     /// Begin a new transaction
     /// 开始新事务
     fn begin(
@@ -471,14 +502,16 @@ pub(crate) trait TransactionManager: Send + Sync {
 
 /// Transaction
 /// 事务
-pub(crate) struct Transaction {
+pub(crate) struct Transaction
+{
     _inner: (),
 }
 
 /// Transaction configuration for the manager
 /// 事务管理器的配置
 #[derive(Debug, Clone)]
-pub(crate) struct TransactionConfig {
+pub(crate) struct TransactionConfig
+{
     /// Isolation level
     /// 隔离级别
     pub isolation: IsolationLevel,
@@ -488,8 +521,10 @@ pub(crate) struct TransactionConfig {
     pub read_only: bool,
 }
 
-impl From<TransactionalConfig> for TransactionConfig {
-    fn from(config: TransactionalConfig) -> Self {
+impl From<TransactionalConfig> for TransactionConfig
+{
+    fn from(config: TransactionalConfig) -> Self
+    {
         Self {
             isolation: config.isolation,
             read_only: config.read_only,
@@ -497,10 +532,12 @@ impl From<TransactionalConfig> for TransactionConfig {
     }
 }
 
-impl Transaction {
+impl Transaction
+{
     /// Commit the transaction
     /// 提交事务
-    pub(crate) fn commit(&self) -> Result<(), String> {
+    pub(crate) fn commit(&self) -> Result<(), String>
+    {
         // Placeholder
         // 占位符
         Ok(())
@@ -508,7 +545,8 @@ impl Transaction {
 
     /// Rollback the transaction
     /// 回滚事务
-    pub(crate) fn rollback(&self) -> Result<(), String> {
+    pub(crate) fn rollback(&self) -> Result<(), String>
+    {
         // Placeholder
         // 占位符
         Ok(())
@@ -516,11 +554,13 @@ impl Transaction {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_transactional_config_default() {
+    fn test_transactional_config_default()
+    {
         let config = TransactionalConfig::default();
         assert_eq!(config.isolation, IsolationLevel::Default);
         assert_eq!(config.propagation, Propagation::Required);
@@ -529,7 +569,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transactional_config_builder() {
+    fn test_transactional_config_builder()
+    {
         let config = TransactionalConfig::new()
             .isolation(IsolationLevel::Serializable)
             .timeout(30)
@@ -543,13 +584,15 @@ mod tests {
     }
 
     #[test]
-    fn test_isolation_level_default() {
+    fn test_isolation_level_default()
+    {
         let level = IsolationLevel::default();
         assert_eq!(level, IsolationLevel::Default);
     }
 
     #[test]
-    fn test_propagation_default() {
+    fn test_propagation_default()
+    {
         let propagation = Propagation::default();
         assert_eq!(propagation, Propagation::Required);
     }
