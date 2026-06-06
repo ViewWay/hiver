@@ -610,7 +610,7 @@ mod tests
     }
 
     #[tokio::test]
-    #[ignore] // Flaky: race between zero timeout and future completion
+    #[ignore = "flaky: race between zero timeout and future completion"]
     async fn test_zero_timeout_with_pending()
     {
         // A pending future with Duration::ZERO should time out immediately.

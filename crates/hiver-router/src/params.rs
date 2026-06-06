@@ -285,7 +285,7 @@ mod tests
     /// Test deserialization into a struct with serde.
     /// 测试使用 serde 反序列化为结构体。
     #[test]
-    #[ignore] // Pre-existing: string-to-u64 deserialization not supported
+    #[ignore = "pre-existing: string-to-u64 deserialization not supported"]
     fn test_deserializer_into_struct()
     {
         #[derive(Debug, Deserialize, PartialEq)]
@@ -357,7 +357,7 @@ mod tests
     /// Test deserialization of optional fields (absent = None).
     /// 测试可选字段的反序列化（缺失 = None）。
     #[test]
-    #[ignore] // Pre-existing: string-to-u64 deserialization not supported
+    #[ignore = "pre-existing: string-to-u64 deserialization not supported"]
     fn test_deserializer_optional_field_absent()
     {
         #[derive(Debug, Deserialize, PartialEq)]
@@ -378,7 +378,7 @@ mod tests
     /// Test deserialization of optional fields (present = Some).
     /// 测试可选字段的反序列化（存在 = Some）。
     #[test]
-    #[ignore] // Pre-existing: string-to-u64 deserialization not supported
+    #[ignore = "pre-existing: string-to-u64 deserialization not supported"]
     fn test_deserializer_optional_field_present()
     {
         #[derive(Debug, Deserialize, PartialEq)]

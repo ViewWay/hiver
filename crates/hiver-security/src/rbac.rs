@@ -1809,7 +1809,7 @@ mod tests
     }
 
     #[tokio::test]
-    #[ignore] // Pre-existing: rbac check changed after async-to-sync refactoring
+    #[ignore = "pre-existing: rbac check changed after async-to-sync refactoring"]
     async fn test_multiple_users_isolated()
     {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
