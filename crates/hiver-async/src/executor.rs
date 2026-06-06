@@ -359,6 +359,7 @@ impl TaskExecutor for AsyncTaskExecutor
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::{

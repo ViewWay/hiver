@@ -134,7 +134,7 @@ mod tests
     struct ModA;
     impl Module for ModA
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "a"
         }
@@ -143,7 +143,7 @@ mod tests
     struct ModB;
     impl Module for ModB
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "b"
         }
@@ -157,7 +157,7 @@ mod tests
     struct ModC;
     impl Module for ModC
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "c"
         }
@@ -195,7 +195,7 @@ mod tests
     struct ModX;
     impl Module for ModX
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "x"
         }
@@ -209,7 +209,7 @@ mod tests
     struct ModY;
     impl Module for ModY
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "y"
         }

@@ -195,6 +195,7 @@ impl<T> From<T> for Form<T>
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

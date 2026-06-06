@@ -285,6 +285,7 @@ fn current_timestamp() -> u64
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

@@ -72,7 +72,7 @@ mod tests
     struct OrderModule;
     impl Module for OrderModule
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "order"
         }
@@ -110,7 +110,7 @@ mod tests
         struct SimpleMod;
         impl Module for SimpleMod
         {
-            fn name(&self) -> &str
+            fn name(&self) -> &'static str
             {
                 "simple"
             }

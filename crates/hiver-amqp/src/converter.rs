@@ -397,6 +397,7 @@ fn extract_xml_content(xml: &str) -> String
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

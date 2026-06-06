@@ -118,6 +118,7 @@ pub trait RegisterEventListener
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use crate::{

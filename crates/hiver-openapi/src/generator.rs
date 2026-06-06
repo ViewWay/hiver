@@ -1035,6 +1035,7 @@ pub fn server_variable_with_enum(
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

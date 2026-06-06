@@ -312,7 +312,7 @@ mod tests
     #[tokio::test]
     async fn test_predicate_filter()
     {
-        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 10));
+        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().is_some_and(|v| v > 10));
 
         assert!(!filter.test(&Message::new(5)).await);
         assert!(filter.test(&Message::new(15)).await);
@@ -343,7 +343,7 @@ mod tests
     async fn test_not_filter()
     {
         let inner = Arc::new(PredicateFilter::new(|msg| {
-            msg.get_payload::<i32>().map_or(false, |v| v > 10)
+            msg.get_payload::<i32>().is_some_and(|v| v > 10)
         }));
         let filter = NotFilter::new(inner);
 
@@ -355,9 +355,9 @@ mod tests
     async fn test_and_filter()
     {
         let filter = AndFilter::new(vec![
-            Arc::new(PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 0))),
+            Arc::new(PredicateFilter::new(|msg| msg.get_payload::<i32>().is_some_and(|v| v > 0))),
             Arc::new(PredicateFilter::new(|msg| {
-                msg.get_payload::<i32>().map_or(false, |v| v < 100)
+                msg.get_payload::<i32>().is_some_and(|v| v < 100)
             })),
         ]);
 
@@ -372,10 +372,10 @@ mod tests
         let filter = OrFilter::new(vec![
             Arc::new(PredicateFilter::new(|msg| {
                 msg.get_payload::<String>()
-                    .map_or(false, |s| s == "special")
+                    .is_some_and(|s| s == "special")
             })),
             Arc::new(PredicateFilter::new(|msg| {
-                msg.get_payload::<i32>().map_or(false, |v| v > 100)
+                msg.get_payload::<i32>().is_some_and(|v| v > 100)
             })),
         ]);
 
@@ -410,7 +410,7 @@ mod tests
     #[tokio::test]
     async fn test_filter_method()
     {
-        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().map_or(false, |v| v > 10));
+        let filter = PredicateFilter::new(|msg| msg.get_payload::<i32>().is_some_and(|v| v > 10));
 
         let good_msg = Message::new(15i32);
         let bad_msg = Message::new(5i32);

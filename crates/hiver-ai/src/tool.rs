@@ -273,6 +273,7 @@ impl ToolRegistry
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -284,12 +285,12 @@ mod tests
     #[async_trait::async_trait]
     impl ToolCallback for EchoTool
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "echo"
         }
 
-        fn description(&self) -> &str
+        fn description(&self) -> &'static str
         {
             "Echoes the input text back to the user."
         }
@@ -316,12 +317,12 @@ mod tests
     #[async_trait::async_trait]
     impl ToolCallback for AddTool
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "add"
         }
 
-        fn description(&self) -> &str
+        fn description(&self) -> &'static str
         {
             "Adds two numbers together."
         }

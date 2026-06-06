@@ -399,7 +399,7 @@ mod tests
     {
         let buf = [0u8; 1024];
         let entry = unsafe {
-            SubmitEntry::read(0, buf.as_ptr() as *mut u8, 1024, 42)
+            SubmitEntry::read(0, buf.as_ptr().cast_mut(), 1024, 42)
                 .with_offset(100)
                 .with_flags(0x0001)
         };

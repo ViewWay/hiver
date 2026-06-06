@@ -382,6 +382,7 @@ pub mod common
 pub use common::{CreateGroup, DeleteGroup, LoginGroup, RegisterGroup, UpdateGroup};
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

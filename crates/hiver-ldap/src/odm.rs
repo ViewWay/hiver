@@ -304,6 +304,7 @@ pub fn parse_rdn_value(dn: &str, attr: &str) -> Option<String>
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

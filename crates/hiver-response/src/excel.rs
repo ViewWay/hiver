@@ -1136,6 +1136,7 @@ impl crate::IntoResponse for Excel
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::time::{Duration, UNIX_EPOCH};

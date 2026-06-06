@@ -104,6 +104,7 @@ where
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use serde::Deserialize;

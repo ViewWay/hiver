@@ -1064,6 +1064,7 @@ pub fn histogram(name: impl Into<String>) -> Histogram
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

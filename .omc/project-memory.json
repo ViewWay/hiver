@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | tail -5",
-    "testCommand": "cargo clippy --workspace --exclude hiver-benches 2>&1 | grep -E \"warning:.*generated\" | sort -u; cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"FAILED\" | head -5; echo \"---\"; cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"test result:\" | grep -v \"ok.\" | head -5; echo \"DONE\"",
+    "buildCommand": "cargo build --workspace 2>&1 | tail -3",
+    "testCommand": "cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"test result:\" | awk '{p+=$4; f+=$6} END{print p, \"passed,\", f, \"failed\"}'",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
@@ -162,8 +162,8 @@
     },
     {
       "path": "crates/hiver-middleware/src/request_id.rs",
-      "accessCount": 11,
-      "lastAccessed": 1780709071857,
+      "accessCount": 13,
+      "lastAccessed": 1780714844546,
       "type": "file"
     },
     {
@@ -203,6 +203,12 @@
       "type": "file"
     },
     {
+      "path": "crates/hiver-runtime/src/driver/iouring.rs",
+      "accessCount": 4,
+      "lastAccessed": 1780712438313,
+      "type": "file"
+    },
+    {
       "path": "crates/hiver-runtime/src/time.rs",
       "accessCount": 3,
       "lastAccessed": 1780708413228,
@@ -230,6 +236,18 @@
       "path": "crates/hiver-resilience/src/circuit.rs",
       "accessCount": 2,
       "lastAccessed": 1780708900272,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-benches/Cargo.toml",
+      "accessCount": 2,
+      "lastAccessed": 1780710959017,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/query_runtime.rs",
+      "accessCount": 2,
+      "lastAccessed": 1780722912040,
       "type": "file"
     },
     {
@@ -263,12 +281,6 @@
       "type": "file"
     },
     {
-      "path": "crates/hiver-data-orm/src/query_runtime.rs",
-      "accessCount": 1,
-      "lastAccessed": 1780709213341,
-      "type": "file"
-    },
-    {
       "path": "crates/hiver-events/src/lib.rs",
       "accessCount": 1,
       "lastAccessed": 1780710228509,
@@ -290,6 +302,48 @@
       "path": "crates/hiver-core/src/conditional.rs",
       "accessCount": 1,
       "lastAccessed": 1780710385608,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-runtime/src/runtime.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780712472654,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780722843132,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-core/src/container.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780723626893,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-aop-macros/Cargo.toml",
+      "accessCount": 1,
+      "lastAccessed": 1780724268701,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-aop-macros/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780724319363,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-aop/Cargo.toml",
+      "accessCount": 1,
+      "lastAccessed": 1780724485613,
+      "type": "file"
+    },
+    {
+      "path": "crates/hiver-aop/src/lib.rs",
+      "accessCount": 1,
+      "lastAccessed": 1780724515431,
       "type": "file"
     }
   ],

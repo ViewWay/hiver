@@ -2,6 +2,7 @@
 //! hiver-data-orm 的集成测试
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::sync::Arc;

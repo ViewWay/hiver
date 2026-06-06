@@ -307,6 +307,7 @@ impl DatabaseClient for NoopClient
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -345,6 +346,7 @@ mod tests
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_interpolate_params()
     {
         let sql = "SELECT * FROM users WHERE id = $1 AND name = $2";
@@ -354,6 +356,7 @@ mod tests
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_interpolate_params_sql_injection_safe()
     {
         let malicious = "'; DROP TABLE users; --";

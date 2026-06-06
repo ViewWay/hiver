@@ -337,6 +337,7 @@ impl From<Environment> for EnvironmentResponse
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

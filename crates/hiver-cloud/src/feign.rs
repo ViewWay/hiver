@@ -513,6 +513,7 @@ impl FeignRequestInterceptor for HeaderInterceptor
 // ─────────────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

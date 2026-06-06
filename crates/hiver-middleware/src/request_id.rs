@@ -152,27 +152,32 @@ impl RequestIdConfig
 // ---------------------------------------------------------------------------
 
 /// Generate a UUID v4-like string using random bytes.
-/// 使用随机字节生成类似 UUID v4 的字符串。
-#[allow(clippy::many_single_char_names)]
+/// 使用时间戳 + 原子计数器生成唯一 UUID v4 格式字符串。
 fn generate_uuid() -> String
 {
+    use std::sync::atomic::{AtomicU64, Ordering};
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
 
     let ts = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default();
 
-    // Simple UUID v4-like generation using timestamp + counter entropy.
-    // 使用时间戳 + 计数器熵的简单 UUID v4 类生成。
+    let seq = COUNTER.fetch_add(1, Ordering::Relaxed);
+
     let secs = ts.as_secs();
     let nanos = ts.subsec_nanos();
-    let a = (secs ^ (nanos as u64).wrapping_mul(2_654_435_761)) & 0xFFFF_FFFF;
-    let b = ((secs >> 32) ^ nanos as u64) & 0xFFFF;
-    let c = (0x4000 | ((nanos >> 16) & 0x0FFF)) as u16; // version 4
-    let d = (0x8000 | ((a >> 16) & 0x3FFF)) as u16; // variant 1
-    let e = (a ^ b ^ nanos as u64) & 0xFFFF_FFFF_FFFF;
+    let time_lo = (secs ^ (nanos as u64).wrapping_mul(2_654_435_761) ^ seq.wrapping_mul(0x9E37_79B9)) & 0xFFFF_FFFF;
+    let time_hi = ((secs >> 32) ^ nanos as u64 ^ seq) & 0xFFFF;
+    let ver = (0x4000 | ((nanos >> 16) & 0x0FFF)) as u16; // version 4
+    let var = (0x8000 | ((time_lo >> 16) & 0x3FFF)) as u16; // variant 1
+    let node = (time_lo ^ time_hi ^ nanos as u64 ^ seq) & 0xFFFF_FFFF_FFFF;
 
-    format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", a, b, c, d, e)
+    format!(
+        "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
+        time_lo, time_hi, ver, var, node
+    )
 }
 
 /// Counter for Counter strategy.

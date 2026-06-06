@@ -2,6 +2,7 @@
 //! 测试模块
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use crate::{config::Config, dialect::DatabaseType};

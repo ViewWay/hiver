@@ -902,6 +902,7 @@ impl Clone for TransactionalEventBridge
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::sync::atomic::{AtomicU32, Ordering};
@@ -1104,7 +1105,7 @@ mod tests
         };
         let results = publisher.publish_after_commit(&event).await;
         assert_eq!(results.len(), 2);
-        assert!(results.iter().all(|r| r.is_ok()));
+        assert!(results.iter().all(std::result::Result::is_ok));
         assert_eq!(counter1.load(Ordering::SeqCst), 1);
         assert_eq!(counter2.load(Ordering::SeqCst), 1);
     }

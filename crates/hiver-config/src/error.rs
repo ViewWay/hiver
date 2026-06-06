@@ -114,6 +114,7 @@ impl From<toml::de::Error> for ConfigError
 // 如果 yaml 解析失败，将被捕获为 serde_yaml 错误
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

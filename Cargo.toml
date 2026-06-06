@@ -13,6 +13,7 @@ members = [
     "crates/hiver-cache",
     "crates/hiver-tx",
     "crates/hiver-aop",
+    "crates/hiver-aop-macros",
     "crates/hiver-security",
     "crates/hiver-cloud",
     "crates/hiver-schedule",

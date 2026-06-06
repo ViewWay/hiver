@@ -554,7 +554,7 @@ mod tests
     {
         let aggregator = ExpressionAggregator::new(
             // Only add even numbers
-            |msg| msg.get_payload::<i32>().map_or(false, |v| v % 2 == 0),
+            |msg| msg.get_payload::<i32>().is_some_and(|v| v % 2 == 0),
             // Complete when we have 3 messages
             |msgs| msgs.len() >= 3,
             // Sum the values

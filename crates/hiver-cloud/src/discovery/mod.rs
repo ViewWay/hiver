@@ -985,6 +985,7 @@ impl ServiceDiscovery for SimpleDiscoveryClient
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

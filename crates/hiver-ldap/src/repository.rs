@@ -432,6 +432,7 @@ where
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -725,7 +726,7 @@ mod tests
         let person = Person {
             uid: "jane".into(),
             cn: "Jane".into(),
-            mail: "".into(),
+            mail: String::new(),
         };
         let serializer = PersonSerializer;
         assert_eq!(serializer.rdn_value(&person), "jane");
@@ -739,7 +740,7 @@ mod tests
         let person = Person {
             uid: "john".into(),
             cn: "John".into(),
-            mail: "".into(),
+            mail: String::new(),
         };
         let extractor = PersonIdExtractor;
         assert_eq!(extractor.extract_id(&person), "john");

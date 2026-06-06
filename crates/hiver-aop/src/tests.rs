@@ -7,6 +7,7 @@
 //! 运行时类型测试（JoinPoint, PointcutExpression, AspectRegistry）位于 runtime.rs。
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     /// Verify the test infrastructure is functional

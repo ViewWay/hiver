@@ -8,12 +8,13 @@
 //! 当 `ldap` feature 禁用时，模板返回安全的存根值。
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use crate::{
         context::LdapContextSourceBuilder,
-        mapper::{self, AttrMap},
-        odm::{self, AttributeMapping, Dn, ObjectDirectoryMapper, build_dn, parse_rdn_value},
+        mapper::AttrMap,
+        odm::{AttributeMapping, Dn, ObjectDirectoryMapper, build_dn, parse_rdn_value},
         pool::{LdapPool, PoolConfig},
         query::LdapQueryBuilder,
         repository::{EntryMapper, EntrySerializer, IdExtractor, TypedLdapRepository},

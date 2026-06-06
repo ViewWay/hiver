@@ -588,6 +588,7 @@ impl ServiceRegistry for ConsulServiceRegistry
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use mockito::{Matcher, Server};

@@ -372,6 +372,7 @@ impl VectorStore for InMemoryVectorStore
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -404,7 +405,7 @@ mod tests
                     let norm: f32 = v.iter().map(|x| x * x).sum::<f32>().sqrt();
                     if norm > 0.0
                     {
-                        for x in v.iter_mut()
+                        for x in &mut v
                         {
                             *x /= norm;
                         }

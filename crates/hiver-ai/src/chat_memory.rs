@@ -379,6 +379,7 @@ impl ConversationMemory for ConversationBufferWindowMemory
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

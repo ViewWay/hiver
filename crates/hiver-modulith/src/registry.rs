@@ -77,7 +77,7 @@ mod tests
     struct CustomerModule;
     impl Module for CustomerModule
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "customer"
         }
@@ -91,7 +91,7 @@ mod tests
     struct OrderModule;
     impl Module for OrderModule
     {
-        fn name(&self) -> &str
+        fn name(&self) -> &'static str
         {
             "order"
         }

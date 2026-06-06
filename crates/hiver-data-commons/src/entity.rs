@@ -545,6 +545,7 @@ pub trait Entity: AggregateRoot + TableName + Any + Send + Sync
 impl<E> EntityWithLifecycle for E where E: AggregateRoot {}
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use chrono::Utc;

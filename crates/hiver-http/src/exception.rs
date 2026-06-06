@@ -721,7 +721,7 @@ mod tests
         registry.register::<ResourceNotFoundException>(|exc| {
             ErrorResponse::not_found()
                 .code("CUSTOM_NOT_FOUND")
-                .message(&format!("Custom: {}", exc))
+                .message(format!("Custom: {}", exc))
         });
 
         let exc = ResourceNotFoundException::user("123");

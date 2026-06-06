@@ -141,7 +141,7 @@ mod tests
             Ok(bean)
         }
 
-        fn type_name(&self) -> &str
+        fn type_name(&self) -> &'static str
         {
             "TestBean"
         }

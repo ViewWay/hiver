@@ -853,6 +853,7 @@ impl Default for ConfigBuilder
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::io::Write;

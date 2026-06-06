@@ -401,6 +401,7 @@ fn default_fetch_max_wait() -> u32
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -509,13 +510,11 @@ mod tests
     {
         assert_eq!(CompressionType::default(), CompressionType::None);
 
-        let variants = vec![
-            CompressionType::None,
+        let variants = [CompressionType::None,
             CompressionType::Gzip,
             CompressionType::Snappy,
             CompressionType::Lz4,
-            CompressionType::Zstd,
-        ];
+            CompressionType::Zstd];
         // Verify all are distinct
         for i in 0..variants.len()
         {

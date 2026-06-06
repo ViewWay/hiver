@@ -484,7 +484,7 @@ mod tests
     fn test_is_empty()
     {
         let mut args = HashMap::new();
-        args.insert("name".to_string(), JsonValue::String("".to_string()));
+        args.insert("name".to_string(), JsonValue::String(String::new()));
         args.insert("email".to_string(), JsonValue::String("test@example.com".to_string()));
 
         assert!(evaluate_cache_condition("#name.isEmpty()", &args, None));
@@ -519,7 +519,7 @@ mod tests
         assert!(evaluate_cache_condition(
             "#result.isEmpty()",
             &args,
-            Some(&JsonValue::String("".to_string()))
+            Some(&JsonValue::String(String::new()))
         ));
         assert!(!evaluate_cache_condition(
             "#result.isEmpty()",
@@ -557,7 +557,7 @@ mod tests
         assert!(evaluate_cache_condition("#result == null", &args, Some(&result)));
 
         // Unless: don't cache if result is empty
-        let result = JsonValue::String("".to_string());
+        let result = JsonValue::String(String::new());
         assert!(evaluate_cache_condition("#result.isEmpty()", &args, Some(&result)));
 
         // Unless: don't cache if id < 10

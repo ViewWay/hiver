@@ -435,6 +435,7 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

@@ -528,11 +528,11 @@ mod tests
         // Add routes
         // 添加路由
         router
-            .add_route("channel1", |msg| msg.get_payload::<i32>().map_or(false, |v| v < 50))
+            .add_route("channel1", |msg| msg.get_payload::<i32>().is_some_and(|v| v < 50))
             .await;
 
         router
-            .add_route("channel2", |msg| msg.get_payload::<i32>().map_or(false, |v| v >= 50))
+            .add_route("channel2", |msg| msg.get_payload::<i32>().is_some_and(|v| v >= 50))
             .await;
 
         // Route messages
@@ -608,8 +608,8 @@ mod tests
     async fn test_router_builder()
     {
         let router = RouterBuilder::content_based()
-            .route("channel1", |msg| msg.get_payload::<i32>().map_or(false, |v| v < 50))
-            .route("channel2", |msg| msg.get_payload::<i32>().map_or(false, |v| v >= 50))
+            .route("channel1", |msg| msg.get_payload::<i32>().is_some_and(|v| v < 50))
+            .route("channel2", |msg| msg.get_payload::<i32>().is_some_and(|v| v >= 50))
             .build()
             .await
             .unwrap();

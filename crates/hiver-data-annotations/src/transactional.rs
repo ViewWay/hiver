@@ -564,7 +564,7 @@ mod tests
         let config = TransactionalConfig::default();
         assert_eq!(config.isolation, IsolationLevel::Default);
         assert_eq!(config.propagation, Propagation::Required);
-        assert_eq!(config.read_only, false);
+        assert!(!config.read_only);
         assert_eq!(config.max_retries, 3);
     }
 
@@ -579,7 +579,7 @@ mod tests
 
         assert_eq!(config.isolation, IsolationLevel::Serializable);
         assert_eq!(config.timeout, Some(30));
-        assert_eq!(config.read_only, true);
+        assert!(config.read_only);
         assert_eq!(config.max_retries, 5);
     }
 

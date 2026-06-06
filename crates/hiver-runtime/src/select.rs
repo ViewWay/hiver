@@ -243,7 +243,7 @@ mod tests
         }
 
         let noop_waker = Waker::noop();
-        let mut context = Context::from_waker(&noop_waker);
+        let mut context = Context::from_waker(noop_waker);
 
         let mut future = Box::pin(Ready);
         assert!(matches!(Pin::new(&mut future).poll(&mut context), Poll::Ready(42)));

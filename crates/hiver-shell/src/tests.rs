@@ -377,7 +377,7 @@ fn test_prompt_style_default()
     let style = PromptStyle::new();
     let rendered = style.render();
     assert!(rendered.contains("hiver"));
-    assert!(rendered.contains(">"));
+    assert!(rendered.contains('>'));
 }
 
 #[test]
@@ -390,7 +390,7 @@ fn test_prompt_style_custom()
 
     let rendered = style.render();
     assert!(rendered.contains("myapp"));
-    assert!(rendered.contains("$"));
+    assert!(rendered.contains('$'));
 }
 
 #[test]
@@ -459,7 +459,7 @@ fn test_builtin_history_command()
 {
     let state = Arc::new(Mutex::new(BuiltinState::new()));
     {
-        let mut s = state.lock().unwrap_or_else(|e| e.into_inner());
+        let mut s = state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         s.add_history("echo hello");
         s.add_history("greet world");
     }

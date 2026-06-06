@@ -147,7 +147,7 @@ fn test_future_polling()
     // Create a dummy context with no waker
     // 创建一个没有waker的虚拟context
     let waker = std::task::Waker::noop();
-    let mut context = Context::from_waker(&waker);
+    let mut context = Context::from_waker(waker);
 
     // First poll should return Pending
     // 第一次轮询应该返回Pending
@@ -276,16 +276,10 @@ fn test_bind_future_tcp()
 
     // Should not be Error variant for valid address
     // 有效地址不应该返回Error变体
-    match future
-    {
-        hiver_runtime::io::BindFuture::Error(_) =>
-        {
-            panic!("Expected non-Error future for valid address");
-        },
-        _ =>
-        {
-            // Expected / 符合预期
-        },
+    if let hiver_runtime::io::BindFuture::Error(_) = future {
+        panic!("Expected non-Error future for valid address");
+    } else {
+        // Expected / 符合预期
     }
 }
 
@@ -321,16 +315,10 @@ fn test_bind_future_udp()
 
     // Should not be Error variant for valid address
     // 有效地址不应该返回Error变体
-    match future
-    {
-        hiver_runtime::io::BindUdpFuture::Error(_) =>
-        {
-            panic!("Expected non-Error future for valid address");
-        },
-        _ =>
-        {
-            // Expected / 符合预期
-        },
+    if let hiver_runtime::io::BindUdpFuture::Error(_) = future {
+        panic!("Expected non-Error future for valid address");
+    } else {
+        // Expected / 符合预期
     }
 }
 
@@ -364,16 +352,10 @@ fn test_connect_future()
     // 测试有效地址格式
     let future = TcpStream::connect("127.0.0.1:8080");
 
-    match future
-    {
-        hiver_runtime::io::ConnectFuture::Error(_) =>
-        {
-            panic!("Expected non-Error future for valid address");
-        },
-        _ =>
-        {
-            // Expected / 符合预期
-        },
+    if let hiver_runtime::io::ConnectFuture::Error(_) = future {
+        panic!("Expected non-Error future for valid address");
+    } else {
+        // Expected / 符合预期
     }
 }
 

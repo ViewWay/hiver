@@ -238,7 +238,18 @@ impl ChatMemoryManager
     }
 }
 
+// Manual Debug impl for ChatMemoryManager since dyn ChatMemory doesn't impl Debug
+// ChatMemoryManager 的手动 Debug 实现，因为 dyn ChatMemory 不实现 Debug
+impl std::fmt::Debug for ChatMemoryManager
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        f.debug_struct("ChatMemoryManager").finish_non_exhaustive()
+    }
+}
+
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -360,15 +371,5 @@ mod tests
         }
 
         assert_eq!(manager.message_count(&conv_id).await, 2);
-    }
-}
-
-// Manual Debug impl for ChatMemoryManager since dyn ChatMemory doesn't impl Debug
-// ChatMemoryManager 的手动 Debug 实现，因为 dyn ChatMemory 不实现 Debug
-impl std::fmt::Debug for ChatMemoryManager
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        f.debug_struct("ChatMemoryManager").finish_non_exhaustive()
     }
 }

@@ -368,6 +368,7 @@ pub trait VersionCheckedUpdate<T: Version>
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

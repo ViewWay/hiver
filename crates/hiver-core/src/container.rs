@@ -249,6 +249,24 @@ impl Container
         }
     }
 
+    /// Acquire read lock on bean store.
+    /// 获取bean存储的读锁。
+    fn read_beans(&self) -> Result<std::sync::RwLockReadGuard<'_, BeanStore>>
+    {
+        self.beans
+            .read()
+            .map_err(|e| Error::internal(format!("Lock error: {}", e)))
+    }
+
+    /// Acquire write lock on bean store.
+    /// 获取bean存储的写锁。
+    fn write_beans(&self) -> Result<std::sync::RwLockWriteGuard<'_, BeanStore>>
+    {
+        self.beans
+            .write()
+            .map_err(|e| Error::internal(format!("Lock error: {}", e)))
+    }
+
     /// Register a bean with a factory function
     /// 使用工厂函数注册bean
     ///
@@ -271,10 +289,7 @@ impl Container
         let type_id = TypeId::of::<T>();
         let type_name = std::any::type_name::<T>();
 
-        let mut beans = self
-            .beans
-            .write()
-            .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+        let mut beans = self.write_beans()?;
 
         let registration = BeanRegistration::new(type_name).factory(Arc::new(factory));
 
@@ -299,17 +314,11 @@ impl Container
             let hook = PreDestroyHookImpl {
                 callback: pre_destroy.clone(),
             };
-            let mut beans = self
-                .beans
-                .write()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let mut beans = self.write_beans()?;
             beans.pre_destroy_hooks.insert(type_id, Box::new(hook));
         }
 
-        let mut beans = self
-            .beans
-            .write()
-            .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+        let mut beans = self.write_beans()?;
 
         beans
             .by_name
@@ -344,10 +353,7 @@ impl Container
         // First, check if there's a post-construct callback
         // 首先检查是否有初始化后回调
         let post_construct_callback = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
             beans
                 .registrations
                 .get(&type_id)
@@ -369,10 +375,7 @@ impl Container
 
         // Now insert the bean (with write lock)
         // 现在插入bean（使用写锁）
-        let mut beans = self
-            .beans
-            .write()
-            .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+        let mut beans = self.write_beans()?;
         beans.singletons.insert(type_id, bean_arc);
         Ok(())
     }
@@ -433,10 +436,7 @@ impl Container
         // Build a ConditionContext from the current container state
         // 从当前容器状态构建ConditionContext
         let context = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             let registered_beans: Vec<TypeId> = beans
                 .registrations
@@ -486,10 +486,7 @@ impl Container
         // First, check if we already have a singleton
         // 首先检查是否已有单例
         {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             if let Some(bean) = beans.singletons.get(&type_id)
                 && let Ok(typed) = Arc::clone(bean).downcast::<T>()
@@ -520,10 +517,7 @@ impl Container
         // Check if we have a registration with factory
         // 检查是否有带工厂的注册
         let factory_opt = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             beans
                 .registrations
@@ -537,10 +531,7 @@ impl Container
             // Mark as creating (for cycle detection)
             // 标记为正在创建（用于循环检测）
             {
-                let beans = self
-                    .beans
-                    .read()
-                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                let beans = self.read_beans()?;
                 beans.creating.borrow_mut().insert(type_id);
             }
 
@@ -556,10 +547,7 @@ impl Container
             // Store Weak reference early (for circular dependencies)
             // 提前存储Weak引用（用于循环依赖）
             {
-                let mut beans = self
-                    .beans
-                    .write()
-                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                let mut beans = self.write_beans()?;
                 beans.early_exposed.insert(
                     type_id,
                     Arc::downgrade(&placeholder) as std::sync::Weak<dyn Any + Send + Sync>,
@@ -569,10 +557,7 @@ impl Container
             // Store as singleton
             // 存储为单例
             {
-                let mut beans = self
-                    .beans
-                    .write()
-                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                let mut beans = self.write_beans()?;
                 beans.singletons.insert(type_id, placeholder.clone());
                 // Remove from creating set
                 // 从创建集合中移除
@@ -582,10 +567,7 @@ impl Container
             // Call post_construct callback if available
             // 调用初始化后回调（如果有）
             {
-                let beans = self
-                    .beans
-                    .read()
-                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                let beans = self.read_beans()?;
                 if let Some(reg) = beans.registrations.get(&type_id)
                     && let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
                     && let Some(post_construct) = &reg_t.post_construct
@@ -610,10 +592,7 @@ impl Container
     pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
     {
         let type_id = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             beans
                 .by_name
@@ -625,10 +604,7 @@ impl Container
         // First check if we already have a singleton
         // 首先检查是否已有单例
         {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             if let Some(bean) = beans.singletons.get(&type_id)
                 && let Ok(typed) = Arc::clone(bean).downcast::<T>()
@@ -640,10 +616,7 @@ impl Container
         // Check if we have a registration with factory and create the bean
         // 检查是否有带工厂的注册并创建bean
         let factory_opt = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
 
             beans
                 .registrations
@@ -661,10 +634,7 @@ impl Container
 
             // Store as singleton
             // 存储为单例
-            let mut beans = self
-                .beans
-                .write()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let mut beans = self.write_beans()?;
 
             beans.singletons.insert(type_id, bean_arc.clone());
 
@@ -723,10 +693,7 @@ impl Container
     pub fn initialize(&self) -> Result<()>
     {
         let to_init: Vec<TypeId> = {
-            let beans = self
-                .beans
-                .read()
-                .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+            let beans = self.read_beans()?;
             beans
                 .registrations
                 .keys()
@@ -738,10 +705,7 @@ impl Container
         for type_id in to_init
         {
             let init_fn = {
-                let beans = self
-                    .beans
-                    .read()
-                    .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+                let beans = self.read_beans()?;
                 beans.eager_init_fns.get(&type_id).cloned()
             };
             if let Some(init_fn) = init_fn
@@ -757,10 +721,7 @@ impl Container
     /// 关闭容器，调用销毁前回调
     pub fn shutdown(&self) -> Result<()>
     {
-        let mut beans = self
-            .beans
-            .write()
-            .map_err(|e| Error::internal(format!("Lock error: {}", e)))?;
+        let mut beans = self.write_beans()?;
 
         let hooks: Vec<_> = beans.pre_destroy_hooks.drain().collect();
         for (type_id, hook) in hooks
@@ -1139,6 +1100,7 @@ pub trait PreDestroy
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

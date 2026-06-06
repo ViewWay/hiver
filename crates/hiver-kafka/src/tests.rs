@@ -2,6 +2,7 @@
 //! hiver-kafka 集成测试
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use crate::{

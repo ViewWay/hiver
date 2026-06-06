@@ -1,5 +1,6 @@
 //! Tests for hiver-ws
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     #[test]

@@ -1037,7 +1037,7 @@ mod tests
             .collect::<Vec<_>>()
             .await;
         let mut sorted = items;
-        sorted.sort();
+        sorted.sort_unstable();
         assert_eq!(sorted, vec![1, 2, 3, 4, 5]);
     }
 

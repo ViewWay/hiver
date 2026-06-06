@@ -354,6 +354,7 @@ impl Clone for Handler
 use crate::Method;
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use hiver_http::StatusCode;

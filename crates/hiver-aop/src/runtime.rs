@@ -443,7 +443,7 @@ impl PointcutExpression
         {
             if let Some(end) = expr[start..].find(')')
             {
-                let full_expr = &expr[start..start + end + 1];
+                let full_expr = &expr[start..=(start + end)];
                 let _inner = &full_expr[11..full_expr.len() - 1]; // Remove "execution(" and ")"
 
                 // Parse: package..class.method(params)
@@ -719,8 +719,8 @@ impl Default for AspectRegistry
 
 /// Global aspect registry
 /// 全局切面注册表
-static GLOBAL_REGISTRY: once_cell::sync::Lazy<AspectRegistry> =
-    once_cell::sync::Lazy::new(AspectRegistry::new);
+static GLOBAL_REGISTRY: std::sync::LazyLock<AspectRegistry> =
+    std::sync::LazyLock::new(AspectRegistry::new);
 
 /// Get the global aspect registry
 /// 获取全局切面注册表
@@ -734,6 +734,7 @@ pub fn global_registry() -> &'static AspectRegistry
 // ============================================================================
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

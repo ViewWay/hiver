@@ -323,7 +323,7 @@ mod tests
 
         assert_eq!(params.get("name"), Some(&"John".to_string()));
         assert_eq!(params.get("age"), Some(&"30".to_string()));
-        assert_eq!(params.get("city"), Some(&"".to_string()));
+        assert_eq!(params.get("city"), Some(&String::new()));
     }
 
     #[test]

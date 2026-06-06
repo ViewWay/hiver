@@ -222,7 +222,8 @@
       "Bash(env)",
       "Bash(security find-certificate *)",
       "Bash(openssl x509 *)",
-      "Bash(xargs '-I{}' sh -c 'count=$\\(grep -c \"unwrap\\(\\)\" \"{}\"\\); file=\"{}\"; if [ \"$count\" -gt 3 ]; then echo \"$count $file\"; fi')"
+      "Bash(xargs '-I{}' sh -c 'count=$\\(grep -c \"unwrap\\(\\)\" \"{}\"\\); file=\"{}\"; if [ \"$count\" -gt 3 ]; then echo \"$count $file\"; fi')",
+      "Bash(awk '{p+=$4; f+=$6} END{print p, \"passed,\", f, \"failed\"}')"
     ]
   }
 }

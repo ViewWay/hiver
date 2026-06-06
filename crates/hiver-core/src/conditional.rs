@@ -717,6 +717,7 @@ impl Condition for NotCondition
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use std::collections::HashMap;
@@ -1187,7 +1188,7 @@ mod tests
         {
             fn matches(&self, _context: &ConditionContext) -> bool
             {
-                self.0 % 2 == 0
+                self.0.is_multiple_of(2)
             }
         }
 

@@ -420,7 +420,7 @@ mod tests
 
         // Simulate time passing by creating a connection with old activity
         // 通过创建活动陈旧的连接来模拟时间流逝
-        conn.last_activity = Instant::now() - Duration::from_millis(20);
+        conn.last_activity = Instant::now().checked_sub(Duration::from_millis(20)).unwrap();
 
         assert!(!conn.is_alive());
     }
@@ -433,7 +433,7 @@ mod tests
 
         // Make connection stale
         // 使连接陈旧
-        conn.last_activity = Instant::now() - Duration::from_millis(20);
+        conn.last_activity = Instant::now().checked_sub(Duration::from_millis(20)).unwrap();
         assert!(!conn.is_alive());
 
         // Record activity

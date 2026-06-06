@@ -844,6 +844,7 @@ fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<
 // ─────────────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

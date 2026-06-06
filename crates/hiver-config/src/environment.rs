@@ -401,6 +401,7 @@ impl Default for Environment
 }
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

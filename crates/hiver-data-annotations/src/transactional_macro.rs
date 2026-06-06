@@ -305,7 +305,7 @@ mod tests
         assert_eq!(attrs.isolation.unwrap().to_string(), "Serializable");
         assert_eq!(attrs.timeout.unwrap().base10_parse::<u64>().unwrap(), 60);
         assert_eq!(attrs.propagation.unwrap().to_string(), "RequiresNew");
-        assert_eq!(attrs.read_only.unwrap(), true);
+        assert!(attrs.read_only.unwrap());
         assert_eq!(attrs.max_retries.unwrap().base10_parse::<u32>().unwrap(), 5);
     }
 
@@ -314,6 +314,6 @@ mod tests
     {
         let input = quote! { read_only };
         let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
-        assert_eq!(attrs.read_only.unwrap(), true);
+        assert!(attrs.read_only.unwrap());
     }
 }

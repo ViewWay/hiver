@@ -643,6 +643,6 @@ mod tests
     #[test]
     fn test_model_rendering()
     {
-        assert_eq!(matches!(ModelRendering::default(), ModelRendering::Example), true);
+        assert!(matches!(ModelRendering::default(), ModelRendering::Example));
     }
 }

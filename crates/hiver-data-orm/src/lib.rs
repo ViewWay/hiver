@@ -90,11 +90,12 @@ pub use migrations::{Migration, MigrationDirection, Migrator, Schema};
 pub use mock_connection::Connection;
 pub use model::{Column, ColumnType, Model, ModelMeta, SqlDialect};
 pub use query::{Limit, OrderBy, QueryBuilder, WhereClause};
-// query_runtime re-exports from the split modules (query_metadata, mapper, executor)
-pub use query_runtime::{
-    AnnotatedQueryExecutor, BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor,
-    ParamStyle, QueryExecutor, QueryMetadata, QueryType, ResultSetExtractor, RowMapper,
+// Direct re-exports from split modules
+pub use executor::{AnnotatedQueryExecutor, QueryExecutor};
+pub use mapper::{
+    BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor, RowMapper,
 };
+pub use query_metadata::{ParamStyle, QueryMetadata, QueryType};
 pub use relationships::{
     BelongsTo, BelongsToMany, EagerLoad, EagerQueryBuilder, HasMany, HasOne, OnDelete, Relation,
     RelationType, WithRelations,

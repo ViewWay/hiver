@@ -610,6 +610,7 @@ impl EmbeddingModel for OllamaEmbeddingModel
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;
@@ -833,7 +834,7 @@ mod tests
     #[test]
     fn test_error_response_empty_error()
     {
-        let json = r#"{}"#;
+        let json = r"{}";
         let error: OllamaErrorResponse = serde_json::from_str(json).expect("deserialize");
         assert!(error.error.is_none());
     }

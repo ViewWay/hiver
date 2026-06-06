@@ -354,7 +354,7 @@ mod tests
         let uri = "/search?q=&page=1";
         let params = parse_query_params(uri);
 
-        assert_eq!(params.get("q"), Some(&"".to_string()));
+        assert_eq!(params.get("q"), Some(&String::new()));
         assert_eq!(params.get("page"), Some(&"1".to_string()));
     }
 
@@ -364,7 +364,7 @@ mod tests
         let uri = "/search?q&flag";
         let params = parse_query_params(uri);
 
-        assert_eq!(params.get("q"), Some(&"".to_string()));
-        assert_eq!(params.get("flag"), Some(&"".to_string()));
+        assert_eq!(params.get("q"), Some(&String::new()));
+        assert_eq!(params.get("flag"), Some(&String::new()));
     }
 }

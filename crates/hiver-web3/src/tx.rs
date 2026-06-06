@@ -959,6 +959,7 @@ impl fmt::Display for TransactionError
 impl std::error::Error for TransactionError {}
 
 #[cfg(test)]
+#[allow(clippy::indexing_slicing)]
 mod tests
 {
     use super::*;

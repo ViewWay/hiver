@@ -5216,13 +5216,19 @@ dependencies = [
 name = "hiver-aop"
 version = "0.1.0-alpha.6"
 dependencies = [
+ "hiver-aop-macros",
+ "tokio",
+ "trybuild",
+]
+
+[[package]]
+name = "hiver-aop-macros"
+version = "0.1.0-alpha.6"
+dependencies = [
  "darling 0.23.0",
- "once_cell",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
- "tokio",
- "trybuild",
 ]
 
 [[package]]
