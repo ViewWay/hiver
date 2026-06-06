@@ -185,6 +185,18 @@ struct BeanStore
     /// Bean lifecycle states
     /// Bean生命周期状态
     states: HashMap<TypeId, BeanState>,
+
+    /// Named bean registrations for @Qualifier support: name -> (TypeId, registration)
+    /// 命名bean注册，用于@Qualifier支持：名称 -> (TypeId, 注册)
+    named_registrations: HashMap<String, (TypeId, Box<dyn Any + Send + Sync>)>,
+
+    /// Named singleton instances: name -> instance
+    /// 命名单例实例：名称 -> 实例
+    named_singletons: HashMap<String, Arc<dyn Any + Send + Sync>>,
+
+    /// Type -> list of bean names for reverse lookup
+    /// 类型 -> bean名称列表，用于反向查找
+    type_to_names: HashMap<TypeId, Vec<String>>,
 }
 
 impl BeanStore
@@ -201,6 +213,9 @@ impl BeanStore
             eager_init_fns: HashMap::new(),
             lazy_flags: HashMap::new(),
             states: HashMap::new(),
+            named_registrations: HashMap::new(),
+            named_singletons: HashMap::new(),
+            type_to_names: HashMap::new(),
         }
     }
 }
@@ -608,7 +623,9 @@ impl Container
         }
         else
         {
-            Err(Error::not_found(format!("Bean not found: {}", std::any::type_name::<T>())))
+            // Fall back to named bean resolution (@Qualifier support)
+            // 回退到命名bean解析（@Qualifier支持）
+            self.resolve_named_bean()
         }
     }
 
@@ -674,6 +691,228 @@ impl Container
         }
     }
 
+
+    /// Resolve a named bean when the default TypeId-keyed lookup fails.
+    /// 当默认TypeId键查找失败时，解析命名bean。
+    fn resolve_named_bean<T: Bean + Send + Sync + 'static>(&self) -> Result<Arc<T>>
+    {
+        let type_id = TypeId::of::<T>();
+        let beans = self.read_beans()?;
+
+        let names = beans
+            .type_to_names
+            .get(&type_id)
+            .map(|n| n.as_slice())
+            .unwrap_or(&[]);
+
+        match names.len()
+        {
+            0 => Err(Error::not_found(format!(
+                "Bean not found: {}",
+                std::any::type_name::<T>()
+            ))),
+            1 =>
+            {
+                let name = names[0].clone();
+                drop(beans);
+                self.get_qualified_bean(&name)
+            }
+            _ =>
+            {
+                // Multiple candidates: look for @Primary
+                // 多个候选者：查找@Primary
+                let primary_name = names.iter().find(|name| {
+                    beans
+                        .named_registrations
+                        .get(*name)
+                        .and_then(|(_, reg)| reg.downcast_ref::<BeanRegistration<T>>())
+                        .map(|reg| reg.definition.primary)
+                        .unwrap_or(false)
+                });
+
+                if let Some(name) = primary_name
+                {
+                    let name = name.clone();
+                    drop(beans);
+                    self.get_qualified_bean(&name)
+                }
+                else
+                {
+                    Err(Error::internal(format!(
+                        "Multiple beans of type {} found. \
+                         Use get_qualified_bean() with a qualifier to specify. \
+                         Candidates: {:?}",
+                        std::any::type_name::<T>(),
+                        names
+                    )))
+                }
+            }
+        }
+    }
+
+    /// Register a bean with an explicit qualifier name.
+    /// 使用显式限定符名称注册bean。
+    ///
+    /// Equivalent to Spring's `@Bean("beanName")` or `@Qualifier("beanName")`.
+    /// 等价于Spring的 `@Bean("beanName")` 或 `@Qualifier("beanName")`。
+    ///
+    /// Multiple beans of the same type can be registered with different names.
+    /// When retrieving, use `get_qualified_bean` to select by name, or
+    /// `get_bean` which will use `@Primary` as the default.
+    ///
+    /// 同一类型的多个bean可以使用不同的名称注册。
+    /// 检索时，使用 `get_qualified_bean` 按名称选择，或
+    /// 使用 `get_bean` 将默认使用 `@Primary`。
+    ///
+    /// # Example / 示例
+    ///
+    /// ```rust,no_run,ignore
+    /// container.register_named("redisCache", |c| {
+    ///     Ok(RedisCache::new())
+    /// })?;
+    /// container.register_named("memCache", |c| {
+    ///     Ok(MemCache::new())
+    /// })?;
+    ///
+    /// // Resolve by qualifier
+    /// // 按限定符解析
+    /// let cache = container.get_qualified_bean::<CacheService>("redisCache")?;
+    /// ```
+    pub fn register_named<T, F>(&mut self, name: &str, factory: F) -> Result<()>
+    where
+        T: Bean + Send + Sync + 'static,
+        F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
+    {
+        let type_id = TypeId::of::<T>();
+        let registration = BeanRegistration::new(name).factory(Arc::new(factory));
+
+        let mut beans = self.write_beans()?;
+        beans
+            .named_registrations
+            .insert(name.to_string(), (type_id, Box::new(registration)));
+        beans
+            .type_to_names
+            .entry(type_id)
+            .or_default()
+            .push(name.to_string());
+
+        Ok(())
+    }
+
+    /// Get a bean by qualifier name.
+    /// 通过限定符名称获取bean。
+    ///
+    /// Equivalent to Spring's `@Qualifier("beanName")` injection.
+    /// 等价于Spring的 `@Qualifier("beanName")` 注入。
+    pub fn get_qualified_bean<T: Bean + Send + Sync + 'static>(
+        &self,
+        qualifier: &str,
+    ) -> Result<Arc<T>>
+    {
+        let type_id = TypeId::of::<T>();
+
+        // Check named singletons cache
+        // 检查命名单例缓存
+        {
+            let beans = self.read_beans()?;
+            if let Some(bean) = beans.named_singletons.get(qualifier)
+            {
+                if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                {
+                    return Ok(typed);
+                }
+            }
+        }
+
+        // Look up named registration and create bean
+        // 查找命名注册并创建bean
+        let factory = {
+            let beans = self.read_beans()?;
+            beans
+                .named_registrations
+                .get(qualifier)
+                .filter(|(tid, _)| *tid == type_id)
+                .and_then(|(_, reg)| reg.downcast_ref::<BeanRegistration<T>>())
+                .and_then(|reg| reg.factory.clone())
+        };
+
+        if let Some(factory) = factory
+        {
+            let bean = factory(self)?;
+            let bean_arc: Arc<T> = Arc::new(bean);
+
+            // Call post-construct if available
+            // 调用初始化后回调（如果有）
+            {
+                let beans = self.read_beans()?;
+                if let Some((_, reg)) = beans.named_registrations.get(qualifier)
+                {
+                    if let Some(reg_t) = reg.downcast_ref::<BeanRegistration<T>>()
+                    {
+                        if let Some(post_construct) = &reg_t.post_construct
+                        {
+                            post_construct(&bean_arc)?;
+                        }
+                    }
+                }
+            }
+
+            let mut beans = self.write_beans()?;
+            beans
+                .named_singletons
+                .insert(qualifier.to_string(), bean_arc.clone());
+
+            Ok(bean_arc)
+        }
+        else
+        {
+            Err(Error::not_found(format!(
+                "Qualified bean '{}' not found for type {}",
+                qualifier,
+                std::any::type_name::<T>()
+            )))
+        }
+    }
+
+    /// Get all beans of a given type (from both default and named storage).
+    /// 获取指定类型的所有bean（包括默认和命名存储）。
+    pub fn get_beans_of_type<T: Bean + Send + Sync + 'static>(&self) -> Vec<(String, Arc<T>)>
+    {
+        let type_id = TypeId::of::<T>();
+        let mut results = Vec::new();
+
+        if let Ok(beans) = self.read_beans()
+        {
+            // Check default singletons
+            // 检查默认单例
+            if let Some(bean) = beans.singletons.get(&type_id)
+            {
+                if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                {
+                    results.push(("default".to_string(), typed));
+                }
+            }
+
+            // Check named singletons
+            // 检查命名单例
+            if let Some(names) = beans.type_to_names.get(&type_id)
+            {
+                for name in names
+                {
+                    if let Some(bean) = beans.named_singletons.get(name)
+                    {
+                        if let Ok(typed) = Arc::clone(bean).downcast::<T>()
+                        {
+                            results.push((name.clone(), typed));
+                        }
+                    }
+                }
+            }
+        }
+
+        results
+    }
+
     /// Check if a bean is registered
     /// 检查bean是否已注册
     pub fn has_bean<T: Bean + Send + Sync + 'static>(&self) -> bool
@@ -682,7 +921,8 @@ impl Container
 
         if let Ok(beans) = self.beans.try_read()
             && (beans.singletons.contains_key(&type_id)
-                || beans.registrations.contains_key(&type_id))
+                || beans.registrations.contains_key(&type_id)
+                || beans.type_to_names.contains_key(&type_id))
         {
             return true;
         }
@@ -786,6 +1026,9 @@ impl Container
         beans.singletons.clear();
         beans.registrations.clear();
         beans.by_name.clear();
+        beans.named_registrations.clear();
+        beans.named_singletons.clear();
+        beans.type_to_names.clear();
 
         // Transition all to Destroyed
         // 将所有状态转为 Destroyed
@@ -904,6 +1147,26 @@ impl ApplicationContext
     pub fn get_bean_by_name<T: Bean + Send + Sync + 'static>(&self, name: &str) -> Result<Arc<T>>
     {
         self.container.get_bean_by_name(name)
+    }
+
+    /// Register a named bean with qualifier
+    /// 使用限定符注册命名bean
+    pub fn register_named<T, F>(&mut self, name: &str, factory: F) -> Result<()>
+    where
+        T: Bean + Send + Sync + 'static,
+        F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
+    {
+        self.container.register_named(name, factory)
+    }
+
+    /// Get a qualified bean by name
+    /// 按名称获取限定bean
+    pub fn get_qualified_bean<T: Bean + Send + Sync + 'static>(
+        &self,
+        qualifier: &str,
+    ) -> Result<Arc<T>>
+    {
+        self.container.get_qualified_bean(qualifier)
     }
 
     /// Check if a bean exists
@@ -2155,4 +2418,158 @@ mod tests
         assert!(container.has_bean::<EmailService>());
         assert!(container.has_bean::<CacheService>());
     }
+
+    // ── @Qualifier / Named bean tests / @Qualifier / 命名bean测试 ───────
+
+    #[test]
+    fn test_register_named_single_bean()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("myService", |_| Ok(UserService { user_count: 42 }))
+            .unwrap();
+        let bean = container
+            .get_qualified_bean::<UserService>("myService")
+            .unwrap();
+        assert_eq!(bean.user_count, 42);
+    }
+
+    #[test]
+    fn test_register_named_multiple_same_type()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("serviceA", |_| Ok(UserService { user_count: 1 }))
+            .unwrap();
+        container
+            .register_named("serviceB", |_| Ok(UserService { user_count: 2 }))
+            .unwrap();
+
+        let a = container
+            .get_qualified_bean::<UserService>("serviceA")
+            .unwrap();
+        let b = container
+            .get_qualified_bean::<UserService>("serviceB")
+            .unwrap();
+        assert_eq!(a.user_count, 1);
+        assert_eq!(b.user_count, 2);
+    }
+
+    #[test]
+    fn test_qualified_bean_singleton_identity()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("svc", |_| Ok(UserService { user_count: 10 }))
+            .unwrap();
+
+        let first = container.get_qualified_bean::<UserService>("svc").unwrap();
+        let second = container.get_qualified_bean::<UserService>("svc").unwrap();
+        assert!(Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn test_get_bean_falls_back_to_named_single()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("onlyCache", |_| Ok(CacheService { hits: 99 }))
+            .unwrap();
+
+        // get_bean should find the single named bean
+        // get_bean 应找到唯一的命名bean
+        let bean = container.get_bean::<CacheService>().unwrap();
+        assert_eq!(bean.hits, 99);
+    }
+
+    #[test]
+    fn test_get_bean_multiple_named_without_primary_returns_error()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("cacheA", |_| Ok(CacheService { hits: 1 }))
+            .unwrap();
+        container
+            .register_named("cacheB", |_| Ok(CacheService { hits: 2 }))
+            .unwrap();
+
+        let result = container.get_bean::<CacheService>();
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("Multiple beans"));
+    }
+
+    #[test]
+    fn test_has_bean_checks_named_storage()
+    {
+        let mut container = Container::new();
+        assert!(!container.has_bean::<CacheService>());
+        container
+            .register_named("myCache", |_| Ok(CacheService { hits: 0 }))
+            .unwrap();
+        assert!(container.has_bean::<CacheService>());
+    }
+
+    #[test]
+    fn test_get_qualified_bean_not_found()
+    {
+        let container = Container::new();
+        let result = container.get_qualified_bean::<UserService>("nonexistent");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_get_beans_of_type()
+    {
+        let mut container = Container::new();
+        container
+            .register_named("alpha", |_| Ok(CacheService { hits: 10 }))
+            .unwrap();
+        container
+            .register_named("beta", |_| Ok(CacheService { hits: 20 }))
+            .unwrap();
+
+        // Instantiate both named beans first
+        // 先实例化两个命名bean
+        container.get_qualified_bean::<CacheService>("alpha").unwrap();
+        container.get_qualified_bean::<CacheService>("beta").unwrap();
+
+        let beans = container.get_beans_of_type::<CacheService>();
+        assert_eq!(beans.len(), 2);
+    }
+
+    #[test]
+    fn test_qualified_bean_with_dependency_injection()
+    {
+        let mut container = Container::new();
+        container
+            .register(|_| Ok(UserRepository { initialized: true }))
+            .unwrap();
+        container
+            .register_named("primaryService", |c| {
+                let repo = c.get_bean::<UserRepository>()?;
+                Ok(UserService {
+                    user_count: if repo.initialized { 100 } else { 0 },
+                })
+            })
+            .unwrap();
+
+        let svc = container
+            .get_qualified_bean::<UserService>("primaryService")
+            .unwrap();
+        assert_eq!(svc.user_count, 100);
+    }
+
+    // ── ApplicationContext @Qualifier tests ─────────────────────────────
+
+    #[test]
+    fn test_application_context_register_named()
+    {
+        let mut ctx = ApplicationContext::new();
+        ctx.register_named("mySvc", |_| Ok(UserService { user_count: 7 }))
+            .unwrap();
+        let bean = ctx.get_qualified_bean::<UserService>("mySvc").unwrap();
+        assert_eq!(bean.user_count, 7);
+    }
+
 }
