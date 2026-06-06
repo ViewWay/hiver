@@ -39,10 +39,11 @@ pub trait Bean: Any
     }
 }
 
-// Note: Blanket impl removed — use `#[derive(Bean)]` from hiver-macros
-// or manually `impl Bean for T {}` for explicit opt-in (Spring @Component style).
-// 注意：通用实现已移除 — 使用 hiver-macros 的 `#[derive(Bean)]`
-// 或手动 `impl Bean for T {}` 进行显式声明（Spring @Component 风格）。
+// Blanket implementation: all types can be beans by default.
+// Use `#[derive(Bean)]` to document intent and enable future customizations.
+// 通用实现：默认所有类型都可以是 Bean。
+// 使用 `#[derive(Bean)]` 标记意图并启用未来的自定义功能。
+impl<T: Any> Bean for T {}
 
 /// Bean scope
 /// Bean作用域
@@ -309,10 +310,8 @@ mod tests
     #[test]
     fn test_bean_trait_blanket_impl()
     {
-        // Explicit Bean impl required — no blanket impl
-        // 需要显式 Bean impl — 无通用实现
+        // Blanket impl means any type has Bean / 通用实现意味着任何类型都有Bean
         struct MyStruct;
-        impl Bean for MyStruct {}
         let s = MyStruct;
         // bean_name returns type_name / bean_name返回类型名
         let name = s.bean_name();
@@ -324,7 +323,6 @@ mod tests
     fn test_bean_default_scope_is_singleton()
     {
         struct Foo;
-        impl Bean for Foo {}
         let foo = Foo;
         assert_eq!(foo.scope(), Scope::Singleton);
     }
@@ -333,7 +331,6 @@ mod tests
     fn test_bean_name_contains_type()
     {
         struct VerySpecificType;
-        impl Bean for VerySpecificType {}
         let v = VerySpecificType;
         let name = v.bean_name();
         assert!(name.contains("VerySpecificType"));
