@@ -18,7 +18,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cargo build --workspace 2>&1 | grep \"dead_code\" | wc -l",
+    "buildCommand": "cargo build --workspace 2>&1 | tail -5",
     "testCommand": "cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1 2>&1 | grep \"test result:\" | awk '{p+=$4; f+=$6} END{print p, \"passed,\", f, \"failed\"}'",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",

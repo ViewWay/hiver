@@ -456,7 +456,7 @@ impl<'de> Deserialize<'de> for Value
             serde_json::Value::String(v) => Value::String(v),
             serde_json::Value::Array(v) =>
             {
-                Value::List(v.into_iter().map(|x| Self::from_json(x)).collect())
+                Value::List(v.into_iter().map(Self::from_json).collect())
             },
             serde_json::Value::Object(v) => Value::Object(
                 v.into_iter()
@@ -495,7 +495,7 @@ impl Value
             serde_json::Value::String(v) => Value::String(v),
             serde_json::Value::Array(v) =>
             {
-                Value::List(v.into_iter().map(|x| Self::from_json(x)).collect())
+                Value::List(v.into_iter().map(Self::from_json).collect())
             },
             serde_json::Value::Object(v) => Value::Object(
                 v.into_iter()
@@ -660,8 +660,7 @@ impl ValueExtractor
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

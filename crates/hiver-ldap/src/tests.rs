@@ -8,8 +8,7 @@
 //! 当 `ldap` feature 禁用时，模板返回安全的存根值。
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use crate::{

@@ -180,7 +180,7 @@ impl ControllerAdvice
         E: Any + Debug + Send + Sync + Clone + 'static,
     {
         self.handle(error, request)
-            .unwrap_or_else(|| Response::internal_server_error())
+            .unwrap_or_else(Response::internal_server_error)
     }
 
     /// Register a closure as a handler
@@ -233,7 +233,7 @@ impl ControllerAdvice
 }
 
 #[cfg(test)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

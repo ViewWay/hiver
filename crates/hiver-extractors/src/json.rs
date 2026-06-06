@@ -148,7 +148,7 @@ pub fn get_content_type(req: &Request) -> String
 pub const DEFAULT_JSON_LIMIT: usize = 10 * 1024 * 1024;
 
 #[cfg(test)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

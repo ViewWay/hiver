@@ -304,8 +304,7 @@ pub fn parse_rdn_value(dn: &str, attr: &str) -> Option<String>
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

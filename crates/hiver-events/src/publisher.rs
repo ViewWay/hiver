@@ -222,7 +222,7 @@ impl ApplicationEventPublisher
                         let any_ref: &(dyn std::any::Any + Send + Sync) = event_ref;
                         consumer_clone.call_event(any_ref).await
                     })
-                    .map_err(|e| EventError::ListenerFailed(e))
+                    .map_err(EventError::ListenerFailed)
             });
             tasks.push(handle);
         }
@@ -395,8 +395,7 @@ impl Default for SimpleEventPublisher
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

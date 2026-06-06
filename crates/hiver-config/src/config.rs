@@ -494,7 +494,7 @@ impl Config
             serde_yaml::Value::String(v) => Value::String(v.clone()),
             serde_yaml::Value::Sequence(v) => Value::List(
                 v.iter()
-                    .map(|x| Self::yaml_to_value(x))
+                    .map(Self::yaml_to_value)
                     .collect::<ConfigResult<Vec<_>>>()?,
             ),
             serde_yaml::Value::Mapping(v) => Value::Object(
@@ -853,8 +853,7 @@ impl Default for ConfigBuilder
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use std::io::Write;

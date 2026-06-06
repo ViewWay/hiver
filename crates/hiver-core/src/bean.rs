@@ -57,9 +57,11 @@ impl<T: Any> Bean for T {}
 /// Defined → Creating → Created → Destroying → Destroyed
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default)]
 pub enum BeanState
 {
     /// Registered but not yet instantiated / 已注册但未实例化
+    #[default]
     Defined,
     /// Factory is being invoked (cycle detection) / 工厂正在调用（循环检测）
     Creating,
@@ -71,13 +73,6 @@ pub enum BeanState
     Destroyed,
 }
 
-impl Default for BeanState
-{
-    fn default() -> Self
-    {
-        Self::Defined
-    }
-}
 
 /// Bean scope
 /// Bean作用域
@@ -190,8 +185,7 @@ pub trait BeanFactory: Send + Sync
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

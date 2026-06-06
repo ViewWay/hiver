@@ -101,7 +101,7 @@ pub trait Save:
         let mut params: Vec<QueryParam> = Vec::new();
         let mut idx = 1u32;
 
-        for (k, v) in map.iter()
+        for (k, v) in map
         {
             if k == "id"
             {
@@ -198,7 +198,7 @@ pub trait OptimisticLock: Save
         let mut params: Vec<QueryParam> = Vec::new();
         let mut idx = 1u32;
 
-        for (k, v) in map.iter()
+        for (k, v) in map
         {
             if k == "id" || k.as_str() == version_col
             {
@@ -592,8 +592,7 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

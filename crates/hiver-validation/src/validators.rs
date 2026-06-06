@@ -328,7 +328,7 @@ pub fn is_in_range(value: i64, min: i64, max: i64) -> bool
 }
 
 #[cfg(test)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

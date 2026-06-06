@@ -1033,7 +1033,7 @@ fn export_metric_line(id: &MetricId, value: u64) -> String
 /// Global metrics registry
 /// 全局指标注册表
 static GLOBAL_REGISTRY: std::sync::LazyLock<MetricsRegistry> =
-    std::sync::LazyLock::new(|| MetricsRegistry::new());
+    std::sync::LazyLock::new(MetricsRegistry::new);
 
 /// Get the global metrics registry
 /// 获取全局指标注册表
@@ -1064,8 +1064,7 @@ pub fn histogram(name: impl Into<String>) -> Histogram
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

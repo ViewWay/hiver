@@ -309,7 +309,7 @@ where
         // The group-based validation will be enhanced with macro support
         // 目前，仅使用Validate trait进行验证
         // 基于分组的验证将通过宏支持增强
-        data.validate().map_err(|e| ValidationError::from(e))?;
+        data.validate().map_err(ValidationError::from)?;
         Ok(Self {
             value: data,
             group: _group,
@@ -383,8 +383,7 @@ pub mod common
 pub use common::{CreateGroup, DeleteGroup, LoginGroup, RegisterGroup, UpdateGroup};
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

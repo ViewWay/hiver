@@ -558,7 +558,7 @@ impl Container
                 .and_then(|r| r.downcast_ref::<BeanRegistration<T>>());
 
             let factory = reg.and_then(|reg| reg.factory.clone());
-            let prototype = reg.map_or(false, |reg| reg.definition.scope == Scope::Prototype);
+            let prototype = reg.is_some_and(|reg| reg.definition.scope == Scope::Prototype);
             (factory, prototype)
         };
 
@@ -702,7 +702,7 @@ impl Container
         let names = beans
             .type_to_names
             .get(&type_id)
-            .map(|n| n.as_slice())
+            .map(Vec::as_slice)
             .unwrap_or(&[]);
 
         match names.len()
@@ -726,8 +726,7 @@ impl Container
                         .named_registrations
                         .get(*name)
                         .and_then(|(_, reg)| reg.downcast_ref::<BeanRegistration<T>>())
-                        .map(|reg| reg.definition.primary)
-                        .unwrap_or(false)
+                        .is_some_and(|reg| reg.definition.primary)
                 });
 
                 if let Some(name) = primary_name
@@ -1424,8 +1423,7 @@ pub trait PreDestroy
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;

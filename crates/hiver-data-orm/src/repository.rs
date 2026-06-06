@@ -159,7 +159,7 @@ where
             let mut set_parts: Vec<String> = Vec::new();
             let mut params: Vec<QueryParam> = Vec::new();
             let mut idx = 1u32;
-            for (k, v) in map.iter()
+            for (k, v) in map
             {
                 if k == "id"
                 {
@@ -309,7 +309,7 @@ fn collect_rows<T: serde::de::DeserializeOwned>(rows: Vec<hiver_data_rdbc::Row>)
 }
 
 #[cfg(test)]
-#[allow(clippy::float_cmp, clippy::items_after_statements)]
+#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
 mod tests
 {
     use super::*;
