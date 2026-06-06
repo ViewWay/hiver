@@ -63,8 +63,7 @@ pub type Result<T> = std::result::Result<T, PdfError>;
 
 /// Font family for PDF text.
 /// PDF 文本的字体族。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum PdfFont {
     /// Helvetica (default sans-serif)
     /// Helvetica（默认无衬线体）
@@ -86,7 +85,6 @@ pub enum PdfFont {
     /// Times 粗体
     TimesBold,
 }
-
 
 impl PdfFont {
     /// Get the PDF internal font name.

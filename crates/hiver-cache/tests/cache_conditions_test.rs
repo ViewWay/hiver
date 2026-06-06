@@ -1,10 +1,7 @@
 //! Tests for cache condition evaluation
 //! 缓存条件评估的测试
 
-use hiver_cache::{
-    CacheEvictOptions, CachePutOptions, CacheableOptions,
-    evaluate_cache_condition,
-};
+use hiver_cache::{CacheEvictOptions, CachePutOptions, CacheableOptions, evaluate_cache_condition};
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 

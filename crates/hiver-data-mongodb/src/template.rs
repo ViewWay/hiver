@@ -131,7 +131,6 @@ impl MongoTemplate {
 
 #[cfg(test)]
 mod tests {
-    
 
     #[test]
     fn test_template_database_name() {

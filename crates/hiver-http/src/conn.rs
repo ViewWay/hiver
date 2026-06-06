@@ -147,7 +147,7 @@ impl Connection {
             last_activity: now,
             created_at: now,
             max_idle: Duration::from_secs(60), // Default 60 second keep-alive
-            // 默认 60 秒保活
+                                               // 默认 60 秒保活
         }
     }
 

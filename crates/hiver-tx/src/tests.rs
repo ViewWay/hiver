@@ -3,7 +3,7 @@
 
 #[cfg(test)]
 mod tests {
-    
+
     use crate::manager::TransactionDefinition;
     use crate::registry::TransactionManagerRegistry;
     use crate::status::TransactionStatus;

@@ -299,7 +299,6 @@ impl TransactionManager for DelegatingTransactionManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
 
     fn noop(_name: &str) -> Arc<dyn TransactionManager> {
         Arc::new(crate::manager::NoopTransactionManager)

@@ -499,7 +499,9 @@ impl WebClient {
             } else {
                 80
             });
-        let path = uri.path_and_query().map_or("/", http::uri::PathAndQuery::as_str);
+        let path = uri
+            .path_and_query()
+            .map_or("/", http::uri::PathAndQuery::as_str);
 
         // Connect with timeout
         // 带超时连接
@@ -626,8 +628,9 @@ fn parse_http_response(buf: &[u8]) -> ClientResult<ClientResponse> {
 /// 查找 HTTP 头结束位置（\r\n\r\n 的位置）。
 #[allow(clippy::indexing_slicing)]
 fn find_header_end(buf: &[u8]) -> Option<usize> {
-    (0..buf.len().saturating_sub(3))
-        .find(|&i| buf[i] == b'\r' && buf[i + 1] == b'\n' && buf[i + 2] == b'\r' && buf[i + 3] == b'\n')
+    (0..buf.len().saturating_sub(3)).find(|&i| {
+        buf[i] == b'\r' && buf[i + 1] == b'\n' && buf[i + 2] == b'\r' && buf[i + 3] == b'\n'
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -643,7 +646,6 @@ fn find_header_end(buf: &[u8]) -> Option<usize> {
 pub struct WebClientBuilder {
     config: WebClientConfig,
 }
-
 
 impl WebClientBuilder {
     /// Set the base URL.

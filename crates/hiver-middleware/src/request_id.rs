@@ -42,8 +42,7 @@ pub const X_CORRELATION_ID: &str = "x-correlation-id";
 
 /// Request ID generation strategy.
 /// 请求 ID 生成策略。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum RequestIdStrategy {
     /// Use UUID v4 (random).
     /// 使用 UUID v4（随机）。
@@ -56,7 +55,6 @@ pub enum RequestIdStrategy {
     /// 使用基于时间戳的 ID（自纪元以来的毫秒数）。
     Timestamp,
 }
-
 
 /// Request ID middleware configuration.
 /// 请求 ID 中间件配置。
@@ -286,7 +284,11 @@ where
             let request_id = if config.accept_existing {
                 req.headers()
                     .get(&config.header_name)
-                    .and_then(|v| v.to_str().ok()).map_or_else(|| generate_id(config.strategy, &config.prefix), ToString::to_string)
+                    .and_then(|v| v.to_str().ok())
+                    .map_or_else(
+                        || generate_id(config.strategy, &config.prefix),
+                        ToString::to_string,
+                    )
             } else {
                 generate_id(config.strategy, &config.prefix)
             };
