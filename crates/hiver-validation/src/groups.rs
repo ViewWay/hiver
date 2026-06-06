@@ -340,6 +340,7 @@ macro_rules! validation_groups {
     ) => {
         $(
             $(#[$meta])*
+            #[allow(unreachable_pub)]
             #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
             pub struct $group;
             impl $crate::groups::ValidationGroup for $group {}
