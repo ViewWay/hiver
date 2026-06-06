@@ -37,20 +37,6 @@ pub trait Bean: Any
     {
         Scope::Singleton
     }
-
-    /// Initialize callback (equivalent to @`PostConstruct`)
-    /// 初始化回调（等价于 @`PostConstruct`）
-    fn init(&self)
-    {
-        // Default: no-op
-    }
-
-    /// Destroy callback (equivalent to @`PreDestroy`)
-    /// 销毁回调（等价于 @`PreDestroy`）
-    fn destroy(&self)
-    {
-        // Default: no-op
-    }
 }
 
 // Blanket implementation for all types that meet the requirements
@@ -336,24 +322,6 @@ mod tests
         struct Foo;
         let foo = Foo;
         assert_eq!(foo.scope(), Scope::Singleton);
-    }
-
-    #[test]
-    fn test_bean_init_default_noop()
-    {
-        struct Bar;
-        let bar = Bar;
-        // Should not panic / 不应panic
-        bar.init();
-    }
-
-    #[test]
-    fn test_bean_destroy_default_noop()
-    {
-        struct Baz;
-        let baz = Baz;
-        // Should not panic / 不应panic
-        baz.destroy();
     }
 
     #[test]
