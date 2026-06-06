@@ -81,7 +81,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run tests / 运行测试
-        run: cargo test --workspace --lib --exclude hiver-benches
+        run: cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1
 
   audit:
     name: Security Audit

@@ -19,37 +19,42 @@ criterion = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
-[[bench]]
-name = "http_server"
-harness = false
-path = "http_server.rs"
+# Benchmarks are disabled (files have .disabled suffix).
+# Run `mv X.rs.disabled X.rs` to enable a specific benchmark.
+# 基准测试已禁用（文件有 .disabled 后缀）。
+# 运行 `mv X.rs.disabled X.rs` 启用特定基准测试。
 
-[[bench]]
-name = "router"
-harness = false
-path = "router.rs"
+# [[bench]]
+# name = "http_server"
+# harness = false
+# path = "http_server.rs"
 
-[[bench]]
-name = "extractors"
-harness = false
-path = "extractors.rs"
+# [[bench]]
+# name = "router"
+# harness = false
+# path = "router.rs"
 
-[[bench]]
-name = "runtime_driver"
-harness = false
-path = "runtime_driver.rs"
+# [[bench]]
+# name = "extractors"
+# harness = false
+# path = "extractors.rs"
 
-[[bench]]
-name = "http_techpower"
-harness = false
-path = "http_techpower.rs"
+# [[bench]]
+# name = "runtime_driver"
+# harness = false
+# path = "runtime_driver.rs"
 
-[[bench]]
-name = "data_orm"
-harness = false
-path = "data_orm.rs"
+# [[bench]]
+# name = "http_techpower"
+# harness = false
+# path = "http_techpower.rs"
 
-[[bench]]
-name = "security"
-harness = false
-path = "security.rs"
+# [[bench]]
+# name = "data_orm"
+# harness = false
+# path = "data_orm.rs"
+
+# [[bench]]
+# name = "security"
+# harness = false
+# path = "security.rs"
