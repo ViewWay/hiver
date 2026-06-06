@@ -116,7 +116,7 @@ impl Error
     /// 获取错误链中的源错误。
     pub fn source_error(&self) -> Option<&(dyn std::error::Error + Send + Sync)>
     {
-        self.source.as_ref().map(|b| b.as_ref())
+        self.source.as_ref().map(AsRef::as_ref)
     }
 
     /// Get the full error chain as a vector of messages.

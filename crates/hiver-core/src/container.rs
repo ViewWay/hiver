@@ -314,8 +314,7 @@ impl Container
         let names = beans
             .type_to_names
             .get(&type_id)
-            .map(|n| n.as_slice())
-            .unwrap_or(&[]);
+            .map_or(&[] as &[String], |n| n.as_slice());
 
         match names.len()
         {
@@ -323,7 +322,11 @@ impl Container
                 "Bean not found: {:?}",
                 type_id
             ))),
-            1 => Ok(names[0].clone()),
+            1 =>
+            {
+                #[allow(clippy::unwrap_used)]
+                Ok(names.first().unwrap().clone())
+            }
             _ =>
             {
                 // Multiple candidates: look for @Primary
@@ -331,7 +334,7 @@ impl Container
                     beans
                         .beans
                         .get(*name)
-                        .map_or(false, |e| e.primary)
+                        .is_some_and(|e| e.primary)
                 });
 
                 if let Some(name) = primary_name
@@ -801,7 +804,7 @@ impl Container
                 .or_else(|| beans.type_to_names.get(&type_id).and_then(|n| n.first()));
             match name
             {
-                Some(n) => beans.beans.get(n).map_or(false, |e| e.state != BeanState::Destroyed),
+                Some(n) => beans.beans.get(n).is_some_and(|e| e.state != BeanState::Destroyed),
                 None => false,
             }
         }
@@ -1071,7 +1074,7 @@ impl ApplicationContext
         // 步骤1：在已创建的bean上调用销毁前回调
         {
             let beans = self.container.read_beans()?;
-            for (_name, entry) in &beans.beans
+            for entry in beans.beans.values()
             {
                 if entry.state == BeanState::Created
                 {
