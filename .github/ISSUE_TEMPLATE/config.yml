@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / 提问
+    url: https://github.com/ViewWay/hiver/discussions
+    about: Ask questions and discuss with the community.
+  - name: Security Vulnerability / 安全漏洞
+    url: mailto:security@hiver.dev
+    about: Please report security vulnerabilities via email. Do NOT open public issues.
