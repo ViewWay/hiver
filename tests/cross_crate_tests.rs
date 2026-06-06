@@ -15,7 +15,6 @@ fn test_core_container_create()
 #[tokio::test]
 async fn test_core_reactive_flux()
 {
-    use futures::StreamExt;
     use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5]);
     let collected: Vec<i32> = flux.collect().await;
@@ -25,7 +24,6 @@ async fn test_core_reactive_flux()
 #[tokio::test]
 async fn test_core_reactive_flux_backpressure()
 {
-    use futures::StreamExt;
     use hiver_core::reactive::Flux;
     let flux = Flux::from_iter(vec![1, 2, 3, 4, 5, 6]);
     let buffered = flux.on_backpressure_buffer(10);

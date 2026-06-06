@@ -9,7 +9,7 @@ mod tests
         BytesSerializer, Consumer, ConsumerConfig, ConsumerGroup, ConsumerListener, ConsumerOffset,
         DEFAULT_GROUP_ID, DEFAULT_KAFKA_PORT, Deserializer, JsonDeserializer, JsonSerializer,
         KafkaMessage, KeySerializer, MessageHeaderValue, MessageHeaders, MessageKey, MessageValue,
-        Offset, ProduceOptions, Producer, ProducerConfig, Record, SerializeData, Serializer,
+        Offset, ProduceOptions, Producer, ProducerConfig, Record, Serializer,
         TopicPartition, TopicPartitionBuilder, VERSION,
     };
 
