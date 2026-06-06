@@ -158,6 +158,32 @@ impl std::error::Error for Error
     }
 }
 
+// ── From conversions for error chaining ────────────────────────────────
+
+impl From<anyhow::Error> for Error
+{
+    fn from(err: anyhow::Error) -> Self
+    {
+        Self::internal(format!("{}", err))
+    }
+}
+
+impl From<std::io::Error> for Error
+{
+    fn from(err: std::io::Error) -> Self
+    {
+        Self::internal(format!("IO error: {}", err))
+    }
+}
+
+impl From<serde_json::Error> for Error
+{
+    fn from(err: serde_json::Error) -> Self
+    {
+        Self::internal(format!("JSON error: {}", err))
+    }
+}
+
 /// Error kind
 /// 错误类型
 #[derive(Debug, Clone, PartialEq, Eq)]
