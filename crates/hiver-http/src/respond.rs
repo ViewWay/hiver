@@ -52,18 +52,12 @@ pub trait ResponseFormatter: Send + Sync {
 ///
 /// 使用 [`ContentNegotiationManager`] 协商响应格式。默认支持 JSON 和纯文本。
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct DefaultResponseFormatter {
     /// The content negotiation manager. / 内容协商管理器。
     negotiation: ContentNegotiationManager,
 }
 
-impl Default for DefaultResponseFormatter {
-    fn default() -> Self {
-        Self {
-            negotiation: ContentNegotiationManager::default(),
-        }
-    }
-}
 
 impl DefaultResponseFormatter {
     /// Create a new formatter with the given negotiation manager.

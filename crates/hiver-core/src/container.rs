@@ -749,7 +749,7 @@ impl Container
             // Phase 1: BeanPostProcessor before initialization
             // 第一阶段：初始化前的BeanPostProcessor
             {
-                let mut dyn_bean: &mut dyn Any = &mut bean;
+                let dyn_bean: &mut dyn Any = &mut bean;
                 self.apply_post_processors_before(&mut *dyn_bean, name)?;
             }
 
@@ -772,7 +772,7 @@ impl Container
             // Phase 3: BeanPostProcessor after initialization
             // 第三阶段：初始化后的BeanPostProcessor
             {
-                let mut dyn_bean: &mut dyn Any = &mut bean;
+                let dyn_bean: &mut dyn Any = &mut bean;
                 self.apply_post_processors_after(&mut *dyn_bean, name)?;
             }
 

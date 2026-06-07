@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"rgs=\\\"rg --type rust\\\" \\\"register_bean\\\\(42i32\\\\)\\\" crates/hiver-starter/ -l\",\"description\":\"List starter files with register_bean(42i32)\"}",
+  "error": "Exit code 127\n(eval):1: command not found: register_bean\\(42i32\\)",
+  "timestamp": "2026-06-07T01:11:18.476Z",
+  "retry_count": 3
+}

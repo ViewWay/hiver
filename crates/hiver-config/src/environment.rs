@@ -285,7 +285,7 @@ impl Environment
         {
             if let Some(sources) = profile_sources.get(profile.name())
             {
-                for source in sources.iter()
+                for source in sources
                 {
                     if let Some(value) = source.get(key)
                     {

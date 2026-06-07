@@ -487,7 +487,7 @@ impl PointcutExpression
 
         if let Some(inner) = Self::extract_parens(expr, "execution(")
         {
-            components.push(Self::parse_execution(&inner));
+            components.push(Self::parse_execution(inner));
         }
 
         if let Some(inner) = Self::extract_parens(expr, "within(")
@@ -997,7 +997,7 @@ impl AspectRegistry
             {
                 AdviceType::Before =>
                 {
-                    if let Some(fn_ptr) = advice.callback.clone().downcast::<BeforeFn>().ok()
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<BeforeFn>()
                     {
                         let f = Arc::clone(&fn_ptr);
                         chain.before(move |jp| f(jp));
@@ -1005,7 +1005,7 @@ impl AspectRegistry
                 },
                 AdviceType::After =>
                 {
-                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AfterFn>().ok()
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterFn>()
                     {
                         let f = Arc::clone(&fn_ptr);
                         chain.after(move |jp| f(jp));
@@ -1013,7 +1013,7 @@ impl AspectRegistry
                 },
                 AdviceType::Around =>
                 {
-                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AroundFn>().ok()
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AroundFn>()
                     {
                         let f = Arc::clone(&fn_ptr);
                         chain.around(move |pjp| f(pjp));
@@ -1021,7 +1021,7 @@ impl AspectRegistry
                 },
                 AdviceType::AfterReturning =>
                 {
-                    if let Some(fn_ptr) = advice.callback.clone().downcast::<AfterReturningFn>().ok()
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterReturningFn>()
                     {
                         let f = Arc::clone(&fn_ptr);
                         chain.after_returning(move |jp, val| f(jp, val));

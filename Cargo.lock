@@ -6172,6 +6172,7 @@ dependencies = [
  "hiver-batch",
  "hiver-cache",
  "hiver-config",
+ "hiver-core",
  "hiver-data-rdbc",
  "hiver-http",
  "hiver-macros",
