@@ -62,11 +62,11 @@ impl LdapConnection
                 .simple_bind(user, pass)
                 .await
                 .map_err(|e| LdapError::Authentication(e.to_string()))?;
-            if !result.success()
+            if result.rc != 0
             {
                 return Err(LdapError::Authentication(format!(
                     "Bind failed: {:?}",
-                    result.result_code()
+                    result.rc
                 )));
             }
             return Ok(());
@@ -89,7 +89,7 @@ impl LdapConnection
     pub(crate) async fn search(
         &mut self,
         base: &str,
-        scope: ldap3::SearchScope,
+        scope: ldap3::Scope,
         filter: &str,
         attrs: &[&str],
     ) -> LdapResult<Vec<(String, Vec<(String, Vec<String>)>)>>
@@ -103,6 +103,8 @@ impl LdapConnection
         let (rs, _result) = ldap
             .search(base, scope, filter, attrs)
             .await
+            .map_err(|e| LdapError::Operation(e.to_string()))?
+            .success()
             .map_err(|e| LdapError::Operation(e.to_string()))?;
 
         let mut entries = Vec::new();
@@ -149,7 +151,7 @@ impl LdapConnection
 
     /// Modify an existing LDAP entry / 修改现有LDAP条目
     #[cfg(feature = "ldap")]
-    pub(crate) async fn modify(&mut self, dn: &str, mods: Vec<ldap3::Mod>) -> LdapResult<()>
+    pub(crate) async fn modify(&mut self, dn: &str, mods: Vec<ldap3::Mod<String>>) -> LdapResult<()>
     {
         let ldap = self
             .inner
@@ -194,11 +196,12 @@ impl LdapConnection
             .inner
             .as_mut()
             .ok_or_else(|| LdapError::Connection("Not connected".into()))?;
-        let result = ldap
+        ldap
             .compare(dn, attribute, value)
             .await
-            .map_err(|e| LdapError::Operation(e.to_string()))?;
-        Ok(result.0)
+            .map_err(|e| LdapError::Operation(e.to_string()))?
+            .equal()
+            .map_err(|e| LdapError::Operation(e.to_string()))
     }
 
     /// Abandon an ongoing operation / 放弃正在进行的操作
@@ -293,24 +296,23 @@ impl LdapContextSource
     #[cfg(feature = "ldap")]
     async fn create_connection(&self, authenticate: bool) -> LdapResult<LdapConnection>
     {
-        let ldap = ldap3::LdapConnAsync::new(&self.url)
+        let (_conn_async, mut ldap) = ldap3::LdapConnAsync::new(&self.url)
             .await
             .map_err(|e| LdapError::Connection(e.to_string()))?;
-        let mut ldap_conn = ldap3::LdapConn::from(ldap);
 
         if authenticate
         {
             if let (Some(user), Some(pass)) = (&self.username, &self.password)
             {
-                let result = ldap_conn
+                let result = ldap
                     .simple_bind(user, pass)
                     .await
                     .map_err(|e| LdapError::Authentication(e.to_string()))?;
-                if !result.success()
+                if result.rc != 0
                 {
                     return Err(LdapError::Authentication(format!(
                         "Bind failed: {:?}",
-                        result.result_code()
+                        result.rc
                     )));
                 }
             }
@@ -319,7 +321,7 @@ impl LdapContextSource
         Ok(LdapConnection {
             url: self.url.clone(),
             connected: true,
-            inner: Some(ldap_conn),
+            inner: Some(ldap),
         })
     }
 

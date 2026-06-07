@@ -12,7 +12,7 @@
 #[cfg(feature = "ldap")]
 use crate::error::LdapError;
 use crate::{
-    context::LdapContextSource,
+    context::{ContextSource, LdapContextSource},
     error::LdapResult,
     mapper::{AttrMap, AttributesMapper, ContextMapper},
 };
@@ -86,7 +86,7 @@ impl LdapTemplate
     {
         #[cfg(feature = "ldap")]
         {
-            let scope = ldap3::SearchScope::Subtree;
+            let scope = ldap3::Scope::Subtree;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(base, scope, filter, &["*"]).await?;
             let mapped = results
@@ -121,7 +121,7 @@ impl LdapTemplate
     {
         #[cfg(feature = "ldap")]
         {
-            let scope = ldap3::SearchScope::Subtree;
+            let scope = ldap3::Scope::Subtree;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(base, scope, filter, &["*"]).await?;
             let maps = results
@@ -155,7 +155,7 @@ impl LdapTemplate
     {
         #[cfg(feature = "ldap")]
         {
-            let scope = ldap3::SearchScope::Base;
+            let scope = ldap3::Scope::Base;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(dn, scope, "(objectClass=*)", &["*"]).await?;
             if let Some((_dn, _attrs)) = results.into_iter().next()
@@ -229,10 +229,10 @@ impl LdapTemplate
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.context_source.get_context().await?;
-            let mods: Vec<ldap3::Mod> = modifications
+            let mods: Vec<ldap3::Mod<String>> = modifications
                 .iter()
                 .map(|(attr, values)| {
-                    ldap3::Mod::Replace(
+                    ldap3::Mod::<String>::Replace(
                         attr.to_string(),
                         values.iter().map(|v| v.to_string()).collect(),
                     )
@@ -253,7 +253,7 @@ impl LdapTemplate
     {
         #[cfg(feature = "ldap")]
         {
-            let scope = ldap3::SearchScope::Base;
+            let scope = ldap3::Scope::Base;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(dn, scope, "(objectClass=*)", &["1.1"]).await?;
             Ok(!results.is_empty())
@@ -271,7 +271,7 @@ impl LdapTemplate
     {
         #[cfg(feature = "ldap")]
         {
-            let scope = ldap3::SearchScope::Subtree;
+            let scope = ldap3::Scope::Subtree;
             let mut conn = self.context_source.get_context().await?;
             let results = conn.search(base, scope, filter, &["1.1"]).await?;
             Ok(results.len())
