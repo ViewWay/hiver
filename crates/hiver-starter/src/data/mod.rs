@@ -10,7 +10,6 @@ use std::sync::Arc;
 pub use hiver_data_rdbc::SqlxPoolClient;
 pub use hiver_data_rdbc::{DatabaseClient, PoolConfig, TransactionManager};
 #[cfg(feature = "sqlx")]
-use hiver_tx::SqlxTransactionManager;
 use hiver_tx::{NoopTransactionManager, set_global_tx_manager};
 
 use crate::core::{ApplicationContext, AutoConfiguration};
@@ -248,7 +247,7 @@ impl AutoConfiguration for DataSourceAutoConfiguration
             // Create DataSourceConfig from configuration
             // 从配置创建 DataSourceConfig
             let mut config = DataSourceConfig::new(url);
-            if let (Some(ref username), Some(ref password)) = (&self.username, &self.password)
+            if let (Some(username), Some(password)) = (&self.username, &self.password)
             {
                 config = config.with_credentials(username, password);
             }
@@ -296,7 +295,7 @@ impl AutoConfiguration for TransactionAutoConfiguration
         ctx.register_bean(tm);
         tracing::info!("Registered TransactionManager bean");
 
-        set_global_tx_manager(Arc::new(NoopTransactionManager::default()));
+        set_global_tx_manager(Arc::new(NoopTransactionManager));
         tracing::info!(
             "Registered global NoopTransactionManager (override in start() when datasource \
              present)"
@@ -318,10 +317,17 @@ pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyh
 
     #[cfg(feature = "sqlx")]
     {
-        let mgr = SqlxTransactionManager::connect(&cfg.url)
-            .await
-            .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?;
-        set_global_tx_manager(Arc::new(mgr));
+        let mgr: Arc<dyn hiver_tx::TransactionManager> = if cfg.url.starts_with("postgres://") || cfg.url.starts_with("postgresql://") {
+            Arc::new(hiver_tx::PostgresTransactionManager::connect(&cfg.url).await
+                .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?)
+        } else if cfg.url.starts_with("mysql://") {
+            Arc::new(hiver_tx::MySqlTransactionManager::connect(&cfg.url).await
+                .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?)
+        } else {
+            Arc::new(hiver_tx::SqliteTransactionManager::connect(&cfg.url).await
+                .map_err(|e| anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}"))?)
+        };
+        set_global_tx_manager(mgr);
         tracing::info!("Registered global SqlxTransactionManager");
     }
 

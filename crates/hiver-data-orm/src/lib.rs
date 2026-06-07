@@ -1,3 +1,4 @@
+#![allow(missing_docs, clippy::missing_fields_in_debug, clippy::wrong_self_convention)]
 //! Hiver Data ORM - ORM Integration
 //! Hiver Data ORM - ORM 集成
 //!
@@ -52,7 +53,7 @@
 //!     .all().await?;
 //! ```
 
-#![warn(missing_docs)]
+#![warn(missing_docs, clippy::missing_fields_in_debug, clippy::wrong_self_convention)]
 #![warn(unreachable_pub)]
 
 #[cfg(test)]

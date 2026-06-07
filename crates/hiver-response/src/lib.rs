@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::format_push_string, clippy::indexing_slicing)]
 //! Hiver Response - Response builders
 //! Hiver响应 - 响应构建器
 //!
@@ -13,7 +14,7 @@
 // using expect with a descriptive message is intentional.
 // 允许 expect_used：Response::builder().body() 失败是不可恢复的；
 // 使用带有描述性消息的 expect 是有意的。
-#![allow(clippy::expect_used)]
+#![allow(clippy::expect_used, clippy::format_push_string, clippy::indexing_slicing)]
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]

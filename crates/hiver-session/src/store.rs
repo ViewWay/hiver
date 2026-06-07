@@ -317,7 +317,6 @@ impl SessionStore for RedisSessionStore
         self.client
             .setex(&key, self.timeout, json.as_bytes())
             .await
-            .map(|_| ())
             .map_err(|e| format!("Failed to save session: {}", e))
     }
 

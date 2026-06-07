@@ -152,19 +152,19 @@ impl OpenApiResponse
     #[cfg(feature = "hiver-http")]
     pub fn to_hiver_response(self) -> hiver_http::Response
     {
-        let mut response = hiver_http::Response::builder()
-            .status(self.status.as_u16())
-            .body(hiver_http::Body::from(self.body));
+        let mut builder = hiver_http::Response::builder()
+            .status(hiver_http::StatusCode::from_u16(self.status.as_u16()));
 
-        for (name, value) in self.headers.iter()
+        for (name, value) in &self.headers
         {
-            if let (Some(name), Some(value)) = (name.as_str(), value.to_str().ok())
+            if let Ok(value) = value.to_str()
             {
-                response = response.header(name, value);
+                builder = builder.header(name.as_str(), value);
             }
         }
 
-        response
+        builder.body(hiver_http::Body::from(self.body))
+            .expect("valid response builder")
     }
 }
 

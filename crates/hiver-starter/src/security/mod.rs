@@ -118,7 +118,7 @@ impl AutoConfiguration for SecurityAutoConfiguration
 
         // Create JwtTokenProvider with configured settings
         // 使用配置的设置创建 JwtTokenProvider
-        let secret = self.jwt_secret.as_ref().cloned().unwrap_or_else(|| {
+        let secret = self.jwt_secret.clone().unwrap_or_else(|| {
             tracing::warn!("JWT secret not configured, using default (insecure!)");
             "hiver-jwt-secret-key-change-in-production-2024".to_string()
         });

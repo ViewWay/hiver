@@ -295,7 +295,7 @@ impl std::error::Error for SseError {}
 #[derive(Debug, Clone)]
 pub struct SseSender
 {
-    pub(crate) tx: tokio::sync::mpsc::Sender<std::result::Result<SseEvent, SseError>>,
+    pub(crate) tx: tokio::sync::mpsc::Sender<Result<SseEvent, SseError>>,
 }
 
 impl SseSender
@@ -346,7 +346,7 @@ impl SseSender
 pub struct SseEmitter
 {
     /// Channel receiver for incoming events
-    pub(crate) rx: tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
+    pub(crate) rx: tokio::sync::mpsc::Receiver<Result<SseEvent, SseError>>,
     /// Whether the stream has ended
     terminated: bool,
 }
@@ -361,7 +361,7 @@ impl SseEmitter
     pub fn new<F, Fut>(f: F) -> Self
     where
         F: FnOnce(SseSender) -> Fut + Send + 'static,
-        Fut: std::future::Future<Output = ()> + Send,
+        Fut: Future<Output = ()> + Send,
     {
         let (tx, rx) = tokio::sync::mpsc::channel(DEFAULT_BUFFER_SIZE);
 
@@ -380,7 +380,7 @@ impl SseEmitter
     pub fn with_buffer<F, Fut>(f: F, buffer_size: usize) -> Self
     where
         F: FnOnce(SseSender) -> Fut + Send + 'static,
-        Fut: std::future::Future<Output = ()> + Send,
+        Fut: Future<Output = ()> + Send,
     {
         let (tx, rx) = tokio::sync::mpsc::channel(buffer_size);
 
@@ -399,7 +399,7 @@ impl SseEmitter
     /// 从现有通道接收器创建 SSE 发射器。
     /// 当事件由外部产生时有用（例如，通过共享通道）。
     pub fn from_channel(
-        rx: tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>,
+        rx: tokio::sync::mpsc::Receiver<Result<SseEvent, SseError>>,
     ) -> Self
     {
         Self {
@@ -420,7 +420,7 @@ impl SseEmitter
     /// 将此发射器转换为其原始通道部分，用于自定义运行时集成。
     pub fn into_parts(
         self,
-    ) -> (tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>, bool)
+    ) -> (tokio::sync::mpsc::Receiver<Result<SseEvent, SseError>>, bool)
     {
         (self.rx, self.terminated)
     }
@@ -429,7 +429,7 @@ impl SseEmitter
     /// 尝试不阻塞地接收下一个事件。
     pub fn try_recv(
         &mut self,
-    ) -> std::result::Result<Option<SseEvent>, tokio::sync::mpsc::error::TryRecvError>
+    ) -> Result<Option<SseEvent>, tokio::sync::mpsc::error::TryRecvError>
     {
         if self.terminated
         {
@@ -452,7 +452,7 @@ impl SseEmitter
     pub fn poll_recv(
         &mut self,
         cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<std::result::Result<SseEvent, SseError>>>
+    ) -> std::task::Poll<Option<Result<SseEvent, SseError>>>
     {
         use std::task::Poll;
 
@@ -483,7 +483,7 @@ impl SseEmitter
 /// 当事件来自多个来源时很有用：后台任务、其他请求的响应、共享事件总线等。
 pub fn sse_channel(
     buffer_size: Option<usize>,
-) -> (SseSender, tokio::sync::mpsc::Receiver<std::result::Result<SseEvent, SseError>>)
+) -> (SseSender, tokio::sync::mpsc::Receiver<Result<SseEvent, SseError>>)
 {
     let (tx, rx) = tokio::sync::mpsc::channel(buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE));
     (SseSender { tx }, rx)

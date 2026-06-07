@@ -1,3 +1,4 @@
+#![allow(dead_code, non_snake_case, clippy::needless_pass_by_value)]
 //! # Hiver Data Annotations
 //!
 //! Spring Data JPA style annotations for Hiver framework

@@ -250,7 +250,7 @@ impl Runtime
         // Create the driver
         // 创建driver
         let driver =
-            DriverFactory::create_with_config(config.driver_type, config.driver_io.clone())?;
+            DriverFactory::create_with_config(config.driver_type, config.driver_io)?;
 
         // Create the scheduler with the driver
         // 使用driver创建调度器

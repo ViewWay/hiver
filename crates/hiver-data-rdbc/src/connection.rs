@@ -298,8 +298,8 @@ impl ConnectionPool
             DatabaseType::SQLite =>
             {
                 let sqlx_pool = sqlx::sqlite::SqlitePoolOptions::new()
-                    .max_connections(config.max_size as u32)
-                    .min_connections(config.min_idle as u32)
+                    .max_connections(config.max_size)
+                    .min_connections(config.min_idle)
                     .acquire_timeout(config.connection_timeout)
                     .idle_timeout(config.idle_timeout)
                     .max_lifetime(config.max_lifetime)

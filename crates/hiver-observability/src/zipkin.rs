@@ -289,16 +289,18 @@ impl InMemoryReporter
 
     /// Get all reported spans
     /// 获取所有已报告的 span
+    #[allow(clippy::expect_used)]
     pub fn spans(&self) -> Vec<ZipkinSpan>
     {
-        self.spans.lock().unwrap().clone()
+        self.spans.lock().expect("not poisoned").clone()
     }
 
     /// Clear all reported spans
     /// 清除所有已报告的 span
+    #[allow(clippy::expect_used)]
     pub fn clear(&self)
     {
-        self.spans.lock().unwrap().clear();
+        self.spans.lock().expect("not poisoned").clear();
     }
 }
 
@@ -312,9 +314,10 @@ impl Default for InMemoryReporter
 
 impl SpanReporter for InMemoryReporter
 {
+    #[allow(clippy::expect_used)]
     fn report(&self, span: ZipkinSpan)
     {
-        self.spans.lock().unwrap().push(span);
+        self.spans.lock().expect("not poisoned").push(span);
     }
 
     fn flush(&self) {}
@@ -373,7 +376,7 @@ impl ZipkinExporter
     /// 导出单个 span
     pub fn export_one(&self, span: &Span) -> Result<()>
     {
-        self.export(&[span.clone()])
+        self.export(std::slice::from_ref(span))
     }
 
     /// Serialize spans to Zipkin v2 JSON
@@ -397,6 +400,7 @@ impl fmt::Debug for ZipkinExporter
     {
         f.debug_struct("ZipkinExporter")
             .field("config", &self.config)
+            .field("reporter", &"<SpanReporter>")
             .finish()
     }
 }

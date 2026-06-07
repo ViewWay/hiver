@@ -202,7 +202,7 @@ impl hiver_http::HttpService for TrieRouter
     fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send
     {
         // Match the route first, then create the appropriate future
-        let method = req.method().clone();
+        let method = req.method();
         let path = req.path().to_string();
 
         let matched = self.match_request(method, &path);

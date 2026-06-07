@@ -241,7 +241,7 @@ impl TaskScheduler
         {
             ScheduleType::FixedRate(duration) => self.spawn_fixed_rate_task(task, duration),
             ScheduleType::FixedDelay(duration) => self.spawn_fixed_delay_task(task, duration),
-            ScheduleType::Cron(expression) => self.spawn_cron_task(task, &expression),
+            ScheduleType::Cron(expression) => self.spawn_cron_task(&task, &expression),
         };
 
         let mut handles = self.handles.write().await;
@@ -307,7 +307,8 @@ impl TaskScheduler
     ///
     /// Equivalent to Spring's `@Scheduled(cron = "...")`.
     /// 等价于 Spring 的 `@Scheduled(cron = "...")`。
-    fn spawn_cron_task(&self, task: ScheduledTask, expression: &str) -> JoinHandle<()>
+    #[allow(clippy::expect_used)]
+    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> JoinHandle<()>
     {
         let task_name = task.name.clone();
         let running = self.running.clone();
@@ -336,7 +337,7 @@ impl TaskScheduler
             let job = match tokio_cron_scheduler::Job::new_async(
                 &expression_owned,
                 move |_uuid, _lock| {
-                    let inner_fn = async_fn.clone().unwrap();
+                    let inner_fn = async_fn.clone().expect("async fn was checked above");
                     Box::pin(async move { inner_fn().await })
                 },
             )

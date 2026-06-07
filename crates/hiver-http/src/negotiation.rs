@@ -125,6 +125,7 @@ pub struct ContentNegotiationManager {
     default: MediaType,
 }
 
+#[allow(clippy::unwrap_used)]
 impl Default for ContentNegotiationManager {
     fn default() -> Self {
         Self {
@@ -142,7 +143,8 @@ impl Default for ContentNegotiationManager {
 impl ContentNegotiationManager {
     /// Create a new manager with custom supported types.
     /// 使用自定义支持的类型创建新管理器。
-    pub fn new(supported: Vec<&str>) -> Self {
+    #[allow(clippy::expect_used)]
+    pub fn new(supported: &[&str]) -> Self {
         let types: Vec<MediaType> = supported
             .iter()
             .filter_map(|s| MediaType::parse(s))
@@ -150,7 +152,7 @@ impl ContentNegotiationManager {
         let default = types
             .first()
             .cloned()
-            .unwrap_or_else(|| MediaType::parse("application/json").unwrap());
+            .unwrap_or_else(|| MediaType::parse("application/json").expect("valid media type"));
         Self {
             supported: types,
             default,
@@ -293,7 +295,7 @@ mod tests {
 
     #[test]
     fn test_custom_supported_types() {
-        let manager = ContentNegotiationManager::new(vec!["text/xml", "application/xml"]);
+        let manager = ContentNegotiationManager::new(&["text/xml", "application/xml"]);
         let result = manager.negotiate("text/xml, application/json;q=0.5");
         assert_eq!(result, Some("text/xml".to_string()));
     }

@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::unused_async, clippy::format_push_string, clippy::missing_fields_in_debug, clippy::manual_strip, clippy::should_implement_trait)]
 //! Hiver Web3 - Blockchain and Web3 support
 //! Hiver Web3 - 区块链和Web3支持
 //!

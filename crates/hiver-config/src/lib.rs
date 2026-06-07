@@ -1,3 +1,4 @@
+#![allow(clippy::let_and_return)]
 #![allow(clippy::expect_used)]
 //! Hiver Config - Configuration management module
 //! Hiver配置 - 配置管理模块

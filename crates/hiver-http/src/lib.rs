@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 //! # Hiver HTTP — HTTP Server and Client / HTTP 服务器和客户端
 //!
 //! `hiver-http` provides a production-grade HTTP server and client implementation
@@ -512,6 +513,6 @@ impl FromRequest for Method
 {
     async fn from_request(req: &Request) -> Result<Self>
     {
-        Ok(req.method().clone())
+        Ok(req.method())
     }
 }

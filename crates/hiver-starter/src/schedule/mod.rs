@@ -174,9 +174,7 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError>
 
     // Try unit-suffix parsing first.
     // 首先尝试带单位后缀的解析。
-    if input.ends_with("ms")
-    {
-        let num_str = &input[..input.len() - 2];
+    if let Some(num_str) = input.strip_suffix("ms") {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -185,9 +183,7 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError>
         return Ok(ParsedDuration::from_millis(num));
     }
 
-    if input.ends_with('s')
-    {
-        let num_str = &input[..input.len() - 1];
+    if let Some(num_str) = input.strip_suffix('s') {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -196,9 +192,7 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError>
         return Ok(ParsedDuration::from_secs(num));
     }
 
-    if input.ends_with('m')
-    {
-        let num_str = &input[..input.len() - 1];
+    if let Some(num_str) = input.strip_suffix('m') {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -207,9 +201,7 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError>
         return Ok(ParsedDuration::from_mins(num));
     }
 
-    if input.ends_with('h')
-    {
-        let num_str = &input[..input.len() - 1];
+    if let Some(num_str) = input.strip_suffix('h') {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -325,14 +317,14 @@ impl CronField
                 // 检查值是否与步长对齐。
                 match base.as_ref()
                 {
-                    CronField::All => value % step == 0,
+                    CronField::All => value.is_multiple_of(*step),
                     CronField::Range(start, _end) =>
                     {
                         if value < *start
                         {
                             return false;
                         }
-                        (value - start) % step == 0
+                        (value - start).is_multiple_of(*step)
                     },
                     _ => true,
                 }
@@ -638,7 +630,7 @@ impl ScheduledMethodScanner
     pub fn scan(&self) -> Result<Vec<DiscoveredScheduledMethod>, ScheduleScanError>
     {
         let descriptors: Vec<&ScheduledMethodDescriptor> =
-            inventory::iter::<ScheduledMethodDescriptor>.collect();
+            inventory::iter::<ScheduledMethodDescriptor>().collect();
 
         let mut discovered = Vec::with_capacity(descriptors.len());
 

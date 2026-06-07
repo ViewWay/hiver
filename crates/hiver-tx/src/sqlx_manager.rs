@@ -23,9 +23,6 @@ mod imp
     use async_trait::async_trait;
     use sqlx::Database;
 
-/// Wrapper for raw SQL that implements Execute without IntoArguments.
-/// 包装原始 SQL，无需 IntoArguments bound 即可实现 Execute。
-
 
     use crate::{
         Propagation, TransactionError, TransactionResult,
@@ -48,11 +45,11 @@ mod imp
 
     impl<DB: Database> LiveTransaction for SqlxLiveTx<DB>
     where
-        for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
+        for<'q> &'q mut <DB as Database>::Connection: sqlx::Executor<'q>,
     {
         fn commit_boxed(
             mut self: Box<Self>,
-        ) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>
+        ) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>
         {
             Box::pin(async move {
                 sqlx::Executor::execute(&mut *self.conn, "COMMIT")
@@ -64,7 +61,7 @@ mod imp
 
         fn rollback_boxed(
             mut self: Box<Self>,
-        ) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>
+        ) -> std::pin::Pin<Box<dyn Future<Output = TransactionResult<()>> + Send>>
         {
             Box::pin(async move {
                 sqlx::Executor::execute(&mut *self.conn, "ROLLBACK")
@@ -114,7 +111,7 @@ mod imp
 
     impl<DB: Database> SqlxTransactionManager<DB>
     where
-        for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
+        for<'q> &'q mut <DB as Database>::Connection: sqlx::Executor<'q>,
     {
         /// Create from an existing pool.
         /// 从已有连接池创建。
@@ -160,7 +157,7 @@ mod imp
     #[async_trait]
     impl<DB: Database> TransactionManager for SqlxTransactionManager<DB>
     where
-        for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
+        for<'q> &'q mut <DB as Database>::Connection: sqlx::Executor<'q>,
     {
         async fn begin(
             &self,

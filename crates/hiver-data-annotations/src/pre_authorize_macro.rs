@@ -12,8 +12,7 @@ use syn::{ItemFn, parse_macro_input};
 /// @PreAuthorize 属性
 /// @PreAuthorize Attributes
 #[derive(Debug, FromMeta)]
-#[darling(attributes(authorization))]
-pub struct PreAuthorizeAttrs
+pub(crate) struct PreAuthorizeAttrs
 {
     /// 权限表达式 / Permission expression
     pub expression: String,
@@ -45,7 +44,13 @@ pub struct PreAuthorizeAttrs
 /// }
 /// ```
 #[cfg(feature = "security")]
-pub fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream
+pub(crate) fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream
+{
+    pre_authorize_macro_impl(attr, item)
+}
+
+#[cfg(feature = "security")]
+pub(crate) fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream
 {
     let input = parse_macro_input!(item as ItemFn);
 

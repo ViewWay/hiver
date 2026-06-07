@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Hiver Starter - Spring Boot风格的自动配置
 //! Hiver Starter - Spring Boot-style Auto-Configuration
 //!

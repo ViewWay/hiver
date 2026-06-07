@@ -223,7 +223,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
             self.select_columns.join(", ")
         };
 
-        let mut sql = format!("SELECT ");
+        let mut sql = "SELECT ".to_string();
         if self.distinct
         {
             sql.push_str("DISTINCT ");

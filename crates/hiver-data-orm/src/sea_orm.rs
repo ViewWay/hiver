@@ -162,7 +162,7 @@ impl<M: Model + serde::de::DeserializeOwned> Default for SeaOrmBridge<M>
 pub trait IntoSeaOrmEntity
 {
     type Entity: sea_orm::EntityTrait;
-    fn into_active_model(self) -> sea_orm::ActiveModel<Self::Entity>;
+    fn into_active_model(self) -> <Self::Entity as sea_orm::EntityTrait>::ActiveModelEx;
 }
 
 /// Convert a SeaORM Model to a Hiver Model (requires sea-orm feature)

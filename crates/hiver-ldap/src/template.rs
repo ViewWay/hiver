@@ -92,7 +92,7 @@ impl LdapTemplate
             let mapped = results
                 .into_iter()
                 .map(|(_dn, attrs)| {
-                    let attr_slices: Vec<(&str, &[String])> = Vec::new();
+                    let _attr_slices: Vec<(&str, &[String])> = Vec::new();
                     // Convert owned attrs to borrowed for mapper
                     let attr_pairs: Vec<(&str, Vec<&str>)> = attrs
                         .iter()
@@ -188,7 +188,7 @@ impl LdapTemplate
             let ldap_attrs: Vec<(String, HashSet<String>)> = attrs
                 .iter()
                 .map(|(k, v)| {
-                    (k.to_string(), v.iter().map(|s| s.to_string()).collect::<HashSet<String>>())
+                    (k.to_string(), v.iter().map(ToString::to_string).collect::<HashSet<String>>())
                 })
                 .collect();
             conn.add(dn, ldap_attrs).await
@@ -234,7 +234,7 @@ impl LdapTemplate
                 .map(|(attr, values)| {
                     ldap3::Mod::<String>::Replace(
                         attr.to_string(),
-                        values.iter().map(|v| v.to_string()).collect(),
+                        values.iter().map(ToString::to_string).collect(),
                     )
                 })
                 .collect();

@@ -295,7 +295,7 @@ impl ShellBuilder
 
         let repl_config = ReplConfig::new()
             .prompt(config.prompt.clone())
-            .output_format(config.output_format.clone())
+            .output_format(config.output_format)
             .show_banner(config.show_banner);
 
         let repl_config = if let Some(ref history_file) = config.history_file

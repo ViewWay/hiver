@@ -279,7 +279,7 @@ pub fn print_startup_info(_debug: bool, _worker_threads: usize, _profile: Option
 /// // 指定 profile
 /// init_runtime_logging(Some("dev"))?;
 /// ```
-pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()>
+pub fn init_runtime_logging(profile: Option<&str>) -> anyhow::Result<()>
 {
     #[cfg(feature = "observability")]
     {
@@ -291,7 +291,7 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()>
         let level = std::env::var("HIVER_LOG_LEVEL")
             .ok()
             .and_then(|s| LogLevel::from_str(&s))
-            .unwrap_or(LogLevel::INFO);
+            .unwrap_or(LogLevel::Info);
 
         let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE")
         {
@@ -309,7 +309,7 @@ pub fn init_runtime_logging(_profile: Option<&str>) -> anyhow::Result<()>
             ..Default::default()
         };
 
-        Logger::init_with_config(config)?;
+        Logger::init_with_config(&config).map_err(|e| anyhow::anyhow!("Logger init failed: {e}"))?;
         Ok(())
     }
 

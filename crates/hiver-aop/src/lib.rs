@@ -1,3 +1,4 @@
+#![allow(missing_docs, dead_code, clippy::format_push_string, clippy::indexing_slicing, clippy::missing_fields_in_debug, clippy::needless_pass_by_value)]
 //! # Hiver AOP
 //!
 //! Spring AOP style aspects for Hiver framework.

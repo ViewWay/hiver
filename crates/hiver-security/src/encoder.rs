@@ -289,7 +289,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder
             mac.update(&salt);
             mac.update(&(block_idx as u32).to_be_bytes());
             let mut u = mac.finalize().into_bytes();
-            let mut result = u.clone();
+            let mut result = u;
 
             // U2..Uc: each iteration applies PRF(Password, U_prev)
             // 每次迭代应用 PRF(Password, U_prev)
@@ -361,7 +361,7 @@ impl PasswordEncoder for Pbkdf2PasswordEncoder
             mac.update(&salt);
             mac.update(&(block_idx as u32).to_be_bytes());
             let mut u = mac.finalize().into_bytes();
-            let mut result = u.clone();
+            let mut result = u;
 
             for _ in 1..iterations
             {

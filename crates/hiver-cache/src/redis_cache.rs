@@ -171,12 +171,14 @@ where
     Fallback
     {
         memory: Arc<crate::cache::MemoryCache<K, V>>,
+        #[allow(dead_code)]
         config: RedisConfig,
     },
     /// Neither Redis nor fallback is available (degraded, no-op mode).
     /// Redis 和回退均不可用（降级、空操作模式）。
     Degraded
     {
+        #[allow(dead_code)]
         config: RedisConfig
     },
 }

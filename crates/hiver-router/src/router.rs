@@ -408,7 +408,7 @@ where
 {
     fn call(&self, mut req: Request) -> impl Future<Output = Result<Response>> + Send
     {
-        let method = req.method().clone();
+        let method = req.method();
         let path = req.path().to_string();
         let state = self.state.clone();
         let middleware = self.middleware.clone();

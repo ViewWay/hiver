@@ -988,15 +988,10 @@ impl OAuth2Client
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
             },
-            TokenEndpointAuthMethod::ClientSecretPost =>
-            {
-                // Client credentials will be added to the form data below
-                // 客户端凭据将添加到下面的表单数据中
-            },
+            TokenEndpointAuthMethod::ClientSecretPost |
             TokenEndpointAuthMethod::None =>
             {
-                // No authentication
-                // 无认证
+                // No additional header auth needed / 无需额外头部认证
             },
         }
 

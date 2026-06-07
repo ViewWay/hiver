@@ -88,7 +88,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .status(StatusCode::OK)
                     .header("content-type", "application/json")
                     .body(Body::from(json))
-                    .unwrap())
+                    .expect("valid response builder"))
             }
             "text/plain" => {
                 let text = serde_json::to_string(data)
@@ -97,7 +97,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .status(StatusCode::OK)
                     .header("content-type", "text/plain")
                     .body(Body::from(text))
-                    .unwrap())
+                    .expect("valid response builder"))
             }
             "text/html" => {
                 let text = serde_json::to_string(data)
@@ -106,7 +106,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .status(StatusCode::OK)
                     .header("content-type", "text/html")
                     .body(Body::from(text))
-                    .unwrap())
+                    .expect("valid response builder"))
             }
             "application/xml" => {
                 // Fallback to JSON if XML serialization is not available
@@ -117,7 +117,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .status(StatusCode::OK)
                     .header("content-type", "application/json")
                     .body(Body::from(json))
-                    .unwrap())
+                    .expect("valid response builder"))
             }
             _ => {
                 // Fallback to JSON for unknown types / 未知类型回退到 JSON
@@ -127,7 +127,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .status(StatusCode::OK)
                     .header("content-type", "application/json")
                     .body(Body::from(json))
-                    .unwrap())
+                    .expect("valid response builder"))
             }
         }
     }
@@ -223,7 +223,7 @@ mod tests {
 
     #[test]
     fn test_custom_negotiation_manager() {
-        let manager = ContentNegotiationManager::new(vec!["text/plain"]);
+        let manager = ContentNegotiationManager::new(&["text/plain"]);
         let formatter = DefaultResponseFormatter::new(manager);
         let data = "custom manager";
         let response = formatter.format(&data, "text/plain, application/json;q=0.5").unwrap();

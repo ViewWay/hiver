@@ -846,10 +846,9 @@ impl MultipartParser
 
             // Split headers from body (separated by \r\n\r\n)
             // 分离头部和主体（以 \r\n\r\n 分隔）
-            let (header_section, body_content) = match part.split_once("\r\n\r\n")
+            let Some((header_section, body_content)) = part.split_once("\r\n\r\n") else
             {
-                Some((h, b)) => (h, b),
-                None => continue,
+                continue;
             };
 
             // Remove trailing \r\n from body content (before next boundary)
@@ -893,8 +892,7 @@ impl MultipartParser
                 let field_count = multipart
                     .files()
                     .get(&field_name)
-                    .map(Vec::len)
-                    .unwrap_or(0);
+                    .map_or(0, Vec::len);
                 if field_count >= config.max_files_per_field
                 {
                     return Err(UploadError::TooManyFiles {
@@ -936,7 +934,7 @@ fn parse_content_disposition(header_section: &str) -> (String, Option<String>)
         }
         // Extract value from the original line (preserves case in quoted strings)
         // 从原始行提取值（保留引号内字符串的大小写）
-        let value = line.splitn(2, ':').nth(1).unwrap_or("").trim();
+        let value = line.split_once(':').map_or("", |(_, v)| v.trim());
 
         for part in value.split(';')
         {

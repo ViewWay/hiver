@@ -129,9 +129,8 @@ impl LocalQueue
             // 该值由push初始化，因此assume_init是安全的
             let task = unsafe { self.buffer[pos].get().read().assume_init() };
 
-            if let Ok(_) =
-                self.head
-                    .compare_exchange(head, head + 1, Ordering::AcqRel, Ordering::Relaxed)
+            if self.head
+                    .compare_exchange(head, head + 1, Ordering::AcqRel, Ordering::Relaxed).is_ok()
             {
                 return Some(task);
             }

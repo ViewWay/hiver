@@ -734,7 +734,12 @@ impl ConfigBuilder
     pub fn add_profile_file<P: AsRef<Path>>(self, profile: &str, path: P) -> Self
     {
         let path = path.as_ref();
-        let format = if let Some(f) = FileFormat::from_path(path) { f } else {
+        let format = if let Some(f) = FileFormat::from_path(path)
+        {
+            f
+        }
+        else
+        {
             tracing::warn!("Unrecognized format for profile file {:?}", path);
             return self;
         };
