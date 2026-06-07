@@ -125,6 +125,7 @@ pub mod multipart;
 pub mod negotiation;
 pub mod proto;
 pub mod request;
+pub mod respond;
 pub mod response;
 pub mod server;
 pub mod service;
@@ -163,6 +164,7 @@ pub use multipart::{
 };
 pub use negotiation::{ContentNegotiationManager, MediaType};
 pub use request::Request;
+pub use respond::{DefaultResponseFormatter, ResponseFormatter};
 pub use response::{BodyBuilder, Response};
 pub use server::Server;
 pub use service::HttpService;

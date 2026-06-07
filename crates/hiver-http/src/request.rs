@@ -268,6 +268,27 @@ impl Request
         params
     }
 
+    /// Get the value of the `Accept` header, if present.
+    /// 获取 `Accept` header 的值（如果存在）。
+    ///
+    /// This is a convenience wrapper around [`Request::header`] that uses
+    /// the appropriate header name constant.
+    ///
+    /// 这是对 [`Request::header`] 的便捷包装，使用适当的 header 名称常量。
+    ///
+    /// # Example / 示例
+    ///
+    /// ```rust,no_run,ignore
+    /// use hiver_http::Request;
+    ///
+    /// let req = Request::from_method_uri(hiver_http::Method::GET, "/api/data");
+    /// let accept = req.accept(); // None, since no Accept header was set
+    /// ```
+    pub fn accept(&self) -> Option<&str>
+    {
+        self.header("accept")
+    }
+
     /// Builder for creating requests
     /// 创建请求的构建器
     pub fn builder() -> RequestBuilder
