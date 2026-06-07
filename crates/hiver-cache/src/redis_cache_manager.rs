@@ -12,7 +12,7 @@ use std::{collections::HashMap, hash::Hash, sync::Arc};
 use tokio::sync::RwLock;
 
 use crate::{
-    cache::{CacheConfig, CacheStats},
+    cache::{Cache, CacheConfig, CacheStats},
     cache_manager::{CacheManager, CacheWorker, SimpleCacheManager},
     redis_cache::{RedisCache, RedisConfig},
 };
