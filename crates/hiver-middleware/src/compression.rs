@@ -34,6 +34,8 @@
 
 use std::{future::Future, pin::Pin, sync::Arc};
 
+#[cfg(feature = "compression")]
+use bytes::Bytes;
 use hiver_http::{Body, Response, Result};
 use hiver_router::{Middleware, Next};
 

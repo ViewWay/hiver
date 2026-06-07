@@ -44,7 +44,7 @@ mod imp
 
     impl<DB: Database> LiveTransaction for SqlxLiveTx<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, sqlx::query::Arguments<'q, DB>>: sqlx::Execute<'q, DB>,
+        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
     {
         fn commit_boxed(
             mut self: Box<Self>,
@@ -112,7 +112,7 @@ mod imp
 
     impl<DB: Database> SqlxTransactionManager<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, sqlx::query::Arguments<'q, DB>>: sqlx::Execute<'q, DB>,
+        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
     {
         /// Create from an existing pool.
         /// 从已有连接池创建。
@@ -158,7 +158,7 @@ mod imp
     #[async_trait]
     impl<DB: Database> TransactionManager for SqlxTransactionManager<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, sqlx::query::Arguments<'q, DB>>: sqlx::Execute<'q, DB>,
+        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
     {
         async fn begin(
             &self,

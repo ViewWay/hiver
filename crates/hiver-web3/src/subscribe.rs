@@ -43,6 +43,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::{tx::TxHash, wallet::Address};
 
+#[cfg(feature = "ws")]
+use std::sync::Arc;
+
+#[cfg(feature = "ws")]
+use futures::Stream;
+
 /// WebSocket error
 /// `WebSocket错误`
 #[derive(Debug, Clone)]

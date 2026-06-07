@@ -108,6 +108,15 @@ pub struct RpcClient
 use std::sync::Arc;
 
 #[cfg(feature = "rpc")]
+use crate::chain::BlockNumber;
+
+#[cfg(feature = "rpc")]
+use crate::tx::TxHash;
+
+#[cfg(feature = "rpc")]
+use crate::wallet::Address;
+
+#[cfg(feature = "rpc")]
 impl RpcClient
 {
     /// Create a new RPC client

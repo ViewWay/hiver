@@ -37,6 +37,12 @@ use std::fmt;
 
 use crate::wallet::Address;
 
+#[cfg(feature = "rpc")]
+use crate::chain::BlockNumber;
+
+#[cfg(feature = "rpc")]
+use crate::tx::TxHash;
+
 /// Contract error
 /// 合约错误
 #[derive(Debug, Clone)]
