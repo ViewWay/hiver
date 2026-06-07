@@ -192,6 +192,23 @@ impl Config
         self.invalidate_cache();
     }
 
+    /// Add a property source for a specific profile.
+    /// Profile-specific sources have higher priority than default sources for that profile.
+    /// 为特定配置文件添加属性源。该配置文件的特定源具有高于默认源的优先级。
+    pub fn add_profile_source(&self, profile: impl Into<crate::Profile>, source: PropertySource)
+    {
+        self.environment.add_profile_source(profile, source);
+        self.invalidate_cache();
+    }
+
+    /// Add an active profile
+    /// 添加活动配置文件
+    pub fn add_active_profile(&self, profile: impl Into<crate::Profile>)
+    {
+        self.environment.add_active_profile(profile.into());
+        self.invalidate_cache();
+    }
+
     /// Get a property value
     /// 获取属性值
     pub fn get(&self, key: &str) -> Option<Value>
@@ -701,6 +718,63 @@ impl ConfigBuilder
     pub fn add_property_source(self, source: PropertySource) -> Self
     {
         self.config.add_property_source(source);
+        self
+    }
+
+    /// Add a profile-specific property source for a profile
+    /// 为特定配置文件添加属性源
+    pub fn add_profile_source(self, profile: impl Into<crate::Profile>, source: PropertySource) -> Self
+    {
+        self.config.add_profile_source(profile, source);
+        self
+    }
+
+    /// Load a profile-specific configuration file (e.g. `application-{profile}.yaml`)
+    /// 加载特定配置文件的配置文件（例如 `application-{profile}.yaml`）
+    pub fn add_profile_file<P: AsRef<Path>>(self, profile: &str, path: P) -> Self
+    {
+        let path = path.as_ref();
+        let format = match FileFormat::from_path(path)
+        {
+            Some(f) => f,
+            None =>
+            {
+                tracing::warn!("Unrecognized format for profile file {:?}", path);
+                return self;
+            },
+        };
+
+        let content = match std::fs::read_to_string(path)
+        {
+            Ok(c) => c,
+            Err(e) =>
+            {
+                tracing::warn!("Failed to read profile file {:?}: {}", path, e);
+                return self;
+            },
+        };
+
+        let source = match format
+        {
+            FileFormat::Properties => self.config.parse_properties(&content),
+            FileFormat::Yaml => self.config.parse_yaml(&content),
+            FileFormat::Toml => self.config.parse_toml(&content),
+            FileFormat::Json => self.config.parse_json(&content),
+        };
+
+        match source
+        {
+            Ok(mut source) =>
+            {
+                source.set_file_path(path.to_path_buf());
+                self.config.add_profile_source(profile, source);
+            },
+            Err(e) =>
+            {
+                tracing::warn!("Failed to parse profile file {:?}: {}", path, e);
+            },
+        }
+
         self
     }
 
@@ -1262,5 +1336,85 @@ mod tests
 
         // Should get the new value (from source2, added first)
         assert_eq!(config.get("key").unwrap().as_str(), Some("v2"));
+    }
+
+    // ============================================================
+    // Profile-aware config tests / 配置文件感知配置测试
+    // ============================================================
+
+    /// Test Config::add_profile_source overrides default sources
+    /// 测试Config::add_profile_source覆盖默认源
+    #[test]
+    fn test_config_add_profile_source()
+    {
+        let config = Config::new();
+        config.add_active_profile(crate::Profile::new("dev"));
+
+        let mut default_source = PropertySource::new("default");
+        default_source.put("key", Value::string("from_default"));
+        config.add_property_source(default_source);
+
+        let mut dev_source = PropertySource::new("application-dev");
+        dev_source.put("key", Value::string("from_dev"));
+        config.add_profile_source(crate::Profile::new("dev"), dev_source);
+
+        // Profile-specific overrides default
+        assert_eq!(config.get("key").unwrap().as_str(), Some("from_dev"));
+    }
+
+    /// Test ConfigBuilder::add_profile_file loads and registers profile-specific source
+    /// 测试ConfigBuilder::add_profile_file加载并注册配置文件特定源
+    #[test]
+    fn test_builder_add_profile_file()
+    {
+        use std::io::Write;
+
+        let dir = tempfile::tempdir().unwrap();
+
+        // Write a default application.properties
+        let default_path = dir.path().join("application.properties");
+        let mut f = std::fs::File::create(&default_path).unwrap();
+        writeln!(f, "key=from_default").unwrap();
+        writeln!(f, "only_default=yes").unwrap();
+
+        // Write a profile-specific application-dev.properties
+        let dev_path = dir.path().join("application-dev.properties");
+        let mut f = std::fs::File::create(&dev_path).unwrap();
+        writeln!(f, "key=from_dev").unwrap();
+        writeln!(f, "only_dev=yes").unwrap();
+
+        let config = Config::builder()
+            .add_file(&default_path)
+            .add_profile("dev")
+            .add_profile_file("dev", &dev_path)
+            .build()
+            .unwrap();
+
+        // Profile-specific overrides default
+        assert_eq!(config.get("key").unwrap().as_str(), Some("from_dev"));
+        // Default-only keys still accessible
+        assert_eq!(config.get("only_default").unwrap().as_str(), Some("yes"));
+        // Profile-only keys accessible
+        assert_eq!(config.get("only_dev").unwrap().as_str(), Some("yes"));
+    }
+
+    /// Test ConfigBuilder::add_profile_source
+    /// 测试ConfigBuilder::add_profile_source
+    #[test]
+    fn test_builder_add_profile_source()
+    {
+        let mut dev_source = PropertySource::new("application-dev");
+        dev_source.put("dev.key", Value::string("dev_value"));
+
+        let config = Config::builder()
+            .add_profile("dev")
+            .add_profile_source("dev", dev_source)
+            .build()
+            .unwrap();
+
+        assert_eq!(
+            config.get("dev.key").unwrap().as_str(),
+            Some("dev_value")
+        );
     }
 }

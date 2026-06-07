@@ -8,6 +8,7 @@
 //! - `ActiveProfiles` - Active profiles management
 
 use std::{
+    collections::HashMap,
     fmt,
     sync::{Arc, RwLock},
 };
@@ -199,6 +200,10 @@ pub struct Environment
     /// 属性源
     property_sources: Arc<RwLock<Vec<PropertySource>>>,
 
+    /// Profile-specific property sources (profile_name -> Vec<PropertySource>)
+    /// 特定配置文件的属性源（profile_name -> Vec<PropertySource>）
+    profile_sources: Arc<RwLock<HashMap<String, Vec<PropertySource>>>>,
+
     /// Active profiles
     /// 活动配置文件
     active_profiles: Arc<RwLock<ActiveProfiles>>,
@@ -216,6 +221,7 @@ impl Environment
     {
         Self {
             property_sources: Arc::new(RwLock::new(Vec::new())),
+            profile_sources: Arc::new(RwLock::new(HashMap::new())),
             active_profiles: Arc::new(RwLock::new(ActiveProfiles::new())),
             system_env: std::env::vars().collect(),
         }
@@ -243,10 +249,53 @@ impl Environment
         sources.insert(0, source);
     }
 
-    /// Get a property value
-    /// 获取属性值
+    /// Add a property source for a specific profile.
+    /// Profile-specific sources have higher priority than default sources for that profile.
+    /// 为特定配置文件添加属性源。该配置文件的特定源具有高于默认源的优先级。
+    pub fn add_profile_source(&self, profile: impl Into<Profile>, source: PropertySource)
+    {
+        let profile_name = profile.into().name().to_string();
+        let mut sources = self
+            .profile_sources
+            .write()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        sources.entry(profile_name).or_default().push(source);
+    }
+
+    /// Get a property value, with profile-aware resolution.
+    /// 获取属性值，支持配置文件感知的解析。
+    ///
+    /// Resolution order / 解析顺序:
+    /// 1. Profile-specific sources (checked for each active profile, first active wins)
+    /// 2. Default property sources (in insertion order)
+    /// 3. System environment variables (fallback)
     pub fn get_property(&self, key: &str) -> Option<Value>
     {
+        let profile_sources = self
+            .profile_sources
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+
+        // 1. Check profile-specific sources for each active profile (first active wins)
+        let active = self
+            .active_profiles
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        for profile in active.active()
+        {
+            if let Some(sources) = profile_sources.get(profile.name())
+            {
+                for source in sources.iter()
+                {
+                    if let Some(value) = source.get(key)
+                    {
+                        return Some(value);
+                    }
+                }
+            }
+        }
+
+        // 2. Check default property sources
         let sources = self
             .property_sources
             .read()
@@ -258,6 +307,7 @@ impl Environment
                 return Some(value);
             }
         }
+
         None
     }
 
@@ -741,5 +791,133 @@ mod tests
 
         let result: f64 = env.get_required_property_as("ratio").unwrap();
         assert!((result - 2.5).abs() < f64::EPSILON);
+    }
+
+    // ============================================================
+    // Profile-specific property source tests / 配置文件特定属性源测试
+    // ============================================================
+
+    /// Test add_profile_source and profile-aware get_property
+    /// 测试add_profile_source和配置文件感知的get_property
+    #[test]
+    fn test_profile_source_get()
+    {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::new("dev")]);
+
+        // Add a default source
+        let mut default_source = PropertySource::new("default");
+        default_source.put("key", Value::string("from_default"));
+        default_source.put("only_default", Value::string("default_only"));
+        env.add_property_source(default_source);
+
+        // Add a profile-specific source
+        let mut dev_source = PropertySource::new("application-dev");
+        dev_source.put("key", Value::string("from_dev"));
+        dev_source.put("only_dev", Value::string("dev_only"));
+        env.add_profile_source(Profile::new("dev"), dev_source);
+
+        // Profile-specific overrides default
+        assert_eq!(
+            env.get_property("key").unwrap().as_str(),
+            Some("from_dev")
+        );
+        // Default-only keys still accessible
+        assert_eq!(
+            env.get_property("only_default").unwrap().as_str(),
+            Some("default_only")
+        );
+        // Profile-only keys accessible
+        assert_eq!(
+            env.get_property("only_dev").unwrap().as_str(),
+            Some("dev_only")
+        );
+    }
+
+    /// Test profile-specific sources only apply to active profiles
+    /// 测试配置文件特定源仅应用于活动配置文件
+    #[test]
+    fn test_profile_source_only_active()
+    {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::new("dev")]);
+
+        let mut prod_source = PropertySource::new("application-prod");
+        prod_source.put("key", Value::string("from_prod"));
+        env.add_profile_source(Profile::new("prod"), prod_source);
+
+        // Inactive profile source should not be visible
+        assert!(env.get_property("key").is_none());
+    }
+
+    /// Test profile-specific < default < system priority ordering
+    /// 测试配置文件特定 < 默认 < 系统的优先级顺序
+    #[test]
+    fn test_profile_source_priority_over_default()
+    {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::new("dev")]);
+
+        // Default source added first (lowest priority among sources)
+        let mut default_source = PropertySource::new("default");
+        default_source.put("key", Value::string("from_default"));
+        env.add_property_source(default_source);
+
+        // Profile-specific added later but should win
+        let mut dev_source = PropertySource::new("application-dev");
+        dev_source.put("key", Value::string("from_dev"));
+        env.add_profile_source(Profile::new("dev"), dev_source);
+
+        // Profile-specific overrides default
+        assert_eq!(
+            env.get_property("key").unwrap().as_str(),
+            Some("from_dev")
+        );
+    }
+
+    /// Test multiple active profiles — first active profile's sources win
+    /// 测试多个活动配置文件 — 第一个活动配置文件的源优先
+    #[test]
+    fn test_multiple_active_profile_sources()
+    {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::new("dev"), Profile::new("staging")]);
+
+        let mut dev_source = PropertySource::new("application-dev");
+        dev_source.put("key", Value::string("from_dev"));
+        env.add_profile_source(Profile::new("dev"), dev_source);
+
+        let mut staging_source = PropertySource::new("application-staging");
+        staging_source.put("key", Value::string("from_staging"));
+        env.add_profile_source(Profile::new("staging"), staging_source);
+
+        // First active profile (dev) wins
+        assert_eq!(
+            env.get_property("key").unwrap().as_str(),
+            Some("from_dev")
+        );
+    }
+
+    /// Test multiple profile sources for the same profile — first added wins (same as default source behavior)
+    /// 测试同一配置文件的多个源 — 先添加的优先（与默认源行为一致）
+    #[test]
+    fn test_multiple_sources_same_profile()
+    {
+        let env = Environment::new();
+        env.set_active_profiles(vec![Profile::new("dev")]);
+
+        let mut source1 = PropertySource::new("dev-first");
+        source1.put("key", Value::string("from_first"));
+        env.add_profile_source(Profile::new("dev"), source1);
+
+        let mut source2 = PropertySource::new("dev-second");
+        source2.put("key", Value::string("from_second"));
+        env.add_profile_source(Profile::new("dev"), source2);
+
+        // First profile source wins (iterated first)
+        assert_eq!(
+            env.get_property("key").unwrap().as_str(),
+            Some("from_first")
+        );
     }
 }
