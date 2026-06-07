@@ -648,7 +648,7 @@ mod tests
         assert_eq!(result.applied_count, 1);
         assert_eq!(result.skipped_count, 0);
         assert!(result.has_applied());
-        assert!(ctx.contains_bean::<i32>());
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
     }
 
     #[test]
@@ -664,8 +664,8 @@ mod tests
         let result = processor.process(&registry, &mut ctx).unwrap();
 
         assert_eq!(result.applied_count, 2);
-        assert!(ctx.contains_bean::<i32>());
-        assert!(ctx.contains_bean::<String>());
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
+        assert!(ctx.contains_bean::<ConfigValue<String>>());
     }
 
     #[test]
@@ -690,8 +690,8 @@ mod tests
         // So only AlwaysConfig is processed
         assert_eq!(result.applied_count, 1);
         assert_eq!(result.total_candidates, 1); // evaluate() already filtered
-        assert!(ctx.contains_bean::<i32>());
-        assert!(!ctx.contains_bean::<String>());
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
+        assert!(!ctx.contains_bean::<ConfigValue<String>>());
     }
 
     #[test]
@@ -714,8 +714,8 @@ mod tests
         // String 尚未注册，条件满足，应该被注册
         // String not yet registered, condition met, should be registered
         assert_eq!(result.applied_count, 2);
-        assert!(ctx.contains_bean::<i32>());
-        assert!(ctx.contains_bean::<String>());
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
+        assert!(ctx.contains_bean::<ConfigValue<String>>());
     }
 
     #[test]

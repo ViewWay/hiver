@@ -877,7 +877,7 @@ mod tests
         let mut ctx = ApplicationContext::new();
         let entry = AutoConfigurationEntry::new("RegisterConfig", register_test_bean);
         entry.configure(&mut ctx).unwrap();
-        assert!(ctx.contains_bean::<i32>());
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
     }
 
     #[test]

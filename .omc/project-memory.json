@@ -19,7 +19,7 @@
   },
   "build": {
     "buildCommand": "cargo build --workspace 2>&1 | tail -3",
-    "testCommand": "cargo test --workspace -- --test-threads=4 2>&1 | grep -E \"FAILED|test result:\" | grep -c \"FAILED\" ; rg \"test result:\" -o /private/tmp/claude-501/-Users-yimiliya-RustroverProjects-hiver/cdc29c2d-b0a7-4601-9a4d-5f328d123174/tasks/b591fpm0q.output 2>/dev/null | head -5",
+    "testCommand": "cargo test -p hiver-starter 2>&1 | grep \"test result:\"",
     "lintCommand": "cargo clippy",
     "devCommand": "cargo run",
     "scripts": {}
