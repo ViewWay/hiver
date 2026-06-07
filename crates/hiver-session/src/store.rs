@@ -317,6 +317,7 @@ impl SessionStore for RedisSessionStore
         self.client
             .setex(&key, self.timeout, json.as_bytes())
             .await
+            .map(|_| ())
             .map_err(|e| format!("Failed to save session: {}", e))
     }
 
@@ -479,6 +480,7 @@ impl SessionStore for MongoSessionStore
         self.client
             .insert(&self.database, &self.collection, doc)
             .await
+            .map(|_| ())
             .map_err(|e| format!("Failed to save session: {}", e))
     }
 
