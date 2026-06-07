@@ -44,7 +44,7 @@ mod imp
 
     impl<DB: Database> LiveTransaction for SqlxLiveTx<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
+        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         fn commit_boxed(
@@ -113,7 +113,7 @@ mod imp
 
     impl<DB: Database> SqlxTransactionManager<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
+        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         /// Create from an existing pool.
@@ -160,7 +160,7 @@ mod imp
     #[async_trait]
     impl<DB: Database> TransactionManager for SqlxTransactionManager<DB>
     where
-        for<'q> sqlx::query::Query<'q, DB, <DB as sqlx::Database>::Arguments<'q>>: sqlx::Execute<'q, DB>,
+        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         async fn begin(

@@ -137,6 +137,14 @@ impl RedisConfig
         self.fallback_to_memory = false;
         self
     }
+
+    /// Enable fallback to in-memory cache (default behavior).
+    /// 启用回退到内存缓存（默认行为）。
+    pub fn fallback_to_memory(mut self) -> Self
+    {
+        self.fallback_to_memory = true;
+        self
+    }
 }
 
 // ---------------------------------------------------------------------------
