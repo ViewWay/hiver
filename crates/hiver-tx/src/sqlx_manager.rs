@@ -23,6 +23,10 @@ mod imp
     use async_trait::async_trait;
     use sqlx::Database;
 
+/// Wrapper for raw SQL that implements Execute without IntoArguments.
+/// 包装原始 SQL，无需 IntoArguments bound 即可实现 Execute。
+
+
     use crate::{
         Propagation, TransactionError, TransactionResult,
         manager::{TransactionDefinition, TransactionManager},
@@ -44,7 +48,6 @@ mod imp
 
     impl<DB: Database> LiveTransaction for SqlxLiveTx<DB>
     where
-        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         fn commit_boxed(
@@ -52,8 +55,7 @@ mod imp
         ) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>
         {
             Box::pin(async move {
-                sqlx::query("COMMIT")
-                    .execute(&mut *self.conn)
+                sqlx::Executor::execute(&mut *self.conn, "COMMIT")
                     .await
                     .map_err(|e| TransactionError::CommitFailed(e.to_string()))?;
                 Ok(())
@@ -65,8 +67,7 @@ mod imp
         ) -> std::pin::Pin<Box<dyn std::future::Future<Output = TransactionResult<()>> + Send>>
         {
             Box::pin(async move {
-                sqlx::query("ROLLBACK")
-                    .execute(&mut *self.conn)
+                sqlx::Executor::execute(&mut *self.conn, "ROLLBACK")
                     .await
                     .map_err(|e| TransactionError::RollbackFailed(e.to_string()))?;
                 Ok(())
@@ -113,7 +114,6 @@ mod imp
 
     impl<DB: Database> SqlxTransactionManager<DB>
     where
-        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         /// Create from an existing pool.
@@ -153,14 +153,13 @@ mod imp
     }
 
     // The `Execute` bound is the same one used on `SqlxLiveTx`.  We need it
-    // here too so that `sqlx::query("BEGIN").execute(&mut *conn)` compiles
+    // here too so that `sqlx::Executor::execute(&mut *conn, "BEGIN")` compiles
     // inside `begin()`.
     // `Execute` 约束与 `SqlxLiveTx` 上使用的相同。这里也需要，
-    // 以便 `sqlx::query("BEGIN").execute(&mut *conn)` 在 `begin()` 内编译。
+    // 以便 `sqlx::Executor::execute(&mut *conn, "BEGIN")` 在 `begin()` 内编译。
     #[async_trait]
     impl<DB: Database> TransactionManager for SqlxTransactionManager<DB>
     where
-        <DB as sqlx::Database>::Arguments<'static>: sqlx::IntoArguments<'static, DB>,
         for<'q> &'q mut <DB as sqlx::Database>::Connection: sqlx::Executor<'q>,
     {
         async fn begin(
@@ -184,8 +183,7 @@ mod imp
                 .await
                 .map_err(|e| TransactionError::CreationFailed(e.to_string()))?;
 
-            sqlx::query("BEGIN")
-                .execute(&mut *conn)
+            sqlx::Executor::execute(&mut *conn, "BEGIN")
                 .await
                 .map_err(|e| TransactionError::CreationFailed(e.to_string()))?;
 

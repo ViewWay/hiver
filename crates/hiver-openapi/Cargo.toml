@@ -25,7 +25,6 @@ default = ["swagger", "json"]
 swagger = ["utoipa-swagger-ui"]
 json = ["utoipa"]
 http = ["hiver-http"]
-actix = ["utoipa-swagger-ui/actix-web", "utoipa/actix_extras"]
 axum = ["utoipa-swagger-ui/axum", "utoipa/axum_extras"]
 rocket = []
 

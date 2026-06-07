@@ -243,7 +243,7 @@ futures-rustls = "0.26"
 # API Documentation / API 文档
 # Equivalent to: SpringDoc OpenAPI (Swagger 3)
 utoipa = { version = "5", features = ["chrono", "uuid", "decimal", "repr"] }
-utoipa-swagger-ui = { version = "8", features = ["actix-web", "axum"] }
+utoipa-swagger-ui = { version = "8" }
 
 # Web3 / 区块链
 # Equivalent to: Spring Web3 (community projects)
