@@ -114,6 +114,7 @@ tracing-subscriber = { workspace = true, features = ["fmt"] }
 once_cell = { workspace = true }
 inventory = { workspace = true }
 num_cpus = "1.16"
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
 
 # 配置解析
 toml = "0.8"

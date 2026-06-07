@@ -817,6 +817,11 @@ mod tests
     use std::sync::Arc;
 
     use super::*;
+    use hiver_core::Bean;
+
+    #[derive(Debug, Clone)]
+    struct ConfigValue<T>(T);
+    impl<T: 'static> Bean for ConfigValue<T> {}
 
     fn noop_factory(_ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
@@ -825,7 +830,7 @@ mod tests
 
     fn register_test_bean(ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
-        ctx.register_bean(42i32);
+        ctx.register_bean(ConfigValue(42i32));
         Ok(())
     }
 
@@ -997,7 +1002,7 @@ mod tests
     fn test_conditional_on_missing_bean_condition()
     {
         let ctx = ApplicationContext::new();
-        let condition = ConditionalOnMissingBeanCondition::new::<i32>();
+        let condition = ConditionalOnMissingBeanCondition::new::<ConfigValue<i32>>();
 
         // Bean 不存在，条件满足
         // Bean absent, condition met
@@ -1005,7 +1010,7 @@ mod tests
 
         // 注册 Bean
         // Register bean
-        ctx.register_bean(42i32);
+        ctx.register_bean(ConfigValue(42i32));
 
         // Bean 存在，条件不满足
         // Bean present, condition not met
@@ -1016,7 +1021,7 @@ mod tests
     fn test_conditional_on_bean_condition()
     {
         let ctx = ApplicationContext::new();
-        let condition = ConditionalOnBeanCondition::new::<i32>();
+        let condition = ConditionalOnBeanCondition::new::<ConfigValue<i32>>();
 
         // Bean 不存在，条件不满足
         // Bean absent, condition not met
@@ -1024,7 +1029,7 @@ mod tests
 
         // 注册 Bean
         // Register bean
-        ctx.register_bean(42i32);
+        ctx.register_bean(ConfigValue(42i32));
 
         // Bean 存在，条件满足
         // Bean present, condition met

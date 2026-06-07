@@ -538,6 +538,11 @@ mod tests
     use crate::core::autoconfigure::{
         AutoConfigurationEntry, ConditionalOnMissingBeanCondition, ConditionalOnPropertyCondition,
     };
+    use hiver_core::Bean;
+
+    #[derive(Debug, Clone)]
+    struct ConfigValue<T>(T);
+    impl<T: 'static> Bean for ConfigValue<T> {}
 
     fn noop_factory(_ctx: &mut ApplicationContext) -> Result<()>
     {
@@ -546,13 +551,13 @@ mod tests
 
     fn register_i32_bean(ctx: &mut ApplicationContext) -> Result<()>
     {
-        ctx.register_bean(42i32);
+        ctx.register_bean(ConfigValue(42i32));
         Ok(())
     }
 
     fn register_string_bean(ctx: &mut ApplicationContext) -> Result<()>
     {
-        ctx.register_bean("hello".to_string());
+        ctx.register_bean(ConfigValue("hello".to_string()));
         Ok(())
     }
 

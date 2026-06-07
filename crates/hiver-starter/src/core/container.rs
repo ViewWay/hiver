@@ -920,6 +920,11 @@ impl Default for ComponentRegistry
 mod tests
 {
     use super::*;
+    use hiver_core::Bean;
+
+    #[derive(Debug, Clone)]
+    struct ConfigValue<T>(T);
+    impl<T: 'static> Bean for ConfigValue<T> {}
 
     #[test]
     fn test_application_context_creation()
@@ -935,13 +940,13 @@ mod tests
         let ctx = ApplicationContext::new();
 
         // 注册 Bean
-        ctx.register_bean(42i32);
-        assert!(ctx.contains_bean::<i32>());
+        ctx.register_bean(ConfigValue(42i32));
+        assert!(ctx.contains_bean::<ConfigValue<i32>>());
 
         // 获取 Bean
-        let bean = ctx.get_bean::<i32>();
+        let bean = ctx.get_bean::<ConfigValue<i32>>();
         assert!(bean.is_some());
-        assert_eq!(*bean.unwrap(), 42);
+        assert_eq!(bean.unwrap().0, 42);
     }
 
     #[test]
@@ -949,11 +954,11 @@ mod tests
     {
         let ctx = ApplicationContext::new();
 
-        ctx.register_named_bean("test".to_string(), "value".to_string());
+        ctx.register_named_bean("test".to_string(), ConfigValue("value".to_string()));
 
-        let bean = ctx.get_bean_by_name::<String>("test");
+        let bean = ctx.get_bean_by_name::<ConfigValue<String>>("test");
         assert!(bean.is_some());
-        assert_eq!(bean.unwrap().as_str(), "value");
+        assert_eq!(bean.unwrap().0.as_str(), "value");
     }
 
     #[test]
