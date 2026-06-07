@@ -172,7 +172,7 @@ fn test_getter_varied_types()
     assert_eq!(rec.id(), 42);
     assert_eq!(rec.name(), "test");
     assert!(rec.active());
-    assert!((rec.score() - 3.15).abs() < f64::EPSILON);
+    assert!((rec.score() - 3.14).abs() < f64::EPSILON);
 }
 
 /// Test #[get] attribute skips field getter generation.

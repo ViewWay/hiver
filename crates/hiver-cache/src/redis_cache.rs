@@ -167,7 +167,7 @@ where
     /// 已回退到内存。
     Fallback
     {
-        memory: crate::cache::MemoryCache<K, V>,
+        memory: Arc<crate::cache::MemoryCache<K, V>>,
         config: RedisConfig,
     },
     /// Neither Redis nor fallback is available (degraded, no-op mode).
@@ -259,7 +259,7 @@ where
                     "Redis unavailable, falling back to in-memory cache for '{}'",
                     cache_config.name
                 );
-                let memory = crate::cache::MemoryCache::new(cache_config.clone());
+                let memory = Arc::new(crate::cache::MemoryCache::new(cache_config.clone()));
                 RedisCacheInner::Fallback {
                     memory,
                     config: redis_config.clone(),
@@ -427,10 +427,11 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 drop(guard);
                 drop(stats);
                 // Delegate to in-memory cache — need a separate stats update
-                let value = memory.get(key).await;
+                let value = mem.get(key).await;
                 let mut stats = self.stats.write().await;
                 if value.is_some()
                 {
@@ -478,9 +479,10 @@ where
                 },
                 RedisCacheInner::Fallback { memory, .. } =>
                 {
+                    let mem = Arc::clone(memory);
                     let k = key;
                     drop(guard);
-                    memory.put(k, value).await;
+                    mem.put(k, value).await;
                 },
                 RedisCacheInner::Degraded { .. } =>
                 {},
@@ -508,9 +510,10 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 let k = key;
                 drop(guard);
-                memory.put_with_ttl(k, value, ttl_secs).await;
+                mem.put_with_ttl(k, value, ttl_secs).await;
             },
             RedisCacheInner::Degraded { .. } =>
             {},
@@ -532,8 +535,9 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 drop(guard);
-                memory.invalidate(key).await;
+                mem.invalidate(key).await;
             },
             RedisCacheInner::Degraded { .. } =>
             {},
@@ -567,8 +571,9 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 drop(guard);
-                memory.invalidate_all().await;
+                mem.invalidate_all().await;
             },
             RedisCacheInner::Degraded { .. } =>
             {},
@@ -592,8 +597,9 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 drop(guard);
-                memory.contains_key(key).await
+                mem.contains_key(key).await
             },
             RedisCacheInner::Degraded { .. } => false,
         }
@@ -620,8 +626,9 @@ where
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
+                let mem = Arc::clone(memory);
                 drop(guard);
-                memory.size().await
+                mem.size().await
             },
             RedisCacheInner::Degraded { .. } => 0,
         }
