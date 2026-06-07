@@ -292,9 +292,9 @@ impl<'a> Contract<'a>
     /// 向合约函数发送交易
     pub async fn send_transaction(
         &self,
-        selector: &FunctionSelector,
-        params: &[u8],
-        value: Option<u128>,
+        _selector: &FunctionSelector,
+        _params: &[u8],
+        _value: Option<u128>,
     ) -> Result<TxHash, ContractError>
     {
         // This would require signing a transaction
@@ -304,7 +304,7 @@ impl<'a> Contract<'a>
 }
 
 #[cfg(feature = "rpc")]
-impl<'a> fmt::Debug for Contract<'a>
+impl fmt::Debug for Contract<'_>
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
     {
@@ -417,7 +417,7 @@ impl<'a, 'b> ContractCall<'a, 'b>
 }
 
 #[cfg(feature = "rpc")]
-impl<'a, 'b> Contract<'a>
+impl Contract<'_>
 {
     /// Internal call method
     /// 内部调用方法

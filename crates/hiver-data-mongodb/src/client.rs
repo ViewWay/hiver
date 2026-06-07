@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 use mongodb::{Client, Database};
 
+use futures_util::StreamExt;
 use crate::{MongoError, MongoResult};
 
 /// MongoDB client wrapper / MongoDB 客户端包装器
@@ -104,6 +105,100 @@ impl MongoClient
             .create_collection(name)
             .await
             .map_err(MongoError::from)
+    }
+
+    /// Insert a document into a collection.
+    /// 向集合中插入文档。
+    pub async fn insert(
+        &self,
+        database: &str,
+        collection: &str,
+        doc: serde_json::Value,
+    ) -> MongoResult<mongodb::results::InsertOneResult>
+    {
+        let bson_doc = mongodb::bson::to_document(&doc)
+            .map_err(|e| MongoError::data_conversion(format!("Failed to convert to BSON: {}", e)))?;
+        self.client
+            .database(database)
+            .collection::<mongodb::bson::Document>(collection)
+            .insert_one(bson_doc)
+            .await
+            .map_err(MongoError::from)
+    }
+
+    /// Find a single document matching the filter.
+    /// 查找匹配过滤器的单个文档。
+    pub async fn find_one(
+        &self,
+        database: &str,
+        collection: &str,
+        filter: serde_json::Value,
+    ) -> MongoResult<Option<serde_json::Value>>
+    {
+        let bson_filter = mongodb::bson::to_document(&filter)
+            .map_err(|e| MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e)))?;
+        let result: Option<mongodb::bson::Document> = self
+            .client
+            .database(database)
+            .collection::<mongodb::bson::Document>(collection)
+            .find_one(bson_filter)
+            .await
+            .map_err(MongoError::from)?;
+        match result
+        {
+            Some(doc) => mongodb::bson::from_document::<serde_json::Value>(doc)
+                .map(Some)
+                .map_err(|e| MongoError::data_conversion(format!("Failed to convert from BSON: {}", e))),
+            None => Ok(None),
+        }
+    }
+
+    /// Delete documents matching the filter.
+    /// 删除匹配过滤器的文档。
+    pub async fn delete(
+        &self,
+        database: &str,
+        collection: &str,
+        filter: serde_json::Value,
+    ) -> MongoResult<mongodb::results::DeleteResult>
+    {
+        let bson_filter = mongodb::bson::to_document(&filter)
+            .map_err(|e| MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e)))?;
+        self.client
+            .database(database)
+            .collection::<mongodb::bson::Document>(collection)
+            .delete_one(bson_filter)
+            .await
+            .map_err(MongoError::from)
+    }
+
+    /// Find all documents matching the filter.
+    /// 查找匹配过滤器的所有文档。
+    pub async fn find(
+        &self,
+        database: &str,
+        collection: &str,
+        filter: serde_json::Value,
+    ) -> MongoResult<Vec<serde_json::Value>>
+    {
+        let bson_filter = mongodb::bson::to_document(&filter)
+            .map_err(|e| MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e)))?;
+        let mut cursor = self
+            .client
+            .database(database)
+            .collection::<mongodb::bson::Document>(collection)
+            .find(bson_filter)
+            .await
+            .map_err(MongoError::from)?;
+        let mut results = Vec::new();
+        while let Some(doc) = cursor.next().await
+        {
+            let doc = doc.map_err(MongoError::from)?;
+            let json: serde_json::Value = mongodb::bson::from_document(doc)
+                .map_err(|e| MongoError::data_conversion(format!("Failed to convert from BSON: {}", e)))?;
+            results.push(json);
+        }
+        Ok(results)
     }
 }
 

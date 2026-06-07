@@ -533,7 +533,7 @@ impl WsClient
     async fn subscribe(
         &self,
         sub_type: SubscriptionType,
-        params: Option<serde_json::Value>,
+        _params: Option<serde_json::Value>,
     ) -> Result<SubscriptionId, WsError>
     {
         // In a real implementation, this would:
@@ -617,7 +617,7 @@ pub struct BlockReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Stream for BlockReceiver<'a>
+impl Stream for BlockReceiver<'_>
 {
     type Item = NewBlockHeader;
 
@@ -632,7 +632,7 @@ impl<'a> Stream for BlockReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Unpin for BlockReceiver<'a> {}
+impl Unpin for BlockReceiver<'_> {}
 
 /// Pending transaction stream
 /// 待处理交易流
@@ -644,7 +644,7 @@ pub struct PendingTxReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Stream for PendingTxReceiver<'a>
+impl Stream for PendingTxReceiver<'_>
 {
     type Item = PendingTransaction;
 
@@ -658,7 +658,7 @@ impl<'a> Stream for PendingTxReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Unpin for PendingTxReceiver<'a> {}
+impl Unpin for PendingTxReceiver<'_> {}
 
 /// Log notification stream
 /// 日志通知流
@@ -670,7 +670,7 @@ pub struct LogReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Stream for LogReceiver<'a>
+impl Stream for LogReceiver<'_>
 {
     type Item = LogNotification;
 
@@ -684,7 +684,7 @@ impl<'a> Stream for LogReceiver<'a>
 }
 
 #[cfg(feature = "ws")]
-impl<'a> Unpin for LogReceiver<'a> {}
+impl Unpin for LogReceiver<'_> {}
 
 /// Subscription manager
 /// 订阅管理器

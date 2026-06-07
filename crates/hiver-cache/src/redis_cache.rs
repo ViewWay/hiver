@@ -20,10 +20,12 @@ use crate::cache::{Cache, CacheConfig, CacheStats};
 /// Serialization format for Redis cache values.
 /// Redis 缓存值的序列化格式。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum SerializationFormat
 {
     /// JSON (default). Human-readable, widely compatible.
     /// JSON（默认）。人类可读，广泛兼容。
+    #[default]
     Json,
 
     /// MessagePack. Compact binary, faster for structured data.
@@ -32,13 +34,6 @@ pub enum SerializationFormat
     MsgPack,
 }
 
-impl Default for SerializationFormat
-{
-    fn default() -> Self
-    {
-        Self::Json
-    }
-}
 
 /// Serialize a value to bytes according to the chosen format.
 /// 按所选格式将值序列化为字节。
@@ -400,29 +395,23 @@ where
                     .ok()
                     .flatten();
 
-                match result
-                {
-                    Some(data) =>
+                if let Some(data) = result {
+                    if let Some(value) = from_bytes(&data, config.format)
                     {
-                        if let Some(value) = from_bytes(&data, config.format)
-                        {
-                            stats.hits += 1;
-                            stats.calculate_hit_rate();
-                            Some(value)
-                        }
-                        else
-                        {
-                            stats.misses += 1;
-                            stats.calculate_hit_rate();
-                            None
-                        }
-                    },
-                    None =>
+                        stats.hits += 1;
+                        stats.calculate_hit_rate();
+                        Some(value)
+                    }
+                    else
                     {
                         stats.misses += 1;
                         stats.calculate_hit_rate();
                         None
-                    },
+                    }
+                } else {
+                    stats.misses += 1;
+                    stats.calculate_hit_rate();
+                    None
                 }
             },
             RedisCacheInner::Fallback { memory, .. } =>
@@ -592,8 +581,7 @@ where
                     .arg(&full_key)
                     .query_async::<i32>(conn)
                     .await
-                    .map(|v| v > 0)
-                    .unwrap_or(false)
+                    .is_ok_and(|v| v > 0)
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {
@@ -621,8 +609,7 @@ where
                     .arg(&pattern)
                     .query_async::<Vec<String>>(conn)
                     .await
-                    .map(|keys| keys.len())
-                    .unwrap_or(0)
+                    .map_or(0, |keys| keys.len())
             },
             RedisCacheInner::Fallback { memory, .. } =>
             {

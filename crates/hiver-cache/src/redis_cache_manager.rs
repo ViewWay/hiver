@@ -37,7 +37,7 @@ pub struct RedisCacheWorker
 
 /// Type alias for a pinned, boxed, sendable future.
 /// 固定、装箱、可发送的 future 的类型别名。
-type PinnedFuture<T> = std::pin::Pin<Box<dyn std::future::Future<Output = T> + Send>>;
+type PinnedFuture<T> = std::pin::Pin<Box<dyn Future<Output = T> + Send>>;
 
 impl RedisCacheWorker
 {

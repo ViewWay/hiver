@@ -49,7 +49,9 @@
 
 use std::{collections::HashMap, sync::Arc, time::Instant};
 
+#[cfg(feature = "http-client")]
 use crate::error::{SecurityError, SecurityResult};
+
 use base64::Engine;
 use rand::Rng;
 use serde::{Deserialize, Serialize};

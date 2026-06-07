@@ -108,6 +108,56 @@ impl RedisClient
         let result: u64 = redis::cmd("DBSIZE").query_async(&mut conn).await?;
         Ok(result)
     }
+
+    /// Set a key with expiration (SETEX).
+    /// 设置带过期时间的键（SETEX）。
+    pub async fn setex(&self, key: &str, ttl_secs: u64, value: &[u8]) -> RedisResult<()>
+    {
+        let mut conn = self.get_connection().await?;
+        redis::cmd("SETEX")
+            .arg(key)
+            .arg(ttl_secs)
+            .arg(value)
+            .query_async::<()>(&mut conn)
+            .await?;
+        Ok(())
+    }
+
+    /// Get a key's value.
+    /// 获取键的值。
+    pub async fn get(&self, key: &str) -> RedisResult<Option<Vec<u8>>>
+    {
+        let mut conn = self.get_connection().await?;
+        let result: Option<Vec<u8>> = redis::cmd("GET")
+            .arg(key)
+            .query_async(&mut conn)
+            .await?;
+        Ok(result)
+    }
+
+    /// Delete a key.
+    /// 删除键。
+    pub async fn del(&self, key: &str) -> RedisResult<()>
+    {
+        let mut conn = self.get_connection().await?;
+        redis::cmd("DEL")
+            .arg(key)
+            .query_async::<()>(&mut conn)
+            .await?;
+        Ok(())
+    }
+
+    /// Find keys matching a pattern.
+    /// 查找匹配模式的键。
+    pub async fn keys(&self, pattern: &str) -> RedisResult<Vec<Vec<u8>>>
+    {
+        let mut conn = self.get_connection().await?;
+        let result: Vec<Vec<u8>> = redis::cmd("KEYS")
+            .arg(pattern)
+            .query_async(&mut conn)
+            .await?;
+        Ok(result)
+    }
 }
 
 #[cfg(test)]
