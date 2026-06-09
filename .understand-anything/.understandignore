@@ -1,0 +1,53 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+# Lines below are suggestions — uncomment to activate.
+# Use ! prefix to force-include something excluded by defaults.
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+#
+# --- From .gitignore (uncomment to exclude) ---
+
+# /target
+# **/*.rs.bk
+# Cargo.lock
+# **/Cargo.lock
+# /.idea
+# /.vscode
+# **/target
+# /.vs
+# /examples/_*.rs
+# /examples/_test*
+# /examples/target
+# /examples/*/target
+# codecov.txt
+# cobertura.xml
+# tarpaulin-report.*
+# debug.log
+# **/temp
+# *.profraw
+# examples/*/.env.local
+# examples/**/package-lock.json
+# examples/**/pnpm-lock.yaml
+# **/node_modules
+# .DS_Store
+# .claude
+# .cursor
+# .env
+# .env/
+# .env.*
+# !.env.example
+# .cache/*
+# .claude/*docs/book/book/
+
+# --- Detected directories (uncomment to exclude) ---
+
+# tests/
+# docs/
+# examples/
+
+# --- Test file patterns (uncomment to exclude) ---
+
+# *.test.*
+# *.spec.*
+# *.snap

@@ -69,6 +69,7 @@ pub mod optimistic_lock;
 pub mod page;
 pub mod part_tree;
 pub mod projection;
+pub mod propagation;
 #[cfg(feature = "query")]
 pub mod query;
 pub mod repository;

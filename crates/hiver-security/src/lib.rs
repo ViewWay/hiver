@@ -97,6 +97,7 @@ pub mod data_scope;
 pub mod email;
 mod encoder;
 mod error;
+pub mod filter_chain;
 mod jwt;
 mod oauth2;
 pub mod permission;

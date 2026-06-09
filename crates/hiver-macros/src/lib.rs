@@ -91,7 +91,7 @@ pub fn into_response_derive(input: TokenStream) -> TokenStream
     derive::into_response(input)
 }
 
-#[proc_macro_derive(Bean)]
+#[proc_macro_derive(Bean, attributes(bean))]
 pub fn bean_derive(input: TokenStream) -> TokenStream
 {
     derive::bean_derive(input)

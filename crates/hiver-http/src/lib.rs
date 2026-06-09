@@ -128,6 +128,8 @@ pub mod proto;
 pub mod request;
 pub mod respond;
 pub mod response;
+pub mod response_entity;
+pub mod content_negotiation;
 pub mod server;
 pub mod service;
 pub mod sse;

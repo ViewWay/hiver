@@ -34,6 +34,7 @@ pub mod bean;
 pub mod conditional;
 pub mod container;
 pub mod context;
+pub mod conversion;
 pub mod error;
 pub mod event;
 pub mod extension;
@@ -43,12 +44,15 @@ pub mod reflect;
 
 // Re-exports / 重新导出
 pub use aware::{ApplicationContextAware, BeanFactoryAware, BeanNameAware};
-pub use bean::{Bean, BeanDefinition, BeanState, Scope};
+pub use bean::{Bean, BeanDefinition, BeanDependencies, BeanState, DependencyInfo, Scope};
 pub use conditional::{
     AllConditions, AnyCondition, Condition, ConditionContext, ConditionalOnBean,
     ConditionalOnMissingBean, ConditionalOnProperty, NotCondition, ProfileCondition,
 };
 pub use container::{ApplicationContext, Container};
+pub use conversion::{
+    ConversionService, Converter, DefaultConversionService, parse_duration, resolve_placeholders,
+};
 pub use error::{Error, ErrorKind, Result};
 pub use event::{ApplicationEvent, ApplicationEventPublisher};
 pub use extension::Extensions;

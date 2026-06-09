@@ -10,7 +10,66 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::any::Any;
+use std::any::{Any, TypeId};
+
+/// Dependency metadata for a bean.
+/// Bean 的依赖元数据。
+///
+/// Stores both the TypeId and type name for clear error messages.
+/// 同时存储 TypeId 和类型名称，以便生成清晰的错误消息。
+#[derive(Debug, Clone)]
+pub struct DependencyInfo
+{
+    /// The TypeId of the dependency.
+    /// 依赖的 TypeId。
+    pub type_id: TypeId,
+
+    /// The type name of the dependency (for diagnostics).
+    /// 依赖的类型名称（用于诊断）。
+    pub type_name: &'static str,
+}
+
+impl DependencyInfo
+{
+    /// Create a new dependency info for type `T`.
+    /// 为类型 `T` 创建新的依赖信息。
+    pub fn of<T: 'static>() -> Self
+    {
+        Self {
+            type_id: TypeId::of::<T>(),
+            type_name: std::any::type_name::<T>(),
+        }
+    }
+}
+
+/// Trait for declaring bean dependencies at registration time.
+/// 在注册时声明 Bean 依赖的 trait。
+///
+/// Types implementing this trait can declare their dependencies,
+/// allowing the Container to verify all dependencies are satisfied
+/// before the application starts.
+///
+/// 实现此 trait 的类型可以声明其依赖，
+/// 允许 Container 在应用启动前验证所有依赖是否满足。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use hiver_core::{Bean, BeanDependencies, DependencyInfo};
+///
+/// #[derive(Bean)]
+/// #[bean(depends(UserRepository, EmailService))]
+/// struct UserService { /* ... */ }
+/// ```
+pub trait BeanDependencies: Bean
+{
+    /// Return the dependencies of this bean.
+    /// 返回此 bean 的依赖。
+    fn dependencies() -> Vec<DependencyInfo>
+    {
+        Vec::new()
+    }
+}
 
 /// Bean trait - marker for Spring-managed components
 /// Bean trait - Spring管理的组件标记

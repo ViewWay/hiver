@@ -14,12 +14,13 @@
 
 use std::{
     any::{Any, TypeId},
-    collections::HashMap,
+    collections::{HashMap, HashSet},
+    marker::PhantomData,
     sync::{Arc, RwLock},
 };
 
 use super::{
-    bean::{Bean, BeanDefinition, BeanState, Scope},
+    bean::{Bean, BeanDefinition, BeanState, DependencyInfo, Scope},
     conditional::{Condition, ConditionContext},
     error::{Error, Result},
     extension::Extensions,
@@ -215,6 +216,10 @@ struct BeanEntry
     /// Eager init function (used by `initialize()`).
     /// 急切初始化函数（由 `initialize()` 使用）。
     eager_init_fn: Option<Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>>,
+
+    /// Declared dependencies for startup verification.
+    /// 声明的依赖，用于启动验证。
+    dependencies: Vec<super::bean::DependencyInfo>,
 }
 
 impl BeanStore
@@ -440,6 +445,7 @@ impl Container
             scope: Scope::Singleton,
             pre_destroy_hook: None,
             eager_init_fn: None,
+            dependencies: Vec::new(),
         });
 
         Ok(())
@@ -482,6 +488,7 @@ impl Container
             scope: entry_scope,
             pre_destroy_hook: hook,
             eager_init_fn: Some(eager_fn),
+            dependencies: Vec::new(),
         });
 
         Ok(())
@@ -542,6 +549,7 @@ impl Container
                 scope: Scope::Singleton,
                 pre_destroy_hook: None,
                 eager_init_fn: None,
+                dependencies: Vec::new(),
             });
         }
 
@@ -612,6 +620,7 @@ impl Container
             scope: Scope::Singleton,
             pre_destroy_hook: None,
             eager_init_fn: None,
+            dependencies: Vec::new(),
         });
 
         Ok(())
@@ -652,6 +661,7 @@ impl Container
             scope: entry_scope,
             pre_destroy_hook: hook,
             eager_init_fn: Some(eager_fn),
+            dependencies: Vec::new(),
         });
 
         Ok(())
@@ -1368,6 +1378,244 @@ pub trait PreDestroy
     /// Called before the bean is destroyed
     /// 在bean销毁前调用
     fn pre_destroy(&self) -> Result<()>;
+}
+
+// ============================================================================
+// BeanRegistrar — Builder for dependency-aware bean registration
+// BeanRegistrar — 带依赖声明的 Bean 注册构建器
+// ============================================================================
+
+/// Builder for registering a bean with declared dependencies.
+/// 带依赖声明的 Bean 注册构建器。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// container.register_bean::<UserService>()
+///     .depends_on::<UserRepository>()
+///     .depends_on::<EmailService>()
+///     .factory(|c| {
+///         Ok(UserService::new(
+///             c.get_bean::<UserRepository>()?,
+///             c.get_bean::<EmailService>()?,
+///         ))
+///     })
+///     .build()?;
+/// ```
+pub struct BeanRegistrar<'a, T>
+where
+    T: Bean + Send + Sync + 'static,
+{
+    container: &'a mut Container,
+    _marker: PhantomData<T>,
+    deps: Vec<DependencyInfo>,
+    factory: Option<Arc<dyn Fn(&Container) -> Result<T> + Send + Sync>>,
+    scope: Scope,
+    primary: bool,
+    lazy: bool,
+    name: String,
+}
+
+impl<'a, T: Bean + Send + Sync + 'static> BeanRegistrar<'a, T>
+{
+    fn new(container: &'a mut Container) -> Self
+    {
+        Self {
+            container,
+            _marker: PhantomData,
+            deps: Vec::new(),
+            factory: None,
+            scope: Scope::Singleton,
+            primary: false,
+            lazy: false,
+            name: std::any::type_name::<T>().to_string(),
+        }
+    }
+
+    /// Declare a dependency on another bean type.
+    /// 声明对另一个 bean 类型的依赖。
+    pub fn depends_on<D: 'static>(mut self) -> Self
+    {
+        self.deps.push(DependencyInfo::of::<D>());
+        self
+    }
+
+    /// Use dependencies declared via `BeanDependencies` trait.
+    /// 使用通过 `BeanDependencies` trait 声明的依赖。
+    ///
+    /// The `#[derive(Bean)]` macro with `#[bean(depends(...))]` generates
+    /// the `BeanDependencies` impl automatically.
+    ///
+    /// `#[derive(Bean)]` 宏配合 `#[bean(depends(...))]` 会自动生成
+    /// `BeanDependencies` 实现。
+    pub fn with_declared_deps(mut self) -> Self
+    where
+        T: super::bean::BeanDependencies,
+    {
+        self.deps = T::dependencies();
+        self
+    }
+
+    /// Set the factory function.
+    /// 设置工厂函数。
+    pub fn factory<F>(mut self, f: F) -> Self
+    where
+        F: Fn(&Container) -> Result<T> + Send + Sync + 'static,
+    {
+        self.factory = Some(Arc::new(f));
+        self
+    }
+
+    /// Set the scope.
+    /// 设置作用域。
+    pub fn scope(mut self, scope: Scope) -> Self
+    {
+        self.scope = scope;
+        self
+    }
+
+    /// Mark this bean as the primary candidate for its type.
+    /// 标记此 bean 为其类型的首选候选。
+    pub fn primary(mut self) -> Self
+    {
+        self.primary = true;
+        self
+    }
+
+    /// Set lazy initialization.
+    /// 设置延迟初始化。
+    pub fn lazy(mut self) -> Self
+    {
+        self.lazy = true;
+        self
+    }
+
+    /// Set the bean name explicitly.
+    /// 显式设置 bean 名称。
+    pub fn named(mut self, name: impl Into<String>) -> Self
+    {
+        self.name = name.into();
+        self
+    }
+
+    /// Build and register the bean with its declared dependencies.
+    /// 构建并注册 bean 及其声明的依赖。
+    pub fn build(self) -> Result<()>
+    {
+        let factory = self.factory.ok_or_else(|| {
+            Error::internal(format!(
+                "Bean '{}' registered without a factory function. \
+                 Call .factory() before .build()",
+                self.name
+            ))
+        })?;
+
+        let type_id = TypeId::of::<T>();
+        let registration = BeanRegistration::new(&self.name).factory(factory);
+
+        let name_clone = self.name.clone();
+        let eager_fn = if !self.lazy
+        {
+            Some(
+                Arc::new(move |c: &Container| {
+                    c.get_bean_by_name::<T>(&name_clone)?;
+                    Ok(())
+                }) as Arc<dyn Fn(&Container) -> Result<()> + Send + Sync>,
+            )
+        }
+        else
+        {
+            None
+        };
+
+        let mut beans = self.container.write_beans()?;
+        beans.type_index.insert(type_id, self.name.clone());
+        beans
+            .type_to_names
+            .entry(type_id)
+            .or_default()
+            .push(self.name.clone());
+        beans.beans.insert(
+            self.name,
+            BeanEntry {
+                type_id,
+                registration: Box::new(registration),
+                instance: None,
+                early_exposed: None,
+                state: BeanState::Defined,
+                lazy: self.lazy,
+                primary: self.primary,
+                scope: self.scope,
+                pre_destroy_hook: None,
+                eager_init_fn: eager_fn,
+                dependencies: self.deps,
+            },
+        );
+
+        Ok(())
+    }
+}
+
+// ============================================================================
+// Container — Dependency Verification & Initialization
+// Container — 依赖验证与初始化
+// ============================================================================
+
+impl Container
+{
+    /// Start registering a bean with the builder pattern.
+    /// 使用构建器模式开始注册 bean。
+    ///
+    /// Returns a `BeanRegistrar` that allows declaring dependencies,
+    /// setting scope, and configuring the factory function.
+    ///
+    /// 返回 `BeanRegistrar`，允许声明依赖、设置作用域和配置工厂函数。
+    ///
+    /// # Example / 示例
+    ///
+    /// ```rust,ignore
+    /// container.bean_builder::<UserService>()
+    ///     .depends_on::<UserRepository>()
+    ///     .factory(|c| Ok(UserService::new(c.get_bean()?)))
+    ///     .build()?;
+    /// ```
+    pub fn bean_builder<T: Bean + Send + Sync + 'static>(&mut self) -> BeanRegistrar<'_, T>
+    {
+        BeanRegistrar::new(self)
+    }
+
+    /// Verify that all declared bean dependencies are satisfied.
+    /// 验证所有声明的 bean 依赖是否满足。
+    ///
+    /// Call this after all beans are registered but before creating them.
+    /// Returns a list of warnings for missing dependencies.
+    ///
+    /// 在所有 bean 注册完成后、创建之前调用此方法。
+    /// 返回缺失依赖的警告列表。
+    ///
+    /// Equivalent to Spring's `ApplicationContext.refresh()` validation step.
+    /// 等价于 Spring 的 `ApplicationContext.refresh()` 验证步骤。
+    pub fn verify_dependencies(&self) -> Result<Vec<String>>
+    {
+        let beans = self.read_beans()?;
+        let registered: HashSet<TypeId> = beans.type_index.keys().copied().collect();
+
+        let mut warnings = Vec::new();
+        for (name, entry) in &beans.beans
+        {
+            for dep in &entry.dependencies
+            {
+                if !registered.contains(&dep.type_id)
+                {
+                    warnings.push(format!(
+                        "Bean '{}' depends on '{}' which is not registered",
+                        name, dep.type_name
+                    ));
+                }
+            }
+        }
+        Ok(warnings)
+    }
 }
 
 #[cfg(test)]

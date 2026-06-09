@@ -8,7 +8,10 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DataStruct, DeriveInput, Fields, parse_macro_input};
+use syn::{
+    parse::ParseStream, punctuated::Punctuated, Data, DataStruct, DeriveInput, Fields, Ident,
+    Token, parse_macro_input,
+};
 
 /// Derive macro for FromRequest trait
 /// FromRequest trait的派生宏
@@ -71,33 +74,107 @@ pub fn from_request(input: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-/// Derive macro for Bean trait
-/// Bean trait 的派生宏
+/// Derive macro for Bean trait with optional dependency declaration.
+/// Bean trait 的派生宏，支持可选的依赖声明。
 ///
-/// Marks a type as a Spring-managed component (equivalent to `@Component`).
-/// 标记类型为 Spring 管理的组件（等价于 `@Component`）。
+/// # Attributes / 属性
 ///
-/// # Example / 示例
+/// - `#[bean(depends(Type1, Type2, ...))]` — declare bean dependencies
 ///
-/// ```rust,no_run,ignore
-/// use hiver_macros::Bean;
+/// # Examples / 示例
 ///
+/// ```rust,ignore
+/// // Simple bean without dependencies / 无依赖的简单 bean
 /// #[derive(Bean)]
-/// struct UserService {
-///     name: String,
-/// }
+/// struct SimpleService;
+///
+/// // Bean with declared dependencies / 带声明的依赖
+/// #[derive(Bean)]
+/// #[bean(depends(UserRepository, EmailService))]
+/// struct UserService { /* ... */ }
 /// ```
 pub fn bean_derive(input: TokenStream) -> TokenStream
 {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
+    // Parse #[bean(depends(Type1, Type2, ...))] helper attribute
+    let deps = parse_bean_depends(&input.attrs);
+
+    let dep_impl = if deps.is_empty()
+    {
+        // No dependencies declared — skip BeanDependencies impl
+        quote! {}
+    }
+    else
+    {
+        let type_infos: Vec<_> = deps
+            .iter()
+            .map(|dep| {
+                quote! {
+                    ::hiver_core::DependencyInfo {
+                        type_id: std::any::TypeId::of::<#dep>(),
+                        type_name: std::any::type_name::<#dep>(),
+                    }
+                }
+            })
+            .collect();
+
+        quote! {
+            #[automatically_derived]
+            impl ::hiver_core::BeanDependencies for #name
+            {
+                fn dependencies() -> Vec<::hiver_core::DependencyInfo>
+                {
+                    vec![#(#type_infos),*]
+                }
+            }
+        }
+    };
+
     let expanded = quote! {
         #[automatically_derived]
         impl ::hiver_core::Bean for #name {}
+
+        #dep_impl
     };
 
     TokenStream::from(expanded)
+}
+
+/// Parse `#[bean(depends(Type1, Type2))]` from derive helper attributes.
+fn parse_bean_depends(attrs: &[syn::Attribute]) -> Vec<Ident>
+{
+    for attr in attrs
+    {
+        if !attr.path().is_ident("bean")
+        {
+            continue;
+        }
+
+        let result: Result<Vec<Ident>, syn::Error> = attr.parse_args_with(
+            |input: ParseStream| {
+                // Parse: depends(Type1, Type2, ...)
+                let keyword: Ident = input.parse()?;
+                if keyword != "depends"
+                {
+                    return Ok(Vec::new());
+                }
+
+                let content;
+                syn::parenthesized!(content in input);
+                let types =
+                    Punctuated::<Ident, Token![,]>::parse_terminated(&content)?;
+                Ok(types.into_iter().collect())
+            },
+        );
+
+        if let Ok(deps) = result
+        {
+            return deps;
+        }
+    }
+    Vec::new()
 }
 
 /// Derive macro for IntoResponse trait

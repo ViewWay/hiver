@@ -1,0 +1,7518 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".claude.json",
+      "language": "json",
+      "sizeLines": 12,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".claude/settings.local.json",
+      "language": "json",
+      "sizeLines": 230,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codecov.yml",
+      "language": "yaml",
+      "sizeLines": 368,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codegraph/config.json",
+      "language": "json",
+      "sizeLines": 139,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codegraph/daemon.pid",
+      "language": "pid",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".cursorignore",
+      "language": "unknown",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".deepseek/trusted",
+      "language": "unknown",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".env.example",
+      "language": "config",
+      "sizeLines": 40,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/codeql-config.yml",
+      "language": "yaml",
+      "sizeLines": 109,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/dco.yml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "language": "yaml",
+      "sizeLines": 202,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "language": "yaml",
+      "sizeLines": 8,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "language": "markdown",
+      "sizeLines": 31,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".github/workflows/auto-publish.yml",
+      "language": "yaml",
+      "sizeLines": 224,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/benchmark.yml",
+      "language": "yaml",
+      "sizeLines": 107,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/binary-release.yml",
+      "language": "yaml",
+      "sizeLines": 206,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/check-workspace-deps.yml",
+      "language": "yaml",
+      "sizeLines": 109,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "language": "yaml",
+      "sizeLines": 119,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/codeql.yml",
+      "language": "yaml",
+      "sizeLines": 75,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/coverage.yml",
+      "language": "yaml",
+      "sizeLines": 77,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/docs.yml",
+      "language": "yaml",
+      "sizeLines": 110,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/outdated.yml",
+      "language": "yaml",
+      "sizeLines": 140,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/README.md",
+      "language": "markdown",
+      "sizeLines": 1053,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "language": "yaml",
+      "sizeLines": 201,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/semver.yml",
+      "language": "yaml",
+      "sizeLines": 121,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".omc/project-memory.json",
+      "language": "json",
+      "sizeLines": 272,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/07f2f5d5-75da-4b93-b6e2-1f01f46c619b.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/0d6c534a-3af2-448a-bd57-3fbfdc9debf8.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/113c5c27-8d8e-47bd-b25c-c97a43f1ac2d.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/15446cb9-8c8d-41d9-9e27-24f3efc8b1be.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/1b968089-48cf-4f68-b025-2ae9a67f0b84.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/1e26d6ee-be91-4187-9f55-76840baf2e84.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/23a5c108-3272-4ae6-8c84-4684cc7e3fa4.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/2ae57ef1-d983-4f08-81fc-7b91f2def5ff.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/2b6ce726-2184-4bea-acf1-8f25d9a28247.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/2e7e5ff4-d00a-400e-8b3b-7335c4efe897.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/3ead075a-dfa0-41f8-b631-b90d48362deb.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/45726bfc-97ae-4fe3-ba1b-6151b4aa3656.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/53acf405-77ab-4baf-be47-0a6ec0eacaeb.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/55ef7c17-0917-4a4d-99b8-3a0a7eab53f1.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/5ad65fee-db62-48e9-9e3a-7bce9ac3ffc7.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/690623e1-d6dd-4293-bd07-fe6b2c5c3790.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/6987fab6-d29c-46b4-b792-0be02dec932e.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/6e4811cf-5c53-4905-b6b9-29d99e37bca7.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/707b60e9-db7c-4401-9d91-ee442e62fbb1.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/8d0c41e6-57d2-41fd-b0fe-cd79862b000c.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/9229172d-6650-49a4-a0cc-6a2e9e0aec62.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/927ea45b-f0e9-4c5a-a166-0e25bb63a9f9.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/92e5d9d9-9467-45f1-971a-cb19a125505b.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/94edfcfe-c897-4530-b05c-1c2072da9a0c.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/9c380658-bcba-4568-b667-ee281c09d5cc.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/a5742e7c-bca4-4ec3-9b6b-f284c64c13fb.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/a5c8b6e6-0134-431f-b68f-3c356497ae7c.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/ca086e0e-a580-42d1-968b-7547d1453c59.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/cd65953c-c39e-4c58-8bf4-2e750f576b2a.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/cdc29c2d-b0a7-4601-9a4d-5f328d123174.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/cfc9bc65-64b1-44ab-9d70-f883ca493a88.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/d1fefc50-e936-4991-a8f3-ef36339af2fc.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/d49e24a4-15d8-4735-bd90-805446a1cdd9.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/d7b7c3bd-760a-49b8-8481-40c4d98ef5cb.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/e2fe558d-5f68-49ed-bcfc-03a00ed985c1.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/edc2724c-6056-45b8-970d-1c54d78d2478.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/sessions/f3ffd5e9-8578-4cec-9aa5-5b1ef464c3bb.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T02-31-27-133Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T09-53-04-981Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T11-20-50-025Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T14-02-18-549Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T15-23-06-061Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-24T23-42-26-425Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-25T08-57-06-252Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-26T00-54-45-658Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-27T14-28-34-520Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-27T15-05-52-806Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-27T19-36-15-420Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-27T23-51-17-597Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-28T14-41-11-113Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-28T16-01-29-453Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-29T16-40-24-000Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-30T03-14-18-832Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-30T06-49-16-102Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-30T07-12-38-373Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-30T13-14-09-974Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T04-16-44-077Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T04-34-58-976Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T05-07-48-406Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T05-12-15-780Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T07-44-49-890Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T08-27-08-374Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T08-27-33-134Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T13-25-53-089Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T15-00-47-751Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-05-31T16-13-15-152Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-06-01T15-51-30-987Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-06-03T23-54-07-624Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-06-06T06-25-18-942Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-06-06T14-17-46-178Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/checkpoints/checkpoint-2026-06-07T16-21-49-238Z.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/last-tool-error.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/mission-state.json",
+      "language": "json",
+      "sizeLines": 1208,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/006e127e-e527-42e6-950c-6ef99ab8b632/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/2ff585d7-1707-49b6-af46-da00afb72472/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/43c32f6e-b7ff-4ddb-9425-b5b1dcc7e3a3/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/45726bfc-97ae-4fe3-ba1b-6151b4aa3656/hud-state.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/54203296-802f-4f82-86fb-f05b080486f1/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/54d654a1-3d30-4d3d-b834-b59f6e95ffd5/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/85de10be-74bd-4c29-92b6-9e4a1133abb8/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/877016f4-23ac-4f7e-a735-a774847236f0/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/b9747514-eeae-4da1-8c76-8857af8148d9/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".omc/state/sessions/f0f3a159-693f-4801-a034-4d8ffcc1312c/session-started.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 1,
+      "fileCategory": "config"
+    },
+    {
+      "path": "book.toml",
+      "language": "toml",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Cargo.toml",
+      "language": "toml",
+      "sizeLines": 574,
+      "fileCategory": "config"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "language": "markdown",
+      "sizeLines": 775,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLA.md",
+      "language": "markdown",
+      "sizeLines": 65,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLAUDE_CHANGES.md",
+      "language": "markdown",
+      "sizeLines": 16005,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 400,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "clippy.toml",
+      "language": "toml",
+      "sizeLines": 118,
+      "fileCategory": "config"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "language": "markdown",
+      "sizeLines": 322,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-actuator/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 43,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-actuator/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-actuator/src/beans.rs",
+      "language": "rust",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/env.rs",
+      "language": "rust",
+      "sizeLines": 401,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/health.rs",
+      "language": "rust",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/info.rs",
+      "language": "rust",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/loggers.rs",
+      "language": "rust",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/mappings.rs",
+      "language": "rust",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/metrics.rs",
+      "language": "rust",
+      "sizeLines": 326,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/routes.rs",
+      "language": "rust",
+      "sizeLines": 588,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-actuator/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-agent/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-agent/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-agent/src/agent.rs",
+      "language": "rust",
+      "sizeLines": 442,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-agent/src/chain.rs",
+      "language": "rust",
+      "sizeLines": 575,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-agent/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-agent/src/prompt.rs",
+      "language": "rust",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-agent/src/react.rs",
+      "language": "rust",
+      "sizeLines": 666,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-ai/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-ai/src/anthropic.rs",
+      "language": "rust",
+      "sizeLines": 965,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/chat_client.rs",
+      "language": "rust",
+      "sizeLines": 560,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/chat_memory.rs",
+      "language": "rust",
+      "sizeLines": 560,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/chat_model.rs",
+      "language": "rust",
+      "sizeLines": 522,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/embedding.rs",
+      "language": "rust",
+      "sizeLines": 362,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/memory.rs",
+      "language": "rust",
+      "sizeLines": 375,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/ollama.rs",
+      "language": "rust",
+      "sizeLines": 1139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/openai.rs",
+      "language": "rust",
+      "sizeLines": 1215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/prompt.rs",
+      "language": "rust",
+      "sizeLines": 467,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/rag.rs",
+      "language": "rust",
+      "sizeLines": 916,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/tool.rs",
+      "language": "rust",
+      "sizeLines": 971,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ai/src/vector_store.rs",
+      "language": "rust",
+      "sizeLines": 876,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 69,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-amqp/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-amqp/src/ack.rs",
+      "language": "rust",
+      "sizeLines": 492,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/binding.rs",
+      "language": "rust",
+      "sizeLines": 316,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/config.rs",
+      "language": "rust",
+      "sizeLines": 426,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/connection.rs",
+      "language": "rust",
+      "sizeLines": 308,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/converter.rs",
+      "language": "rust",
+      "sizeLines": 638,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/dead_letter.rs",
+      "language": "rust",
+      "sizeLines": 491,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/exchange.rs",
+      "language": "rust",
+      "sizeLines": 403,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/listener.rs",
+      "language": "rust",
+      "sizeLines": 317,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/message.rs",
+      "language": "rust",
+      "sizeLines": 529,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/publisher.rs",
+      "language": "rust",
+      "sizeLines": 407,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/queue.rs",
+      "language": "rust",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/rabbit_client.rs",
+      "language": "rust",
+      "sizeLines": 318,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-amqp/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 209,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-aop-macros/src/advice.rs",
+      "language": "rust",
+      "sizeLines": 278,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop-macros/src/aspect.rs",
+      "language": "rust",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop-macros/src/pointcut.rs",
+      "language": "rust",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-aop/examples/logging_aspect.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop/README.md",
+      "language": "markdown",
+      "sizeLines": 661,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-aop/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop/src/runtime.rs",
+      "language": "rust",
+      "sizeLines": 2369,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-aop/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 22,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-async/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-async/src/config.rs",
+      "language": "rust",
+      "sizeLines": 288,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/src/error.rs",
+      "language": "rust",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/src/executor.rs",
+      "language": "rust",
+      "sizeLines": 517,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/src/task.rs",
+      "language": "rust",
+      "sizeLines": 355,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-async/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-batch/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-batch/src/context.rs",
+      "language": "rust",
+      "sizeLines": 325,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/error.rs",
+      "language": "rust",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/execution.rs",
+      "language": "rust",
+      "sizeLines": 595,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/flow.rs",
+      "language": "rust",
+      "sizeLines": 400,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/job.rs",
+      "language": "rust",
+      "sizeLines": 472,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/launcher.rs",
+      "language": "rust",
+      "sizeLines": 441,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/operator.rs",
+      "language": "rust",
+      "sizeLines": 725,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/partition.rs",
+      "language": "rust",
+      "sizeLines": 284,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/processor.rs",
+      "language": "rust",
+      "sizeLines": 475,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/reader.rs",
+      "language": "rust",
+      "sizeLines": 543,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 518,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/step.rs",
+      "language": "rust",
+      "sizeLines": 616,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-batch/src/writer.rs",
+      "language": "rust",
+      "sizeLines": 687,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-benches/data_orm.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 546,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/extractors.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 172,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/http_server.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/http_techpower.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 444,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/lib.rs",
+      "language": "rust",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/router.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/runtime_driver.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 316,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/security.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 491,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-benches/src/main.rs",
+      "language": "rust",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 88,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-cache/README.md",
+      "language": "markdown",
+      "sizeLines": 576,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-cache/src/cache_config.rs",
+      "language": "rust",
+      "sizeLines": 326,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/cache_evict.rs",
+      "language": "rust",
+      "sizeLines": 301,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/cache_manager.rs",
+      "language": "rust",
+      "sizeLines": 324,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/cache_put.rs",
+      "language": "rust",
+      "sizeLines": 278,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/cache.rs",
+      "language": "rust",
+      "sizeLines": 543,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/cacheable.rs",
+      "language": "rust",
+      "sizeLines": 342,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/caching.rs",
+      "language": "rust",
+      "sizeLines": 572,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/condition_evaluator.rs",
+      "language": "rust",
+      "sizeLines": 568,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/global_cache.rs",
+      "language": "rust",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/key_generator.rs",
+      "language": "rust",
+      "sizeLines": 394,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/redis_cache_manager.rs",
+      "language": "rust",
+      "sizeLines": 439,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/redis_cache.rs",
+      "language": "rust",
+      "sizeLines": 1187,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/src/resolver.rs",
+      "language": "rust",
+      "sizeLines": 297,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cache/tests/cache_conditions_test.rs",
+      "language": "rust",
+      "sizeLines": 386,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 26,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-cli/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-cli/src/cli.rs",
+      "language": "rust",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/commands/add.rs",
+      "language": "rust",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/commands/generate.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/commands/mod.rs",
+      "language": "rust",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/commands/new.rs",
+      "language": "rust",
+      "sizeLines": 189,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/commands/run.rs",
+      "language": "rust",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/main.rs",
+      "language": "rust",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/templates/arch.rs",
+      "language": "rust",
+      "sizeLines": 298,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/templates/mod.rs",
+      "language": "rust",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cli/src/templates/project.rs",
+      "language": "rust",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/.omc/state/last-tool-error.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-cloud/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 80,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-cloud/README.md",
+      "language": "markdown",
+      "sizeLines": 108,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-cloud/src/circuit_breaker.rs",
+      "language": "rust",
+      "sizeLines": 1017,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/config_client.rs",
+      "language": "rust",
+      "sizeLines": 1202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/config.rs",
+      "language": "rust",
+      "sizeLines": 734,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/discovery/consul.rs",
+      "language": "rust",
+      "sizeLines": 1283,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/discovery/mod.rs",
+      "language": "rust",
+      "sizeLines": 1220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/feign.rs",
+      "language": "rust",
+      "sizeLines": 598,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/gateway.rs",
+      "language": "rust",
+      "sizeLines": 2591,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/load_balancer_ext.rs",
+      "language": "rust",
+      "sizeLines": 272,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/load_balancer.rs",
+      "language": "rust",
+      "sizeLines": 646,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-cloud/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 74,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-config/README.md",
+      "language": "markdown",
+      "sizeLines": 547,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-config/src/config.rs",
+      "language": "rust",
+      "sizeLines": 1420,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/encrypt.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/environment.rs",
+      "language": "rust",
+      "sizeLines": 923,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/error.rs",
+      "language": "rust",
+      "sizeLines": 293,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/loader.rs",
+      "language": "rust",
+      "sizeLines": 789,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/properties.rs",
+      "language": "rust",
+      "sizeLines": 602,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/refresh.rs",
+      "language": "rust",
+      "sizeLines": 572,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/source.rs",
+      "language": "rust",
+      "sizeLines": 625,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-config/src/value.rs",
+      "language": "rust",
+      "sizeLines": 1208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 79,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-core/README.md",
+      "language": "markdown",
+      "sizeLines": 187,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-core/src/aware.rs",
+      "language": "rust",
+      "sizeLines": 163,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/bean.rs",
+      "language": "rust",
+      "sizeLines": 366,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/conditional.rs",
+      "language": "rust",
+      "sizeLines": 1199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/container.rs",
+      "language": "rust",
+      "sizeLines": 2530,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/context.rs",
+      "language": "rust",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/error.rs",
+      "language": "rust",
+      "sizeLines": 271,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/event.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/extension.rs",
+      "language": "rust",
+      "sizeLines": 341,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/lifecycle.rs",
+      "language": "rust",
+      "sizeLines": 493,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/reactive.rs",
+      "language": "rust",
+      "sizeLines": 1104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/reflect.rs",
+      "language": "rust",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-core/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 62,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-annotations/examples/user_entity.rs",
+      "language": "rust",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/README.md",
+      "language": "markdown",
+      "sizeLines": 771,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/audit.rs",
+      "language": "rust",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/column.rs",
+      "language": "rust",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/entity.rs",
+      "language": "rust",
+      "sizeLines": 633,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/id.rs",
+      "language": "rust",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 720,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/lifecycle.rs",
+      "language": "rust",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/pre_authorize_macro.rs",
+      "language": "rust",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/query.rs",
+      "language": "rust",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/relation.rs",
+      "language": "rust",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 432,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/transactional_macro.rs",
+      "language": "rust",
+      "sizeLines": 321,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/src/transactional.rs",
+      "language": "rust",
+      "sizeLines": 601,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/tests/entity_test.rs",
+      "language": "rust",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-annotations/tests/pre_authorize_test.rs",
+      "language": "rust",
+      "sizeLines": 391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 42,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-commons/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/auditing.rs",
+      "language": "rust",
+      "sizeLines": 512,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/entity.rs",
+      "language": "rust",
+      "sizeLines": 853,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/error.rs",
+      "language": "rust",
+      "sizeLines": 259,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 219,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/method_name.rs",
+      "language": "rust",
+      "sizeLines": 1045,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/optimistic_lock.rs",
+      "language": "rust",
+      "sizeLines": 495,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/page.rs",
+      "language": "rust",
+      "sizeLines": 648,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/part_tree.rs",
+      "language": "rust",
+      "sizeLines": 1638,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/projection.rs",
+      "language": "rust",
+      "sizeLines": 397,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/query.rs",
+      "language": "rust",
+      "sizeLines": 1267,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/sort.rs",
+      "language": "rust",
+      "sizeLines": 360,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/specification.rs",
+      "language": "rust",
+      "sizeLines": 1131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-commons/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 34,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-macros/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 1626,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-macros/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-macros/tests/model_macro_test.rs.disabled",
+      "language": "disabled",
+      "sizeLines": 180,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 59,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/aggregation.rs",
+      "language": "rust",
+      "sizeLines": 730,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/bulk.rs",
+      "language": "rust",
+      "sizeLines": 515,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/client.rs",
+      "language": "rust",
+      "sizeLines": 220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/error.rs",
+      "language": "rust",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/index.rs",
+      "language": "rust",
+      "sizeLines": 633,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/projection.rs",
+      "language": "rust",
+      "sizeLines": 288,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/query.rs",
+      "language": "rust",
+      "sizeLines": 383,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 259,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/template.rs",
+      "language": "rust",
+      "sizeLines": 154,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-mongodb/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 79,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-orm/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/active_record.rs",
+      "language": "rust",
+      "sizeLines": 650,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/diesel.rs",
+      "language": "rust",
+      "sizeLines": 651,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/error.rs",
+      "language": "rust",
+      "sizeLines": 287,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/example.rs",
+      "language": "rust",
+      "sizeLines": 338,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/executor.rs",
+      "language": "rust",
+      "sizeLines": 134,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 127,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/mapper.rs",
+      "language": "rust",
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/migrations.rs",
+      "language": "rust",
+      "sizeLines": 624,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/mock_connection.rs",
+      "language": "rust",
+      "sizeLines": 293,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/model.rs",
+      "language": "rust",
+      "sizeLines": 314,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/projection.rs",
+      "language": "rust",
+      "sizeLines": 434,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/query_metadata.rs",
+      "language": "rust",
+      "sizeLines": 405,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/query_runtime.rs",
+      "language": "rust",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/query.rs",
+      "language": "rust",
+      "sizeLines": 995,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/relationships.rs",
+      "language": "rust",
+      "sizeLines": 858,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 332,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/sea_orm.rs",
+      "language": "rust",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/specification.rs",
+      "language": "rust",
+      "sizeLines": 261,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/sqlx.rs",
+      "language": "rust",
+      "sizeLines": 600,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-orm/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 411,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 67,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/client.rs",
+      "language": "rust",
+      "sizeLines": 372,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/config.rs",
+      "language": "rust",
+      "sizeLines": 603,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/connection.rs",
+      "language": "rust",
+      "sizeLines": 626,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/error.rs",
+      "language": "rust",
+      "sizeLines": 266,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/executor.rs",
+      "language": "rust",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/pool.rs",
+      "language": "rust",
+      "sizeLines": 445,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/row.rs",
+      "language": "rust",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/sql_builder.rs",
+      "language": "rust",
+      "sizeLines": 420,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/transaction.rs",
+      "language": "rust",
+      "sizeLines": 275,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-rdbc/src/tx_bridge.rs",
+      "language": "rust",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 69,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-data-redis/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/cache.rs",
+      "language": "rust",
+      "sizeLines": 312,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/client.rs",
+      "language": "rust",
+      "sizeLines": 180,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/error.rs",
+      "language": "rust",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/lock.rs",
+      "language": "rust",
+      "sizeLines": 1290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/operations.rs",
+      "language": "rust",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/pipeline.rs",
+      "language": "rust",
+      "sizeLines": 350,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/template.rs",
+      "language": "rust",
+      "sizeLines": 448,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-data-redis/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 26,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-events-macros/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-events-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 310,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events-macros/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 57,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-events/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-events/src/annotation.rs",
+      "language": "rust",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/condition.rs",
+      "language": "rust",
+      "sizeLines": 1198,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/event.rs",
+      "language": "rust",
+      "sizeLines": 577,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/listener.rs",
+      "language": "rust",
+      "sizeLines": 1161,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/publisher.rs",
+      "language": "rust",
+      "sizeLines": 586,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/registry.rs",
+      "language": "rust",
+      "sizeLines": 588,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-events/src/transactional_listener.rs",
+      "language": "rust",
+      "sizeLines": 1356,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-exceptions/README.md",
+      "language": "markdown",
+      "sizeLines": 291,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/advice.rs",
+      "language": "rust",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/error_body.rs",
+      "language": "rust",
+      "sizeLines": 255,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/handler.rs",
+      "language": "rust",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/response.rs",
+      "language": "rust",
+      "sizeLines": 268,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-exceptions/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 67,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-extractors/README.md",
+      "language": "markdown",
+      "sizeLines": 671,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-extractors/src/attribute.rs",
+      "language": "rust",
+      "sizeLines": 243,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/cookie.rs",
+      "language": "rust",
+      "sizeLines": 340,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/form.rs",
+      "language": "rust",
+      "sizeLines": 239,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/header.rs",
+      "language": "rust",
+      "sizeLines": 322,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/json.rs",
+      "language": "rust",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/matrix.rs",
+      "language": "rust",
+      "sizeLines": 347,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/model.rs",
+      "language": "rust",
+      "sizeLines": 371,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/multipart.rs",
+      "language": "rust",
+      "sizeLines": 1364,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/path.rs",
+      "language": "rust",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/query.rs",
+      "language": "rust",
+      "sizeLines": 337,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/state.rs",
+      "language": "rust",
+      "sizeLines": 161,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-extractors/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 28,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-flyway/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-flyway/src/config.rs",
+      "language": "rust",
+      "sizeLines": 364,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/dialect.rs",
+      "language": "rust",
+      "sizeLines": 456,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/error.rs",
+      "language": "rust",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/flyway.rs",
+      "language": "rust",
+      "sizeLines": 849,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/info.rs",
+      "language": "rust",
+      "sizeLines": 357,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/migration.rs",
+      "language": "rust",
+      "sizeLines": 251,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-flyway/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 293,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-graphql/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-graphql/src/client.rs",
+      "language": "rust",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/context.rs",
+      "language": "rust",
+      "sizeLines": 213,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/dataloader.rs",
+      "language": "rust",
+      "sizeLines": 256,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/engine.rs",
+      "language": "rust",
+      "sizeLines": 467,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/error.rs",
+      "language": "rust",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/macros.rs",
+      "language": "rust",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/resolver.rs",
+      "language": "rust",
+      "sizeLines": 150,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/schema.rs",
+      "language": "rust",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/subscription.rs",
+      "language": "rust",
+      "sizeLines": 315,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-graphql/src/transport.rs",
+      "language": "rust",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 54,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-grpc/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-grpc/src/client.rs",
+      "language": "rust",
+      "sizeLines": 198,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/error.rs",
+      "language": "rust",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/health.rs",
+      "language": "rust",
+      "sizeLines": 188,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/interceptor.rs",
+      "language": "rust",
+      "sizeLines": 544,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/metadata.rs",
+      "language": "rust",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/retry.rs",
+      "language": "rust",
+      "sizeLines": 305,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/server.rs",
+      "language": "rust",
+      "sizeLines": 281,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-grpc/src/tls.rs",
+      "language": "rust",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 47,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-hateoas/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/affordance.rs",
+      "language": "rust",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/assembler.rs",
+      "language": "rust",
+      "sizeLines": 178,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/collection_model.rs",
+      "language": "rust",
+      "sizeLines": 442,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/entity_model.rs",
+      "language": "rust",
+      "sizeLines": 274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/link_builder.rs",
+      "language": "rust",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/link.rs",
+      "language": "rust",
+      "sizeLines": 547,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/media_types/hal_forms.rs",
+      "language": "rust",
+      "sizeLines": 178,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/media_types/hal.rs",
+      "language": "rust",
+      "sizeLines": 153,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/media_types/mod.rs",
+      "language": "rust",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/representation.rs",
+      "language": "rust",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-hateoas/src/traverson.rs",
+      "language": "rust",
+      "sizeLines": 219,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 96,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-http/README.md",
+      "language": "markdown",
+      "sizeLines": 216,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-http/src/api_response.rs",
+      "language": "rust",
+      "sizeLines": 685,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/body.rs",
+      "language": "rust",
+      "sizeLines": 226,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/builder.rs",
+      "language": "rust",
+      "sizeLines": 717,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/client.rs",
+      "language": "rust",
+      "sizeLines": 1074,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/conn.rs",
+      "language": "rust",
+      "sizeLines": 466,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/controller_advice.rs",
+      "language": "rust",
+      "sizeLines": 709,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/error.rs",
+      "language": "rust",
+      "sizeLines": 352,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/exception.rs",
+      "language": "rust",
+      "sizeLines": 734,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/ext.rs",
+      "language": "rust",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/http2.rs",
+      "language": "rust",
+      "sizeLines": 869,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 518,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/method.rs",
+      "language": "rust",
+      "sizeLines": 187,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/multipart.rs",
+      "language": "rust",
+      "sizeLines": 693,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/negotiation.rs",
+      "language": "rust",
+      "sizeLines": 302,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/proto/context.rs",
+      "language": "rust",
+      "sizeLines": 156,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/proto/mod.rs",
+      "language": "rust",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/proto/request.rs",
+      "language": "rust",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/proto/response.rs",
+      "language": "rust",
+      "sizeLines": 251,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/request.rs",
+      "language": "rust",
+      "sizeLines": 440,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/respond.rs",
+      "language": "rust",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/response.rs",
+      "language": "rust",
+      "sizeLines": 532,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/server.rs",
+      "language": "rust",
+      "sizeLines": 445,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/service.rs",
+      "language": "rust",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/sse.rs",
+      "language": "rust",
+      "sizeLines": 498,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/status.rs",
+      "language": "rust",
+      "sizeLines": 298,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/validation.rs",
+      "language": "rust",
+      "sizeLines": 686,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-http/src/websocket.rs",
+      "language": "rust",
+      "sizeLines": 768,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-i18n/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-i18n/src/error.rs",
+      "language": "rust",
+      "sizeLines": 136,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/locale.rs",
+      "language": "rust",
+      "sizeLines": 690,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/message_source.rs",
+      "language": "rust",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/resolver.rs",
+      "language": "rust",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/resource_bundle.rs",
+      "language": "rust",
+      "sizeLines": 536,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-i18n/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-integration/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-integration/src/aggregator.rs",
+      "language": "rust",
+      "sizeLines": 598,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/channel.rs",
+      "language": "rust",
+      "sizeLines": 633,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/endpoint.rs",
+      "language": "rust",
+      "sizeLines": 316,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/error.rs",
+      "language": "rust",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/filter.rs",
+      "language": "rust",
+      "sizeLines": 422,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/interceptor.rs",
+      "language": "rust",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 289,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/message.rs",
+      "language": "rust",
+      "sizeLines": 756,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/router.rs",
+      "language": "rust",
+      "sizeLines": 627,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/splitter.rs",
+      "language": "rust",
+      "sizeLines": 447,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-integration/src/transformer.rs",
+      "language": "rust",
+      "sizeLines": 537,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 65,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-kafka/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-kafka/src/config.rs",
+      "language": "rust",
+      "sizeLines": 550,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/consumer_group_manager.rs",
+      "language": "rust",
+      "sizeLines": 515,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/consumer.rs",
+      "language": "rust",
+      "sizeLines": 456,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/kafka_client.rs",
+      "language": "rust",
+      "sizeLines": 282,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/listener.rs",
+      "language": "rust",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/message.rs",
+      "language": "rust",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/offset_manager.rs",
+      "language": "rust",
+      "sizeLines": 424,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/producer.rs",
+      "language": "rust",
+      "sizeLines": 374,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/serialization.rs",
+      "language": "rust",
+      "sizeLines": 443,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 299,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/topic.rs",
+      "language": "rust",
+      "sizeLines": 270,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-kafka/src/transactional_producer.rs",
+      "language": "rust",
+      "sizeLines": 648,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 53,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-ldap/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-ldap/src/context.rs",
+      "language": "rust",
+      "sizeLines": 512,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/error.rs",
+      "language": "rust",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/ldif.rs",
+      "language": "rust",
+      "sizeLines": 681,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/mapper.rs",
+      "language": "rust",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/odm.rs",
+      "language": "rust",
+      "sizeLines": 484,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/operations.rs",
+      "language": "rust",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/pool.rs",
+      "language": "rust",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/query.rs",
+      "language": "rust",
+      "sizeLines": 512,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/repository.rs",
+      "language": "rust",
+      "sizeLines": 772,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/template.rs",
+      "language": "rust",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ldap/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 821,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 57,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-lombok/examples/user_entity.rs",
+      "language": "rust",
+      "sizeLines": 247,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/README.md",
+      "language": "markdown",
+      "sizeLines": 589,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-lombok/src/builder.rs",
+      "language": "rust",
+      "sizeLines": 178,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/constructor.rs",
+      "language": "rust",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/data.rs",
+      "language": "rust",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/getter.rs",
+      "language": "rust",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 312,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/setter.rs",
+      "language": "rust",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/value.rs",
+      "language": "rust",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/src/with_method.rs",
+      "language": "rust",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-lombok/tests/data_test.rs",
+      "language": "rust",
+      "sizeLines": 676,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 69,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-macros/README.md",
+      "language": "markdown",
+      "sizeLines": 177,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-macros/src/bean_register.rs",
+      "language": "rust",
+      "sizeLines": 245,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/cache.rs",
+      "language": "rust",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/derive.rs",
+      "language": "rust",
+      "sizeLines": 151,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/exception.rs",
+      "language": "rust",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/handler.rs",
+      "language": "rust",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 1194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/pre_authorize.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/routes.rs",
+      "language": "rust",
+      "sizeLines": 188,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/scheduled.rs",
+      "language": "rust",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/spring_cloud.rs",
+      "language": "rust",
+      "sizeLines": 654,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/spring_di.rs",
+      "language": "rust",
+      "sizeLines": 391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/spring_stereotype.rs",
+      "language": "rust",
+      "sizeLines": 440,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-macros/src/transactional.rs",
+      "language": "rust",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 40,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-micrometer/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/counter.rs",
+      "language": "rust",
+      "sizeLines": 209,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/error.rs",
+      "language": "rust",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/gauge.rs",
+      "language": "rust",
+      "sizeLines": 355,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/metric.rs",
+      "language": "rust",
+      "sizeLines": 393,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/prometheus.rs",
+      "language": "rust",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/registry.rs",
+      "language": "rust",
+      "sizeLines": 449,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-micrometer/src/timer.rs",
+      "language": "rust",
+      "sizeLines": 412,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 98,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-middleware/README.md",
+      "language": "markdown",
+      "sizeLines": 631,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-middleware/src/compression.rs",
+      "language": "rust",
+      "sizeLines": 694,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/cors.rs",
+      "language": "rust",
+      "sizeLines": 380,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/jwt_auth.rs",
+      "language": "rust",
+      "sizeLines": 457,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/logger.rs",
+      "language": "rust",
+      "sizeLines": 644,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/middleware.rs",
+      "language": "rust",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/request_id.rs",
+      "language": "rust",
+      "sizeLines": 525,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/security_headers.rs",
+      "language": "rust",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/static_files.rs",
+      "language": "rust",
+      "sizeLines": 467,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-middleware/src/timeout.rs",
+      "language": "rust",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-modulith/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-modulith/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-modulith/src/event.rs",
+      "language": "rust",
+      "sizeLines": 190,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-modulith/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-modulith/src/module.rs",
+      "language": "rust",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-modulith/src/registry.rs",
+      "language": "rust",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-modulith/src/verify.rs",
+      "language": "rust",
+      "sizeLines": 243,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 43,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-multipart/README.md",
+      "language": "markdown",
+      "sizeLines": 243,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-multipart/src/error.rs",
+      "language": "rust",
+      "sizeLines": 165,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/extractor.rs",
+      "language": "rust",
+      "sizeLines": 557,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/field.rs",
+      "language": "rust",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/form.rs",
+      "language": "rust",
+      "sizeLines": 291,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-multipart/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 97,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-observability/README.md",
+      "language": "markdown",
+      "sizeLines": 490,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-observability/src/hiver_format.rs",
+      "language": "rust",
+      "sizeLines": 747,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/log.rs",
+      "language": "rust",
+      "sizeLines": 1258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/metrics.rs",
+      "language": "rust",
+      "sizeLines": 1380,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/trace.rs",
+      "language": "rust",
+      "sizeLines": 1282,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-observability/src/zipkin.rs",
+      "language": "rust",
+      "sizeLines": 529,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 62,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-openapi/README.md",
+      "language": "markdown",
+      "sizeLines": 339,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-openapi/src/config.rs",
+      "language": "rust",
+      "sizeLines": 658,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/doc_pdf.rs",
+      "language": "rust",
+      "sizeLines": 955,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/generator.rs",
+      "language": "rust",
+      "sizeLines": 1551,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/http.rs",
+      "language": "rust",
+      "sizeLines": 435,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 165,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/macros.rs",
+      "language": "rust",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/openapi.rs",
+      "language": "rust",
+      "sizeLines": 308,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/operation.rs",
+      "language": "rust",
+      "sizeLines": 654,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/path.rs",
+      "language": "rust",
+      "sizeLines": 378,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/postman.rs",
+      "language": "rust",
+      "sizeLines": 1267,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/response.rs",
+      "language": "rust",
+      "sizeLines": 394,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/scanner.rs",
+      "language": "rust",
+      "sizeLines": 423,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/schema.rs",
+      "language": "rust",
+      "sizeLines": 435,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/swagger.rs",
+      "language": "rust",
+      "sizeLines": 649,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-openapi/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 97,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-resilience/README.md",
+      "language": "markdown",
+      "sizeLines": 510,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-resilience/src/bulkhead.rs",
+      "language": "rust",
+      "sizeLines": 958,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/circuit.rs",
+      "language": "rust",
+      "sizeLines": 829,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/discovery.rs",
+      "language": "rust",
+      "sizeLines": 706,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/rate_limit.rs",
+      "language": "rust",
+      "sizeLines": 840,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/retry.rs",
+      "language": "rust",
+      "sizeLines": 592,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-resilience/src/timeout.rs",
+      "language": "rust",
+      "sizeLines": 701,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 79,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-response/README.md",
+      "language": "markdown",
+      "sizeLines": 550,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-response/src/csv.rs",
+      "language": "rust",
+      "sizeLines": 659,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/excel.rs",
+      "language": "rust",
+      "sizeLines": 1405,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/html.rs",
+      "language": "rust",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/json.rs",
+      "language": "rust",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/pdf.rs",
+      "language": "rust",
+      "sizeLines": 1032,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/response.rs",
+      "language": "rust",
+      "sizeLines": 589,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/result.rs",
+      "language": "rust",
+      "sizeLines": 368,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/sse.rs",
+      "language": "rust",
+      "sizeLines": 657,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-response/src/unified.rs",
+      "language": "rust",
+      "sizeLines": 428,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-retry-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 24,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-retry-macros/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-retry-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 257,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-retry-macros/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-retry/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-retry/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-retry/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-retry/src/template.rs",
+      "language": "rust",
+      "sizeLines": 593,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-retry/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 58,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-router/README.md",
+      "language": "markdown",
+      "sizeLines": 219,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-router/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/src/params.rs",
+      "language": "rust",
+      "sizeLines": 477,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/src/route.rs",
+      "language": "rust",
+      "sizeLines": 748,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/src/router.rs",
+      "language": "rust",
+      "sizeLines": 627,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-router/src/trie.rs",
+      "language": "rust",
+      "sizeLines": 313,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/benches/runtime_bench.rs",
+      "language": "rust",
+      "sizeLines": 483,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 103,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-runtime/README.md",
+      "language": "markdown",
+      "sizeLines": 185,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-runtime/src/channel.rs",
+      "language": "rust",
+      "sizeLines": 544,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/config.rs",
+      "language": "rust",
+      "sizeLines": 403,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/epoll.rs",
+      "language": "rust",
+      "sizeLines": 597,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/interest.rs",
+      "language": "rust",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/iouring.rs",
+      "language": "rust",
+      "sizeLines": 903,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/kqueue.rs",
+      "language": "rust",
+      "sizeLines": 755,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/mod.rs",
+      "language": "rust",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/driver/queue.rs",
+      "language": "rust",
+      "sizeLines": 427,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/io.rs",
+      "language": "rust",
+      "sizeLines": 1606,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/runtime.rs",
+      "language": "rust",
+      "sizeLines": 810,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/scheduler/handle.rs",
+      "language": "rust",
+      "sizeLines": 424,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/scheduler/local.rs",
+      "language": "rust",
+      "sizeLines": 419,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/scheduler/mod.rs",
+      "language": "rust",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/scheduler/queue.rs",
+      "language": "rust",
+      "sizeLines": 311,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/scheduler/work_stealing.rs",
+      "language": "rust",
+      "sizeLines": 378,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/select.rs",
+      "language": "rust",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/task.rs",
+      "language": "rust",
+      "sizeLines": 812,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/task/raw_task.rs",
+      "language": "rust",
+      "sizeLines": 375,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/src/time.rs",
+      "language": "rust",
+      "sizeLines": 791,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-runtime/tests/integration_test.rs",
+      "language": "rust",
+      "sizeLines": 516,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-schedule/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 63,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-schedule/README.md",
+      "language": "markdown",
+      "sizeLines": 271,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-schedule/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-schedule/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-schedule/src/scheduled.rs",
+      "language": "rust",
+      "sizeLines": 657,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-schedule/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 87,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-security/README.md",
+      "language": "markdown",
+      "sizeLines": 212,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-security/src/acl.rs",
+      "language": "rust",
+      "sizeLines": 352,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/auth.rs",
+      "language": "rust",
+      "sizeLines": 523,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/authority.rs",
+      "language": "rust",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/authorization_server.rs",
+      "language": "rust",
+      "sizeLines": 2021,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/context.rs",
+      "language": "rust",
+      "sizeLines": 622,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/csrf.rs",
+      "language": "rust",
+      "sizeLines": 1048,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/data_scope.rs",
+      "language": "rust",
+      "sizeLines": 1055,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/email.rs",
+      "language": "rust",
+      "sizeLines": 1034,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/encoder.rs",
+      "language": "rust",
+      "sizeLines": 414,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/error.rs",
+      "language": "rust",
+      "sizeLines": 213,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/jwt.rs",
+      "language": "rust",
+      "sizeLines": 1496,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 189,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/oauth2.rs",
+      "language": "rust",
+      "sizeLines": 1727,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/permission.rs",
+      "language": "rust",
+      "sizeLines": 849,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/post_authorize.rs",
+      "language": "rust",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/pre_authorize.rs",
+      "language": "rust",
+      "sizeLines": 366,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/rbac.rs",
+      "language": "rust",
+      "sizeLines": 1834,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/rememberme.rs",
+      "language": "rust",
+      "sizeLines": 452,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/request_ext.rs",
+      "language": "rust",
+      "sizeLines": 226,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/role.rs",
+      "language": "rust",
+      "sizeLines": 447,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/secured.rs",
+      "language": "rust",
+      "sizeLines": 356,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-security/src/user.rs",
+      "language": "rust",
+      "sizeLines": 545,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 58,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-session/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-session/src/config.rs",
+      "language": "rust",
+      "sizeLines": 334,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/events.rs",
+      "language": "rust",
+      "sizeLines": 809,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 108,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/middleware.rs",
+      "language": "rust",
+      "sizeLines": 416,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/session.rs",
+      "language": "rust",
+      "sizeLines": 381,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/store.rs",
+      "language": "rust",
+      "sizeLines": 591,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-session/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell-macros/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-shell-macros/README.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-shell-macros/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 48,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-shell/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-shell/src/builtin.rs",
+      "language": "rust",
+      "sizeLines": 422,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/command.rs",
+      "language": "rust",
+      "sizeLines": 392,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/completion.rs",
+      "language": "rust",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 420,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/prompt.rs",
+      "language": "rust",
+      "sizeLines": 218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/repl.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/result.rs",
+      "language": "rust",
+      "sizeLines": 401,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 690,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-shell/src/validation.rs",
+      "language": "rust",
+      "sizeLines": 159,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-spel/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-spel/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-spel/src/context.rs",
+      "language": "rust",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-spel/src/evaluator.rs",
+      "language": "rust",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-spel/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-spel/src/parser.rs",
+      "language": "rust",
+      "sizeLines": 481,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 127,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-starter/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-starter/resources/META-INF/hiver/autoconfiguration.imports",
+      "language": "imports",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/actuator/mod.rs",
+      "language": "rust",
+      "sizeLines": 195,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/cache/mod.rs",
+      "language": "rust",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/config/environment.rs",
+      "language": "rust",
+      "sizeLines": 207,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/config/loader.rs",
+      "language": "rust",
+      "sizeLines": 620,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/config/mod.rs",
+      "language": "rust",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/config/properties.rs",
+      "language": "rust",
+      "sizeLines": 442,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/autoconfig.rs",
+      "language": "rust",
+      "sizeLines": 324,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/autoconfigure_processor.rs",
+      "language": "rust",
+      "sizeLines": 866,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/autoconfigure.rs",
+      "language": "rust",
+      "sizeLines": 1116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/bean_factory_post_processor.rs",
+      "language": "rust",
+      "sizeLines": 1012,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/bean_post_processor.rs",
+      "language": "rust",
+      "sizeLines": 983,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/condition_evaluator.rs",
+      "language": "rust",
+      "sizeLines": 524,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/condition.rs",
+      "language": "rust",
+      "sizeLines": 1121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/config.rs",
+      "language": "rust",
+      "sizeLines": 297,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/container.rs",
+      "language": "rust",
+      "sizeLines": 976,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/loader.rs",
+      "language": "rust",
+      "sizeLines": 806,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/logging.rs",
+      "language": "rust",
+      "sizeLines": 456,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/mod.rs",
+      "language": "rust",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/registry.rs",
+      "language": "rust",
+      "sizeLines": 184,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/core/scanner.rs",
+      "language": "rust",
+      "sizeLines": 529,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/data/mod.rs",
+      "language": "rust",
+      "sizeLines": 440,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/schedule/mod.rs",
+      "language": "rust",
+      "sizeLines": 1343,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/security/mod.rs",
+      "language": "rust",
+      "sizeLines": 237,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-starter/src/web/mod.rs",
+      "language": "rust",
+      "sizeLines": 723,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 26,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-state-machine/README.md",
+      "language": "markdown",
+      "sizeLines": 190,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/builder.rs",
+      "language": "rust",
+      "sizeLines": 425,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/config.rs",
+      "language": "rust",
+      "sizeLines": 402,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/error.rs",
+      "language": "rust",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 329,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/persist.rs",
+      "language": "rust",
+      "sizeLines": 167,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/regions.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/state.rs",
+      "language": "rust",
+      "sizeLines": 360,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/timer.rs",
+      "language": "rust",
+      "sizeLines": 231,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/transition.rs",
+      "language": "rust",
+      "sizeLines": 343,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-state-machine/src/visualizer.rs",
+      "language": "rust",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 68,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-test/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-test/src/containers.rs",
+      "language": "rust",
+      "sizeLines": 368,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/listener.rs",
+      "language": "rust",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/mock_bean.rs",
+      "language": "rust",
+      "sizeLines": 257,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/mockito_ext.rs",
+      "language": "rust",
+      "sizeLines": 650,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/property_source.rs",
+      "language": "rust",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/test_application.rs",
+      "language": "rust",
+      "sizeLines": 763,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/test_client.rs",
+      "language": "rust",
+      "sizeLines": 402,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/test_config.rs",
+      "language": "rust",
+      "sizeLines": 371,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/test_context.rs",
+      "language": "rust",
+      "sizeLines": 345,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-test/src/web_test_client.rs",
+      "language": "rust",
+      "sizeLines": 889,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 64,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-tx/README.md",
+      "language": "markdown",
+      "sizeLines": 153,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-tx/src/error.rs",
+      "language": "rust",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/events.rs",
+      "language": "rust",
+      "sizeLines": 484,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/isolation.rs",
+      "language": "rust",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/manager.rs",
+      "language": "rust",
+      "sizeLines": 403,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/prelude.rs",
+      "language": "rust",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/propagation.rs",
+      "language": "rust",
+      "sizeLines": 187,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/registry.rs",
+      "language": "rust",
+      "sizeLines": 518,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/request_ext.rs",
+      "language": "rust",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/sqlx_manager.rs",
+      "language": "rust",
+      "sizeLines": 321,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/status.rs",
+      "language": "rust",
+      "sizeLines": 253,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/synchronization.rs",
+      "language": "rust",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/template.rs",
+      "language": "rust",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 407,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/transaction.rs",
+      "language": "rust",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-tx/src/transactional.rs",
+      "language": "rust",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation-annotations/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-validation-annotations/README.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-validation-annotations/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 887,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation-annotations/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 337,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-validation/README.md",
+      "language": "markdown",
+      "sizeLines": 296,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-validation/src/annotations.rs",
+      "language": "rust",
+      "sizeLines": 989,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/custom.rs",
+      "language": "rust",
+      "sizeLines": 1121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/error.rs",
+      "language": "rust",
+      "sizeLines": 368,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/extractor.rs",
+      "language": "rust",
+      "sizeLines": 174,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/groups.rs",
+      "language": "rust",
+      "sizeLines": 444,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 228,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/nested.rs",
+      "language": "rust",
+      "sizeLines": 538,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/traits.rs",
+      "language": "rust",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/validate.rs",
+      "language": "rust",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-validation/src/validators.rs",
+      "language": "rust",
+      "sizeLines": 407,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 54,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-vault/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-vault/src/auth_jwt.rs",
+      "language": "rust",
+      "sizeLines": 469,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/auth.rs",
+      "language": "rust",
+      "sizeLines": 237,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/client.rs",
+      "language": "rust",
+      "sizeLines": 495,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/error.rs",
+      "language": "rust",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/health.rs",
+      "language": "rust",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/kv_v2.rs",
+      "language": "rust",
+      "sizeLines": 559,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/kv.rs",
+      "language": "rust",
+      "sizeLines": 380,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/lease.rs",
+      "language": "rust",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/pki.rs",
+      "language": "rust",
+      "sizeLines": 342,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/secret.rs",
+      "language": "rust",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 1803,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-vault/src/transit.rs",
+      "language": "rust",
+      "sizeLines": 326,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 105,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-web3/README.md",
+      "language": "markdown",
+      "sizeLines": 131,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-web3/src/chain.rs",
+      "language": "rust",
+      "sizeLines": 786,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/contract.rs",
+      "language": "rust",
+      "sizeLines": 556,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/defi.rs",
+      "language": "rust",
+      "sizeLines": 1222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/hd_wallet.rs",
+      "language": "rust",
+      "sizeLines": 2056,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/multichain.rs",
+      "language": "rust",
+      "sizeLines": 985,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/rpc.rs",
+      "language": "rust",
+      "sizeLines": 574,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/subscribe.rs",
+      "language": "rust",
+      "sizeLines": 911,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/tx.rs",
+      "language": "rust",
+      "sizeLines": 1118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-web3/src/wallet.rs",
+      "language": "rust",
+      "sizeLines": 755,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 40,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/README.md",
+      "language": "markdown",
+      "sizeLines": 34,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/error.rs",
+      "language": "rust",
+      "sizeLines": 132,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/frame.rs",
+      "language": "rust",
+      "sizeLines": 518,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/handler.rs",
+      "language": "rust",
+      "sizeLines": 1417,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/session.rs",
+      "language": "rust",
+      "sizeLines": 669,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-websocket-stomp/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 43,
+      "fileCategory": "config"
+    },
+    {
+      "path": "crates/hiver-ws/README.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "crates/hiver-ws/src/dispatcher.rs",
+      "language": "rust",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/endpoint.rs",
+      "language": "rust",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/marshalling.rs",
+      "language": "rust",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/security.rs",
+      "language": "rust",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/soap.rs",
+      "language": "rust",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/tests.rs",
+      "language": "rust",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/transport.rs",
+      "language": "rust",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "crates/hiver-ws/src/wsdl.rs",
+      "language": "rust",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "deny.toml",
+      "language": "toml",
+      "sizeLines": 101,
+      "fileCategory": "config"
+    },
+    {
+      "path": "docs/api/AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 1258,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/api/annotations-reference.md",
+      "language": "markdown",
+      "sizeLines": 1367,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/api/api-quick-reference.md",
+      "language": "markdown",
+      "sizeLines": 576,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/api/api-schema.json",
+      "language": "json",
+      "sizeLines": 5320,
+      "fileCategory": "config"
+    },
+    {
+      "path": "docs/api/api-spec.md",
+      "language": "markdown",
+      "sizeLines": 3906,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/api/full-api-reference.md",
+      "language": "markdown",
+      "sizeLines": 2031,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/book/.nojekyll",
+      "language": "unknown",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/404.html",
+      "language": "html",
+      "sizeLines": 225,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/advanced/observability.html",
+      "language": "html",
+      "sizeLines": 518,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/advanced/resilience.html",
+      "language": "html",
+      "sizeLines": 413,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/advanced/testing.html",
+      "language": "html",
+      "sizeLines": 509,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/advanced/web3.html",
+      "language": "html",
+      "sizeLines": 448,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/ai/anthropic.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/ai/ollama.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/ai/openai.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/ai/overview.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/ayu-highlight-3fdfc3ac.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/book-a0b12cfe.js",
+      "language": "javascript",
+      "sizeLines": 843,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/cloud/feign.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/cloud/gateway.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/cloud/service-discovery.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/core-concepts/extractors.html",
+      "language": "html",
+      "sizeLines": 628,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/core-concepts/http.html",
+      "language": "html",
+      "sizeLines": 454,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/core-concepts/middleware.html",
+      "language": "html",
+      "sizeLines": 546,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/core-concepts/router.html",
+      "language": "html",
+      "sizeLines": 424,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/core-concepts/runtime.html",
+      "language": "html",
+      "sizeLines": 1138,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/css/chrome-ae938929.css",
+      "language": "css",
+      "sizeLines": 756,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/css/general-2459343d.css",
+      "language": "css",
+      "sizeLines": 408,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/css/print-9e4910d8.css",
+      "language": "css",
+      "sizeLines": 50,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/css/variables-8adf115d.css",
+      "language": "css",
+      "sizeLines": 383,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/migrations.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/mongodb.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/orm.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/overview.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/rdbc.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/data/redis.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/fonts/fonts-9644e21d.css",
+      "language": "css",
+      "sizeLines": 100,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/fonts/OPEN-SANS-LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 202,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/book/fonts/SOURCE-CODE-PRO-LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 93,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/book/getting-started/installation.html",
+      "language": "html",
+      "sizeLines": 367,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/getting-started/introduction.html",
+      "language": "html",
+      "sizeLines": 325,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/getting-started/quick-start.html",
+      "language": "html",
+      "sizeLines": 450,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/getting-started/tutorial.html",
+      "language": "html",
+      "sizeLines": 635,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/highlight-493f70e1.css",
+      "language": "css",
+      "sizeLines": 83,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/highlight-abc7f01d.js",
+      "language": "javascript",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/index.html",
+      "language": "html",
+      "sizeLines": 412,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/messaging/amqp.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/messaging/kafka.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/print.html",
+      "language": "html",
+      "sizeLines": 5368,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/reference/annotations.html",
+      "language": "html",
+      "sizeLines": 278,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/reference/api.html",
+      "language": "html",
+      "sizeLines": 422,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/reference/configuration.html",
+      "language": "html",
+      "sizeLines": 447,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/reference/performance.html",
+      "language": "html",
+      "sizeLines": 367,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/reference/security.html",
+      "language": "html",
+      "sizeLines": 433,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/searcher-c2a407aa.js",
+      "language": "javascript",
+      "sizeLines": 555,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/searchindex-20df9491.js",
+      "language": "javascript",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/security/authorization.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/security/jwt.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/security/oauth2.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/security/overview.html",
+      "language": "html",
+      "sizeLines": 251,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/theme/hiver.css",
+      "language": "css",
+      "sizeLines": 66,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/toc-2fed1e65.js",
+      "language": "javascript",
+      "sizeLines": 454,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/book/book/toc.html",
+      "language": "html",
+      "sizeLines": 31,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/book/tomorrow-night-4c0ae647.css",
+      "language": "css",
+      "sizeLines": 104,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/book/src/advanced/observability.md",
+      "language": "markdown",
+      "sizeLines": 314,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/advanced/resilience.md",
+      "language": "markdown",
+      "sizeLines": 204,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/advanced/testing.md",
+      "language": "markdown",
+      "sizeLines": 300,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/advanced/web3.md",
+      "language": "markdown",
+      "sizeLines": 254,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/ai/anthropic.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/ai/ollama.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/ai/openai.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/ai/overview.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/cloud/feign.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/cloud/gateway.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/cloud/service-discovery.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/core-concepts/extractors.md",
+      "language": "markdown",
+      "sizeLines": 433,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/core-concepts/http.md",
+      "language": "markdown",
+      "sizeLines": 234,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/core-concepts/middleware.md",
+      "language": "markdown",
+      "sizeLines": 315,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/core-concepts/router.md",
+      "language": "markdown",
+      "sizeLines": 207,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/core-concepts/runtime.md",
+      "language": "markdown",
+      "sizeLines": 1027,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/migrations.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/mongodb.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/orm.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/overview.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/rdbc.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/data/redis.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/getting-started/installation.md",
+      "language": "markdown",
+      "sizeLines": 171,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/getting-started/introduction.md",
+      "language": "markdown",
+      "sizeLines": 86,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/getting-started/quick-start.md",
+      "language": "markdown",
+      "sizeLines": 245,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/getting-started/tutorial.md",
+      "language": "markdown",
+      "sizeLines": 459,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/index.md",
+      "language": "markdown",
+      "sizeLines": 200,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/messaging/amqp.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/messaging/kafka.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/reference/annotations.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/reference/api.md",
+      "language": "markdown",
+      "sizeLines": 159,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/reference/configuration.md",
+      "language": "markdown",
+      "sizeLines": 244,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/reference/performance.md",
+      "language": "markdown",
+      "sizeLines": 149,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/reference/security.md",
+      "language": "markdown",
+      "sizeLines": 223,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/security/authorization.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/security/jwt.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/security/oauth2.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/security/overview.md",
+      "language": "markdown",
+      "sizeLines": 24,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/SUMMARY.md",
+      "language": "markdown",
+      "sizeLines": 68,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/book/src/theme/hiver.css",
+      "language": "css",
+      "sizeLines": 66,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/bug-fixes/phase0.md",
+      "language": "markdown",
+      "sizeLines": 766,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/CODEMAP.md",
+      "language": "markdown",
+      "sizeLines": 375,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/data-layer.md",
+      "language": "markdown",
+      "sizeLines": 269,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/dependency-management.md",
+      "language": "markdown",
+      "sizeLines": 324,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/design/design-spec.md",
+      "language": "markdown",
+      "sizeLines": 975,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/design/implementation-plan.md",
+      "language": "markdown",
+      "sizeLines": 1455,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/design/implementation-roadmap-data.md",
+      "language": "markdown",
+      "sizeLines": 390,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/design/MASTER-ROADMAP.md",
+      "language": "markdown",
+      "sizeLines": 684,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/design/STRATEGY-OVERVIEW.md",
+      "language": "markdown",
+      "sizeLines": 385,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/DOCS-INDEX.md",
+      "language": "markdown",
+      "sizeLines": 328,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/DOCUMENTATION-REORGANIZATION-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 373,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/guides/benchmarking.md",
+      "language": "markdown",
+      "sizeLines": 971,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/guides/migration-guide.md",
+      "language": "markdown",
+      "sizeLines": 128,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/guides/rust-challenges-solutions.md",
+      "language": "markdown",
+      "sizeLines": 1451,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/guides/user-guide.md",
+      "language": "markdown",
+      "sizeLines": 821,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "language": "markdown",
+      "sizeLines": 299,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/logging.md",
+      "language": "markdown",
+      "sizeLines": 423,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/openapi/README.md",
+      "language": "markdown",
+      "sizeLines": 295,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/plans/2026-05-04-spring-ecosystem-completion.md",
+      "language": "markdown",
+      "sizeLines": 489,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/ANNOTATION-COMPARISON.md",
+      "language": "markdown",
+      "sizeLines": 891,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/ANNOTATION-GUIDE.md",
+      "language": "markdown",
+      "sizeLines": 665,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/ANNOTATIONS-COMPLETE-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 481,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/ANNOTATIONS-PROGRESS-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 457,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/code-review-report.md",
+      "language": "markdown",
+      "sizeLines": 356,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/DATA-LAYER-ADDENDUM.md",
+      "language": "markdown",
+      "sizeLines": 553,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/DOCUMENTATION-UPDATE-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 436,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/FINAL-PROGRESS-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 610,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/hiver-data-full-implementation.md",
+      "language": "markdown",
+      "sizeLines": 1076,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/hiver-mybatis-plus-style.md",
+      "language": "markdown",
+      "sizeLines": 904,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/JWT-AUTHENTICATION-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 622,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/LOMBOK-IMPLEMENTATION.md",
+      "language": "markdown",
+      "sizeLines": 1120,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/LOMBOK-QUICK-REF.md",
+      "language": "markdown",
+      "sizeLines": 363,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/MISSING-FEATURES-PROGRESS.md",
+      "language": "markdown",
+      "sizeLines": 489,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/MISSING-FEATURES-QUICK-REF.md",
+      "language": "markdown",
+      "sizeLines": 360,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/MISSING-FEATURES.md",
+      "language": "markdown",
+      "sizeLines": 786,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase0-completion.md",
+      "language": "markdown",
+      "sizeLines": 275,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase1-completion.md",
+      "language": "markdown",
+      "sizeLines": 367,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase2-completion.md",
+      "language": "markdown",
+      "sizeLines": 351,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase3-completion.md",
+      "language": "markdown",
+      "sizeLines": 377,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase4-completion.md",
+      "language": "markdown",
+      "sizeLines": 376,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase5-completion.md",
+      "language": "markdown",
+      "sizeLines": 432,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/phase6-completion.md",
+      "language": "markdown",
+      "sizeLines": 307,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/README-UPDATE-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 310,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/RUNTIME-INTEGRATION-PROGRESS.md",
+      "language": "markdown",
+      "sizeLines": 628,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/security-audit-report.md",
+      "language": "markdown",
+      "sizeLines": 578,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/SPRING-ANNOTATIONS-STATUS.md",
+      "language": "markdown",
+      "sizeLines": 761,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/reports/TRANSACTIONAL-UPGRADE-REPORT.md",
+      "language": "markdown",
+      "sizeLines": 362,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SECURITY_AUDIT.md",
+      "language": "markdown",
+      "sizeLines": 158,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/00-documentation-overview.md",
+      "language": "markdown",
+      "sizeLines": 239,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/01-overview.md",
+      "language": "markdown",
+      "sizeLines": 172,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/02-getting-started/system-requirements.md",
+      "language": "markdown",
+      "sizeLines": 79,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/03-using-spring-boot/auto-configuration.md",
+      "language": "markdown",
+      "sizeLines": 117,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/03-using-spring-boot/configuration-classes.md",
+      "language": "markdown",
+      "sizeLines": 39,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/05-web/reactive-web-applications.md",
+      "language": "markdown",
+      "sizeLines": 563,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/05-web/servlet-web-applications.md",
+      "language": "markdown",
+      "sizeLines": 647,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/06-data/nosql-databases.md",
+      "language": "markdown",
+      "sizeLines": 813,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/06-data/sql-databases.md",
+      "language": "markdown",
+      "sizeLines": 999,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/07-messaging/amqp-rabbitmq.md",
+      "language": "markdown",
+      "sizeLines": 325,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/07-messaging/jms.md",
+      "language": "markdown",
+      "sizeLines": 333,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/09-actuator/endpoints.md",
+      "language": "markdown",
+      "sizeLines": 725,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/10-configuration/properties-and-configuration.md",
+      "language": "markdown",
+      "sizeLines": 771,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/specification/configuration-metadata-format.md",
+      "language": "markdown",
+      "sizeLines": 375,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-advanced.md",
+      "language": "markdown",
+      "sizeLines": 1980,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-basics.md",
+      "language": "markdown",
+      "sizeLines": 750,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-core.md",
+      "language": "markdown",
+      "sizeLines": 1765,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-enterprise.md",
+      "language": "markdown",
+      "sizeLines": 1742,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-feature-matrix.md",
+      "language": "markdown",
+      "sizeLines": 275,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-gap-analysis.md",
+      "language": "markdown",
+      "sizeLines": 284,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-learning-index.md",
+      "language": "markdown",
+      "sizeLines": 154,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-logging.md",
+      "language": "markdown",
+      "sizeLines": 197,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-boot-practice.md",
+      "language": "markdown",
+      "sizeLines": 2297,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-comparison.md",
+      "language": "markdown",
+      "sizeLines": 346,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-ecosystem-gap-analysis.md",
+      "language": "markdown",
+      "sizeLines": 554,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-features-gap-analysis.md",
+      "language": "markdown",
+      "sizeLines": 684,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-missing-features.md",
+      "language": "markdown",
+      "sizeLines": 864,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/spring-modules-deep-analysis.md",
+      "language": "markdown",
+      "sizeLines": 2412,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-boot/upgrading-spring-boot.md",
+      "language": "markdown",
+      "sizeLines": 73,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SPRING-COMPARISON.md",
+      "language": "markdown",
+      "sizeLines": 896,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/01-overview.md",
+      "language": "markdown",
+      "sizeLines": 111,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/01-ioc-container.md",
+      "language": "markdown",
+      "sizeLines": 58,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/02-resources.md",
+      "language": "markdown",
+      "sizeLines": 443,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/03-validation.md",
+      "language": "markdown",
+      "sizeLines": 25,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/04-spel.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/05-aop.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/06-aop-api.md",
+      "language": "markdown",
+      "sizeLines": 20,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/07-null-safety.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/08-data-buffers.md",
+      "language": "markdown",
+      "sizeLines": 90,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/09-logging.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/core/10-aot.md",
+      "language": "markdown",
+      "sizeLines": 87,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/data-access/01-transaction.md",
+      "language": "markdown",
+      "sizeLines": 47,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/data-access/02-dao.md",
+      "language": "markdown",
+      "sizeLines": 130,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/data-access/03-jdbc.md",
+      "language": "markdown",
+      "sizeLines": 68,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/data-access/04-r2dbc.md",
+      "language": "markdown",
+      "sizeLines": 209,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/data-access/05-orm.md",
+      "language": "markdown",
+      "sizeLines": 116,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/01-rest-clients.md",
+      "language": "markdown",
+      "sizeLines": 424,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/02-jms.md",
+      "language": "markdown",
+      "sizeLines": 130,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/03-jmx.md",
+      "language": "markdown",
+      "sizeLines": 234,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/04-email.md",
+      "language": "markdown",
+      "sizeLines": 219,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/05-scheduling.md",
+      "language": "markdown",
+      "sizeLines": 336,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/06-cache.md",
+      "language": "markdown",
+      "sizeLines": 321,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/07-observability.md",
+      "language": "markdown",
+      "sizeLines": 211,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/08-checkpoint-restore.md",
+      "language": "markdown",
+      "sizeLines": 164,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/integration/09-cds.md",
+      "language": "markdown",
+      "sizeLines": 147,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/languages/01-kotlin.md",
+      "language": "markdown",
+      "sizeLines": 917,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/languages/02-groovy.md",
+      "language": "markdown",
+      "sizeLines": 10,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/languages/03-dynamic.md",
+      "language": "markdown",
+      "sizeLines": 301,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/01-introduction.md",
+      "language": "markdown",
+      "sizeLines": 75,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/02-unit-testing.md",
+      "language": "markdown",
+      "sizeLines": 115,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/03-integration-testing.md",
+      "language": "markdown",
+      "sizeLines": 144,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/04-jdbc-test.md",
+      "language": "markdown",
+      "sizeLines": 42,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/05-testcontext-framework.md",
+      "language": "markdown",
+      "sizeLines": 38,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/06-webtestclient.md",
+      "language": "markdown",
+      "sizeLines": 256,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/07-mockmvc.md",
+      "language": "markdown",
+      "sizeLines": 31,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/08-testing-client-apps.md",
+      "language": "markdown",
+      "sizeLines": 118,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/testing/09-annotations.md",
+      "language": "markdown",
+      "sizeLines": 161,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/01-webflux.md",
+      "language": "markdown",
+      "sizeLines": 61,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/01a-webflux-overview.md",
+      "language": "markdown",
+      "sizeLines": 287,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/01b-webflux-reactive-core.md",
+      "language": "markdown",
+      "sizeLines": 917,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/01c-webflux-functional.md",
+      "language": "markdown",
+      "sizeLines": 1076,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/02-webclient.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/02a-webclient-configuration.md",
+      "language": "markdown",
+      "sizeLines": 522,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/02b-webclient-retrieve.md",
+      "language": "markdown",
+      "sizeLines": 101,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/03-http-interface.md",
+      "language": "markdown",
+      "sizeLines": 9,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/04-rsocket.md",
+      "language": "markdown",
+      "sizeLines": 1152,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/05-reactive-libraries.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-reactive/README.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-servlet/01-webmvc.md",
+      "language": "markdown",
+      "sizeLines": 601,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-servlet/02-rest-clients.md",
+      "language": "markdown",
+      "sizeLines": 328,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-framework/web-servlet/03-websocket.md",
+      "language": "markdown",
+      "sizeLines": 365,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/01-overview/00-main-index.md",
+      "language": "markdown",
+      "sizeLines": 133,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/INDEX.md",
+      "language": "markdown",
+      "sizeLines": 109,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/reactive/getting-started.md",
+      "language": "markdown",
+      "sizeLines": 118,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/cas.md",
+      "language": "markdown",
+      "sizeLines": 257,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/index.md",
+      "language": "markdown",
+      "sizeLines": 88,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/jaas.md",
+      "language": "markdown",
+      "sizeLines": 138,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/logout.md",
+      "language": "markdown",
+      "sizeLines": 158,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/passwords/index.md",
+      "language": "markdown",
+      "sizeLines": 145,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/passwords/storage.md",
+      "language": "markdown",
+      "sizeLines": 148,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/rememberme.md",
+      "language": "markdown",
+      "sizeLines": 150,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/session-management.md",
+      "language": "markdown",
+      "sizeLines": 159,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authentication/x509.md",
+      "language": "markdown",
+      "sizeLines": 100,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authorization/index.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/authorization/method-security.md",
+      "language": "markdown",
+      "sizeLines": 110,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/getting-started.md",
+      "language": "markdown",
+      "sizeLines": 109,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/oauth2/index.md",
+      "language": "markdown",
+      "sizeLines": 268,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/oauth2/login/core.md",
+      "language": "markdown",
+      "sizeLines": 173,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/oauth2/login/index.md",
+      "language": "markdown",
+      "sizeLines": 75,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/spring-security/servlet/saml2/index.md",
+      "language": "markdown",
+      "sizeLines": 130,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/starter-autoconfig-design.md",
+      "language": "markdown",
+      "sizeLines": 937,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "examples/cache_example.rs",
+      "language": "rust",
+      "sizeLines": 238,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/cache_with_conditions.rs",
+      "language": "rust",
+      "sizeLines": 522,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 101,
+      "fileCategory": "config"
+    },
+    {
+      "path": "examples/config_example.rs",
+      "language": "rust",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/EXAMPLES.md",
+      "language": "markdown",
+      "sizeLines": 542,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "examples/grpc_service.rs",
+      "language": "rust",
+      "sizeLines": 603,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/ioc_container_example.rs",
+      "language": "rust",
+      "sizeLines": 404,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/jwt_auth_example.rs",
+      "language": "rust",
+      "sizeLines": 798,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/logging_example.rs",
+      "language": "rust",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/META-INF/hiver/autoconfiguration.imports",
+      "language": "imports",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/microservice.rs",
+      "language": "rust",
+      "sizeLines": 715,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/pre_authorize_example.rs",
+      "language": "rust",
+      "sizeLines": 474,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/README.md",
+      "language": "markdown",
+      "sizeLines": 671,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "examples/rest_api.rs",
+      "language": "rust",
+      "sizeLines": 894,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/runtime_integration_example.rs",
+      "language": "rust",
+      "sizeLines": 471,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/runtime-chat-server/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": "examples/runtime-chat-server/src/main.rs",
+      "language": "rust",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/runtime-echo-server/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": "examples/runtime-echo-server/src/main.rs",
+      "language": "rust",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/runtime-timer-service/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "examples/runtime-timer-service/src/main.rs",
+      "language": "rust",
+      "sizeLines": 191,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/spring_boot_logging_demo.rs",
+      "language": "rust",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/spring_style_example.rs",
+      "language": "rust",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/core_example.rs",
+      "language": "rust",
+      "sizeLines": 151,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/http_example.rs",
+      "language": "rust",
+      "sizeLines": 414,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/logging_demo.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/resilience_example.rs",
+      "language": "rust",
+      "sizeLines": 204,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/router_example.rs",
+      "language": "rust",
+      "sizeLines": 328,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/starter_example.rs",
+      "language": "rust",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/stress_test.rs",
+      "language": "rust",
+      "sizeLines": 197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/techempower_benchmark.rs",
+      "language": "rust",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/src/validation_example.rs",
+      "language": "rust",
+      "sizeLines": 531,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/transactional_example.rs",
+      "language": "rust",
+      "sizeLines": 528,
+      "fileCategory": "code"
+    },
+    {
+      "path": "examples/web3_dapp.rs",
+      "language": "rust",
+      "sizeLines": 848,
+      "fileCategory": "code"
+    },
+    {
+      "path": "fuzzers/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "fuzzers/fuzz_targets/compression.rs",
+      "language": "rust",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "fuzzers/fuzz_targets/http_request_parsing.rs",
+      "language": "rust",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "fuzzers/fuzz_targets/router_matching.rs",
+      "language": "rust",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "fuzzers/README.md",
+      "language": "markdown",
+      "sizeLines": 96,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LICENSES/Apache-2.0.txt",
+      "language": "txt",
+      "sizeLines": 202,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LICENSES/MIT.txt",
+      "language": "txt",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LICENSES/THIRD-PARTY.txt",
+      "language": "txt",
+      "sizeLines": 268,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "publish_resume.sh",
+      "language": "shell",
+      "sizeLines": 80,
+      "fileCategory": "script"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 585,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.zh.md",
+      "language": "markdown",
+      "sizeLines": 585,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "rustfmt.toml",
+      "language": "toml",
+      "sizeLines": 120,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tests/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 102,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tests/cross_crate_tests.rs",
+      "language": "rust",
+      "sizeLines": 305,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/helpers.rs",
+      "language": "rust",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/migration_tests.rs",
+      "language": "rust",
+      "sizeLines": 125,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/mod.rs",
+      "language": "rust",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/model_tests.rs",
+      "language": "rust",
+      "sizeLines": 307,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/query_tests.rs",
+      "language": "rust",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/data_integration/repository_tests.rs",
+      "language": "rust",
+      "sizeLines": 468,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/integration/kafka_tests.rs",
+      "language": "rust",
+      "sizeLines": 674,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/integration/mysql_tests.rs",
+      "language": "rust",
+      "sizeLines": 428,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/integration/postgres_tests.rs",
+      "language": "rust",
+      "sizeLines": 444,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/integration/rabbitmq_tests.rs",
+      "language": "rust",
+      "sizeLines": 740,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/integration/redis_tests.rs",
+      "language": "rust",
+      "sizeLines": 373,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/lib.rs",
+      "language": "rust",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 1247,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "very-large",
+  "stats": {
+    "filesScanned": 1247,
+    "byCategory": {
+      "config": 171,
+      "code": 739,
+      "docs": 273,
+      "infra": 12,
+      "markup": 51,
+      "script": 1
+    },
+    "byLanguage": {
+      "json": 90,
+      "yaml": 16,
+      "pid": 1,
+      "unknown": 4,
+      "config": 1,
+      "markdown": 269,
+      "toml": 75,
+      "rust": 718,
+      "disabled": 9,
+      "imports": 2,
+      "html": 41,
+      "css": 10,
+      "javascript": 5,
+      "txt": 5,
+      "shell": 1
+    }
+  }
+}
