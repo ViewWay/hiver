@@ -15,8 +15,7 @@ use crate::StatusCode;
 /// HTTP Error type
 /// HTTP 错误类型
 #[derive(Debug, Clone)]
-pub enum Error
-{
+pub enum Error {
     /// Incomplete request (needs more data) / 不完整请求（需要更多数据）
     IncompleteRequest,
 
@@ -57,56 +56,47 @@ pub enum Error
     Custom(u16, String),
 }
 
-impl Error
-{
+impl Error {
     /// Create a 400 Bad Request error
     /// 创建400 Bad Request错误
-    pub fn bad_request(msg: impl Into<String>) -> Self
-    {
+    pub fn bad_request(msg: impl Into<String>) -> Self {
         Error::InvalidRequest(msg.into())
     }
 
     /// Create a 401 Unauthorized error
     /// 创建401 Unauthorized错误
-    pub fn unauthorized() -> Self
-    {
+    pub fn unauthorized() -> Self {
         Error::Unauthorized
     }
 
     /// Create a 403 Forbidden error
     /// 创建403 Forbidden错误
-    pub fn forbidden() -> Self
-    {
+    pub fn forbidden() -> Self {
         Error::Forbidden
     }
 
     /// Create a 404 Not Found error
     /// 创建404 Not Found错误
-    pub fn not_found(resource: impl Into<String>) -> Self
-    {
+    pub fn not_found(resource: impl Into<String>) -> Self {
         Error::NotFound(resource.into())
     }
 
     /// Create a 500 Internal Server Error
     /// 创建500 Internal Server Error错误
-    pub fn internal(msg: impl Into<String>) -> Self
-    {
+    pub fn internal(msg: impl Into<String>) -> Self {
         Error::Internal(msg.into())
     }
 
     /// Create a connection error
     /// 创建连接错误
-    pub fn connection(msg: impl Into<String>) -> Self
-    {
+    pub fn connection(msg: impl Into<String>) -> Self {
         Error::Connection(msg.into())
     }
 
     /// Get the HTTP status code for this error
     /// 获取此错误的HTTP状态码
-    pub fn status_code(&self) -> u16
-    {
-        match self
-        {
+    pub fn status_code(&self) -> u16 {
+        match self {
             Error::InvalidRequest(_) => 400,
             Error::Unauthorized => 401,
             Error::Forbidden => 403,
@@ -121,12 +111,9 @@ impl Error
 
 /// Formats the error as a human-readable string.
 /// 将错误格式化为人类可读的字符串。
-impl fmt::Display for Error
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Error::IncompleteRequest => write!(f, "Incomplete Request"),
             Error::InvalidRequest(msg) => write!(f, "Bad Request: {}", msg),
             Error::InvalidResponse(msg) => write!(f, "Invalid Response: {}", msg),
@@ -148,10 +135,8 @@ impl std::error::Error for Error {}
 
 /// Converts a `std::io::Error` into `Error::Io`.
 /// 将 `std::io::Error` 转换为 `Error::Io`。
-impl From<std::io::Error> for Error
-{
-    fn from(e: std::io::Error) -> Self
-    {
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
         Error::Io(e.to_string())
     }
 }
@@ -183,8 +168,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// return Err(ResponseStatusException::new(StatusCode::UNPROCESSABLE_ENTITY, "Invalid data"))?;
 /// ```
 #[derive(Debug, Clone)]
-pub struct ResponseStatusException
-{
+pub struct ResponseStatusException {
     /// The HTTP status code
     /// HTTP状态码
     pub status: StatusCode,
@@ -194,12 +178,10 @@ pub struct ResponseStatusException
     pub reason: String,
 }
 
-impl ResponseStatusException
-{
+impl ResponseStatusException {
     /// Create a new `ResponseStatusException` with the given status code and reason
     /// `使用给定的状态码和原因创建新的ResponseStatusException`
-    pub fn new(status: StatusCode, reason: impl Into<String>) -> Self
-    {
+    pub fn new(status: StatusCode, reason: impl Into<String>) -> Self {
         Self {
             status,
             reason: reason.into(),
@@ -208,79 +190,67 @@ impl ResponseStatusException
 
     /// Create a 400 Bad Request exception
     /// 创建400 Bad Request异常
-    pub fn bad_request(reason: impl Into<String>) -> Self
-    {
+    pub fn bad_request(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::BAD_REQUEST, reason)
     }
 
     /// Create a 401 Unauthorized exception
     /// 创建401 Unauthorized异常
-    pub fn unauthorized(reason: impl Into<String>) -> Self
-    {
+    pub fn unauthorized(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::UNAUTHORIZED, reason)
     }
 
     /// Create a 403 Forbidden exception
     /// 创建403 Forbidden异常
-    pub fn forbidden(reason: impl Into<String>) -> Self
-    {
+    pub fn forbidden(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::FORBIDDEN, reason)
     }
 
     /// Create a 404 Not Found exception
     /// 创建404 Not Found异常
-    pub fn not_found(reason: impl Into<String>) -> Self
-    {
+    pub fn not_found(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::NOT_FOUND, reason)
     }
 
     /// Create a 409 Conflict exception
     /// 创建409 Conflict异常
-    pub fn conflict(reason: impl Into<String>) -> Self
-    {
+    pub fn conflict(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::from_u16(409), reason)
     }
 
     /// Create a 422 Unprocessable Entity exception
     /// 创建422 Unprocessable Entity异常
-    pub fn unprocessable_entity(reason: impl Into<String>) -> Self
-    {
+    pub fn unprocessable_entity(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::from_u16(422), reason)
     }
 
     /// Create a 500 Internal Server Error exception
     /// 创建500 Internal Server Error异常
-    pub fn internal_server_error(reason: impl Into<String>) -> Self
-    {
+    pub fn internal_server_error(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::INTERNAL_SERVER_ERROR, reason)
     }
 
     /// Create a 503 Service Unavailable exception
     /// 创建503 Service Unavailable异常
-    pub fn service_unavailable(reason: impl Into<String>) -> Self
-    {
+    pub fn service_unavailable(reason: impl Into<String>) -> Self {
         Self::new(StatusCode::from_u16(503), reason)
     }
 
     /// Get the status code
     /// 获取状态码
-    pub fn status_code(&self) -> StatusCode
-    {
+    pub fn status_code(&self) -> StatusCode {
         self.status
     }
 
     /// Get the reason phrase
     /// 获取原因短语
-    pub fn reason(&self) -> &str
-    {
+    pub fn reason(&self) -> &str {
         &self.reason
     }
 }
 
-impl fmt::Display for ResponseStatusException
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for ResponseStatusException {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} {}", self.status.as_u16(), self.reason)
     }
 }
@@ -289,62 +259,59 @@ impl std::error::Error for ResponseStatusException {}
 
 /// Converts a `ResponseStatusException` into `Error::Custom`.
 /// 将 `ResponseStatusException` 转换为 `Error::Custom`。
-impl From<ResponseStatusException> for Error
-{
-    fn from(ex: ResponseStatusException) -> Self
-    {
+impl From<ResponseStatusException> for Error {
+    fn from(ex: ResponseStatusException) -> Self {
         Error::Custom(ex.status.as_u16(), ex.reason)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_response_status_exception_new()
-    {
+    fn test_response_status_exception_new() {
         let exc = ResponseStatusException::new(StatusCode::NOT_FOUND, "Resource not found");
         assert_eq!(exc.status, StatusCode::NOT_FOUND);
         assert_eq!(exc.reason, "Resource not found");
     }
 
     #[test]
-    fn test_response_status_exception_bad_request()
-    {
+    fn test_response_status_exception_bad_request() {
         let exc = ResponseStatusException::bad_request("Invalid input");
         assert_eq!(exc.status, StatusCode::BAD_REQUEST);
         assert_eq!(exc.reason, "Invalid input");
     }
 
     #[test]
-    fn test_response_status_exception_not_found()
-    {
+    fn test_response_status_exception_not_found() {
         let exc = ResponseStatusException::not_found("User not found");
         assert_eq!(exc.status, StatusCode::NOT_FOUND);
         assert_eq!(exc.reason, "User not found");
     }
 
     #[test]
-    fn test_response_status_exception_forbidden()
-    {
+    fn test_response_status_exception_forbidden() {
         let exc = ResponseStatusException::forbidden("Access denied");
         assert_eq!(exc.status, StatusCode::FORBIDDEN);
         assert_eq!(exc.reason, "Access denied");
     }
 
     #[test]
-    fn test_response_status_exception_display()
-    {
+    fn test_response_status_exception_display() {
         let exc = ResponseStatusException::not_found("Resource not found");
         assert_eq!(exc.to_string(), "404 Resource not found");
     }
 
     #[test]
-    fn test_response_status_exception_to_error()
-    {
+    fn test_response_status_exception_to_error() {
         let exc = ResponseStatusException::not_found("Resource not found");
         let error: Error = exc.into();
         assert_eq!(error.status_code(), 404);

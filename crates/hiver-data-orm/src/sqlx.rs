@@ -40,20 +40,16 @@ use crate::{Model, Result};
 /// Order direction for SQLx queries.
 /// SQLx 查询的排序方向。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SqlxOrder
-{
+pub enum SqlxOrder {
     /// Ascending / 升序
     Asc,
     /// Descending / 降序
     Desc,
 }
 
-impl SqlxOrder
-{
-    fn to_sql(self) -> &'static str
-    {
-        match self
-        {
+impl SqlxOrder {
+    fn to_sql(self) -> &'static str {
+        match self {
             Self::Asc => "ASC",
             Self::Desc => "DESC",
         }
@@ -69,8 +65,7 @@ impl SqlxOrder
 /// 构建带有 `$1`, `$2` ... 位置参数标记（PostgreSQL 风格）的查询，
 /// 将执行委托给 `DatabaseClient`。
 #[derive(Debug, Clone)]
-pub struct SqlxQuery<M>
-{
+pub struct SqlxQuery<M> {
     _phantom: PhantomData<M>,
     table: String,
     select_columns: Vec<String>,
@@ -85,12 +80,10 @@ pub struct SqlxQuery<M>
     distinct: bool,
 }
 
-impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
-{
+impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M> {
     /// Create a new SELECT * query.
     /// 创建新的 SELECT * 查询。
-    pub fn select() -> Self
-    {
+    pub fn select() -> Self {
         Self {
             _phantom: PhantomData,
             table: M::table_name().to_string(),
@@ -110,8 +103,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Select specific columns instead of *.
     /// 选择特定列而不是 *。
     #[must_use]
-    pub fn columns(mut self, cols: &[&str]) -> Self
-    {
+    pub fn columns(mut self, cols: &[&str]) -> Self {
         self.select_columns = cols.iter().map(|s| s.to_string()).collect();
         self
     }
@@ -128,16 +120,13 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
         mut self,
         condition: impl Into<String>,
         params: &[hiver_data_rdbc::QueryParam],
-    ) -> Self
-    {
+    ) -> Self {
         let mut cond = condition.into();
-        for param in params
-        {
+        for param in params {
             self.param_counter += 1;
             let marker = format!("${}", self.param_counter);
             // Replace first `?` or `$N` with the actual parameter marker
-            if let Some(pos) = cond.find('?')
-            {
+            if let Some(pos) = cond.find('?') {
                 cond.replace_range(pos..pos + 1, &marker);
             }
             self.params.push(param.to_sql_literal());
@@ -149,8 +138,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Add an ORDER BY clause.
     /// 添加 ORDER BY 子句。
     #[must_use]
-    pub fn order_by(mut self, expr: impl Into<String>) -> Self
-    {
+    pub fn order_by(mut self, expr: impl Into<String>) -> Self {
         self.orders.push(expr.into());
         self
     }
@@ -158,8 +146,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Add an ORDER BY clause with direction.
     /// 添加带方向的 ORDER BY 子句。
     #[must_use]
-    pub fn order_by_dir(mut self, column: impl Into<String>, direction: SqlxOrder) -> Self
-    {
+    pub fn order_by_dir(mut self, column: impl Into<String>, direction: SqlxOrder) -> Self {
         self.orders
             .push(format!("{} {}", column.into(), direction.to_sql()));
         self
@@ -168,8 +155,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Add a GROUP BY clause.
     /// 添加 GROUP BY 子句。
     #[must_use]
-    pub fn group_by(mut self, columns: &[&str]) -> Self
-    {
+    pub fn group_by(mut self, columns: &[&str]) -> Self {
         self.groups = columns.iter().map(|s| s.to_string()).collect();
         self
     }
@@ -177,8 +163,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Add a HAVING clause.
     /// 添加 HAVING 子句。
     #[must_use]
-    pub fn having(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn having(mut self, condition: impl Into<String>) -> Self {
         self.having = Some(condition.into());
         self
     }
@@ -186,8 +171,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Set LIMIT.
     /// 设置 LIMIT。
     #[must_use]
-    pub fn limit(mut self, n: usize) -> Self
-    {
+    pub fn limit(mut self, n: usize) -> Self {
         self.limit_val = Some(n);
         self
     }
@@ -195,8 +179,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Set OFFSET.
     /// 设置 OFFSET。
     #[must_use]
-    pub fn offset(mut self, n: usize) -> Self
-    {
+    pub fn offset(mut self, n: usize) -> Self {
         self.offset_val = Some(n);
         self
     }
@@ -204,63 +187,51 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// Enable DISTINCT.
     /// 启用 DISTINCT。
     #[must_use]
-    pub fn distinct(mut self) -> Self
-    {
+    pub fn distinct(mut self) -> Self {
         self.distinct = true;
         self
     }
 
     /// Build the full SQL string.
     /// 构建完整的 SQL 字符串。
-    pub fn to_sql(&self) -> String
-    {
-        let columns = if self.select_columns.is_empty()
-        {
+    pub fn to_sql(&self) -> String {
+        let columns = if self.select_columns.is_empty() {
             "*".to_string()
-        }
-        else
-        {
+        } else {
             self.select_columns.join(", ")
         };
 
         let mut sql = "SELECT ".to_string();
-        if self.distinct
-        {
+        if self.distinct {
             sql.push_str("DISTINCT ");
         }
         sql.push_str(&columns);
         sql.push_str(&format!(" FROM {}", self.table));
 
-        if !self.conditions.is_empty()
-        {
+        if !self.conditions.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&self.conditions.join(" AND "));
         }
 
-        if !self.groups.is_empty()
-        {
+        if !self.groups.is_empty() {
             sql.push_str(" GROUP BY ");
             sql.push_str(&self.groups.join(", "));
         }
 
-        if let Some(ref having) = self.having
-        {
+        if let Some(ref having) = self.having {
             sql.push_str(&format!(" HAVING {having}"));
         }
 
-        if !self.orders.is_empty()
-        {
+        if !self.orders.is_empty() {
             sql.push_str(" ORDER BY ");
             sql.push_str(&self.orders.join(", "));
         }
 
-        if let Some(limit) = self.limit_val
-        {
+        if let Some(limit) = self.limit_val {
             sql.push_str(&format!(" LIMIT {limit}"));
         }
 
-        if let Some(offset) = self.offset_val
-        {
+        if let Some(offset) = self.offset_val {
             sql.push_str(&format!(" OFFSET {offset}"));
         }
 
@@ -276,15 +247,13 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// `$1`, `$2` ... markers in `to_sql()` are placeholders only.
     /// 警告：参数已存储但当前 `DatabaseClient` trait 仅接受原始 SQL 字符串。
     /// 当参数化执行 API 可用时，应使用此方法绑定值。
-    pub fn params(&self) -> &[String]
-    {
+    pub fn params(&self) -> &[String] {
         &self.params
     }
 
     /// Execute the query and fetch all results.
     /// 执行查询并获取所有结果。
-    pub async fn fetch_all<C: DatabaseClient>(self, client: &C) -> Result<Vec<M>>
-    {
+    pub async fn fetch_all<C: DatabaseClient>(self, client: &C) -> Result<Vec<M>> {
         let sql = self.to_sql();
         let rows = client
             .fetch_all(&sql)
@@ -292,8 +261,7 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
             .map_err(|e| crate::Error::query_build(format!("Sqlx fetch_all failed: {e}")))?;
 
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             let model: M = row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("Sqlx deserialize: {e}")))?;
@@ -304,16 +272,12 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
 
     /// Execute the query and fetch at most one result.
     /// 执行查询并最多获取一个结果。
-    pub async fn fetch_optional<C: DatabaseClient>(self, client: &C) -> Result<Option<M>>
-    {
+    pub async fn fetch_optional<C: DatabaseClient>(self, client: &C) -> Result<Option<M>> {
         // BUGFIX: Avoid double LIMIT if the query already has one.
         let base_sql = self.to_sql();
-        let sql = if base_sql.contains("LIMIT")
-        {
+        let sql = if base_sql.contains("LIMIT") {
             base_sql
-        }
-        else
-        {
+        } else {
             format!("{} LIMIT 1", base_sql)
         };
         let row = client
@@ -321,10 +285,8 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
             .await
             .map_err(|e| crate::Error::query_build(format!("Sqlx fetch_optional failed: {e}")))?;
 
-        match row
-        {
-            Some(row) =>
-            {
+        match row {
+            Some(row) => {
                 let model: M = row
                     .deserialize()
                     .map_err(|e| crate::Error::validation(format!("Sqlx deserialize: {e}")))?;
@@ -338,17 +300,14 @@ impl<M: Model + serde::de::DeserializeOwned> SqlxQuery<M>
     /// 执行查询并获取恰好一个结果。
     ///
     /// Returns an error if zero or more than one row is returned.
-    pub async fn fetch_one<C: DatabaseClient>(self, client: &C) -> Result<M>
-    {
+    pub async fn fetch_one<C: DatabaseClient>(self, client: &C) -> Result<M> {
         let result = self.fetch_optional(client).await?;
         result.ok_or_else(|| crate::Error::not_found("Sqlx fetch_one: no rows returned"))
     }
 }
 
-impl<M: Model + serde::de::DeserializeOwned> Default for SqlxQuery<M>
-{
-    fn default() -> Self
-    {
+impl<M: Model + serde::de::DeserializeOwned> Default for SqlxQuery<M> {
+    fn default() -> Self {
         Self::select()
     }
 }
@@ -361,8 +320,7 @@ impl<M: Model + serde::de::DeserializeOwned> Default for SqlxQuery<M>
 /// Equivalent to SQLx's `FromRow` trait — bridges row-based
 /// deserialization to the Hiver `Model` ecosystem.
 /// 等价于 SQLx 的 `FromRow` trait — 将基于行的反序列化桥接到 Hiver `Model` 生态系统。
-pub trait FromRow: Sized
-{
+pub trait FromRow: Sized {
     /// Construct this type from a Hiver RDBC row.
     /// 从 Hiver RDBC 行构造此类型。
     fn from_rdbc_row(row: &hiver_data_rdbc::Row) -> Result<Self>;
@@ -378,34 +336,28 @@ pub trait FromRow: Sized
 /// SQLx pool is provided.
 /// 仅在启用 `sqlx` 特性并提供真实 SQLx 池时可用。
 #[cfg(feature = "sqlx")]
-pub struct SqlxPoolAdapter<DB: sqlx::Database>
-{
+pub struct SqlxPoolAdapter<DB: sqlx::Database> {
     pool: sqlx::Pool<DB>,
 }
 
 #[cfg(feature = "sqlx")]
-impl<DB: sqlx::Database> SqlxPoolAdapter<DB>
-{
+impl<DB: sqlx::Database> SqlxPoolAdapter<DB> {
     /// Create a new adapter wrapping a SQLx pool.
     /// 创建包装 SQLx 池的新适配器。
-    pub fn new(pool: sqlx::Pool<DB>) -> Self
-    {
+    pub fn new(pool: sqlx::Pool<DB>) -> Self {
         Self { pool }
     }
 
     /// Get a reference to the inner pool.
     /// 获取内部池的引用。
-    pub fn inner(&self) -> &sqlx::Pool<DB>
-    {
+    pub fn inner(&self) -> &sqlx::Pool<DB> {
         &self.pool
     }
 }
 
 #[cfg(feature = "sqlx")]
-impl<DB: sqlx::Database> Clone for SqlxPoolAdapter<DB>
-{
-    fn clone(&self) -> Self
-    {
+impl<DB: sqlx::Database> Clone for SqlxPoolAdapter<DB> {
+    fn clone(&self) -> Self {
         Self {
             pool: self.pool.clone(),
         }
@@ -423,20 +375,17 @@ impl<DB: sqlx::Database> Clone for SqlxPoolAdapter<DB>
 /// 在生产环境中，用户应直接使用 `sqlx::query!()` 进行编译时 SQL 验证。
 /// 此结构体提供了一个遵循相同约定的运行时桥接。
 #[derive(Debug, Clone)]
-pub struct VerifiedQuery
-{
+pub struct VerifiedQuery {
     sql: String,
 }
 
-impl VerifiedQuery
-{
+impl VerifiedQuery {
     /// Create a new verified query.
     /// 创建新的已验证查询。
     ///
     /// In production, use `sqlx::query!(sql)` instead.
     /// 在生产环境中，请改用 `sqlx::query!(sql)`。
-    pub fn new(sql: impl Into<String>) -> Self
-    {
+    pub fn new(sql: impl Into<String>) -> Self {
         Self { sql: sql.into() }
     }
 
@@ -445,8 +394,7 @@ impl VerifiedQuery
     pub async fn fetch_all<C: DatabaseClient>(
         &self,
         client: &C,
-    ) -> Result<Vec<hiver_data_rdbc::Row>>
-    {
+    ) -> Result<Vec<hiver_data_rdbc::Row>> {
         client
             .fetch_all(&self.sql)
             .await
@@ -458,15 +406,11 @@ impl VerifiedQuery
     pub async fn fetch_optional<C: DatabaseClient>(
         &self,
         client: &C,
-    ) -> Result<Option<hiver_data_rdbc::Row>>
-    {
+    ) -> Result<Option<hiver_data_rdbc::Row>> {
         // BUGFIX: Avoid double LIMIT if the query already has one.
-        let sql = if self.sql.contains("LIMIT")
-        {
+        let sql = if self.sql.contains("LIMIT") {
             self.sql.clone()
-        }
-        else
-        {
+        } else {
             format!("{} LIMIT 1", self.sql)
         };
         client
@@ -477,16 +421,20 @@ impl VerifiedQuery
 
     /// Get the raw SQL.
     /// 获取原始 SQL。
-    pub fn sql(&self) -> &str
-    {
+    pub fn sql(&self) -> &str {
         &self.sql
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::model::*;
 
@@ -494,10 +442,8 @@ mod tests
     #[derive(Debug, Clone)]
     struct Product;
 
-    impl Model for Product
-    {
-        fn meta() -> ModelMeta
-        {
+    impl Model for Product {
+        fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("products");
             meta.columns.push(Column::new("id", ColumnType::I64));
             meta.columns.push(Column::new("name", ColumnType::String));
@@ -505,35 +451,29 @@ mod tests
             meta
         }
 
-        fn primary_key(&self) -> crate::Result<String>
-        {
+        fn primary_key(&self) -> crate::Result<String> {
             Ok("id".to_string())
         }
 
-        fn set_primary_key(&mut self, _: String) -> crate::Result<()>
-        {
+        fn set_primary_key(&mut self, _: String) -> crate::Result<()> {
             Ok(())
         }
     }
 
-    impl<'de> serde::Deserialize<'de> for Product
-    {
-        fn deserialize<D: serde::Deserializer<'de>>(_d: D) -> std::result::Result<Self, D::Error>
-        {
+    impl<'de> serde::Deserialize<'de> for Product {
+        fn deserialize<D: serde::Deserializer<'de>>(_d: D) -> std::result::Result<Self, D::Error> {
             Ok(Product)
         }
     }
 
     #[test]
-    fn test_sqlx_query_basic()
-    {
+    fn test_sqlx_query_basic() {
         let sql = SqlxQuery::<Product>::select().to_sql();
         assert_eq!(sql, "SELECT * FROM products");
     }
 
     #[test]
-    fn test_sqlx_query_with_columns()
-    {
+    fn test_sqlx_query_with_columns() {
         let sql = SqlxQuery::<Product>::select()
             .columns(&["id", "name"])
             .to_sql();
@@ -541,8 +481,7 @@ mod tests
     }
 
     #[test]
-    fn test_sqlx_query_with_conditions()
-    {
+    fn test_sqlx_query_with_conditions() {
         let sql = SqlxQuery::<Product>::select()
             .where_("active = ?", &[hiver_data_rdbc::QueryParam::Bool(true)])
             .where_("price > ?", &[hiver_data_rdbc::QueryParam::F64(100.0)])
@@ -555,8 +494,7 @@ mod tests
     }
 
     #[test]
-    fn test_sqlx_query_full()
-    {
+    fn test_sqlx_query_full() {
         let sql = SqlxQuery::<Product>::select()
             .columns(&["name", "price"])
             .where_("active = ?", &[hiver_data_rdbc::QueryParam::Bool(true)])
@@ -578,22 +516,19 @@ mod tests
     }
 
     #[test]
-    fn test_sqlx_order_direction()
-    {
+    fn test_sqlx_order_direction() {
         assert_eq!(SqlxOrder::Asc.to_sql(), "ASC");
         assert_eq!(SqlxOrder::Desc.to_sql(), "DESC");
     }
 
     #[test]
-    fn test_sqlx_query_default()
-    {
+    fn test_sqlx_query_default() {
         let q: SqlxQuery<Product> = SqlxQuery::default();
         assert_eq!(q.to_sql(), "SELECT * FROM products");
     }
 
     #[test]
-    fn test_verified_query()
-    {
+    fn test_verified_query() {
         let vq = VerifiedQuery::new("SELECT count(*) FROM products");
         assert_eq!(vq.sql(), "SELECT count(*) FROM products");
     }

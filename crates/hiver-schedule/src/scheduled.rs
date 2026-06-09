@@ -30,8 +30,7 @@ pub type AsyncTaskFn =
 /// Schedule type
 /// 调度类型
 #[derive(Debug, Clone)]
-pub enum ScheduleType
-{
+pub enum ScheduleType {
     /// Fixed rate (runs at fixed intervals)
     /// 固定速率（按固定间隔运行）
     FixedRate(Duration),
@@ -60,8 +59,7 @@ pub enum ScheduleType
 /// }
 /// ```
 #[derive(Clone)]
-pub struct ScheduledTask
-{
+pub struct ScheduledTask {
     /// Task name
     /// 任务名称
     pub name: String,
@@ -83,12 +81,10 @@ pub struct ScheduledTask
     async_task_fn: Option<AsyncTaskFn>,
 }
 
-impl ScheduledTask
-{
+impl ScheduledTask {
     /// Create a new scheduled task with fixed rate
     /// 创建固定速率的定时任务
-    pub fn fixed_rate(name: impl Into<String>, interval_ms: u64) -> Self
-    {
+    pub fn fixed_rate(name: impl Into<String>, interval_ms: u64) -> Self {
         Self {
             name: name.into(),
             schedule_type: ScheduleType::FixedRate(Duration::from_millis(interval_ms)),
@@ -100,8 +96,7 @@ impl ScheduledTask
 
     /// Create a new scheduled task with fixed delay
     /// 创建固定延迟的定时任务
-    pub fn fixed_delay(name: impl Into<String>, delay_ms: u64) -> Self
-    {
+    pub fn fixed_delay(name: impl Into<String>, delay_ms: u64) -> Self {
         Self {
             name: name.into(),
             schedule_type: ScheduleType::FixedDelay(Duration::from_millis(delay_ms)),
@@ -113,8 +108,7 @@ impl ScheduledTask
 
     /// Create a new scheduled task with cron expression
     /// 创建Cron表达式的定时任务
-    pub fn cron(name: impl Into<String>, cron_expression: impl Into<String>) -> Self
-    {
+    pub fn cron(name: impl Into<String>, cron_expression: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             schedule_type: ScheduleType::Cron(cron_expression.into()),
@@ -126,8 +120,7 @@ impl ScheduledTask
 
     /// Set initial delay
     /// 设置初始延迟
-    pub fn with_initial_delay(mut self, delay_ms: u64) -> Self
-    {
+    pub fn with_initial_delay(mut self, delay_ms: u64) -> Self {
         self.initial_delay = Duration::from_millis(delay_ms);
         self
     }
@@ -157,29 +150,23 @@ impl ScheduledTask
 
     /// Execute the task
     /// 执行任务
-    pub fn execute(&self)
-    {
-        if let Some(ref f) = self.task_fn
-        {
+    pub fn execute(&self) {
+        if let Some(ref f) = self.task_fn {
             f();
         }
     }
 
     /// Execute the async task
     /// 执行异步任务
-    pub async fn execute_async(&self)
-    {
-        if let Some(ref f) = self.async_task_fn
-        {
+    pub async fn execute_async(&self) {
+        if let Some(ref f) = self.async_task_fn {
             f().await;
         }
     }
 }
 
-impl std::fmt::Debug for ScheduledTask
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for ScheduledTask {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ScheduledTask")
             .field("name", &self.name)
             .field("schedule_type", &self.schedule_type)
@@ -205,8 +192,7 @@ impl std::fmt::Debug for ScheduledTask
 ///     // Scheduled tasks will be automatically detected
 /// }
 /// ```
-pub struct TaskScheduler
-{
+pub struct TaskScheduler {
     /// Running state
     /// 运行状态
     running: Arc<tokio::sync::RwLock<bool>>,
@@ -216,12 +202,10 @@ pub struct TaskScheduler
     handles: Arc<tokio::sync::RwLock<Vec<JoinHandle<()>>>>,
 }
 
-impl TaskScheduler
-{
+impl TaskScheduler {
     /// Create a new task scheduler
     /// 创建新的任务调度器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             running: Arc::new(tokio::sync::RwLock::new(false)),
             handles: Arc::new(tokio::sync::RwLock::new(Vec::new())),
@@ -230,15 +214,12 @@ impl TaskScheduler
 
     /// Schedule a task to run
     /// 调度任务运行
-    pub async fn schedule(&self, task: ScheduledTask) -> Result<(), String>
-    {
-        if !self.is_running().await
-        {
+    pub async fn schedule(&self, task: ScheduledTask) -> Result<(), String> {
+        if !self.is_running().await {
             return Err("Scheduler is not running".to_string());
         }
 
-        let handle = match task.schedule_type.clone()
-        {
+        let handle = match task.schedule_type.clone() {
             ScheduleType::FixedRate(duration) => self.spawn_fixed_rate_task(task, duration),
             ScheduleType::FixedDelay(duration) => self.spawn_fixed_delay_task(task, duration),
             ScheduleType::Cron(expression) => self.spawn_cron_task(&task, &expression),
@@ -251,23 +232,20 @@ impl TaskScheduler
 
     /// Spawn a fixed rate task
     /// 生成固定速率任务
-    fn spawn_fixed_rate_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()>
-    {
+    fn spawn_fixed_rate_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
         let task_name = task.name.clone();
         let running = self.running.clone();
 
         tokio::spawn(async move {
             // Initial delay
-            if !task.initial_delay.is_zero()
-            {
+            if !task.initial_delay.is_zero() {
                 sleep(task.initial_delay).await;
             }
 
             let mut interval = interval(duration);
             info!("Starting fixed rate task: {}", task_name);
 
-            while *running.read().await
-            {
+            while *running.read().await {
                 task.execute_async().await;
                 interval.tick().await;
             }
@@ -278,22 +256,19 @@ impl TaskScheduler
 
     /// Spawn a fixed delay task
     /// 生成固定延迟任务
-    fn spawn_fixed_delay_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()>
-    {
+    fn spawn_fixed_delay_task(&self, task: ScheduledTask, duration: Duration) -> JoinHandle<()> {
         let task_name = task.name.clone();
         let running = self.running.clone();
 
         tokio::spawn(async move {
             // Initial delay
-            if !task.initial_delay.is_zero()
-            {
+            if !task.initial_delay.is_zero() {
                 sleep(task.initial_delay).await;
             }
 
             info!("Starting fixed delay task: {}", task_name);
 
-            while *running.read().await
-            {
+            while *running.read().await {
                 task.execute_async().await;
                 sleep(duration).await;
             }
@@ -308,8 +283,7 @@ impl TaskScheduler
     /// Equivalent to Spring's `@Scheduled(cron = "...")`.
     /// 等价于 Spring 的 `@Scheduled(cron = "...")`。
     #[allow(clippy::expect_used)]
-    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> JoinHandle<()>
-    {
+    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> JoinHandle<()> {
         let task_name = task.name.clone();
         let running = self.running.clone();
         let async_fn = task.async_task_fn.clone();
@@ -317,17 +291,14 @@ impl TaskScheduler
         let expression_owned = expression.to_string();
 
         tokio::spawn(async move {
-            if async_fn.is_none()
-            {
+            if async_fn.is_none() {
                 tracing::warn!("Cron task {} has no async fn set — nothing to execute", task_name);
                 return;
             }
 
-            let scheduler = match tokio_cron_scheduler::JobScheduler::new().await
-            {
+            let scheduler = match tokio_cron_scheduler::JobScheduler::new().await {
                 Ok(s) => s,
-                Err(e) =>
-                {
+                Err(e) => {
                     tracing::error!("Failed to create cron scheduler for {}: {}", task_name, e);
                     return;
                 },
@@ -340,30 +311,25 @@ impl TaskScheduler
                     let inner_fn = async_fn.clone().expect("async fn was checked above");
                     Box::pin(async move { inner_fn().await })
                 },
-            )
-            {
+            ) {
                 Ok(j) => j,
-                Err(e) =>
-                {
+                Err(e) => {
                     tracing::error!("Failed to create cron job for {}: {}", task_name, e);
                     return;
                 },
             };
 
-            if let Err(e) = scheduler.add(job).await
-            {
+            if let Err(e) = scheduler.add(job).await {
                 tracing::error!("Failed to add cron job for {}: {}", task_name, e);
                 return;
             }
 
             // Initial delay
-            if !initial_delay.is_zero()
-            {
+            if !initial_delay.is_zero() {
                 sleep(initial_delay).await;
             }
 
-            if let Err(e) = scheduler.start().await
-            {
+            if let Err(e) = scheduler.start().await {
                 tracing::error!("Failed to start cron scheduler for {}: {}", task_name, e);
                 return;
             }
@@ -371,8 +337,7 @@ impl TaskScheduler
             tracing::info!("Cron task started: {} ({})", name_clone, expression_owned);
 
             // Wait until shutdown
-            while *running.read().await
-            {
+            while *running.read().await {
                 sleep(Duration::from_secs(1)).await;
             }
         })
@@ -380,22 +345,19 @@ impl TaskScheduler
 
     /// Run the scheduler
     /// 运行调度器
-    pub async fn run(&self)
-    {
+    pub async fn run(&self) {
         *self.running.write().await = true;
         info!("Task scheduler started");
     }
 
     /// Shutdown the scheduler
     /// 关闭调度器
-    pub async fn shutdown(&self)
-    {
+    pub async fn shutdown(&self) {
         *self.running.write().await = false;
 
         // Abort all running tasks
         let mut handles = self.handles.write().await;
-        for handle in handles.drain(..)
-        {
+        for handle in handles.drain(..) {
             handle.abort();
         }
 
@@ -404,23 +366,19 @@ impl TaskScheduler
 
     /// Check if the scheduler is running
     /// 检查调度器是否正在运行
-    pub async fn is_running(&self) -> bool
-    {
+    pub async fn is_running(&self) -> bool {
         *self.running.read().await
     }
 
     /// Get the number of active tasks
     /// 获取活动任务数量
-    pub async fn active_task_count(&self) -> usize
-    {
+    pub async fn active_task_count(&self) -> usize {
         self.handles.read().await.len()
     }
 }
 
-impl Default for TaskScheduler
-{
-    fn default() -> Self
-    {
+impl Default for TaskScheduler {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -444,8 +402,7 @@ where
 {
     tokio::spawn(async move {
         let mut timer = interval(Duration::from_millis(interval_ms));
-        loop
-        {
+        loop {
             f().await;
             timer.tick().await;
         }
@@ -470,8 +427,7 @@ where
     Fut: Future<Output = ()> + Send + 'static,
 {
     tokio::spawn(async move {
-        loop
-        {
+        loop {
             f().await;
             sleep(Duration::from_millis(delay_ms)).await;
         }
@@ -489,8 +445,7 @@ where
 {
     tokio::spawn(async move {
         let mut timer = interval(Duration::from_millis(interval_ms));
-        loop
-        {
+        loop {
             f();
             timer.tick().await;
         }
@@ -507,8 +462,7 @@ where
     F: FnMut() + Send + 'static,
 {
     tokio::spawn(async move {
-        loop
-        {
+        loop {
             f();
             sleep(Duration::from_millis(delay_ms)).await;
         }
@@ -516,9 +470,14 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::{
         Arc,
         atomic::{AtomicU32, Ordering},
@@ -527,8 +486,7 @@ mod tests
     use super::*;
 
     #[test]
-    fn test_scheduled_task_creation()
-    {
+    fn test_scheduled_task_creation() {
         let task = ScheduledTask::fixed_rate("test", 5000);
         assert_eq!(task.name, "test");
 
@@ -540,8 +498,7 @@ mod tests
     }
 
     #[test]
-    fn test_scheduled_task_builder()
-    {
+    fn test_scheduled_task_builder() {
         let task = ScheduledTask::fixed_rate("test", 5000).with_initial_delay(1000);
 
         assert_eq!(task.name, "test");
@@ -549,8 +506,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_task_scheduler()
-    {
+    async fn test_task_scheduler() {
         let scheduler = TaskScheduler::new();
         assert!(!scheduler.is_running().await);
 
@@ -562,8 +518,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_schedule_fixed_rate()
-    {
+    async fn test_schedule_fixed_rate() {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
@@ -585,8 +540,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_schedule_fixed_delay()
-    {
+    async fn test_schedule_fixed_delay() {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
@@ -608,8 +562,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_scheduled_task_with_fn()
-    {
+    async fn test_scheduled_task_with_fn() {
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
 
@@ -621,8 +574,7 @@ mod tests
         });
 
         // Execute the task manually a few times
-        for _ in 0..3
-        {
+        for _ in 0..3 {
             task.execute_async().await;
         }
 
@@ -630,8 +582,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_task_scheduler_with_task()
-    {
+    async fn test_task_scheduler_with_task() {
         let scheduler = TaskScheduler::new();
         scheduler.run().await;
 

@@ -60,26 +60,22 @@ use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 /// ```
 pub struct Form<T>(pub T);
 
-impl<T> Form<T>
-{
+impl<T> Form<T> {
     /// Consume the form extractor and get the inner value
     /// 消耗表单提取器并获取内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T
-    {
+    pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
 }
@@ -88,8 +84,7 @@ impl<T> std::fmt::Debug for Form<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("Form").field(&self.0).finish()
     }
 }
@@ -98,8 +93,7 @@ impl<T> Clone for Form<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self(self.0.clone())
     }
 }
@@ -109,8 +103,7 @@ impl<T> FromRequest for Form<T>
 where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self>
-    {
+    fn from_request(req: &Request) -> ExtractorFuture<Self> {
         let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
         let content_type = req.header("content-type").unwrap_or("").to_string();
 
@@ -146,20 +139,16 @@ where
 
 /// Parse form data into a map
 /// 将表单数据解析为映射
-pub fn parse_form_data(body: &str) -> HashMap<String, String>
-{
+pub fn parse_form_data(body: &str) -> HashMap<String, String> {
     let mut params = HashMap::new();
 
-    for pair in body.split('&')
-    {
+    for pair in body.split('&') {
         let pair = pair.trim();
-        if pair.is_empty()
-        {
+        if pair.is_empty() {
             continue;
         }
 
-        let (key, value) = match pair.split_once('=')
-        {
+        let (key, value) = match pair.split_once('=') {
             Some((k, v)) => (k, v),
             None => (pair, ""),
         };
@@ -176,19 +165,14 @@ pub fn parse_form_data(body: &str) -> HashMap<String, String>
 
 /// Simple URL decode
 /// 简单的URL解码
-pub fn url_decode(input: &str) -> String
-{
+pub fn url_decode(input: &str) -> String {
     let mut result = String::new();
     let mut chars = input.chars().peekable();
 
-    while let Some(c) = chars.next()
-    {
-        if c == '+'
-        {
+    while let Some(c) = chars.next() {
+        if c == '+' {
             result.push(' ');
-        }
-        else if c == '%'
-        {
+        } else if c == '%' {
             let hex: String = chars.by_ref().take(2).collect();
             if hex.len() == 2
                 && let Ok(byte) = u8::from_str_radix(&hex, 16)
@@ -196,9 +180,7 @@ pub fn url_decode(input: &str) -> String
             {
                 result.push(decoded);
             }
-        }
-        else
-        {
+        } else {
             result.push(c);
         }
     }
@@ -208,20 +190,23 @@ pub fn url_decode(input: &str) -> String
 
 /// Get content type from request
 /// 从请求获取content type
-pub fn get_content_type(req: &Request) -> String
-{
+pub fn get_content_type(req: &Request) -> String {
     req.header("content-type").unwrap_or("").to_string()
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_parse_form_data()
-    {
+    fn test_parse_form_data() {
         let form = "username=John&password=secret&remember=on";
         let params = parse_form_data(form);
 
@@ -231,8 +216,7 @@ mod tests
     }
 
     #[test]
-    fn test_url_decode_form()
-    {
+    fn test_url_decode_form() {
         assert_eq!(url_decode("hello%20world"), "hello world");
         assert_eq!(url_decode("user%40email.com"), "user@email.com");
     }

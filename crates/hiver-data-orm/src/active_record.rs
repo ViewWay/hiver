@@ -57,12 +57,10 @@ pub trait Save:
 {
     /// Insert a new record.
     /// 插入新记录。
-    async fn insert<C: DatabaseClient>(&self, client: &C) -> Result<Self>
-    {
+    async fn insert<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let json = serde_json::to_value(self)
             .map_err(|e| crate::Error::unknown(format!("serialize: {e}")))?;
-        let map = match &json
-        {
+        let map = match &json {
             serde_json::Value::Object(m) => m,
             _ => return Err(crate::Error::unknown("not an object")),
         };
@@ -75,8 +73,7 @@ pub trait Save:
             cols.join(", "),
             placeholders.join(", ")
         );
-        match client.fetch_one_params(&sql, &params).await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -86,13 +83,11 @@ pub trait Save:
 
     /// Update an existing record by primary key.
     /// 按主键更新记录。
-    async fn update<C: DatabaseClient>(&self, client: &C) -> Result<Self>
-    {
+    async fn update<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key()?;
         let json = serde_json::to_value(self)
             .map_err(|e| crate::Error::unknown(format!("serialize: {e}")))?;
-        let map = match &json
-        {
+        let map = match &json {
             serde_json::Value::Object(m) => m,
             _ => return Err(crate::Error::unknown("not an object")),
         };
@@ -101,10 +96,8 @@ pub trait Save:
         let mut params: Vec<QueryParam> = Vec::new();
         let mut idx = 1u32;
 
-        for (k, v) in map
-        {
-            if k == "id"
-            {
+        for (k, v) in map {
+            if k == "id" {
                 continue;
             }
             set_parts.push(format!("{} = ${idx}", k));
@@ -112,8 +105,7 @@ pub trait Save:
             idx += 1;
         }
 
-        if set_parts.is_empty()
-        {
+        if set_parts.is_empty() {
             return Err(crate::Error::unknown("no columns to update"));
         }
 
@@ -125,8 +117,7 @@ pub trait Save:
             Self::table_name(),
             set_parts.join(", ")
         );
-        match client.fetch_one_params(&sql, &params).await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -140,15 +131,11 @@ pub trait Save:
 
     /// Insert or update (upsert).
     /// 插入或更新（upsert）。
-    async fn save<C: DatabaseClient>(&self, client: &C) -> Result<Self>
-    {
+    async fn save<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key().unwrap_or_default();
-        if pk.is_empty() || pk == "0"
-        {
+        if pk.is_empty() || pk == "0" {
             self.insert(client).await
-        }
-        else
-        {
+        } else {
             self.update(client).await
         }
     }
@@ -164,23 +151,20 @@ pub trait Save:
 /// Equivalent to Spring Data's `@Version`.
 /// 等价于 Spring Data 的 `@Version`。
 #[async_trait::async_trait]
-pub trait OptimisticLock: Save
-{
+pub trait OptimisticLock: Save {
     /// Return the current version value.
     /// 返回当前版本值。
     fn version(&self) -> i64;
 
     /// Return the version column name (defaults to `"version"`).
     /// 返回版本列名（默认为 `"version"`）。
-    fn version_column() -> &'static str
-    {
+    fn version_column() -> &'static str {
         "version"
     }
 
     /// Update with version check.
     /// 带版本检查的更新。
-    async fn update_versioned<C: DatabaseClient>(&self, client: &C) -> Result<Self>
-    {
+    async fn update_versioned<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key()?;
         let current_version = self.version();
         let next_version = current_version + 1;
@@ -188,8 +172,7 @@ pub trait OptimisticLock: Save
 
         let json = serde_json::to_value(self)
             .map_err(|e| crate::Error::unknown(format!("serialize: {e}")))?;
-        let map = match &json
-        {
+        let map = match &json {
             serde_json::Value::Object(m) => m,
             _ => return Err(crate::Error::unknown("not an object")),
         };
@@ -198,10 +181,8 @@ pub trait OptimisticLock: Save
         let mut params: Vec<QueryParam> = Vec::new();
         let mut idx = 1u32;
 
-        for (k, v) in map
-        {
-            if k == "id" || k.as_str() == version_col
-            {
+        for (k, v) in map {
+            if k == "id" || k.as_str() == version_col {
                 continue;
             }
             set_parts.push(format!("{} = ${idx}", k));
@@ -228,8 +209,7 @@ pub trait OptimisticLock: Save
             version_col,
         );
 
-        match client.fetch_one_params(&sql, &params).await?
-        {
+        match client.fetch_one_params(&sql, &params).await? {
             Some(row) => row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}"))),
@@ -250,12 +230,10 @@ pub trait OptimisticLock: Save
 /// Delete operation trait.
 /// 删除操作 trait。
 #[async_trait::async_trait]
-pub trait Delete: Send + Sync + Model + Sized
-{
+pub trait Delete: Send + Sync + Model + Sized {
     /// Delete this record from the database.
     /// 从数据库删除此记录。
-    async fn delete<C: DatabaseClient>(&self, client: &C) -> Result<()>
-    {
+    async fn delete<C: DatabaseClient>(&self, client: &C) -> Result<()> {
         // Enforce cascade rules before deleting the parent record.
         // 在删除父记录之前执行级联规则。
         let relations = Self::relations();
@@ -291,12 +269,10 @@ pub trait Delete: Send + Sync + Model + Sized
 /// Refresh operation trait.
 /// 刷新操作 trait。
 #[async_trait::async_trait]
-pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized
-{
+pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized {
     /// Refresh this record from the database (re-fetch by primary key).
     /// 从数据库刷新此记录（按主键重新获取）。
-    async fn refresh<C: DatabaseClient>(&self, client: &C) -> Result<Self>
-    {
+    async fn refresh<C: DatabaseClient>(&self, client: &C) -> Result<Self> {
         let pk = self.primary_key()?;
         let sql = format!("SELECT * FROM {} WHERE id = $1 LIMIT 1", Self::table_name());
         match client
@@ -322,8 +298,7 @@ pub trait Refresh: Send + Sync + Model + serde::de::DeserializeOwned + Sized
 /// Count operation trait.
 /// 计数操作 trait。
 #[allow(async_fn_in_trait)]
-pub trait Count: Send + Sync + Model
-{
+pub trait Count: Send + Sync + Model {
     /// Count all records in the table.
     async fn count_all<C: DatabaseClient>(client: &C) -> Result<i64>
     where
@@ -348,15 +323,13 @@ pub trait Count: Send + Sync + Model
 ///
 /// Each method takes a `&C: DatabaseClient` so the caller supplies the connection.
 #[async_trait::async_trait]
-pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Sized
-{
+pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Sized {
     /// Find a record by primary key.
     /// 通过主键查找记录。
     async fn find_by_id<C: DatabaseClient>(
         id: impl Into<String> + Send,
         client: &C,
-    ) -> Result<Option<Self>>
-    {
+    ) -> Result<Option<Self>> {
         let id_str = id.into();
         let sql = format!("SELECT * FROM {} WHERE id = $1", Self::table_name());
         match client
@@ -373,8 +346,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 
     /// Find all records.
     /// 查找所有记录。
-    async fn all<C: DatabaseClient>(client: &C) -> Result<Vec<Self>>
-    {
+    async fn all<C: DatabaseClient>(client: &C) -> Result<Vec<Self>> {
         let sql = format!("SELECT * FROM {}", Self::table_name());
         let rows = client.fetch_all(&sql).await?;
         collect_rows(rows)
@@ -386,8 +358,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         client: &C,
         condition: &str,
         params: &[QueryParam],
-    ) -> Result<Vec<Self>>
-    {
+    ) -> Result<Vec<Self>> {
         let cond = hiver_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("SELECT * FROM {} WHERE {}", Self::table_name(), cond);
         let rows = client.fetch_all_params(&sql, params).await?;
@@ -400,12 +371,10 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
         client: &C,
         condition: &str,
         params: &[QueryParam],
-    ) -> Result<Option<Self>>
-    {
+    ) -> Result<Option<Self>> {
         let cond = hiver_data_commons::replace_placeholders(condition, params.len(), 1);
         let sql = format!("SELECT * FROM {} WHERE {} LIMIT 1", Self::table_name(), cond);
-        match client.fetch_one_params(&sql, params).await?
-        {
+        match client.fetch_one_params(&sql, params).await? {
             Some(row) => row
                 .deserialize()
                 .map(Some)
@@ -419,8 +388,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     async fn find_page<C: DatabaseClient>(
         client: &C,
         page_request: &PageRequest,
-    ) -> Result<Page<Self>>
-    {
+    ) -> Result<Page<Self>> {
         let offset = page_request.page as usize * page_request.size as usize;
         let limit = page_request.size as usize;
 
@@ -440,12 +408,9 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
                             format!(
                                 "{} {}",
                                 o.property,
-                                if o.direction == hiver_data_commons::Direction::ASC
-                                {
+                                if o.direction == hiver_data_commons::Direction::ASC {
                                     "ASC"
-                                }
-                                else
-                                {
+                                } else {
                                     "DESC"
                                 }
                             )
@@ -453,12 +418,9 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
                         .collect::<Vec<_>>()
                 })
                 .unwrap_or_default();
-            if orders.is_empty()
-            {
+            if orders.is_empty() {
                 String::new()
-            }
-            else
-            {
+            } else {
                 format!(" ORDER BY {}", orders.join(", "))
             }
         };
@@ -487,8 +449,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 
     /// Count all records.
     /// 计数所有记录。
-    async fn count<C: DatabaseClient>(client: &C) -> Result<i64>
-    {
+    async fn count<C: DatabaseClient>(client: &C) -> Result<i64> {
         let sql = format!("SELECT COUNT(*) AS cnt FROM {}", Self::table_name());
         let rows = client.fetch_all(&sql).await?;
         let cnt = rows
@@ -503,8 +464,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     async fn exists_by_id<C: DatabaseClient>(
         id: impl Into<String> + Send,
         client: &C,
-    ) -> Result<bool>
-    {
+    ) -> Result<bool> {
         let id_str = id.into();
         let sql = format!("SELECT 1 FROM {} WHERE id = $1 LIMIT 1", Self::table_name());
         let rows = client
@@ -515,8 +475,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 
     /// Get a QueryBuilder for this model type.
     /// 获取此模型类型的 QueryBuilder。
-    fn query() -> QueryBuilder<Self>
-    {
+    fn query() -> QueryBuilder<Self> {
         QueryBuilder::new()
     }
 
@@ -531,8 +490,7 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
     ///     .all(&client)
     ///     .await?;
     /// ```
-    fn eager_query() -> EagerQueryBuilder<Self>
-    {
+    fn eager_query() -> EagerQueryBuilder<Self> {
         EagerQueryBuilder::new()
     }
 }
@@ -543,24 +501,16 @@ pub trait ActiveRecord: Send + Sync + Model + serde::de::DeserializeOwned + Size
 
 /// Convert a JSON value to a QueryParam for parameterized queries.
 /// 将 JSON 值转换为参数化查询的 QueryParam。
-fn json_value_to_param(v: &serde_json::Value) -> QueryParam
-{
-    match v
-    {
+fn json_value_to_param(v: &serde_json::Value) -> QueryParam {
+    match v {
         serde_json::Value::Null => QueryParam::Null,
         serde_json::Value::Bool(b) => QueryParam::Bool(*b),
-        serde_json::Value::Number(n) =>
-        {
-            if let Some(i) = n.as_i64()
-            {
+        serde_json::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
                 QueryParam::I64(i)
-            }
-            else if let Some(f) = n.as_f64()
-            {
+            } else if let Some(f) = n.as_f64() {
                 QueryParam::F64(f)
-            }
-            else
-            {
+            } else {
                 QueryParam::Text(n.to_string())
             }
         },
@@ -581,8 +531,7 @@ where
     T: serde::de::DeserializeOwned,
 {
     let mut results = Vec::with_capacity(rows.len());
-    for row in &rows
-    {
+    for row in &rows {
         results.push(
             row.deserialize()
                 .map_err(|e| crate::Error::validation(format!("deserialize: {e}")))?,
@@ -592,38 +541,38 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[derive(Debug, Clone)]
     struct MockModel;
 
-    impl Model for MockModel
-    {
-        fn meta() -> crate::ModelMeta
-        {
+    impl Model for MockModel {
+        fn meta() -> crate::ModelMeta {
             crate::ModelMeta::new("mock_table")
         }
     }
 
     #[test]
-    fn test_traits_exist()
-    {
+    fn test_traits_exist() {
         fn assert_send_sync<T: Send + Sync>() {}
         assert_send_sync::<MockModel>();
     }
 
     #[test]
-    fn test_query_builder_access()
-    {
+    fn test_query_builder_access() {
         let _builder: QueryBuilder<MockModel> = QueryBuilder::new();
     }
 
     #[test]
-    fn test_json_value_to_param()
-    {
+    fn test_json_value_to_param() {
         assert_eq!(json_value_to_param(&serde_json::Value::Null), QueryParam::Null);
         assert_eq!(json_value_to_param(&serde_json::json!(true)), QueryParam::Bool(true));
         assert_eq!(json_value_to_param(&serde_json::json!(42i64)), QueryParam::I64(42));
@@ -635,8 +584,7 @@ mod tests
     }
 
     #[test]
-    fn test_json_value_to_param_injection()
-    {
+    fn test_json_value_to_param_injection() {
         let malicious = "'; DROP TABLE users; --";
         let param = json_value_to_param(&serde_json::json!(malicious));
         assert_eq!(param, QueryParam::Text(malicious.into()));

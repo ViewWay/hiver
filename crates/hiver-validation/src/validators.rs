@@ -33,13 +33,11 @@ pub static PHONE_REGEX: std::sync::LazyLock<Regex> =
 
 /// 验证规则 / Validation rules
 #[derive(Debug, Clone)]
-pub enum ValidationRule
-{
+pub enum ValidationRule {
     /// 非空字符串 / Non-empty string
     NotEmpty,
     /// 长度范围 / Length range
-    Length
-    {
+    Length {
         /// Minimum length (inclusive)
         /// 最小长度（包含）
         min: usize,
@@ -48,8 +46,7 @@ pub enum ValidationRule
         max: usize,
     },
     /// 数值范围 / Numeric range
-    Range
-    {
+    Range {
         /// Minimum value (inclusive)
         /// 最小值（包含）
         min: i64,
@@ -71,89 +68,66 @@ pub enum ValidationRule
     Custom(fn(&str) -> Result<(), String>),
 }
 
-impl ValidationRule
-{
+impl ValidationRule {
     /// 验证字符串值 / Validate string value
-    pub fn validate_str(&self, field: &str, value: &str) -> Result<(), ValidationError>
-    {
-        match self
-        {
-            ValidationRule::NotEmpty =>
-            {
-                if value.trim().is_empty()
-                {
+    pub fn validate_str(&self, field: &str, value: &str) -> Result<(), ValidationError> {
+        match self {
+            ValidationRule::NotEmpty => {
+                if value.trim().is_empty() {
                     return Err(ValidationError::new(field, "Cannot be empty"));
                 }
             },
-            ValidationRule::Length { min, max } =>
-            {
+            ValidationRule::Length { min, max } => {
                 let len = value.len();
-                if len < *min || len > *max
-                {
+                if len < *min || len > *max {
                     return Err(ValidationError::invalid_length(field, *min, *max));
                 }
             },
             // Range validation for numeric strings
             // Range 验证用于数字字符串
-            ValidationRule::Range { min, max } =>
-            {
+            ValidationRule::Range { min, max } => {
                 // Try to parse as i64 for range validation
                 // 尝试解析为 i64 进行范围验证
-                if let Ok(num) = value.parse::<i64>()
-                {
-                    if num < *min || num > *max
-                    {
+                if let Ok(num) = value.parse::<i64>() {
+                    if num < *min || num > *max {
                         return Err(ValidationError::out_of_range(field, *min, *max));
                     }
-                }
-                else
-                {
+                } else {
                     // If not a valid number, return an error
                     // 如果不是有效数字，则返回错误
                     return Err(ValidationError::new(field, "Must be a valid number"));
                 }
             },
-            ValidationRule::Regex(pattern) =>
-            {
+            ValidationRule::Regex(pattern) => {
                 let regex = Regex::new(pattern).expect("unexpected error");
-                if !regex.is_match(value)
-                {
+                if !regex.is_match(value) {
                     return Err(ValidationError::pattern_mismatch(field, pattern));
                 }
             },
-            ValidationRule::Email =>
-            {
-                if !EMAIL_REGEX.is_match(value)
-                {
+            ValidationRule::Email => {
+                if !EMAIL_REGEX.is_match(value) {
                     return Err(ValidationError::invalid_email(field));
                 }
             },
-            ValidationRule::Url =>
-            {
-                if !URL_REGEX.is_match(value)
-                {
+            ValidationRule::Url => {
+                if !URL_REGEX.is_match(value) {
                     return Err(ValidationError::new(field, "Invalid URL format"));
                 }
             },
-            ValidationRule::Username =>
-            {
-                if !USERNAME_REGEX.is_match(value)
-                {
+            ValidationRule::Username => {
+                if !USERNAME_REGEX.is_match(value) {
                     return Err(ValidationError::new(
                         field,
                         "Username must be 3-20 characters (alphanumeric, underscore, hyphen)",
                     ));
                 }
             },
-            ValidationRule::Phone =>
-            {
-                if !PHONE_REGEX.is_match(value)
-                {
+            ValidationRule::Phone => {
+                if !PHONE_REGEX.is_match(value) {
                     return Err(ValidationError::new(field, "Invalid phone number format"));
                 }
             },
-            ValidationRule::Custom(validator) =>
-            {
+            ValidationRule::Custom(validator) => {
                 validator(value).map_err(|msg| ValidationError::new(field, msg))?;
             },
         }
@@ -161,10 +135,8 @@ impl ValidationRule
     }
 
     /// 获取规则描述 / Get rule description
-    pub fn description(&self) -> String
-    {
-        match self
-        {
+    pub fn description(&self) -> String {
+        match self {
             ValidationRule::NotEmpty => "not empty".to_string(),
             ValidationRule::Length { min, max } => format!("length between {} and {}", min, max),
             ValidationRule::Range { min, max } => format!("range between {} and {}", min, max),
@@ -179,103 +151,83 @@ impl ValidationRule
 }
 
 /// 验证器构建器 / Validator builder
-pub struct ValidatorBuilder
-{
+pub struct ValidatorBuilder {
     rules: Vec<(&'static str, ValidationRule)>,
 }
 
-impl Default for ValidatorBuilder
-{
-    fn default() -> Self
-    {
+impl Default for ValidatorBuilder {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl ValidatorBuilder
-{
+impl ValidatorBuilder {
     /// 创建新的验证器构建器 / Create new validator builder
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self { rules: Vec::new() }
     }
 
     /// 添加非空规则 / Add not empty rule
-    pub fn not_empty(mut self, field: &'static str) -> Self
-    {
+    pub fn not_empty(mut self, field: &'static str) -> Self {
         self.rules.push((field, ValidationRule::NotEmpty));
         self
     }
 
     /// 添加长度规则 / Add length rule
-    pub fn length(mut self, field: &'static str, min: usize, max: usize) -> Self
-    {
+    pub fn length(mut self, field: &'static str, min: usize, max: usize) -> Self {
         self.rules
             .push((field, ValidationRule::Length { min, max }));
         self
     }
 
     /// 添加邮箱规则 / Add email rule
-    pub fn email(mut self, field: &'static str) -> Self
-    {
+    pub fn email(mut self, field: &'static str) -> Self {
         self.rules.push((field, ValidationRule::Email));
         self
     }
 
     /// 添加 URL 规则 / Add URL rule
-    pub fn url(mut self, field: &'static str) -> Self
-    {
+    pub fn url(mut self, field: &'static str) -> Self {
         self.rules.push((field, ValidationRule::Url));
         self
     }
 
     /// 添加用户名规则 / Add username rule
-    pub fn username(mut self, field: &'static str) -> Self
-    {
+    pub fn username(mut self, field: &'static str) -> Self {
         self.rules.push((field, ValidationRule::Username));
         self
     }
 
     /// 添加正则规则 / Add regex rule
-    pub fn regex(mut self, field: &'static str, pattern: &'static str) -> Self
-    {
+    pub fn regex(mut self, field: &'static str, pattern: &'static str) -> Self {
         self.rules.push((field, ValidationRule::Regex(pattern)));
         self
     }
 
     /// 添加自定义规则 / Add custom rule
-    pub fn custom(mut self, field: &'static str, f: fn(&str) -> Result<(), String>) -> Self
-    {
+    pub fn custom(mut self, field: &'static str, f: fn(&str) -> Result<(), String>) -> Self {
         self.rules.push((field, ValidationRule::Custom(f)));
         self
     }
 
     /// 验证数据 / Validate data
-    pub fn validate(&self, data: &HashMap<String, String>) -> Result<(), ValidationErrors>
-    {
+    pub fn validate(&self, data: &HashMap<String, String>) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
-        for (field, rule) in &self.rules
-        {
-            if let Some(value) = data.get(*field)
-            {
-                if let Err(e) = rule.validate_str(field, value)
-                {
+        for (field, rule) in &self.rules {
+            if let Some(value) = data.get(*field) {
+                if let Err(e) = rule.validate_str(field, value) {
                     errors.add_error(e);
                 }
-            }
-            else
-            {
+            } else {
                 // Field missing - treat as empty
-                if matches!(rule, ValidationRule::NotEmpty)
-                {
+                if matches!(rule, ValidationRule::NotEmpty) {
                     errors.add(*field, format!("{} is required", field));
                 }
             }
         }
 
-        if errors.has_errors()
-        {
+        if errors.has_errors() {
             return Err(errors);
         }
         Ok(())
@@ -285,57 +237,54 @@ impl ValidatorBuilder
 /// 快速验证函数 / Quick validation functions
 ///
 /// 验证邮箱 / Validate email
-pub fn is_email(value: &str) -> bool
-{
+pub fn is_email(value: &str) -> bool {
     EMAIL_REGEX.is_match(value)
 }
 
 /// 验证 URL / Validate URL
-pub fn is_url(value: &str) -> bool
-{
+pub fn is_url(value: &str) -> bool {
     URL_REGEX.is_match(value)
 }
 
 /// 验证用户名 / Validate username
-pub fn is_username(value: &str) -> bool
-{
+pub fn is_username(value: &str) -> bool {
     USERNAME_REGEX.is_match(value)
 }
 
 /// 验证手机号 / Validate phone
-pub fn is_phone(value: &str) -> bool
-{
+pub fn is_phone(value: &str) -> bool {
     PHONE_REGEX.is_match(value)
 }
 
 /// 验证非空 / Validate not empty
-pub fn is_not_empty(value: &str) -> bool
-{
+pub fn is_not_empty(value: &str) -> bool {
     !value.trim().is_empty()
 }
 
 /// 验证长度 / Validate length
-pub fn is_length(value: &str, min: usize, max: usize) -> bool
-{
+pub fn is_length(value: &str, min: usize, max: usize) -> bool {
     let len = value.len();
     len >= min && len <= max
 }
 
 /// 验证数值范围 / Validate numeric range
-pub fn is_in_range(value: i64, min: i64, max: i64) -> bool
-{
+pub fn is_in_range(value: i64, min: i64, max: i64) -> bool {
     value >= min && value <= max
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_email_validation()
-    {
+    fn test_email_validation() {
         assert!(is_email("test@example.com"));
         assert!(is_email("user.name+tag@domain.co.uk"));
         assert!(!is_email("invalid"));
@@ -344,16 +293,14 @@ mod tests
     }
 
     #[test]
-    fn test_url_validation()
-    {
+    fn test_url_validation() {
         assert!(is_url("https://example.com"));
         assert!(is_url("http://localhost:8080"));
         assert!(!is_url("not-a-url"));
     }
 
     #[test]
-    fn test_username_validation()
-    {
+    fn test_username_validation() {
         assert!(is_username("user123"));
         assert!(is_username("test_user"));
         assert!(is_username("my-name"));
@@ -362,16 +309,14 @@ mod tests
     }
 
     #[test]
-    fn test_phone_validation()
-    {
+    fn test_phone_validation() {
         assert!(is_phone("+1234567890"));
         assert!(is_phone("1234567890"));
         assert!(!is_phone("abc"));
     }
 
     #[test]
-    fn test_validator_builder()
-    {
+    fn test_validator_builder() {
         let builder = ValidatorBuilder::new()
             .not_empty("username")
             .length("username", 3, 20)
@@ -389,16 +334,14 @@ mod tests
     }
 
     #[test]
-    fn test_validation_rule_email()
-    {
+    fn test_validation_rule_email() {
         let rule = ValidationRule::Email;
         assert!(rule.validate_str("email", "test@example.com").is_ok());
         assert!(rule.validate_str("email", "invalid").is_err());
     }
 
     #[test]
-    fn test_validation_rule_length()
-    {
+    fn test_validation_rule_length() {
         let rule = ValidationRule::Length { min: 3, max: 10 };
         assert!(rule.validate_str("name", "test").is_ok());
         assert!(rule.validate_str("name", "ab").is_err());

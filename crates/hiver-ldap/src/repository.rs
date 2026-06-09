@@ -35,8 +35,7 @@ use crate::{
 /// }
 /// ```
 #[async_trait]
-pub trait LdapRepository<T: OdmEntry + Send + Sync, ID: Send + Sync>: Send + Sync
-{
+pub trait LdapRepository<T: OdmEntry + Send + Sync, ID: Send + Sync>: Send + Sync {
     /// Get the LDAP template / 获取LDAP模板
     fn template(&self) -> &LdapTemplate;
 
@@ -70,8 +69,7 @@ pub trait LdapRepository<T: OdmEntry + Send + Sync, ID: Send + Sync>: Send + Syn
 ///
 /// 将 `AttrMap` 转换为领域类型的回调 trait。
 /// 由 `SimpleLdapRepository` 用于映射搜索结果。
-pub trait EntryMapper<T>: Send + Sync
-{
+pub trait EntryMapper<T>: Send + Sync {
     /// Map an `AttrMap` to a domain type / 将 `AttrMap` 映射为领域类型
     fn map_entry(&self, attrs: &AttrMap) -> T;
 }
@@ -81,8 +79,7 @@ pub trait EntryMapper<T>: Send + Sync
 ///
 /// 从领域类型提取ID的回调 trait。
 /// 由 `SimpleLdapRepository` 用于确定条目标识。
-pub trait IdExtractor<T, ID>: Send + Sync
-{
+pub trait IdExtractor<T, ID>: Send + Sync {
     /// Extract the ID from an entity / 从实体提取ID
     fn extract_id(&self, entity: &T) -> ID;
 }
@@ -92,8 +89,7 @@ pub trait IdExtractor<T, ID>: Send + Sync
 ///
 /// 将领域类型转换为LDAP属性的回调 trait。
 /// 由 `SimpleLdapRepository` 用于创建/修改操作。
-pub trait EntrySerializer<T>: Send + Sync
-{
+pub trait EntrySerializer<T>: Send + Sync {
     /// Convert an entity to `(attribute_name, values)` pairs / 将实体转换为 `(属性名, 值)` 对
     fn serialize(&self, entity: &T) -> Vec<(String, Vec<String>)>;
 
@@ -126,18 +122,15 @@ pub trait EntrySerializer<T>: Send + Sync
 ///     }
 /// }
 /// ```
-pub struct SimpleLdapRepository<T: OdmEntry + Send + Sync, ID: Send + Sync>
-{
+pub struct SimpleLdapRepository<T: OdmEntry + Send + Sync, ID: Send + Sync> {
     template: LdapTemplate,
     base: String,
     _marker: PhantomData<(T, ID)>,
 }
 
-impl<T: OdmEntry + Send + Sync, ID: Send + Sync> SimpleLdapRepository<T, ID>
-{
+impl<T: OdmEntry + Send + Sync, ID: Send + Sync> SimpleLdapRepository<T, ID> {
     /// Create a new repository / 创建新的仓库
-    pub fn new(template: LdapTemplate, base: &str) -> Self
-    {
+    pub fn new(template: LdapTemplate, base: &str) -> Self {
         Self {
             template,
             base: base.to_string(),
@@ -146,8 +139,7 @@ impl<T: OdmEntry + Send + Sync, ID: Send + Sync> SimpleLdapRepository<T, ID>
     }
 
     /// Get the base DN / 获取基础DN
-    pub fn base(&self) -> &str
-    {
+    pub fn base(&self) -> &str {
         &self.base
     }
 }
@@ -156,18 +148,15 @@ impl<T: OdmEntry + Send + Sync, ID: Send + Sync> SimpleLdapRepository<T, ID>
 impl<T: OdmEntry + Send + Sync + 'static, ID: Send + Sync + 'static> LdapRepository<T, ID>
     for SimpleLdapRepository<T, ID>
 {
-    fn template(&self) -> &LdapTemplate
-    {
+    fn template(&self) -> &LdapTemplate {
         &self.template
     }
 
-    fn base(&self) -> &str
-    {
+    fn base(&self) -> &str {
         &self.base
     }
 
-    async fn find_all(&self) -> LdapResult<Vec<T>>
-    {
+    async fn find_all(&self) -> LdapResult<Vec<T>> {
         // Without a concrete mapper we cannot construct T in the generic case.
         // Users should use template().search_attrs() with their own mapper,
         // or use the typed `TypedLdapRepository` wrapper.
@@ -179,14 +168,12 @@ impl<T: OdmEntry + Send + Sync + 'static, ID: Send + Sync + 'static> LdapReposit
         Ok(Vec::new())
     }
 
-    async fn find_by_id(&self, _id: &ID) -> LdapResult<Option<T>>
-    {
+    async fn find_by_id(&self, _id: &ID) -> LdapResult<Option<T>> {
         let _ = self;
         Ok(None)
     }
 
-    async fn save(&self, _entity: &T) -> LdapResult<T>
-    {
+    async fn save(&self, _entity: &T) -> LdapResult<T> {
         let _ = self;
         // Cannot construct T generically; users should use TypedLdapRepository
         // 无法泛型构造 T；用户应使用 TypedLdapRepository
@@ -195,23 +182,19 @@ impl<T: OdmEntry + Send + Sync + 'static, ID: Send + Sync + 'static> LdapReposit
         ))
     }
 
-    async fn delete(&self, _entity: &T) -> LdapResult<()>
-    {
+    async fn delete(&self, _entity: &T) -> LdapResult<()> {
         Ok(())
     }
 
-    async fn exists_by_id(&self, _id: &ID) -> LdapResult<bool>
-    {
+    async fn exists_by_id(&self, _id: &ID) -> LdapResult<bool> {
         Ok(false)
     }
 
-    async fn count(&self) -> LdapResult<usize>
-    {
+    async fn count(&self) -> LdapResult<usize> {
         self.template.count(&self.base, "(objectClass=*)").await
     }
 
-    async fn delete_all(&self) -> LdapResult<()>
-    {
+    async fn delete_all(&self) -> LdapResult<()> {
         Ok(())
     }
 }
@@ -285,8 +268,7 @@ where
         mapper: M,
         serializer: S,
         _id_extractor: E,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             template,
             base: base.to_string(),
@@ -297,15 +279,13 @@ where
     }
 
     /// Build the full DN for an entry / 构建条目的完整DN
-    pub fn build_entry_dn(&self, entity: &T) -> String
-    {
+    pub fn build_entry_dn(&self, entity: &T) -> String {
         let rdn_val = self.serializer.rdn_value(entity);
         build_dn(T::rdn_attribute(), &rdn_val, &self.base)
     }
 
     /// Build the full DN for a given ID value / 为给定的ID值构建完整DN
-    pub fn build_id_dn(&self, id: &ID) -> String
-    {
+    pub fn build_id_dn(&self, id: &ID) -> String {
         build_dn(T::rdn_attribute(), &id.to_string(), &self.base)
     }
 }
@@ -319,18 +299,15 @@ where
     S: EntrySerializer<T> + Sync,
     E: IdExtractor<T, ID> + Sync,
 {
-    fn template(&self) -> &LdapTemplate
-    {
+    fn template(&self) -> &LdapTemplate {
         &self.template
     }
 
-    fn base(&self) -> &str
-    {
+    fn base(&self) -> &str {
         &self.base
     }
 
-    async fn find_all(&self) -> LdapResult<Vec<T>>
-    {
+    async fn find_all(&self) -> LdapResult<Vec<T>> {
         let attr_maps = self
             .template
             .search_attrs(&self.base, "(objectClass=*)")
@@ -341,21 +318,18 @@ where
             .collect())
     }
 
-    async fn find_by_id(&self, id: &ID) -> LdapResult<Option<T>>
-    {
+    async fn find_by_id(&self, id: &ID) -> LdapResult<Option<T>> {
         let dn = self.build_id_dn(id);
         let results = self.template.search_attrs(&dn, "(objectClass=*)").await?;
         Ok(results.first().map(|am| self.mapper.map_entry(am)))
     }
 
-    async fn save(&self, entity: &T) -> LdapResult<T>
-    {
+    async fn save(&self, entity: &T) -> LdapResult<T> {
         let dn = self.build_entry_dn(entity);
         let attrs = self.serializer.serialize(entity);
         let exists = self.template.exists(&dn).await?;
 
-        if exists
-        {
+        if exists {
             // Modify existing entry / 修改现有条目
             let _modifications: Vec<(&str, &[&str])> = attrs
                 .iter()
@@ -378,14 +352,11 @@ where
             let mod_slices: Vec<(&str, &[&str])> =
                 mods.iter().map(|(k, v)| (*k, v.as_slice())).collect();
             self.template.modify(&dn, &mod_slices).await?;
-        }
-        else
-        {
+        } else {
             // Create new entry / 创建新条目
             let mut ldap_attrs: Vec<(&str, Vec<&str>)> =
                 vec![("objectClass", T::object_classes().to_vec())];
-            for (key, values) in &attrs
-            {
+            for (key, values) in &attrs {
                 let refs: Vec<&str> = values.iter().map(String::as_str).collect();
                 ldap_attrs.push((key.as_str(), refs));
             }
@@ -397,31 +368,26 @@ where
         Ok(entity.clone())
     }
 
-    async fn delete(&self, entity: &T) -> LdapResult<()>
-    {
+    async fn delete(&self, entity: &T) -> LdapResult<()> {
         let dn = self.build_entry_dn(entity);
         self.template.unbind(&dn).await
     }
 
-    async fn exists_by_id(&self, id: &ID) -> LdapResult<bool>
-    {
+    async fn exists_by_id(&self, id: &ID) -> LdapResult<bool> {
         let dn = self.build_id_dn(id);
         self.template.exists(&dn).await
     }
 
-    async fn count(&self) -> LdapResult<usize>
-    {
+    async fn count(&self) -> LdapResult<usize> {
         self.template.count(&self.base, "(objectClass=*)").await
     }
 
-    async fn delete_all(&self) -> LdapResult<()>
-    {
+    async fn delete_all(&self) -> LdapResult<()> {
         let results = self
             .template
             .search_attrs(&self.base, "(objectClass=*)")
             .await?;
-        for attr_map in results
-        {
+        for attr_map in results {
             // AttrMap doesn't store DN, so we re-derive from attributes.
             // For a full impl, the search method would also return the DN.
             // Here we skip entries we can't identify.
@@ -432,41 +398,40 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::{context::LdapContextSource, mapper::AttrMap};
 
     // -- Test domain type --
 
     #[derive(Debug, Clone)]
-    struct Person
-    {
+    struct Person {
         uid: String,
         cn: String,
         mail: String,
     }
 
-    impl OdmEntry for Person
-    {
-        fn base_dn() -> &'static str
-        {
+    impl OdmEntry for Person {
+        fn base_dn() -> &'static str {
             "ou=people,dc=example,dc=com"
         }
 
-        fn rdn_attribute() -> &'static str
-        {
+        fn rdn_attribute() -> &'static str {
             "uid"
         }
 
-        fn object_classes() -> &'static [&'static str]
-        {
+        fn object_classes() -> &'static [&'static str] {
             &["top", "person", "organizationalPerson", "inetOrgPerson"]
         }
 
-        fn attribute_names() -> &'static [&'static str]
-        {
+        fn attribute_names() -> &'static [&'static str] {
             &["uid", "cn", "mail"]
         }
     }
@@ -474,10 +439,8 @@ mod tests
     // -- Callback implementations --
 
     struct PersonMapper;
-    impl EntryMapper<Person> for PersonMapper
-    {
-        fn map_entry(&self, attrs: &AttrMap) -> Person
-        {
+    impl EntryMapper<Person> for PersonMapper {
+        fn map_entry(&self, attrs: &AttrMap) -> Person {
             Person {
                 uid: attrs.get_first("uid").unwrap_or_default().to_string(),
                 cn: attrs.get_first("cn").unwrap_or_default().to_string(),
@@ -487,10 +450,8 @@ mod tests
     }
 
     struct PersonSerializer;
-    impl EntrySerializer<Person> for PersonSerializer
-    {
-        fn serialize(&self, p: &Person) -> Vec<(String, Vec<String>)>
-        {
+    impl EntrySerializer<Person> for PersonSerializer {
+        fn serialize(&self, p: &Person) -> Vec<(String, Vec<String>)> {
             vec![
                 ("uid".to_string(), vec![p.uid.clone()]),
                 ("cn".to_string(), vec![p.cn.clone()]),
@@ -498,17 +459,14 @@ mod tests
             ]
         }
 
-        fn rdn_value(&self, p: &Person) -> String
-        {
+        fn rdn_value(&self, p: &Person) -> String {
             p.uid.clone()
         }
     }
 
     struct PersonIdExtractor;
-    impl IdExtractor<Person, String> for PersonIdExtractor
-    {
-        fn extract_id(&self, p: &Person) -> String
-        {
+    impl IdExtractor<Person, String> for PersonIdExtractor {
+        fn extract_id(&self, p: &Person) -> String {
             p.uid.clone()
         }
     }
@@ -516,8 +474,7 @@ mod tests
     // -- Tests --
 
     #[test]
-    fn test_simple_repository_creation()
-    {
+    fn test_simple_repository_creation() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo =
@@ -526,8 +483,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_simple_repository_find_all_stub()
-    {
+    async fn test_simple_repository_find_all_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo =
@@ -537,8 +493,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_simple_repository_find_by_id_stub()
-    {
+    async fn test_simple_repository_find_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo =
@@ -548,8 +503,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_simple_repository_exists_by_id_stub()
-    {
+    async fn test_simple_repository_exists_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo =
@@ -559,8 +513,7 @@ mod tests
     }
 
     #[test]
-    fn test_typed_repository_creation()
-    {
+    fn test_typed_repository_creation() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -574,8 +527,7 @@ mod tests
     }
 
     #[test]
-    fn test_typed_repository_build_entry_dn()
-    {
+    fn test_typed_repository_build_entry_dn() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -595,8 +547,7 @@ mod tests
     }
 
     #[test]
-    fn test_typed_repository_build_id_dn()
-    {
+    fn test_typed_repository_build_id_dn() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -611,8 +562,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_typed_repository_find_all_stub()
-    {
+    async fn test_typed_repository_find_all_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -627,8 +577,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_typed_repository_find_by_id_stub()
-    {
+    async fn test_typed_repository_find_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -643,8 +592,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_typed_repository_exists_by_id_stub()
-    {
+    async fn test_typed_repository_exists_by_id_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -659,8 +607,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_typed_repository_count_stub()
-    {
+    async fn test_typed_repository_count_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx);
         let repo = TypedLdapRepository::new(
@@ -677,8 +624,7 @@ mod tests
     // -- EntryMapper unit tests --
 
     #[test]
-    fn test_person_mapper_from_attr_map()
-    {
+    fn test_person_mapper_from_attr_map() {
         let mut attrs = AttrMap::new();
         attrs.add("uid", &["john"]);
         attrs.add("cn", &["John Doe"]);
@@ -692,8 +638,7 @@ mod tests
     }
 
     #[test]
-    fn test_person_mapper_missing_fields()
-    {
+    fn test_person_mapper_missing_fields() {
         let attrs = AttrMap::new();
         let mapper = PersonMapper;
         let person = mapper.map_entry(&attrs);
@@ -705,8 +650,7 @@ mod tests
     // -- EntrySerializer unit tests --
 
     #[test]
-    fn test_person_serializer()
-    {
+    fn test_person_serializer() {
         let person = Person {
             uid: "john".into(),
             cn: "John".into(),
@@ -721,8 +665,7 @@ mod tests
     }
 
     #[test]
-    fn test_person_serializer_rdn_value()
-    {
+    fn test_person_serializer_rdn_value() {
         let person = Person {
             uid: "jane".into(),
             cn: "Jane".into(),
@@ -735,8 +678,7 @@ mod tests
     // -- IdExtractor unit tests --
 
     #[test]
-    fn test_person_id_extractor()
-    {
+    fn test_person_id_extractor() {
         let person = Person {
             uid: "john".into(),
             cn: "John".into(),
@@ -749,8 +691,7 @@ mod tests
     // -- ObjectDirectoryMapper integration tests --
 
     #[test]
-    fn test_odm_mapper_with_person()
-    {
+    fn test_odm_mapper_with_person() {
         let mut odm = ObjectDirectoryMapper::new();
         odm.add_mapping(AttributeMapping::new("uid", "uid").id());
         odm.add_mapping(AttributeMapping::new("cn", "cn"));

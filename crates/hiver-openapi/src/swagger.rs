@@ -26,8 +26,7 @@ use crate::OpenApi;
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct SwaggerConfig
-{
+pub struct SwaggerConfig {
     /// Path to serve Swagger UI
     /// 服务 Swagger UI 的路径
     pub path: String,
@@ -80,8 +79,7 @@ pub struct SwaggerConfig
 /// Model rendering mode
 /// 模型渲染模式
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum ModelRendering
-{
+pub enum ModelRendering {
     /// Example
     /// 示例
     #[default]
@@ -94,8 +92,7 @@ pub enum ModelRendering
 /// Syntax highlight theme
 /// 语法高亮主题
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum SyntaxHighlightTheme
-{
+pub enum SyntaxHighlightTheme {
     /// Agate theme
     Agate,
     /// Artsy theme
@@ -123,14 +120,11 @@ pub enum SyntaxHighlightTheme
     VsCodeLight,
 }
 
-impl SyntaxHighlightTheme
-{
+impl SyntaxHighlightTheme {
     /// Get the theme name for Swagger UI
     /// 获取 Swagger UI 的主题名称
-    pub fn as_str(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn as_str(&self) -> &'static str {
+        match self {
             Self::Agate => "agate",
             Self::Artsy => "artsy",
             Self::AtomOneDark => "atom-one-dark",
@@ -147,10 +141,8 @@ impl SyntaxHighlightTheme
     }
 }
 
-impl Default for SwaggerConfig
-{
-    fn default() -> Self
-    {
+impl Default for SwaggerConfig {
+    fn default() -> Self {
         Self {
             path: "/swagger".to_string(),
             spec_path: "/swagger/openapi.json".to_string(),
@@ -168,115 +160,100 @@ impl Default for SwaggerConfig
     }
 }
 
-impl SwaggerConfig
-{
+impl SwaggerConfig {
     /// Create a new `SwaggerConfig`
     /// 创建新的 `SwaggerConfig`
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set the path to serve Swagger UI
     /// 设置服务 Swagger UI 的路径
-    pub fn path(mut self, path: impl Into<String>) -> Self
-    {
+    pub fn path(mut self, path: impl Into<String>) -> Self {
         self.path = path.into();
         self
     }
 
     /// Set the path to serve `OpenAPI` JSON spec
     /// 设置服务 `OpenAPI` JSON 规范的路径
-    pub fn spec_path(mut self, spec_path: impl Into<String>) -> Self
-    {
+    pub fn spec_path(mut self, spec_path: impl Into<String>) -> Self {
         self.spec_path = spec_path.into();
         self
     }
 
     /// Set the title
     /// 设置标题
-    pub fn title(mut self, title: impl Into<String>) -> Self
-    {
+    pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
     /// Set the logo URL
     /// 设置 logo URL
-    pub fn logo_url(mut self, logo_url: impl Into<String>) -> Self
-    {
+    pub fn logo_url(mut self, logo_url: impl Into<String>) -> Self {
         self.logo_url = Some(logo_url.into());
         self
     }
 
     /// Enable request duration display
     /// 启用请求持续时间显示
-    pub fn display_request_duration(mut self, enabled: bool) -> Self
-    {
+    pub fn display_request_duration(mut self, enabled: bool) -> Self {
         self.display_request_duration = enabled;
         self
     }
 
     /// Set default models expand depth
     /// 设置默认模型展开深度
-    pub fn default_models_expand_depth(mut self, depth: usize) -> Self
-    {
+    pub fn default_models_expand_depth(mut self, depth: usize) -> Self {
         self.default_models_expand_depth = Some(depth);
         self
     }
 
     /// Set default model expand depth
     /// 设置默认模型展开深度
-    pub fn default_model_expand_depth(mut self, depth: usize) -> Self
-    {
+    pub fn default_model_expand_depth(mut self, depth: usize) -> Self {
         self.default_model_expand_depth = Some(depth);
         self
     }
 
     /// Set default model rendering
     /// 设置默认模型渲染
-    pub fn default_model_rendering(mut self, rendering: ModelRendering) -> Self
-    {
+    pub fn default_model_rendering(mut self, rendering: ModelRendering) -> Self {
         self.default_model_rendering = rendering;
         self
     }
 
     /// Set display operation id
     /// 设置显示操作 ID
-    pub fn display_operation_id(mut self, enabled: bool) -> Self
-    {
+    pub fn display_operation_id(mut self, enabled: bool) -> Self {
         self.display_operation_id = enabled;
         self
     }
 
     /// Set try it out enabled
     /// 设置启用尝试功能
-    pub fn try_it_out_enabled(mut self, enabled: bool) -> Self
-    {
+    pub fn try_it_out_enabled(mut self, enabled: bool) -> Self {
         self.try_it_out_enabled = enabled;
         self
     }
 
     /// Set persist authorization
     /// 设置持久化授权
-    pub fn persist_authorization(mut self, enabled: bool) -> Self
-    {
+    pub fn persist_authorization(mut self, enabled: bool) -> Self {
         self.persist_authorization = enabled;
         self
     }
 
     /// Set syntax highlight theme
     /// 设置语法高亮主题
-    pub fn syntax_highlight_theme(mut self, theme: SyntaxHighlightTheme) -> Self
-    {
+    pub fn syntax_highlight_theme(mut self, theme: SyntaxHighlightTheme) -> Self {
         self.syntax_highlight_theme = theme;
         self
     }
 
     /// Generate Swagger UI HTML
     /// 生成 Swagger UI HTML
-    pub fn html(&self, spec_url: &str) -> String
-    {
+    pub fn html(&self, spec_url: &str) -> String {
         let config_json = self.config_json(spec_url);
         format!(
             r#"<!DOCTYPE html>
@@ -337,8 +314,7 @@ impl SwaggerConfig
             spec_url = spec_url,
             default_models_expand_depth = self.default_models_expand_depth.unwrap_or(1),
             default_model_expand_depth = self.default_model_expand_depth.unwrap_or(1),
-            default_model_rendering = match self.default_model_rendering
-            {
+            default_model_rendering = match self.default_model_rendering {
                 ModelRendering::Example => "example",
                 ModelRendering::Model => "model",
             },
@@ -353,12 +329,10 @@ impl SwaggerConfig
 
     /// Generate the config JSON object for Swagger UI
     /// 生成 Swagger UI 的配置 JSON 对象
-    fn config_json(&self, _spec_url: &str) -> String
-    {
+    fn config_json(&self, _spec_url: &str) -> String {
         let mut parts = Vec::new();
 
-        if let Some(ref logo) = self.logo_url
-        {
+        if let Some(ref logo) = self.logo_url {
             parts.push(format!("logo: {{ url: '{}' }}", logo));
         }
 
@@ -390,8 +364,7 @@ impl SwaggerConfig
 /// }}
 /// ```
 #[derive(Debug, Clone)]
-pub struct SwaggerUi
-{
+pub struct SwaggerUi {
     /// `OpenAPI` spec
     /// `OpenAPI` 规范
     openapi: Arc<OpenApi>,
@@ -401,12 +374,10 @@ pub struct SwaggerUi
     config: SwaggerConfig,
 }
 
-impl SwaggerUi
-{
+impl SwaggerUi {
     /// Create a new `SwaggerUi` handler
     /// 创建新的 `SwaggerUi` 处理器
-    pub fn new(openapi: OpenApi) -> Self
-    {
+    pub fn new(openapi: OpenApi) -> Self {
         Self {
             openapi: Arc::new(openapi),
             config: SwaggerConfig::default(),
@@ -415,8 +386,7 @@ impl SwaggerUi
 
     /// Create with custom config
     /// 使用自定义配置创建
-    pub fn with_config(openapi: OpenApi, config: SwaggerConfig) -> Self
-    {
+    pub fn with_config(openapi: OpenApi, config: SwaggerConfig) -> Self {
         Self {
             openapi: Arc::new(openapi),
             config,
@@ -425,22 +395,19 @@ impl SwaggerUi
 
     /// Get the `OpenAPI` spec as JSON
     /// 获取 `OpenAPI` 规范的 JSON
-    pub fn spec_json(&self) -> Result<String, serde_json::Error>
-    {
+    pub fn spec_json(&self) -> Result<String, serde_json::Error> {
         self.openapi.to_json()
     }
 
     /// Get the `OpenAPI` spec as YAML
     /// 获取 `OpenAPI` 规范的 YAML
-    pub fn spec_yaml(&self) -> Result<String, serde_yaml::Error>
-    {
+    pub fn spec_yaml(&self) -> Result<String, serde_yaml::Error> {
         self.openapi.to_yaml()
     }
 
     /// Get the Swagger UI HTML
     /// 获取 Swagger UI HTML
-    pub fn html(&self) -> String
-    {
+    pub fn html(&self) -> String {
         self.config.html(&self.config.spec_path)
     }
 
@@ -449,53 +416,41 @@ impl SwaggerUi
     ///
     /// Returns the response body, status code, and headers for the given path.
     /// 返回给定路径的响应体、状态码和头。
-    pub fn handle(&self, path: &str) -> (String, StatusCode, HeaderMap)
-    {
+    pub fn handle(&self, path: &str) -> (String, StatusCode, HeaderMap) {
         let mut headers = HeaderMap::new();
 
-        let (body, status) = if path == self.config.spec_path
-        {
+        let (body, status) = if path == self.config.spec_path {
             // Serve OpenAPI JSON spec
             // 服务 OpenAPI JSON 规范
             headers.insert(
                 "content-type",
                 HeaderValue::from_static("application/json; charset=utf-8"),
             );
-            match self.spec_json()
-            {
+            match self.spec_json() {
                 Ok(spec) => (spec, StatusCode::OK),
-                Err(_) =>
-                {
+                Err(_) => {
                     ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR)
                 },
             }
-        }
-        else if path == self.config.path || path == format!("{}/", self.config.path)
-        {
+        } else if path == self.config.path || path == format!("{}/", self.config.path) {
             // Serve Swagger UI HTML
             // 服务 Swagger UI HTML
             headers.insert("content-type", HeaderValue::from_static("text/html; charset=utf-8"));
             (self.html(), StatusCode::OK)
-        }
-        else if path == format!("{}.json", self.config.spec_path.trim_end_matches(".json"))
-        {
+        } else if path == format!("{}.json", self.config.spec_path.trim_end_matches(".json")) {
             // Serve YAML spec (if requested)
             // 服务 YAML 规范（如果请求）
             headers.insert(
                 "content-type",
                 HeaderValue::from_static("application/x-yaml; charset=utf-8"),
             );
-            match self.spec_yaml()
-            {
+            match self.spec_yaml() {
                 Ok(spec) => (spec, StatusCode::OK),
-                Err(_) =>
-                {
+                Err(_) => {
                     ("Error generating OpenAPI spec".to_string(), StatusCode::INTERNAL_SERVER_ERROR)
                 },
             }
-        }
-        else
-        {
+        } else {
             // Not found
             // 未找到
             ("Not Found".to_string(), StatusCode::NOT_FOUND)
@@ -506,15 +461,13 @@ impl SwaggerUi
 
     /// Get the configuration
     /// 获取配置
-    pub fn config(&self) -> &SwaggerConfig
-    {
+    pub fn config(&self) -> &SwaggerConfig {
         &self.config
     }
 
     /// Get the `OpenAPI` spec
     /// 获取 `OpenAPI` 规范
-    pub fn openapi(&self) -> &OpenApi
-    {
+    pub fn openapi(&self) -> &OpenApi {
         &self.openapi
     }
 }
@@ -533,8 +486,7 @@ impl SwaggerUi
 /// let html = swagger_ui_html("/api-docs/openapi.json");
 /// assert!(html.contains("swagger-ui"));
 /// ```
-pub fn swagger_ui_html(spec_url: &str) -> String
-{
+pub fn swagger_ui_html(spec_url: &str) -> String {
     SwaggerConfig::default().html(spec_url)
 }
 
@@ -553,8 +505,7 @@ pub fn swagger_ui_html(spec_url: &str) -> String
 /// let html = redoc_html("/api-docs/openapi.json");
 /// assert!(html.contains("redoc"));
 /// ```
-pub fn redoc_html(spec_url: &str) -> String
-{
+pub fn redoc_html(spec_url: &str) -> String {
     format!(
         r#"<!DOCTYPE html>
 <html lang="en">
@@ -579,15 +530,19 @@ pub fn redoc_html(spec_url: &str) -> String
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::{InfoConfig, OpenApiConfig};
 
     #[test]
-    fn test_swagger_config_default()
-    {
+    fn test_swagger_config_default() {
         let config = SwaggerConfig::default();
         assert_eq!(config.path, "/swagger");
         assert_eq!(config.spec_path, "/swagger/openapi.json");
@@ -595,8 +550,7 @@ mod tests
     }
 
     #[test]
-    fn test_swagger_config_builder()
-    {
+    fn test_swagger_config_builder() {
         let config = SwaggerConfig::new()
             .path("/docs")
             .spec_path("/docs/openapi.json")
@@ -610,8 +564,7 @@ mod tests
     }
 
     #[test]
-    fn test_swagger_ui()
-    {
+    fn test_swagger_ui() {
         let openapi = OpenApi::new(OpenApiConfig {
             info: InfoConfig {
                 title: "Test API".to_string(),
@@ -635,15 +588,13 @@ mod tests
     }
 
     #[test]
-    fn test_syntax_highlight_theme()
-    {
+    fn test_syntax_highlight_theme() {
         assert_eq!(SyntaxHighlightTheme::Monokai.as_str(), "monokai");
         assert_eq!(SyntaxHighlightTheme::GithubDark.as_str(), "github-dark");
     }
 
     #[test]
-    fn test_model_rendering()
-    {
+    fn test_model_rendering() {
         assert!(matches!(ModelRendering::default(), ModelRendering::Example));
     }
 }

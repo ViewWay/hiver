@@ -10,8 +10,7 @@ use crate::error::{Result, StompError};
 /// STOMP command
 /// STOMP 命令
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum StompCommand
-{
+pub enum StompCommand {
     /// Client commands / 客户端命令
     Connect,
     Stomp,
@@ -35,15 +34,12 @@ pub enum StompCommand
     Custom(String),
 }
 
-impl StompCommand
-{
+impl StompCommand {
     /// Create from string
     /// 从字符串创建
     #[allow(clippy::should_implement_trait)]
-    pub fn from_str(s: &str) -> Result<Self>
-    {
-        match s
-        {
+    pub fn from_str(s: &str) -> Result<Self> {
+        match s {
             "CONNECT" => Ok(StompCommand::Connect),
             "STOMP" => Ok(StompCommand::Stomp),
             "SEND" => Ok(StompCommand::Send),
@@ -65,10 +61,8 @@ impl StompCommand
 
     /// Get command as string
     /// 获取命令字符串
-    pub fn as_str(&self) -> &str
-    {
-        match self
-        {
+    pub fn as_str(&self) -> &str {
+        match self {
             StompCommand::Connect => "CONNECT",
             StompCommand::Stomp => "STOMP",
             StompCommand::Send => "SEND",
@@ -90,8 +84,7 @@ impl StompCommand
 
     /// Check if command is from client
     /// 检查是否为客户端命令
-    pub fn is_client_command(&self) -> bool
-    {
+    pub fn is_client_command(&self) -> bool {
         matches!(
             self,
             Self::Connect
@@ -111,16 +104,13 @@ impl StompCommand
 
     /// Check if command is from server
     /// 检查是否为服务端命令
-    pub fn is_server_command(&self) -> bool
-    {
+    pub fn is_server_command(&self) -> bool {
         matches!(self, Self::Connected | Self::Message | Self::Receipt | Self::Error)
     }
 }
 
-impl fmt::Display for StompCommand
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for StompCommand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
@@ -128,8 +118,7 @@ impl fmt::Display for StompCommand
 /// STOMP frame
 /// STOMP 帧
 #[derive(Debug, Clone, PartialEq)]
-pub struct StompFrame
-{
+pub struct StompFrame {
     /// Command
     /// 命令
     pub command: StompCommand,
@@ -143,12 +132,10 @@ pub struct StompFrame
     pub body: Option<Bytes>,
 }
 
-impl StompFrame
-{
+impl StompFrame {
     /// Create a new frame
     /// 创建新帧
-    pub fn new(command: StompCommand) -> Self
-    {
+    pub fn new(command: StompCommand) -> Self {
         Self {
             command,
             headers: HashMap::new(),
@@ -158,61 +145,53 @@ impl StompFrame
 
     /// Create with headers
     /// 创建带头部的帧
-    pub fn with_headers(mut self, headers: HashMap<String, String>) -> Self
-    {
+    pub fn with_headers(mut self, headers: HashMap<String, String>) -> Self {
         self.headers = headers;
         self
     }
 
     /// Create with body
     /// 创建带主体的帧
-    pub fn with_body(mut self, body: Bytes) -> Self
-    {
+    pub fn with_body(mut self, body: Bytes) -> Self {
         self.body = Some(body);
         self
     }
 
     /// Get header value
     /// 获取头部值
-    pub fn header(&self, name: &str) -> Option<&String>
-    {
+    pub fn header(&self, name: &str) -> Option<&String> {
         self.headers.get(name)
     }
 
     /// Get required header
     /// 获取必需的头部
-    pub fn require_header(&self, name: &str) -> Result<&String>
-    {
+    pub fn require_header(&self, name: &str) -> Result<&String> {
         self.header(name)
             .ok_or_else(|| StompError::MissingHeader(name.to_string()))
     }
 
     /// Set header value
     /// 设置头部值
-    pub fn set_header(&mut self, name: impl Into<String>, value: impl Into<String>) -> &mut Self
-    {
+    pub fn set_header(&mut self, name: impl Into<String>, value: impl Into<String>) -> &mut Self {
         self.headers.insert(name.into(), value.into());
         self
     }
 
     /// Check if frame has body
     /// 检查是否有主体
-    pub fn has_body(&self) -> bool
-    {
+    pub fn has_body(&self) -> bool {
         self.body.is_some()
     }
 
     /// Get body length
     /// 获取主体长度
-    pub fn body_len(&self) -> usize
-    {
+    pub fn body_len(&self) -> usize {
         self.body.as_ref().map(|b| b.len()).unwrap_or(0)
     }
 
     /// Encode frame to bytes
     /// 将帧编码为字节
-    pub fn encode(&self) -> Bytes
-    {
+    pub fn encode(&self) -> Bytes {
         let mut buf = BytesMut::new();
 
         // Command
@@ -220,8 +199,7 @@ impl StompFrame
         buf.extend_from_slice(b"\n");
 
         // Headers
-        for (key, value) in &self.headers
-        {
+        for (key, value) in &self.headers {
             buf.extend_from_slice(key.as_bytes());
             buf.extend_from_slice(b":");
             buf.extend_from_slice(escape_header(value).as_bytes());
@@ -232,8 +210,7 @@ impl StompFrame
         buf.extend_from_slice(b"\n");
 
         // Body
-        if let Some(body) = &self.body
-        {
+        if let Some(body) = &self.body {
             buf.extend_from_slice(body.as_ref());
         }
 
@@ -245,8 +222,7 @@ impl StompFrame
 
     /// Decode frame from bytes
     /// 从字节解码帧
-    pub fn decode(data: &[u8]) -> Result<Self>
-    {
+    pub fn decode(data: &[u8]) -> Result<Self> {
         let data = std::str::from_utf8(data)
             .map_err(|_| StompError::InvalidFrame("Invalid UTF-8".to_string()))?;
 
@@ -259,8 +235,7 @@ impl StompFrame
 
         // Split into lines
         let lines = frame_str.lines().collect::<Vec<_>>();
-        if lines.is_empty()
-        {
+        if lines.is_empty() {
             return Err(StompError::InvalidFrame("Empty frame".to_string()));
         }
 
@@ -271,40 +246,31 @@ impl StompFrame
         let mut headers = HashMap::new();
         let mut body_start = 1;
 
-        for (i, line) in lines.iter().skip(1).enumerate()
-        {
-            if line.is_empty()
-            {
+        for (i, line) in lines.iter().skip(1).enumerate() {
+            if line.is_empty() {
                 body_start = i + 2;
                 break;
             }
 
-            if let Some((key, value)) = line.split_once(':')
-            {
+            if let Some((key, value)) = line.split_once(':') {
                 headers.insert(key.to_string(), unescape_header(value));
             }
         }
 
         // Parse body
-        let body = if body_start < lines.len()
-        {
+        let body = if body_start < lines.len() {
             // Calculate body byte offset
             let header_offset = lines[..body_start]
                 .iter()
                 .map(|l| l.len() + 1)
                 .sum::<usize>();
             let body_bytes = &data.as_bytes()[header_offset..frame_end];
-            if !body_bytes.is_empty()
-            {
+            if !body_bytes.is_empty() {
                 Some(Bytes::copy_from_slice(body_bytes))
-            }
-            else
-            {
+            } else {
                 None
             }
-        }
-        else
-        {
+        } else {
             None
         };
 
@@ -317,8 +283,7 @@ impl StompFrame
 
     /// Create CONNECT frame
     /// 创建 CONNECT 帧
-    pub fn connect() -> Self
-    {
+    pub fn connect() -> Self {
         let mut frame = Self::new(StompCommand::Connect);
         frame.set_header("accept-version", "1.2");
         frame
@@ -326,8 +291,7 @@ impl StompFrame
 
     /// Create CONNECTED frame
     /// 创建 CONNECTED 帧
-    pub fn connected(server: &str) -> Self
-    {
+    pub fn connected(server: &str) -> Self {
         let mut frame = Self::new(StompCommand::Connected);
         frame.set_header("version", "1.2");
         frame.set_header("server", server);
@@ -336,8 +300,7 @@ impl StompFrame
 
     /// Create SEND frame
     /// 创建 SEND 帧
-    pub fn send(destination: impl Into<String>, body: Bytes) -> Self
-    {
+    pub fn send(destination: impl Into<String>, body: Bytes) -> Self {
         let mut frame = Self::new(StompCommand::Send);
         frame.set_header("destination", destination);
         frame.body = Some(body);
@@ -346,8 +309,7 @@ impl StompFrame
 
     /// Create SUBSCRIBE frame
     /// 创建 SUBSCRIBE 帧
-    pub fn subscribe(destination: impl Into<String>, id: impl Into<String>) -> Self
-    {
+    pub fn subscribe(destination: impl Into<String>, id: impl Into<String>) -> Self {
         let mut frame = Self::new(StompCommand::Subscribe);
         frame.set_header("destination", destination);
         frame.set_header("id", id);
@@ -362,8 +324,7 @@ impl StompFrame
         subscription: impl Into<String>,
         message_id: impl Into<String>,
         body: Bytes,
-    ) -> Self
-    {
+    ) -> Self {
         let mut frame = Self::new(StompCommand::Message);
         frame.set_header("destination", destination);
         frame.set_header("subscription", subscription);
@@ -374,8 +335,7 @@ impl StompFrame
 
     /// Create ERROR frame
     /// 创建 ERROR 帧
-    pub fn error(message: impl Into<String>) -> Self
-    {
+    pub fn error(message: impl Into<String>) -> Self {
         let mut frame = Self::new(StompCommand::Error);
         frame.set_header("message", message);
         frame
@@ -383,8 +343,7 @@ impl StompFrame
 
     /// Create RECEIPT frame
     /// 创建 RECEIPT 帧
-    pub fn receipt(receipt_id: impl Into<String>) -> Self
-    {
+    pub fn receipt(receipt_id: impl Into<String>) -> Self {
         let mut frame = Self::new(StompCommand::Receipt);
         frame.set_header("receipt-id", receipt_id);
         frame
@@ -392,16 +351,14 @@ impl StompFrame
 
     /// Create DISCONNECT frame
     /// 创建 DISCONNECT 帧
-    pub fn disconnect() -> Self
-    {
+    pub fn disconnect() -> Self {
         Self::new(StompCommand::Disconnect)
     }
 }
 
 /// Escape header value
 /// 转义头部值
-fn escape_header(value: &str) -> String
-{
+fn escape_header(value: &str) -> String {
     value
         .replace('\\', "\\\\")
         .replace('\r', "\\r")
@@ -411,31 +368,24 @@ fn escape_header(value: &str) -> String
 
 /// Unescape header value
 /// 反转义头部值
-fn unescape_header(value: &str) -> String
-{
+fn unescape_header(value: &str) -> String {
     let mut result = String::new();
     let mut chars = value.chars();
 
-    while let Some(c) = chars.next()
-    {
-        if c == '\\'
-        {
-            match chars.next()
-            {
+    while let Some(c) = chars.next() {
+        if c == '\\' {
+            match chars.next() {
                 Some('\\') => result.push('\\'),
                 Some('r') => result.push('\r'),
                 Some('n') => result.push('\n'),
                 Some('c') => result.push(':'),
-                Some(other) =>
-                {
+                Some(other) => {
                     result.push('\\');
                     result.push(other);
                 },
                 None => result.push('\\'),
             }
-        }
-        else
-        {
+        } else {
             result.push(c);
         }
     }
@@ -444,14 +394,18 @@ fn unescape_header(value: &str) -> String
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_command_from_str()
-    {
+    fn test_command_from_str() {
         assert_eq!(StompCommand::from_str("CONNECT").unwrap(), StompCommand::Connect);
         assert_eq!(StompCommand::from_str("SEND").unwrap(), StompCommand::Send);
         assert_eq!(
@@ -461,8 +415,7 @@ mod tests
     }
 
     #[test]
-    fn test_frame_encode_decode()
-    {
+    fn test_frame_encode_decode() {
         let frame = StompFrame::send("/queue/test", Bytes::from("hello"));
         let encoded = frame.encode();
         let decoded = StompFrame::decode(&encoded).unwrap();
@@ -473,8 +426,7 @@ mod tests
     }
 
     #[test]
-    fn test_frame_with_headers()
-    {
+    fn test_frame_with_headers() {
         let mut frame = StompFrame::connect();
         frame.set_header("login", "guest");
         frame.set_header("passcode", "guest");
@@ -484,8 +436,7 @@ mod tests
     }
 
     #[test]
-    fn test_escape_unescape_header()
-    {
+    fn test_escape_unescape_header() {
         let original = "hello\nworld:r\n";
         let escaped = escape_header(original);
         let unescaped = unescape_header(&escaped);
@@ -493,16 +444,14 @@ mod tests
     }
 
     #[test]
-    fn test_require_header()
-    {
+    fn test_require_header() {
         let frame = StompFrame::connect();
         assert!(frame.require_header("accept-version").is_ok());
         assert!(frame.require_header("missing").is_err());
     }
 
     #[test]
-    fn test_message_frame()
-    {
+    fn test_message_frame() {
         let frame = StompFrame::message(
             "/queue/test",
             "sub-1",

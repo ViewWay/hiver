@@ -37,8 +37,7 @@ use crate::load_balancer::LoadBalancer as _;
 /// Equivalent to Spring's `DiscoveryClient`.
 /// 等价于Spring的`DiscoveryClient`。
 #[async_trait]
-pub trait ServiceDiscovery: Send + Sync
-{
+pub trait ServiceDiscovery: Send + Sync {
     /// Get all service instances for a service
     /// 获取服务的所有实例
     async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance>;
@@ -58,8 +57,7 @@ pub trait ServiceDiscovery: Send + Sync
 /// Tracks the lifecycle state of a registered service instance.
 /// 跟踪已注册服务实例的生命周期状态。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum InstanceStatus
-{
+pub enum InstanceStatus {
     /// Instance is starting up / 实例正在启动
     Starting,
 
@@ -76,20 +74,16 @@ pub enum InstanceStatus
     Unknown,
 }
 
-impl InstanceStatus
-{
+impl InstanceStatus {
     /// Check if the instance can accept traffic
     /// 检查实例是否可以接受流量
-    pub fn is_available(&self) -> bool
-    {
+    pub fn is_available(&self) -> bool {
         matches!(self, InstanceStatus::Up)
     }
 
     /// Get status name string / 获取状态名称字符串
-    pub fn as_str(&self) -> &str
-    {
-        match self
-        {
+    pub fn as_str(&self) -> &str {
+        match self {
             InstanceStatus::Starting => "STARTING",
             InstanceStatus::Up => "UP",
             InstanceStatus::Down => "DOWN",
@@ -99,10 +93,8 @@ impl InstanceStatus
     }
 }
 
-impl std::fmt::Display for InstanceStatus
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Display for InstanceStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
 }
@@ -116,8 +108,7 @@ impl std::fmt::Display for InstanceStatus
 /// Equivalent to Spring's `ServiceInstance`.
 /// 等价于Spring的`ServiceInstance`。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ServiceInstance
-{
+pub struct ServiceInstance {
     /// Service ID
     /// 服务ID
     pub service_id: String,
@@ -162,8 +153,7 @@ pub struct ServiceInstance
     pub last_heartbeat: Option<DateTime<Utc>>,
 }
 
-impl ServiceInstance
-{
+impl ServiceInstance {
     /// Create a new service instance
     /// 创建新的服务实例
     pub fn new(
@@ -171,8 +161,7 @@ impl ServiceInstance
         instance_id: impl Into<String>,
         host: impl Into<String>,
         port: u16,
-    ) -> Self
-    {
+    ) -> Self {
         let host = host.into();
         let uri = format!("http://{}:{}", host, port);
 
@@ -193,15 +182,11 @@ impl ServiceInstance
 
     /// Set secure (HTTPS)
     /// 设置安全（HTTPS）
-    pub fn secure(mut self, secure: bool) -> Self
-    {
+    pub fn secure(mut self, secure: bool) -> Self {
         self.secure = secure;
-        self.uri = if secure
-        {
+        self.uri = if secure {
             format!("https://{}:{}", self.host, self.port)
-        }
-        else
-        {
+        } else {
             format!("http://{}:{}", self.host, self.port)
         };
         self
@@ -209,51 +194,42 @@ impl ServiceInstance
 
     /// Add metadata
     /// 添加元数据
-    pub fn add_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn add_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.metadata.insert(key.into(), value.into());
         self
     }
 
     /// Set health check URL
     /// 设置健康检查URL
-    pub fn health_check_url(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn health_check_url(mut self, url: impl Into<String>) -> Self {
         self.health_check_url = Some(url.into());
         self
     }
 
     /// Set instance status
     /// 设置实例状态
-    pub fn status(mut self, status: InstanceStatus) -> Self
-    {
+    pub fn status(mut self, status: InstanceStatus) -> Self {
         self.status = status;
         self
     }
 
     /// Get URI
     /// 获取URI
-    pub fn uri(&self) -> &str
-    {
+    pub fn uri(&self) -> &str {
         &self.uri
     }
 
     /// Check if instance is healthy
     /// 检查实例是否健康
-    pub fn is_healthy(&self) -> bool
-    {
-        if !self.status.is_available()
-        {
+    pub fn is_healthy(&self) -> bool {
+        if !self.status.is_available() {
             return false;
         }
         // Consider instance healthy if heartbeat is recent
-        if let Some(last) = self.last_heartbeat
-        {
+        if let Some(last) = self.last_heartbeat {
             let timeout = chrono::Duration::seconds(crate::DEFAULT_HEARTBEAT_SECS as i64 * 3);
             Utc::now().signed_duration_since(last) < timeout
-        }
-        else
-        {
+        } else {
             true
         }
     }
@@ -265,8 +241,7 @@ impl ServiceInstance
 /// Returned by health checkers to report instance health status.
 /// 由健康检查器返回，报告实例健康状态。
 #[derive(Debug, Clone)]
-pub struct HealthCheckResult
-{
+pub struct HealthCheckResult {
     /// Whether the instance is healthy
     /// 实例是否健康
     pub healthy: bool,
@@ -280,12 +255,10 @@ pub struct HealthCheckResult
     pub checked_at: DateTime<Utc>,
 }
 
-impl HealthCheckResult
-{
+impl HealthCheckResult {
     /// Create a healthy result
     /// 创建健康结果
-    pub fn healthy() -> Self
-    {
+    pub fn healthy() -> Self {
         Self {
             healthy: true,
             message: None,
@@ -295,8 +268,7 @@ impl HealthCheckResult
 
     /// Create a healthy result with a message
     /// 创建带消息的健康结果
-    pub fn healthy_with_message(msg: impl Into<String>) -> Self
-    {
+    pub fn healthy_with_message(msg: impl Into<String>) -> Self {
         Self {
             healthy: true,
             message: Some(msg.into()),
@@ -306,8 +278,7 @@ impl HealthCheckResult
 
     /// Create an unhealthy result
     /// 创建不健康结果
-    pub fn unhealthy(msg: impl Into<String>) -> Self
-    {
+    pub fn unhealthy(msg: impl Into<String>) -> Self {
         Self {
             healthy: false,
             message: Some(msg.into()),
@@ -322,8 +293,7 @@ impl HealthCheckResult
 /// Implementations probe a service instance to determine if it is healthy.
 /// 实现类探测服务实例以确定其是否健康。
 #[async_trait]
-pub trait HealthChecker: Send + Sync
-{
+pub trait HealthChecker: Send + Sync {
     /// Check the health of a service instance
     /// 检查服务实例的健康状况
     async fn check(&self, instance: &ServiceInstance) -> HealthCheckResult;
@@ -334,8 +304,7 @@ pub trait HealthChecker: Send + Sync
 ///
 /// Performs a GET request to the instance's health check URL.
 /// 对实例的健康检查URL执行GET请求。
-pub struct HttpHealthChecker
-{
+pub struct HttpHealthChecker {
     /// Request timeout / 请求超时
     pub timeout: std::time::Duration,
 
@@ -343,12 +312,10 @@ pub struct HttpHealthChecker
     pub healthy_status_codes: Vec<u16>,
 }
 
-impl HttpHealthChecker
-{
+impl HttpHealthChecker {
     /// Create a new HTTP health checker with defaults
     /// 创建带默认值的新HTTP健康检查器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             timeout: std::time::Duration::from_secs(5),
             healthy_status_codes: vec![200],
@@ -357,32 +324,24 @@ impl HttpHealthChecker
 
     /// Set timeout
     /// 设置超时
-    pub fn timeout(mut self, timeout: std::time::Duration) -> Self
-    {
+    pub fn timeout(mut self, timeout: std::time::Duration) -> Self {
         self.timeout = timeout;
         self
     }
 }
 
-impl Default for HttpHealthChecker
-{
-    fn default() -> Self
-    {
+impl Default for HttpHealthChecker {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[async_trait]
-impl HealthChecker for HttpHealthChecker
-{
-    async fn check(&self, instance: &ServiceInstance) -> HealthCheckResult
-    {
-        let url = if let Some(ref health_url) = instance.health_check_url
-        {
+impl HealthChecker for HttpHealthChecker {
+    async fn check(&self, instance: &ServiceInstance) -> HealthCheckResult {
+        let url = if let Some(ref health_url) = instance.health_check_url {
             health_url.clone()
-        }
-        else
-        {
+        } else {
             // Default: use the instance URI with /actuator/health appended
             format!("{}/actuator/health", instance.uri)
         };
@@ -392,17 +351,12 @@ impl HealthChecker for HttpHealthChecker
             .build()
             .unwrap_or_default();
 
-        match client.get(&url).send().await
-        {
-            Ok(response) =>
-            {
+        match client.get(&url).send().await {
+            Ok(response) => {
                 let status = response.status().as_u16();
-                if self.healthy_status_codes.contains(&status)
-                {
+                if self.healthy_status_codes.contains(&status) {
                     HealthCheckResult::healthy()
-                }
-                else
-                {
+                } else {
                     HealthCheckResult::unhealthy(format!(
                         "Health endpoint returned status {}",
                         status
@@ -419,10 +373,8 @@ impl HealthChecker for HttpHealthChecker
 pub struct AlwaysHealthyChecker;
 
 #[async_trait]
-impl HealthChecker for AlwaysHealthyChecker
-{
-    async fn check(&self, _instance: &ServiceInstance) -> HealthCheckResult
-    {
+impl HealthChecker for AlwaysHealthyChecker {
+    async fn check(&self, _instance: &ServiceInstance) -> HealthCheckResult {
         HealthCheckResult::healthy()
     }
 }
@@ -434,8 +386,7 @@ impl HealthChecker for AlwaysHealthyChecker
 /// considered expired.
 /// 控制客户端发送心跳的频率以及何时认为实例已过期。
 #[derive(Debug, Clone)]
-pub struct HeartbeatConfig
-{
+pub struct HeartbeatConfig {
     /// Interval between heartbeats in seconds
     /// 心跳间隔（秒）
     pub interval_secs: u64,
@@ -445,12 +396,10 @@ pub struct HeartbeatConfig
     pub timeout_secs: u64,
 }
 
-impl HeartbeatConfig
-{
+impl HeartbeatConfig {
     /// Create a new heartbeat configuration
     /// 创建新的心跳配置
-    pub fn new(interval_secs: u64, timeout_secs: u64) -> Self
-    {
+    pub fn new(interval_secs: u64, timeout_secs: u64) -> Self {
         Self {
             interval_secs,
             timeout_secs,
@@ -458,10 +407,8 @@ impl HeartbeatConfig
     }
 }
 
-impl Default for HeartbeatConfig
-{
-    fn default() -> Self
-    {
+impl Default for HeartbeatConfig {
+    fn default() -> Self {
         Self {
             interval_secs: crate::DEFAULT_HEARTBEAT_SECS,
             timeout_secs: crate::DEFAULT_HEARTBEAT_SECS * 3,
@@ -481,8 +428,7 @@ impl Default for HeartbeatConfig
 /// - 服务实例本地缓存以避免重复注册表查找
 /// - 自动心跳发送器以保持本地实例注册
 /// - 可配置间隔的缓存刷新
-pub struct ServiceDiscoveryClient
-{
+pub struct ServiceDiscoveryClient {
     /// Underlying registry / 底层注册表
     registry: Arc<dyn ServiceRegistry>,
 
@@ -505,12 +451,10 @@ pub struct ServiceDiscoveryClient
     heartbeat_cancel: tokio::sync::watch::Sender<bool>,
 }
 
-impl ServiceDiscoveryClient
-{
+impl ServiceDiscoveryClient {
     /// Create a new service discovery client
     /// 创建新的服务发现客户端
-    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self
-    {
+    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self {
         let (heartbeat_cancel, _) = tokio::sync::watch::channel(false);
         Self {
             registry,
@@ -525,46 +469,39 @@ impl ServiceDiscoveryClient
 
     /// Set cache TTL
     /// 设置缓存TTL
-    pub fn cache_ttl(mut self, secs: u64) -> Self
-    {
+    pub fn cache_ttl(mut self, secs: u64) -> Self {
         self.cache_ttl_secs = secs;
         self
     }
 
     /// Set health checker
     /// 设置健康检查器
-    pub fn health_checker(mut self, checker: Arc<dyn HealthChecker>) -> Self
-    {
+    pub fn health_checker(mut self, checker: Arc<dyn HealthChecker>) -> Self {
         self.health_checker = checker;
         self
     }
 
     /// Set heartbeat configuration
     /// 设置心跳配置
-    pub fn heartbeat_config(mut self, config: HeartbeatConfig) -> Self
-    {
+    pub fn heartbeat_config(mut self, config: HeartbeatConfig) -> Self {
         self.heartbeat_config = config;
         self
     }
 
     /// Get instances for a service (with caching)
     /// 获取服务实例（带缓存）
-    pub async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance>
-    {
+    pub async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         // Check cache freshness / 检查缓存新鲜度
         let last_refresh = self.last_refresh.read().await;
-        let needs_refresh = match last_refresh.get(service_id)
-        {
-            Some(last) =>
-            {
+        let needs_refresh = match last_refresh.get(service_id) {
+            Some(last) => {
                 Utc::now().signed_duration_since(*last).num_seconds() as u64 >= self.cache_ttl_secs
             },
             None => true,
         };
         drop(last_refresh);
 
-        if needs_refresh
-        {
+        if needs_refresh {
             self.refresh_cache(service_id).await;
         }
 
@@ -574,8 +511,7 @@ impl ServiceDiscoveryClient
 
     /// Get all registered service names
     /// 获取所有已注册的服务名称
-    pub async fn get_all_services(&self) -> Vec<String>
-    {
+    pub async fn get_all_services(&self) -> Vec<String> {
         self.registry.get_services().await
     }
 
@@ -585,16 +521,14 @@ impl ServiceDiscoveryClient
         &self,
         service_id: &str,
         load_balancer: &crate::load_balancer::RoundRobinLoadBalancer,
-    ) -> Option<ServiceInstance>
-    {
+    ) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
         let healthy: Vec<_> = instances
             .into_iter()
             .filter(ServiceInstance::is_healthy)
             .collect();
 
-        if healthy.is_empty()
-        {
+        if healthy.is_empty() {
             return None;
         }
 
@@ -603,31 +537,27 @@ impl ServiceDiscoveryClient
 
     /// Register a service instance
     /// 注册服务实例
-    pub async fn register(&self, instance: ServiceInstance) -> Result<(), String>
-    {
+    pub async fn register(&self, instance: ServiceInstance) -> Result<(), String> {
         self.registry.register(instance).await
     }
 
     /// Deregister a service instance
     /// 取消注册服务实例
-    pub async fn deregister(&self, instance_id: &str) -> Result<(), String>
-    {
+    pub async fn deregister(&self, instance_id: &str) -> Result<(), String> {
         self.registry.deregister(instance_id).await
     }
 
     /// Start the heartbeat loop for a given instance
     /// 为给定实例启动心跳循环
     #[allow(clippy::unused_async)]
-    pub async fn start_heartbeat(&self, instance_id: String)
-    {
+    pub async fn start_heartbeat(&self, instance_id: String) {
         let registry = self.registry.clone();
         let mut cancel_rx = self.heartbeat_cancel.subscribe();
         let interval = self.heartbeat_config.interval_secs;
 
         tokio::spawn(async move {
             let mut ticker = tokio::time::interval(std::time::Duration::from_secs(interval));
-            loop
-            {
+            loop {
                 tokio::select! {
                     _ = ticker.tick() => {
                         if let Err(e) = registry.heartbeat(&instance_id).await {
@@ -649,22 +579,19 @@ impl ServiceDiscoveryClient
 
     /// Stop all heartbeat loops
     /// 停止所有心跳循环
-    pub fn stop_heartbeat(&self)
-    {
+    pub fn stop_heartbeat(&self) {
         let _ = self.heartbeat_cancel.send(true);
     }
 
     /// Run a health check on an instance
     /// 对实例运行健康检查
-    pub async fn check_health(&self, instance: &ServiceInstance) -> HealthCheckResult
-    {
+    pub async fn check_health(&self, instance: &ServiceInstance) -> HealthCheckResult {
         self.health_checker.check(instance).await
     }
 
     /// Force refresh the cache for a specific service
     /// 强制刷新特定服务的缓存
-    async fn refresh_cache(&self, service_id: &str)
-    {
+    async fn refresh_cache(&self, service_id: &str) {
         let instances = self.registry.get_instances(service_id).await;
         let mut cache = self.cache.write().await;
         cache.insert(service_id.to_string(), instances);
@@ -675,19 +602,16 @@ impl ServiceDiscoveryClient
 
     /// Refresh the cache for all services
     /// 刷新所有服务的缓存
-    pub async fn refresh_all(&self)
-    {
+    pub async fn refresh_all(&self) {
         let services = self.registry.get_services().await;
-        for service_id in services
-        {
+        for service_id in services {
             self.refresh_cache(&service_id).await;
         }
     }
 
     /// Get healthy instances for a service.
     /// 获取服务的健康实例。
-    pub async fn get_healthy_instances(&self, service_id: &str) -> Vec<ServiceInstance>
-    {
+    pub async fn get_healthy_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         self.get_instances(service_id)
             .await
             .into_iter()
@@ -702,8 +626,7 @@ impl ServiceDiscoveryClient
         service_id: &str,
         key: &str,
         value: &str,
-    ) -> Vec<ServiceInstance>
-    {
+    ) -> Vec<ServiceInstance> {
         self.get_instances(service_id)
             .await
             .into_iter()
@@ -713,8 +636,7 @@ impl ServiceDiscoveryClient
 
     /// Get instances that have a specific tag (metadata key present).
     /// 获取带有特定标签（元数据键存在）的实例。
-    pub async fn get_instances_by_tag(&self, service_id: &str, tag: &str) -> Vec<ServiceInstance>
-    {
+    pub async fn get_instances_by_tag(&self, service_id: &str, tag: &str) -> Vec<ServiceInstance> {
         self.get_instances(service_id)
             .await
             .into_iter()
@@ -728,22 +650,18 @@ impl ServiceDiscoveryClient
         &self,
         service_id: &str,
         version: &str,
-    ) -> Vec<ServiceInstance>
-    {
+    ) -> Vec<ServiceInstance> {
         self.get_instances_by_metadata(service_id, "version", version)
             .await
     }
 
     /// Get all service IDs that have at least one healthy instance.
     /// 获取至少有一个健康实例的所有服务 ID。
-    pub async fn get_healthy_services(&self) -> Vec<String>
-    {
+    pub async fn get_healthy_services(&self) -> Vec<String> {
         let services = self.get_all_services().await;
         let mut healthy = Vec::new();
-        for s in services
-        {
-            if !self.get_healthy_instances(&s).await.is_empty()
-            {
+        for s in services {
+            if !self.get_healthy_instances(&s).await.is_empty() {
                 healthy.push(s);
             }
         }
@@ -757,8 +675,7 @@ impl ServiceDiscoveryClient
 /// Equivalent to Spring's `ServiceRegistry`.
 /// 等价于Spring的`ServiceRegistry`。
 #[async_trait]
-pub trait ServiceRegistry: Send + Sync
-{
+pub trait ServiceRegistry: Send + Sync {
     /// Register a service instance
     /// 注册服务实例
     async fn register(&self, instance: ServiceInstance) -> Result<(), String>;
@@ -785,19 +702,16 @@ pub trait ServiceRegistry: Send + Sync
 ///
 /// Equivalent to Spring's `SimpleDiscoveryClient`.
 /// 等价于Spring的`SimpleDiscoveryClient`。
-pub struct InMemoryServiceRegistry
-{
+pub struct InMemoryServiceRegistry {
     /// Registered services
     /// 已注册服务
     services: Arc<tokio::sync::RwLock<HashMap<String, Vec<ServiceInstance>>>>,
 }
 
-impl InMemoryServiceRegistry
-{
+impl InMemoryServiceRegistry {
     /// Create a new in-memory registry
     /// 创建新的内存注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             services: Arc::new(tokio::sync::RwLock::new(HashMap::new())),
         }
@@ -805,8 +719,7 @@ impl InMemoryServiceRegistry
 
     /// Register a service
     /// 注册服务
-    pub async fn register_service(&self, instance: ServiceInstance) -> Result<(), String>
-    {
+    pub async fn register_service(&self, instance: ServiceInstance) -> Result<(), String> {
         let mut services = self.services.write().await;
         let service_id = instance.service_id.clone();
 
@@ -825,36 +738,29 @@ impl InMemoryServiceRegistry
 
     /// Get all instances for a service
     /// 获取服务的所有实例
-    pub async fn get_service_instances(&self, service_id: &str) -> Vec<ServiceInstance>
-    {
+    pub async fn get_service_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         let services = self.services.read().await;
         services.get(service_id).cloned().unwrap_or_default()
     }
 
     /// Get all services
     /// 获取所有服务
-    pub async fn get_all_services(&self) -> Vec<String>
-    {
+    pub async fn get_all_services(&self) -> Vec<String> {
         let services = self.services.read().await;
         services.keys().cloned().collect()
     }
 
     /// Evict instances whose heartbeat has timed out
     /// 驱逐心跳超时的实例
-    pub async fn evict_stale(&self, timeout_secs: i64)
-    {
+    pub async fn evict_stale(&self, timeout_secs: i64) {
         let mut services = self.services.write().await;
         let timeout = chrono::Duration::seconds(timeout_secs);
 
-        for instances in services.values_mut()
-        {
+        for instances in services.values_mut() {
             instances.retain(|inst| {
-                if let Some(last) = inst.last_heartbeat
-                {
+                if let Some(last) = inst.last_heartbeat {
                     Utc::now().signed_duration_since(last) < timeout
-                }
-                else
-                {
+                } else {
                     true
                 }
             });
@@ -862,47 +768,37 @@ impl InMemoryServiceRegistry
     }
 }
 
-impl Default for InMemoryServiceRegistry
-{
-    fn default() -> Self
-    {
+impl Default for InMemoryServiceRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[async_trait]
-impl ServiceRegistry for InMemoryServiceRegistry
-{
-    async fn register(&self, instance: ServiceInstance) -> Result<(), String>
-    {
+impl ServiceRegistry for InMemoryServiceRegistry {
+    async fn register(&self, instance: ServiceInstance) -> Result<(), String> {
         self.register_service(instance).await
     }
 
-    async fn deregister(&self, instance_id: &str) -> Result<(), String>
-    {
+    async fn deregister(&self, instance_id: &str) -> Result<(), String> {
         let mut services = self.services.write().await;
 
-        for (_service_id, instances) in services.iter_mut()
-        {
+        for (_service_id, instances) in services.iter_mut() {
             instances.retain(|inst| inst.instance_id != instance_id);
         }
 
         Ok(())
     }
 
-    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance>
-    {
+    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         self.get_service_instances(service_id).await
     }
 
-    async fn heartbeat(&self, instance_id: &str) -> Result<(), String>
-    {
+    async fn heartbeat(&self, instance_id: &str) -> Result<(), String> {
         let mut services = self.services.write().await;
 
-        for instances in services.values_mut()
-        {
-            if let Some(instance) = instances.iter_mut().find(|i| i.instance_id == instance_id)
-            {
+        for instances in services.values_mut() {
+            if let Some(instance) = instances.iter_mut().find(|i| i.instance_id == instance_id) {
                 instance.last_heartbeat = Some(Utc::now());
                 return Ok(());
             }
@@ -911,8 +807,7 @@ impl ServiceRegistry for InMemoryServiceRegistry
         Err(format!("Instance not found: {}", instance_id))
     }
 
-    async fn get_services(&self) -> Vec<String>
-    {
+    async fn get_services(&self) -> Vec<String> {
         self.get_all_services().await
     }
 }
@@ -922,8 +817,7 @@ impl ServiceRegistry for InMemoryServiceRegistry
 ///
 /// Implements `ServiceDiscovery` using a registry.
 /// 使用注册表实现`ServiceDiscovery`。
-pub struct SimpleDiscoveryClient
-{
+pub struct SimpleDiscoveryClient {
     /// Service registry
     /// 服务注册表
     registry: Arc<dyn ServiceRegistry>,
@@ -933,12 +827,10 @@ pub struct SimpleDiscoveryClient
     load_balancer: Arc<crate::load_balancer::RoundRobinLoadBalancer>,
 }
 
-impl SimpleDiscoveryClient
-{
+impl SimpleDiscoveryClient {
     /// Create a new discovery client
     /// 创建新的发现客户端
-    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self
-    {
+    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self {
         Self {
             registry,
             load_balancer: Arc::new(crate::load_balancer::RoundRobinLoadBalancer::new()),
@@ -947,36 +839,30 @@ impl SimpleDiscoveryClient
 
     /// Set load balancer
     /// 设置负载均衡器
-    pub fn load_balancer(mut self, lb: Arc<crate::load_balancer::RoundRobinLoadBalancer>) -> Self
-    {
+    pub fn load_balancer(mut self, lb: Arc<crate::load_balancer::RoundRobinLoadBalancer>) -> Self {
         self.load_balancer = lb;
         self
     }
 }
 
 #[async_trait]
-impl ServiceDiscovery for SimpleDiscoveryClient
-{
-    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance>
-    {
+impl ServiceDiscovery for SimpleDiscoveryClient {
+    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
         self.registry.get_instances(service_id).await
     }
 
-    async fn get_services(&self) -> Vec<String>
-    {
+    async fn get_services(&self) -> Vec<String> {
         self.registry.get_services().await
     }
 
-    async fn get_instance(&self, service_id: &str) -> Option<ServiceInstance>
-    {
+    async fn get_instance(&self, service_id: &str) -> Option<ServiceInstance> {
         let instances = self.get_instances(service_id).await;
         let healthy: Vec<_> = instances
             .into_iter()
             .filter(ServiceInstance::is_healthy)
             .collect();
 
-        if healthy.is_empty()
-        {
+        if healthy.is_empty() {
             return None;
         }
 
@@ -985,14 +871,18 @@ impl ServiceDiscovery for SimpleDiscoveryClient
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_in_memory_registry()
-    {
+    async fn test_in_memory_registry() {
         let registry = InMemoryServiceRegistry::new();
 
         let instance = ServiceInstance::new("userservice", "instance-1", "localhost", 8080);
@@ -1007,8 +897,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_duplicate_registration()
-    {
+    async fn test_duplicate_registration() {
         let registry = InMemoryServiceRegistry::new();
 
         let instance = ServiceInstance::new("svc", "inst-1", "localhost", 8080);
@@ -1017,8 +906,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_deregister()
-    {
+    async fn test_deregister() {
         let registry = InMemoryServiceRegistry::new();
 
         let instance = ServiceInstance::new("svc", "inst-1", "localhost", 8080);
@@ -1031,8 +919,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_heartbeat()
-    {
+    async fn test_heartbeat() {
         let registry = InMemoryServiceRegistry::new();
 
         let instance = ServiceInstance::new("svc", "inst-1", "localhost", 8080);
@@ -1045,16 +932,14 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_heartbeat_not_found()
-    {
+    async fn test_heartbeat_not_found() {
         let registry = InMemoryServiceRegistry::new();
         let result = registry.heartbeat("nonexistent").await;
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_service_instance()
-    {
+    fn test_service_instance() {
         let instance = ServiceInstance::new("test", "id1", "localhost", 8080)
             .secure(true)
             .add_metadata("version", "1.0.0");
@@ -1065,8 +950,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_health_check_url()
-    {
+    fn test_service_instance_health_check_url() {
         let instance = ServiceInstance::new("test", "id1", "localhost", 8080)
             .health_check_url("http://localhost:8080/health");
 
@@ -1074,8 +958,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_status()
-    {
+    fn test_service_instance_status() {
         let up = ServiceInstance::new("test", "id1", "localhost", 8080);
         assert!(up.is_healthy());
 
@@ -1089,8 +972,7 @@ mod tests
     }
 
     #[test]
-    fn test_instance_status()
-    {
+    fn test_instance_status() {
         assert!(InstanceStatus::Up.is_available());
         assert!(!InstanceStatus::Down.is_available());
         assert!(!InstanceStatus::Starting.is_available());
@@ -1099,8 +981,7 @@ mod tests
     }
 
     #[test]
-    fn test_health_check_result()
-    {
+    fn test_health_check_result() {
         let healthy = HealthCheckResult::healthy();
         assert!(healthy.healthy);
         assert!(healthy.message.is_none());
@@ -1115,8 +996,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_always_healthy_checker()
-    {
+    async fn test_always_healthy_checker() {
         let checker = AlwaysHealthyChecker;
         let instance = ServiceInstance::new("test", "id1", "localhost", 8080);
         let result = checker.check(&instance).await;
@@ -1124,8 +1004,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_discovery_client_caching()
-    {
+    async fn test_discovery_client_caching() {
         let registry = Arc::new(InMemoryServiceRegistry::new());
 
         let inst1 = ServiceInstance::new("svc", "inst-1", "localhost", 8080);
@@ -1147,8 +1026,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_discovery_client_register_and_deregister()
-    {
+    async fn test_discovery_client_register_and_deregister() {
         let registry = Arc::new(InMemoryServiceRegistry::new());
         let client = ServiceDiscoveryClient::new(registry.clone());
 
@@ -1165,8 +1043,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_discovery_client_get_all_services()
-    {
+    async fn test_discovery_client_get_all_services() {
         let registry = Arc::new(InMemoryServiceRegistry::new());
         let client = ServiceDiscoveryClient::new(registry.clone());
 
@@ -1184,8 +1061,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_discovery_client_refresh_all()
-    {
+    async fn test_discovery_client_refresh_all() {
         let registry = Arc::new(InMemoryServiceRegistry::new());
         let client = ServiceDiscoveryClient::new(registry.clone()).cache_ttl(60);
 
@@ -1206,8 +1082,7 @@ mod tests
     }
 
     #[test]
-    fn test_heartbeat_config_defaults()
-    {
+    fn test_heartbeat_config_defaults() {
         let config = HeartbeatConfig::default();
         assert_eq!(config.interval_secs, crate::DEFAULT_HEARTBEAT_SECS);
         assert_eq!(config.timeout_secs, crate::DEFAULT_HEARTBEAT_SECS * 3);

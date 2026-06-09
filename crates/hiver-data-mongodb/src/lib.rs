@@ -63,7 +63,13 @@
 #![warn(rust_2018_idioms)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod aggregation;
@@ -92,8 +98,7 @@ pub use template::MongoTemplate;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types / 常用类型预导入
-pub mod prelude
-{
+pub mod prelude {
     pub use super::{
         Aggregation, AggregationResults, BulkOperations, BulkWriteResult, FieldProjection,
         IndexBuilder, IndexDirection, IndexOperations, MongoClient, MongoError, MongoFilter,

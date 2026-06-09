@@ -6,8 +6,7 @@ use std::fmt;
 /// Micrometer error
 /// Micrometer 错误
 #[derive(Debug)]
-pub enum MicrometerError
-{
+pub enum MicrometerError {
     /// Invalid metric name
     /// 指标名称无效
     InvalidName(String),
@@ -33,12 +32,9 @@ pub enum MicrometerError
     RegistryClosed,
 }
 
-impl fmt::Display for MicrometerError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for MicrometerError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             MicrometerError::InvalidName(name) => write!(f, "Invalid metric name: {}", name),
             MicrometerError::MetricExists(name) => write!(f, "Metric already exists: {}", name),
             MicrometerError::MetricNotFound(name) => write!(f, "Metric not found: {}", name),
@@ -56,14 +52,18 @@ impl std::error::Error for MicrometerError {}
 pub type Result<T> = std::result::Result<T, MicrometerError>;
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_error_display()
-    {
+    fn test_error_display() {
         assert_eq!(
             MicrometerError::InvalidName("test$".to_string()).to_string(),
             "Invalid metric name: test$"

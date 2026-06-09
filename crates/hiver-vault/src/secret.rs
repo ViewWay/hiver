@@ -13,8 +13,7 @@ use crate::{client::VaultClient, error::VaultResult};
 /// Contains the secret data and associated metadata.
 /// 包含密钥数据和关联的元数据。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Secret
-{
+pub struct Secret {
     /// The secret data / 密钥数据
     pub data: serde_json::Value,
     /// Lease ID associated with the secret / 与密钥关联的租约 ID
@@ -29,8 +28,7 @@ pub struct Secret
 
 /// Vault API response wrapper / Vault API 响应包装
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SecretResponse
-{
+pub struct SecretResponse {
     /// The secret data / 密钥数据
     pub data: serde_json::Value,
     /// Lease info / 租约信息
@@ -44,10 +42,8 @@ pub struct SecretResponse
     pub renewable: Option<bool>,
 }
 
-impl From<SecretResponse> for Secret
-{
-    fn from(resp: SecretResponse) -> Self
-    {
+impl From<SecretResponse> for Secret {
+    fn from(resp: SecretResponse) -> Self {
         Secret {
             data: resp.data,
             lease_id: resp.lease_id,
@@ -69,8 +65,7 @@ impl From<SecretResponse> for Secret
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.read(path)`.
 /// 等价于 Spring Vault 的 `VaultTemplate.read(path)`。
-pub async fn read(client: &VaultClient, path: &str) -> VaultResult<Secret>
-{
+pub async fn read(client: &VaultClient, path: &str) -> VaultResult<Secret> {
     let resp = client.get(path).await?;
     let secret_resp: SecretResponse = resp.json().await?;
     Ok(secret_resp.into())
@@ -84,12 +79,10 @@ pub async fn write(
     client: &VaultClient,
     path: &str,
     data: &serde_json::Value,
-) -> VaultResult<Option<Secret>>
-{
+) -> VaultResult<Option<Secret>> {
     let resp = client.post(path, data).await?;
     // Some writes return data, some don't / 有些写入返回数据，有些不返回
-    if resp.status() == reqwest::StatusCode::NO_CONTENT
-    {
+    if resp.status() == reqwest::StatusCode::NO_CONTENT {
         return Ok(None);
     }
     let body: Option<SecretResponse> = resp.json().await.ok();
@@ -100,8 +93,7 @@ pub async fn write(
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.list(path)`.
 /// 等价于 Spring Vault 的 `VaultTemplate.list(path)`。
-pub async fn list(client: &VaultClient, path: &str) -> VaultResult<Vec<String>>
-{
+pub async fn list(client: &VaultClient, path: &str) -> VaultResult<Vec<String>> {
     let resp = client.list(path).await?;
     let body: serde_json::Value = resp.json().await?;
 
@@ -123,8 +115,7 @@ pub async fn list(client: &VaultClient, path: &str) -> VaultResult<Vec<String>>
 ///
 /// Equivalent to Spring Vault's `VaultTemplate.delete(path)`.
 /// 等价于 Spring Vault 的 `VaultTemplate.delete(path)`。
-pub async fn delete(client: &VaultClient, path: &str) -> VaultResult<()>
-{
+pub async fn delete(client: &VaultClient, path: &str) -> VaultResult<()> {
     client.delete(path).await?;
     Ok(())
 }

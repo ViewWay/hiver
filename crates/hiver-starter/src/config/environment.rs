@@ -12,8 +12,7 @@ use std::fmt;
 /// 配置文件（Profile）
 /// Profile (dev, test, prod, etc.)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Profile
-{
+pub enum Profile {
     /// 开发环境
     Dev,
 
@@ -27,21 +26,16 @@ pub enum Profile
     Custom(&'static str),
 }
 
-impl fmt::Display for Profile
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for Profile {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.name())
     }
 }
 
-impl Profile
-{
+impl Profile {
     /// 获取 Profile 名称
-    pub fn name(&self) -> &str
-    {
-        match self
-        {
+    pub fn name(&self) -> &str {
+        match self {
             Profile::Dev => "dev",
             Profile::Test => "test",
             Profile::Prod => "prod",
@@ -50,10 +44,8 @@ impl Profile
     }
 
     /// 从字符串创建 Profile
-    pub fn from_str(s: &str) -> Self
-    {
-        match s.to_lowercase().as_str()
-        {
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
             "dev" | "development" => Profile::Dev,
             "test" | "testing" => Profile::Test,
             "prod" | "production" => Profile::Prod,
@@ -62,14 +54,12 @@ impl Profile
     }
 
     /// 是否为开发环境
-    pub fn is_dev(&self) -> bool
-    {
+    pub fn is_dev(&self) -> bool {
         matches!(self, Profile::Dev)
     }
 
     /// 是否为生产环境
-    pub fn is_prod(&self) -> bool
-    {
+    pub fn is_prod(&self) -> bool {
         matches!(self, Profile::Prod)
     }
 }
@@ -84,8 +74,7 @@ impl Profile
 /// 包含当前活动的 Profile 和环境信息。
 /// Contains the currently active profile and environment information.
 #[derive(Debug, Clone)]
-pub struct Environment
-{
+pub struct Environment {
     /// 当前活动的 Profile
     active_profile: Profile,
 
@@ -93,11 +82,9 @@ pub struct Environment
     profiles: Vec<Profile>,
 }
 
-impl Environment
-{
+impl Environment {
     /// 创建新的环境
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         let active_profile = Self::detect_profile();
         let profiles = vec![active_profile, Profile::Dev];
 
@@ -108,8 +95,7 @@ impl Environment
     }
 
     /// 从环境变量检测 Profile
-    fn detect_profile() -> Profile
-    {
+    fn detect_profile() -> Profile {
         std::env::var("HIVER_PROFILE")
             .or_else(|_| std::env::var("APP_PROFILE"))
             .or_else(|_| std::env::var("SPRING_PROFILES_ACTIVE"))
@@ -117,47 +103,38 @@ impl Environment
     }
 
     /// 获取当前活动的 Profile
-    pub fn active_profile(&self) -> Profile
-    {
+    pub fn active_profile(&self) -> Profile {
         self.active_profile
     }
 
     /// 设置活动 Profile
-    pub fn set_active_profile(&mut self, profile: Profile)
-    {
+    pub fn set_active_profile(&mut self, profile: Profile) {
         self.active_profile = profile;
-        if !self.profiles.contains(&profile)
-        {
+        if !self.profiles.contains(&profile) {
             self.profiles.push(profile);
         }
     }
 
     /// 检查是否包含某个 Profile
-    pub fn contains(&self, profile: Profile) -> bool
-    {
+    pub fn contains(&self, profile: Profile) -> bool {
         self.profiles.contains(&profile)
     }
 
     /// 添加 Profile
-    pub fn add_profile(&mut self, profile: Profile)
-    {
-        if !self.profiles.contains(&profile)
-        {
+    pub fn add_profile(&mut self, profile: Profile) {
+        if !self.profiles.contains(&profile) {
             self.profiles.push(profile);
         }
     }
 
     /// 获取所有 Profile
-    pub fn profiles(&self) -> &[Profile]
-    {
+    pub fn profiles(&self) -> &[Profile] {
         &self.profiles
     }
 }
 
-impl Default for Environment
-{
-    fn default() -> Self
-    {
+impl Default for Environment {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -167,14 +144,18 @@ impl Default for Environment
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_profile_from_str()
-    {
+    fn test_profile_from_str() {
         assert_eq!(Profile::from_str("dev"), Profile::Dev);
         assert_eq!(Profile::from_str("development"), Profile::Dev);
         assert_eq!(Profile::from_str("test"), Profile::Test);
@@ -183,23 +164,20 @@ mod tests
     }
 
     #[test]
-    fn test_profile_name()
-    {
+    fn test_profile_name() {
         assert_eq!(Profile::Dev.name(), "dev");
         assert_eq!(Profile::Test.name(), "test");
         assert_eq!(Profile::Prod.name(), "prod");
     }
 
     #[test]
-    fn test_environment_default()
-    {
+    fn test_environment_default() {
         let env = Environment::new();
         assert_eq!(env.active_profile(), Profile::Dev);
     }
 
     #[test]
-    fn test_environment_set_profile()
-    {
+    fn test_environment_set_profile() {
         let mut env = Environment::new();
         env.set_active_profile(Profile::Prod);
         assert_eq!(env.active_profile(), Profile::Prod);

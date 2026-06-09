@@ -16,8 +16,7 @@ use crate::{
 /// Contains the client token and metadata about the authentication.
 /// 包含客户端 Token 和认证元数据。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuthResult
-{
+pub struct AuthResult {
     /// Client token / 客户端 Token
     #[serde(rename = "client_token")]
     pub client_token: String,
@@ -38,8 +37,7 @@ pub struct AuthResult
 
 /// Vault auth response wrapper / Vault 认证响应包装
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuthResponse
-{
+pub struct AuthResponse {
     /// The auth result / 认证结果
     pub auth: AuthResult,
 }
@@ -49,8 +47,7 @@ pub struct AuthResponse
 /// Equivalent to Spring Vault's `AuthenticationSteps`.
 /// 等价于 Spring Vault 的 `AuthenticationSteps`。
 #[async_trait::async_trait]
-pub trait AuthBackend: Send + Sync
-{
+pub trait AuthBackend: Send + Sync {
     /// Authenticate against Vault and return an auth result
     /// 向 Vault 认证并返回认证结果
     async fn authenticate(&self, client: &VaultClient) -> VaultResult<AuthResult>;
@@ -75,16 +72,13 @@ pub trait AuthBackend: Send + Sync
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct TokenAuth
-{
+pub struct TokenAuth {
     token: String,
 }
 
-impl TokenAuth
-{
+impl TokenAuth {
     /// Create a new `TokenAuth` with the given token / 使用给定 Token 创建 `TokenAuth`
-    pub fn new(token: &str) -> Self
-    {
+    pub fn new(token: &str) -> Self {
         Self {
             token: token.to_string(),
         }
@@ -92,10 +86,8 @@ impl TokenAuth
 }
 
 #[async_trait::async_trait]
-impl AuthBackend for TokenAuth
-{
-    async fn authenticate(&self, client: &VaultClient) -> VaultResult<AuthResult>
-    {
+impl AuthBackend for TokenAuth {
+    async fn authenticate(&self, client: &VaultClient) -> VaultResult<AuthResult> {
         // Use the token to look up itself / 使用 Token 查找自身信息
         let url = client.url("auth/token/lookup-self")?;
         let resp = client
@@ -105,8 +97,7 @@ impl AuthBackend for TokenAuth
             .send()
             .await?;
 
-        if !resp.status().is_success()
-        {
+        if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body = resp.text().await.unwrap_or_default();
             return Err(VaultError::AuthenticationFailed(format!(
@@ -148,8 +139,7 @@ impl AuthBackend for TokenAuth
 
 /// `AppRole` authentication request body / `AppRole` 认证请求体
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AppRoleLoginRequest
-{
+pub struct AppRoleLoginRequest {
     /// Role ID / 角色 ID
     #[serde(rename = "role_id")]
     pub role_id: String,
@@ -177,15 +167,13 @@ pub struct AppRoleLoginRequest
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct AppRoleAuth
-{
+pub struct AppRoleAuth {
     role_id: String,
     secret_id: String,
     mount: String,
 }
 
-impl AppRoleAuth
-{
+impl AppRoleAuth {
     /// Create a new `AppRoleAuth` / 创建新的 `AppRoleAuth`
     ///
     /// - `role_id`: The `RoleID` assigned to the application
@@ -195,8 +183,7 @@ impl AppRoleAuth
     /// - `role_id`: 分配给应用程序的 `RoleID`
     /// - `secret_id`: 用于认证的 `SecretID`
     /// - `mount`: `AppRole` 认证方法的挂载路径（默认: "approle"）
-    pub fn new(role_id: &str, secret_id: &str, mount: &str) -> Self
-    {
+    pub fn new(role_id: &str, secret_id: &str, mount: &str) -> Self {
         Self {
             role_id: role_id.to_string(),
             secret_id: secret_id.to_string(),
@@ -206,10 +193,8 @@ impl AppRoleAuth
 }
 
 #[async_trait::async_trait]
-impl AuthBackend for AppRoleAuth
-{
-    async fn authenticate(&self, client: &VaultClient) -> VaultResult<AuthResult>
-    {
+impl AuthBackend for AppRoleAuth {
+    async fn authenticate(&self, client: &VaultClient) -> VaultResult<AuthResult> {
         let path = format!("auth/{}/login", self.mount);
         let url = client.url(&path)?;
 
@@ -222,8 +207,7 @@ impl AuthBackend for AppRoleAuth
         // 不使用 client.post() 因为此时可能还没有 token
         let resp = client.http_client().post(url).json(&body).send().await?;
 
-        if !resp.status().is_success()
-        {
+        if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body_text = resp.text().await.unwrap_or_default();
             return Err(VaultError::AuthenticationFailed(format!(

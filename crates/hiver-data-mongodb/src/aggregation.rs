@@ -34,8 +34,7 @@ use crate::{MongoError, MongoResult};
 /// A single stage in an aggregation pipeline.
 /// 聚合管道中的单个阶段。
 #[derive(Debug, Clone)]
-pub enum AggregationStage
-{
+pub enum AggregationStage {
     /// $match stage — filters documents
     Match(Document),
     /// $group stage — groups documents by a specified expression
@@ -70,14 +69,11 @@ pub enum AggregationStage
     Raw(Document),
 }
 
-impl AggregationStage
-{
+impl AggregationStage {
     /// Convert the stage to a BSON document for the pipeline.
     /// 将阶段转换为管道所需的 BSON 文档。
-    pub fn to_document(&self) -> Document
-    {
-        match self
-        {
+    pub fn to_document(&self) -> Document {
+        match self {
             Self::Match(doc) => mongodb::bson::doc! { "$match": doc.clone() },
             Self::Group(doc) => mongodb::bson::doc! { "$group": doc.clone() },
             Self::Project(doc) => mongodb::bson::doc! { "$project": doc.clone() },
@@ -106,8 +102,7 @@ impl AggregationStage
 /// Equivalent to Spring Data MongoDB's `Aggregation`.
 /// 等价于 Spring Data MongoDB 的 `Aggregation`。
 #[derive(Debug, Clone, Default)]
-pub struct Aggregation
-{
+pub struct Aggregation {
     stages: Vec<AggregationStage>,
     /// Whether to allow disk usage for large aggregations (>100MB).
     allow_disk_use: bool,
@@ -119,12 +114,10 @@ pub struct Aggregation
     max_time_mins: Option<u64>,
 }
 
-impl Aggregation
-{
+impl Aggregation {
     /// Create a new empty aggregation pipeline.
     /// 创建新的空聚合管道。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -133,8 +126,7 @@ impl Aggregation
     /// Add a $match stage to filter documents.
     /// 添加 $match 阶段以过滤文档。
     #[must_use]
-    pub fn match_(mut self, filter: Document) -> Self
-    {
+    pub fn match_(mut self, filter: Document) -> Self {
         self.stages.push(AggregationStage::Match(filter));
         self
     }
@@ -142,8 +134,7 @@ impl Aggregation
     /// Add a $group stage.
     /// 添加 $group 阶段。
     #[must_use]
-    pub fn group(mut self, expr: Document) -> Self
-    {
+    pub fn group(mut self, expr: Document) -> Self {
         self.stages.push(AggregationStage::Group(expr));
         self
     }
@@ -151,8 +142,7 @@ impl Aggregation
     /// Add a $project stage to reshape documents.
     /// 添加 $project 阶段以重塑文档。
     #[must_use]
-    pub fn project(mut self, expr: Document) -> Self
-    {
+    pub fn project(mut self, expr: Document) -> Self {
         self.stages.push(AggregationStage::Project(expr));
         self
     }
@@ -160,8 +150,7 @@ impl Aggregation
     /// Add a $sort stage.
     /// 添加 $sort 阶段。
     #[must_use]
-    pub fn sort(mut self, expr: Document) -> Self
-    {
+    pub fn sort(mut self, expr: Document) -> Self {
         self.stages.push(AggregationStage::Sort(expr));
         self
     }
@@ -169,8 +158,7 @@ impl Aggregation
     /// Add a $limit stage.
     /// 添加 $limit 阶段。
     #[must_use]
-    pub fn limit(mut self, n: u64) -> Self
-    {
+    pub fn limit(mut self, n: u64) -> Self {
         self.stages.push(AggregationStage::Limit(n));
         self
     }
@@ -178,8 +166,7 @@ impl Aggregation
     /// Add a $skip stage.
     /// 添加 $skip 阶段。
     #[must_use]
-    pub fn skip(mut self, n: u64) -> Self
-    {
+    pub fn skip(mut self, n: u64) -> Self {
         self.stages.push(AggregationStage::Skip(n));
         self
     }
@@ -189,8 +176,7 @@ impl Aggregation
     ///
     /// The path should be the field name without the `$` prefix.
     #[must_use]
-    pub fn unwind(mut self, path: impl Into<String>) -> Self
-    {
+    pub fn unwind(mut self, path: impl Into<String>) -> Self {
         self.stages.push(AggregationStage::Unwind(path.into()));
         self
     }
@@ -204,8 +190,7 @@ impl Aggregation
         local_field: &str,
         foreign_field: &str,
         as_name: &str,
-    ) -> Self
-    {
+    ) -> Self {
         let doc = mongodb::bson::doc! {
             "from": from,
             "localField": local_field,
@@ -225,8 +210,7 @@ impl Aggregation
         let_vars: Document,
         pipeline: Vec<Document>,
         as_name: &str,
-    ) -> Self
-    {
+    ) -> Self {
         let pipeline_bson: Vec<mongodb::bson::Bson> = pipeline
             .into_iter()
             .map(mongodb::bson::Bson::Document)
@@ -244,8 +228,7 @@ impl Aggregation
     /// Add an $addFields stage.
     /// 添加 $addFields 阶段。
     #[must_use]
-    pub fn add_fields(mut self, fields: Document) -> Self
-    {
+    pub fn add_fields(mut self, fields: Document) -> Self {
         self.stages.push(AggregationStage::AddFields(fields));
         self
     }
@@ -253,8 +236,7 @@ impl Aggregation
     /// Add a $replaceRoot stage.
     /// 添加 $replaceRoot 阶段。
     #[must_use]
-    pub fn replace_root(mut self, new_root: Document) -> Self
-    {
+    pub fn replace_root(mut self, new_root: Document) -> Self {
         self.stages.push(AggregationStage::ReplaceRoot(new_root));
         self
     }
@@ -262,8 +244,7 @@ impl Aggregation
     /// Add a $count stage.
     /// 添加 $count 阶段。
     #[must_use]
-    pub fn count(mut self, field_name: impl Into<String>) -> Self
-    {
+    pub fn count(mut self, field_name: impl Into<String>) -> Self {
         self.stages.push(AggregationStage::Count(field_name.into()));
         self
     }
@@ -276,14 +257,12 @@ impl Aggregation
         group_by: impl Into<String>,
         boundaries: Vec<i64>,
         default: Option<impl Into<String>>,
-    ) -> Self
-    {
+    ) -> Self {
         let mut doc = mongodb::bson::doc! {
             "groupBy": format!("${}", group_by.into()),
             "boundaries": boundaries,
         };
-        if let Some(d) = default
-        {
+        if let Some(d) = default {
             doc.insert("default", d.into());
         }
         self.stages.push(AggregationStage::Bucket(doc));
@@ -293,11 +272,9 @@ impl Aggregation
     /// Add a $facet stage for multi-pipeline processing.
     /// 添加 $facet 阶段用于多管道处理。
     #[must_use]
-    pub fn facet(mut self, pipelines: Vec<(&str, Vec<Document>)>) -> Self
-    {
+    pub fn facet(mut self, pipelines: Vec<(&str, Vec<Document>)>) -> Self {
         let mut doc = Document::new();
-        for (name, pipeline) in pipelines
-        {
+        for (name, pipeline) in pipelines {
             let bson_pipeline: Vec<mongodb::bson::Bson> = pipeline
                 .into_iter()
                 .map(mongodb::bson::Bson::Document)
@@ -311,8 +288,7 @@ impl Aggregation
     /// Add a $sample stage for random sampling.
     /// 添加 $sample 阶段用于随机采样。
     #[must_use]
-    pub fn sample(mut self, size: u64) -> Self
-    {
+    pub fn sample(mut self, size: u64) -> Self {
         self.stages.push(AggregationStage::Sample(size));
         self
     }
@@ -320,8 +296,7 @@ impl Aggregation
     /// Add a $sortByCount stage.
     /// 添加 $sortByCount 阶段。
     #[must_use]
-    pub fn sort_by_count(mut self, expr: Document) -> Self
-    {
+    pub fn sort_by_count(mut self, expr: Document) -> Self {
         self.stages.push(AggregationStage::SortByCount(expr));
         self
     }
@@ -329,8 +304,7 @@ impl Aggregation
     /// Add a raw stage (for operations not explicitly supported).
     /// 添加原始阶段（用于未明确支持的操作）。
     #[must_use]
-    pub fn raw_stage(mut self, doc: Document) -> Self
-    {
+    pub fn raw_stage(mut self, doc: Document) -> Self {
         self.stages.push(AggregationStage::Raw(doc));
         self
     }
@@ -340,8 +314,7 @@ impl Aggregation
     /// Allow disk usage for large aggregations (>100MB).
     /// 允许大聚合使用磁盘（>100MB）。
     #[must_use]
-    pub fn allow_disk_use(mut self, allow: bool) -> Self
-    {
+    pub fn allow_disk_use(mut self, allow: bool) -> Self {
         self.allow_disk_use = allow;
         self
     }
@@ -349,8 +322,7 @@ impl Aggregation
     /// Set a comment for the aggregation (appears in logs/profiler).
     /// 设置聚合的注释（出现在日志/分析器中）。
     #[must_use]
-    pub fn comment(mut self, comment: impl Into<String>) -> Self
-    {
+    pub fn comment(mut self, comment: impl Into<String>) -> Self {
         self.comment = Some(comment.into());
         self
     }
@@ -358,8 +330,7 @@ impl Aggregation
     /// Set batch size hint for the cursor.
     /// 设置游标的批处理大小提示。
     #[must_use]
-    pub fn batch_size(mut self, size: u32) -> Self
-    {
+    pub fn batch_size(mut self, size: u32) -> Self {
         self.batch_size = Some(size);
         self
     }
@@ -367,8 +338,7 @@ impl Aggregation
     /// Set maximum execution time in minutes.
     /// 设置最大执行时间（分钟）。
     #[must_use]
-    pub fn max_time_mins(mut self, mins: u64) -> Self
-    {
+    pub fn max_time_mins(mut self, mins: u64) -> Self {
         self.max_time_mins = Some(mins);
         self
     }
@@ -377,22 +347,19 @@ impl Aggregation
 
     /// Build the pipeline as a vector of BSON documents.
     /// 构建管道为 BSON 文档的向量。
-    pub fn to_pipeline(&self) -> Vec<Document>
-    {
+    pub fn to_pipeline(&self) -> Vec<Document> {
         self.stages.iter().map(|s| s.to_document()).collect()
     }
 
     /// Get the number of stages in the pipeline.
     /// 获取管道中的阶段数。
-    pub fn stage_count(&self) -> usize
-    {
+    pub fn stage_count(&self) -> usize {
         self.stages.len()
     }
 
     /// Get the stages.
     /// 获取阶段列表。
-    pub fn stages(&self) -> &[AggregationStage]
-    {
+    pub fn stages(&self) -> &[AggregationStage] {
         &self.stages
     }
 
@@ -401,8 +368,7 @@ impl Aggregation
     pub async fn execute<T: DeserializeOwned + Send + Sync + Unpin>(
         &self,
         collection: &mongodb::Collection<T>,
-    ) -> MongoResult<AggregationResults<T>>
-    {
+    ) -> MongoResult<AggregationResults<T>> {
         use std::time::Duration;
 
         let pipeline = self.to_pipeline();
@@ -412,12 +378,10 @@ impl Aggregation
             .comment
             .as_ref()
             .map(|c| mongodb::bson::Bson::String(c.clone()));
-        if let Some(bs) = self.batch_size
-        {
+        if let Some(bs) = self.batch_size {
             agg_options.batch_size = Some(bs);
         }
-        if let Some(mtm) = self.max_time_mins
-        {
+        if let Some(mtm) = self.max_time_mins {
             agg_options.max_time = Some(Duration::from_secs(mtm * 60));
         }
 
@@ -428,8 +392,7 @@ impl Aggregation
             .map_err(MongoError::from)?;
 
         let mut results = Vec::new();
-        while let Some(result) = cursor.next().await
-        {
+        while let Some(result) = cursor.next().await {
             let doc: Document = result.map_err(MongoError::from)?;
             let item: T = mongodb::bson::from_document(doc)
                 .map_err(|e| MongoError::data_conversion(e.to_string()))?;
@@ -447,8 +410,7 @@ impl Aggregation
     pub async fn execute_raw(
         &self,
         collection: &mongodb::Collection<Document>,
-    ) -> MongoResult<AggregationResults<Document>>
-    {
+    ) -> MongoResult<AggregationResults<Document>> {
         self.execute(collection).await
     }
 }
@@ -458,53 +420,45 @@ impl Aggregation
 /// Results from an aggregation pipeline execution.
 /// 聚合管道执行的结果。
 #[derive(Debug, Clone)]
-pub struct AggregationResults<T>
-{
+pub struct AggregationResults<T> {
     /// The resulting documents.
     pub results: Vec<T>,
     /// Number of pipeline stages executed.
     pub pipeline_stages: usize,
 }
 
-impl<T> AggregationResults<T>
-{
+impl<T> AggregationResults<T> {
     /// Get the number of results.
     /// 获取结果数量。
-    pub fn len(&self) -> usize
-    {
+    pub fn len(&self) -> usize {
         self.results.len()
     }
 
     /// Check if results are empty.
     /// 检查结果是否为空。
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.results.is_empty()
     }
 
     /// Get the first result, if any.
     /// 获取第一个结果（如果有）。
-    pub fn first(&self) -> Option<&T>
-    {
+    pub fn first(&self) -> Option<&T> {
         self.results.first()
     }
 
     /// Convert into the inner results vector.
     /// 转换为内部结果向量。
-    pub fn into_inner(self) -> Vec<T>
-    {
+    pub fn into_inner(self) -> Vec<T> {
         self.results
     }
 }
 
 // ── Convenience Methods for Common Aggregations ──
 
-impl Aggregation
-{
+impl Aggregation {
     /// Create a count aggregation grouped by a field.
     /// 创建按字段分组的计数聚合。
-    pub fn count_by(field: impl Into<String>, output_field: impl Into<String>) -> Self
-    {
+    pub fn count_by(field: impl Into<String>, output_field: impl Into<String>) -> Self {
         let f = field.into();
         Self::new().group(mongodb::bson::doc! {
             "_id": format!("${f}"),
@@ -518,8 +472,7 @@ impl Aggregation
         group_field: impl Into<String>,
         sum_field: impl Into<String>,
         output_field: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         let gf = group_field.into();
         let sf = sum_field.into();
         Self::new().group(mongodb::bson::doc! {
@@ -534,8 +487,7 @@ impl Aggregation
         group_field: impl Into<String>,
         avg_field: impl Into<String>,
         output_field: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         let gf = group_field.into();
         let af = avg_field.into();
         Self::new().group(mongodb::bson::doc! {
@@ -551,8 +503,7 @@ impl Aggregation
         value_field: impl Into<String>,
         min_field: impl Into<String>,
         max_field: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         let gf = group_field.into();
         let vf = value_field.into();
         Self::new().group(mongodb::bson::doc! {
@@ -564,24 +515,27 @@ impl Aggregation
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use mongodb::bson::doc;
 
     use super::*;
 
     #[test]
-    fn test_empty_aggregation()
-    {
+    fn test_empty_aggregation() {
         let agg = Aggregation::new();
         assert_eq!(agg.stage_count(), 0);
         assert!(agg.to_pipeline().is_empty());
     }
 
     #[test]
-    fn test_aggregation_with_stages()
-    {
+    fn test_aggregation_with_stages() {
         let pipeline = Aggregation::new()
             .match_(doc! { "status": "active" })
             .group(doc! { "_id": "$category", "total": { "$sum": 1 } })
@@ -597,8 +551,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_with_skip_and_unwind()
-    {
+    fn test_aggregation_with_skip_and_unwind() {
         let pipeline = Aggregation::new()
             .match_(doc! { "active": true })
             .skip(20)
@@ -613,8 +566,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_lookup()
-    {
+    fn test_aggregation_lookup() {
         let agg = Aggregation::new()
             .match_(doc! {})
             .lookup("orders", "userId", "_id", "orders");
@@ -631,8 +583,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_count_by()
-    {
+    fn test_aggregation_count_by() {
         let pipeline = Aggregation::count_by("category", "count").to_pipeline();
         assert_eq!(pipeline.len(), 1);
         let group = pipeline[0].get_document("$group").unwrap();
@@ -641,8 +592,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_sum_by()
-    {
+    fn test_aggregation_sum_by() {
         let pipeline = Aggregation::sum_by("category", "amount", "total").to_pipeline();
         assert_eq!(pipeline.len(), 1);
         let group = pipeline[0].get_document("$group").unwrap();
@@ -651,8 +601,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_avg_by()
-    {
+    fn test_aggregation_avg_by() {
         let pipeline = Aggregation::avg_by("product", "rating", "avg_rating").to_pipeline();
         assert_eq!(pipeline.len(), 1);
         let group = pipeline[0].get_document("$group").unwrap();
@@ -661,8 +610,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_config()
-    {
+    fn test_aggregation_config() {
         let agg = Aggregation::new()
             .match_(doc! {})
             .allow_disk_use(true)
@@ -677,8 +625,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_add_fields_and_replace_root()
-    {
+    fn test_aggregation_add_fields_and_replace_root() {
         let pipeline = Aggregation::new()
             .add_fields(doc! { "fullName": { "$concat": ["$first", " ", "$last"] } })
             .replace_root(doc! { "newRoot": "$nested" })
@@ -690,8 +637,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_bucket()
-    {
+    fn test_aggregation_bucket() {
         let pipeline = Aggregation::new()
             .bucket("age", vec![0, 18, 30, 50, 100], Some("Unknown"))
             .to_pipeline();
@@ -703,8 +649,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_sample_and_sort_by_count()
-    {
+    fn test_aggregation_sample_and_sort_by_count() {
         let pipeline = Aggregation::new()
             .sample(100)
             .sort_by_count(doc! { "category": -1 })
@@ -716,8 +661,7 @@ mod tests
     }
 
     #[test]
-    fn test_aggregation_results()
-    {
+    fn test_aggregation_results() {
         let results: AggregationResults<String> = AggregationResults {
             results: vec!["a".to_string(), "b".to_string()],
             pipeline_stages: 3,

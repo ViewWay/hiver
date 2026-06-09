@@ -46,8 +46,7 @@ use crate::Model;
 /// to map the result rows into a target type.
 ///
 /// 投影定义查询结果中包含哪些列以及如何将结果行映射到目标类型。
-pub trait Projection: Send + Sync
-{
+pub trait Projection: Send + Sync {
     /// The source model type (the full entity)
     /// 源模型类型（完整实体）
     type Source: Model;
@@ -100,8 +99,7 @@ pub trait Projection: Send + Sync
 ///     }
 /// }
 /// ```
-pub trait InterfaceProjection: Send + Sync
-{
+pub trait InterfaceProjection: Send + Sync {
     /// The source model type
     /// 源模型类型
     type Source: Model;
@@ -148,8 +146,7 @@ pub trait InterfaceProjection: Send + Sync
 /// let projection = DtoProjection::<User, UserSummary>::new(&["name", "email"]);
 /// let results = projection.query(&client).await?;
 /// ```
-pub struct DtoProjection<M, T>
-{
+pub struct DtoProjection<M, T> {
     _phantom: PhantomData<(M, T)>,
     columns: Vec<String>,
 }
@@ -161,8 +158,7 @@ where
 {
     /// Create a new DTO projection with the specified columns.
     /// 使用指定列创建新的 DTO 投影。
-    pub fn new(columns: &[&str]) -> Self
-    {
+    pub fn new(columns: &[&str]) -> Self {
         Self {
             _phantom: PhantomData,
             columns: columns.iter().map(|s| s.to_string()).collect(),
@@ -171,14 +167,10 @@ where
 
     /// Execute the projected query and return all results as DTOs.
     /// 执行投影查询并以 DTO 形式返回所有结果。
-    pub async fn query<C: DatabaseClient>(&self, client: &C) -> crate::Result<Vec<T>>
-    {
-        let col_list = if self.columns.is_empty()
-        {
+    pub async fn query<C: DatabaseClient>(&self, client: &C) -> crate::Result<Vec<T>> {
+        let col_list = if self.columns.is_empty() {
             "*".to_string()
-        }
-        else
-        {
+        } else {
             self.columns.join(", ")
         };
         let sql = format!("SELECT {} FROM {}", col_list, M::table_name());
@@ -187,8 +179,7 @@ where
             .await
             .map_err(|e| crate::Error::query_build(format!("Projection query failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             results.push(
                 row.deserialize()
                     .map_err(|e| crate::Error::validation(format!("DTO deserialize: {e}")))?,
@@ -204,20 +195,15 @@ where
         client: &C,
         condition: &str,
         params: &[hiver_data_rdbc::QueryParam],
-    ) -> crate::Result<Vec<T>>
-    {
-        let col_list = if self.columns.is_empty()
-        {
+    ) -> crate::Result<Vec<T>> {
+        let col_list = if self.columns.is_empty() {
             "*".to_string()
-        }
-        else
-        {
+        } else {
             self.columns.join(", ")
         };
 
         let mut cond = condition.to_string();
-        for (param_idx, _) in (1u32..).zip(params.iter())
-        {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
         }
 
@@ -227,8 +213,7 @@ where
             .await
             .map_err(|e| crate::Error::query_build(format!("Projection query failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             results.push(
                 row.deserialize()
                     .map_err(|e| crate::Error::validation(format!("DTO deserialize: {e}")))?,
@@ -239,8 +224,7 @@ where
 
     /// Get the columns included in this projection.
     /// 获取此投影中包含的列。
-    pub fn columns(&self) -> &[String]
-    {
+    pub fn columns(&self) -> &[String] {
         &self.columns
     }
 }
@@ -277,8 +261,7 @@ where
 ///     }
 /// }
 /// ```
-pub trait ClosedProjection: Send + Sync
-{
+pub trait ClosedProjection: Send + Sync {
     /// The source model type
     /// 源模型类型
     type Source: Model;
@@ -307,18 +290,15 @@ pub trait ClosedProjection: Send + Sync
 /// similar to Spring Data's `crystal()`.
 ///
 /// 允许在运行时而非编译时选择投影类型，类似于 Spring Data 的 `crystal()`。
-pub struct DynamicProjection<M: Model>
-{
+pub struct DynamicProjection<M: Model> {
     _phantom: PhantomData<M>,
     columns: Vec<String>,
 }
 
-impl<M: Model> DynamicProjection<M>
-{
+impl<M: Model> DynamicProjection<M> {
     /// Create a new dynamic projection.
     /// 创建新的动态投影。
-    pub fn new(columns: &[&str]) -> Self
-    {
+    pub fn new(columns: &[&str]) -> Self {
         Self {
             _phantom: PhantomData,
             columns: columns.iter().map(|s| s.to_string()).collect(),
@@ -330,14 +310,10 @@ impl<M: Model> DynamicProjection<M>
     pub async fn execute<C: DatabaseClient>(
         &self,
         client: &C,
-    ) -> crate::Result<Vec<hiver_data_rdbc::Row>>
-    {
-        let col_list = if self.columns.is_empty()
-        {
+    ) -> crate::Result<Vec<hiver_data_rdbc::Row>> {
+        let col_list = if self.columns.is_empty() {
             "*".to_string()
-        }
-        else
-        {
+        } else {
             self.columns.join(", ")
         };
         let sql = format!("SELECT {} FROM {}", col_list, M::table_name());
@@ -354,20 +330,15 @@ impl<M: Model> DynamicProjection<M>
         client: &C,
         condition: &str,
         params: &[hiver_data_rdbc::QueryParam],
-    ) -> crate::Result<Vec<hiver_data_rdbc::Row>>
-    {
-        let col_list = if self.columns.is_empty()
-        {
+    ) -> crate::Result<Vec<hiver_data_rdbc::Row>> {
+        let col_list = if self.columns.is_empty() {
             "*".to_string()
-        }
-        else
-        {
+        } else {
             self.columns.join(", ")
         };
 
         let mut cond = condition.to_string();
-        for (param_idx, _) in (1u32..).zip(params.iter())
-        {
+        for (param_idx, _) in (1u32..).zip(params.iter()) {
             cond = cond.replacen('?', &format!("${param_idx}"), 1);
         }
 
@@ -380,26 +351,28 @@ impl<M: Model> DynamicProjection<M>
 
     /// Get the columns included in this projection.
     /// 获取此投影中包含的列。
-    pub fn columns(&self) -> &[String]
-    {
+    pub fn columns(&self) -> &[String] {
         &self.columns
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::{Column, ColumnType, Model, ModelMeta};
 
     #[derive(Debug, Clone)]
     struct TestUser;
 
-    impl Model for TestUser
-    {
-        fn meta() -> ModelMeta
-        {
+    impl Model for TestUser {
+        fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("users");
             meta.columns
                 .push(Column::new("id", ColumnType::I64).primary_key());
@@ -410,8 +383,7 @@ mod tests
     }
 
     #[test]
-    fn test_dto_projection_creation()
-    {
+    fn test_dto_projection_creation() {
         let projection = DtoProjection::<TestUser, serde_json::Value>::new(&["name", "email"]);
         assert_eq!(projection.columns().len(), 2);
         assert_eq!(projection.columns()[0], "name");
@@ -419,15 +391,13 @@ mod tests
     }
 
     #[test]
-    fn test_dto_projection_all_columns()
-    {
+    fn test_dto_projection_all_columns() {
         let projection = DtoProjection::<TestUser, serde_json::Value>::new(&[]);
         assert!(projection.columns().is_empty());
     }
 
     #[test]
-    fn test_dynamic_projection_creation()
-    {
+    fn test_dynamic_projection_creation() {
         let projection = DynamicProjection::<TestUser>::new(&["id", "name"]);
         assert_eq!(projection.columns().len(), 2);
     }

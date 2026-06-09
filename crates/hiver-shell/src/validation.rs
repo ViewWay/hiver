@@ -9,19 +9,16 @@ use crate::result::{ShellError, ShellResult};
 /// Input validator for shell commands
 /// Shell命令的输入验证器
 #[derive(Debug, Default)]
-pub struct InputValidator
-{
+pub struct InputValidator {
     /// Maximum input length / 最大输入长度
     pub max_length: usize,
     /// Whether to allow empty input / 是否允许空输入
     pub allow_empty: bool,
 }
 
-impl InputValidator
-{
+impl InputValidator {
     /// Create a new validator / 创建新的验证器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             max_length: 4096,
             allow_empty: true,
@@ -29,28 +26,23 @@ impl InputValidator
     }
 
     /// Set maximum length / 设置最大长度
-    pub fn max_length(mut self, len: usize) -> Self
-    {
+    pub fn max_length(mut self, len: usize) -> Self {
         self.max_length = len;
         self
     }
 
     /// Set whether empty input is allowed / 设置是否允许空输入
-    pub fn allow_empty(mut self, allow: bool) -> Self
-    {
+    pub fn allow_empty(mut self, allow: bool) -> Self {
         self.allow_empty = allow;
         self
     }
 
     /// Validate input / 验证输入
-    pub fn validate(&self, input: &str) -> ShellResult<ValidatedInput>
-    {
+    pub fn validate(&self, input: &str) -> ShellResult<ValidatedInput> {
         let trimmed = input.trim();
 
-        if trimmed.is_empty()
-        {
-            if self.allow_empty
-            {
+        if trimmed.is_empty() {
+            if self.allow_empty {
                 return Ok(ValidatedInput {
                     raw: input.to_string(),
                     command: String::new(),
@@ -60,8 +52,7 @@ impl InputValidator
             return Err(ShellError::Validation("Input cannot be empty / 输入不能为空".to_string()));
         }
 
-        if trimmed.len() > self.max_length
-        {
+        if trimmed.len() > self.max_length {
             return Err(ShellError::Validation(format!(
                 "Input exceeds maximum length of {} / 输入超过最大长度 {}",
                 self.max_length, self.max_length
@@ -69,8 +60,7 @@ impl InputValidator
         }
 
         // Check for null bytes / 检查空字节
-        if trimmed.contains('\0')
-        {
+        if trimmed.contains('\0') {
             return Err(ShellError::Validation(
                 "Input contains null bytes / 输入包含空字节".to_string(),
             ));
@@ -94,10 +84,8 @@ impl InputValidator
 }
 
 /// Validate a command name / 验证命令名
-pub fn validate_command_name(name: &str) -> ShellResult<()>
-{
-    if name.is_empty()
-    {
+pub fn validate_command_name(name: &str) -> ShellResult<()> {
+    if name.is_empty() {
         return Err(ShellError::Validation(
             "Command name cannot be empty / 命令名不能为空".to_string(),
         ));
@@ -133,8 +121,7 @@ pub fn validate_command_name(name: &str) -> ShellResult<()>
 /// Validated and parsed input
 /// 已验证和解析的输入
 #[derive(Debug, Clone)]
-pub struct ValidatedInput
-{
+pub struct ValidatedInput {
     /// Raw input string / 原始输入字符串
     pub raw: String,
     /// Parsed command name / 解析的命令名
@@ -143,17 +130,14 @@ pub struct ValidatedInput
     pub args: Vec<String>,
 }
 
-impl ValidatedInput
-{
+impl ValidatedInput {
     /// Get args as string slices / 获取参数作为字符串切片
-    pub fn args_slices(&self) -> Vec<&str>
-    {
+    pub fn args_slices(&self) -> Vec<&str> {
         self.args.iter().map(String::as_str).collect()
     }
 
     /// Check if this is empty input / 检查是否为空输入
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.command.is_empty()
     }
 }

@@ -52,8 +52,7 @@ use futures::Stream;
 /// WebSocket error
 /// `WebSocket错误`
 #[derive(Debug, Clone)]
-pub enum WsError
-{
+pub enum WsError {
     /// Connection error
     /// 连接错误
     ConnectionError(String),
@@ -79,12 +78,9 @@ pub enum WsError
     ConnectionClosed,
 }
 
-impl fmt::Display for WsError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for WsError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Self::ConnectionError(msg) => write!(f, "Connection error: {}", msg),
             Self::SubscriptionError(msg) => write!(f, "Subscription error: {}", msg),
             Self::ParseError(msg) => write!(f, "Parse error: {}", msg),
@@ -103,8 +99,7 @@ impl std::error::Error for WsError {}
 /// Types of events that can be subscribed to.
 /// 可以订阅的事件类型。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum SubscriptionType
-{
+pub enum SubscriptionType {
     /// New block headers
     /// 新区块头
     NewHeads,
@@ -126,14 +121,11 @@ pub enum SubscriptionType
     ChainChanged,
 }
 
-impl SubscriptionType
-{
+impl SubscriptionType {
     /// Get the subscription method name for `eth_subscribe`
     /// `获取eth_subscribe的方法名`
-    pub fn method_name(self) -> &'static str
-    {
-        match self
-        {
+    pub fn method_name(self) -> &'static str {
+        match self {
             Self::NewHeads => "newHeads",
             Self::PendingTransactions => "newPendingTransactions",
             Self::Logs => "logs",
@@ -143,10 +135,8 @@ impl SubscriptionType
     }
 }
 
-impl fmt::Display for SubscriptionType
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for SubscriptionType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.method_name())
     }
 }
@@ -154,8 +144,7 @@ impl fmt::Display for SubscriptionType
 /// Log filter for contract events
 /// 合约事件的日志过滤器
 #[derive(Debug, Clone, Serialize)]
-pub struct LogFilter
-{
+pub struct LogFilter {
     /// Contract address to filter
     /// 过滤的合约地址
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -167,12 +156,10 @@ pub struct LogFilter
     pub topics: Option<Vec<Option<String>>>,
 }
 
-impl LogFilter
-{
+impl LogFilter {
     /// Create a new log filter
     /// 创建新的日志过滤器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             address: None,
             topics: None,
@@ -181,33 +168,28 @@ impl LogFilter
 
     /// Set the contract address
     /// 设置合约地址
-    pub fn address(mut self, address: &Address) -> Self
-    {
+    pub fn address(mut self, address: &Address) -> Self {
         self.address = Some(address.to_hex());
         self
     }
 
     /// Add a topic filter
     /// 添加主题过滤器
-    pub fn topic(mut self, topic: String) -> Self
-    {
+    pub fn topic(mut self, topic: String) -> Self {
         self.topics.get_or_insert_with(Vec::new).push(Some(topic));
         self
     }
 
     /// Set all topics
     /// 设置所有主题
-    pub fn topics(mut self, topics: Vec<Option<String>>) -> Self
-    {
+    pub fn topics(mut self, topics: Vec<Option<String>>) -> Self {
         self.topics = Some(topics);
         self
     }
 }
 
-impl Default for LogFilter
-{
-    fn default() -> Self
-    {
+impl Default for LogFilter {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -216,8 +198,7 @@ impl Default for LogFilter
 /// 新区块头通知
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct NewBlockHeader
-{
+pub struct NewBlockHeader {
     /// Block hash
     pub hash: String,
 
@@ -240,12 +221,10 @@ pub struct NewBlockHeader
     pub miner: String,
 }
 
-impl NewBlockHeader
-{
+impl NewBlockHeader {
     /// Get the block number as u64
     /// 获取区块号（u64）
-    pub fn number_as_u64(&self) -> Option<u64>
-    {
+    pub fn number_as_u64(&self) -> Option<u64> {
         self.number
             .strip_prefix("0x")
             .and_then(|h| u64::from_str_radix(h, 16).ok())
@@ -253,8 +232,7 @@ impl NewBlockHeader
 
     /// Get the timestamp as u64
     /// 获取时间戳（u64）
-    pub fn timestamp_as_u64(&self) -> Option<u64>
-    {
+    pub fn timestamp_as_u64(&self) -> Option<u64> {
         self.timestamp
             .strip_prefix("0x")
             .and_then(|h| u64::from_str_radix(h, 16).ok())
@@ -265,8 +243,7 @@ impl NewBlockHeader
 /// 日志通知（合约事件）
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct LogNotification
-{
+pub struct LogNotification {
     /// Log index
     pub log_index: String,
 
@@ -292,12 +269,10 @@ pub struct LogNotification
     pub topics: Vec<String>,
 }
 
-impl LogNotification
-{
+impl LogNotification {
     /// Get the block number as u64
     /// 获取区块号（u64）
-    pub fn block_number_as_u64(&self) -> Option<u64>
-    {
+    pub fn block_number_as_u64(&self) -> Option<u64> {
         self.block_number
             .strip_prefix("0x")
             .and_then(|h| u64::from_str_radix(h, 16).ok())
@@ -307,18 +282,15 @@ impl LogNotification
 /// Pending transaction notification
 /// 待处理交易通知
 #[derive(Debug, Clone, Deserialize)]
-pub struct PendingTransaction
-{
+pub struct PendingTransaction {
     /// Transaction hash
     pub hash: String,
 }
 
-impl PendingTransaction
-{
+impl PendingTransaction {
     /// Parse as `TxHash`
     /// `解析为TxHash`
-    pub fn as_tx_hash(&self) -> Result<TxHash, WsError>
-    {
+    pub fn as_tx_hash(&self) -> Result<TxHash, WsError> {
         TxHash::from_hex(&self.hash).map_err(|e| WsError::ParseError(e.to_string()))
     }
 }
@@ -326,8 +298,7 @@ impl PendingTransaction
 /// Subscription notification
 /// 订阅通知
 #[derive(Debug, Clone)]
-pub enum SubscriptionNotification
-{
+pub enum SubscriptionNotification {
     /// New block header
     /// 新区块头
     NewHead(NewBlockHeader),
@@ -350,43 +321,34 @@ pub enum SubscriptionNotification
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SubscriptionId(pub String);
 
-impl SubscriptionId
-{
+impl SubscriptionId {
     /// Create a new subscription ID
     /// 创建新的订阅ID
-    pub fn new(id: String) -> Self
-    {
+    pub fn new(id: String) -> Self {
         Self(id)
     }
 
     /// Get the inner ID string
     /// 获取内部ID字符串
-    pub fn as_str(&self) -> &str
-    {
+    pub fn as_str(&self) -> &str {
         &self.0
     }
 }
 
-impl fmt::Display for SubscriptionId
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for SubscriptionId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl From<String> for SubscriptionId
-{
-    fn from(s: String) -> Self
-    {
+impl From<String> for SubscriptionId {
+    fn from(s: String) -> Self {
         Self(s)
     }
 }
 
-impl From<&str> for SubscriptionId
-{
-    fn from(s: &str) -> Self
-    {
+impl From<&str> for SubscriptionId {
+    fn from(s: &str) -> Self {
         Self(s.to_string())
     }
 }
@@ -400,8 +362,7 @@ impl From<&str> for SubscriptionId
 /// This is available only when the `ws` feature is enabled.
 /// 仅当启用`ws`功能时可用。
 #[cfg(feature = "ws")]
-pub struct WsClient
-{
+pub struct WsClient {
     /// WebSocket URL
     url: String,
 
@@ -417,8 +378,7 @@ pub struct WsClient
 }
 
 #[cfg(feature = "ws")]
-impl WsClient
-{
+impl WsClient {
     /// Connect to a WebSocket endpoint
     /// 连接到WebSocket端点
     ///
@@ -432,8 +392,7 @@ impl WsClient
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn connect(url: impl Into<String>) -> Result<Self, WsError>
-    {
+    pub async fn connect(url: impl Into<String>) -> Result<Self, WsError> {
         let url = url.into();
 
         // Create a simple channel for notifications
@@ -449,8 +408,7 @@ impl WsClient
 
     /// Get the WebSocket URL
     /// 获取WebSocket URL
-    pub fn url(&self) -> &str
-    {
+    pub fn url(&self) -> &str {
         &self.url
     }
 
@@ -475,8 +433,7 @@ impl WsClient
     /// ```
     pub async fn subscribe_blocks(
         &self,
-    ) -> Result<impl Stream<Item = NewBlockHeader> + Send + Unpin + '_, WsError>
-    {
+    ) -> Result<impl Stream<Item = NewBlockHeader> + Send + Unpin + '_, WsError> {
         let sub_id = self.subscribe(SubscriptionType::NewHeads, None).await?;
 
         // Create a stream that yields new blocks
@@ -492,8 +449,7 @@ impl WsClient
     /// 订阅待处理交易
     pub async fn subscribe_pending_transactions(
         &self,
-    ) -> Result<impl Stream<Item = PendingTransaction> + Send + Unpin + '_, WsError>
-    {
+    ) -> Result<impl Stream<Item = PendingTransaction> + Send + Unpin + '_, WsError> {
         let sub_id = self
             .subscribe(SubscriptionType::PendingTransactions, None)
             .await?;
@@ -511,8 +467,7 @@ impl WsClient
     pub async fn subscribe_logs(
         &self,
         filter: LogFilter,
-    ) -> Result<impl Stream<Item = LogNotification> + Send + Unpin + '_, WsError>
-    {
+    ) -> Result<impl Stream<Item = LogNotification> + Send + Unpin + '_, WsError> {
         let filter_json =
             serde_json::to_value(filter).map_err(|e| WsError::ParseError(e.to_string()))?;
 
@@ -534,8 +489,7 @@ impl WsClient
         &self,
         sub_type: SubscriptionType,
         _params: Option<serde_json::Value>,
-    ) -> Result<SubscriptionId, WsError>
-    {
+    ) -> Result<SubscriptionId, WsError> {
         // In a real implementation, this would:
         // 1. Establish WebSocket connection if not already connected
         // 2. Send eth_subscribe request
@@ -559,11 +513,9 @@ impl WsClient
 
     /// Unsubscribe from an event
     /// 取消订阅
-    pub async fn unsubscribe(&self, sub_id: &SubscriptionId) -> Result<(), WsError>
-    {
+    pub async fn unsubscribe(&self, sub_id: &SubscriptionId) -> Result<(), WsError> {
         let mut subs = self.subscriptions.write().await;
-        if subs.remove(sub_id).is_none()
-        {
+        if subs.remove(sub_id).is_none() {
             return Err(WsError::NotSubscribed);
         }
         Ok(())
@@ -571,8 +523,7 @@ impl WsClient
 
     /// Unsubscribe from all events
     /// 取消所有订阅
-    pub async fn unsubscribe_all(&self) -> Result<(), WsError>
-    {
+    pub async fn unsubscribe_all(&self) -> Result<(), WsError> {
         let mut subs = self.subscriptions.write().await;
         subs.clear();
         Ok(())
@@ -580,26 +531,22 @@ impl WsClient
 
     /// Get active subscriptions
     /// 获取活动订阅
-    pub async fn active_subscriptions(&self) -> Vec<(SubscriptionId, SubscriptionType)>
-    {
+    pub async fn active_subscriptions(&self) -> Vec<(SubscriptionId, SubscriptionType)> {
         let subs = self.subscriptions.read().await;
         subs.iter().map(|(id, ty)| (id.clone(), *ty)).collect()
     }
 
     /// Check if subscribed to a specific type
     /// 检查是否订阅了特定类型
-    pub async fn is_subscribed(&self, sub_type: SubscriptionType) -> bool
-    {
+    pub async fn is_subscribed(&self, sub_type: SubscriptionType) -> bool {
         let subs = self.subscriptions.read().await;
         subs.values().any(|&ty| ty == sub_type)
     }
 }
 
 #[cfg(feature = "ws")]
-impl fmt::Debug for WsClient
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for WsClient {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("WsClient")
             .field("url", &self.url)
             .field("subscriptions", &"<subscriptions>")
@@ -610,22 +557,19 @@ impl fmt::Debug for WsClient
 /// Block notification stream
 /// 区块通知流
 #[cfg(feature = "ws")]
-pub struct BlockReceiver<'a>
-{
+pub struct BlockReceiver<'a> {
     sub_id: SubscriptionId,
     _client: &'a WsClient,
 }
 
 #[cfg(feature = "ws")]
-impl Stream for BlockReceiver<'_>
-{
+impl Stream for BlockReceiver<'_> {
     type Item = NewBlockHeader;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<NewBlockHeader>>
-    {
+    ) -> std::task::Poll<Option<NewBlockHeader>> {
         // In a real implementation, this would poll from the WebSocket
         std::task::Poll::Pending
     }
@@ -637,22 +581,19 @@ impl Unpin for BlockReceiver<'_> {}
 /// Pending transaction stream
 /// 待处理交易流
 #[cfg(feature = "ws")]
-pub struct PendingTxReceiver<'a>
-{
+pub struct PendingTxReceiver<'a> {
     sub_id: SubscriptionId,
     _client: &'a WsClient,
 }
 
 #[cfg(feature = "ws")]
-impl Stream for PendingTxReceiver<'_>
-{
+impl Stream for PendingTxReceiver<'_> {
     type Item = PendingTransaction;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<PendingTransaction>>
-    {
+    ) -> std::task::Poll<Option<PendingTransaction>> {
         std::task::Poll::Pending
     }
 }
@@ -663,22 +604,19 @@ impl Unpin for PendingTxReceiver<'_> {}
 /// Log notification stream
 /// 日志通知流
 #[cfg(feature = "ws")]
-pub struct LogReceiver<'a>
-{
+pub struct LogReceiver<'a> {
     sub_id: SubscriptionId,
     _client: &'a WsClient,
 }
 
 #[cfg(feature = "ws")]
-impl Stream for LogReceiver<'_>
-{
+impl Stream for LogReceiver<'_> {
     type Item = LogNotification;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         _cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<LogNotification>>
-    {
+    ) -> std::task::Poll<Option<LogNotification>> {
         std::task::Poll::Pending
     }
 }
@@ -693,8 +631,7 @@ impl Unpin for LogReceiver<'_> {}
 /// 管理多个WebSocket订阅。
 #[derive(Clone)]
 #[cfg(feature = "ws")]
-pub struct SubscriptionManager
-{
+pub struct SubscriptionManager {
     /// WebSocket client
     client: Arc<WsClient>,
 
@@ -703,12 +640,10 @@ pub struct SubscriptionManager
 }
 
 #[cfg(feature = "ws")]
-impl SubscriptionManager
-{
+impl SubscriptionManager {
     /// Create a new subscription manager
     /// 创建新的订阅管理器
-    pub async fn new(url: impl Into<String>) -> Result<Self, WsError>
-    {
+    pub async fn new(url: impl Into<String>) -> Result<Self, WsError> {
         let client = Arc::new(WsClient::connect(url).await?);
         Ok(Self {
             client,
@@ -718,17 +653,14 @@ impl SubscriptionManager
 
     /// Get the underlying client
     /// 获取底层客户端
-    pub fn client(&self) -> &WsClient
-    {
+    pub fn client(&self) -> &WsClient {
         &self.client
     }
 
     /// Subscribe to blocks with automatic tracking
     /// 自动跟踪订阅区块
-    pub async fn subscribe_blocks(&self) -> Result<SubscriptionId, WsError>
-    {
-        if self.client.is_subscribed(SubscriptionType::NewHeads).await
-        {
+    pub async fn subscribe_blocks(&self) -> Result<SubscriptionId, WsError> {
+        if self.client.is_subscribed(SubscriptionType::NewHeads).await {
             return Err(WsError::AlreadySubscribed);
         }
 
@@ -745,10 +677,8 @@ impl SubscriptionManager
 
     /// Subscribe to logs with automatic tracking
     /// 自动跟踪订阅日志
-    pub async fn subscribe_logs(&self, filter: LogFilter) -> Result<SubscriptionId, WsError>
-    {
-        if self.client.is_subscribed(SubscriptionType::Logs).await
-        {
+    pub async fn subscribe_logs(&self, filter: LogFilter) -> Result<SubscriptionId, WsError> {
+        if self.client.is_subscribed(SubscriptionType::Logs).await {
             return Err(WsError::AlreadySubscribed);
         }
 
@@ -768,11 +698,9 @@ impl SubscriptionManager
 
     /// Unsubscribe by type
     /// 按类型取消订阅
-    pub async fn unsubscribe_by_type(&self, sub_type: SubscriptionType) -> Result<(), WsError>
-    {
+    pub async fn unsubscribe_by_type(&self, sub_type: SubscriptionType) -> Result<(), WsError> {
         let mut ids = self.sub_ids.write().await;
-        if let Some(sub_id) = ids.remove(&sub_type)
-        {
+        if let Some(sub_id) = ids.remove(&sub_type) {
             self.client.unsubscribe(&sub_id).await?;
         }
         Ok(())
@@ -780,8 +708,7 @@ impl SubscriptionManager
 
     /// Unsubscribe from all
     /// 取消所有订阅
-    pub async fn unsubscribe_all(&self) -> Result<(), WsError>
-    {
+    pub async fn unsubscribe_all(&self) -> Result<(), WsError> {
         self.client.unsubscribe_all().await?;
         let mut ids = self.sub_ids.write().await;
         ids.clear();
@@ -790,45 +717,45 @@ impl SubscriptionManager
 
     /// Get subscription ID by type
     /// 按类型获取订阅ID
-    pub async fn subscription_id(&self, sub_type: SubscriptionType) -> Option<SubscriptionId>
-    {
+    pub async fn subscription_id(&self, sub_type: SubscriptionType) -> Option<SubscriptionId> {
         let ids = self.sub_ids.read().await;
         ids.get(&sub_type).cloned()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_subscription_type_method_name()
-    {
+    fn test_subscription_type_method_name() {
         assert_eq!(SubscriptionType::NewHeads.method_name(), "newHeads");
         assert_eq!(SubscriptionType::PendingTransactions.method_name(), "newPendingTransactions");
         assert_eq!(SubscriptionType::Logs.method_name(), "logs");
     }
 
     #[test]
-    fn test_subscription_type_display()
-    {
+    fn test_subscription_type_display() {
         assert_eq!(SubscriptionType::NewHeads.to_string(), "newHeads");
         assert_eq!(SubscriptionType::PendingTransactions.to_string(), "newPendingTransactions");
     }
 
     #[test]
-    fn test_log_filter_new()
-    {
+    fn test_log_filter_new() {
         let filter = LogFilter::new();
         assert!(filter.address.is_none());
         assert!(filter.topics.is_none());
     }
 
     #[test]
-    fn test_log_filter_builder()
-    {
+    fn test_log_filter_builder() {
         let addr = Address::zero();
         let filter = LogFilter::new().address(&addr).topic("0x1234".to_string());
 
@@ -837,37 +764,32 @@ mod tests
     }
 
     #[test]
-    fn test_log_filter_default()
-    {
+    fn test_log_filter_default() {
         let filter = LogFilter::default();
         assert!(filter.address.is_none());
         assert!(filter.topics.is_none());
     }
 
     #[test]
-    fn test_subscription_id_new()
-    {
+    fn test_subscription_id_new() {
         let id = SubscriptionId::new("0x123".to_string());
         assert_eq!(id.as_str(), "0x123");
     }
 
     #[test]
-    fn test_subscription_id_from_string()
-    {
+    fn test_subscription_id_from_string() {
         let id: SubscriptionId = "0x456".into();
         assert_eq!(id.as_str(), "0x456");
     }
 
     #[test]
-    fn test_subscription_id_display()
-    {
+    fn test_subscription_id_display() {
         let id = SubscriptionId::new("0x789".to_string());
         assert_eq!(id.to_string(), "0x789");
     }
 
     #[test]
-    fn test_ws_error_display()
-    {
+    fn test_ws_error_display() {
         let err = WsError::ConnectionError("test error".to_string());
         assert!(err.to_string().contains("Connection error"));
 
@@ -876,8 +798,7 @@ mod tests
     }
 
     #[test]
-    fn test_new_block_header_number_as_u64()
-    {
+    fn test_new_block_header_number_as_u64() {
         let header = NewBlockHeader {
             hash: "0x123".to_string(),
             parent_hash: "0x456".to_string(),
@@ -893,8 +814,7 @@ mod tests
     }
 
     #[test]
-    fn test_log_notification_block_number()
-    {
+    fn test_log_notification_block_number() {
         let log = LogNotification {
             log_index: "0x0".to_string(),
             transaction_index: "0x0".to_string(),

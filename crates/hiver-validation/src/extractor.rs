@@ -48,19 +48,16 @@ use crate::ValidationError;
 /// ```
 pub struct Valid<T>(pub T);
 
-impl<T> Valid<T>
-{
+impl<T> Valid<T> {
     /// Consumes the Valid wrapper and returns the inner value
     /// 消耗 Valid 包装器并返回内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 
     /// Gets a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 }
@@ -69,8 +66,7 @@ impl<T> fmt::Debug for Valid<T>
 where
     T: fmt::Debug,
 {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Valid").field(&self.0).finish()
     }
 }
@@ -79,8 +75,7 @@ impl<T> Clone for Valid<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self(self.0.clone())
     }
 }
@@ -96,37 +91,37 @@ where
 {
     /// Validate the given data
     /// 验证给定数据
-    pub fn validate(data: T) -> Result<Self, ValidationError>
-    {
+    pub fn validate(data: T) -> Result<Self, ValidationError> {
         data.validate()?;
         Ok(Valid(data))
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use serde::Deserialize;
 
     use super::*;
     use crate::ValidationErrors;
 
     #[derive(Debug, Clone, Deserialize)]
-    struct TestUser
-    {
+    struct TestUser {
         username: String,
         email: String,
     }
 
     // Implement our Validate trait for tests
     // 为测试实现我们的 Validate trait
-    impl HiverValidate for TestUser
-    {
-        fn validate(&self) -> Result<(), ValidationErrors>
-        {
-            if self.username.len() < 3
-            {
+    impl HiverValidate for TestUser {
+        fn validate(&self) -> Result<(), ValidationErrors> {
+            if self.username.len() < 3 {
                 let mut errors = ValidationErrors::new();
                 errors.add("username", "Username must be at least 3 characters");
                 return Err(errors);
@@ -136,8 +131,7 @@ mod tests
     }
 
     #[test]
-    fn test_valid_success()
-    {
+    fn test_valid_success() {
         let user = TestUser {
             username: "alice".to_string(),
             email: "alice@example.com".to_string(),
@@ -148,8 +142,7 @@ mod tests
     }
 
     #[test]
-    fn test_valid_failure()
-    {
+    fn test_valid_failure() {
         let user = TestUser {
             username: "ab".to_string(), // Too short
             email: "test@example.com".to_string(),
@@ -160,8 +153,7 @@ mod tests
     }
 
     #[test]
-    fn test_valid_into_inner()
-    {
+    fn test_valid_into_inner() {
         let user = TestUser {
             username: "alice".to_string(),
             email: "alice@example.com".to_string(),

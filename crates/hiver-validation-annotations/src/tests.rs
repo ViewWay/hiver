@@ -10,8 +10,7 @@ use quote::quote;
 
 /// Helper: parse a DeriveInput from a token stream.
 /// 辅助函数：从 token 流解析 DeriveInput。
-fn parse_input(tokens: TokenStream) -> syn::DeriveInput
-{
+fn parse_input(tokens: TokenStream) -> syn::DeriveInput {
     syn::parse2::<syn::DeriveInput>(tokens).expect("Failed to parse DeriveInput")
 }
 
@@ -22,8 +21,7 @@ fn parse_input(tokens: TokenStream) -> syn::DeriveInput
 /// Test that `#[min(5)]` extracts value 5, not the hardcoded default 0.
 /// 测试 `#[min(5)]` 提取值 5，而非硬编码默认值 0。
 #[test]
-fn test_min_bare_value_is_parsed()
-{
+fn test_min_bare_value_is_parsed() {
     let input = parse_input(quote! {
         struct Order {
             #[min(5)]
@@ -42,8 +40,7 @@ fn test_min_bare_value_is_parsed()
 /// Test that `#[min(value = 10)]` extracts value 10.
 /// 测试 `#[min(value = 10)]` 提取值 10。
 #[test]
-fn test_min_named_value_is_parsed()
-{
+fn test_min_named_value_is_parsed() {
     let input = parse_input(quote! {
         struct Order {
             #[min(value = 10)]
@@ -61,8 +58,7 @@ fn test_min_named_value_is_parsed()
 /// Test that `#[min(0)]` correctly parses zero.
 /// 测试 `#[min(0)]` 正确解析零值。
 #[test]
-fn test_min_zero_value()
-{
+fn test_min_zero_value() {
     let input = parse_input(quote! {
         struct Data {
             #[min(0)]
@@ -77,8 +73,7 @@ fn test_min_zero_value()
 /// Test that `#[min(999)]` parses large values.
 /// 测试 `#[min(999)]` 解析大数值。
 #[test]
-fn test_min_large_value()
-{
+fn test_min_large_value() {
     let input = parse_input(quote! {
         struct Data {
             #[min(999)]
@@ -97,8 +92,7 @@ fn test_min_large_value()
 /// Test that `#[max(100)]` extracts value 100, not u32::MAX.
 /// 测试 `#[max(100)]` 提取值 100，而非 u32::MAX。
 #[test]
-fn test_max_bare_value_is_parsed()
-{
+fn test_max_bare_value_is_parsed() {
     let input = parse_input(quote! {
         struct Order {
             #[max(100)]
@@ -117,8 +111,7 @@ fn test_max_bare_value_is_parsed()
 /// Test that `#[max(value = 50)]` extracts value 50.
 /// 测试 `#[max(value = 50)]` 提取值 50。
 #[test]
-fn test_max_named_value_is_parsed()
-{
+fn test_max_named_value_is_parsed() {
     let input = parse_input(quote! {
         struct Order {
             #[max(value = 50)]
@@ -136,8 +129,7 @@ fn test_max_named_value_is_parsed()
 /// Test multiple fields with different max values.
 /// 测试多个字段使用不同的 max 值。
 #[test]
-fn test_max_multiple_fields()
-{
+fn test_max_multiple_fields() {
     let input = parse_input(quote! {
         struct Data {
             #[max(10)]
@@ -163,8 +155,7 @@ fn test_max_multiple_fields()
 /// Test that `#[pattern("^[a-z]+$")]` extracts the actual regex, not ".*".
 /// 测试 `#[pattern("^[a-z]+$")]` 提取实际正则，而非 ".*"。
 #[test]
-fn test_pattern_bare_string_is_parsed()
-{
+fn test_pattern_bare_string_is_parsed() {
     let input = parse_input(quote! {
         struct User {
             #[pattern("^[a-z]+$")]
@@ -187,8 +178,7 @@ fn test_pattern_bare_string_is_parsed()
 /// Test that `#[pattern(regex = "^[0-9]{3}$")]` extracts the regex via named arg.
 /// 测试 `#[pattern(regex = \"^[0-9]{3}$\")] 通过命名参数提取正则。
 #[test]
-fn test_pattern_named_value_is_parsed()
-{
+fn test_pattern_named_value_is_parsed() {
     let input = parse_input(quote! {
         struct Data {
             #[pattern(regex = "^[0-9]{3}$")]
@@ -206,8 +196,7 @@ fn test_pattern_named_value_is_parsed()
 /// Test pattern with complex regex containing special characters.
 /// 测试包含特殊字符的复杂正则。
 #[test]
-fn test_pattern_complex_regex()
-{
+fn test_pattern_complex_regex() {
     let input = parse_input(quote! {
         struct Data {
             #[pattern("^[A-Z][a-zA-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$")]
@@ -226,8 +215,7 @@ fn test_pattern_complex_regex()
 /// Test that `#[length(min = 3, max = 20)]` extracts both values, not defaults.
 /// 测试 `#[length(min = 3, max = 20)]` 提取两个值，而非默认值。
 #[test]
-fn test_length_min_max_parsed()
-{
+fn test_length_min_max_parsed() {
     let input = parse_input(quote! {
         struct User {
             #[length(min = 3, max = 20)]
@@ -247,8 +235,7 @@ fn test_length_min_max_parsed()
 /// Test `#[length(min = 5)]` with only min specified.
 /// 测试仅指定 min 的 `#[length(min = 5)]`。
 #[test]
-fn test_length_min_only()
-{
+fn test_length_min_only() {
     let input = parse_input(quote! {
         struct Data {
             #[length(min = 5)]
@@ -265,8 +252,7 @@ fn test_length_min_only()
 /// Test `#[length(max = 100)]` with only max specified.
 /// 测试仅指定 max 的 `#[length(max = 100)]`。
 #[test]
-fn test_length_max_only()
-{
+fn test_length_max_only() {
     let input = parse_input(quote! {
         struct Data {
             #[length(max = 100)]
@@ -283,8 +269,7 @@ fn test_length_max_only()
 /// Test `#[length(min = 1, max = 1)]` with equal min and max.
 /// 测试 min 和 max 相等的 `#[length(min = 1, max = 1)]`。
 #[test]
-fn test_length_equal_min_max()
-{
+fn test_length_equal_min_max() {
     let input = parse_input(quote! {
         struct Data {
             #[length(min = 1, max = 1)]
@@ -304,8 +289,7 @@ fn test_length_equal_min_max()
 /// Test that fields without the target attribute are skipped.
 /// 测试没有目标属性的字段会被跳过。
 #[test]
-fn test_only_tagged_fields_extracted()
-{
+fn test_only_tagged_fields_extracted() {
     let input = parse_input(quote! {
         struct Mixed {
             #[min(5)]
@@ -322,8 +306,7 @@ fn test_only_tagged_fields_extracted()
 /// Test struct with no matching attributes returns empty vec.
 /// 测试没有匹配属性的结构体返回空向量。
 #[test]
-fn test_no_matching_attributes()
-{
+fn test_no_matching_attributes() {
     let input = parse_input(quote! {
         struct Plain {
             field: i32,

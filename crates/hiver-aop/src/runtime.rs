@@ -45,8 +45,7 @@ use tokio::sync::RwLock;
 ///     println!("Args: {:?}", join_point.args());
 /// }
 /// ```
-pub struct JoinPoint
-{
+pub struct JoinPoint {
     /// Target object (self)
     /// 目标对象 (self)
     target: Arc<dyn Any + Send + Sync>,
@@ -68,8 +67,7 @@ pub struct JoinPoint
     target_class: String,
 }
 
-impl JoinPoint
-{
+impl JoinPoint {
     /// Create a new join point
     /// 创建新的连接点
     pub fn new(
@@ -78,8 +76,7 @@ impl JoinPoint
         args: Vec<Arc<dyn Any + Send + Sync>>,
         signature: String,
         target_class: String,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             target,
             method_name,
@@ -91,51 +88,43 @@ impl JoinPoint
 
     /// Get the target object
     /// 获取目标对象
-    pub fn target(&self) -> &Arc<dyn Any + Send + Sync>
-    {
+    pub fn target(&self) -> &Arc<dyn Any + Send + Sync> {
         &self.target
     }
 
     /// Get the method name
     /// 获取方法名
-    pub fn method_name(&self) -> &str
-    {
+    pub fn method_name(&self) -> &str {
         &self.method_name
     }
 
     /// Get the method arguments
     /// 获取方法参数
-    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>]
-    {
+    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>] {
         &self.args
     }
 
     /// Get the method signature
     /// 获取方法签名
-    pub fn signature(&self) -> &str
-    {
+    pub fn signature(&self) -> &str {
         &self.signature
     }
 
     /// Get the target class name
     /// 获取目标类名
-    pub fn target_class(&self) -> &str
-    {
+    pub fn target_class(&self) -> &str {
         &self.target_class
     }
 
     /// Get argument by index
     /// 通过索引获取参数
-    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T>
-    {
+    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T> {
         self.args.get(index).and_then(|arg| arg.downcast_ref::<T>())
     }
 }
 
-impl Clone for JoinPoint
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for JoinPoint {
+    fn clone(&self) -> Self {
         Self {
             target: self.target.clone(),
             method_name: self.method_name.clone(),
@@ -146,10 +135,8 @@ impl Clone for JoinPoint
     }
 }
 
-impl fmt::Debug for JoinPoint
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for JoinPoint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("JoinPoint")
             .field("method_name", &self.method_name)
             .field("signature", &self.signature)
@@ -170,8 +157,7 @@ impl fmt::Debug for JoinPoint
 /// method executes.
 ///
 /// 用于 `@Around` 通知控制目标方法是否以及何时执行。
-pub struct ProceedingJoinPoint
-{
+pub struct ProceedingJoinPoint {
     /// Inner join point data.
     /// 内部连接点数据。
     inner: JoinPoint,
@@ -180,12 +166,10 @@ pub struct ProceedingJoinPoint
     proceeded: bool,
 }
 
-impl ProceedingJoinPoint
-{
+impl ProceedingJoinPoint {
     /// Create a new proceeding join point.
     /// 创建新的可继续连接点。
-    pub fn new(inner: JoinPoint) -> Self
-    {
+    pub fn new(inner: JoinPoint) -> Self {
         Self {
             inner,
             proceeded: false,
@@ -194,65 +178,55 @@ impl ProceedingJoinPoint
 
     /// Get the method name.
     /// 获取方法名。
-    pub fn method_name(&self) -> &str
-    {
+    pub fn method_name(&self) -> &str {
         self.inner.method_name()
     }
 
     /// Get the method arguments.
     /// 获取方法参数。
-    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>]
-    {
+    pub fn args(&self) -> &[Arc<dyn Any + Send + Sync>] {
         self.inner.args()
     }
 
     /// Get typed argument by index.
     /// 通过索引获取类型化参数。
-    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T>
-    {
+    pub fn arg<T: 'static>(&self, index: usize) -> Option<&T> {
         self.inner.arg(index)
     }
 
     /// Get the target class name.
     /// 获取目标类名。
-    pub fn target_class(&self) -> &str
-    {
+    pub fn target_class(&self) -> &str {
         self.inner.target_class()
     }
 
     /// Get the method signature.
     /// 获取方法签名。
-    pub fn signature(&self) -> &str
-    {
+    pub fn signature(&self) -> &str {
         self.inner.signature()
     }
 
     /// Get the target object.
     /// 获取目标对象。
-    pub fn target(&self) -> &Arc<dyn Any + Send + Sync>
-    {
+    pub fn target(&self) -> &Arc<dyn Any + Send + Sync> {
         self.inner.target()
     }
 
     /// Mark that the underlying method should proceed.
     /// 标记底层方法应继续执行。
-    pub fn proceed(&mut self)
-    {
+    pub fn proceed(&mut self) {
         self.proceeded = true;
     }
 
     /// Check whether proceed has been called.
     /// 检查 proceed 是否已被调用。
-    pub fn is_proceeded(&self) -> bool
-    {
+    pub fn is_proceeded(&self) -> bool {
         self.proceeded
     }
 }
 
-impl Clone for ProceedingJoinPoint
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for ProceedingJoinPoint {
+    fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
             proceeded: self.proceeded,
@@ -260,10 +234,8 @@ impl Clone for ProceedingJoinPoint
     }
 }
 
-impl fmt::Debug for ProceedingJoinPoint
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for ProceedingJoinPoint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ProceedingJoinPoint")
             .field("method_name", &self.inner.method_name())
             .field("proceeded", &self.proceeded)
@@ -278,8 +250,7 @@ impl fmt::Debug for ProceedingJoinPoint
 /// Ordered advice to be applied to a join point.
 /// 要应用到连接点的有序通知。
 #[derive(Debug, Clone)]
-pub struct AdviceChain
-{
+pub struct AdviceChain {
     /// Before advices (in order).
     /// 前置通知（按顺序）。
     pub before: Vec<String>,
@@ -297,12 +268,10 @@ pub struct AdviceChain
     pub after_throwing: Vec<String>,
 }
 
-impl AdviceChain
-{
+impl AdviceChain {
     /// Create an empty chain.
     /// 创建空链。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             before: Vec::new(),
             around: Vec::new(),
@@ -314,13 +283,10 @@ impl AdviceChain
 
     /// Build a chain from matched advice.
     /// 从匹配的通知构建链。
-    pub fn from_matches(matches: &[(AdviceType, String, String)]) -> Self
-    {
+    pub fn from_matches(matches: &[(AdviceType, String, String)]) -> Self {
         let mut chain = Self::new();
-        for (advice_type, _aspect, method) in matches
-        {
-            match advice_type
-            {
+        for (advice_type, _aspect, method) in matches {
+            match advice_type {
                 AdviceType::Before => chain.before.push(method.clone()),
                 AdviceType::Around => chain.around.push(method.clone()),
                 AdviceType::After => chain.after.push(method.clone()),
@@ -333,8 +299,7 @@ impl AdviceChain
 
     /// Total number of advices in the chain.
     /// 链中通知总数。
-    pub fn total(&self) -> usize
-    {
+    pub fn total(&self) -> usize {
         self.before.len()
             + self.around.len()
             + self.after.len()
@@ -344,16 +309,13 @@ impl AdviceChain
 
     /// Check if the chain is empty.
     /// 检查链是否为空。
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.total() == 0
     }
 }
 
-impl Default for AdviceChain
-{
-    fn default() -> Self
-    {
+impl Default for AdviceChain {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -382,8 +344,7 @@ impl Default for AdviceChain
 /// Wildcards: `*` matches any single segment, `..` matches zero or more segments.
 /// 通配符：`*` 匹配单个段，`..` 匹配零或多个段。
 #[derive(Debug, Clone)]
-pub struct PointcutExpression
-{
+pub struct PointcutExpression {
     /// The expression string
     /// 表达式字符串
     expression: String,
@@ -400,12 +361,10 @@ pub struct PointcutExpression
 /// Components of a pointcut expression
 /// 切点表达式的组件
 #[derive(Debug, Clone, PartialEq)]
-enum ExpressionComponent
-{
+enum ExpressionComponent {
     /// Execution pointcut: matches method execution
     /// 执行切点：匹配方法执行
-    Execution
-    {
+    Execution {
         /// Package pattern (may contain `..` and `*`)
         /// 包模式（可包含 `..` 和 `*`）
         package: String,
@@ -427,12 +386,10 @@ enum ExpressionComponent
     Annotation(String),
 }
 
-impl PointcutExpression
-{
+impl PointcutExpression {
     /// Create a new pointcut expression
     /// 创建新的切点表达式
-    pub fn new(expression: String) -> Self
-    {
+    pub fn new(expression: String) -> Self {
         let (components, is_conjunction) = Self::parse_expression(&expression);
         Self {
             expression,
@@ -443,20 +400,17 @@ impl PointcutExpression
 
     /// Get the expression string
     /// 获取表达式字符串
-    pub fn expression(&self) -> &str
-    {
+    pub fn expression(&self) -> &str {
         &self.expression
     }
 
     /// Parse a pointcut expression into components.
     /// 解析切点表达式为组件。
-    fn parse_expression(expr: &str) -> (Vec<ExpressionComponent>, bool)
-    {
+    fn parse_expression(expr: &str) -> (Vec<ExpressionComponent>, bool) {
         let expr = expr.trim();
 
         // Handle OR: split and parse each branch independently
-        if expr.contains(" || ")
-        {
+        if expr.contains(" || ") {
             let components: Vec<ExpressionComponent> = expr
                 .split(" || ")
                 .flat_map(|part| Self::parse_single(part.trim()))
@@ -465,11 +419,9 @@ impl PointcutExpression
         }
 
         // Handle AND: parse each branch, all must match
-        if expr.contains(" && ")
-        {
+        if expr.contains(" && ") {
             let mut components = Vec::new();
-            for part in expr.split(" && ")
-            {
+            for part in expr.split(" && ") {
                 components.extend(Self::parse_single(part.trim()));
             }
             return (components, true); // AND: all must match
@@ -481,22 +433,18 @@ impl PointcutExpression
 
     /// Parse a single pointcut designator (no logical operators).
     /// 解析单个切点指示符（无逻辑运算符）。
-    fn parse_single(expr: &str) -> Vec<ExpressionComponent>
-    {
+    fn parse_single(expr: &str) -> Vec<ExpressionComponent> {
         let mut components = Vec::new();
 
-        if let Some(inner) = Self::extract_parens(expr, "execution(")
-        {
+        if let Some(inner) = Self::extract_parens(expr, "execution(") {
             components.push(Self::parse_execution(inner));
         }
 
-        if let Some(inner) = Self::extract_parens(expr, "within(")
-        {
+        if let Some(inner) = Self::extract_parens(expr, "within(") {
             components.push(ExpressionComponent::Within(inner.to_string()));
         }
 
-        if let Some(inner) = Self::extract_parens(expr, "@annotation(")
-        {
+        if let Some(inner) = Self::extract_parens(expr, "@annotation(") {
             components.push(ExpressionComponent::Annotation(inner.to_string()));
         }
 
@@ -505,15 +453,11 @@ impl PointcutExpression
 
     /// Parse execution() inner content: `RET_TYPE QUALIFIED_NAME(PARAMS)`
     /// 解析 execution() 内部内容：`返回类型 全限定名(参数)`
-    fn parse_execution(inner: &str) -> ExpressionComponent
-    {
+    fn parse_execution(inner: &str) -> ExpressionComponent {
         // Split at '(' to separate pattern from params
-        let (pattern_part, params) = if let Some(pos) = inner.find('(')
-        {
+        let (pattern_part, params) = if let Some(pos) = inner.find('(') {
             (&inner[..pos], inner[pos + 1..].trim_end_matches(')').to_string())
-        }
-        else
-        {
+        } else {
             (inner, String::new())
         };
 
@@ -524,25 +468,19 @@ impl PointcutExpression
 
         // Split qualified name: last segment is method, second-to-last is class, rest is package
         let segments: Vec<&str> = qualified.split('.').collect();
-        let (package, class, method) = match segments.len()
-        {
+        let (package, class, method) = match segments.len() {
             0 => (String::new(), String::new(), String::new()),
             1 => (String::new(), String::new(), segments[0].to_string()),
-            2 =>
-            {
+            2 => {
                 let (first, second) = (segments[0], segments[1]);
                 // Check if first segment is a package wildcard (ends with ..)
-                if first == "*" || first.is_empty()
-                {
+                if first == "*" || first.is_empty() {
                     (String::new(), first.to_string(), second.to_string())
-                }
-                else
-                {
+                } else {
                     (first.to_string(), String::new(), second.to_string())
                 }
             },
-            _ =>
-            {
+            _ => {
                 let method = segments[segments.len() - 1].to_string();
                 let class = segments[segments.len() - 2].to_string();
                 let pkg = segments[..segments.len() - 2].join(".");
@@ -560,8 +498,7 @@ impl PointcutExpression
 
     /// Extract content between `prefix(` and `)`.
     /// 提取 `prefix(` 和 `)` 之间的内容。
-    fn extract_parens<'a>(expr: &'a str, prefix: &str) -> Option<&'a str>
-    {
+    fn extract_parens<'a>(expr: &'a str, prefix: &str) -> Option<&'a str> {
         let start = expr.find(prefix)?;
         let content_start = start + prefix.len();
         let end = expr[content_start..].find(')')?;
@@ -570,62 +507,52 @@ impl PointcutExpression
 
     /// Check if this pointcut matches a join point.
     /// 检查此切点是否匹配连接点。
-    pub fn matches(&self, join_point: &JoinPoint) -> bool
-    {
-        if self.components.is_empty()
-        {
+    pub fn matches(&self, join_point: &JoinPoint) -> bool {
+        if self.components.is_empty() {
             return false;
         }
 
-        if self.is_conjunction
-        {
+        if self.is_conjunction {
             // AND: every component must match
-            self.components.iter().all(|c| Self::matches_component(c, join_point))
-        }
-        else
-        {
+            self.components
+                .iter()
+                .all(|c| Self::matches_component(c, join_point))
+        } else {
             // OR / single: any component matching is sufficient
-            self.components.iter().any(|c| Self::matches_component(c, join_point))
+            self.components
+                .iter()
+                .any(|c| Self::matches_component(c, join_point))
         }
     }
 
     /// Check if a single component matches a join point.
     /// 检查单个组件是否匹配连接点。
-    fn matches_component(component: &ExpressionComponent, join_point: &JoinPoint) -> bool
-    {
-        match component
-        {
+    fn matches_component(component: &ExpressionComponent, join_point: &JoinPoint) -> bool {
+        match component {
             ExpressionComponent::Execution {
                 package,
                 class,
                 method,
                 params: _,
-            } =>
-            {
+            } => {
                 // Method matching
-                if *method != "*" && method != join_point.method_name()
-                {
+                if *method != "*" && method != join_point.method_name() {
                     return false;
                 }
 
                 let target = join_point.target_class();
 
                 // Class matching
-                if *class != "*"
-                    && !class.is_empty()
-                    && !Self::matches_segment(class, target)
-                {
+                if *class != "*" && !class.is_empty() && !Self::matches_segment(class, target) {
                     return false;
                 }
 
                 // Package matching: skip if target has no package prefix
                 // 包匹配：如果 target 没有包前缀则跳过
-                if package.is_empty() || *package == "*"
-                {
+                if package.is_empty() || *package == "*" {
                     return true;
                 }
-                if !target.contains('.')
-                {
+                if !target.contains('.') {
                     // Target is a simple class name (no package), skip package check
                     // target 是简单类名（无包名），跳过包检查
                     return true;
@@ -634,27 +561,20 @@ impl PointcutExpression
                 // Handle .. wildcard in package pattern
                 // 处理包模式中的 .. 通配符
                 let pkg_normalized = package.trim_end_matches('.');
-                if pkg_normalized.is_empty() || pkg_normalized == "*"
-                {
+                if pkg_normalized.is_empty() || pkg_normalized == "*" {
                     true
-                }
-                else if pkg_normalized.contains("..")
-                {
+                } else if pkg_normalized.contains("..") {
                     // "com.example.." means com.example and any sub-packages
                     let prefix = pkg_normalized.replace("..", ".");
                     let prefix = prefix.trim_end_matches('.');
                     target.starts_with(prefix)
-                }
-                else
-                {
+                } else {
                     target.starts_with(pkg_normalized)
                         || target.starts_with(&format!("{}.", pkg_normalized))
                 }
             },
-            ExpressionComponent::Within(pattern) =>
-            {
-                if *pattern == "*"
-                {
+            ExpressionComponent::Within(pattern) => {
+                if *pattern == "*" {
                     return true;
                 }
                 let target = join_point.target_class();
@@ -662,8 +582,7 @@ impl PointcutExpression
                     || target.ends_with(&format!(".{}", pattern))
                     || Self::matches_wildcard(pattern, target)
             },
-            ExpressionComponent::Annotation(_ann) =>
-            {
+            ExpressionComponent::Annotation(_ann) => {
                 // Cannot check annotations at runtime without metadata
                 // 无法在没有元数据的情况下在运行时检查注解
                 false
@@ -673,55 +592,41 @@ impl PointcutExpression
 
     /// Check if a pattern segment matches a target string.
     /// `*` matches any single name segment.
-    fn matches_segment(pattern: &str, target: &str) -> bool
-    {
-        if pattern == target
-        {
+    fn matches_segment(pattern: &str, target: &str) -> bool {
+        if pattern == target {
             return true;
         }
         // Check if target ends with ".Class" where Class matches the pattern
-        if let Some(dot_pos) = target.rfind('.')
-        {
+        if let Some(dot_pos) = target.rfind('.') {
             &target[dot_pos + 1..] == pattern
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// Check if a wildcard pattern (with `*`) matches a target.
-    fn matches_wildcard(pattern: &str, target: &str) -> bool
-    {
-        if !pattern.contains('*')
-        {
+    fn matches_wildcard(pattern: &str, target: &str) -> bool {
+        if !pattern.contains('*') {
             return false;
         }
         let parts: Vec<&str> = pattern.split('*').collect();
         let mut idx = 0;
-        for (i, part) in parts.iter().enumerate()
-        {
-            if part.is_empty()
-            {
+        for (i, part) in parts.iter().enumerate() {
+            if part.is_empty() {
                 continue;
             }
-            if let Some(pos) = target[idx..].find(part)
-            {
+            if let Some(pos) = target[idx..].find(part) {
                 idx += pos + part.len();
-            }
-            else
-            {
+            } else {
                 return false;
             }
-            if i == 0 && !pattern.starts_with('*') && target[idx..].find(part) != Some(0)
-            {
+            if i == 0 && !pattern.starts_with('*') && target[idx..].find(part) != Some(0) {
                 return false;
             }
         }
         true
     }
 }
-
 
 // ============================================================================
 // Advice Types / 通知类型
@@ -730,8 +635,7 @@ impl PointcutExpression
 /// Type of advice
 /// 通知类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AdviceType
-{
+pub enum AdviceType {
     /// Before advice
     /// 前置通知
     Before,
@@ -759,8 +663,7 @@ pub enum AdviceType
 /// The aspect registry manages all registered aspects and their advice.
 ///
 /// 切面注册表管理所有已注册的切面及其通知。
-pub struct AspectRegistry
-{
+pub struct AspectRegistry {
     /// Registered aspects
     /// 已注册的切面
     aspects: RwLock<HashMap<String, AspectInfo>>,
@@ -783,8 +686,7 @@ type AfterReturningFn = Arc<dyn Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Se
 
 /// Associates a pointcut with a callable advice closure.
 /// 将切点与可调用通知闭包关联。
-struct CallableAdvice
-{
+struct CallableAdvice {
     pointcut: PointcutExpression,
     advice_type: AdviceType,
     callback: Arc<dyn Any + Send + Sync>,
@@ -793,8 +695,7 @@ struct CallableAdvice
 /// Information about an aspect
 /// 切面信息
 #[derive(Debug, Clone)]
-struct AspectInfo
-{
+struct AspectInfo {
     /// Aspect name
     /// 切面名称
     name: String,
@@ -811,8 +712,7 @@ struct AspectInfo
 /// Associates a pointcut with advice
 /// 关联切点和通知
 #[derive(Debug, Clone)]
-struct PointcutAdvice
-{
+struct PointcutAdvice {
     /// Pointcut expression
     /// 切点表达式
     pointcut: PointcutExpression,
@@ -830,12 +730,10 @@ struct PointcutAdvice
     method_name: String,
 }
 
-impl AspectRegistry
-{
+impl AspectRegistry {
     /// Create a new aspect registry
     /// 创建新的切面注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             aspects: RwLock::new(HashMap::new()),
             pointcuts: RwLock::new(Vec::new()),
@@ -845,8 +743,7 @@ impl AspectRegistry
 
     /// Register an aspect
     /// 注册切面
-    pub async fn register_aspect<T: Any + Send + Sync>(&self, name: String, instance: T)
-    {
+    pub async fn register_aspect<T: Any + Send + Sync>(&self, name: String, instance: T) {
         let info = AspectInfo {
             name: name.clone(),
             type_id: TypeId::of::<T>(),
@@ -865,8 +762,7 @@ impl AspectRegistry
         advice_type: AdviceType,
         aspect_name: String,
         method_name: String,
-    )
-    {
+    ) {
         let advice = PointcutAdvice {
             pointcut,
             advice_type,
@@ -883,15 +779,12 @@ impl AspectRegistry
     pub async fn find_matching_advice(
         &self,
         join_point: &JoinPoint,
-    ) -> Vec<(AdviceType, String, String)>
-    {
+    ) -> Vec<(AdviceType, String, String)> {
         let pointcuts = self.pointcuts.read().await;
         let mut matches = Vec::new();
 
-        for advice in pointcuts.iter()
-        {
-            if advice.pointcut.matches(join_point)
-            {
+        for advice in pointcuts.iter() {
+            if advice.pointcut.matches(join_point) {
                 matches.push((
                     advice.advice_type,
                     advice.aspect_name.clone(),
@@ -905,8 +798,7 @@ impl AspectRegistry
 
     /// Get an aspect by name
     /// 通过名称获取切面
-    pub async fn get_aspect(&self, name: &str) -> Option<Arc<dyn Any + Send + Sync>>
-    {
+    pub async fn get_aspect(&self, name: &str) -> Option<Arc<dyn Any + Send + Sync>> {
         let aspects = self.aspects.read().await;
         aspects.get(name).map(|info| info.instance.clone())
     }
@@ -917,8 +809,7 @@ impl AspectRegistry
         &self,
         pointcut: PointcutExpression,
         advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
-    )
-    {
+    ) {
         let mut advices = self.callable_advices.blocking_write();
         let fn_ptr: BeforeFn = Arc::new(advice);
         advices.push(CallableAdvice {
@@ -934,8 +825,7 @@ impl AspectRegistry
         &self,
         pointcut: PointcutExpression,
         advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
-    )
-    {
+    ) {
         let mut advices = self.callable_advices.blocking_write();
         let fn_ptr: AfterFn = Arc::new(advice);
         advices.push(CallableAdvice {
@@ -951,8 +841,7 @@ impl AspectRegistry
         &self,
         pointcut: PointcutExpression,
         advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static,
-    )
-    {
+    ) {
         let mut advices = self.callable_advices.blocking_write();
         let fn_ptr: AroundFn = Arc::new(advice);
         advices.push(CallableAdvice {
@@ -968,8 +857,7 @@ impl AspectRegistry
         &self,
         pointcut: PointcutExpression,
         advice: impl Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync + 'static,
-    )
-    {
+    ) {
         let mut advices = self.callable_advices.blocking_write();
         let fn_ptr: AfterReturningFn = Arc::new(advice);
         advices.push(CallableAdvice {
@@ -981,54 +869,41 @@ impl AspectRegistry
 
     /// Build an InterceptChain from all callable advice matching the join point.
     /// 从所有匹配连接点的可调用通知构建拦截链。
-    pub fn build_chain(&self, join_point: &JoinPoint) -> InterceptChain
-    {
+    pub fn build_chain(&self, join_point: &JoinPoint) -> InterceptChain {
         let advices = self.callable_advices.blocking_read();
         let mut chain = InterceptChain::new();
 
-        for advice in advices.iter()
-        {
-            if !advice.pointcut.matches(join_point)
-            {
+        for advice in advices.iter() {
+            if !advice.pointcut.matches(join_point) {
                 continue;
             }
 
-            match advice.advice_type
-            {
-                AdviceType::Before =>
-                {
-                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<BeforeFn>()
-                    {
+            match advice.advice_type {
+                AdviceType::Before => {
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<BeforeFn>() {
                         let f = Arc::clone(&fn_ptr);
                         chain.before(move |jp| f(jp));
                     }
                 },
-                AdviceType::After =>
-                {
-                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterFn>()
-                    {
+                AdviceType::After => {
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterFn>() {
                         let f = Arc::clone(&fn_ptr);
                         chain.after(move |jp| f(jp));
                     }
                 },
-                AdviceType::Around =>
-                {
-                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AroundFn>()
-                    {
+                AdviceType::Around => {
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AroundFn>() {
                         let f = Arc::clone(&fn_ptr);
                         chain.around(move |pjp| f(pjp));
                     }
                 },
-                AdviceType::AfterReturning =>
-                {
-                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterReturningFn>()
-                    {
+                AdviceType::AfterReturning => {
+                    if let Ok(fn_ptr) = advice.callback.clone().downcast::<AfterReturningFn>() {
                         let f = Arc::clone(&fn_ptr);
                         chain.after_returning(move |jp, val| f(jp, val));
                     }
                 },
-                AdviceType::AfterThrowing =>
-                {
+                AdviceType::AfterThrowing => {
                     // AfterThrowing not yet supported in InterceptChain
                     // AfterThrowing 尚未在 InterceptChain 中支持
                 },
@@ -1039,10 +914,8 @@ impl AspectRegistry
     }
 }
 
-impl Default for AspectRegistry
-{
-    fn default() -> Self
-    {
+impl Default for AspectRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -1058,11 +931,9 @@ static GLOBAL_REGISTRY: std::sync::LazyLock<AspectRegistry> =
 
 /// Get the global aspect registry
 /// 获取全局切面注册表
-pub fn global_registry() -> &'static AspectRegistry
-{
+pub fn global_registry() -> &'static AspectRegistry {
     &GLOBAL_REGISTRY
 }
-
 
 // ============================================================================
 // Intercept Result / 拦截结果
@@ -1070,53 +941,46 @@ pub fn global_registry() -> &'static AspectRegistry
 
 /// Result of intercepting a method call through the advice chain.
 /// 通过通知链拦截方法调用的结果。
-pub struct InterceptResult
-{
+pub struct InterceptResult {
     return_value: Option<Arc<dyn Any + Send + Sync>>,
 }
 
-impl InterceptResult
-{
+impl InterceptResult {
     /// Create a new intercept result with a return value.
     /// 创建带返回值的拦截结果。
-    pub fn new(return_value: Option<Arc<dyn Any + Send + Sync>>) -> Self
-    {
+    pub fn new(return_value: Option<Arc<dyn Any + Send + Sync>>) -> Self {
         Self { return_value }
     }
 
     /// Create an empty result (void method).
     /// 创建空结果（无返回值方法）。
-    pub fn empty() -> Self
-    {
+    pub fn empty() -> Self {
         Self { return_value: None }
     }
 
     /// Get the return value.
     /// 获取返回值。
-    pub fn return_value(&self) -> Option<&Arc<dyn Any + Send + Sync>>
-    {
+    pub fn return_value(&self) -> Option<&Arc<dyn Any + Send + Sync>> {
         self.return_value.as_ref()
     }
 
     /// Check if this result has a return value.
     /// 检查此结果是否有返回值。
-    pub fn has_return_value(&self) -> bool
-    {
+    pub fn has_return_value(&self) -> bool {
         self.return_value.is_some()
     }
 
     /// Get a typed reference to the return value.
     /// 获取返回值的类型化引用。
-    pub fn value<T: 'static>(&self) -> Option<&T>
-    {
-        self.return_value.as_ref().and_then(|v| v.downcast_ref::<T>())
+    pub fn value<T: 'static>(&self) -> Option<&T> {
+        self.return_value
+            .as_ref()
+            .and_then(|v| v.downcast_ref::<T>())
     }
 }
 
-impl fmt::Debug for InterceptResult
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for InterceptResult {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("InterceptResult")
             .field("has_return_value", &self.return_value.is_some())
             .finish()
@@ -1145,8 +1009,7 @@ impl fmt::Debug for InterceptResult
 /// let jp = JoinPoint::new(/* ... */);
 /// let result = chain.invoke(jp, || Some(Arc::new(42)));
 /// ```
-pub struct InterceptChain
-{
+pub struct InterceptChain {
     /// @Before advice callbacks
     /// @Before 通知回调
     before: Vec<Arc<dyn Fn(&JoinPoint) + Send + Sync>>,
@@ -1164,12 +1027,10 @@ pub struct InterceptChain
     after_returning: Vec<Arc<dyn Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync>>,
 }
 
-impl InterceptChain
-{
+impl InterceptChain {
     /// Create an empty intercept chain.
     /// 创建空拦截链。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             before: Vec::new(),
             after: Vec::new(),
@@ -1180,22 +1041,19 @@ impl InterceptChain
 
     /// Add @Before advice.
     /// 添加 @Before 通知。
-    pub fn before(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static)
-    {
+    pub fn before(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static) {
         self.before.push(Arc::new(advice));
     }
 
     /// Add @After advice (always executed, like finally).
     /// 添加 @After 通知（始终执行，类似 finally）。
-    pub fn after(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static)
-    {
+    pub fn after(&mut self, advice: impl Fn(&JoinPoint) + Send + Sync + 'static) {
         self.after.push(Arc::new(advice));
     }
 
     /// Add @Around advice.
     /// 添加 @Around 通知。
-    pub fn around(&mut self, advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static)
-    {
+    pub fn around(&mut self, advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static) {
         self.around.push(Arc::new(advice));
     }
 
@@ -1204,22 +1062,19 @@ impl InterceptChain
     pub fn after_returning(
         &mut self,
         advice: impl Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync + 'static,
-    )
-    {
+    ) {
         self.after_returning.push(Arc::new(advice));
     }
 
     /// Total number of advice in the chain.
     /// 链中通知总数。
-    pub fn total(&self) -> usize
-    {
+    pub fn total(&self) -> usize {
         self.before.len() + self.after.len() + self.around.len() + self.after_returning.len()
     }
 
     /// Check if the chain has no advice.
     /// 检查链是否没有通知。
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.total() == 0
     }
 
@@ -1239,32 +1094,23 @@ impl InterceptChain
     /// 3. 目标方法（如果 @Around 允许或没有 @Around）
     /// 4. 所有 @After 通知（始终执行，按注册顺序）
     /// 5. @AfterReturning 通知（如果目标成功并返回了值）
-    pub fn invoke<F>(
-        &self,
-        join_point: JoinPoint,
-        target: F,
-    ) -> InterceptResult
+    pub fn invoke<F>(&self, join_point: JoinPoint, target: F) -> InterceptResult
     where
         F: FnOnce() -> Option<Arc<dyn Any + Send + Sync>>,
     {
         // 1. Execute @Before advice
         // 执行 @Before 通知
-        for advice in &self.before
-        {
+        for advice in &self.before {
             advice(&join_point);
         }
 
         // 2. Execute @Around advice (if any)
         // 执行 @Around 通知（如果有的话）
-        let should_proceed = if self.around.is_empty()
-        {
+        let should_proceed = if self.around.is_empty() {
             true
-        }
-        else
-        {
+        } else {
             let mut pjp = ProceedingJoinPoint::new(join_point.clone());
-            for advice in &self.around
-            {
+            for advice in &self.around {
                 advice(&mut pjp);
             }
             pjp.is_proceeded()
@@ -1272,28 +1118,18 @@ impl InterceptChain
 
         // 3. Execute target if @Around allows
         // 如果 @Around 允许，执行目标
-        let result = if should_proceed
-        {
-            target()
-        }
-        else
-        {
-            None
-        };
+        let result = if should_proceed { target() } else { None };
 
         // 4. Execute @After advice (always)
         // 执行 @After 通知（始终执行）
-        for advice in &self.after
-        {
+        for advice in &self.after {
             advice(&join_point);
         }
 
         // 5. Execute @AfterReturning advice (on success with value)
         // 执行 @AfterReturning 通知（成功返回时）
-        if let Some(ref value) = result
-        {
-            for advice in &self.after_returning
-            {
+        if let Some(ref value) = result {
+            for advice in &self.after_returning {
                 advice(&join_point, value);
             }
         }
@@ -1302,18 +1138,14 @@ impl InterceptChain
     }
 }
 
-impl Default for InterceptChain
-{
-    fn default() -> Self
-    {
+impl Default for InterceptChain {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl fmt::Debug for InterceptChain
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for InterceptChain {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("InterceptChain")
             .field("before_count", &self.before.len())
             .field("after_count", &self.after.len())
@@ -1328,9 +1160,14 @@ impl fmt::Debug for InterceptChain
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     // ========================================================================
@@ -1339,8 +1176,7 @@ mod tests
 
     /// Create a simple JoinPoint for testing
     /// 创建用于测试的简单 JoinPoint
-    fn make_join_point(method: &str, class: &str) -> JoinPoint
-    {
+    fn make_join_point(method: &str, class: &str) -> JoinPoint {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("target");
         JoinPoint::new(
             target,
@@ -1357,8 +1193,7 @@ mod tests
         method: &str,
         class: &str,
         args: Vec<Arc<dyn Any + Send + Sync>>,
-    ) -> JoinPoint
-    {
+    ) -> JoinPoint {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("target");
         let sig = format!("{}({} args)", method, args.len());
         JoinPoint::new(target, method.to_string(), args, sig, class.to_string())
@@ -1371,8 +1206,7 @@ mod tests
     /// Test basic JoinPoint construction and field access
     /// 测试基本 JoinPoint 构造和字段访问
     #[test]
-    fn test_join_point_basic_fields()
-    {
+    fn test_join_point_basic_fields() {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("test");
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(42), Arc::new("hello")];
 
@@ -1393,8 +1227,7 @@ mod tests
     /// Test JoinPoint with no arguments
     /// 测试无参数的 JoinPoint
     #[test]
-    fn test_join_point_no_args()
-    {
+    fn test_join_point_no_args() {
         let jp = make_join_point("no_args_method", "Svc");
 
         assert_eq!(jp.method_name(), "no_args_method");
@@ -1405,8 +1238,7 @@ mod tests
     /// Test JoinPoint typed argument retrieval via arg<T>
     /// 测试通过 arg<T> 获取类型化参数
     #[test]
-    fn test_join_point_typed_arg_access()
-    {
+    fn test_join_point_typed_arg_access() {
         let args: Vec<Arc<dyn Any + Send + Sync>> =
             vec![Arc::new(99_i32), Arc::new("world".to_string())];
         let jp = make_join_point_with_args("typed_method", "Repo", args);
@@ -1430,8 +1262,7 @@ mod tests
     /// Test JoinPoint arg<T> with wrong type returns None
     /// 测试 arg<T> 类型不匹配时返回 None
     #[test]
-    fn test_join_point_arg_wrong_type()
-    {
+    fn test_join_point_arg_wrong_type() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(42_i32)];
         let jp = make_join_point_with_args("cast_method", "Svc", args);
 
@@ -1444,8 +1275,7 @@ mod tests
     /// Test JoinPoint Clone produces an equal copy
     /// 测试 JoinPoint Clone 产生相等的副本
     #[test]
-    fn test_join_point_clone()
-    {
+    fn test_join_point_clone() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![Arc::new(7_i32)];
         let jp = make_join_point_with_args("clone_method", "Svc", args);
         let jp2 = jp.clone();
@@ -1459,8 +1289,7 @@ mod tests
     /// Test JoinPoint Debug output contains key fields
     /// 测试 JoinPoint Debug 输出包含关键字段
     #[test]
-    fn test_join_point_debug()
-    {
+    fn test_join_point_debug() {
         let jp = make_join_point("debug_method", "DebugClass");
         let debug_str = format!("{:?}", jp);
 
@@ -1472,8 +1301,7 @@ mod tests
     /// Test JoinPoint target accessor returns the original Arc
     /// 测试 JoinPoint target 访问器返回原始 Arc
     #[test]
-    fn test_join_point_target_accessor()
-    {
+    fn test_join_point_target_accessor() {
         let target: Arc<dyn Any + Send + Sync> = Arc::new("my_target");
         let jp =
             JoinPoint::new(target, "m".to_string(), vec![], "m()".to_string(), "C".to_string());
@@ -1491,8 +1319,7 @@ mod tests
     /// Test PointcutExpression stores and returns the raw expression string
     /// 测试切点表达式存储并返回原始表达式字符串
     #[test]
-    fn test_pointcut_expression_stores_raw_string()
-    {
+    fn test_pointcut_expression_stores_raw_string() {
         let raw = "execution(* com.example..*.*(..))";
         let expr = PointcutExpression::new(raw.to_string());
         assert_eq!(expr.expression(), raw);
@@ -1501,8 +1328,7 @@ mod tests
     /// Test execution pointcut matches any method via wildcard
     /// 测试 execution 切点通过通配符匹配任意方法
     #[test]
-    fn test_pointcut_execution_wildcard_matches()
-    {
+    fn test_pointcut_execution_wildcard_matches() {
         let expr = PointcutExpression::new("execution(* *..*.*(..))".to_string());
         let jp = make_join_point("any_method", "AnyClass");
 
@@ -1512,8 +1338,7 @@ mod tests
     /// Test execution pointcut with specific method name matches
     /// 测试带有具体方法名的 execution 切点匹配
     #[test]
-    fn test_pointcut_execution_specific_method()
-    {
+    fn test_pointcut_execution_specific_method() {
         let expr = PointcutExpression::new(
             "execution(* com.example.Service.specific_method(..))".to_string(),
         );
@@ -1527,8 +1352,7 @@ mod tests
     /// Test within pointcut matches target class
     /// 测试 within 切点匹配目标类
     #[test]
-    fn test_pointcut_within_matches_class()
-    {
+    fn test_pointcut_within_matches_class() {
         let expr = PointcutExpression::new("within(com.example.Service)".to_string());
 
         let jp_match = make_join_point("method_a", "com.example.Service");
@@ -1538,8 +1362,7 @@ mod tests
     /// Test within pointcut with wildcard matches any class
     /// 测试带通配符的 within 切点匹配任意类
     #[test]
-    fn test_pointcut_within_wildcard()
-    {
+    fn test_pointcut_within_wildcard() {
         let expr = PointcutExpression::new("within(*)".to_string());
         let jp = make_join_point("anything", "AnyClass");
 
@@ -1549,8 +1372,7 @@ mod tests
     /// Test @annotation pointcut expression is parsed without panic
     /// 测试 @annotation 切点表达式解析不会 panic
     #[test]
-    fn test_pointcut_annotation_parsing()
-    {
+    fn test_pointcut_annotation_parsing() {
         let expr = PointcutExpression::new("@annotation(org.example.Transactional)".to_string());
         assert_eq!(expr.expression(), "@annotation(org.example.Transactional)");
     }
@@ -1558,8 +1380,7 @@ mod tests
     /// Test combined expression with AND operator
     /// 测试带 AND 操作符的组合表达式
     #[test]
-    fn test_pointcut_and_operator()
-    {
+    fn test_pointcut_and_operator() {
         let expr = PointcutExpression::new(
             "execution(* *..*.*(..)) && within(com.example.Service)".to_string(),
         );
@@ -1571,8 +1392,7 @@ mod tests
     /// Test combined expression with OR operator
     /// 测试带 OR 操作符的组合表达式
     #[test]
-    fn test_pointcut_or_operator()
-    {
+    fn test_pointcut_or_operator() {
         let expr = PointcutExpression::new(
             "execution(* com.example..*.*(..)) || within(com.other..*)".to_string(),
         );
@@ -1582,8 +1402,7 @@ mod tests
     /// Test empty expression produces no components and never matches
     /// 测试空表达式不产生组件且永不匹配
     #[test]
-    fn test_pointcut_empty_expression()
-    {
+    fn test_pointcut_empty_expression() {
         let expr = PointcutExpression::new(String::new());
         let jp = make_join_point("any", "Any");
 
@@ -1594,8 +1413,7 @@ mod tests
     /// Test PointcutExpression clone preserves expression string
     /// 测试切点表达式克隆保留表达式字符串
     #[test]
-    fn test_pointcut_clone()
-    {
+    fn test_pointcut_clone() {
         let expr = PointcutExpression::new("execution(* com.example..*.*(..))".to_string());
         let cloned = expr.clone();
 
@@ -1605,8 +1423,7 @@ mod tests
     /// Test PointcutExpression Debug output
     /// 测试切点表达式 Debug 输出
     #[test]
-    fn test_pointcut_debug()
-    {
+    fn test_pointcut_debug() {
         let expr = PointcutExpression::new("execution(* *(..))".to_string());
         let debug_str = format!("{:?}", expr);
 
@@ -1620,8 +1437,7 @@ mod tests
     /// Test AdviceType variants equality
     /// 测试 AdviceType 变体的相等性
     #[test]
-    fn test_advice_type_equality()
-    {
+    fn test_advice_type_equality() {
         assert_eq!(AdviceType::Before, AdviceType::Before);
         assert_eq!(AdviceType::After, AdviceType::After);
         assert_eq!(AdviceType::Around, AdviceType::Around);
@@ -1636,8 +1452,7 @@ mod tests
     /// Test AdviceType Copy and Clone
     /// 测试 AdviceType 的 Copy 和 Clone
     #[test]
-    fn test_advice_type_copy_clone()
-    {
+    fn test_advice_type_copy_clone() {
         let a = AdviceType::Before;
         let b = a; // Copy
         let c = a; // Copy again
@@ -1648,8 +1463,7 @@ mod tests
     /// Test AdviceType Debug output contains variant names
     /// 测试 AdviceType Debug 输出包含变体名称
     #[test]
-    fn test_advice_type_debug()
-    {
+    fn test_advice_type_debug() {
         assert!(format!("{:?}", AdviceType::Before).contains("Before"));
         assert!(format!("{:?}", AdviceType::After).contains("After"));
         assert!(format!("{:?}", AdviceType::Around).contains("Around"));
@@ -1662,8 +1476,7 @@ mod tests
     /// Test AspectRegistry creation with new() and default()
     /// 测试使用 new() 和 default() 创建切面注册表
     #[test]
-    fn test_aspect_registry_new_and_default()
-    {
+    fn test_aspect_registry_new_and_default() {
         let _r1 = AspectRegistry::new();
         let _r2 = AspectRegistry::default();
     }
@@ -1671,8 +1484,7 @@ mod tests
     /// Test registering and retrieving an aspect
     /// 测试注册并获取切面
     #[tokio::test]
-    async fn test_aspect_registry_register_and_get()
-    {
+    async fn test_aspect_registry_register_and_get() {
         let registry = AspectRegistry::new();
 
         let instance = "test_aspect";
@@ -1692,8 +1504,7 @@ mod tests
     /// Test retrieving a non-existent aspect returns None
     /// 测试获取不存在的切面返回 None
     #[tokio::test]
-    async fn test_aspect_registry_get_missing()
-    {
+    async fn test_aspect_registry_get_missing() {
         let registry = AspectRegistry::new();
 
         let result = registry.get_aspect("DoesNotExist").await;
@@ -1703,8 +1514,7 @@ mod tests
     /// Test registering multiple aspects
     /// 测试注册多个切面
     #[tokio::test]
-    async fn test_aspect_registry_multiple_aspects()
-    {
+    async fn test_aspect_registry_multiple_aspects() {
         let registry = AspectRegistry::new();
 
         registry.register_aspect("AspectA".to_string(), 1_i32).await;
@@ -1723,8 +1533,7 @@ mod tests
     /// Test overwriting an aspect with the same name
     /// 测试用相同名称覆盖切面
     #[tokio::test]
-    async fn test_aspect_registry_overwrite()
-    {
+    async fn test_aspect_registry_overwrite() {
         let registry = AspectRegistry::new();
 
         registry.register_aspect("Aspect".to_string(), "v1").await;
@@ -1737,8 +1546,7 @@ mod tests
     /// Test register_pointcut and find_matching_advice
     /// 测试注册切点和查找匹配通知
     #[tokio::test]
-    async fn test_aspect_registry_register_pointcut_and_match()
-    {
+    async fn test_aspect_registry_register_pointcut_and_match() {
         let registry = AspectRegistry::new();
 
         let pointcut = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1763,8 +1571,7 @@ mod tests
     /// Test find_matching_advice with no registered pointcuts
     /// 测试无已注册切点时查找匹配通知
     #[tokio::test]
-    async fn test_aspect_registry_no_matching_advice()
-    {
+    async fn test_aspect_registry_no_matching_advice() {
         let registry = AspectRegistry::new();
 
         let jp = make_join_point("method", "Class");
@@ -1776,8 +1583,7 @@ mod tests
     /// Test multiple pointcuts matching the same join point
     /// 测试多个切点匹配同一个连接点
     #[tokio::test]
-    async fn test_aspect_registry_multiple_matching_pointcuts()
-    {
+    async fn test_aspect_registry_multiple_matching_pointcuts() {
         let registry = AspectRegistry::new();
 
         let p1 = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1799,8 +1605,7 @@ mod tests
     /// Test pointcut with non-matching join point returns empty
     /// 测试切点与不匹配的连接点返回空结果
     #[tokio::test]
-    async fn test_aspect_registry_pointcut_no_match()
-    {
+    async fn test_aspect_registry_pointcut_no_match() {
         let registry = AspectRegistry::new();
 
         // Empty expression never matches
@@ -1823,8 +1628,7 @@ mod tests
     /// Test global_registry() returns a valid reference
     /// 测试 global_registry() 返回有效引用
     #[test]
-    fn test_global_registry_exists()
-    {
+    fn test_global_registry_exists() {
         let reg = global_registry();
         // Verify it is the same instance each call
         // 验证每次调用返回同一实例
@@ -1835,8 +1639,7 @@ mod tests
     /// Test global registry can register and retrieve aspects
     /// 测试全局注册表可以注册和获取切面
     #[tokio::test]
-    async fn test_global_registry_register_and_get()
-    {
+    async fn test_global_registry_register_and_get() {
         let registry = global_registry();
 
         registry
@@ -1855,8 +1658,7 @@ mod tests
     /// Test full workflow: register aspect, register pointcuts, match advice
     /// 测试完整流程：注册切面、注册切点、匹配通知
     #[tokio::test]
-    async fn test_full_aop_workflow()
-    {
+    async fn test_full_aop_workflow() {
         let registry = AspectRegistry::new();
 
         // Register aspect instance
@@ -1919,8 +1721,7 @@ mod tests
 
         // All advice belong to the same aspect
         // 所有通知属于同一个切面
-        for m in &matches
-        {
+        for m in &matches {
             assert_eq!(m.1, "TransactionAspect");
         }
     }
@@ -1928,8 +1729,7 @@ mod tests
     /// Test advice ordering: before, around, after registered in sequence
     /// 测试通知顺序：按前置、环绕、后置顺序注册
     #[tokio::test]
-    async fn test_advice_ordering()
-    {
+    async fn test_advice_ordering() {
         let registry = AspectRegistry::new();
 
         let wildcard = PointcutExpression::new("execution(* *..*.*(..))".to_string());
@@ -1972,8 +1772,7 @@ mod tests
     /// Test JoinPoint with complex typed arguments
     /// 测试带有复杂类型参数的 JoinPoint
     #[test]
-    fn test_join_point_complex_args()
-    {
+    fn test_join_point_complex_args() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = vec![
             Arc::new(42_i64),
             Arc::new(true),
@@ -1992,8 +1791,7 @@ mod tests
     /// Test JoinPoint with many arguments
     /// 测试带有大量参数的 JoinPoint
     #[test]
-    fn test_join_point_many_args()
-    {
+    fn test_join_point_many_args() {
         let args: Vec<Arc<dyn Any + Send + Sync>> = (0..100)
             .map(|i| Arc::new(i) as Arc<dyn Any + Send + Sync>)
             .collect();
@@ -2014,8 +1812,7 @@ mod tests
     /// Test empty intercept chain passes through to target.
     /// 测试空拦截链直接传递到目标。
     #[test]
-    fn test_intercept_chain_empty()
-    {
+    fn test_intercept_chain_empty() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let target_called = Arc::new(AtomicBool::new(false));
         let target_called_clone = target_called.clone();
@@ -2034,8 +1831,7 @@ mod tests
     /// Test @Before advice executes before the target.
     /// 测试 @Before 通知在目标之前执行。
     #[test]
-    fn test_intercept_chain_before()
-    {
+    fn test_intercept_chain_before() {
         use std::sync::atomic::{AtomicI32, Ordering};
         let order = Arc::new(AtomicI32::new(0));
         let before_order = order.clone();
@@ -2058,8 +1854,7 @@ mod tests
     /// Test @After advice always executes after the target.
     /// 测试 @After 通知始终在目标之后执行。
     #[test]
-    fn test_intercept_chain_after_always_runs()
-    {
+    fn test_intercept_chain_after_always_runs() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let after_called = Arc::new(AtomicBool::new(false));
         let after_clone = after_called.clone();
@@ -2078,8 +1873,7 @@ mod tests
     /// Test @Around advice with proceed allows target to run.
     /// 测试 @Around 通知调用 proceed 后目标执行。
     #[test]
-    fn test_intercept_chain_around_proceed()
-    {
+    fn test_intercept_chain_around_proceed() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let target_called = Arc::new(AtomicBool::new(false));
         let target_clone = target_called.clone();
@@ -2101,8 +1895,7 @@ mod tests
     /// Test @Around advice without proceed blocks target.
     /// 测试 @Around 通知不调用 proceed 时目标被阻止。
     #[test]
-    fn test_intercept_chain_around_block()
-    {
+    fn test_intercept_chain_around_block() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let target_called = Arc::new(AtomicBool::new(false));
         let target_clone = target_called.clone();
@@ -2126,8 +1919,7 @@ mod tests
     /// Test full lifecycle: Before -> Around(proceed) -> Target -> After -> AfterReturning.
     /// 测试完整生命周期：Before -> Around(proceed) -> 目标 -> After -> AfterReturning。
     #[test]
-    fn test_intercept_chain_full_lifecycle()
-    {
+    fn test_intercept_chain_full_lifecycle() {
         use std::sync::atomic::{AtomicI32, Ordering};
         let order = Arc::new(AtomicI32::new(0));
         let log: Arc<std::sync::Mutex<Vec<i32>>> = Arc::new(std::sync::Mutex::new(Vec::new()));
@@ -2175,8 +1967,7 @@ mod tests
     /// Test @AfterReturning receives the return value.
     /// 测试 @AfterReturning 接收返回值。
     #[test]
-    fn test_intercept_chain_after_returning()
-    {
+    fn test_intercept_chain_after_returning() {
         use std::sync::atomic::{AtomicI32, Ordering};
         let received = Arc::new(AtomicI32::new(0));
         let received_clone = received.clone();
@@ -2197,9 +1988,9 @@ mod tests
     /// Test InterceptResult typed value access.
     /// 测试 InterceptResult 类型化值访问。
     #[test]
-    fn test_intercept_result_typed_access()
-    {
-        let result = InterceptResult::new(Some(Arc::new("hello".to_string()) as Arc<dyn Any + Send + Sync>));
+    fn test_intercept_result_typed_access() {
+        let result =
+            InterceptResult::new(Some(Arc::new("hello".to_string()) as Arc<dyn Any + Send + Sync>));
 
         assert!(result.has_return_value());
         assert_eq!(result.value::<String>(), Some(&String::from("hello")));
@@ -2209,8 +2000,7 @@ mod tests
     /// Test InterceptResult empty.
     /// 测试 InterceptResult 空。
     #[test]
-    fn test_intercept_result_empty()
-    {
+    fn test_intercept_result_empty() {
         let result = InterceptResult::empty();
         assert!(!result.has_return_value());
         assert!(result.return_value().is_none());
@@ -2219,8 +2009,7 @@ mod tests
     /// Test InterceptResult Debug output.
     /// 测试 InterceptResult Debug 输出。
     #[test]
-    fn test_intercept_result_debug()
-    {
+    fn test_intercept_result_debug() {
         let result = InterceptResult::new(Some(Arc::new(42_i32) as Arc<dyn Any + Send + Sync>));
         let debug = format!("{:?}", result);
         assert!(debug.contains("InterceptResult"));
@@ -2230,8 +2019,7 @@ mod tests
     /// Test InterceptChain Debug output.
     /// 测试 InterceptChain Debug 输出。
     #[test]
-    fn test_intercept_chain_debug()
-    {
+    fn test_intercept_chain_debug() {
         let chain = InterceptChain::new();
         let debug = format!("{:?}", chain);
         assert!(debug.contains("InterceptChain"));
@@ -2241,8 +2029,7 @@ mod tests
     /// Test InterceptChain default.
     /// 测试 InterceptChain default。
     #[test]
-    fn test_intercept_chain_default()
-    {
+    fn test_intercept_chain_default() {
         let chain = InterceptChain::default();
         assert!(chain.is_empty());
         assert_eq!(chain.total(), 0);
@@ -2251,23 +2038,28 @@ mod tests
     /// Test multiple @Before advice execute in registration order.
     /// 测试多个 @Before 通知按注册顺序执行。
     #[test]
-    fn test_intercept_chain_multiple_before_order()
-    {
+    fn test_intercept_chain_multiple_before_order() {
         use std::sync::Mutex;
         let log: Arc<Mutex<Vec<i32>>> = Arc::new(Mutex::new(Vec::new()));
 
         let mut chain = InterceptChain::new();
         {
             let log = log.clone();
-            chain.before(move |_| { log.lock().unwrap().push(1); });
+            chain.before(move |_| {
+                log.lock().unwrap().push(1);
+            });
         }
         {
             let log = log.clone();
-            chain.before(move |_| { log.lock().unwrap().push(2); });
+            chain.before(move |_| {
+                log.lock().unwrap().push(2);
+            });
         }
         {
             let log = log.clone();
-            chain.before(move |_| { log.lock().unwrap().push(3); });
+            chain.before(move |_| {
+                log.lock().unwrap().push(3);
+            });
         }
 
         let jp = make_join_point("ordered", "Svc");
@@ -2279,14 +2071,15 @@ mod tests
     /// Test @After runs even when no @Around and target returns None.
     /// 测试即使没有 @Around 且目标返回 None，@After 仍执行。
     #[test]
-    fn test_after_runs_on_void_target()
-    {
+    fn test_after_runs_on_void_target() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let after_called = Arc::new(AtomicBool::new(false));
         let after_clone = after_called.clone();
 
         let mut chain = InterceptChain::new();
-        chain.after(move |_| { after_clone.store(true, Ordering::SeqCst); });
+        chain.after(move |_| {
+            after_clone.store(true, Ordering::SeqCst);
+        });
 
         let jp = make_join_point("void_method", "Svc");
         chain.invoke(jp, || None);
@@ -2299,8 +2092,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_registry_build_chain_before_after()
-    {
+    fn test_registry_build_chain_before_after() {
         let log: Arc<std::sync::Mutex<Vec<i32>>> = Arc::new(std::sync::Mutex::new(Vec::new()));
 
         let registry = AspectRegistry::new();
@@ -2334,15 +2126,16 @@ mod tests
     }
 
     #[test]
-    fn test_registry_build_chain_around()
-    {
+    fn test_registry_build_chain_around() {
         use std::sync::atomic::{AtomicBool, Ordering};
         let target_called = Arc::new(AtomicBool::new(false));
         let target_clone = target_called.clone();
 
         let registry = AspectRegistry::new();
         let pointcut = PointcutExpression::new("within(*)".to_string());
-        registry.register_around(pointcut, |pjp| { pjp.proceed(); });
+        registry.register_around(pointcut, |pjp| {
+            pjp.proceed();
+        });
 
         let jp = make_join_point("save", "Repo");
         let chain = registry.build_chain(&jp);
@@ -2355,8 +2148,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_build_chain_no_match()
-    {
+    fn test_registry_build_chain_no_match() {
         let registry = AspectRegistry::new();
         let pointcut = PointcutExpression::new("execution(* nonexistent.method(..))".to_string());
         registry.register_before(pointcut, |_| {});
@@ -2366,4 +2158,3 @@ mod tests
         assert!(chain.is_empty());
     }
 }
-

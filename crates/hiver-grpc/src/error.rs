@@ -6,8 +6,7 @@ use thiserror::Error;
 /// gRPC-level errors.
 /// gRPC 级别错误。
 #[derive(Debug, Error)]
-pub enum GrpcError
-{
+pub enum GrpcError {
     /// Transport / connection error.
     /// 传输/连接错误。
     #[error("gRPC transport error: {0}")]
@@ -29,44 +28,35 @@ pub enum GrpcError
     Serialization(String),
 }
 
-impl From<tonic::transport::Error> for GrpcError
-{
-    fn from(e: tonic::transport::Error) -> Self
-    {
+impl From<tonic::transport::Error> for GrpcError {
+    fn from(e: tonic::transport::Error) -> Self {
         GrpcError::Transport(Box::new(e))
     }
 }
 
-impl From<tonic::Status> for GrpcError
-{
-    fn from(s: tonic::Status) -> Self
-    {
+impl From<tonic::Status> for GrpcError {
+    fn from(s: tonic::Status) -> Self {
         GrpcError::Status(Box::new(s))
     }
 }
 
-impl GrpcError
-{
+impl GrpcError {
     /// Create a config error.
     /// 创建配置错误。
-    pub fn config(msg: impl Into<String>) -> Self
-    {
+    pub fn config(msg: impl Into<String>) -> Self {
         Self::Config(msg.into())
     }
 
     /// Create a serialization error.
     /// 创建序列化错误。
-    pub fn serialization(msg: impl Into<String>) -> Self
-    {
+    pub fn serialization(msg: impl Into<String>) -> Self {
         Self::Serialization(msg.into())
     }
 
     /// Convert to a `tonic::Status`.
     /// 转换为 tonic::Status。
-    pub fn into_status(self) -> tonic::Status
-    {
-        match self
-        {
+    pub fn into_status(self) -> tonic::Status {
+        match self {
             GrpcError::Status(s) => *s,
             GrpcError::Transport(e) => tonic::Status::unavailable(format!("transport: {e}")),
             GrpcError::Config(msg) => tonic::Status::invalid_argument(msg),

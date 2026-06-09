@@ -14,8 +14,7 @@ use std::time::Duration;
 /// Kafka configuration.
 /// Kafka 配置。
 #[derive(Debug, Clone)]
-pub struct KafkaConfig
-{
+pub struct KafkaConfig {
     /// Bootstrap servers (comma-separated).
     pub bootstrap_servers: String,
     /// Consumer group ID.
@@ -30,10 +29,8 @@ pub struct KafkaConfig
     pub properties: HashMap<String, String>,
 }
 
-impl Default for KafkaConfig
-{
-    fn default() -> Self
-    {
+impl Default for KafkaConfig {
+    fn default() -> Self {
         Self {
             bootstrap_servers: "localhost:9092".to_string(),
             group_id: "hiver-consumer-group".to_string(),
@@ -45,11 +42,9 @@ impl Default for KafkaConfig
     }
 }
 
-impl KafkaConfig
-{
+impl KafkaConfig {
     /// Create a new config with bootstrap servers.
-    pub fn new(bootstrap_servers: impl Into<String>) -> Self
-    {
+    pub fn new(bootstrap_servers: impl Into<String>) -> Self {
         Self {
             bootstrap_servers: bootstrap_servers.into(),
             ..Self::default()
@@ -57,22 +52,19 @@ impl KafkaConfig
     }
 
     /// Set the consumer group ID.
-    pub fn group_id(mut self, id: impl Into<String>) -> Self
-    {
+    pub fn group_id(mut self, id: impl Into<String>) -> Self {
         self.group_id = id.into();
         self
     }
 
     /// Set auto offset reset.
-    pub fn auto_offset_reset(mut self, reset: impl Into<String>) -> Self
-    {
+    pub fn auto_offset_reset(mut self, reset: impl Into<String>) -> Self {
         self.auto_offset_reset = reset.into();
         self
     }
 
     /// Add a custom property.
-    pub fn property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.properties.insert(key.into(), value.into());
         self
     }
@@ -81,8 +73,7 @@ impl KafkaConfig
 /// A Kafka message.
 /// Kafka 消息。
 #[derive(Debug, Clone)]
-pub struct KafkaMessage
-{
+pub struct KafkaMessage {
     /// Topic name.
     pub topic: String,
     /// Message key.
@@ -97,11 +88,9 @@ pub struct KafkaMessage
     pub timestamp: Option<i64>,
 }
 
-impl KafkaMessage
-{
+impl KafkaMessage {
     /// Create a new message for the given topic.
-    pub fn new(topic: impl Into<String>, value: impl Into<Vec<u8>>) -> Self
-    {
+    pub fn new(topic: impl Into<String>, value: impl Into<Vec<u8>>) -> Self {
         Self {
             topic: topic.into(),
             key: None,
@@ -113,22 +102,19 @@ impl KafkaMessage
     }
 
     /// Set the message key.
-    pub fn key(mut self, key: impl Into<String>) -> Self
-    {
+    pub fn key(mut self, key: impl Into<String>) -> Self {
         self.key = Some(key.into());
         self
     }
 
     /// Set the partition.
-    pub fn partition(mut self, partition: i32) -> Self
-    {
+    pub fn partition(mut self, partition: i32) -> Self {
         self.partition = Some(partition);
         self
     }
 
     /// Add a header.
-    pub fn header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.headers.insert(key.into(), value.into());
         self
     }
@@ -136,8 +122,7 @@ impl KafkaMessage
 
 /// Kafka producer trait.
 /// Kafka 生产者 trait。
-pub trait KafkaProducer: Send + Sync
-{
+pub trait KafkaProducer: Send + Sync {
     /// Send a message to a topic.
     fn send(&self, message: KafkaMessage) -> Result<RecordMetadata, KafkaError>;
 
@@ -150,8 +135,7 @@ pub trait KafkaProducer: Send + Sync
 
 /// Kafka consumer trait.
 /// Kafka 消费者 trait。
-pub trait KafkaConsumer: Send + Sync
-{
+pub trait KafkaConsumer: Send + Sync {
     /// Subscribe to topics.
     fn subscribe(&self, topics: &[&str]) -> Result<(), KafkaError>;
 
@@ -168,8 +152,7 @@ pub trait KafkaConsumer: Send + Sync
 /// Record metadata returned after sending.
 /// 发送后返回的记录元数据。
 #[derive(Debug, Clone)]
-pub struct RecordMetadata
-{
+pub struct RecordMetadata {
     /// Topic name.
     pub topic: String,
     /// Partition.
@@ -183,8 +166,7 @@ pub struct RecordMetadata
 /// Kafka error type.
 /// Kafka 错误类型。
 #[derive(Debug)]
-pub enum KafkaError
-{
+pub enum KafkaError {
     /// Connection error.
     Connection(String),
     /// Serialization error.
@@ -197,12 +179,9 @@ pub enum KafkaError
     Other(String),
 }
 
-impl std::fmt::Display for KafkaError
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
+impl std::fmt::Display for KafkaError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
             Self::Connection(msg) => write!(f, "Kafka connection error: {}", msg),
             Self::Serialization(msg) => write!(f, "Kafka serialization error: {}", msg),
             Self::Timeout => write!(f, "Kafka timeout"),
@@ -216,16 +195,13 @@ impl std::error::Error for KafkaError {}
 
 /// Kafka template for simplified messaging.
 /// Kafka 模板，用于简化消息传递。
-pub struct KafkaTemplate
-{
+pub struct KafkaTemplate {
     producer: Arc<dyn KafkaProducer>,
 }
 
-impl KafkaTemplate
-{
+impl KafkaTemplate {
     /// Create a new KafkaTemplate with the given producer.
-    pub fn new(producer: Arc<dyn KafkaProducer>) -> Self
-    {
+    pub fn new(producer: Arc<dyn KafkaProducer>) -> Self {
         Self { producer }
     }
 
@@ -235,11 +211,9 @@ impl KafkaTemplate
         topic: &str,
         key: Option<&str>,
         value: &[u8],
-    ) -> Result<RecordMetadata, KafkaError>
-    {
+    ) -> Result<RecordMetadata, KafkaError> {
         let mut msg = KafkaMessage::new(topic, value.to_vec());
-        if let Some(k) = key
-        {
+        if let Some(k) = key {
             msg = msg.key(k);
         }
         self.producer.send(msg)
@@ -249,8 +223,7 @@ impl KafkaTemplate
 /// Kafka topic configuration.
 /// Kafka topic 配置。
 #[derive(Debug, Clone)]
-pub struct TopicConfig
-{
+pub struct TopicConfig {
     /// Topic name.
     pub name: String,
     /// Number of partitions.
@@ -261,11 +234,9 @@ pub struct TopicConfig
     pub retention_ms: Option<i64>,
 }
 
-impl TopicConfig
-{
+impl TopicConfig {
     /// Create a new topic config.
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             partitions: 3,
@@ -275,29 +246,31 @@ impl TopicConfig
     }
 
     /// Set partitions.
-    pub fn partitions(mut self, n: u32) -> Self
-    {
+    pub fn partitions(mut self, n: u32) -> Self {
         self.partitions = n;
         self
     }
 
     /// Set replication factor.
-    pub fn replication_factor(mut self, n: u32) -> Self
-    {
+    pub fn replication_factor(mut self, n: u32) -> Self {
         self.replication_factor = n;
         self
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_kafka_config_builder()
-    {
+    fn test_kafka_config_builder() {
         let config = KafkaConfig::new("kafka:9092")
             .group_id("test-group")
             .auto_offset_reset("earliest");
@@ -306,8 +279,7 @@ mod tests
     }
 
     #[test]
-    fn test_kafka_message_builder()
-    {
+    fn test_kafka_message_builder() {
         let msg = KafkaMessage::new("test-topic", b"hello".to_vec())
             .key("key1")
             .partition(0)
@@ -317,8 +289,7 @@ mod tests
     }
 
     #[test]
-    fn test_topic_config()
-    {
+    fn test_topic_config() {
         let tc = TopicConfig::new("orders").partitions(6);
         assert_eq!(tc.name, "orders");
         assert_eq!(tc.partitions, 6);

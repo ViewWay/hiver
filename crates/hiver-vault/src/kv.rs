@@ -40,17 +40,14 @@ use crate::{
 /// }
 /// ```
 #[derive(Debug)]
-pub struct KvV1<'a>
-{
+pub struct KvV1<'a> {
     client: &'a VaultClient,
     mount: String,
 }
 
-impl<'a> KvV1<'a>
-{
+impl<'a> KvV1<'a> {
     /// Create a new KV v1 backend handle / 创建新的 KV v1 后端句柄
-    pub fn new(client: &'a VaultClient, mount: &str) -> Self
-    {
+    pub fn new(client: &'a VaultClient, mount: &str) -> Self {
         Self {
             client,
             mount: mount.to_string(),
@@ -61,8 +58,7 @@ impl<'a> KvV1<'a>
     ///
     /// Reads the secret at the given path within the KV v1 mount.
     /// 读取 KV v1 挂载中指定路径的密钥。
-    pub async fn read(&self, path: &str) -> VaultResult<serde_json::Value>
-    {
+    pub async fn read(&self, path: &str) -> VaultResult<serde_json::Value> {
         let full_path = format!("{}/{}", self.mount, path);
         let resp = self.client.get(&full_path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -76,8 +72,7 @@ impl<'a> KvV1<'a>
     ///
     /// Writes the given data to the specified path within the KV v1 mount.
     /// 将给定数据写入 KV v1 挂载中指定路径。
-    pub async fn write(&self, path: &str, data: serde_json::Value) -> VaultResult<()>
-    {
+    pub async fn write(&self, path: &str, data: serde_json::Value) -> VaultResult<()> {
         let full_path = format!("{}/{}", self.mount, path);
         let body = serde_json::json!({ "data": data });
         self.client.post(&full_path, &body).await?;
@@ -88,8 +83,7 @@ impl<'a> KvV1<'a>
     ///
     /// Deletes the secret at the given path.
     /// 删除指定路径的密钥。
-    pub async fn delete(&self, path: &str) -> VaultResult<()>
-    {
+    pub async fn delete(&self, path: &str) -> VaultResult<()> {
         let full_path = format!("{}/{}", self.mount, path);
         self.client.delete(&full_path).await?;
         Ok(())
@@ -99,8 +93,7 @@ impl<'a> KvV1<'a>
     ///
     /// Lists all secrets at the given path prefix.
     /// 列出给定路径前缀下的所有密钥。
-    pub async fn list(&self, path: &str) -> VaultResult<Vec<String>>
-    {
+    pub async fn list(&self, path: &str) -> VaultResult<Vec<String>> {
         let full_path = format!("{}/{}", self.mount, path);
         crate::secret::list(self.client, &full_path).await
     }
@@ -112,8 +105,7 @@ impl<'a> KvV1<'a>
 
 /// KV v2 metadata for a secret / KV v2 密钥的元数据
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct KvV2Metadata
-{
+pub struct KvV2Metadata {
     /// Time of creation / 创建时间
     pub created_time: Option<String>,
     /// Time of last update / 最后更新时间
@@ -127,8 +119,7 @@ pub struct KvV2Metadata
 
 /// KV v2 secret read result / KV v2 密钥读取结果
 #[derive(Debug, Clone)]
-pub struct KvV2Secret
-{
+pub struct KvV2Secret {
     /// The secret data / 密钥数据
     pub data: serde_json::Value,
     /// Metadata about the secret version / 密钥版本的元数据
@@ -137,22 +128,19 @@ pub struct KvV2Secret
 
 /// KV v2 secret response from Vault API / Vault API 返回的 KV v2 密钥响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct KvV2Response
-{
+struct KvV2Response {
     data: KvV2ResponseInner,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct KvV2ResponseInner
-{
+struct KvV2ResponseInner {
     data: serde_json::Value,
     metadata: KvV2Metadata,
 }
 
 /// Version request for KV v2 / KV v2 的版本请求
 #[derive(Debug, Clone, Serialize)]
-struct KvV2VersionRequest
-{
+struct KvV2VersionRequest {
     versions: Vec<i64>,
 }
 
@@ -189,17 +177,14 @@ struct KvV2VersionRequest
 /// }
 /// ```
 #[derive(Debug)]
-pub struct KvV2<'a>
-{
+pub struct KvV2<'a> {
     client: &'a VaultClient,
     mount: String,
 }
 
-impl<'a> KvV2<'a>
-{
+impl<'a> KvV2<'a> {
     /// Create a new KV v2 backend handle / 创建新的 KV v2 后端句柄
-    pub fn new(client: &'a VaultClient, mount: &str) -> Self
-    {
+    pub fn new(client: &'a VaultClient, mount: &str) -> Self {
         Self {
             client,
             mount: mount.to_string(),
@@ -207,8 +192,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Read the latest version of a secret / 读取密钥的最新版本
-    pub async fn read(&self, path: &str) -> VaultResult<KvV2Secret>
-    {
+    pub async fn read(&self, path: &str) -> VaultResult<KvV2Secret> {
         let full_path = format!("{}/data/{}", self.mount, path);
         let resp = self.client.get(&full_path).await?;
         let body: KvV2Response = resp.json().await?;
@@ -219,8 +203,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Read a specific version of a secret / 读取密钥的指定版本
-    pub async fn read_version(&self, path: &str, version: i64) -> VaultResult<KvV2Secret>
-    {
+    pub async fn read_version(&self, path: &str, version: i64) -> VaultResult<KvV2Secret> {
         let full_path = format!("{}/data/{}", self.mount, path);
         let url = self.client.url(&full_path)?;
         let url_with_version = format!("{}?version={}", url, version);
@@ -231,8 +214,7 @@ impl<'a> KvV2<'a>
         req = add_auth_header(self.client, req)?;
 
         let resp = req.send().await?;
-        if !resp.status().is_success()
-        {
+        if !resp.status().is_success() {
             let status = resp.status().as_u16();
             let body = resp.text().await.unwrap_or_default();
             return Err(VaultError::from_status(status, &body));
@@ -246,8 +228,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Write (or update) a secret / 写入（或更新）密钥
-    pub async fn write(&self, path: &str, data: serde_json::Value) -> VaultResult<KvV2Metadata>
-    {
+    pub async fn write(&self, path: &str, data: serde_json::Value) -> VaultResult<KvV2Metadata> {
         let full_path = format!("{}/data/{}", self.mount, path);
         let body = serde_json::json!({ "data": data });
         let resp = self.client.post(&full_path, &body).await?;
@@ -270,8 +251,7 @@ impl<'a> KvV2<'a>
     ///
     /// Merges the provided data with the existing secret data.
     /// 将提供的数据与现有密钥数据合并。
-    pub async fn patch(&self, path: &str, data: serde_json::Value) -> VaultResult<()>
-    {
+    pub async fn patch(&self, path: &str, data: serde_json::Value) -> VaultResult<()> {
         let full_path = format!("{}/data/{}", self.mount, path);
         let body = serde_json::json!({ "data": data });
         self.client.post(&full_path, &body).await?;
@@ -279,16 +259,14 @@ impl<'a> KvV2<'a>
     }
 
     /// Delete the latest version of a secret (soft delete) / 删除密钥的最新版本（软删除）
-    pub async fn delete(&self, path: &str) -> VaultResult<()>
-    {
+    pub async fn delete(&self, path: &str) -> VaultResult<()> {
         let full_path = format!("{}/data/{}", self.mount, path);
         self.client.delete(&full_path).await?;
         Ok(())
     }
 
     /// Delete specific versions of a secret / 删除密钥的指定版本
-    pub async fn delete_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()>
-    {
+    pub async fn delete_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         let full_path = format!("{}/delete/{}", self.mount, path);
         let body = KvV2VersionRequest {
             versions: versions.to_vec(),
@@ -298,8 +276,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Undelete specific versions of a secret / 恢复密钥的指定版本
-    pub async fn undelete_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()>
-    {
+    pub async fn undelete_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         let full_path = format!("{}/undelete/{}", self.mount, path);
         let body = KvV2VersionRequest {
             versions: versions.to_vec(),
@@ -309,8 +286,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Permanently destroy versions of a secret / 永久销毁密钥的指定版本
-    pub async fn destroy_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()>
-    {
+    pub async fn destroy_versions(&self, path: &str, versions: &[i64]) -> VaultResult<()> {
         let full_path = format!("{}/destroy/{}", self.mount, path);
         let body = KvV2VersionRequest {
             versions: versions.to_vec(),
@@ -320,15 +296,13 @@ impl<'a> KvV2<'a>
     }
 
     /// List secrets / 列出密钥
-    pub async fn list(&self, path: &str) -> VaultResult<Vec<String>>
-    {
+    pub async fn list(&self, path: &str) -> VaultResult<Vec<String>> {
         let full_path = format!("{}/metadata/{}", self.mount, path);
         crate::secret::list(self.client, &full_path).await
     }
 
     /// Read secret metadata / 读取密钥元数据
-    pub async fn read_metadata(&self, path: &str) -> VaultResult<KvV2Metadata>
-    {
+    pub async fn read_metadata(&self, path: &str) -> VaultResult<KvV2Metadata> {
         let full_path = format!("{}/metadata/{}", self.mount, path);
         let resp = self.client.get(&full_path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -354,8 +328,7 @@ impl<'a> KvV2<'a>
     }
 
     /// Delete all versions and metadata for a secret / 删除密钥的所有版本和元数据
-    pub async fn delete_metadata(&self, path: &str) -> VaultResult<()>
-    {
+    pub async fn delete_metadata(&self, path: &str) -> VaultResult<()> {
         let full_path = format!("{}/metadata/{}", self.mount, path);
         self.client.delete(&full_path).await?;
         Ok(())
@@ -367,10 +340,8 @@ impl<'a> KvV2<'a>
 fn add_auth_header(
     client: &VaultClient,
     mut req: reqwest::RequestBuilder,
-) -> VaultResult<reqwest::RequestBuilder>
-{
-    if let Some(token) = client.token()
-    {
+) -> VaultResult<reqwest::RequestBuilder> {
+    if let Some(token) = client.token() {
         req = req.header("Authorization", format!("Bearer {token}"));
     }
     Ok(req)

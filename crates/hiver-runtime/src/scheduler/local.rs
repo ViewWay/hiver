@@ -13,8 +13,7 @@ use super::{RawTask, handle::SchedulerHandle, queue::LocalQueue};
 /// Configuration for the scheduler
 /// 调度器配置
 #[derive(Debug, Clone)]
-pub struct SchedulerConfig
-{
+pub struct SchedulerConfig {
     /// Size of the local task queue / 本地任务队列大小
     pub queue_size: usize,
     /// CPU core affinity (None = no affinity) / CPU核心亲和性（None = 无亲和性）
@@ -23,10 +22,8 @@ pub struct SchedulerConfig
     pub thread_name: String,
 }
 
-impl Default for SchedulerConfig
-{
-    fn default() -> Self
-    {
+impl Default for SchedulerConfig {
+    fn default() -> Self {
         Self {
             queue_size: 256,
             cpu_affinity: None,
@@ -43,8 +40,7 @@ impl Default for SchedulerConfig
 ///
 /// 每个调度器在自己的线程上运行并管理自己的任务队列。
 /// 每个调度器遵循 thread-per-core 模型，没有工作窃取。
-pub struct Scheduler
-{
+pub struct Scheduler {
     /// Local task queue / 本地任务队列
     queue: Arc<LocalQueue>,
     /// External queue for task injection / 用于任务注入的外部队列
@@ -64,8 +60,7 @@ const STATE_RUNNING: u8 = 0;
 const STATE_SHUTTING_DOWN: u8 = 1;
 const STATE_STOPPED: u8 = 2;
 
-impl Scheduler
-{
+impl Scheduler {
     /// Create a new scheduler with default configuration
     /// 使用默认配置创建新调度器
     ///
@@ -73,8 +68,7 @@ impl Scheduler
     ///
     /// Returns an error if the wake channel cannot be created.
     /// 如果无法创建唤醒通道则返回错误。
-    pub fn new() -> std::io::Result<Self>
-    {
+    pub fn new() -> std::io::Result<Self> {
         Self::with_config(&SchedulerConfig::default())
     }
 
@@ -87,8 +81,7 @@ impl Scheduler
     /// 返回错误如果：
     /// - Configuration is invalid / 配置无效
     /// - Wake channel creation fails / 唤醒通道创建失败
-    pub fn with_config(config: &SchedulerConfig) -> std::io::Result<Self>
-    {
+    pub fn with_config(config: &SchedulerConfig) -> std::io::Result<Self> {
         let queue = Arc::new(LocalQueue::new(config.queue_size));
         let inject_queue = Arc::new(LocalQueue::new(config.queue_size));
         let wake = Arc::new(super::handle::WakeChannel::new()?);
@@ -110,8 +103,7 @@ impl Scheduler
         let thread_handle = thread::Builder::new().name(thread_name).spawn(move || {
             // Set CPU affinity if specified
             // 如果指定了，设置CPU亲和性
-            if let Some(core) = cpu_affinity
-            {
+            if let Some(core) = cpu_affinity {
                 Self::set_cpu_affinity(core);
             }
 
@@ -142,8 +134,7 @@ impl Scheduler
     pub fn with_config_and_driver(
         config: &SchedulerConfig,
         _driver: Arc<dyn crate::driver::Driver>,
-    ) -> std::io::Result<Self>
-    {
+    ) -> std::io::Result<Self> {
         let queue = Arc::new(LocalQueue::new(config.queue_size));
         let inject_queue = Arc::new(LocalQueue::new(config.queue_size));
         let wake = Arc::new(super::handle::WakeChannel::new()?);
@@ -165,8 +156,7 @@ impl Scheduler
         let thread_handle = thread::Builder::new().name(thread_name).spawn(move || {
             // Set CPU affinity if specified
             // 如果指定了，设置CPU亲和性
-            if let Some(core) = cpu_affinity
-            {
+            if let Some(core) = cpu_affinity {
                 Self::set_cpu_affinity(core);
             }
 
@@ -194,15 +184,13 @@ impl Scheduler
     /// Get a handle to this scheduler for external task submission
     /// 获取此调度器的句柄用于外部任务提交
     #[must_use]
-    pub fn handle(&self) -> SchedulerHandle
-    {
+    pub fn handle(&self) -> SchedulerHandle {
         SchedulerHandle::new(self.inject_queue.clone(), self.wake.clone())
     }
 
     /// Request the scheduler to shut down gracefully
     /// 请求调度器优雅关闭
-    pub fn shutdown(&self)
-    {
+    pub fn shutdown(&self) {
         self.state
             .store(STATE_SHUTTING_DOWN, std::sync::atomic::Ordering::Release);
         // Notify the scheduler to wake up and check state
@@ -217,14 +205,10 @@ impl Scheduler
     ///
     /// Panics if the scheduler thread has already been joined.
     /// 如果调度器线程已被加入则恐慌。
-    pub fn join(&mut self) -> thread::Result<()>
-    {
-        if let Some(handle) = self.thread_handle.take()
-        {
+    pub fn join(&mut self) -> thread::Result<()> {
+        if let Some(handle) = self.thread_handle.take() {
             handle.join()
-        }
-        else
-        {
+        } else {
             Ok(())
         }
     }
@@ -236,10 +220,8 @@ impl Scheduler
         inject_queue: &LocalQueue,
         wake: &super::handle::WakeChannel,
         state: &std::sync::atomic::AtomicU8,
-    )
-    {
-        while state.load(std::sync::atomic::Ordering::Relaxed) == STATE_RUNNING
-        {
+    ) {
+        while state.load(std::sync::atomic::Ordering::Relaxed) == STATE_RUNNING {
             // Try to get a task from local queue first
             // 首先尝试从本地队列获取任务
             let task = local_queue.pop().or_else(|| {
@@ -248,13 +230,11 @@ impl Scheduler
                 inject_queue.pop()
             });
 
-            if let Some(task) = task
-            {
+            if let Some(task) = task {
                 // Execute the task by polling its future via the vtable
                 // 通过vtable轮询其future来执行任务
                 let completed = unsafe { crate::task::raw_task::poll_raw_task(task) };
-                if completed
-                {
+                if completed {
                     // Task finished, consume queue ref
                     unsafe {
                         crate::task::raw_task::deallocate_completed_task(task);
@@ -262,9 +242,7 @@ impl Scheduler
                 }
                 // If Pending: waker holds the ref and will re-enqueue when ready
                 // 如果Pending：waker持有引用，就绪时会重新入队
-            }
-            else
-            {
+            } else {
                 // No tasks available, block on wake channel with timeout
                 // 没有可用任务，带超时阻塞在唤醒通道上
                 wake.recv_timeout(Duration::from_millis(10));
@@ -277,8 +255,7 @@ impl Scheduler
     /// Set CPU affinity for the current thread
     /// 为当前线程设置CPU亲和性
     #[cfg(target_os = "linux")]
-    fn set_cpu_affinity(core: usize)
-    {
+    fn set_cpu_affinity(core: usize) {
         unsafe {
             let mut cpu_set: libc::cpu_set_t = std::mem::zeroed();
             libc::CPU_ZERO(&mut cpu_set);
@@ -289,23 +266,18 @@ impl Scheduler
     }
 
     #[cfg(not(target_os = "linux"))]
-    fn set_cpu_affinity(_core: usize)
-    {
+    fn set_cpu_affinity(_core: usize) {
         // CPU affinity is only supported on Linux
         // CPU亲和性仅在Linux上支持
     }
 
     /// Submit a task to this scheduler
     /// 向此调度器提交任务
-    pub fn submit(&self, task: RawTask) -> Result<(), RawTask>
-    {
-        if self.queue.push(task)
-        {
+    pub fn submit(&self, task: RawTask) -> Result<(), RawTask> {
+        if self.queue.push(task) {
             self.wake.notify();
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(task)
         }
     }
@@ -313,40 +285,34 @@ impl Scheduler
     /// Get the wake file descriptor for epoll registration
     /// 获取用于epoll注册的唤醒文件描述符
     #[must_use]
-    pub fn wake_fd(&self) -> RawFd
-    {
+    pub fn wake_fd(&self) -> RawFd {
         self.wake.raw_fd()
     }
 
     /// Get a task waker by ID
     /// 通过ID获取任务waker
-    pub fn get_task_waker(&self, id: u64) -> Option<std::task::Waker>
-    {
+    pub fn get_task_waker(&self, id: u64) -> Option<std::task::Waker> {
         let wakers = self.task_wakers.lock().unwrap();
         wakers.get(&id).cloned()
     }
 
     /// Register a task waker
     /// 注册任务waker
-    pub fn register_task_waker(&self, id: u64, waker: std::task::Waker)
-    {
+    pub fn register_task_waker(&self, id: u64, waker: std::task::Waker) {
         let mut wakers = self.task_wakers.lock().unwrap();
         wakers.insert(id, waker);
     }
 
     /// Remove a task waker
     /// 移除任务waker
-    pub fn remove_task_waker(&self, id: u64) -> Option<std::task::Waker>
-    {
+    pub fn remove_task_waker(&self, id: u64) -> Option<std::task::Waker> {
         let mut wakers = self.task_wakers.lock().unwrap();
         wakers.remove(&id)
     }
 }
 
-impl Drop for Scheduler
-{
-    fn drop(&mut self)
-    {
+impl Drop for Scheduler {
+    fn drop(&mut self) {
         // Ensure scheduler is stopped
         // 确保调度器已停止
         self.shutdown();
@@ -355,14 +321,18 @@ impl Drop for Scheduler
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_scheduler_creation()
-    {
+    fn test_scheduler_creation() {
         let scheduler = Scheduler::new();
         assert!(scheduler.is_ok());
 
@@ -372,8 +342,7 @@ mod tests
     }
 
     #[test]
-    fn test_scheduler_config()
-    {
+    fn test_scheduler_config() {
         let config = SchedulerConfig {
             queue_size: 512,
             cpu_affinity: Some(0),
@@ -385,8 +354,7 @@ mod tests
     }
 
     #[test]
-    fn test_scheduler_submit_and_handle()
-    {
+    fn test_scheduler_submit_and_handle() {
         let scheduler = Scheduler::new().unwrap();
         let handle = scheduler.handle();
 
@@ -399,8 +367,7 @@ mod tests
     }
 
     #[test]
-    fn test_scheduler_waker_store_empty()
-    {
+    fn test_scheduler_waker_store_empty() {
         let scheduler = Scheduler::new().unwrap();
 
         // Non-existent waker should return None
@@ -411,8 +378,7 @@ mod tests
     }
 
     #[test]
-    fn test_scheduler_shutdown()
-    {
+    fn test_scheduler_shutdown() {
         let scheduler = Scheduler::new().unwrap();
         scheduler.shutdown();
     }

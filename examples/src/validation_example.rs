@@ -24,8 +24,7 @@
 use hiver_validation::{Validate, ValidationErrors};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>>
-{
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Hiver Validation Example / Hiver验证示例 ===\n");
 
     // 1. Basic Validation / 基本验证
@@ -66,8 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>>
 ///
 /// Demonstrates the simplest form of validation.
 /// 演示最简单的验证形式。
-fn basic_validation_example()
-{
+fn basic_validation_example() {
     let valid_input = "hello";
     let invalid_input = "";
 
@@ -79,21 +77,16 @@ fn basic_validation_example()
 }
 
 /// Simple string validation / 简单字符串验证
-fn validate_string(input: &str) -> Result<(), ValidationErrors>
-{
+fn validate_string(input: &str) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
 
-    if input.is_empty()
-    {
+    if input.is_empty() {
         errors.add("input", "String cannot be empty");
     }
 
-    if errors.is_empty()
-    {
+    if errors.is_empty() {
         Ok(())
-    }
-    else
-    {
+    } else {
         Err(errors)
     }
 }
@@ -105,8 +98,7 @@ fn validate_string(input: &str) -> Result<(), ValidationErrors>
 ///
 /// Equivalent to Spring's `@Valid` annotation with Bean Validation.
 /// 等价于 Spring 的 `@Valid` 注解与 Bean Validation。
-fn user_input_validation_example()
-{
+fn user_input_validation_example() {
     println!("  Valid user:");
     let valid_user = UserInput {
         username: "alice".to_string(),
@@ -114,8 +106,7 @@ fn user_input_validation_example()
         age: 25,
         password: "SecurePass123!".to_string(),
     };
-    match valid_user.validate()
-    {
+    match valid_user.validate() {
         Ok(()) => println!("    Validation passed!"),
         Err(e) => println!("    Validation failed: {:?}", e),
     }
@@ -128,18 +119,13 @@ fn user_input_validation_example()
         age: 15,                           // Below minimum
         password: "123".to_string(),       // Too weak
     };
-    match invalid_user.validate()
-    {
+    match invalid_user.validate() {
         Ok(()) => println!("    Validation passed!"),
-        Err(errors) =>
-        {
+        Err(errors) => {
             println!("    Validation failed with {} fields:", errors.len());
-            for field in errors.fields()
-            {
-                if let Some(field_errors) = errors.get(&field)
-                {
-                    for err in field_errors
-                    {
+            for field in errors.fields() {
+                if let Some(field_errors) = errors.get(&field) {
+                    for err in field_errors {
                         println!("      {}: {}", field, err.message);
                     }
                 }
@@ -152,8 +138,7 @@ fn user_input_validation_example()
 ///
 /// Demonstrates creating custom validation logic.
 /// 演示创建自定义验证逻辑。
-fn custom_validation_example()
-{
+fn custom_validation_example() {
     println!("  Custom business rule validation:");
     println!("    Password must contain uppercase, lowercase, number, and special char");
 
@@ -161,23 +146,20 @@ fn custom_validation_example()
     let strong_password = "StrongP@ssw0rd";
 
     println!("    Weak password: {}", weak_password);
-    match validate_password_strength(weak_password)
-    {
+    match validate_password_strength(weak_password) {
         Ok(()) => println!("      Valid"),
         Err(e) => println!("      Invalid: {}", e.to_map().iter().next().unwrap().1.join(", ")),
     }
 
     println!("    Strong password: {}", strong_password);
-    match validate_password_strength(strong_password)
-    {
+    match validate_password_strength(strong_password) {
         Ok(()) => println!("      Valid"),
         Err(e) => println!("      Invalid: {}", e.to_map().iter().next().unwrap().1.join(", ")),
     }
 }
 
 /// Password strength validation / 密码强度验证
-fn validate_password_strength(password: &str) -> Result<(), ValidationErrors>
-{
+fn validate_password_strength(password: &str) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
 
     let has_uppercase = password.chars().any(char::is_uppercase);
@@ -185,33 +167,25 @@ fn validate_password_strength(password: &str) -> Result<(), ValidationErrors>
     let has_digit = password.chars().any(|c| c.is_ascii_digit());
     let has_special = password.chars().any(|c| !c.is_alphanumeric());
 
-    if !has_uppercase
-    {
+    if !has_uppercase {
         errors.add("password", "Must contain at least one uppercase letter");
     }
-    if !has_lowercase
-    {
+    if !has_lowercase {
         errors.add("password", "Must contain at least one lowercase letter");
     }
-    if !has_digit
-    {
+    if !has_digit {
         errors.add("password", "Must contain at least one digit");
     }
-    if !has_special
-    {
+    if !has_special {
         errors.add("password", "Must contain at least one special character");
     }
-    if password.len() < 8
-    {
+    if password.len() < 8 {
         errors.add("password", "Must be at least 8 characters long");
     }
 
-    if errors.is_empty()
-    {
+    if errors.is_empty() {
         Ok(())
-    }
-    else
-    {
+    } else {
         Err(errors)
     }
 }
@@ -220,8 +194,7 @@ fn validate_password_strength(password: &str) -> Result<(), ValidationErrors>
 ///
 /// Demonstrates validating nested structures.
 /// 演示验证嵌套结构。
-fn nested_validation_example()
-{
+fn nested_validation_example() {
     println!("  Validating user with address:");
 
     let user_with_address = UserWithAddress {
@@ -235,8 +208,7 @@ fn nested_validation_example()
         },
     };
 
-    match user_with_address.validate()
-    {
+    match user_with_address.validate() {
         Ok(()) => println!("    All validations passed!"),
         Err(e) => println!("    Validation failed: {}", e),
     }
@@ -246,8 +218,7 @@ fn nested_validation_example()
 ///
 /// Demonstrates how to handle validation errors in a backend API.
 /// 演示如何在后端API中处理验证错误。
-fn error_handling_example()
-{
+fn error_handling_example() {
     println!("  Converting validation errors to HTTP response:");
 
     let invalid_user = UserInput {
@@ -257,11 +228,9 @@ fn error_handling_example()
         password: "123".to_string(),
     };
 
-    match invalid_user.validate()
-    {
+    match invalid_user.validate() {
         Ok(()) => println!("    User is valid"),
-        Err(errors) =>
-        {
+        Err(errors) => {
             // Convert to API error response / 转换为API错误响应
             let error_map = errors.to_map();
             let error_response = format!(
@@ -297,66 +266,48 @@ fn error_handling_example()
 /// }
 /// ```
 #[derive(Debug)]
-struct UserInput
-{
+struct UserInput {
     username: String,
     email: String,
     age: u8,
     password: String,
 }
 
-impl Validate for UserInput
-{
-    fn validate(&self) -> Result<(), ValidationErrors>
-    {
+impl Validate for UserInput {
+    fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
         // Username validation / 用户名验证
-        if self.username.is_empty()
-        {
+        if self.username.is_empty() {
             errors.add("username", "Username is required");
-        }
-        else if self.username.len() < 3
-        {
+        } else if self.username.len() < 3 {
             errors.add("username", "Username must be at least 3 characters");
-        }
-        else if self.username.len() > 20
-        {
+        } else if self.username.len() > 20 {
             errors.add("username", "Username must not exceed 20 characters");
         }
 
         // Email validation / 邮箱验证
-        if self.email.is_empty()
-        {
+        if self.email.is_empty() {
             errors.add("email", "Email is required");
-        }
-        else if !self.email.contains('@')
-        {
+        } else if !self.email.contains('@') {
             errors.add("email", "Email must be valid");
         }
 
         // Age validation / 年龄验证
-        if self.age < 18
-        {
+        if self.age < 18 {
             errors.add("age", "Age must be at least 18");
-        }
-        else if self.age > 120
-        {
+        } else if self.age > 120 {
             errors.add("age", "Age must not exceed 120");
         }
 
         // Password validation / 密码验证
-        if self.password.len() < 8
-        {
+        if self.password.len() < 8 {
             errors.add("password", "Password must be at least 8 characters");
         }
 
-        if errors.is_empty()
-        {
+        if errors.is_empty() {
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(errors)
         }
     }
@@ -364,39 +315,30 @@ impl Validate for UserInput
 
 /// Address struct / 地址结构体
 #[derive(Debug)]
-struct Address
-{
+struct Address {
     street: String,
     city: String,
     zip_code: String,
     country: String,
 }
 
-impl Validate for Address
-{
-    fn validate(&self) -> Result<(), ValidationErrors>
-    {
+impl Validate for Address {
+    fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
-        if self.street.is_empty()
-        {
+        if self.street.is_empty() {
             errors.add("street", "Street is required");
         }
-        if self.city.is_empty()
-        {
+        if self.city.is_empty() {
             errors.add("city", "City is required");
         }
-        if self.zip_code.len() < 5
-        {
+        if self.zip_code.len() < 5 {
             errors.add("zip_code", "Zip code must be at least 5 characters");
         }
 
-        if errors.is_empty()
-        {
+        if errors.is_empty() {
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(errors)
         }
     }
@@ -404,50 +346,39 @@ impl Validate for Address
 
 /// User with nested address / 带嵌套地址的用户
 #[derive(Debug)]
-struct UserWithAddress
-{
+struct UserWithAddress {
     username: String,
     email: String,
     address: Address,
 }
 
-impl Validate for UserWithAddress
-{
-    fn validate(&self) -> Result<(), ValidationErrors>
-    {
+impl Validate for UserWithAddress {
+    fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
         // Validate username / 验证用户名
-        if self.username.is_empty()
-        {
+        if self.username.is_empty() {
             errors.add("username", "Username is required");
         }
 
         // Validate email / 验证邮箱
-        if !self.email.contains('@')
-        {
+        if !self.email.contains('@') {
             errors.add("email", "Email must be valid");
         }
 
         // Validate nested address / 验证嵌套地址
-        if let Err(addr_errors) = self.address.validate()
-        {
+        if let Err(addr_errors) = self.address.validate() {
             // Merge errors / 合并错误
-            for (field, field_errors) in addr_errors.to_map()
-            {
-                for message in field_errors
-                {
+            for (field, field_errors) in addr_errors.to_map() {
+                for message in field_errors {
                     errors.add(format!("address.{}", field), message);
                 }
             }
         }
 
-        if errors.is_empty()
-        {
+        if errors.is_empty() {
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(errors)
         }
     }
@@ -480,8 +411,7 @@ impl Validate for UserWithAddress
 ///         .body(new ErrorResponse("Validation failed", errors));
 /// }
 /// ```
-fn example_create_user_endpoint(request: UserInput) -> Result<String, String>
-{
+fn example_create_user_endpoint(request: UserInput) -> Result<String, String> {
     // Validate input / 验证输入
     request.validate().map_err(|e| {
         let error_map = e.to_map();
@@ -500,32 +430,25 @@ fn example_create_user_endpoint(request: UserInput) -> Result<String, String>
 fn example_conditional_validation(
     user: UserInput,
     require_password: bool,
-) -> Result<(), ValidationErrors>
-{
+) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
 
     // Always validate username and email / 始终验证用户名和邮箱
-    if user.username.is_empty()
-    {
+    if user.username.is_empty() {
         errors.add("username", "Username is required");
     }
-    if !user.email.contains('@')
-    {
+    if !user.email.contains('@') {
         errors.add("email", "Email must be valid");
     }
 
     // Conditionally validate password / 条件验证密码
-    if require_password && user.password.len() < 8
-    {
+    if require_password && user.password.len() < 8 {
         errors.add("password", "Password must be at least 8 characters");
     }
 
-    if errors.is_empty()
-    {
+    if errors.is_empty() {
         Ok(())
-    }
-    else
-    {
+    } else {
         Err(errors)
     }
 }

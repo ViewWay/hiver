@@ -30,8 +30,7 @@ use hiver_starter::ApplicationContext;
 #[hiver_main]
 struct Application;
 
-fn main() -> anyhow::Result<()>
-{
+fn main() -> anyhow::Result<()> {
     // 设置环境变量以控制日志级别
     // Set environment variable to control log level
     #[allow(unsafe_code)]
@@ -56,18 +55,15 @@ fn main() -> anyhow::Result<()>
 /// 演示如何创建自定义配置并注入到 `ApplicationContext`。
 /// Demonstrates how to create custom configuration and inject into `ApplicationContext`.
 #[derive(Debug)]
-struct DatabaseConfig
-{
+struct DatabaseConfig {
     url: String,
     pool_size: u32,
 }
 
-impl DatabaseConfig
-{
+impl DatabaseConfig {
     /// 从环境变量创建配置
     /// Create configuration from environment variables
-    fn from_env() -> Self
-    {
+    fn from_env() -> Self {
         Self {
             url: std::env::var("DATABASE_URL")
                 .unwrap_or_else(|_| "postgresql://localhost:5432/mydb".to_string()),
@@ -89,24 +85,20 @@ impl DatabaseConfig
 /// 演示服务层的基本结构。
 /// Demonstrates basic service layer structure.
 #[derive(Debug)]
-struct UserService
-{
+struct UserService {
     config: DatabaseConfig,
 }
 
-impl UserService
-{
+impl UserService {
     /// 创建新服务实例
     /// Create new service instance
-    fn new(config: DatabaseConfig) -> Self
-    {
+    fn new(config: DatabaseConfig) -> Self {
         Self { config }
     }
 
     /// 获取用户
     /// Get user
-    fn get_user(&self, id: u64) -> String
-    {
+    fn get_user(&self, id: u64) -> String {
         format!(
             "User(id={}, db={})",
             id,
@@ -125,8 +117,7 @@ impl UserService
 /// 等价于 Spring Boot 的 `@ConfigurationProperties`。
 /// Equivalent to Spring Boot's `@ConfigurationProperties`.
 #[derive(Debug)]
-struct AppConfig
-{
+struct AppConfig {
     /// 应用名称
     /// Application name
     name: String,
@@ -140,10 +131,8 @@ struct AppConfig
     debug: bool,
 }
 
-impl Default for AppConfig
-{
-    fn default() -> Self
-    {
+impl Default for AppConfig {
+    fn default() -> Self {
         Self {
             name: "Hiver Starter Example".to_string(),
             version: env!("CARGO_PKG_VERSION").to_string(),
@@ -157,13 +146,11 @@ impl Default for AppConfig
 // ============================================================================
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_database_config_from_env()
-    {
+    fn test_database_config_from_env() {
         unsafe {
             std::env::set_var("DATABASE_URL", "mysql://localhost:3306/testdb");
             std::env::set_var("DB_POOL_SIZE", "20");
@@ -178,8 +165,7 @@ mod tests
     }
 
     #[test]
-    fn test_database_config_defaults()
-    {
+    fn test_database_config_defaults() {
         unsafe {
             std::env::remove_var("DATABASE_URL");
             std::env::remove_var("DB_POOL_SIZE");
@@ -191,8 +177,7 @@ mod tests
     }
 
     #[test]
-    fn test_user_service()
-    {
+    fn test_user_service() {
         let config = DatabaseConfig {
             url: "postgresql://localhost:5432/testdb".to_string(),
             pool_size: 10,
@@ -205,8 +190,7 @@ mod tests
     }
 
     #[test]
-    fn test_app_config_default()
-    {
+    fn test_app_config_default() {
         let config = AppConfig::default();
         assert_eq!(config.name, "Hiver Starter Example");
         assert!(!config.version.is_empty());

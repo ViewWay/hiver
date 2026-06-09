@@ -44,8 +44,7 @@ use crate::Error;
 /// 帧是HTTP/2通信的基本单位。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
-pub enum FrameType
-{
+pub enum FrameType {
     /// DATA frame - carries request/response body
     /// DATA帧 - 携带请求/响应体
     Data = 0x0,
@@ -87,14 +86,11 @@ pub enum FrameType
     Continuation = 0x9,
 }
 
-impl FrameType
-{
+impl FrameType {
     /// Get frame type from byte
     /// 从字节获取帧类型
-    pub fn from_byte(b: u8) -> Option<Self>
-    {
-        match b
-        {
+    pub fn from_byte(b: u8) -> Option<Self> {
+        match b {
             0x0 => Some(Self::Data),
             0x1 => Some(Self::Headers),
             0x2 => Some(Self::Priority),
@@ -111,17 +107,14 @@ impl FrameType
 
     /// Get frame type as byte
     /// 获取帧类型字节
-    pub fn as_byte(&self) -> u8
-    {
+    pub fn as_byte(&self) -> u8 {
         *self as u8
     }
 
     /// Get frame type name
     /// 获取帧类型名称
-    pub fn name(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn name(&self) -> &'static str {
+        match self {
             Self::Data => "DATA",
             Self::Headers => "HEADERS",
             Self::Priority => "PRIORITY",
@@ -143,8 +136,7 @@ impl FrameType
 /// `RST_STREAM和GOAWAY帧中使用的错误码`。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
-pub enum ErrorCode
-{
+pub enum ErrorCode {
     /// No error
     /// 无错误
     NoError = 0x0,
@@ -202,14 +194,11 @@ pub enum ErrorCode
     Http11Required = 0xd,
 }
 
-impl ErrorCode
-{
+impl ErrorCode {
     /// Get error code from u32
     /// 从u32获取错误码
-    pub fn from_u32(v: u32) -> Option<Self>
-    {
-        match v
-        {
+    pub fn from_u32(v: u32) -> Option<Self> {
+        match v {
             0x0 => Some(Self::NoError),
             0x1 => Some(Self::ProtocolError),
             0x2 => Some(Self::InternalError),
@@ -230,17 +219,14 @@ impl ErrorCode
 
     /// Get error code as u32
     /// 获取错误码u32值
-    pub fn as_u32(&self) -> u32
-    {
+    pub fn as_u32(&self) -> u32 {
         *self as u32
     }
 
     /// Get error description
     /// 获取错误描述
-    pub fn description(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn description(&self) -> &'static str {
+        match self {
             Self::NoError => "No error",
             Self::ProtocolError => "Protocol error detected",
             Self::InternalError => "Internal error",
@@ -265,8 +251,7 @@ impl ErrorCode
 /// 用于配置HTTP/2连接的设置参数。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u16)]
-pub enum SettingsParameter
-{
+pub enum SettingsParameter {
     /// Header table size
     /// 头表大小
     HeaderTableSize = 0x1,
@@ -292,14 +277,11 @@ pub enum SettingsParameter
     MaxHeaderListSize = 0x6,
 }
 
-impl SettingsParameter
-{
+impl SettingsParameter {
     /// Get parameter from u16
     /// 从u16获取参数
-    pub fn from_u16(v: u16) -> Option<Self>
-    {
-        match v
-        {
+    pub fn from_u16(v: u16) -> Option<Self> {
+        match v {
             0x1 => Some(Self::HeaderTableSize),
             0x2 => Some(Self::EnablePush),
             0x3 => Some(Self::MaxConcurrentStreams),
@@ -312,17 +294,14 @@ impl SettingsParameter
 
     /// Get parameter as u16
     /// 获取参数u16值
-    pub fn as_u16(&self) -> u16
-    {
+    pub fn as_u16(&self) -> u16 {
         *self as u16
     }
 
     /// Get parameter name
     /// 获取参数名称
-    pub fn name(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn name(&self) -> &'static str {
+        match self {
             Self::HeaderTableSize => "HEADER_TABLE_SIZE",
             Self::EnablePush => "ENABLE_PUSH",
             Self::MaxConcurrentStreams => "MAX_CONCURRENT_STREAMS",
@@ -338,44 +317,38 @@ impl SettingsParameter
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StreamId(u32);
 
-impl StreamId
-{
+impl StreamId {
     /// The connection control stream ID
     /// 连接控制流ID
     pub const CONNECTION: Self = Self(0);
 
     /// Create a new stream ID
     /// 创建新的流ID
-    pub fn new(id: u32) -> Self
-    {
+    pub fn new(id: u32) -> Self {
         Self(id)
     }
 
     /// Get the stream ID value
     /// 获取流ID值
-    pub fn get(&self) -> u32
-    {
+    pub fn get(&self) -> u32 {
         self.0
     }
 
     /// Check if this is a connection control stream
     /// 检查是否为连接控制流
-    pub fn is_connection(&self) -> bool
-    {
+    pub fn is_connection(&self) -> bool {
         self.0 == 0
     }
 
     /// Check if this is initiated by the client
     /// 检查是否由客户端发起
-    pub fn is_client_initiated(&self) -> bool
-    {
+    pub fn is_client_initiated(&self) -> bool {
         self.0 % 2 == 1 && self.0 != 0
     }
 
     /// Check if this is initiated by the server
     /// 检查是否由服务器发起
-    pub fn is_server_initiated(&self) -> bool
-    {
+    pub fn is_server_initiated(&self) -> bool {
         self.0.is_multiple_of(2) && self.0 != 0
     }
 }
@@ -386,8 +359,7 @@ impl StreamId
 /// Configuration for HTTP/2 connections.
 /// HTTP/2连接的配置。
 #[derive(Debug, Clone)]
-pub struct Http2Config
-{
+pub struct Http2Config {
     /// Maximum concurrent streams
     /// 最大并发流数
     max_concurrent_streams: u32,
@@ -417,10 +389,8 @@ pub struct Http2Config
     max_push_streams: u32,
 }
 
-impl Default for Http2Config
-{
-    fn default() -> Self
-    {
+impl Default for Http2Config {
+    fn default() -> Self {
         Self {
             max_concurrent_streams: 100,
             initial_window_size: 65535,
@@ -433,96 +403,83 @@ impl Default for Http2Config
     }
 }
 
-impl Http2Config
-{
+impl Http2Config {
     /// Create a new HTTP/2 configuration
     /// 创建新的HTTP/2配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set maximum concurrent streams
     /// 设置最大并发流数
-    pub fn with_max_streams(mut self, max: u32) -> Self
-    {
+    pub fn with_max_streams(mut self, max: u32) -> Self {
         self.max_concurrent_streams = max;
         self
     }
 
     /// Set initial window size
     /// 设置初始窗口大小
-    pub fn with_initial_window_size(mut self, size: u32) -> Self
-    {
+    pub fn with_initial_window_size(mut self, size: u32) -> Self {
         self.initial_window_size = size;
         self
     }
 
     /// Set maximum frame size
     /// 设置最大帧大小
-    pub fn with_max_frame_size(mut self, size: u32) -> Self
-    {
+    pub fn with_max_frame_size(mut self, size: u32) -> Self {
         self.max_frame_size = size.clamp(16_384, 16_777_215);
         self
     }
 
     /// Set maximum header list size
     /// 设置最大头列表大小
-    pub fn with_max_header_list_size(mut self, size: u32) -> Self
-    {
+    pub fn with_max_header_list_size(mut self, size: u32) -> Self {
         self.max_header_list_size = size;
         self
     }
 
     /// Set header table size
     /// 设置头表大小
-    pub fn with_header_table_size(mut self, size: u32) -> Self
-    {
+    pub fn with_header_table_size(mut self, size: u32) -> Self {
         self.header_table_size = size;
         self
     }
 
     /// Enable or disable server push
     /// 启用或禁用服务器推送
-    pub fn with_push(mut self, enable: bool) -> Self
-    {
+    pub fn with_push(mut self, enable: bool) -> Self {
         self.enable_push = enable;
         self
     }
 
     /// Set maximum push streams
     /// 设置最大推送流数
-    pub fn with_max_push_streams(mut self, max: u32) -> Self
-    {
+    pub fn with_max_push_streams(mut self, max: u32) -> Self {
         self.max_push_streams = max;
         self
     }
 
     /// Get maximum concurrent streams
     /// 获取最大并发流数
-    pub fn max_streams(&self) -> u32
-    {
+    pub fn max_streams(&self) -> u32 {
         self.max_concurrent_streams
     }
 
     /// Get initial window size
     /// 获取初始窗口大小
-    pub fn window_size(&self) -> u32
-    {
+    pub fn window_size(&self) -> u32 {
         self.initial_window_size
     }
 
     /// Get maximum frame size
     /// 获取最大帧大小
-    pub fn frame_size(&self) -> u32
-    {
+    pub fn frame_size(&self) -> u32 {
         self.max_frame_size
     }
 
     /// Check if server push is enabled
     /// 检查是否启用服务器推送
-    pub fn push_enabled(&self) -> bool
-    {
+    pub fn push_enabled(&self) -> bool {
         self.enable_push
     }
 }
@@ -533,8 +490,7 @@ impl Http2Config
 /// Represents the state of an HTTP/2 connection.
 /// 表示HTTP/2连接的状态。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ConnectionState
-{
+pub enum ConnectionState {
     /// Connection is being established
     /// 连接正在建立
     Connecting,
@@ -562,8 +518,7 @@ pub enum ConnectionState
 /// Represents the state of an HTTP/2 stream.
 /// 表示HTTP/2流的状态。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum StreamState
-{
+pub enum StreamState {
     /// Stream is idle (not yet used)
     /// 流空闲（尚未使用）
     Idle,
@@ -599,8 +554,7 @@ pub enum StreamState
 /// Priority information for stream dependency and weight.
 /// 流依赖和权重的优先级信息。
 #[derive(Debug, Clone, Copy)]
-pub struct Priority
-{
+pub struct Priority {
     /// Stream dependency
     /// 流依赖
     pub stream_dependency: StreamId,
@@ -614,12 +568,10 @@ pub struct Priority
     pub exclusive: bool,
 }
 
-impl Priority
-{
+impl Priority {
     /// Create a new priority with default weight
     /// 创建具有默认权重的新优先级
-    pub fn new(stream_id: StreamId) -> Self
-    {
+    pub fn new(stream_id: StreamId) -> Self {
         Self {
             stream_dependency: stream_id,
             weight: 16,
@@ -629,16 +581,14 @@ impl Priority
 
     /// Set the weight
     /// 设置权重
-    pub fn with_weight(mut self, weight: u8) -> Self
-    {
+    pub fn with_weight(mut self, weight: u8) -> Self {
         self.weight = weight;
         self
     }
 
     /// Set the exclusive flag
     /// 设置独占标志
-    pub fn with_exclusive(mut self, exclusive: bool) -> Self
-    {
+    pub fn with_exclusive(mut self, exclusive: bool) -> Self {
         self.exclusive = exclusive;
         self
     }
@@ -647,8 +597,7 @@ impl Priority
 /// HTTP/2 error
 /// HTTP/2 错误
 #[derive(Debug, Clone)]
-pub enum Http2Error
-{
+pub enum Http2Error {
     /// Invalid frame received
     /// 收到无效帧
     InvalidFrame(String),
@@ -667,8 +616,7 @@ pub enum Http2Error
 
     /// Stream error
     /// 流错误
-    StreamError
-    {
+    StreamError {
         /// Stream ID
         stream_id: StreamId,
         /// Error code
@@ -682,12 +630,9 @@ pub enum Http2Error
     IoError(String),
 }
 
-impl std::fmt::Display for Http2Error
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
+impl std::fmt::Display for Http2Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
             Self::InvalidFrame(msg) => write!(f, "Invalid frame: {}", msg),
             Self::ProtocolError(msg) => write!(f, "Protocol error: {}", msg),
             Self::FlowControlError(msg) => write!(f, "Flow control error: {}", msg),
@@ -696,8 +641,7 @@ impl std::fmt::Display for Http2Error
                 stream_id,
                 error_code,
                 message,
-            } =>
-            {
+            } => {
                 write!(
                     f,
                     "Stream {} error ({}): {}",
@@ -713,10 +657,8 @@ impl std::fmt::Display for Http2Error
 
 impl std::error::Error for Http2Error {}
 
-impl From<Http2Error> for Error
-{
-    fn from(err: Http2Error) -> Self
-    {
+impl From<Http2Error> for Error {
+    fn from(err: Http2Error) -> Self {
         Error::InvalidRequest(err.to_string())
     }
 }
@@ -724,8 +666,7 @@ impl From<Http2Error> for Error
 /// Represents a pending HTTP/2 stream reset
 /// 表示待处理的HTTP/2流重置
 #[derive(Debug, Clone)]
-pub struct StreamReset
-{
+pub struct StreamReset {
     /// Stream ID
     pub stream_id: StreamId,
 
@@ -734,61 +675,59 @@ pub struct StreamReset
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_frame_type_from_byte()
-    {
+    fn test_frame_type_from_byte() {
         assert_eq!(FrameType::from_byte(0x0), Some(FrameType::Data));
         assert_eq!(FrameType::from_byte(0x4), Some(FrameType::Settings));
         assert_eq!(FrameType::from_byte(0xff), None);
     }
 
     #[test]
-    fn test_frame_type_name()
-    {
+    fn test_frame_type_name() {
         assert_eq!(FrameType::Data.name(), "DATA");
         assert_eq!(FrameType::Settings.name(), "SETTINGS");
         assert_eq!(FrameType::GoAway.name(), "GOAWAY");
     }
 
     #[test]
-    fn test_error_code_from_u32()
-    {
+    fn test_error_code_from_u32() {
         assert_eq!(ErrorCode::from_u32(0x0), Some(ErrorCode::NoError));
         assert_eq!(ErrorCode::from_u32(0x1), Some(ErrorCode::ProtocolError));
         assert_eq!(ErrorCode::from_u32(0xff), None);
     }
 
     #[test]
-    fn test_error_code_description()
-    {
+    fn test_error_code_description() {
         assert_eq!(ErrorCode::NoError.description(), "No error");
         assert_eq!(ErrorCode::ProtocolError.description(), "Protocol error detected");
         assert_eq!(ErrorCode::FlowControlError.description(), "Flow control limits exceeded");
     }
 
     #[test]
-    fn test_settings_parameter_from_u16()
-    {
+    fn test_settings_parameter_from_u16() {
         assert_eq!(SettingsParameter::from_u16(0x1), Some(SettingsParameter::HeaderTableSize));
         assert_eq!(SettingsParameter::from_u16(0x3), Some(SettingsParameter::MaxConcurrentStreams));
         assert_eq!(SettingsParameter::from_u16(0xff), None);
     }
 
     #[test]
-    fn test_settings_parameter_name()
-    {
+    fn test_settings_parameter_name() {
         assert_eq!(SettingsParameter::HeaderTableSize.name(), "HEADER_TABLE_SIZE");
         assert_eq!(SettingsParameter::EnablePush.name(), "ENABLE_PUSH");
     }
 
     #[test]
-    fn test_stream_id()
-    {
+    fn test_stream_id() {
         let conn = StreamId::CONNECTION;
         assert!(conn.is_connection());
         assert!(!conn.is_client_initiated());
@@ -804,8 +743,7 @@ mod tests
     }
 
     #[test]
-    fn test_http2_config_default()
-    {
+    fn test_http2_config_default() {
         let config = Http2Config::default();
         assert_eq!(config.max_streams(), 100);
         assert_eq!(config.window_size(), 65535);
@@ -814,8 +752,7 @@ mod tests
     }
 
     #[test]
-    fn test_http2_config_builder()
-    {
+    fn test_http2_config_builder() {
         let config = Http2Config::new()
             .with_max_streams(500)
             .with_initial_window_size(32768)
@@ -829,8 +766,7 @@ mod tests
     }
 
     #[test]
-    fn test_priority()
-    {
+    fn test_priority() {
         let priority = Priority::new(StreamId::new(1))
             .with_weight(32)
             .with_exclusive(true);
@@ -841,8 +777,7 @@ mod tests
     }
 
     #[test]
-    fn test_http2_error_display()
-    {
+    fn test_http2_error_display() {
         let err = Http2Error::InvalidFrame("Invalid frame type".to_string());
         assert!(err.to_string().contains("Invalid frame"));
 
@@ -858,8 +793,7 @@ mod tests
     }
 
     #[test]
-    fn test_frame_size_clamp()
-    {
+    fn test_frame_size_clamp() {
         let config = Http2Config::new().with_max_frame_size(1000);
         assert_eq!(config.frame_size(), 16384); // Clamped to minimum
 

@@ -48,8 +48,7 @@ use zip::write::SimpleFileOptions;
 /// Excel export error.
 /// Excel 导出错误。
 #[derive(Debug, thiserror::Error)]
-pub enum ExcelError
-{
+pub enum ExcelError {
     /// I/O error during ZIP creation.
     /// ZIP 创建过程中的 I/O 错误。
     #[error("I/O error: {0}")]
@@ -77,8 +76,7 @@ pub type Result<T> = std::result::Result<T, ExcelError>;
 /// Horizontal cell alignment.
 /// 单元格水平对齐方式。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CellAlignment
-{
+pub enum CellAlignment {
     /// Left-aligned / 左对齐
     Left,
     /// Center-aligned / 居中对齐
@@ -87,14 +85,11 @@ pub enum CellAlignment
     Right,
 }
 
-impl CellAlignment
-{
+impl CellAlignment {
     /// Convert to OOXML alignment attribute value.
     /// 转换为 OOXML 对齐属性值。
-    fn as_str(self) -> &'static str
-    {
-        match self
-        {
+    fn as_str(self) -> &'static str {
+        match self {
             CellAlignment::Left => "left",
             CellAlignment::Center => "center",
             CellAlignment::Right => "right",
@@ -109,8 +104,7 @@ impl CellAlignment
 /// Excel cell style definition.
 /// Excel 单元格样式定义。
 #[derive(Debug, Clone)]
-pub struct ExcelCellStyle
-{
+pub struct ExcelCellStyle {
     /// Bold text / 粗体文本
     pub bold: bool,
     /// Font size in points / 字体大小（磅）
@@ -127,10 +121,8 @@ pub struct ExcelCellStyle
     pub number_format: Option<String>,
 }
 
-impl Default for ExcelCellStyle
-{
-    fn default() -> Self
-    {
+impl Default for ExcelCellStyle {
+    fn default() -> Self {
         Self {
             bold: false,
             font_size: 11.0,
@@ -143,67 +135,58 @@ impl Default for ExcelCellStyle
     }
 }
 
-impl ExcelCellStyle
-{
+impl ExcelCellStyle {
     /// Create a new default cell style.
     /// 创建新的默认单元格样式。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set bold text.
     /// 设置粗体文本。
-    pub fn bold(mut self, bold: bool) -> Self
-    {
+    pub fn bold(mut self, bold: bool) -> Self {
         self.bold = bold;
         self
     }
 
     /// Set font size.
     /// 设置字体大小。
-    pub fn font_size(mut self, size: f64) -> Self
-    {
+    pub fn font_size(mut self, size: f64) -> Self {
         self.font_size = size;
         self
     }
 
     /// Set font color (ARGB hex).
     /// 设置字体颜色（ARGB 十六进制）。
-    pub fn font_color(mut self, color: impl Into<String>) -> Self
-    {
+    pub fn font_color(mut self, color: impl Into<String>) -> Self {
         self.font_color = Some(color.into());
         self
     }
 
     /// Set background color (ARGB hex).
     /// 设置背景颜色（ARGB 十六进制）。
-    pub fn bg_color(mut self, color: impl Into<String>) -> Self
-    {
+    pub fn bg_color(mut self, color: impl Into<String>) -> Self {
         self.bg_color = Some(color.into());
         self
     }
 
     /// Set alignment.
     /// 设置对齐方式。
-    pub fn alignment(mut self, alignment: CellAlignment) -> Self
-    {
+    pub fn alignment(mut self, alignment: CellAlignment) -> Self {
         self.alignment = alignment;
         self
     }
 
     /// Set border visibility.
     /// 设置边框可见性。
-    pub fn border(mut self, border: bool) -> Self
-    {
+    pub fn border(mut self, border: bool) -> Self {
         self.border = border;
         self
     }
 
     /// Set number format.
     /// 设置数字格式。
-    pub fn number_format(mut self, fmt: impl Into<String>) -> Self
-    {
+    pub fn number_format(mut self, fmt: impl Into<String>) -> Self {
         self.number_format = Some(fmt.into());
         self
     }
@@ -216,8 +199,7 @@ impl ExcelCellStyle
 /// Excel cell value.
 /// Excel 单元格值。
 #[derive(Debug, Clone)]
-pub enum ExcelCell
-{
+pub enum ExcelCell {
     /// Text string / 文本字符串
     Text(String),
     /// Numeric value / 数值
@@ -232,21 +214,17 @@ pub enum ExcelCell
     Empty,
 }
 
-impl ExcelCell
-{
+impl ExcelCell {
     /// Returns true if the cell is empty.
     /// 如果单元格为空则返回 true。
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         matches!(self, ExcelCell::Empty)
     }
 
     /// Returns the cell type for style-based cells (shared strings / number format).
     /// 返回基于样式单元格的单元格类型。
-    fn style_type_attribute(&self) -> &'static str
-    {
-        match self
-        {
+    fn style_type_attribute(&self) -> &'static str {
+        match self {
             ExcelCell::Boolean(_) => "b",
             ExcelCell::Number(_) | ExcelCell::Date(_) | ExcelCell::DateTime(_) => "n",
             _ => "str",
@@ -255,25 +233,18 @@ impl ExcelCell
 
     /// Returns the value string for style-based cells.
     /// 返回基于样式单元格的值字符串。
-    fn style_value(&self) -> Option<String>
-    {
-        match self
-        {
+    fn style_value(&self) -> Option<String> {
+        match self {
             ExcelCell::Text(s) => Some(escape_xml(s)),
-            ExcelCell::Number(n) =>
-            {
-                if n.fract() == 0.0
-                {
+            ExcelCell::Number(n) => {
+                if n.fract() == 0.0 {
                     Some(format!("{}", *n as i64))
-                }
-                else
-                {
+                } else {
                     Some(format!("{}", n))
                 }
             },
             ExcelCell::Boolean(b) => Some(if *b { "1".to_string() } else { "0".to_string() }),
-            ExcelCell::Date(t) | ExcelCell::DateTime(t) =>
-            {
+            ExcelCell::Date(t) | ExcelCell::DateTime(t) => {
                 let duration = t.duration_since(SystemTime::UNIX_EPOCH).unwrap_or_default();
                 let secs = duration.as_secs();
                 let days = secs / 86400;
@@ -292,8 +263,7 @@ impl ExcelCell
 /// Excel export configuration.
 /// Excel 导出配置。
 #[derive(Debug, Clone)]
-pub struct ExcelExportConfig
-{
+pub struct ExcelExportConfig {
     /// Sheet name / 工作表名称
     pub sheet_name: String,
     /// Column headers / 列标题
@@ -308,12 +278,10 @@ pub struct ExcelExportConfig
     pub date_format: String,
 }
 
-impl ExcelExportConfig
-{
+impl ExcelExportConfig {
     /// Create a new export configuration with the given sheet name.
     /// 使用给定的工作表名称创建新的导出配置。
-    pub fn new(sheet_name: impl Into<String>) -> Self
-    {
+    pub fn new(sheet_name: impl Into<String>) -> Self {
         Self {
             sheet_name: sheet_name.into(),
             headers: Vec::new(),
@@ -326,48 +294,42 @@ impl ExcelExportConfig
 
     /// Add a column header.
     /// 添加列标题。
-    pub fn header(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn header(mut self, name: impl Into<String>) -> Self {
         self.headers.push(name.into());
         self
     }
 
     /// Add multiple column headers.
     /// 添加多个列标题。
-    pub fn headers(mut self, headers: Vec<String>) -> Self
-    {
+    pub fn headers(mut self, headers: Vec<String>) -> Self {
         self.headers = headers;
         self
     }
 
     /// Set column widths.
     /// 设置列宽。
-    pub fn column_widths(mut self, widths: Vec<f64>) -> Self
-    {
+    pub fn column_widths(mut self, widths: Vec<f64>) -> Self {
         self.column_widths = widths;
         self
     }
 
     /// Enable or disable auto-filter.
     /// 启用或禁用自动筛选。
-    pub fn auto_filter(mut self, enabled: bool) -> Self
-    {
+    pub fn auto_filter(mut self, enabled: bool) -> Self {
         self.auto_filter = enabled;
         self
     }
 
     /// Enable or disable header freeze.
     /// 启用或禁用标题冻结。
-    pub fn freeze_header(mut self, enabled: bool) -> Self
-    {
+    pub fn freeze_header(mut self, enabled: bool) -> Self {
         self.freeze_header = enabled;
         self
     }
 
     /// Set the date format string.
     /// 设置日期格式字符串。
-    pub fn date_format(mut self, format: impl Into<String>) -> Self
-    {
+    pub fn date_format(mut self, format: impl Into<String>) -> Self {
         self.date_format = format.into();
         self
     }
@@ -389,20 +351,17 @@ impl ExcelExportConfig
 /// 包含所需的 XML 部分：`[Content_Types].xml`、`_rels/.rels`、
 /// `xl/workbook.xml`、`xl/_rels/workbook.xml.rels`、`xl/styles.xml`、
 /// `xl/worksheets/sheet1.xml`。
-pub struct ExcelExporter
-{
+pub struct ExcelExporter {
     config: ExcelExportConfig,
     rows: Vec<Vec<ExcelCell>>,
     header_style: Option<ExcelCellStyle>,
     column_styles: HashMap<usize, ExcelCellStyle>,
 }
 
-impl ExcelExporter
-{
+impl ExcelExporter {
     /// Create a new Excel exporter with the given configuration.
     /// 使用给定配置创建新的 Excel 导出器。
-    pub fn new(config: ExcelExportConfig) -> Self
-    {
+    pub fn new(config: ExcelExportConfig) -> Self {
         Self {
             config,
             rows: Vec::new(),
@@ -413,29 +372,25 @@ impl ExcelExporter
 
     /// Add a data row to the export.
     /// 向导出添加数据行。
-    pub fn add_row(&mut self, cells: Vec<ExcelCell>)
-    {
+    pub fn add_row(&mut self, cells: Vec<ExcelCell>) {
         self.rows.push(cells);
     }
 
     /// Set the header row style.
     /// 设置标题行样式。
-    pub fn add_header_style(&mut self, style: ExcelCellStyle)
-    {
+    pub fn add_header_style(&mut self, style: ExcelCellStyle) {
         self.header_style = Some(style);
     }
 
     /// Set a style for a specific column.
     /// 设置特定列的样式。
-    pub fn set_column_style(&mut self, col: usize, style: ExcelCellStyle)
-    {
+    pub fn set_column_style(&mut self, col: usize, style: ExcelCellStyle) {
         self.column_styles.insert(col, style);
     }
 
     /// Generate the xlsx file as a byte vector.
     /// 将 xlsx 文件生成为字节向量。
-    pub fn to_bytes(&self) -> Result<Vec<u8>>
-    {
+    pub fn to_bytes(&self) -> Result<Vec<u8>> {
         let buf = Cursor::new(Vec::new());
         let mut zip = zip::ZipWriter::new(buf);
         let options = SimpleFileOptions::default()
@@ -472,8 +427,7 @@ impl ExcelExporter
 
     /// Write the xlsx file to a file path.
     /// 将 xlsx 文件写入文件路径。
-    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()>
-    {
+    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()> {
         let bytes = self.to_bytes()?;
         std::fs::write(path, bytes)?;
         Ok(())
@@ -516,8 +470,7 @@ impl ExcelExporter
 ///     }
 /// }
 /// ```
-pub trait ExcelTable
-{
+pub trait ExcelTable {
     /// Return the column headers for this type.
     /// 返回此类型的列标题。
     fn excel_headers() -> Vec<String>;
@@ -539,11 +492,9 @@ pub trait ExcelTable
 /// let config = ExcelExportConfig::new("Users").headers(User::excel_headers());
 /// let bytes = export_to_excel(&data, config).unwrap();
 /// ```
-pub fn export_to_excel<T: ExcelTable>(data: &[T], config: ExcelExportConfig) -> Result<Vec<u8>>
-{
+pub fn export_to_excel<T: ExcelTable>(data: &[T], config: ExcelExportConfig) -> Result<Vec<u8>> {
     let mut exporter = ExcelExporter::new(config);
-    for item in data
-    {
+    for item in data {
         exporter.add_row(item.excel_row());
     }
     exporter.to_bytes()
@@ -555,16 +506,13 @@ pub fn export_to_excel<T: ExcelTable>(data: &[T], config: ExcelExportConfig) -> 
 
 /// Column reference string (e.g. "A", "AB", "ZZ").
 /// 列引用字符串（如 "A"、"AB"、"ZZ"）。
-fn col_ref(col: usize) -> String
-{
+fn col_ref(col: usize) -> String {
     let mut result = String::new();
     let mut n = col;
-    loop
-    {
+    loop {
         let rem = (n % 26) as u8;
         result.insert(0, (b'A' + rem) as char);
-        if n < 26
-        {
+        if n < 26 {
             break;
         }
         n = n / 26 - 1;
@@ -574,20 +522,16 @@ fn col_ref(col: usize) -> String
 
 /// Cell reference string (e.g. "A1", "B3").
 /// 单元格引用字符串（如 "A1"、"B3"）。
-fn cell_ref(col: usize, row: usize) -> String
-{
+fn cell_ref(col: usize, row: usize) -> String {
     format!("{}{}", col_ref(col), row + 1)
 }
 
 /// Escape XML special characters.
 /// 转义 XML 特殊字符。
-fn escape_xml(s: &str) -> String
-{
+fn escape_xml(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
-    for ch in s.chars()
-    {
-        match ch
-        {
+    for ch in s.chars() {
+        match ch {
             '&' => out.push_str("&amp;"),
             '<' => out.push_str("&lt;"),
             '>' => out.push_str("&gt;"),
@@ -627,8 +571,7 @@ const WORKBOOK_RELS_XML: &str = r#"<?xml version="1.0" encoding="UTF-8" standalo
 
 /// Generate xl/workbook.xml.
 /// 生成 xl/workbook.xml。
-fn workbook_xml(config: &ExcelExportConfig) -> String
-{
+fn workbook_xml(config: &ExcelExportConfig) -> String {
     format!(
         r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
@@ -642,8 +585,7 @@ fn workbook_xml(config: &ExcelExportConfig) -> String
 
 /// Generate xl/styles.xml.
 /// 生成 xl/styles.xml。
-fn styles_xml(exporter: &ExcelExporter) -> String
-{
+fn styles_xml(exporter: &ExcelExporter) -> String {
     let mut xml = String::from(
         r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
@@ -686,8 +628,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String
                             num_fmt_id_map: &mut HashMap<String, u32>,
                             next_num_fmt_id: &mut u32,
                             num_fmt_count: &mut u32| {
-        if let Some(&id) = num_fmt_id_map.get(fmt)
-        {
+        if let Some(&id) = num_fmt_id_map.get(fmt) {
             return id;
         }
         let id = *next_num_fmt_id;
@@ -725,8 +666,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String
     // Helper to register a fill and return its fillId.
     let register_fill =
         |style: &ExcelCellStyle, fills_section: &mut String, next_fill_id: &mut u32| {
-            if let Some(ref color) = style.bg_color
-            {
+            if let Some(ref color) = style.bg_color {
                 let id = *next_fill_id;
                 let _ = write!(
                     fills_section,
@@ -736,9 +676,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String
                 );
                 *next_fill_id += 1;
                 Some(id)
-            }
-            else
-            {
+            } else {
                 None
             }
         };
@@ -746,8 +684,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String
     // Helper to register a border and return its borderId.
     let register_border =
         |style: &ExcelCellStyle, borders_section: &mut String, next_border_id: &mut u32| {
-            if style.border
-            {
+            if style.border {
                 let id = *next_border_id;
                 let _ = write!(
                     borders_section,
@@ -758,16 +695,13 @@ fn styles_xml(exporter: &ExcelExporter) -> String
                 );
                 *next_border_id += 1;
                 Some(id)
-            }
-            else
-            {
+            } else {
                 None
             }
         };
 
     // Register header style as xfId=1
-    if let Some(ref hs) = exporter.header_style
-    {
+    if let Some(ref hs) = exporter.header_style {
         let font_id = register_font(hs, &mut fonts_section, &mut next_font_id);
         let fill_id = register_fill(hs, &mut fills_section, &mut next_fill_id);
         let border_id = register_border(hs, &mut borders_section, &mut next_border_id);
@@ -820,10 +754,8 @@ fn styles_xml(exporter: &ExcelExporter) -> String
     }
 
     // Register column styles
-    for &col in exporter.column_styles.keys()
-    {
-        if let Some(cs) = exporter.column_styles.get(&col)
-        {
+    for &col in exporter.column_styles.keys() {
+        if let Some(cs) = exporter.column_styles.get(&col) {
             let font_id = register_font(cs, &mut fonts_section, &mut next_font_id);
             let fill_id = register_fill(cs, &mut fills_section, &mut next_fill_id);
             let border_id = register_border(cs, &mut borders_section, &mut next_border_id);
@@ -854,8 +786,7 @@ fn styles_xml(exporter: &ExcelExporter) -> String
     }
 
     // Build final output
-    if num_fmt_count > 0
-    {
+    if num_fmt_count > 0 {
         let _ =
             writeln!(xml, "<numFmts count=\"{}\">{}</numFmts>", num_fmt_count, num_fmts_section);
     }
@@ -888,28 +819,22 @@ fn styles_xml(exporter: &ExcelExporter) -> String
 
 /// Build apply attributes string for a cell Xf.
 /// 为单元格 Xf 构建 apply 属性字符串。
-fn build_apply_attributes(style: &ExcelCellStyle) -> String
-{
+fn build_apply_attributes(style: &ExcelCellStyle) -> String {
     let mut attrs = Vec::new();
     #[allow(clippy::float_cmp)]
-    if style.bold || style.font_size != 11.0 || style.font_color.is_some()
-    {
+    if style.bold || style.font_size != 11.0 || style.font_color.is_some() {
         attrs.push("applyFont=\"1\"");
     }
-    if style.bg_color.is_some()
-    {
+    if style.bg_color.is_some() {
         attrs.push("applyFill=\"1\"");
     }
-    if style.border
-    {
+    if style.border {
         attrs.push("applyBorder=\"1\"");
     }
-    if style.alignment != CellAlignment::Left
-    {
+    if style.alignment != CellAlignment::Left {
         attrs.push("applyAlignment=\"1\"");
     }
-    if style.number_format.is_some()
-    {
+    if style.number_format.is_some() {
         attrs.push("applyNumberFormat=\"1\"");
     }
     attrs.join(" ")
@@ -925,8 +850,7 @@ fn build_xf(
     alignment: CellAlignment,
     xf_id: u32,
     apply: &str,
-) -> String
-{
+) -> String {
     format!(
         "<xf numFmtId=\"{}\" fontId=\"{}\" fillId=\"{}\" borderId=\"{}\" xfId=\"{}\" \
          {}><alignment horizontal=\"{}\"/></xf>",
@@ -942,8 +866,7 @@ fn build_xf(
 
 /// Generate xl/worksheets/sheet1.xml.
 /// 生成 xl/worksheets/sheet1.xml。
-fn sheet_xml(exporter: &ExcelExporter) -> String
-{
+fn sheet_xml(exporter: &ExcelExporter) -> String {
     let mut xml = String::from(
         r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
@@ -959,26 +882,21 @@ fn sheet_xml(exporter: &ExcelExporter) -> String
 
     // Header row index for auto-filter and freeze pane
     let has_header = !exporter.config.headers.is_empty();
-    let last_data_row = if has_header
-    {
+    let last_data_row = if has_header {
         exporter.rows.len() + 1 // 1-based: header is row 1
-    }
-    else
-    {
+    } else {
         exporter.rows.len()
     };
 
     // Auto-filter
-    if exporter.config.auto_filter && has_header && num_cols > 0
-    {
+    if exporter.config.auto_filter && has_header && num_cols > 0 {
         let start_col = col_ref(0);
         let end_col = col_ref(num_cols - 1);
         let _ = writeln!(xml, "<autoFilter ref=\"{}1:{}{}\"/>", start_col, end_col, last_data_row);
     }
 
     // Freeze pane (freeze header row)
-    if exporter.config.freeze_header && has_header
-    {
+    if exporter.config.freeze_header && has_header {
         // Freeze below row 1, no split column
         let _ = writeln!(
             xml,
@@ -996,36 +914,27 @@ fn sheet_xml(exporter: &ExcelExporter) -> String
     // 2 = date format
     // 3+ = column styles (in sorted order by column index)
     let header_xf_id = i32::from(exporter.header_style.is_some());
-    let date_xf_id = if exporter.header_style.is_some()
-    {
+    let date_xf_id = if exporter.header_style.is_some() {
         2
-    }
-    else
-    {
+    } else {
         1
     };
     let mut col_style_xf_ids: HashMap<usize, u32> = HashMap::new();
     let mut sorted_cols: Vec<usize> = exporter.column_styles.keys().copied().collect();
     sorted_cols.sort_unstable();
-    for (i, &col) in sorted_cols.iter().enumerate()
-    {
-        let base_xf = if exporter.header_style.is_some()
-        {
+    for (i, &col) in sorted_cols.iter().enumerate() {
+        let base_xf = if exporter.header_style.is_some() {
             3
-        }
-        else
-        {
+        } else {
             2
         };
         col_style_xf_ids.insert(col, base_xf + i as u32);
     }
 
     // Write header row
-    if has_header
-    {
+    if has_header {
         xml.push_str("<row r=\"1\">\n");
-        for (col_idx, header) in exporter.config.headers.iter().enumerate()
-        {
+        for (col_idx, header) in exporter.config.headers.iter().enumerate() {
             let ref_str = cell_ref(col_idx, 0);
             let _ = writeln!(
                 xml,
@@ -1039,27 +948,19 @@ fn sheet_xml(exporter: &ExcelExporter) -> String
     }
 
     // Write data rows
-    for (row_idx, row) in exporter.rows.iter().enumerate()
-    {
+    for (row_idx, row) in exporter.rows.iter().enumerate() {
         let r = row_idx + 1 + usize::from(has_header); // 1-based, offset by header
         let _ = writeln!(xml, "<row r=\"{}\">", r);
-        for (col_idx, cell) in row.iter().enumerate()
-        {
+        for (col_idx, cell) in row.iter().enumerate() {
             let ref_str = cell_ref(col_idx, r);
-            if cell.is_empty()
-            {
+            if cell.is_empty() {
                 let _ = write!(xml, "<c r=\"{}\"/>", ref_str);
-            }
-            else
-            {
+            } else {
                 // Determine style based on column style or cell type
                 let xf_id = col_style_xf_ids.get(&col_idx).copied().unwrap_or({
-                    if matches!(cell, ExcelCell::Date(_) | ExcelCell::DateTime(_))
-                    {
+                    if matches!(cell, ExcelCell::Date(_) | ExcelCell::DateTime(_)) {
                         date_xf_id
-                    }
-                    else
-                    {
+                    } else {
                         0
                     }
                 });
@@ -1080,11 +981,9 @@ fn sheet_xml(exporter: &ExcelExporter) -> String
     xml.push_str("</sheetData>\n");
 
     // Column widths
-    if !exporter.config.column_widths.is_empty()
-    {
+    if !exporter.config.column_widths.is_empty() {
         xml.push_str("<cols>\n");
-        for (i, &width) in exporter.config.column_widths.iter().enumerate()
-        {
+        for (i, &width) in exporter.config.column_widths.iter().enumerate() {
             // OOXML width is in character widths (approximately)
             let _ = writeln!(
                 xml,
@@ -1109,12 +1008,9 @@ fn sheet_xml(exporter: &ExcelExporter) -> String
 /// 包装类型，使 `ExcelExporter` 输出可以用作 HTTP 响应。
 pub struct Excel(pub ExcelExporter);
 
-impl crate::IntoResponse for Excel
-{
-    fn into_response(self) -> crate::Response
-    {
-        match self.0.to_bytes()
-        {
+impl crate::IntoResponse for Excel {
+    fn into_response(self) -> crate::Response {
+        match self.0.to_bytes() {
             Ok(bytes) => crate::Response::builder()
                 .header(
                     "content-type",
@@ -1136,16 +1032,20 @@ impl crate::IntoResponse for Excel
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::time::{Duration, UNIX_EPOCH};
 
     use super::*;
 
     #[test]
-    fn test_col_ref()
-    {
+    fn test_col_ref() {
         assert_eq!(col_ref(0), "A");
         assert_eq!(col_ref(1), "B");
         assert_eq!(col_ref(25), "Z");
@@ -1156,16 +1056,14 @@ mod tests
     }
 
     #[test]
-    fn test_cell_ref()
-    {
+    fn test_cell_ref() {
         assert_eq!(cell_ref(0, 0), "A1");
         assert_eq!(cell_ref(1, 2), "B3");
         assert_eq!(cell_ref(25, 9), "Z10");
     }
 
     #[test]
-    fn test_escape_xml()
-    {
+    fn test_escape_xml() {
         assert_eq!(escape_xml("hello"), "hello");
         assert_eq!(escape_xml("a&b"), "a&amp;b");
         assert_eq!(escape_xml("<tag>"), "&lt;tag&gt;");
@@ -1173,15 +1071,13 @@ mod tests
     }
 
     #[test]
-    fn test_excel_cell_empty()
-    {
+    fn test_excel_cell_empty() {
         assert!(ExcelCell::Empty.is_empty());
         assert!(!ExcelCell::Text("x".into()).is_empty());
     }
 
     #[test]
-    fn test_export_config_builder()
-    {
+    fn test_export_config_builder() {
         let config = ExcelExportConfig::new("Test")
             .header("Name")
             .header("Age")
@@ -1197,8 +1093,7 @@ mod tests
     }
 
     #[test]
-    fn test_simple_export_to_bytes()
-    {
+    fn test_simple_export_to_bytes() {
         let config = ExcelExportConfig::new("Sheet1")
             .header("Name")
             .header("Score");
@@ -1220,8 +1115,7 @@ mod tests
     }
 
     #[test]
-    fn test_export_with_header_style()
-    {
+    fn test_export_with_header_style() {
         let config = ExcelExportConfig::new("Users")
             .header("Name")
             .header("Email");
@@ -1245,8 +1139,7 @@ mod tests
     }
 
     #[test]
-    fn test_export_with_date_cell()
-    {
+    fn test_export_with_date_cell() {
         let config = ExcelExportConfig::new("Dates")
             .header("Name")
             .header("Created");
@@ -1262,8 +1155,7 @@ mod tests
     }
 
     #[test]
-    fn test_export_with_boolean_cell()
-    {
+    fn test_export_with_boolean_cell() {
         let config = ExcelExportConfig::new("Flags").header("Active");
 
         let mut exporter = ExcelExporter::new(config);
@@ -1276,8 +1168,7 @@ mod tests
     }
 
     #[test]
-    fn test_export_with_column_styles()
-    {
+    fn test_export_with_column_styles() {
         let config = ExcelExportConfig::new("Numbers")
             .header("Name")
             .header("Balance");
@@ -1296,23 +1187,18 @@ mod tests
     }
 
     #[test]
-    fn test_export_to_excel_trait()
-    {
-        struct Person
-        {
+    fn test_export_to_excel_trait() {
+        struct Person {
             name: String,
             age: u32,
         }
 
-        impl ExcelTable for Person
-        {
-            fn excel_headers() -> Vec<String>
-            {
+        impl ExcelTable for Person {
+            fn excel_headers() -> Vec<String> {
                 vec!["Name".into(), "Age".into()]
             }
 
-            fn excel_row(&self) -> Vec<ExcelCell>
-            {
+            fn excel_row(&self) -> Vec<ExcelCell> {
                 vec![
                     ExcelCell::Text(self.name.clone()),
                     ExcelCell::Number(self.age as f64),
@@ -1337,8 +1223,7 @@ mod tests
     }
 
     #[test]
-    fn test_write_to_file()
-    {
+    fn test_write_to_file() {
         let config = ExcelExportConfig::new("Test").header("Col1");
         let mut exporter = ExcelExporter::new(config);
         exporter.add_row(vec![ExcelCell::Text("value".into())]);
@@ -1355,8 +1240,7 @@ mod tests
     }
 
     #[test]
-    fn test_empty_export()
-    {
+    fn test_empty_export() {
         let config = ExcelExportConfig::new("Empty").header("Col1");
         let exporter = ExcelExporter::new(config);
         let bytes = exporter.to_bytes().unwrap();
@@ -1364,8 +1248,7 @@ mod tests
     }
 
     #[test]
-    fn test_export_no_headers()
-    {
+    fn test_export_no_headers() {
         let config = ExcelExportConfig::new("NoHeaders");
         let mut exporter = ExcelExporter::new(config);
         exporter.add_row(vec![ExcelCell::Number(1.0), ExcelCell::Number(2.0)]);
@@ -1375,16 +1258,14 @@ mod tests
     }
 
     #[test]
-    fn test_cell_alignment()
-    {
+    fn test_cell_alignment() {
         assert_eq!(CellAlignment::Left.as_str(), "left");
         assert_eq!(CellAlignment::Center.as_str(), "center");
         assert_eq!(CellAlignment::Right.as_str(), "right");
     }
 
     #[test]
-    fn test_cell_style_builder()
-    {
+    fn test_cell_style_builder() {
         let style = ExcelCellStyle::new()
             .bold(true)
             .font_size(14.0)

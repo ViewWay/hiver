@@ -26,8 +26,7 @@ use serde::{Deserialize, Serialize};
 /// )
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OpenApiConfig
-{
+pub struct OpenApiConfig {
     /// API information
     /// API信息
     pub info: InfoConfig,
@@ -49,10 +48,8 @@ pub struct OpenApiConfig
     pub external_docs: Option<ExternalDocsConfig>,
 }
 
-impl Default for OpenApiConfig
-{
-    fn default() -> Self
-    {
+impl Default for OpenApiConfig {
+    fn default() -> Self {
         Self {
             info: InfoConfig::default(),
             servers: vec![ServerConfig::default()],
@@ -63,75 +60,65 @@ impl Default for OpenApiConfig
     }
 }
 
-impl OpenApiConfig
-{
+impl OpenApiConfig {
     /// Create a new config
     /// 创建新配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set title
     /// 设置标题
-    pub fn title(mut self, title: impl Into<String>) -> Self
-    {
+    pub fn title(mut self, title: impl Into<String>) -> Self {
         self.info.title = title.into();
         self
     }
 
     /// Set version
     /// 设置版本
-    pub fn version(mut self, version: impl Into<String>) -> Self
-    {
+    pub fn version(mut self, version: impl Into<String>) -> Self {
         self.info.version = version.into();
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.info.description = Some(description.into());
         self
     }
 
     /// Set contact
     /// 设置联系信息
-    pub fn contact(mut self, contact: ContactConfig) -> Self
-    {
+    pub fn contact(mut self, contact: ContactConfig) -> Self {
         self.info.contact = Some(contact);
         self
     }
 
     /// Set license
     /// 设置许可证
-    pub fn license(mut self, license: LicenseConfig) -> Self
-    {
+    pub fn license(mut self, license: LicenseConfig) -> Self {
         self.info.license = Some(license);
         self
     }
 
     /// Add server
     /// 添加服务器
-    pub fn add_server(mut self, server: ServerConfig) -> Self
-    {
+    pub fn add_server(mut self, server: ServerConfig) -> Self {
         self.servers.push(server);
         self
     }
 
     /// Add security scheme
     /// 添加安全方案
-    pub fn add_security_scheme(mut self, name: String, scheme: SecuritySchemeConfig) -> Self
-    {
+    pub fn add_security_scheme(mut self, name: String, scheme: SecuritySchemeConfig) -> Self {
         self.security_schemes.insert(name, scheme);
         self
     }
 
     /// Add tag
     /// 添加标签
-    pub fn add_tag(mut self, tag: TagConfig) -> Self
-    {
+    pub fn add_tag(mut self, tag: TagConfig) -> Self {
         self.tags.push(tag);
         self
     }
@@ -140,8 +127,7 @@ impl OpenApiConfig
 /// API information configuration
 /// API信息配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InfoConfig
-{
+pub struct InfoConfig {
     /// API title
     /// API标题
     pub title: String,
@@ -167,10 +153,8 @@ pub struct InfoConfig
     pub license: Option<LicenseConfig>,
 }
 
-impl Default for InfoConfig
-{
-    fn default() -> Self
-    {
+impl Default for InfoConfig {
+    fn default() -> Self {
         Self {
             title: "API Documentation".to_string(),
             version: "1.0.0".to_string(),
@@ -185,8 +169,7 @@ impl Default for InfoConfig
 /// Contact configuration
 /// 联系配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ContactConfig
-{
+pub struct ContactConfig {
     /// Contact name
     /// 联系人名称
     pub name: Option<String>,
@@ -200,12 +183,10 @@ pub struct ContactConfig
     pub url: Option<String>,
 }
 
-impl ContactConfig
-{
+impl ContactConfig {
     /// Create a new contact config
     /// 创建新的联系配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             name: None,
             email: None,
@@ -215,33 +196,28 @@ impl ContactConfig
 
     /// Set name
     /// 设置名称
-    pub fn name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn name(mut self, name: impl Into<String>) -> Self {
         self.name = Some(name.into());
         self
     }
 
     /// Set email
     /// 设置邮箱
-    pub fn email(mut self, email: impl Into<String>) -> Self
-    {
+    pub fn email(mut self, email: impl Into<String>) -> Self {
         self.email = Some(email.into());
         self
     }
 
     /// Set URL
     /// 设置URL
-    pub fn url(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 }
 
-impl Default for ContactConfig
-{
-    fn default() -> Self
-    {
+impl Default for ContactConfig {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -249,8 +225,7 @@ impl Default for ContactConfig
 /// License configuration
 /// 许可证配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LicenseConfig
-{
+pub struct LicenseConfig {
     /// License name
     /// 许可证名称
     pub name: String,
@@ -260,12 +235,10 @@ pub struct LicenseConfig
     pub url: Option<String>,
 }
 
-impl LicenseConfig
-{
+impl LicenseConfig {
     /// Create a new license config
     /// 创建新的许可证配置
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             url: None,
@@ -274,8 +247,7 @@ impl LicenseConfig
 
     /// Set URL
     /// 设置URL
-    pub fn url(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
@@ -284,8 +256,7 @@ impl LicenseConfig
 /// Server configuration
 /// 服务器配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ServerConfig
-{
+pub struct ServerConfig {
     /// Server URL
     /// 服务器URL
     pub url: String,
@@ -299,10 +270,8 @@ pub struct ServerConfig
     pub variables: Option<HashMap<String, ServerVariable>>,
 }
 
-impl Default for ServerConfig
-{
-    fn default() -> Self
-    {
+impl Default for ServerConfig {
+    fn default() -> Self {
         Self {
             url: "/".to_string(),
             description: None,
@@ -311,12 +280,10 @@ impl Default for ServerConfig
     }
 }
 
-impl ServerConfig
-{
+impl ServerConfig {
     /// Create a new server config
     /// 创建新的服务器配置
-    pub fn new(url: impl Into<String>) -> Self
-    {
+    pub fn new(url: impl Into<String>) -> Self {
         Self {
             url: url.into(),
             description: None,
@@ -326,8 +293,7 @@ impl ServerConfig
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
@@ -336,8 +302,7 @@ impl ServerConfig
 /// Server variable
 /// 服务器变量
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ServerVariable
-{
+pub struct ServerVariable {
     /// Default value
     /// 默认值
     #[serde(rename = "default")]
@@ -359,12 +324,10 @@ pub struct ServerVariable
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[allow(clippy::large_enum_variant)]
-pub enum SecuritySchemeConfig
-{
+pub enum SecuritySchemeConfig {
     /// HTTP authentication
     /// HTTP认证
-    Http
-    {
+    Http {
         /// Scheme (bearer, basic, etc.)
         /// 方案（bearer, basic等）
         scheme: String,
@@ -377,8 +340,7 @@ pub enum SecuritySchemeConfig
 
     /// API key
     /// API密钥
-    ApiKey
-    {
+    ApiKey {
         /// Name of the header or query parameter
         /// 头或查询参数名称
         name: String,
@@ -391,8 +353,7 @@ pub enum SecuritySchemeConfig
 
     /// `OAuth2`
     /// `OAuth2`
-    OAuth2
-    {
+    OAuth2 {
         /// Flows
         /// 流程
         flows: OAuthFlows,
@@ -400,8 +361,7 @@ pub enum SecuritySchemeConfig
 
     /// `OpenID` Connect
     /// `OpenID` Connect
-    OpenIdConnect
-    {
+    OpenIdConnect {
         /// `OpenID` Connect URL
         /// `OpenID` Connect URL
         connect_url: String,
@@ -412,8 +372,7 @@ pub enum SecuritySchemeConfig
 /// API密钥位置
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum ApiKeyLocation
-{
+pub enum ApiKeyLocation {
     /// In header
     /// 在头中
     Header,
@@ -426,8 +385,7 @@ pub enum ApiKeyLocation
 /// OAuth flows
 /// `OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OAuthFlows
-{
+pub struct OAuthFlows {
     /// Implicit flow
     /// 隐式流程
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -452,8 +410,7 @@ pub struct OAuthFlows
 /// Implicit OAuth flow
 /// `隐式OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImplicitFlow
-{
+pub struct ImplicitFlow {
     /// Authorization URL
     /// 授权URL
     pub authorization_url: String,
@@ -475,8 +432,7 @@ pub struct ImplicitFlow
 /// Password OAuth flow
 /// `密码OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PasswordFlow
-{
+pub struct PasswordFlow {
     /// Token URL
     /// 令牌URL
     pub token_url: String,
@@ -494,8 +450,7 @@ pub struct PasswordFlow
 /// Client credentials OAuth flow
 /// `客户端凭证OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ClientCredentialsFlow
-{
+pub struct ClientCredentialsFlow {
     /// Token URL
     /// 令牌URL
     pub token_url: String,
@@ -513,8 +468,7 @@ pub struct ClientCredentialsFlow
 /// Authorization code OAuth flow
 /// `授权码OAuth流程`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuthorizationCodeFlow
-{
+pub struct AuthorizationCodeFlow {
     /// Authorization URL
     /// 授权URL
     pub authorization_url: String,
@@ -536,8 +490,7 @@ pub struct AuthorizationCodeFlow
 /// Tag configuration
 /// 标签配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TagConfig
-{
+pub struct TagConfig {
     /// Tag name
     /// 标签名
     pub name: String,
@@ -553,12 +506,10 @@ pub struct TagConfig
     pub external_docs: Option<ExternalDocsConfig>,
 }
 
-impl TagConfig
-{
+impl TagConfig {
     /// Create a new tag
     /// 创建新标签
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             description: None,
@@ -568,8 +519,7 @@ impl TagConfig
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
@@ -578,8 +528,7 @@ impl TagConfig
 /// External documentation configuration
 /// 外部文档配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExternalDocsConfig
-{
+pub struct ExternalDocsConfig {
     /// Documentation URL
     /// 文档URL
     pub url: String,
@@ -590,12 +539,10 @@ pub struct ExternalDocsConfig
     pub description: Option<String>,
 }
 
-impl ExternalDocsConfig
-{
+impl ExternalDocsConfig {
     /// Create a new external docs config
     /// 创建新的外部文档配置
-    pub fn new(url: impl Into<String>) -> Self
-    {
+    pub fn new(url: impl Into<String>) -> Self {
         Self {
             url: url.into(),
             description: None,
@@ -604,30 +551,32 @@ impl ExternalDocsConfig
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_openapi_config_default()
-    {
+    fn test_openapi_config_default() {
         let config = OpenApiConfig::default();
         assert_eq!(config.info.title, "API Documentation");
         assert_eq!(config.info.version, "1.0.0");
     }
 
     #[test]
-    fn test_openapi_config_builder()
-    {
+    fn test_openapi_config_builder() {
         let config = OpenApiConfig::new()
             .title("My API")
             .version("2.0.0")
@@ -639,8 +588,7 @@ mod tests
     }
 
     #[test]
-    fn test_server_config()
-    {
+    fn test_server_config() {
         let server = ServerConfig::new("http://localhost:8080").description("Local server");
 
         assert_eq!(server.url, "http://localhost:8080");
@@ -648,8 +596,7 @@ mod tests
     }
 
     #[test]
-    fn test_tag_config()
-    {
+    fn test_tag_config() {
         let tag = TagConfig::new("users").description("User operations");
 
         assert_eq!(tag.name, "users");

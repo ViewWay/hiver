@@ -48,48 +48,39 @@ pub fn evaluate_cache_condition(
     expression: &str,
     args: &HashMap<String, JsonValue>,
     result: Option<&JsonValue>,
-) -> bool
-{
+) -> bool {
     let expr = expression.trim();
 
     // Handle parenthesized expressions — strip outer parens if balanced
     // 处理括号表达式 — 如果外层括号匹配则去掉
-    if expr.starts_with('(') && expr.ends_with(')')
-    {
+    if expr.starts_with('(') && expr.ends_with(')') {
         let mut depth = 0;
         let mut balanced = true;
-        for (i, c) in expr.char_indices()
-        {
-            match c
-            {
+        for (i, c) in expr.char_indices() {
+            match c {
                 '(' => depth += 1,
                 ')' => depth -= 1,
-                _ =>
-                {},
+                _ => {},
             }
-            if depth == 0 && i < expr.len() - 1
-            {
+            if depth == 0 && i < expr.len() - 1 {
                 balanced = false;
                 break;
             }
         }
-        if balanced && depth == 0
-        {
+        if balanced && depth == 0 {
             return evaluate_cache_condition(&expr[1..expr.len() - 1], args, result);
         }
     }
 
     // Handle logical NOT
-    if let Some(inner) = expr.strip_prefix('!')
-    {
+    if let Some(inner) = expr.strip_prefix('!') {
         let inner_expr = inner.trim();
         return !evaluate_cache_condition(inner_expr, args, result);
     }
 
     // Handle method calls like length() — must be checked BEFORE == operator
     // 处理像 length() 这样的方法调用 — 必须在 == 运算符之前检查
-    if expr.contains(".length()")
-    {
+    if expr.contains(".length()") {
         #[allow(clippy::expect_used)]
         let param_part = expr.split(".length()").next().unwrap_or("");
         let method_end = param_part.len() + ".length()".len();
@@ -98,36 +89,26 @@ pub fn evaluate_cache_condition(
         let value = get_value(param_part.trim(), args, result);
         let length = get_length(&value);
 
-        if let Some(stripped) = rest.strip_prefix(" >")
-        {
+        if let Some(stripped) = rest.strip_prefix(" >") {
             let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) > threshold;
-        }
-        else if let Some(stripped) = rest.strip_prefix(" <")
-        {
+        } else if let Some(stripped) = rest.strip_prefix(" <") {
             let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) < threshold;
-        }
-        else if let Some(stripped) = rest.strip_prefix(" >=")
-        {
+        } else if let Some(stripped) = rest.strip_prefix(" >=") {
             let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) >= threshold;
-        }
-        else if let Some(stripped) = rest.strip_prefix(" <=")
-        {
+        } else if let Some(stripped) = rest.strip_prefix(" <=") {
             let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return (length as i64) <= threshold;
-        }
-        else if let Some(stripped) = rest.strip_prefix(" ==")
-        {
+        } else if let Some(stripped) = rest.strip_prefix(" ==") {
             let threshold = stripped.trim().parse::<i64>().unwrap_or(0);
             return length == (threshold as usize);
         }
     }
 
     // Handle OR expressions (left to right)
-    if let Some(pos) = find_operator(expr, " or ")
-    {
+    if let Some(pos) = find_operator(expr, " or ") {
         let left = &expr[..pos];
         let right = &expr[pos + 4..];
         return evaluate_cache_condition(left, args, result)
@@ -135,8 +116,7 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle AND expressions (left to right)
-    if let Some(pos) = find_operator(expr, " and ")
-    {
+    if let Some(pos) = find_operator(expr, " and ") {
         let left = &expr[..pos];
         let right = &expr[pos + 5..];
         return evaluate_cache_condition(left, args, result)
@@ -144,11 +124,9 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle equality checks
-    if expr.contains("==")
-    {
+    if expr.contains("==") {
         let parts: Vec<&str> = expr.splitn(2, "==").collect();
-        if parts.len() == 2
-        {
+        if parts.len() == 2 {
             let left = evaluate_to_value(parts[0].trim(), args, result);
             let right = evaluate_to_value(parts[1].trim(), args, result);
             return left == right;
@@ -156,11 +134,9 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle inequality checks
-    if expr.contains("!=")
-    {
+    if expr.contains("!=") {
         let parts: Vec<&str> = expr.splitn(2, "!=").collect();
-        if parts.len() == 2
-        {
+        if parts.len() == 2 {
             let left = evaluate_to_value(parts[0].trim(), args, result);
             let right = evaluate_to_value(parts[1].trim(), args, result);
             return left != right;
@@ -168,8 +144,7 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle greater than
-    if expr.contains('>')
-    {
+    if expr.contains('>') {
         let parts: Vec<&str> = expr.split('>').collect();
         if parts.len() == 2
             && let (Some(left_num), Some(right_num)) = (
@@ -182,8 +157,7 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle less than
-    if expr.contains('<')
-    {
+    if expr.contains('<') {
         let parts: Vec<&str> = expr.split('<').collect();
         if parts.len() == 2
             && let (Some(left_num), Some(right_num)) = (
@@ -196,8 +170,7 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle greater than or equal
-    if expr.contains(">=")
-    {
+    if expr.contains(">=") {
         let parts: Vec<&str> = expr.splitn(2, ">=").collect();
         if parts.len() == 2
             && let (Some(left_num), Some(right_num)) = (
@@ -210,8 +183,7 @@ pub fn evaluate_cache_condition(
     }
 
     // Handle less than or equal
-    if expr.contains("<=")
-    {
+    if expr.contains("<=") {
         let parts: Vec<&str> = expr.splitn(2, "<=").collect();
         if parts.len() == 2
             && let (Some(left_num), Some(right_num)) = (
@@ -225,8 +197,7 @@ pub fn evaluate_cache_condition(
 
     // Handle method calls like isEmpty()
     // 处理像 isEmpty() 这样的方法调用
-    if expr.ends_with("isEmpty()")
-    {
+    if expr.ends_with("isEmpty()") {
         // Split on '.' to get the base parameter name
         // 使用 '.' 分割来获取基础参数名
         let param_part = expr.split('.').next().unwrap_or(expr);
@@ -241,20 +212,16 @@ pub fn evaluate_cache_condition(
 
 /// Find operator position (respecting parentheses)
 /// 查找运算符位置（考虑括号）
-fn find_operator(expr: &str, op: &str) -> Option<usize>
-{
+fn find_operator(expr: &str, op: &str) -> Option<usize> {
     let mut depth = 0;
     let chars = expr.char_indices();
 
-    for (i, c) in chars
-    {
-        match c
-        {
+    for (i, c) in chars {
+        match c {
             '(' => depth += 1,
             ')' => depth -= 1,
             _ if depth == 0 && expr[i..].starts_with(op) => return Some(i),
-            _ =>
-            {},
+            _ => {},
         }
     }
 
@@ -263,14 +230,15 @@ fn find_operator(expr: &str, op: &str) -> Option<usize>
 
 /// Get value from expression
 /// 从表达式获取值
-fn get_value(expr: &str, args: &HashMap<String, JsonValue>, result: Option<&JsonValue>)
--> JsonValue
-{
+fn get_value(
+    expr: &str,
+    args: &HashMap<String, JsonValue>,
+    result: Option<&JsonValue>,
+) -> JsonValue {
     let expr = expr.trim();
 
     // Handle #result
-    if expr == "#result"
-    {
+    if expr == "#result" {
         return result.cloned().unwrap_or(JsonValue::Null);
     }
 
@@ -290,8 +258,7 @@ fn get_value(expr: &str, args: &HashMap<String, JsonValue>, result: Option<&Json
     }
 
     // Handle number literals
-    if let Ok(num) = expr.parse::<i64>()
-    {
+    if let Ok(num) = expr.parse::<i64>() {
         return JsonValue::Number(num.into());
     }
 
@@ -302,18 +269,15 @@ fn get_value(expr: &str, args: &HashMap<String, JsonValue>, result: Option<&Json
     }
 
     // Handle boolean literals
-    if expr == "true"
-    {
+    if expr == "true" {
         return JsonValue::Bool(true);
     }
 
-    if expr == "false"
-    {
+    if expr == "false" {
         return JsonValue::Bool(false);
     }
 
-    if expr == "null"
-    {
+    if expr == "null" {
         return JsonValue::Null;
     }
 
@@ -326,12 +290,10 @@ fn evaluate_to_value(
     expr: &str,
     args: &HashMap<String, JsonValue>,
     result: Option<&JsonValue>,
-) -> String
-{
+) -> String {
     let value = get_value(expr, args, result);
 
-    match value
-    {
+    match value {
         JsonValue::String(s) => s,
         JsonValue::Number(n) => n.to_string(),
         JsonValue::Bool(b) => b.to_string(),
@@ -347,12 +309,10 @@ fn extract_number(
     expr: &str,
     args: &HashMap<String, JsonValue>,
     result: Option<&JsonValue>,
-) -> Option<f64>
-{
+) -> Option<f64> {
     let value = get_value(expr, args, result);
 
-    match value
-    {
+    match value {
         JsonValue::Number(n) => n.as_f64(),
         JsonValue::String(s) => s.parse::<f64>().ok(),
         _ => None,
@@ -361,10 +321,8 @@ fn extract_number(
 
 /// Check if value is truthy
 /// 检查值是否为真
-fn is_truthy(value: &JsonValue) -> bool
-{
-    match value
-    {
+fn is_truthy(value: &JsonValue) -> bool {
+    match value {
         JsonValue::Bool(b) => *b,
         JsonValue::Number(n) => n.as_f64().is_some_and(|n| n != 0.0),
         JsonValue::String(s) => !s.is_empty(),
@@ -376,10 +334,8 @@ fn is_truthy(value: &JsonValue) -> bool
 
 /// Check if value is empty
 /// 检查值是否为空
-fn is_empty_value(value: &JsonValue) -> bool
-{
-    match value
-    {
+fn is_empty_value(value: &JsonValue) -> bool {
+    match value {
         JsonValue::String(s) => s.is_empty(),
         JsonValue::Array(arr) => arr.is_empty(),
         JsonValue::Object(obj) => obj.is_empty(),
@@ -390,10 +346,8 @@ fn is_empty_value(value: &JsonValue) -> bool
 
 /// Get length of value
 /// 获取值的长度
-fn get_length(value: &JsonValue) -> usize
-{
-    match value
-    {
+fn get_length(value: &JsonValue) -> usize {
+    match value {
         JsonValue::String(s) => s.len(),
         JsonValue::Array(arr) => arr.len(),
         JsonValue::Object(obj) => obj.len(),
@@ -402,14 +356,18 @@ fn get_length(value: &JsonValue) -> usize
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_simple_equality()
-    {
+    fn test_simple_equality() {
         let mut args = HashMap::new();
         args.insert("id".to_string(), JsonValue::Number(123.into()));
 
@@ -418,8 +376,7 @@ mod tests
     }
 
     #[test]
-    fn test_simple_inequality()
-    {
+    fn test_simple_inequality() {
         let mut args = HashMap::new();
         args.insert("id".to_string(), JsonValue::Number(123.into()));
 
@@ -428,8 +385,7 @@ mod tests
     }
 
     #[test]
-    fn test_greater_than()
-    {
+    fn test_greater_than() {
         let mut args = HashMap::new();
         args.insert("age".to_string(), JsonValue::Number(25.into()));
 
@@ -438,8 +394,7 @@ mod tests
     }
 
     #[test]
-    fn test_less_than()
-    {
+    fn test_less_than() {
         let mut args = HashMap::new();
         args.insert("age".to_string(), JsonValue::Number(25.into()));
 
@@ -448,8 +403,7 @@ mod tests
     }
 
     #[test]
-    fn test_and_expressions()
-    {
+    fn test_and_expressions() {
         let mut args = HashMap::new();
         args.insert("age".to_string(), JsonValue::Number(25.into()));
         args.insert("active".to_string(), JsonValue::Bool(true));
@@ -460,8 +414,7 @@ mod tests
     }
 
     #[test]
-    fn test_or_expressions()
-    {
+    fn test_or_expressions() {
         let mut args = HashMap::new();
         args.insert("role".to_string(), JsonValue::String("ADMIN".to_string()));
         args.insert("admin".to_string(), JsonValue::Bool(true)); // Fixed: should be true for correct test logic
@@ -472,8 +425,7 @@ mod tests
     }
 
     #[test]
-    fn test_not_expressions()
-    {
+    fn test_not_expressions() {
         let mut args = HashMap::new();
         args.insert("active".to_string(), JsonValue::Bool(false));
 
@@ -482,8 +434,7 @@ mod tests
     }
 
     #[test]
-    fn test_is_empty()
-    {
+    fn test_is_empty() {
         let mut args = HashMap::new();
         args.insert("name".to_string(), JsonValue::String(String::new()));
         args.insert("email".to_string(), JsonValue::String("test@example.com".to_string()));
@@ -493,8 +444,7 @@ mod tests
     }
 
     #[test]
-    fn test_length_check()
-    {
+    fn test_length_check() {
         let mut args = HashMap::new();
         args.insert("username".to_string(), JsonValue::String("alice".to_string()));
         args.insert("name".to_string(), JsonValue::String("Bob".to_string()));
@@ -504,8 +454,7 @@ mod tests
     }
 
     #[test]
-    fn test_result_check()
-    {
+    fn test_result_check() {
         let args = HashMap::new();
 
         // Don't cache if result is null
@@ -530,8 +479,7 @@ mod tests
     }
 
     #[test]
-    fn test_complex_expressions()
-    {
+    fn test_complex_expressions() {
         let mut args = HashMap::new();
         args.insert("age".to_string(), JsonValue::Number(25.into()));
         args.insert("active".to_string(), JsonValue::Bool(true));
@@ -548,8 +496,7 @@ mod tests
     }
 
     #[test]
-    fn test_unless_condition()
-    {
+    fn test_unless_condition() {
         let mut args = HashMap::new();
         args.insert("id".to_string(), JsonValue::Number(1.into()));
 

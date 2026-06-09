@@ -44,8 +44,7 @@ use crate::{Error, Model, Result, query::validate_identifier};
 /// Relationship type
 /// 关系类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RelationType
-{
+pub enum RelationType {
     /// One-to-One relationship / 一对一关系
     OneToOne,
     /// One-to-Many relationship / 一对多关系
@@ -59,8 +58,7 @@ pub enum RelationType
 /// Relationship metadata
 /// 关系元数据
 #[derive(Debug, Clone)]
-pub struct Relation
-{
+pub struct Relation {
     /// Name of the relationship / 关系名称
     pub name: String,
     /// Type of relationship / 关系类型
@@ -75,16 +73,14 @@ pub struct Relation
     pub on_delete: OnDelete,
 }
 
-impl Relation
-{
+impl Relation {
     /// Create a new relationship / 创建新关系
     pub fn new(
         name: impl Into<String>,
         relation_type: RelationType,
         target_table: impl Into<String>,
         foreign_key: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             name: name.into(),
             relation_type,
@@ -96,15 +92,13 @@ impl Relation
     }
 
     /// Set the join table for many-to-many relationships / 为多对多关系设置连接表
-    pub fn join_table(mut self, table: impl Into<String>) -> Self
-    {
+    pub fn join_table(mut self, table: impl Into<String>) -> Self {
         self.join_table = Some(table.into());
         self
     }
 
     /// Set the on-delete behavior / 设置删除时行为
-    pub fn on_delete(mut self, on_delete: OnDelete) -> Self
-    {
+    pub fn on_delete(mut self, on_delete: OnDelete) -> Self {
         self.on_delete = on_delete;
         self
     }
@@ -112,8 +106,7 @@ impl Relation
 
 /// On delete behavior / 删除时行为
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum OnDelete
-{
+pub enum OnDelete {
     /// Restrict deletion (default) / 限制删除（默认）
     Restrict,
     /// Cascade delete related records / 级联删除相关记录
@@ -129,8 +122,7 @@ pub enum OnDelete
 /// HasMany relationship — parent has many children.
 /// HasMany 关系 — 父模型有多个子模型。
 #[derive(Debug, Clone)]
-pub struct HasMany<T: Model + serde::de::DeserializeOwned>
-{
+pub struct HasMany<T: Model + serde::de::DeserializeOwned> {
     /// Parent model ID / 父模型 ID
     pub parent_id: String,
     /// Foreign key column name / 外键列名
@@ -139,11 +131,9 @@ pub struct HasMany<T: Model + serde::de::DeserializeOwned>
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T: Model + serde::de::DeserializeOwned> HasMany<T>
-{
+impl<T: Model + serde::de::DeserializeOwned> HasMany<T> {
     /// Create a new HasMany relationship / 创建新的 HasMany 关系
-    pub fn new(parent_id: impl Into<String>, foreign_key: impl Into<String>) -> Self
-    {
+    pub fn new(parent_id: impl Into<String>, foreign_key: impl Into<String>) -> Self {
         Self {
             parent_id: parent_id.into(),
             foreign_key: foreign_key.into(),
@@ -153,16 +143,14 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T>
 
     /// Load the related records using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
-    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>>
-    {
+    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>> {
         let sql = format!("SELECT * FROM {} WHERE {} = $1", T::table_name(), self.foreign_key,);
         let rows = client
             .fetch_all_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("HasMany load failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             results.push(
                 row.deserialize()
                     .map_err(|e| Error::relationship(format!("deserialize: {e}")))?,
@@ -173,19 +161,18 @@ impl<T: Model + serde::de::DeserializeOwned> HasMany<T>
 
     /// Get a query builder for the related records.
     /// 获取相关记录的查询构建器。
-    pub fn query(&self) -> crate::QueryBuilder<T>
-    {
-        crate::QueryBuilder::new().where_(&format!("{} = $1", self.foreign_key), &[
-            QueryParam::Text(self.parent_id.clone()),
-        ])
+    pub fn query(&self) -> crate::QueryBuilder<T> {
+        crate::QueryBuilder::new().where_(
+            &format!("{} = $1", self.foreign_key),
+            &[QueryParam::Text(self.parent_id.clone())],
+        )
     }
 }
 
 /// HasOne relationship — parent has one child.
 /// HasOne 关系 — 父模型有一个子模型。
 #[derive(Debug, Clone)]
-pub struct HasOne<T: Model + serde::de::DeserializeOwned>
-{
+pub struct HasOne<T: Model + serde::de::DeserializeOwned> {
     /// Parent model ID / 父模型 ID
     pub parent_id: String,
     /// Foreign key column name / 外键列名
@@ -194,11 +181,9 @@ pub struct HasOne<T: Model + serde::de::DeserializeOwned>
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T: Model + serde::de::DeserializeOwned> HasOne<T>
-{
+impl<T: Model + serde::de::DeserializeOwned> HasOne<T> {
     /// Create a new HasOne relationship / 创建新的 HasOne 关系
-    pub fn new(parent_id: impl Into<String>, foreign_key: impl Into<String>) -> Self
-    {
+    pub fn new(parent_id: impl Into<String>, foreign_key: impl Into<String>) -> Self {
         Self {
             parent_id: parent_id.into(),
             foreign_key: foreign_key.into(),
@@ -208,16 +193,14 @@ impl<T: Model + serde::de::DeserializeOwned> HasOne<T>
 
     /// Load the related record using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
-    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>>
-    {
+    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
         let sql =
             format!("SELECT * FROM {} WHERE {} = $1 LIMIT 1", T::table_name(), self.foreign_key,);
         let row = client
             .fetch_one_params(&sql, &[QueryParam::Text(self.parent_id.clone())])
             .await
             .map_err(|e| Error::relationship(format!("HasOne load failed: {e}")))?;
-        match row
-        {
+        match row {
             Some(r) => r
                 .deserialize()
                 .map(Some)
@@ -230,8 +213,7 @@ impl<T: Model + serde::de::DeserializeOwned> HasOne<T>
 /// BelongsTo relationship — model belongs to another model.
 /// BelongsTo 关系 — 模型属于另一个模型。
 #[derive(Debug, Clone)]
-pub struct BelongsTo<T: Model + serde::de::DeserializeOwned>
-{
+pub struct BelongsTo<T: Model + serde::de::DeserializeOwned> {
     /// Foreign key value / 外键值
     pub foreign_key_value: String,
     /// Foreign key column name / 外键列名
@@ -240,11 +222,9 @@ pub struct BelongsTo<T: Model + serde::de::DeserializeOwned>
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T>
-{
+impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T> {
     /// Create a new BelongsTo relationship / 创建新的 BelongsTo 关系
-    pub fn new(foreign_key_value: impl Into<String>, foreign_key: impl Into<String>) -> Self
-    {
+    pub fn new(foreign_key_value: impl Into<String>, foreign_key: impl Into<String>) -> Self {
         Self {
             foreign_key_value: foreign_key_value.into(),
             foreign_key: foreign_key.into(),
@@ -254,16 +234,14 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T>
 
     /// Load the related record using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
-    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>>
-    {
+    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Option<T>> {
         let sql =
             format!("SELECT * FROM {} WHERE {} = $1 LIMIT 1", T::table_name(), self.foreign_key,);
         let row = client
             .fetch_one_params(&sql, &[QueryParam::Text(self.foreign_key_value.clone())])
             .await
             .map_err(|e| Error::relationship(format!("BelongsTo load failed: {e}")))?;
-        match row
-        {
+        match row {
             Some(r) => r
                 .deserialize()
                 .map(Some)
@@ -276,8 +254,7 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsTo<T>
 /// BelongsToMany relationship — many-to-many with join table.
 /// BelongsToMany 关系 — 多对多（使用连接表）。
 #[derive(Debug, Clone)]
-pub struct BelongsToMany<T: Model + serde::de::DeserializeOwned>
-{
+pub struct BelongsToMany<T: Model + serde::de::DeserializeOwned> {
     /// Current model ID / 当前模型 ID
     pub current_id: String,
     /// Join table name / 连接表名
@@ -290,16 +267,14 @@ pub struct BelongsToMany<T: Model + serde::de::DeserializeOwned>
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
-{
+impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T> {
     /// Create a new BelongsToMany relationship / 创建新的 BelongsToMany 关系
     pub fn new(
         current_id: impl Into<String>,
         join_table: impl Into<String>,
         foreign_key: impl Into<String>,
         related_foreign_key: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             current_id: current_id.into(),
             join_table: join_table.into(),
@@ -311,8 +286,7 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
 
     /// Load the related records using a DatabaseClient.
     /// 使用 DatabaseClient 加载相关记录。
-    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>>
-    {
+    pub async fn load<C: DatabaseClient>(&self, client: &C) -> Result<Vec<T>> {
         let sql = format!(
             "SELECT t.* FROM {} t INNER JOIN {} j ON t.id = j.{} WHERE j.{} = $1",
             T::table_name(),
@@ -325,8 +299,7 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
             .await
             .map_err(|e| Error::relationship(format!("BelongsToMany load failed: {e}")))?;
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             results.push(
                 row.deserialize()
                     .map_err(|e| Error::relationship(format!("deserialize: {e}")))?,
@@ -341,18 +314,20 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
         &self,
         client: &C,
         related_id: impl Into<String>,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
             "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
             self.join_table, self.foreign_key, self.related_foreign_key,
         );
         client
-            .execute_params(&sql, &[
-                QueryParam::Text(self.current_id.clone()),
-                QueryParam::Text(rid),
-            ])
+            .execute_params(
+                &sql,
+                &[
+                    QueryParam::Text(self.current_id.clone()),
+                    QueryParam::Text(rid),
+                ],
+            )
             .await
             .map_err(|e| Error::relationship(format!("attach failed: {e}")))?;
         Ok(())
@@ -364,18 +339,20 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
         &self,
         client: &C,
         related_id: impl Into<String>,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         let rid = related_id.into();
         let sql = format!(
             "DELETE FROM {} WHERE {} = $1 AND {} = $2",
             self.join_table, self.foreign_key, self.related_foreign_key,
         );
         client
-            .execute_params(&sql, &[
-                QueryParam::Text(self.current_id.clone()),
-                QueryParam::Text(rid),
-            ])
+            .execute_params(
+                &sql,
+                &[
+                    QueryParam::Text(self.current_id.clone()),
+                    QueryParam::Text(rid),
+                ],
+            )
             .await
             .map_err(|e| Error::relationship(format!("detach failed: {e}")))?;
         Ok(())
@@ -397,8 +374,7 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
         &self,
         client: &C,
         related_ids: &[impl ToString],
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         debug_assert!(
             validate_identifier(&self.join_table),
             "Invalid join table: {}",
@@ -418,18 +394,20 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
             .map_err(|e| Error::relationship(format!("sync delete failed: {e}")))?;
 
         // Insert new associations / 插入新关联
-        for rid in related_ids
-        {
+        for rid in related_ids {
             let rid_str = rid.to_string();
             let insert_sql = format!(
                 "INSERT INTO {} ({}, {}) VALUES ($1, $2)",
                 self.join_table, self.foreign_key, self.related_foreign_key,
             );
             client
-                .execute_params(&insert_sql, &[
-                    QueryParam::Text(self.current_id.clone()),
-                    QueryParam::Text(rid_str),
-                ])
+                .execute_params(
+                    &insert_sql,
+                    &[
+                        QueryParam::Text(self.current_id.clone()),
+                        QueryParam::Text(rid_str),
+                    ],
+                )
                 .await
                 .map_err(|e| Error::relationship(format!("sync insert failed: {e}")))?;
         }
@@ -442,41 +420,34 @@ impl<T: Model + serde::de::DeserializeOwned> BelongsToMany<T>
 /// Allows loading relationships along with the parent model to avoid N+1 queries.
 /// 允许与父模型一起加载关系以避免 N+1 查询。
 #[derive(Debug, Clone)]
-pub struct EagerLoad
-{
+pub struct EagerLoad {
     /// Relationships to load / 要加载的关系
     pub relationships: Vec<String>,
 }
 
-impl EagerLoad
-{
+impl EagerLoad {
     /// Create a new eager load configuration / 创建新的预加载配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             relationships: Vec::new(),
         }
     }
 
     /// Add a relationship to load / 添加要加载的关系
-    pub fn load(mut self, relationship: impl Into<String>) -> Self
-    {
+    pub fn load(mut self, relationship: impl Into<String>) -> Self {
         self.relationships.push(relationship.into());
         self
     }
 
     /// Add nested relationships to load (dot notation) / 添加要加载的嵌套关系（点表示法）
-    pub fn load_nested(mut self, path: impl Into<String>) -> Self
-    {
+    pub fn load_nested(mut self, path: impl Into<String>) -> Self {
         self.relationships.push(path.into());
         self
     }
 }
 
-impl Default for EagerLoad
-{
-    fn default() -> Self
-    {
+impl Default for EagerLoad {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -505,8 +476,7 @@ impl Default for EagerLoad
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct WithRelations<M>
-{
+pub struct WithRelations<M> {
     /// The parent model / 父模型
     pub model: M,
     /// Loaded relation rows keyed by relationship name
@@ -514,12 +484,10 @@ pub struct WithRelations<M>
     relations: HashMap<String, Vec<serde_json::Value>>,
 }
 
-impl<M> WithRelations<M>
-{
+impl<M> WithRelations<M> {
     /// Get the loaded rows for a named relationship.
     /// 获取命名关系的已加载行。
-    pub fn relation_rows(&self, name: &str) -> &[serde_json::Value]
-    {
+    pub fn relation_rows(&self, name: &str) -> &[serde_json::Value] {
         self.relations
             .get(name)
             .map(|v| v.as_slice())
@@ -528,8 +496,7 @@ impl<M> WithRelations<M>
 
     /// Deserialize the loaded rows for a named relationship into a concrete type.
     /// 将命名关系的已加载行反序列化为具体类型。
-    pub fn relation<T: serde::de::DeserializeOwned>(&self, name: &str) -> Result<Vec<T>>
-    {
+    pub fn relation<T: serde::de::DeserializeOwned>(&self, name: &str) -> Result<Vec<T>> {
         self.relations
             .get(name)
             .map(|rows| {
@@ -554,8 +521,7 @@ impl<M> WithRelations<M>
 ///
 /// 避免 N+1 查询，通过批量加载关系：执行基础查询，收集父 ID，
 /// 然后为每个关系发出一个 `WHERE fk IN (...)` 查询。
-pub struct EagerQueryBuilder<M: Model>
-{
+pub struct EagerQueryBuilder<M: Model> {
     /// The base query builder / 基础查询构建器
     query: crate::QueryBuilder<M>,
     /// Relationships to eager-load: (name, foreign_key, target_table)
@@ -563,12 +529,10 @@ pub struct EagerQueryBuilder<M: Model>
     eager: Vec<(String, String, String)>,
 }
 
-impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
-{
+impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M> {
     /// Create a new eager query builder.
     /// 创建新的预加载查询构建器。
-    pub(crate) fn new() -> Self
-    {
+    pub(crate) fn new() -> Self {
         Self {
             query: crate::QueryBuilder::new(),
             eager: Vec::new(),
@@ -588,8 +552,7 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
         name: impl Into<String>,
         foreign_key: impl Into<String>,
         target_table: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         self.eager
             .push((name.into(), foreign_key.into(), target_table.into()));
         self
@@ -597,24 +560,21 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
 
     /// Add a where clause (delegates to inner QueryBuilder).
     /// 添加 WHERE 子句（委托给内部 QueryBuilder）。
-    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self
-    {
+    pub fn where_(mut self, condition: &str, params: &[QueryParam]) -> Self {
         self.query = self.query.where_(condition, params);
         self
     }
 
     /// Set the limit (delegates to inner QueryBuilder).
     /// 设置 LIMIT（委托给内部 QueryBuilder）。
-    pub fn limit(mut self, limit: usize) -> Self
-    {
+    pub fn limit(mut self, limit: usize) -> Self {
         self.query = self.query.limit(limit);
         self
     }
 
     /// Set the offset (delegates to inner QueryBuilder).
     /// 设置 OFFSET（委托给内部 QueryBuilder）。
-    pub fn offset(mut self, offset: usize) -> Self
-    {
+    pub fn offset(mut self, offset: usize) -> Self {
         self.query = self.query.offset(offset);
         self
     }
@@ -624,15 +584,13 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
     ///
     /// Returns parent records with their relations loaded in a single batch per relationship.
     /// 返回父记录，每个关系在单个批次中加载。
-    pub async fn all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<WithRelations<M>>>
-    {
+    pub async fn all<C: DatabaseClient>(&self, client: &C) -> Result<Vec<WithRelations<M>>> {
         // 1. Execute base query to get parent records
         let parents = self.query.all(client).await?;
 
         // 2. Collect parent primary keys
         let mut parent_ids: Vec<String> = Vec::with_capacity(parents.len());
-        for p in &parents
-        {
+        for p in &parents {
             parent_ids.push(p.primary_key()?);
         }
 
@@ -640,12 +598,10 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
         let mut relation_maps: Vec<HashMap<String, HashMap<String, Vec<serde_json::Value>>>> =
             Vec::with_capacity(self.eager.len());
 
-        for (name, foreign_key, target_table) in &self.eager
-        {
+        for (name, foreign_key, target_table) in &self.eager {
             let mut map: HashMap<String, Vec<serde_json::Value>> = HashMap::new();
 
-            if parent_ids.is_empty()
-            {
+            if parent_ids.is_empty() {
                 relation_maps.push([(name.clone(), map)].into());
                 continue;
             }
@@ -669,8 +625,7 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
                 .await
                 .map_err(|e| Error::relationship(format!("eager load '{name}' failed: {e}")))?;
 
-            for row in rows
-            {
+            for row in rows {
                 let fk_val: String = row
                     .get(foreign_key)
                     .and_then(|v| v.as_type())
@@ -688,14 +643,11 @@ impl<M: Model + serde::de::DeserializeOwned> EagerQueryBuilder<M>
 
         // 4. Assemble results
         let mut results = Vec::with_capacity(parents.len());
-        for parent in parents
-        {
+        for parent in parents {
             let pk = parent.primary_key()?;
             let mut relations = HashMap::new();
-            for keyed in &relation_maps
-            {
-                for (name, map) in keyed
-                {
+            for keyed in &relation_maps {
+                for (name, map) in keyed {
                     let rows = map.get(&pk).cloned().unwrap_or_default();
                     relations.insert(name.clone(), rows);
                 }
@@ -731,12 +683,9 @@ where
 {
     let pk = model.primary_key()?;
 
-    for relation in relations
-    {
-        match relation.on_delete
-        {
-            OnDelete::Cascade =>
-            {
+    for relation in relations {
+        match relation.on_delete {
+            OnDelete::Cascade => {
                 let sql = format!(
                     "DELETE FROM {} WHERE {} = $1",
                     relation.target_table, relation.foreign_key,
@@ -748,8 +697,7 @@ where
                         Error::relationship(format!("cascade delete on '{}': {e}", relation.name))
                     })?;
             },
-            OnDelete::SetNull =>
-            {
+            OnDelete::SetNull => {
                 let sql = format!(
                     "UPDATE {} SET {} = NULL WHERE {} = $1",
                     relation.target_table, relation.foreign_key, relation.foreign_key,
@@ -761,8 +709,7 @@ where
                         Error::relationship(format!("set-null on '{}': {e}", relation.name))
                     })?;
             },
-            OnDelete::Restrict =>
-            {
+            OnDelete::Restrict => {
                 let sql = format!(
                     "SELECT 1 FROM {} WHERE {} = $1 LIMIT 1",
                     relation.target_table, relation.foreign_key,
@@ -773,16 +720,14 @@ where
                     .map_err(|e| {
                         Error::relationship(format!("restrict check on '{}': {e}", relation.name))
                     })?;
-                if row.is_some()
-                {
+                if row.is_some() {
                     return Err(Error::relationship(format!(
                         "cannot delete: relation '{}' has dependent records (OnDelete::Restrict)",
                         relation.name
                     )));
                 }
             },
-            OnDelete::SetDefault | OnDelete::NoAction =>
-            {
+            OnDelete::SetDefault | OnDelete::NoAction => {
                 // No action needed / 无需操作
             },
         }
@@ -792,52 +737,50 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     // Mock model for testing
     #[derive(Debug, Clone, serde::Deserialize)]
     struct MockModel;
 
-    impl Model for MockModel
-    {
-        fn meta() -> crate::ModelMeta
-        {
+    impl Model for MockModel {
+        fn meta() -> crate::ModelMeta {
             crate::ModelMeta::new("mock_table")
         }
 
-        fn primary_key(&self) -> Result<String>
-        {
+        fn primary_key(&self) -> Result<String> {
             Ok("1".to_string())
         }
 
-        fn set_primary_key(&mut self, _value: String) -> Result<()>
-        {
+        fn set_primary_key(&mut self, _value: String) -> Result<()> {
             Ok(())
         }
     }
 
     #[test]
-    fn test_has_many_creation()
-    {
+    fn test_has_many_creation() {
         let has_many = HasMany::<MockModel>::new("123", "user_id");
         assert_eq!(has_many.parent_id, "123");
         assert_eq!(has_many.foreign_key, "user_id");
     }
 
     #[test]
-    fn test_belongs_to_creation()
-    {
+    fn test_belongs_to_creation() {
         let belongs_to = BelongsTo::<MockModel>::new("456", "role_id");
         assert_eq!(belongs_to.foreign_key_value, "456");
         assert_eq!(belongs_to.foreign_key, "role_id");
     }
 
     #[test]
-    fn test_belongs_to_many_creation()
-    {
+    fn test_belongs_to_many_creation() {
         let belongs_to_many =
             BelongsToMany::<MockModel>::new("789", "user_roles", "user_id", "role_id");
         assert_eq!(belongs_to_many.current_id, "789");
@@ -847,8 +790,7 @@ mod tests
     }
 
     #[test]
-    fn test_eager_load()
-    {
+    fn test_eager_load() {
         let eager = EagerLoad::new()
             .load("posts")
             .load("comments")

@@ -15,8 +15,7 @@ use syn::{
 
 /// Parses @Transactional attributes
 /// 解析 @Transactional 属性
-struct TransactionalAttrs
-{
+struct TransactionalAttrs {
     isolation: Option<syn::Ident>,
     timeout: Option<syn::LitInt>,
     propagation: Option<syn::Ident>,
@@ -24,85 +23,60 @@ struct TransactionalAttrs
     max_retries: Option<syn::LitInt>,
 }
 
-impl Parse for TransactionalAttrs
-{
-    fn parse(input: ParseStream) -> SynResult<Self>
-    {
+impl Parse for TransactionalAttrs {
+    fn parse(input: ParseStream) -> SynResult<Self> {
         let mut isolation = None;
         let mut timeout = None;
         let mut propagation = None;
         let mut read_only = None;
         let mut max_retries = None;
 
-        while !input.is_empty()
-        {
+        while !input.is_empty() {
             // Parse key = value or key
             // 解析 key = value 或 key
             let key: syn::Ident = input.parse()?;
 
-            if input.peek(syn::token::Eq)
-            {
+            if input.peek(syn::token::Eq) {
                 // key = value
                 input.parse::<syn::token::Eq>()?;
 
                 let lookahead = input.lookahead1();
-                if lookahead.peek(syn::LitInt)
-                {
+                if lookahead.peek(syn::LitInt) {
                     let value: syn::LitInt = input.parse()?;
-                    if key == "timeout"
-                    {
+                    if key == "timeout" {
                         timeout = Some(value);
-                    }
-                    else if key == "max_retries" || key == "maxRetries"
-                    {
+                    } else if key == "max_retries" || key == "maxRetries" {
                         max_retries = Some(value);
                     }
-                }
-                else if lookahead.peek(syn::LitBool)
-                {
+                } else if lookahead.peek(syn::LitBool) {
                     let value: syn::LitBool = input.parse()?;
-                    if key == "read_only" || key == "readOnly"
-                    {
+                    if key == "read_only" || key == "readOnly" {
                         read_only = Some(value.value);
                     }
-                }
-                else if lookahead.peek(syn::Ident)
-                {
+                } else if lookahead.peek(syn::Ident) {
                     let value: syn::Ident = input.parse()?;
-                    if key == "isolation" || key == "isolationLevel"
-                    {
+                    if key == "isolation" || key == "isolationLevel" {
                         isolation = Some(value);
-                    }
-                    else if key == "propagation"
-                    {
+                    } else if key == "propagation" {
                         propagation = Some(value);
                     }
-                }
-                else
-                {
+                } else {
                     return Err(lookahead.error());
                 }
-            }
-            else
-            {
+            } else {
                 // Just a key, treat as boolean flag
                 // 仅仅是 key，视为布尔标志
-                if key == "read_only" || key == "readOnly"
-                {
+                if key == "read_only" || key == "readOnly" {
                     read_only = Some(true);
                 }
             }
 
             // Check for comma
             // 检查逗号
-            if !input.is_empty()
-            {
-                if input.peek(syn::token::Comma)
-                {
+            if !input.is_empty() {
+                if input.peek(syn::token::Comma) {
                     input.parse::<syn::token::Comma>()?;
-                }
-                else
-                {
+                } else {
                     break;
                 }
             }
@@ -190,8 +164,7 @@ impl Parse for TransactionalAttrs
 ///     Ok(())
 /// }
 /// ```
-pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let attrs = &input.attrs;
     let vis = &input.vis;
@@ -206,30 +179,26 @@ pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenS
 
     // Build TransactionDefinition configuration
     let mut def_config = quote! {};
-    if let Some(iso) = isolation
-    {
+    if let Some(iso) = isolation {
         def_config = quote! {
             #def_config
             __hiver_tx_def.isolation = ::hiver_tx::IsolationLevel::#iso;
         };
     }
-    if let Some(to) = timeout
-    {
+    if let Some(to) = timeout {
         let to_value = to.base10_parse::<u64>().unwrap_or(30);
         def_config = quote! {
             #def_config
             __hiver_tx_def.timeout_secs = Some(#to_value);
         };
     }
-    if let Some(prop) = propagation
-    {
+    if let Some(prop) = propagation {
         def_config = quote! {
             #def_config
             __hiver_tx_def.propagation = ::hiver_tx::Propagation::#prop;
         };
     }
-    if let Some(ro) = read_only
-    {
+    if let Some(ro) = read_only {
         def_config = quote! {
             #def_config
             __hiver_tx_def.read_only = #ro;
@@ -266,16 +235,19 @@ pub(crate) fn impl_transactional(attr: TokenStream, item: TokenStream) -> TokenS
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
-    
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
 
     use super::*;
 
     #[test]
-    fn test_parse_transactional_attrs_empty()
-    {
+    fn test_parse_transactional_attrs_empty() {
         let input = quote! {};
         let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert!(attrs.isolation.is_none());
@@ -286,16 +258,14 @@ mod tests
     }
 
     #[test]
-    fn test_parse_transactional_attrs_isolation()
-    {
+    fn test_parse_transactional_attrs_isolation() {
         let input = quote! { isolation = ReadCommitted };
         let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert_eq!(attrs.isolation.unwrap().to_string(), "ReadCommitted");
     }
 
     #[test]
-    fn test_parse_transactional_attrs_multiple()
-    {
+    fn test_parse_transactional_attrs_multiple() {
         let input = quote! {
             isolation = Serializable,
             timeout = 60,
@@ -312,8 +282,7 @@ mod tests
     }
 
     #[test]
-    fn test_parse_transactional_attrs_read_only_flag()
-    {
+    fn test_parse_transactional_attrs_read_only_flag() {
         let input = quote! { read_only };
         let attrs: TransactionalAttrs = syn::parse2(input).unwrap();
         assert!(attrs.read_only.unwrap());

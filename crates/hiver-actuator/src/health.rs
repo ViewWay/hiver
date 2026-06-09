@@ -12,8 +12,7 @@ use serde::{Deserialize, Serialize};
 /// 健康状态
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
-pub enum HealthStatus
-{
+pub enum HealthStatus {
     /// The component is healthy / 组件健康
     Up,
 
@@ -27,22 +26,17 @@ pub enum HealthStatus
     Unknown,
 }
 
-impl HealthStatus
-{
+impl HealthStatus {
     /// Check if the status represents a healthy state
     /// 检查状态是否表示健康
-    pub fn is_healthy(self) -> bool
-    {
+    pub fn is_healthy(self) -> bool {
         matches!(self, HealthStatus::Up)
     }
 }
 
-impl fmt::Display for HealthStatus
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for HealthStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             HealthStatus::Up => write!(f, "UP"),
             HealthStatus::Down => write!(f, "DOWN"),
             HealthStatus::OutOfService => write!(f, "OUT_OF_SERVICE"),
@@ -54,8 +48,7 @@ impl fmt::Display for HealthStatus
 /// Health check result
 /// 健康检查结果
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Health
-{
+pub struct Health {
     /// Overall status
     /// 整体状态
     pub status: HealthStatus,
@@ -66,12 +59,10 @@ pub struct Health
     pub components: HashMap<String, ComponentHealth>,
 }
 
-impl Health
-{
+impl Health {
     /// Create a new health check result
     /// 创建新的健康检查结果
-    pub fn new(status: HealthStatus) -> Self
-    {
+    pub fn new(status: HealthStatus) -> Self {
         Self {
             status,
             components: HashMap::new(),
@@ -80,22 +71,19 @@ impl Health
 
     /// Create an UP health status
     /// 创建 UP 健康状态
-    pub fn up() -> Self
-    {
+    pub fn up() -> Self {
         Self::new(HealthStatus::Up)
     }
 
     /// Create a DOWN health status
     /// 创建 DOWN 健康状态
-    pub fn down() -> Self
-    {
+    pub fn down() -> Self {
         Self::new(HealthStatus::Down)
     }
 
     /// Add a component health check result
     /// 添加组件健康检查结果
-    pub fn with_component(mut self, name: impl Into<String>, health: ComponentHealth) -> Self
-    {
+    pub fn with_component(mut self, name: impl Into<String>, health: ComponentHealth) -> Self {
         self.components.insert(name.into(), health);
         self
     }
@@ -104,8 +92,7 @@ impl Health
 /// Component health check result
 /// 组件健康检查结果
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ComponentHealth
-{
+pub struct ComponentHealth {
     /// Component status
     /// 组件状态
     pub status: HealthStatus,
@@ -116,12 +103,10 @@ pub struct ComponentHealth
     pub details: HashMap<String, serde_json::Value>,
 }
 
-impl ComponentHealth
-{
+impl ComponentHealth {
     /// Create a new component health
     /// 创建新的组件健康
-    pub fn new(status: HealthStatus) -> Self
-    {
+    pub fn new(status: HealthStatus) -> Self {
         Self {
             status,
             details: HashMap::new(),
@@ -130,8 +115,7 @@ impl ComponentHealth
 
     /// Add a detail
     /// 添加详情
-    pub fn with_detail(mut self, key: impl Into<String>, value: serde_json::Value) -> Self
-    {
+    pub fn with_detail(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.details.insert(key.into(), value);
         self
     }
@@ -162,8 +146,7 @@ impl ComponentHealth
 ///     }
 /// }
 /// ```
-pub trait HealthIndicator: Send + Sync
-{
+pub trait HealthIndicator: Send + Sync {
     /// Get the indicator name
     /// 获取指标名称
     fn name(&self) -> &str;
@@ -176,17 +159,14 @@ pub trait HealthIndicator: Send + Sync
 /// Health check registry
 /// 健康检查注册表
 #[derive(Default)]
-pub struct HealthCheck
-{
+pub struct HealthCheck {
     indicators: Vec<Box<dyn HealthIndicator>>,
 }
 
-impl HealthCheck
-{
+impl HealthCheck {
     /// Create a new health check registry
     /// 创建新的健康检查注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             indicators: Vec::new(),
         }
@@ -194,24 +174,20 @@ impl HealthCheck
 
     /// Add a health indicator
     /// 添加健康指标
-    pub fn indicator(mut self, indicator: Box<dyn HealthIndicator>) -> Self
-    {
+    pub fn indicator(mut self, indicator: Box<dyn HealthIndicator>) -> Self {
         self.indicators.push(indicator);
         self
     }
 
     /// Perform all health checks
     /// 执行所有健康检查
-    pub fn check(&self) -> Health
-    {
+    pub fn check(&self) -> Health {
         let mut components = HashMap::new();
         let mut overall_status = HealthStatus::Up;
 
-        for indicator in &self.indicators
-        {
+        for indicator in &self.indicators {
             let health = indicator.check();
-            if !health.status.is_healthy()
-            {
+            if !health.status.is_healthy() {
                 overall_status = HealthStatus::Down;
             }
             components.insert(indicator.name().to_string(), health);
@@ -228,15 +204,12 @@ impl HealthCheck
 /// 默认系统健康指标
 pub struct SystemHealthIndicator;
 
-impl HealthIndicator for SystemHealthIndicator
-{
-    fn name(&self) -> &'static str
-    {
+impl HealthIndicator for SystemHealthIndicator {
+    fn name(&self) -> &'static str {
         "system"
     }
 
-    fn check(&self) -> ComponentHealth
-    {
+    fn check(&self) -> ComponentHealth {
         // Simple system check - always up for now
         // A full implementation would check disk space, memory, etc.
         ComponentHealth::new(HealthStatus::Up)
@@ -245,14 +218,18 @@ impl HealthIndicator for SystemHealthIndicator
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_health_status()
-    {
+    fn test_health_status() {
         assert!(HealthStatus::Up.is_healthy());
         assert!(!HealthStatus::Down.is_healthy());
         assert!(!HealthStatus::OutOfService.is_healthy());
@@ -260,15 +237,13 @@ mod tests
     }
 
     #[test]
-    fn test_health_display()
-    {
+    fn test_health_display() {
         assert_eq!(HealthStatus::Up.to_string(), "UP");
         assert_eq!(HealthStatus::Down.to_string(), "DOWN");
     }
 
     #[test]
-    fn test_health()
-    {
+    fn test_health() {
         let health = Health::up().with_component("db", ComponentHealth::new(HealthStatus::Up));
 
         assert_eq!(health.status, HealthStatus::Up);

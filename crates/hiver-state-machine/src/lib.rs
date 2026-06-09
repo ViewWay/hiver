@@ -68,12 +68,10 @@ pub use visualizer::{DiagramFormat, StateMachineVisualizer};
 
 /// Event trait for state machine events
 /// 状态机事件的特征
-pub trait Event: Any + Debug + Send + Sync + PartialEq
-{
+pub trait Event: Any + Debug + Send + Sync + PartialEq {
     /// Get event ID
     /// 获取事件 ID
-    fn id(&self) -> String
-    {
+    fn id(&self) -> String {
         format!("{:?}", self)
     }
 }
@@ -97,15 +95,13 @@ where
 {
     /// Create a new state machine with builder
     /// 使用构建器创建新状态机
-    pub fn builder() -> StateMachineBuilder<S, E>
-    {
+    pub fn builder() -> StateMachineBuilder<S, E> {
         StateMachineBuilder::new()
     }
 
     /// Create a new state machine
     /// 创建新状态机
-    pub fn new(initial: S) -> Self
-    {
+    pub fn new(initial: S) -> Self {
         Self {
             current: initial.clone(),
             initial,
@@ -115,31 +111,24 @@ where
 
     /// Get current state
     /// 获取当前状态
-    pub fn state(&self) -> &S
-    {
+    pub fn state(&self) -> &S {
         &self.current
     }
 
     /// Get initial state
     /// 获取初始状态
-    pub fn initial_state(&self) -> &S
-    {
+    pub fn initial_state(&self) -> &S {
         &self.initial
     }
 
     /// Fire an event
     /// 触发事件
-    pub fn fire(&mut self, event: E) -> StateMachineResult<()>
-    {
-        for transition in &self.transitions
-        {
-            if transition.matches(&self.current, &event)
-            {
-                if let Some(guard) = &transition.guard
-                {
+    pub fn fire(&mut self, event: E) -> StateMachineResult<()> {
+        for transition in &self.transitions {
+            if transition.matches(&self.current, &event) {
+                if let Some(guard) = &transition.guard {
                     let context = StateContext::new(&self.current, &event, None);
-                    if !guard(&context)?
-                    {
+                    if !guard(&context)? {
                         continue;
                     }
                 }
@@ -147,8 +136,7 @@ where
                 let old_state = self.current.clone();
                 self.current = transition.target.clone();
 
-                if let Some(action) = &transition.action
-                {
+                if let Some(action) = &transition.action {
                     let context = StateContext::new(&old_state, &event, Some(&self.current));
                     action(&context)?;
                 }
@@ -165,24 +153,16 @@ where
 
     /// Check if event can be fired
     /// 检查事件是否可以触发
-    pub fn can_fire(&self, event: &E) -> bool
-    {
-        for transition in &self.transitions
-        {
-            if transition.matches(&self.current, event)
-            {
-                if let Some(guard) = &transition.guard
-                {
+    pub fn can_fire(&self, event: &E) -> bool {
+        for transition in &self.transitions {
+            if transition.matches(&self.current, event) {
+                if let Some(guard) = &transition.guard {
                     let context = StateContext::new(&self.current, event, None);
-                    if let Ok(result) = guard(&context)
-                    {
-                        if !result
-                        {
+                    if let Ok(result) = guard(&context) {
+                        if !result {
                             continue;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         continue;
                     }
                 }
@@ -194,35 +174,36 @@ where
 
     /// Add a transition
     /// 添加转换
-    pub fn add_transition(&mut self, transition: Transition<S, E>)
-    {
+    pub fn add_transition(&mut self, transition: Transition<S, E>) {
         self.transitions.push(transition);
     }
 
     /// Reset to initial state
     /// 重置到初始状态
-    pub fn reset(&mut self)
-    {
+    pub fn reset(&mut self) {
         self.current = self.initial.clone();
     }
 
     /// Get all transitions
     /// 获取所有转换
-    pub fn transitions(&self) -> &[Transition<S, E>]
-    {
+    pub fn transitions(&self) -> &[Transition<S, E>] {
         &self.transitions
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestState
-    {
+    enum TestState {
         A,
         B,
         C,
@@ -231,8 +212,7 @@ mod tests
     impl State for TestState {}
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestEvent
-    {
+    enum TestEvent {
         ToB,
         ToC,
         Invalid,
@@ -241,8 +221,7 @@ mod tests
     impl Event for TestEvent {}
 
     #[test]
-    fn test_simple_state_machine()
-    {
+    fn test_simple_state_machine() {
         let mut machine = StateMachine::new(TestState::A);
 
         machine.add_transition(
@@ -271,8 +250,7 @@ mod tests
     }
 
     #[test]
-    fn test_invalid_transition()
-    {
+    fn test_invalid_transition() {
         let mut machine = StateMachine::new(TestState::A);
 
         machine.add_transition(
@@ -289,8 +267,7 @@ mod tests
     }
 
     #[test]
-    fn test_state_reset()
-    {
+    fn test_state_reset() {
         let mut machine = StateMachine::new(TestState::A);
 
         machine.add_transition(
@@ -310,8 +287,7 @@ mod tests
     }
 
     #[test]
-    fn test_can_fire()
-    {
+    fn test_can_fire() {
         let mut machine = StateMachine::new(TestState::A);
 
         machine.add_transition(

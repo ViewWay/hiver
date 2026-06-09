@@ -29,8 +29,7 @@ where
 {
     /// Create a new state machine builder
     /// 创建新状态机构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             initial: None,
             transitions: Vec::new(),
@@ -40,34 +39,27 @@ where
 
     /// Set the initial state
     /// 设置初始状态
-    pub fn initial_state(mut self, state: S) -> Self
-    {
+    pub fn initial_state(mut self, state: S) -> Self {
         self.initial = Some(state);
         self
     }
 
     /// Start defining a transition
     /// 开始定义转换
-    pub fn transition(mut self) -> Self
-    {
+    pub fn transition(mut self) -> Self {
         self.current_transition = Some(TransitionBuilder::new());
         self
     }
 
     /// Set the source state (fluent end)
     /// 设置源状态（流式结束）
-    pub fn and(mut self) -> Self
-    {
-        if let Some(builder) = self.current_transition.take()
-        {
-            match builder.build()
-            {
-                Ok(transition) =>
-                {
+    pub fn and(mut self) -> Self {
+        if let Some(builder) = self.current_transition.take() {
+            match builder.build() {
+                Ok(transition) => {
                     self.transitions.push(transition);
                 },
-                Err(_e) =>
-                {
+                Err(_e) => {
                     // Store error for later reporting
                     // 存储错误以供稍后报告
                 },
@@ -78,10 +70,8 @@ where
 
     /// Set the source state
     /// 设置源状态
-    pub fn source(mut self, source: S) -> Self
-    {
-        if let Some(ref mut builder) = self.current_transition
-        {
+    pub fn source(mut self, source: S) -> Self {
+        if let Some(ref mut builder) = self.current_transition {
             *builder = std::mem::take(builder).source(source);
         }
         self
@@ -89,10 +79,8 @@ where
 
     /// Set the target state
     /// 设置目标状态
-    pub fn target(mut self, target: S) -> Self
-    {
-        if let Some(ref mut builder) = self.current_transition
-        {
+    pub fn target(mut self, target: S) -> Self {
+        if let Some(ref mut builder) = self.current_transition {
             *builder = std::mem::take(builder).target(target);
         }
         self
@@ -100,10 +88,8 @@ where
 
     /// Set the event
     /// 设置事件
-    pub fn event(mut self, event: E) -> Self
-    {
-        if let Some(ref mut builder) = self.current_transition
-        {
+    pub fn event(mut self, event: E) -> Self {
+        if let Some(ref mut builder) = self.current_transition {
             *builder = std::mem::take(builder).event(event);
         }
         self
@@ -114,10 +100,8 @@ where
     pub fn guard(
         mut self,
         guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
-    ) -> Self
-    {
-        if let Some(ref mut builder) = self.current_transition
-        {
+    ) -> Self {
+        if let Some(ref mut builder) = self.current_transition {
             *builder = std::mem::take(builder).guard(guard);
         }
         self
@@ -128,10 +112,8 @@ where
     pub fn action(
         mut self,
         action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
-    ) -> Self
-    {
-        if let Some(ref mut builder) = self.current_transition
-        {
+    ) -> Self {
+        if let Some(ref mut builder) = self.current_transition {
             *builder = std::mem::take(builder).action(action);
         }
         self
@@ -150,8 +132,7 @@ where
 
         let mut machine = crate::StateMachine::new(initial);
 
-        for transition in self.transitions
-        {
+        for transition in self.transitions {
             machine.add_transition(transition);
         }
 
@@ -164,8 +145,7 @@ where
     S: State + Clone + PartialEq + Eq,
     E: Event + Clone,
 {
-    fn default() -> Self
-    {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -187,8 +167,7 @@ where
 {
     /// Create a new transition builder
     /// 创建新转换构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             builder: crate::transition::TransitionBuilder::new(),
         }
@@ -196,24 +175,21 @@ where
 
     /// Set the source state
     /// 设置源状态
-    pub fn source(mut self, source: S) -> Self
-    {
+    pub fn source(mut self, source: S) -> Self {
         self.builder = self.builder.source(source);
         self
     }
 
     /// Set the target state
     /// 设置目标状态
-    pub fn target(mut self, target: S) -> Self
-    {
+    pub fn target(mut self, target: S) -> Self {
         self.builder = self.builder.target(target);
         self
     }
 
     /// Set the event
     /// 设置事件
-    pub fn event(mut self, event: E) -> Self
-    {
+    pub fn event(mut self, event: E) -> Self {
         self.builder = self.builder.event(event);
         self
     }
@@ -223,8 +199,7 @@ where
     pub fn guard(
         mut self,
         guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
-    ) -> Self
-    {
+    ) -> Self {
         self.builder = self.builder.guard(guard);
         self
     }
@@ -234,16 +209,14 @@ where
     pub fn action(
         mut self,
         action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
-    ) -> Self
-    {
+    ) -> Self {
         self.builder = self.builder.action(action);
         self
     }
 
     /// Build the transition
     /// 构建转换
-    pub fn build(self) -> StateMachineResult<Transition<S, E>>
-    {
+    pub fn build(self) -> StateMachineResult<Transition<S, E>> {
         self.builder.build()
     }
 }
@@ -253,8 +226,7 @@ where
     S: State + Clone + PartialEq + Eq,
     E: Event + Clone,
 {
-    fn default() -> Self
-    {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -277,8 +249,7 @@ where
     E: Event,
     F: Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
 {
-    fn to_guard(self) -> Arc<Guard<S, E>>
-    {
+    fn to_guard(self) -> Arc<Guard<S, E>> {
         Arc::new(self)
     }
 }
@@ -301,21 +272,24 @@ where
     E: Event,
     F: Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
 {
-    fn to_action(self) -> Arc<Action<S, E>>
-    {
+    fn to_action(self) -> Arc<Action<S, E>> {
         Arc::new(self)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestState
-    {
+    enum TestState {
         A,
         B,
         C,
@@ -324,8 +298,7 @@ mod tests
     impl State for TestState {}
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestEvent
-    {
+    enum TestEvent {
         ToB,
         ToC,
         Invalid,
@@ -334,8 +307,7 @@ mod tests
     impl Event for TestEvent {}
 
     #[test]
-    fn test_builder_basic()
-    {
+    fn test_builder_basic() {
         let machine = StateMachineBuilder::new()
             .initial_state(TestState::A)
             .transition()
@@ -351,8 +323,7 @@ mod tests
     }
 
     #[test]
-    fn test_builder_with_guard()
-    {
+    fn test_builder_with_guard() {
         let machine = StateMachineBuilder::new()
             .initial_state(TestState::A)
             .transition()
@@ -368,8 +339,7 @@ mod tests
     }
 
     #[test]
-    fn test_builder_with_action()
-    {
+    fn test_builder_with_action() {
         let mut machine = StateMachineBuilder::new()
             .initial_state(TestState::A)
             .transition()
@@ -386,8 +356,7 @@ mod tests
     }
 
     #[test]
-    fn test_builder_multiple_transitions()
-    {
+    fn test_builder_multiple_transitions() {
         let mut machine = StateMachineBuilder::new()
             .initial_state(TestState::A)
             .transition()
@@ -411,8 +380,7 @@ mod tests
     }
 
     #[test]
-    fn test_builder_missing_initial_state()
-    {
+    fn test_builder_missing_initial_state() {
         let result = StateMachineBuilder::<TestState, TestEvent>::new()
             .transition()
             .source(TestState::A)

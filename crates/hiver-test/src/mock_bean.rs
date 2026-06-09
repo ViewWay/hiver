@@ -40,8 +40,7 @@ pub trait MockBean: Any + Send + Sync {}
 /// let result = registry.call_mock("userService", "findById", vec![user_id]).await;
 /// ```
 #[derive(Clone)]
-pub struct MockRegistry
-{
+pub struct MockRegistry {
     /// Registered mocks
     /// 注册的模拟
     mocks: Arc<RwLock<HashMap<String, MockDefinition>>>,
@@ -54,8 +53,7 @@ pub struct MockRegistry
 /// Mock definition
 /// 模拟定义
 #[derive(Clone)]
-struct MockDefinition
-{
+struct MockDefinition {
     /// Mock function
     /// 模拟函数
     func: Arc<dyn Fn(Vec<Arc<dyn Any + Send + Sync>>) -> Box<dyn Any + Send + Sync> + Send + Sync>,
@@ -69,8 +67,7 @@ struct MockDefinition
     return_type: String,
 }
 
-impl MockDefinition
-{
+impl MockDefinition {
     /// Create a new mock definition
     /// 创建新的模拟定义
     pub(crate) fn new<
@@ -78,8 +75,7 @@ impl MockDefinition
     >(
         func: F,
         return_type: &str,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             func: Arc::new(func),
             expected_args: None,
@@ -95,8 +91,7 @@ impl MockDefinition
         func: F,
         return_type: &str,
         args: Vec<String>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             func: Arc::new(func),
             expected_args: Some(args),
@@ -105,12 +100,10 @@ impl MockDefinition
     }
 }
 
-impl MockRegistry
-{
+impl MockRegistry {
     /// Create a new mock registry
     /// 创建新的模拟注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             mocks: Arc::new(RwLock::new(HashMap::new())),
             call_counts: Arc::new(RwLock::new(HashMap::new())),
@@ -126,8 +119,7 @@ impl MockRegistry
         bean_name: impl Into<String>,
         method_name: impl Into<String>,
         func: F,
-    )
-    {
+    ) {
         let key = format!("{}::{}", bean_name.into(), method_name.into());
         let mock = MockDefinition::new(func, "Any");
         let mut mocks = self.mocks.write().await;
@@ -144,8 +136,7 @@ impl MockRegistry
         method_name: impl Into<String>,
         func: F,
         expected_args: Vec<String>,
-    )
-    {
+    ) {
         let key = format!("{}::{}", bean_name.into(), method_name.into());
         let mock = MockDefinition::with_expected_args(func, "Any", expected_args);
         let mut mocks = self.mocks.write().await;
@@ -159,8 +150,7 @@ impl MockRegistry
         bean_name: &str,
         method_name: &str,
         args: Vec<Arc<dyn Any + Send + Sync>>,
-    ) -> Option<Box<dyn Any + Send + Sync>>
-    {
+    ) -> Option<Box<dyn Any + Send + Sync>> {
         let key = format!("{}::{}", bean_name, method_name);
 
         // Increment call count
@@ -173,20 +163,16 @@ impl MockRegistry
         // Get mock
         // 获取模拟
         let mocks = self.mocks.read().await;
-        if let Some(mock) = mocks.get(&key)
-        {
+        if let Some(mock) = mocks.get(&key) {
             Some((mock.func)(args))
-        }
-        else
-        {
+        } else {
             None
         }
     }
 
     /// Get call count for a mock
     /// 获取模拟的调用计数
-    pub async fn call_count(&self, bean_name: &str, method_name: &str) -> usize
-    {
+    pub async fn call_count(&self, bean_name: &str, method_name: &str) -> usize {
         let key = format!("{}::{}", bean_name, method_name);
         let counts = self.call_counts.read().await;
         *counts.get(&key).unwrap_or(&0)
@@ -194,8 +180,7 @@ impl MockRegistry
 
     /// Verify mock was called
     /// 验证模拟被调用
-    pub async fn verify_called(&self, bean_name: &str, method_name: &str) -> bool
-    {
+    pub async fn verify_called(&self, bean_name: &str, method_name: &str) -> bool {
         self.call_count(bean_name, method_name).await > 0
     }
 
@@ -206,15 +191,13 @@ impl MockRegistry
         bean_name: &str,
         method_name: &str,
         expected: usize,
-    ) -> bool
-    {
+    ) -> bool {
         self.call_count(bean_name, method_name).await == expected
     }
 
     /// Reset a mock
     /// 重置模拟
-    pub async fn reset_mock(&self, bean_name: &str, method_name: &str)
-    {
+    pub async fn reset_mock(&self, bean_name: &str, method_name: &str) {
         let key = format!("{}::{}", bean_name, method_name);
         let mut counts = self.call_counts.write().await;
         counts.remove(&key);
@@ -222,16 +205,14 @@ impl MockRegistry
 
     /// Reset all mocks
     /// 重置所有模拟
-    pub async fn reset_all(&self)
-    {
+    pub async fn reset_all(&self) {
         let mut counts = self.call_counts.write().await;
         counts.clear();
     }
 
     /// Clear all mocks
     /// 清除所有模拟
-    pub async fn clear_all(&self)
-    {
+    pub async fn clear_all(&self) {
         let mut mocks = self.mocks.write().await;
         mocks.clear();
         let mut counts = self.call_counts.write().await;
@@ -239,18 +220,15 @@ impl MockRegistry
     }
 }
 
-impl Default for MockRegistry
-{
-    fn default() -> Self
-    {
+impl Default for MockRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 /// Global mock registry
 /// 全局模拟注册表
-pub fn global_mock_registry() -> &'static MockRegistry
-{
+pub fn global_mock_registry() -> &'static MockRegistry {
     static REGISTRY: std::sync::LazyLock<MockRegistry> =
         std::sync::LazyLock::new(MockRegistry::new);
     &REGISTRY

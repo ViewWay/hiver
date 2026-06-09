@@ -33,8 +33,7 @@ pub use queue::{CompletionEntry, IoState, SubmitEntry};
 ///
 /// 此trait抽象了不同的I/O轮询机制（io-uring、epoll、kqueue），
 /// 为运行时提供统一接口。
-pub trait Driver: Send + Sync + AsRawFd
-{
+pub trait Driver: Send + Sync + AsRawFd {
     /// Submit queued operations to the kernel
     /// 将队列中的操作提交给内核
     ///
@@ -113,8 +112,7 @@ pub const ERROR_TRANSPORT: i32 = -1;
 
 /// Operation opcodes
 /// 操作操作码
-pub mod opcode
-{
+pub mod opcode {
     /// Read operation / 读操作
     pub const READ: u8 = 0;
     /// Write operation / 写操作

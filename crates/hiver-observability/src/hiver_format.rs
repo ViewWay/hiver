@@ -30,8 +30,7 @@ use tracing_subscriber::{
 /// 2025-01-24 19:15:30.456 DEBUG 4838 [nio-8080-exec-1] n.router.match : Route matched: GET /api/users
 /// 2025-01-24 19:15:30.789 ERROR 4838 [nio-8080-exec-1] n.service.user : Failed to fetch user (user.rs:42)
 /// ```
-pub struct HiverFormatter
-{
+pub struct HiverFormatter {
     /// Whether to use colors
     /// 是否使用颜色
     with_colors: bool,
@@ -45,12 +44,10 @@ pub struct HiverFormatter
     app_version: String,
 }
 
-impl HiverFormatter
-{
+impl HiverFormatter {
     /// Create a new formatter
     /// 创建新的格式化器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             with_colors: true,
             app_name: "hiver".to_string(),
@@ -60,8 +57,7 @@ impl HiverFormatter
 
     /// Create without colors
     /// 创建不带颜色的格式化器
-    pub fn without_colors() -> Self
-    {
+    pub fn without_colors() -> Self {
         Self {
             with_colors: false,
             ..Self::new()
@@ -70,33 +66,28 @@ impl HiverFormatter
 
     /// Set color support
     /// 设置颜色支持
-    pub fn with_colors(mut self, enabled: bool) -> Self
-    {
+    pub fn with_colors(mut self, enabled: bool) -> Self {
         self.with_colors = enabled;
         self
     }
 
     /// Set application name
     /// 设置应用名称
-    pub fn with_app_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn with_app_name(mut self, name: impl Into<String>) -> Self {
         self.app_name = name.into();
         self
     }
 
     /// Set application version
     /// 设置应用版本
-    pub fn with_app_version(mut self, version: impl Into<String>) -> Self
-    {
+    pub fn with_app_version(mut self, version: impl Into<String>) -> Self {
         self.app_version = version.into();
         self
     }
 }
 
-impl Default for HiverFormatter
-{
-    fn default() -> Self
-    {
+impl Default for HiverFormatter {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -111,8 +102,7 @@ where
         ctx: &FmtContext<'_, S, N>,
         mut writer: Writer<'_>,
         event: &Event<'_>,
-    ) -> fmt::Result
-    {
+    ) -> fmt::Result {
         use chrono::Local;
 
         // Get precise timestamp with milliseconds
@@ -122,12 +112,9 @@ where
         // Get log level with symbol and color
         let level = *event.metadata().level();
         let (level_str, level_symbol) = format_level(level);
-        let level_color = if self.with_colors
-        {
+        let level_color = if self.with_colors {
             level_color(level)
-        }
-        else
-        {
+        } else {
             ""
         };
         let level_reset = if self.with_colors { "\x1b[0m" } else { "" };
@@ -152,28 +139,20 @@ where
         let target_short = shorten_target(target);
 
         // Get file location for errors/warnings
-        let file_info = if matches!(level, Level::ERROR | Level::WARN)
-        {
+        let file_info = if matches!(level, Level::ERROR | Level::WARN) {
             event.metadata().file().map(|file| {
                 let line = event.metadata().line().unwrap_or(0);
                 // Shorten file path
-                let short_file = if let Some(idx) = file.rfind("/src/")
-                {
+                let short_file = if let Some(idx) = file.rfind("/src/") {
                     &file[idx + 1..]
-                }
-                else if let Some(idx) = file.rfind('\\')
-                {
+                } else if let Some(idx) = file.rfind('\\') {
                     &file[idx + 1..]
-                }
-                else
-                {
+                } else {
                     file
                 };
                 format!(" ({}:{})", short_file, line)
             })
-        }
-        else
-        {
+        } else {
             None
         };
 
@@ -187,8 +166,7 @@ where
         write!(writer, "{:<32} : ", target_short)?;
 
         // Write the symbol before message for quick identification
-        if !self.with_colors
-        {
+        if !self.with_colors {
             write!(writer, "{} ", level_symbol)?;
         }
 
@@ -196,8 +174,7 @@ where
         ctx.format_fields(writer.by_ref(), event)?;
 
         // Add file info for ERROR/WARN levels
-        if let Some(info) = file_info
-        {
+        if let Some(info) = file_info {
             write!(writer, "{info}")?;
         }
 
@@ -212,10 +189,8 @@ where
 ///
 /// Returns (`level_string`, symbol) where symbol is used in non-color mode
 /// 返回 (级别字符串, 符号)，符号用于无颜色模式
-fn format_level(level: Level) -> (&'static str, &'static str)
-{
-    match level
-    {
+fn format_level(level: Level) -> (&'static str, &'static str) {
+    match level {
         Level::TRACE => ("TRAC", "ℹ"),
         Level::DEBUG => ("DEBG", "→"),
         Level::INFO => ("INFO", "✓"),
@@ -226,10 +201,8 @@ fn format_level(level: Level) -> (&'static str, &'static str)
 
 /// Get ANSI color code for log level
 /// 获取日志级别的 ANSI 颜色代码
-fn level_color(level: Level) -> &'static str
-{
-    match level
-    {
+fn level_color(level: Level) -> &'static str {
+    match level {
         Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
         Level::INFO => "\x1b[32m",                 // Green
         Level::WARN => "\x1b[33m",                 // Yellow
@@ -239,14 +212,10 @@ fn level_color(level: Level) -> &'static str
 
 /// Truncate thread name to fit in 20 chars
 /// 将线程名称截断为20个字符
-fn truncate_thread(thread: &str) -> String
-{
-    if thread.len() > 20
-    {
+fn truncate_thread(thread: &str) -> String {
+    if thread.len() > 20 {
         format!("...{}", &thread[thread.len().saturating_sub(17)..])
-    }
-    else
-    {
+    } else {
         thread.to_string()
     }
 }
@@ -258,53 +227,34 @@ fn truncate_thread(thread: &str) -> String
 /// - `hiver_http::server` → `n.http.server`
 /// - `hiver_middleware::logger` → `n.middleware.logger`
 /// - `hiver_router::router` → `n.router.router`
-fn shorten_target(target: &str) -> String
-{
+fn shorten_target(target: &str) -> String {
     let parts: Vec<&str> = target.split("::").collect();
-    if parts.is_empty()
-    {
+    if parts.is_empty() {
         return target.to_string();
     }
 
     let mut result = Vec::new();
-    for (i, part) in parts.iter().enumerate()
-    {
-        if i == 0
-        {
+    for (i, part) in parts.iter().enumerate() {
+        if i == 0 {
             // First part (crate name): use common abbreviations
-            let owned = if *part == "hiver_http"
-            {
+            let owned = if *part == "hiver_http" {
                 "n.http".to_string()
-            }
-            else if *part == "hiver_router"
-            {
+            } else if *part == "hiver_router" {
                 "n.router".to_string()
-            }
-            else if *part == "hiver_middleware"
-            {
+            } else if *part == "hiver_middleware" {
                 "n.middleware".to_string()
-            }
-            else if *part == "hiver_runtime"
-            {
+            } else if *part == "hiver_runtime" {
                 "n.runtime".to_string()
-            }
-            else if *part == "hiver_observability"
-            {
+            } else if *part == "hiver_observability" {
                 "n.observability".to_string()
-            }
-            else if part.starts_with("hiver_")
-            {
+            } else if part.starts_with("hiver_") {
                 format!("n.{}", &part[7..])
-            }
-            else
-            {
+            } else {
                 // Take first character for other crates
                 part.chars().next().unwrap_or('_').to_string()
             };
             result.push(owned);
-        }
-        else
-        {
+        } else {
             result.push(part.to_string());
         }
     }
@@ -314,8 +264,7 @@ fn shorten_target(target: &str) -> String
 
 /// HTTP request log format helper
 /// HTTP 请求日志格式辅助工具
-pub struct RequestLogFormat
-{
+pub struct RequestLogFormat {
     /// HTTP method (GET, POST, etc.)
     /// HTTP 方法（GET、POST 等）
     pub method: String,
@@ -336,12 +285,10 @@ pub struct RequestLogFormat
     pub client_ip: Option<String>,
 }
 
-impl RequestLogFormat
-{
+impl RequestLogFormat {
     /// Create a new request log format
     /// 创建新的请求日志格式
-    pub fn new(method: impl Into<String>, path: impl Into<String>) -> Self
-    {
+    pub fn new(method: impl Into<String>, path: impl Into<String>) -> Self {
         Self {
             method: method.into(),
             path: path.into(),
@@ -354,48 +301,42 @@ impl RequestLogFormat
 
     /// Set status code
     /// 设置状态码
-    pub fn with_status(mut self, status: u16) -> Self
-    {
+    pub fn with_status(mut self, status: u16) -> Self {
         self.status = Some(status);
         self
     }
 
     /// Set duration
     /// 设置持续时间
-    pub fn with_duration_ms(mut self, duration: u128) -> Self
-    {
+    pub fn with_duration_ms(mut self, duration: u128) -> Self {
         self.duration_ms = duration;
         self
     }
 
     /// Set user agent
     /// 设置用户代理
-    pub fn with_user_agent(mut self, ua: Option<String>) -> Self
-    {
+    pub fn with_user_agent(mut self, ua: Option<String>) -> Self {
         self.user_agent = ua;
         self
     }
 
     /// Set client IP
     /// 设置客户端IP
-    pub fn with_client_ip(mut self, ip: Option<String>) -> Self
-    {
+    pub fn with_client_ip(mut self, ip: Option<String>) -> Self {
         self.client_ip = ip;
         self
     }
 
     /// Format as a compact one-line log
     /// 格式化为紧凑的单行日志
-    pub fn format_compact(&self) -> String
-    {
+    pub fn format_compact(&self) -> String {
         let status = self.status.map_or("-".to_string(), |s| s.to_string());
         format!("{} {} {} {}ms", self.method, self.path, status, self.duration_ms)
     }
 
     /// Format with details
     /// 格式化为带详情的日志
-    pub fn format_detailed(&self) -> String
-    {
+    pub fn format_detailed(&self) -> String {
         let mut parts = vec![
             format!("method={}", self.method),
             format!("uri={}", self.path),
@@ -403,13 +344,11 @@ impl RequestLogFormat
             format!("duration={}ms", self.duration_ms),
         ];
 
-        if let Some(ref ua) = self.user_agent
-        {
+        if let Some(ref ua) = self.user_agent {
             parts.push(format!("ua=\"{}\"", truncate_str(ua, 40)));
         }
 
-        if let Some(ref ip) = self.client_ip
-        {
+        if let Some(ref ip) = self.client_ip {
             parts.push(format!("client={}", ip));
         }
 
@@ -419,14 +358,10 @@ impl RequestLogFormat
 
 /// Truncate string to max length
 /// 截断字符串到最大长度
-fn truncate_str(s: &str, max_len: usize) -> String
-{
-    if s.len() > max_len
-    {
+fn truncate_str(s: &str, max_len: usize) -> String {
+    if s.len() > max_len {
         format!("{}...", &s[..max_len.saturating_sub(3)])
-    }
-    else
-    {
+    } else {
         s.to_string()
     }
 }
@@ -435,12 +370,10 @@ fn truncate_str(s: &str, max_len: usize) -> String
 /// 应用启动横幅
 pub struct Banner;
 
-impl Banner
-{
+impl Banner {
     /// Print startup banner with version info
     /// 打印带有版本信息的启动横幅
-    pub fn print(app_name: &str, version: &str, port: u16)
-    {
+    pub fn print(app_name: &str, version: &str, port: u16) {
         println!(
             r"
   _   _           ___     ___
@@ -456,8 +389,7 @@ impl Banner
 
     /// Print simple startup info
     /// 打印简单启动信息
-    pub fn print_simple(app_name: &str, version: &str)
-    {
+    pub fn print_simple(app_name: &str, version: &str) {
         println!("{} v{} starting...", app_name, version);
     }
 }
@@ -468,17 +400,14 @@ pub type SpringBootFormatter = HiverFormatter;
 
 /// Startup information logger
 /// 启动信息记录器
-pub struct StartupLogger
-{
+pub struct StartupLogger {
     start_time: std::time::Instant,
 }
 
-impl StartupLogger
-{
+impl StartupLogger {
     /// Create a new startup logger
     /// 创建新的启动记录器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             start_time: std::time::Instant::now(),
         }
@@ -486,8 +415,7 @@ impl StartupLogger
 
     /// Log application starting
     /// 记录应用启动
-    pub fn log_starting(&self, app_name: &str)
-    {
+    pub fn log_starting(&self, app_name: &str) {
         tracing::info!(
             target: "hiver.startup",
             "Starting {} on {} with PID {}",
@@ -499,18 +427,14 @@ impl StartupLogger
 
     /// Log profile information
     /// 记录配置文件信息
-    pub fn log_profile(&self, profile: Option<&str>)
-    {
-        if let Some(profile) = profile
-        {
+    pub fn log_profile(&self, profile: Option<&str>) {
+        if let Some(profile) = profile {
             tracing::info!(
                 target: "hiver.startup",
                 "Active profile: {}",
                 profile
             );
-        }
-        else
-        {
+        } else {
             tracing::info!(
                 target: "hiver.startup",
                 "No active profile (using default)"
@@ -520,8 +444,7 @@ impl StartupLogger
 
     /// Log server started
     /// 记录服务器已启动
-    pub fn log_server_started(&self, port: u16, duration_ms: u64)
-    {
+    pub fn log_server_started(&self, port: u16, duration_ms: u64) {
         tracing::info!(
             target: "hiver.startup",
             "Started on port(s): {} (http) | context: ''",
@@ -536,8 +459,7 @@ impl StartupLogger
 
     /// Log initialization completed
     /// 记录初始化完成
-    pub fn log_initialization_completed(&self, duration_ms: u64)
-    {
+    pub fn log_initialization_completed(&self, duration_ms: u64) {
         tracing::info!(
             target: "hiver.startup",
             "Initialization completed in {} ms",
@@ -547,16 +469,13 @@ impl StartupLogger
 
     /// Get elapsed time in milliseconds
     /// 获取已用时间（毫秒）
-    pub fn elapsed_ms(&self) -> u64
-    {
+    pub fn elapsed_ms(&self) -> u64 {
         self.start_time.elapsed().as_millis() as u64
     }
 }
 
-impl Default for StartupLogger
-{
-    fn default() -> Self
-    {
+impl Default for StartupLogger {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -585,42 +504,35 @@ impl Default for StartupLogger
 /// - High-throughput APIs (>10K req/s)
 /// - Containerized environments (K8s, Docker)
 /// - When external log aggregation is available
-pub struct SimpleFormatter
-{
+pub struct SimpleFormatter {
     /// Whether to use colors
     /// 是否使用颜色
     with_colors: bool,
 }
 
-impl SimpleFormatter
-{
+impl SimpleFormatter {
     /// Create a new simple formatter
     /// 创建新的精简格式化器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self { with_colors: true }
     }
 
     /// Create without colors
     /// 创建不带颜色的格式化器
-    pub fn without_colors() -> Self
-    {
+    pub fn without_colors() -> Self {
         Self { with_colors: false }
     }
 
     /// Set color support
     /// 设置颜色支持
-    pub fn with_colors(mut self, enabled: bool) -> Self
-    {
+    pub fn with_colors(mut self, enabled: bool) -> Self {
         self.with_colors = enabled;
         self
     }
 }
 
-impl Default for SimpleFormatter
-{
-    fn default() -> Self
-    {
+impl Default for SimpleFormatter {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -635,17 +547,13 @@ where
         ctx: &FmtContext<'_, S, N>,
         mut writer: Writer<'_>,
         event: &Event<'_>,
-    ) -> fmt::Result
-    {
+    ) -> fmt::Result {
         // Get log level with color
         let level = *event.metadata().level();
         let level_str = simple_level_str(level);
-        let level_color = if self.with_colors
-        {
+        let level_color = if self.with_colors {
             simple_level_color(level)
-        }
-        else
-        {
+        } else {
             ""
         };
         let level_reset = if self.with_colors { "\x1b[0m" } else { "" };
@@ -668,10 +576,8 @@ where
 
 /// Get short level string for simple mode
 /// 获取精简模式的级别字符串
-fn simple_level_str(level: Level) -> &'static str
-{
-    match level
-    {
+fn simple_level_str(level: Level) -> &'static str {
+    match level {
         Level::TRACE => "TRAC",
         Level::DEBUG => "DBUG",
         Level::INFO => "INFO",
@@ -682,10 +588,8 @@ fn simple_level_str(level: Level) -> &'static str
 
 /// Get ANSI color code for log level (simple mode)
 /// 获取日志级别的 ANSI 颜色代码（精简模式）
-fn simple_level_color(level: Level) -> &'static str
-{
-    match level
-    {
+fn simple_level_color(level: Level) -> &'static str {
+    match level {
         Level::TRACE | Level::DEBUG => "\x1b[36m", // Cyan
         Level::INFO => "\x1b[32m",                 // Green
         Level::WARN => "\x1b[33m",                 // Yellow
@@ -694,14 +598,18 @@ fn simple_level_color(level: Level) -> &'static str
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_shorten_target()
-    {
+    fn test_shorten_target() {
         assert_eq!(shorten_target("hiver_http::server"), "n.http.server");
         assert_eq!(shorten_target("hiver_router::router"), "n.router.router");
         assert_eq!(shorten_target("hiver_middleware::logger"), "n.middleware.logger");
@@ -709,8 +617,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_log_format()
-    {
+    fn test_request_log_format() {
         let log = RequestLogFormat::new("GET", "/api/users")
             .with_status(200)
             .with_duration_ms(45)
@@ -720,16 +627,14 @@ mod tests
     }
 
     #[test]
-    fn test_truncate_thread()
-    {
+    fn test_truncate_thread() {
         assert_eq!(truncate_thread("main"), "main");
         assert_eq!(truncate_thread("tokio-runtime-worker"), "tokio-runtime-worker");
         assert!(truncate_thread("very-long-thread-name-that-exceeds-limit").len() <= 20);
     }
 
     #[test]
-    fn test_format_level()
-    {
+    fn test_format_level() {
         assert_eq!(format_level(Level::INFO).0, "INFO");
         assert_eq!(format_level(Level::INFO).1, "✓");
         assert_eq!(format_level(Level::ERROR).0, "ERR ");
@@ -739,8 +644,7 @@ mod tests
     }
 
     #[test]
-    fn test_startup_logger()
-    {
+    fn test_startup_logger() {
         let logger = StartupLogger::new();
         assert!(logger.elapsed_ms() < 100);
     }

@@ -85,7 +85,13 @@
 //! ```
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod annotations;
@@ -125,8 +131,7 @@ pub type ValidationResult<T> = Result<T, ValidationErrors>;
 
 /// 验证上下文 / Validation context
 #[derive(Debug, Clone)]
-pub struct ValidationContext
-{
+pub struct ValidationContext {
     /// 字段名 / Field name
     pub field: String,
     /// 字段值 / Field value
@@ -137,12 +142,10 @@ pub struct ValidationContext
     pub code: String,
 }
 
-impl ValidationContext
-{
+impl ValidationContext {
     /// Create a new validation context
     /// 创建新的验证上下文
-    pub fn new(field: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn new(field: impl Into<String>, value: impl Into<String>) -> Self {
         Self {
             field: field.into(),
             value: value.into(),
@@ -153,16 +156,14 @@ impl ValidationContext
 
     /// Set custom message
     /// 设置自定义消息
-    pub fn with_message(mut self, message: impl Into<String>) -> Self
-    {
+    pub fn with_message(mut self, message: impl Into<String>) -> Self {
         self.message = Some(message.into());
         self
     }
 
     /// Set error code
     /// 设置错误代码
-    pub fn with_code(mut self, code: impl Into<String>) -> Self
-    {
+    pub fn with_code(mut self, code: impl Into<String>) -> Self {
         self.code = code.into();
         self
     }
@@ -170,13 +171,11 @@ impl ValidationContext
 
 /// 验证规则 / Validation rules
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ValidationRule
-{
+pub enum ValidationRule {
     /// 非空 / Not empty
     NotEmpty,
     /// 长度范围 / Length range
-    Length
-    {
+    Length {
         /// Minimum length
         /// 最小长度
         min: Option<usize>,
@@ -185,8 +184,7 @@ pub enum ValidationRule
         max: Option<usize>,
     },
     /// 数值范围 / Range
-    Range
-    {
+    Range {
         /// Minimum value
         /// 最小值
         min: Option<i64>,
@@ -204,19 +202,14 @@ pub enum ValidationRule
     Custom(&'static str),
 }
 
-impl fmt::Display for ValidationRule
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for ValidationRule {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             ValidationRule::NotEmpty => write!(f, "not_empty"),
-            ValidationRule::Length { min, max } =>
-            {
+            ValidationRule::Length { min, max } => {
                 write!(f, "length(min={:?}, max={:?})", min, max)
             },
-            ValidationRule::Range { min, max } =>
-            {
+            ValidationRule::Range { min, max } => {
                 write!(f, "range(min={:?}, max={:?})", min, max)
             },
             ValidationRule::Email => write!(f, "email"),

@@ -47,8 +47,7 @@ pub const X_CORRELATION_ID: &str = "x-correlation-id";
 /// Request ID generation strategy.
 /// 请求 ID 生成策略。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum RequestIdStrategy
-{
+pub enum RequestIdStrategy {
     /// Use UUID v4 (random).
     /// 使用 UUID v4（随机）。
     #[default]
@@ -64,8 +63,7 @@ pub enum RequestIdStrategy
 /// Request ID middleware configuration.
 /// 请求 ID 中间件配置。
 #[derive(Debug, Clone)]
-pub struct RequestIdConfig
-{
+pub struct RequestIdConfig {
     /// Header name to read/write the request ID.
     /// 用于读取/写入请求 ID 的头名称。
     pub header_name: String,
@@ -83,10 +81,8 @@ pub struct RequestIdConfig
     pub prefix: String,
 }
 
-impl Default for RequestIdConfig
-{
-    fn default() -> Self
-    {
+impl Default for RequestIdConfig {
+    fn default() -> Self {
         Self {
             header_name: X_REQUEST_ID.to_string(),
             strategy: RequestIdStrategy::Uuid,
@@ -97,51 +93,44 @@ impl Default for RequestIdConfig
     }
 }
 
-impl RequestIdConfig
-{
+impl RequestIdConfig {
     /// Create a new default configuration.
     /// 创建新的默认配置。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set the header name.
     /// 设置头名称。
-    pub fn header_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn header_name(mut self, name: impl Into<String>) -> Self {
         self.header_name = name.into();
         self
     }
 
     /// Set the ID generation strategy.
     /// 设置 ID 生成策略。
-    pub fn strategy(mut self, strategy: RequestIdStrategy) -> Self
-    {
+    pub fn strategy(mut self, strategy: RequestIdStrategy) -> Self {
         self.strategy = strategy;
         self
     }
 
     /// Whether to accept existing IDs from incoming requests.
     /// 是否接受来自传入请求的已有 ID。
-    pub fn accept_existing(mut self, accept: bool) -> Self
-    {
+    pub fn accept_existing(mut self, accept: bool) -> Self {
         self.accept_existing = accept;
         self
     }
 
     /// Whether to set the response header.
     /// 是否设置响应头。
-    pub fn set_response_header(mut self, set: bool) -> Self
-    {
+    pub fn set_response_header(mut self, set: bool) -> Self {
         self.set_response_header = set;
         self
     }
 
     /// Set a prefix for generated IDs.
     /// 设置生成 ID 的前缀。
-    pub fn prefix(mut self, prefix: impl Into<String>) -> Self
-    {
+    pub fn prefix(mut self, prefix: impl Into<String>) -> Self {
         self.prefix = prefix.into();
         self
     }
@@ -153,8 +142,7 @@ impl RequestIdConfig
 
 /// Generate a UUID v4-like string using random bytes.
 /// 使用时间戳 + 原子计数器生成唯一 UUID v4 格式字符串。
-fn generate_uuid() -> String
-{
+fn generate_uuid() -> String {
     use std::sync::atomic::{AtomicU64, Ordering};
     use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -168,16 +156,15 @@ fn generate_uuid() -> String
 
     let secs = ts.as_secs();
     let nanos = ts.subsec_nanos();
-    let time_lo = (secs ^ (nanos as u64).wrapping_mul(2_654_435_761) ^ seq.wrapping_mul(0x9E37_79B9)) & 0xFFFF_FFFF;
+    let time_lo =
+        (secs ^ (nanos as u64).wrapping_mul(2_654_435_761) ^ seq.wrapping_mul(0x9E37_79B9))
+            & 0xFFFF_FFFF;
     let time_hi = ((secs >> 32) ^ nanos as u64 ^ seq) & 0xFFFF;
     let ver = (0x4000 | ((nanos >> 16) & 0x0FFF)) as u16; // version 4
     let var = (0x8000 | ((time_lo >> 16) & 0x3FFF)) as u16; // variant 1
     let node = (time_lo ^ time_hi ^ nanos as u64 ^ seq) & 0xFFFF_FFFF_FFFF;
 
-    format!(
-        "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
-        time_lo, time_hi, ver, var, node
-    )
+    format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", time_lo, time_hi, ver, var, node)
 }
 
 /// Counter for Counter strategy.
@@ -186,8 +173,7 @@ static REQUEST_COUNTER: AtomicU64 = AtomicU64::new(1);
 
 /// Generate a timestamp-based ID.
 /// 生成基于时间戳的 ID。
-fn generate_timestamp() -> String
-{
+fn generate_timestamp() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
     let ts = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -197,25 +183,19 @@ fn generate_timestamp() -> String
 
 /// Generate a request ID based on the configured strategy.
 /// 根据配置的策略生成请求 ID。
-fn generate_id(strategy: RequestIdStrategy, prefix: &str) -> String
-{
-    let id = match strategy
-    {
+fn generate_id(strategy: RequestIdStrategy, prefix: &str) -> String {
+    let id = match strategy {
         RequestIdStrategy::Uuid => generate_uuid(),
-        RequestIdStrategy::Counter =>
-        {
+        RequestIdStrategy::Counter => {
             let n = REQUEST_COUNTER.fetch_add(1, Ordering::Relaxed);
             format!("{}", n)
         },
         RequestIdStrategy::Timestamp => generate_timestamp(),
     };
 
-    if prefix.is_empty()
-    {
+    if prefix.is_empty() {
         id
-    }
-    else
-    {
+    } else {
         format!("{}-{}", prefix, id)
     }
 }
@@ -260,17 +240,14 @@ fn generate_id(strategy: RequestIdStrategy, prefix: &str) -> String
 /// );
 /// ```
 #[derive(Debug)]
-pub struct RequestIdMiddleware
-{
+pub struct RequestIdMiddleware {
     config: RequestIdConfig,
 }
 
-impl RequestIdMiddleware
-{
+impl RequestIdMiddleware {
     /// Create a new request ID middleware with default configuration.
     /// 使用默认配置创建新的请求 ID 中间件。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             config: RequestIdConfig::default(),
         }
@@ -278,24 +255,19 @@ impl RequestIdMiddleware
 
     /// Create a new request ID middleware with custom configuration.
     /// 使用自定义配置创建新的请求 ID 中间件。
-    pub fn with_config(config: RequestIdConfig) -> Self
-    {
+    pub fn with_config(config: RequestIdConfig) -> Self {
         Self { config }
     }
 }
 
-impl Default for RequestIdMiddleware
-{
-    fn default() -> Self
-    {
+impl Default for RequestIdMiddleware {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl Clone for RequestIdMiddleware
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for RequestIdMiddleware {
+    fn clone(&self) -> Self {
         Self {
             config: self.config.clone(),
         }
@@ -311,15 +283,13 @@ where
         mut req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
-    {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
         let config = self.config.clone();
 
         Box::pin(async move {
             // Determine request ID
             // 确定请求 ID
-            let request_id = if config.accept_existing
-            {
+            let request_id = if config.accept_existing {
                 req.headers()
                     .get(&config.header_name)
                     .and_then(|v| v.to_str().ok())
@@ -327,9 +297,7 @@ where
                         || generate_id(config.strategy, &config.prefix),
                         ToString::to_string,
                     )
-            }
-            else
-            {
+            } else {
                 generate_id(config.strategy, &config.prefix)
             };
 
@@ -348,8 +316,7 @@ where
 
             // Set response header
             // 设置响应头
-            if config.set_response_header
-            {
+            if config.set_response_header {
                 response.insert_header(&config.header_name, &request_id);
             }
 
@@ -380,20 +347,16 @@ where
 #[derive(Debug, Clone)]
 pub struct RequestId(pub String);
 
-impl std::fmt::Display for RequestId
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl RequestId
-{
+impl RequestId {
     /// Get the request ID string.
     /// 获取请求 ID 字符串。
-    pub fn as_str(&self) -> &str
-    {
+    pub fn as_str(&self) -> &str {
         &self.0
     }
 }
@@ -403,14 +366,18 @@ impl RequestId
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_generate_uuid()
-    {
+    fn test_generate_uuid() {
         let id = generate_uuid();
         assert!(!id.is_empty());
         assert_eq!(id.len(), 36); // 8-4-4-4-12
@@ -418,16 +385,14 @@ mod tests
     }
 
     #[test]
-    fn test_generate_uuid_unique()
-    {
+    fn test_generate_uuid_unique() {
         let id1 = generate_uuid();
         let id2 = generate_uuid();
         assert_ne!(id1, id2);
     }
 
     #[test]
-    fn test_generate_counter()
-    {
+    fn test_generate_counter() {
         let id1 = generate_id(RequestIdStrategy::Counter, "");
         let id2 = generate_id(RequestIdStrategy::Counter, "");
         assert_ne!(id1, id2);
@@ -438,30 +403,26 @@ mod tests
     }
 
     #[test]
-    fn test_generate_timestamp()
-    {
+    fn test_generate_timestamp() {
         let id = generate_id(RequestIdStrategy::Timestamp, "");
         let ms: u128 = id.parse().unwrap();
         assert!(ms > 0);
     }
 
     #[test]
-    fn test_generate_id_with_prefix()
-    {
+    fn test_generate_id_with_prefix() {
         let id = generate_id(RequestIdStrategy::Counter, "req");
         assert!(id.starts_with("req-"));
     }
 
     #[test]
-    fn test_generate_id_empty_prefix()
-    {
+    fn test_generate_id_empty_prefix() {
         let id = generate_id(RequestIdStrategy::Counter, "");
         assert!(!id.contains('-'));
     }
 
     #[test]
-    fn test_request_id_config_default()
-    {
+    fn test_request_id_config_default() {
         let config = RequestIdConfig::default();
         assert_eq!(config.header_name, X_REQUEST_ID);
         assert_eq!(config.strategy, RequestIdStrategy::Uuid);
@@ -471,8 +432,7 @@ mod tests
     }
 
     #[test]
-    fn test_request_id_config_builder()
-    {
+    fn test_request_id_config_builder() {
         let config = RequestIdConfig::new()
             .header_name("X-Correlation-Id")
             .strategy(RequestIdStrategy::Counter)
@@ -488,38 +448,33 @@ mod tests
     }
 
     #[test]
-    fn test_request_id_ext()
-    {
+    fn test_request_id_ext() {
         let id = RequestId("abc-123".into());
         assert_eq!(id.as_str(), "abc-123");
         assert_eq!(id.to_string(), "abc-123");
     }
 
     #[test]
-    fn test_request_id_middleware_new()
-    {
+    fn test_request_id_middleware_new() {
         let m = RequestIdMiddleware::new();
         assert_eq!(m.config.header_name, X_REQUEST_ID);
     }
 
     #[test]
-    fn test_request_id_middleware_default()
-    {
+    fn test_request_id_middleware_default() {
         let m = RequestIdMiddleware::default();
         assert_eq!(m.config.strategy, RequestIdStrategy::Uuid);
     }
 
     #[test]
-    fn test_request_id_middleware_clone()
-    {
+    fn test_request_id_middleware_clone() {
         let m1 = RequestIdMiddleware::new();
         let m2 = m1.clone();
         assert_eq!(m1.config.header_name, m2.config.header_name);
     }
 
     #[test]
-    fn test_request_id_strategy_default()
-    {
+    fn test_request_id_strategy_default() {
         assert_eq!(RequestIdStrategy::default(), RequestIdStrategy::Uuid);
     }
 }

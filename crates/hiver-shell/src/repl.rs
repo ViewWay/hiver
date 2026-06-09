@@ -18,8 +18,7 @@ use crate::{
 /// REPL configuration
 /// REPL配置
 #[derive(Debug)]
-pub struct ReplConfig
-{
+pub struct ReplConfig {
     /// Prompt style / 提示符样式
     pub prompt: PromptStyle,
     /// Output format / 输出格式
@@ -34,10 +33,8 @@ pub struct ReplConfig
     pub validator: InputValidator,
 }
 
-impl Default for ReplConfig
-{
-    fn default() -> Self
-    {
+impl Default for ReplConfig {
+    fn default() -> Self {
         Self {
             prompt: PromptStyle::new(),
             output_format: OutputFormat::Plain,
@@ -49,45 +46,38 @@ impl Default for ReplConfig
     }
 }
 
-impl ReplConfig
-{
+impl ReplConfig {
     /// Create a new REPL config / 创建新的REPL配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set prompt style / 设置提示符样式
-    pub fn prompt(mut self, prompt: PromptStyle) -> Self
-    {
+    pub fn prompt(mut self, prompt: PromptStyle) -> Self {
         self.prompt = prompt;
         self
     }
 
     /// Set output format / 设置输出格式
-    pub fn output_format(mut self, format: OutputFormat) -> Self
-    {
+    pub fn output_format(mut self, format: OutputFormat) -> Self {
         self.output_format = format;
         self
     }
 
     /// Set history file / 设置历史文件
-    pub fn history_file(mut self, path: impl Into<String>) -> Self
-    {
+    pub fn history_file(mut self, path: impl Into<String>) -> Self {
         self.history_file = Some(path.into());
         self
     }
 
     /// Set max history / 设置最大历史记录
-    pub fn max_history(mut self, max: usize) -> Self
-    {
+    pub fn max_history(mut self, max: usize) -> Self {
         self.max_history = max;
         self
     }
 
     /// Set show banner / 设置显示横幅
-    pub fn show_banner(mut self, show: bool) -> Self
-    {
+    pub fn show_banner(mut self, show: bool) -> Self {
         self.show_banner = show;
         self
     }
@@ -99,8 +89,7 @@ impl ReplConfig
 /// # Equivalent to Spring Shell / 等价于 Spring Shell
 /// Equivalent to Spring Shell's `ShellRunner` which manages the read-eval-print loop.
 /// 等价于Spring Shell管理读取-求值-打印循环的`ShellRunner`。
-pub struct Repl
-{
+pub struct Repl {
     /// Command registry / 命令注册表
     registry: CommandRegistry,
     /// REPL configuration / REPL配置
@@ -109,11 +98,9 @@ pub struct Repl
     result_handler: ResultHandler,
 }
 
-impl Repl
-{
+impl Repl {
     /// Create a new REPL / 创建新的REPL
-    pub fn new(registry: CommandRegistry) -> Self
-    {
+    pub fn new(registry: CommandRegistry) -> Self {
         Self {
             registry,
             config: ReplConfig::new(),
@@ -122,8 +109,7 @@ impl Repl
     }
 
     /// Create with configuration / 使用配置创建
-    pub fn with_config(registry: CommandRegistry, config: ReplConfig) -> Self
-    {
+    pub fn with_config(registry: CommandRegistry, config: ReplConfig) -> Self {
         let result_handler = ResultHandler::with_format(config.output_format);
         Self {
             registry,
@@ -133,14 +119,12 @@ impl Repl
     }
 
     /// Get a reference to the command registry / 获取命令注册表的引用
-    pub fn registry(&self) -> &CommandRegistry
-    {
+    pub fn registry(&self) -> &CommandRegistry {
         &self.registry
     }
 
     /// Get a mutable reference to the command registry / 获取命令注册表的可变引用
-    pub fn registry_mut(&mut self) -> &mut CommandRegistry
-    {
+    pub fn registry_mut(&mut self) -> &mut CommandRegistry {
         &mut self.registry
     }
 
@@ -148,8 +132,7 @@ impl Repl
     ///
     /// This is the main entry point for the interactive shell.
     /// 这是交互式shell的主要入口点。
-    pub fn run(&mut self) -> ShellResult<()>
-    {
+    pub fn run(&mut self) -> ShellResult<()> {
         let completion_provider = CompletionProvider::new(&self.registry);
         let completer = ShellCompleter::new(completion_provider);
 
@@ -164,14 +147,12 @@ impl Repl
         editor.set_helper(Some(completer));
 
         // Load history / 加载历史
-        if let Some(ref history_file) = self.config.history_file
-        {
+        if let Some(ref history_file) = self.config.history_file {
             let _ = editor.load_history(history_file);
         }
 
         // Show banner / 显示横幅
-        if self.config.show_banner
-        {
+        if self.config.show_banner {
             let banner = crate::prompt::Banner::new();
             print!("{}", banner.render());
         }
@@ -179,79 +160,62 @@ impl Repl
         let prompt_str = self.config.prompt.render();
 
         // Main REPL loop / 主REPL循环
-        loop
-        {
+        loop {
             let readline = editor.readline(&prompt_str);
 
-            match readline
-            {
-                Ok(line) =>
-                {
+            match readline {
+                Ok(line) => {
                     let line = line.trim().to_string();
-                    if line.is_empty()
-                    {
+                    if line.is_empty() {
                         continue;
                     }
 
                     // Validate input / 验证输入
-                    let validated = match self.config.validator.validate(&line)
-                    {
+                    let validated = match self.config.validator.validate(&line) {
                         Ok(v) => v,
-                        Err(e) =>
-                        {
+                        Err(e) => {
                             eprintln!("{}", self.result_handler.handle_error(&e));
                             continue;
                         },
                     };
 
-                    if validated.is_empty()
-                    {
+                    if validated.is_empty() {
                         continue;
                     }
 
                     // Execute / 执行
-                    match self.registry.execute_line(&line)
-                    {
-                        Ok(output) =>
-                        {
-                            if !output.is_empty()
-                            {
+                    match self.registry.execute_line(&line) {
+                        Ok(output) => {
+                            if !output.is_empty() {
                                 println!("{}", output);
                             }
                         },
-                        Err(ShellError::ExitRequested) =>
-                        {
+                        Err(ShellError::ExitRequested) => {
                             println!("{}", "Goodbye! / 再见!".dimmed());
                             // Save history / 保存历史
-                            if let Some(ref history_file) = self.config.history_file
-                            {
+                            if let Some(ref history_file) = self.config.history_file {
                                 let _ = editor.save_history(history_file);
                             }
                             return Ok(());
                         },
-                        Err(e) =>
-                        {
+                        Err(e) => {
                             eprintln!("{}", self.result_handler.handle_error(&e));
                         },
                     }
                 },
-                Err(ReadlineError::Interrupted) =>
-                {
+                Err(ReadlineError::Interrupted) => {
                     // Ctrl-C — just continue
                     println!("{}", "^C".dimmed());
                 },
-                Err(ReadlineError::Eof) =>
-                {
+                Err(ReadlineError::Eof) => {
                     // Ctrl-D — exit
                     println!("{}", "Goodbye! / 再见!".dimmed());
-                    if let Some(ref history_file) = self.config.history_file
-                    {
+                    if let Some(ref history_file) = self.config.history_file {
                         let _ = editor.save_history(history_file);
                     }
                     return Ok(());
                 },
-                Err(e) =>
-                {
+                Err(e) => {
                     return Err(ShellError::Runtime(format!(
                         "Readline error: {e} / 读取错误: {e}"
                     )));
@@ -262,15 +226,13 @@ impl Repl
 
     /// Execute a single line (non-interactive mode)
     /// 执行单行（非交互模式）
-    pub fn execute_line(&self, line: &str) -> ShellResult<String>
-    {
+    pub fn execute_line(&self, line: &str) -> ShellResult<String> {
         self.registry.execute_line(line)
     }
 
     /// Execute a script (multiple lines)
     /// 执行脚本（多行）
-    pub fn execute_script(&self, script: &str) -> Vec<ShellResult<String>>
-    {
+    pub fn execute_script(&self, script: &str) -> Vec<ShellResult<String>> {
         script
             .lines()
             .filter(|line| {
@@ -283,10 +245,8 @@ impl Repl
 }
 
 #[allow(clippy::missing_fields_in_debug)]
-impl std::fmt::Debug for Repl
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for Repl {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Repl")
             .field("command_count", &self.registry.len())
             .field("config", &self.config)

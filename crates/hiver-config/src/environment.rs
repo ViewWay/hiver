@@ -31,78 +31,64 @@ use crate::{ConfigError, ConfigResult, PropertySource, Value};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Profile(String);
 
-impl Profile
-{
+impl Profile {
     /// Create a new profile
     /// 创建新的配置文件
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Profile(name.into())
     }
 
     /// Development profile
     /// 开发环境
-    pub fn dev() -> Self
-    {
+    pub fn dev() -> Self {
         Profile("dev".to_string())
     }
 
     /// Test profile
     /// 测试环境
-    pub fn test() -> Self
-    {
+    pub fn test() -> Self {
         Profile("test".to_string())
     }
 
     /// Staging profile
     /// 预发布环境
-    pub fn staging() -> Self
-    {
+    pub fn staging() -> Self {
         Profile("staging".to_string())
     }
 
     /// Production profile
     /// 生产环境
-    pub fn prod() -> Self
-    {
+    pub fn prod() -> Self {
         Profile("prod".to_string())
     }
 
     /// Get profile name
     /// 获取配置文件名称
-    pub fn name(&self) -> &str
-    {
+    pub fn name(&self) -> &str {
         &self.0
     }
 
     /// Check if is default profile
     /// 检查是否为默认配置文件
-    pub fn is_default(&self) -> bool
-    {
+    pub fn is_default(&self) -> bool {
         self.0 == "default"
     }
 }
 
-impl fmt::Display for Profile
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for Profile {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl From<String> for Profile
-{
-    fn from(s: String) -> Self
-    {
+impl From<String> for Profile {
+    fn from(s: String) -> Self {
         Profile(s)
     }
 }
 
-impl From<&str> for Profile
-{
-    fn from(s: &str) -> Self
-    {
+impl From<&str> for Profile {
+    fn from(s: &str) -> Self {
         Profile(s.to_string())
     }
 }
@@ -113,18 +99,15 @@ impl From<&str> for Profile
 /// Equivalent to Spring's `ConfigurableEnvironment.setActiveProfiles()`.
 /// 等价于Spring的`ConfigurableEnvironment.setActiveProfiles()`。
 #[derive(Debug, Clone)]
-pub struct ActiveProfiles
-{
+pub struct ActiveProfiles {
     profiles: Vec<Profile>,
     default_profiles: Vec<Profile>,
 }
 
-impl ActiveProfiles
-{
+impl ActiveProfiles {
     /// Create a new active profiles manager
     /// 创建新的活动配置文件管理器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             profiles: vec![Profile::dev()],
             default_profiles: vec![Profile("default".to_string())],
@@ -133,54 +116,45 @@ impl ActiveProfiles
 
     /// Set active profiles
     /// 设置活动配置文件
-    pub fn set_active(&mut self, profiles: Vec<Profile>)
-    {
+    pub fn set_active(&mut self, profiles: Vec<Profile>) {
         self.profiles = profiles;
     }
 
     /// Add an active profile
     /// 添加活动配置文件
-    pub fn add_active(&mut self, profile: Profile)
-    {
-        if !self.profiles.contains(&profile)
-        {
+    pub fn add_active(&mut self, profile: Profile) {
+        if !self.profiles.contains(&profile) {
             self.profiles.push(profile);
         }
     }
 
     /// Get active profiles
     /// 获取活动配置文件
-    pub fn active(&self) -> &[Profile]
-    {
+    pub fn active(&self) -> &[Profile] {
         &self.profiles
     }
 
     /// Check if a profile is active
     /// 检查配置文件是否活动
-    pub fn is_active(&self, profile: &Profile) -> bool
-    {
+    pub fn is_active(&self, profile: &Profile) -> bool {
         self.profiles.contains(profile) || self.default_profiles.contains(profile)
     }
 
     /// Set default profiles
     /// 设置默认配置文件
-    pub fn set_defaults(&mut self, profiles: Vec<Profile>)
-    {
+    pub fn set_defaults(&mut self, profiles: Vec<Profile>) {
         self.default_profiles = profiles;
     }
 
     /// Get default profiles
     /// 获取默认配置文件
-    pub fn defaults(&self) -> &[Profile]
-    {
+    pub fn defaults(&self) -> &[Profile] {
         &self.default_profiles
     }
 }
 
-impl Default for ActiveProfiles
-{
-    fn default() -> Self
-    {
+impl Default for ActiveProfiles {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -194,8 +168,7 @@ impl Default for ActiveProfiles
 /// Provides access to configuration properties and profiles.
 /// 提供对配置属性和配置文件的访问。
 #[derive(Debug, Clone)]
-pub struct Environment
-{
+pub struct Environment {
     /// Property sources
     /// 属性源
     property_sources: Arc<RwLock<Vec<PropertySource>>>,
@@ -213,12 +186,10 @@ pub struct Environment
     system_env: IndexMap<String, String>,
 }
 
-impl Environment
-{
+impl Environment {
     /// Create a new environment
     /// 创建新的环境
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             property_sources: Arc::new(RwLock::new(Vec::new())),
             profile_sources: Arc::new(RwLock::new(HashMap::new())),
@@ -229,8 +200,7 @@ impl Environment
 
     /// Add a property source
     /// 添加属性源
-    pub fn add_property_source(&self, source: PropertySource)
-    {
+    pub fn add_property_source(&self, source: PropertySource) {
         let mut sources = self
             .property_sources
             .write()
@@ -240,8 +210,7 @@ impl Environment
 
     /// Add a property source as first (highest priority)
     /// 添加属性源到第一个（最高优先级）
-    pub fn add_property_source_first(&self, source: PropertySource)
-    {
+    pub fn add_property_source_first(&self, source: PropertySource) {
         let mut sources = self
             .property_sources
             .write()
@@ -252,8 +221,7 @@ impl Environment
     /// Add a property source for a specific profile.
     /// Profile-specific sources have higher priority than default sources for that profile.
     /// 为特定配置文件添加属性源。该配置文件的特定源具有高于默认源的优先级。
-    pub fn add_profile_source(&self, profile: impl Into<Profile>, source: PropertySource)
-    {
+    pub fn add_profile_source(&self, profile: impl Into<Profile>, source: PropertySource) {
         let profile_name = profile.into().name().to_string();
         let mut sources = self
             .profile_sources
@@ -269,8 +237,7 @@ impl Environment
     /// 1. Profile-specific sources (checked for each active profile, first active wins)
     /// 2. Default property sources (in insertion order)
     /// 3. System environment variables (fallback)
-    pub fn get_property(&self, key: &str) -> Option<Value>
-    {
+    pub fn get_property(&self, key: &str) -> Option<Value> {
         let profile_sources = self
             .profile_sources
             .read()
@@ -281,14 +248,10 @@ impl Environment
             .active_profiles
             .read()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        for profile in active.active()
-        {
-            if let Some(sources) = profile_sources.get(profile.name())
-            {
-                for source in sources
-                {
-                    if let Some(value) = source.get(key)
-                    {
+        for profile in active.active() {
+            if let Some(sources) = profile_sources.get(profile.name()) {
+                for source in sources {
+                    if let Some(value) = source.get(key) {
                         return Some(value);
                     }
                 }
@@ -300,10 +263,8 @@ impl Environment
             .property_sources
             .read()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        for source in sources.iter()
-        {
-            if let Some(value) = source.get(key)
-            {
+        for source in sources.iter() {
+            if let Some(value) = source.get(key) {
                 return Some(value);
             }
         }
@@ -326,8 +287,7 @@ impl Environment
 
     /// Get a required property
     /// 获取必需属性
-    pub fn get_required_property(&self, key: &str) -> ConfigResult<Value>
-    {
+    pub fn get_required_property(&self, key: &str) -> ConfigResult<Value> {
         self.get_property(key)
             .ok_or_else(|| ConfigError::MissingProperty(key.to_string()))
     }
@@ -344,34 +304,27 @@ impl Environment
 
     /// Check if a property exists
     /// 检查属性是否存在
-    pub fn contains_property(&self, key: &str) -> bool
-    {
+    pub fn contains_property(&self, key: &str) -> bool {
         self.get_property(key).is_some()
     }
 
     /// Resolve placeholders in a string (e.g., ${some.property})
     /// 解析字符串中的占位符（例如 ${some.property}）
-    pub fn resolve_placeholders(&self, input: &str) -> String
-    {
+    pub fn resolve_placeholders(&self, input: &str) -> String {
         let mut result = input.to_string();
 
         // Find and replace ${...} placeholders
         let mut start = 0;
-        while let Some(pos) = result[start..].find("${")
-        {
+        while let Some(pos) = result[start..].find("${") {
             let absolute_pos = start + pos;
-            if let Some(end) = result[absolute_pos..].find('}')
-            {
+            if let Some(end) = result[absolute_pos..].find('}') {
                 let key = &result[absolute_pos + 2..absolute_pos + end];
-                if let Some(value) = self.get_property(key)
-                {
+                if let Some(value) = self.get_property(key) {
                     let value_str = value.as_str().unwrap_or_default();
                     result.replace_range(absolute_pos..=(absolute_pos + end), value_str);
                 }
                 start = absolute_pos + 1;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
@@ -381,8 +334,7 @@ impl Environment
 
     /// Get active profiles
     /// 获取活动配置文件
-    pub fn get_active_profiles(&self) -> Vec<Profile>
-    {
+    pub fn get_active_profiles(&self) -> Vec<Profile> {
         let profiles = self
             .active_profiles
             .read()
@@ -392,8 +344,7 @@ impl Environment
 
     /// Set active profiles
     /// 设置活动配置文件
-    pub fn set_active_profiles(&self, profiles: Vec<Profile>)
-    {
+    pub fn set_active_profiles(&self, profiles: Vec<Profile>) {
         let mut active = self
             .active_profiles
             .write()
@@ -403,8 +354,7 @@ impl Environment
 
     /// Add an active profile
     /// 添加活动配置文件
-    pub fn add_active_profile(&self, profile: Profile)
-    {
+    pub fn add_active_profile(&self, profile: Profile) {
         let mut active = self
             .active_profiles
             .write()
@@ -414,8 +364,7 @@ impl Environment
 
     /// Check if a profile is active
     /// 检查配置文件是否活动
-    pub fn accepts_profiles(&self, profiles: &[Profile]) -> bool
-    {
+    pub fn accepts_profiles(&self, profiles: &[Profile]) -> bool {
         let active = self
             .active_profiles
             .read()
@@ -425,8 +374,7 @@ impl Environment
 
     /// Get all property sources
     /// 获取所有属性源
-    pub fn get_property_sources(&self) -> Vec<PropertySource>
-    {
+    pub fn get_property_sources(&self) -> Vec<PropertySource> {
         let sources = self
             .property_sources
             .read()
@@ -436,24 +384,26 @@ impl Environment
 
     /// Get system environment variable
     /// 获取系统环境变量
-    pub fn get_env(&self, key: &str) -> Option<String>
-    {
+    pub fn get_env(&self, key: &str) -> Option<String> {
         self.system_env.get(key).cloned()
     }
 }
 
-impl Default for Environment
-{
-    fn default() -> Self
-    {
+impl Default for Environment {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     // ============================================================
@@ -463,8 +413,7 @@ mod tests
     /// Test Profile creation and name accessor
     /// 测试Profile创建和名称访问器
     #[test]
-    fn test_profile_new()
-    {
+    fn test_profile_new() {
         let p = Profile::new("custom");
         assert_eq!(p.name(), "custom");
         assert!(!p.is_default());
@@ -473,8 +422,7 @@ mod tests
     /// Test Profile preset constructors
     /// 测试Profile预设构造函数
     #[test]
-    fn test_profile_presets()
-    {
+    fn test_profile_presets() {
         assert_eq!(Profile::dev().name(), "dev");
         assert_eq!(Profile::test().name(), "test");
         assert_eq!(Profile::staging().name(), "staging");
@@ -484,8 +432,7 @@ mod tests
     /// Test Profile::is_default
     /// 测试Profile::is_default
     #[test]
-    fn test_profile_is_default()
-    {
+    fn test_profile_is_default() {
         assert!(Profile::new("default").is_default());
         assert!(!Profile::dev().is_default());
     }
@@ -493,8 +440,7 @@ mod tests
     /// Test Profile Display trait
     /// 测试Profile的Display trait
     #[test]
-    fn test_profile_display()
-    {
+    fn test_profile_display() {
         assert_eq!(format!("{}", Profile::dev()), "dev");
         assert_eq!(format!("{}", Profile::new("staging")), "staging");
     }
@@ -502,8 +448,7 @@ mod tests
     /// Test Profile From<String> and From<&str>
     /// 测试Profile的From<String>和From<&str>
     #[test]
-    fn test_profile_from()
-    {
+    fn test_profile_from() {
         let p1: Profile = "test".into();
         let p2: Profile = String::from("prod").into();
         assert_eq!(p1.name(), "test");
@@ -513,8 +458,7 @@ mod tests
     /// Test Profile equality and ordering
     /// 测试Profile的相等性和排序
     #[test]
-    fn test_profile_eq_and_ord()
-    {
+    fn test_profile_eq_and_ord() {
         assert_eq!(Profile::dev(), Profile::new("dev"));
         assert_ne!(Profile::dev(), Profile::prod());
         assert!(Profile::dev() < Profile::prod());
@@ -527,8 +471,7 @@ mod tests
     /// Test ActiveProfiles default starts with dev
     /// 测试ActiveProfiles默认以dev开始
     #[test]
-    fn test_active_profiles_default()
-    {
+    fn test_active_profiles_default() {
         let ap = ActiveProfiles::new();
         assert_eq!(ap.active().len(), 1);
         assert_eq!(ap.active()[0], Profile::dev());
@@ -537,8 +480,7 @@ mod tests
     /// Test set_active replaces profiles
     /// 测试set_active替换配置文件
     #[test]
-    fn test_active_profiles_set_active()
-    {
+    fn test_active_profiles_set_active() {
         let mut ap = ActiveProfiles::new();
         ap.set_active(vec![Profile::prod()]);
         assert_eq!(ap.active().len(), 1);
@@ -548,8 +490,7 @@ mod tests
     /// Test add_active does not duplicate
     /// 测试add_active不会重复添加
     #[test]
-    fn test_active_profiles_add_no_duplicate()
-    {
+    fn test_active_profiles_add_no_duplicate() {
         let mut ap = ActiveProfiles::new();
         ap.add_active(Profile::dev());
         assert_eq!(ap.active().len(), 1); // Still just dev
@@ -558,8 +499,7 @@ mod tests
     /// Test add_active adds new profile
     /// 测试add_active添加新配置文件
     #[test]
-    fn test_active_profiles_add_new()
-    {
+    fn test_active_profiles_add_new() {
         let mut ap = ActiveProfiles::new();
         ap.add_active(Profile::prod());
         assert_eq!(ap.active().len(), 2);
@@ -568,8 +508,7 @@ mod tests
     /// Test is_active checks both active and default profiles
     /// 测试is_active同时检查活动配置文件和默认配置文件
     #[test]
-    fn test_active_profiles_is_active()
-    {
+    fn test_active_profiles_is_active() {
         let ap = ActiveProfiles::new();
         assert!(ap.is_active(&Profile::dev()));
         assert!(ap.is_active(&Profile::new("default"))); // default profile
@@ -579,8 +518,7 @@ mod tests
     /// Test set_defaults and defaults
     /// 测试set_defaults和defaults
     #[test]
-    fn test_active_profiles_defaults()
-    {
+    fn test_active_profiles_defaults() {
         let mut ap = ActiveProfiles::new();
         assert_eq!(ap.defaults().len(), 1);
         assert_eq!(ap.defaults()[0], Profile::new("default"));
@@ -597,8 +535,7 @@ mod tests
     /// Test Environment creation
     /// 测试Environment创建
     #[test]
-    fn test_environment_new()
-    {
+    fn test_environment_new() {
         let env = Environment::new();
         assert!(env.get_active_profiles().len() >= 1); // default dev
         assert!(env.get_property_sources().is_empty());
@@ -607,8 +544,7 @@ mod tests
     /// Test add_property_source and get_property
     /// 测试add_property_source和get_property
     #[test]
-    fn test_environment_add_and_get()
-    {
+    fn test_environment_add_and_get() {
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("server.port", Value::integer(8080));
@@ -623,8 +559,7 @@ mod tests
     /// Test add_property_source_first gives highest priority
     /// 测试add_property_source_first给予最高优先级
     #[test]
-    fn test_environment_add_first_priority()
-    {
+    fn test_environment_add_first_priority() {
         let env = Environment::new();
 
         let mut source1 = PropertySource::new("source1");
@@ -642,8 +577,7 @@ mod tests
     /// Test get_property_as with type conversion
     /// 测试带类型转换的get_property_as
     #[test]
-    fn test_environment_get_property_as()
-    {
+    fn test_environment_get_property_as() {
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("count", Value::integer(42));
@@ -656,8 +590,7 @@ mod tests
     /// Test get_property_as error on missing key
     /// 测试键缺失时get_property_as返回错误
     #[test]
-    fn test_environment_get_property_as_missing()
-    {
+    fn test_environment_get_property_as_missing() {
         let env = Environment::new();
         let result: Result<i64, _> = env.get_property_as("missing");
         assert!(result.is_err());
@@ -666,8 +599,7 @@ mod tests
     /// Test get_required_property success and failure
     /// 测试get_required_property成功和失败
     #[test]
-    fn test_environment_required_property()
-    {
+    fn test_environment_required_property() {
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("present", Value::string("here"));
@@ -680,8 +612,7 @@ mod tests
     /// Test contains_property
     /// 测试contains_property
     #[test]
-    fn test_environment_contains_property()
-    {
+    fn test_environment_contains_property() {
         let env = Environment::new();
         assert!(!env.contains_property("key"));
 
@@ -694,8 +625,7 @@ mod tests
     /// Test resolve_placeholders replaces ${key} with property value
     /// 测试resolve_placeholders将${key}替换为属性值
     #[test]
-    fn test_environment_resolve_placeholders()
-    {
+    fn test_environment_resolve_placeholders() {
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("host", Value::string("localhost"));
@@ -709,8 +639,7 @@ mod tests
     /// Test resolve_placeholders leaves unresolved placeholders as-is
     /// 测试resolve_placeholders保留未解析的占位符不变
     #[test]
-    fn test_environment_resolve_placeholders_unresolved()
-    {
+    fn test_environment_resolve_placeholders_unresolved() {
         let env = Environment::new();
         let result = env.resolve_placeholders("missing ${no.key} stays");
         assert_eq!(result, "missing ${no.key} stays");
@@ -719,8 +648,7 @@ mod tests
     /// Test set_active_profiles and get_active_profiles
     /// 测试set_active_profiles和get_active_profiles
     #[test]
-    fn test_environment_profiles()
-    {
+    fn test_environment_profiles() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::prod(), Profile::staging()]);
 
@@ -733,8 +661,7 @@ mod tests
     /// Test add_active_profile
     /// 测试add_active_profile
     #[test]
-    fn test_environment_add_profile()
-    {
+    fn test_environment_add_profile() {
         let env = Environment::new();
         env.add_active_profile(Profile::test());
 
@@ -745,8 +672,7 @@ mod tests
     /// Test accepts_profiles
     /// 测试accepts_profiles
     #[test]
-    fn test_environment_accepts_profiles()
-    {
+    fn test_environment_accepts_profiles() {
         let env = Environment::new();
         assert!(env.accepts_profiles(&[Profile::dev()]));
         assert!(!env.accepts_profiles(&[Profile::prod()]));
@@ -755,8 +681,7 @@ mod tests
     /// Test get_property_sources returns all sources
     /// 测试get_property_sources返回所有源
     #[test]
-    fn test_environment_get_property_sources()
-    {
+    fn test_environment_get_property_sources() {
         let env = Environment::new();
         let source1 = PropertySource::new("s1");
         let source2 = PropertySource::new("s2");
@@ -770,8 +695,7 @@ mod tests
     /// Test get_env retrieves system environment variable
     /// 测试get_env获取系统环境变量
     #[test]
-    fn test_environment_get_env()
-    {
+    fn test_environment_get_env() {
         let env = Environment::new();
         // PATH should exist on any system
         assert!(env.get_env("PATH").is_some());
@@ -782,8 +706,7 @@ mod tests
     /// Test get_required_property_as with typed value
     /// 测试带类型值的get_required_property_as
     #[test]
-    fn test_environment_get_required_property_as()
-    {
+    fn test_environment_get_required_property_as() {
         let env = Environment::new();
         let mut source = PropertySource::new("test");
         source.put("ratio", Value::float(2.5));
@@ -800,8 +723,7 @@ mod tests
     /// Test add_profile_source and profile-aware get_property
     /// 测试add_profile_source和配置文件感知的get_property
     #[test]
-    fn test_profile_source_get()
-    {
+    fn test_profile_source_get() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::new("dev")]);
 
@@ -818,27 +740,17 @@ mod tests
         env.add_profile_source(Profile::new("dev"), dev_source);
 
         // Profile-specific overrides default
-        assert_eq!(
-            env.get_property("key").unwrap().as_str(),
-            Some("from_dev")
-        );
+        assert_eq!(env.get_property("key").unwrap().as_str(), Some("from_dev"));
         // Default-only keys still accessible
-        assert_eq!(
-            env.get_property("only_default").unwrap().as_str(),
-            Some("default_only")
-        );
+        assert_eq!(env.get_property("only_default").unwrap().as_str(), Some("default_only"));
         // Profile-only keys accessible
-        assert_eq!(
-            env.get_property("only_dev").unwrap().as_str(),
-            Some("dev_only")
-        );
+        assert_eq!(env.get_property("only_dev").unwrap().as_str(), Some("dev_only"));
     }
 
     /// Test profile-specific sources only apply to active profiles
     /// 测试配置文件特定源仅应用于活动配置文件
     #[test]
-    fn test_profile_source_only_active()
-    {
+    fn test_profile_source_only_active() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::new("dev")]);
 
@@ -853,8 +765,7 @@ mod tests
     /// Test profile-specific < default < system priority ordering
     /// 测试配置文件特定 < 默认 < 系统的优先级顺序
     #[test]
-    fn test_profile_source_priority_over_default()
-    {
+    fn test_profile_source_priority_over_default() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::new("dev")]);
 
@@ -869,17 +780,13 @@ mod tests
         env.add_profile_source(Profile::new("dev"), dev_source);
 
         // Profile-specific overrides default
-        assert_eq!(
-            env.get_property("key").unwrap().as_str(),
-            Some("from_dev")
-        );
+        assert_eq!(env.get_property("key").unwrap().as_str(), Some("from_dev"));
     }
 
     /// Test multiple active profiles — first active profile's sources win
     /// 测试多个活动配置文件 — 第一个活动配置文件的源优先
     #[test]
-    fn test_multiple_active_profile_sources()
-    {
+    fn test_multiple_active_profile_sources() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::new("dev"), Profile::new("staging")]);
 
@@ -892,17 +799,13 @@ mod tests
         env.add_profile_source(Profile::new("staging"), staging_source);
 
         // First active profile (dev) wins
-        assert_eq!(
-            env.get_property("key").unwrap().as_str(),
-            Some("from_dev")
-        );
+        assert_eq!(env.get_property("key").unwrap().as_str(), Some("from_dev"));
     }
 
     /// Test multiple profile sources for the same profile — first added wins (same as default source behavior)
     /// 测试同一配置文件的多个源 — 先添加的优先（与默认源行为一致）
     #[test]
-    fn test_multiple_sources_same_profile()
-    {
+    fn test_multiple_sources_same_profile() {
         let env = Environment::new();
         env.set_active_profiles(vec![Profile::new("dev")]);
 
@@ -915,9 +818,6 @@ mod tests
         env.add_profile_source(Profile::new("dev"), source2);
 
         // First profile source wins (iterated first)
-        assert_eq!(
-            env.get_property("key").unwrap().as_str(),
-            Some("from_first")
-        );
+        assert_eq!(env.get_property("key").unwrap().as_str(), Some("from_first"));
     }
 }

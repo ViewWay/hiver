@@ -39,8 +39,7 @@ use crate::error::BatchResult;
 /// }
 /// ```
 #[async_trait]
-pub trait ItemReader: Send + Sync
-{
+pub trait ItemReader: Send + Sync {
     /// Item type
     /// 项目类型
     type Item: Send + Sync;
@@ -57,8 +56,7 @@ pub trait ItemReader: Send + Sync
     ///
     /// Called before any read operations.
     /// 在任何读取操作之前调用。
-    async fn open(&mut self) -> BatchResult<()>
-    {
+    async fn open(&mut self) -> BatchResult<()> {
         Ok(())
     }
 
@@ -67,8 +65,7 @@ pub trait ItemReader: Send + Sync
     ///
     /// Called after all read operations are complete.
     /// 在所有读取操作完成后调用。
-    async fn close(&mut self) -> BatchResult<()>
-    {
+    async fn close(&mut self) -> BatchResult<()> {
         Ok(())
     }
 
@@ -77,8 +74,7 @@ pub trait ItemReader: Send + Sync
     ///
     /// Used for restartability.
     /// 用于可重启性。
-    fn mark(&mut self) -> Option<String>
-    {
+    fn mark(&mut self) -> Option<String> {
         None
     }
 
@@ -87,8 +83,7 @@ pub trait ItemReader: Send + Sync
     ///
     /// Used for restartability.
     /// 用于可重启性。
-    async fn reset(&mut self) -> BatchResult<()>
-    {
+    async fn reset(&mut self) -> BatchResult<()> {
         Ok(())
     }
 }
@@ -107,19 +102,16 @@ pub trait ItemReader: Send + Sync
 /// let items = vec![1, 2, 3, 4, 5];
 /// let reader = ItemStreamReader::new(items);
 /// ```
-pub struct ItemStreamReader<T>
-{
+pub struct ItemStreamReader<T> {
     items: Vec<T>,
     index: usize,
     marked_index: Option<usize>,
 }
 
-impl<T> ItemStreamReader<T>
-{
+impl<T> ItemStreamReader<T> {
     /// Create new stream reader
     /// 创建新流读取器
-    pub fn new(items: Vec<T>) -> Self
-    {
+    pub fn new(items: Vec<T>) -> Self {
         Self {
             items,
             index: 0,
@@ -129,8 +121,7 @@ impl<T> ItemStreamReader<T>
 
     /// Create empty reader
     /// 创建空读取器
-    pub fn empty() -> Self
-    {
+    pub fn empty() -> Self {
         Self {
             items: Vec::new(),
             index: 0,
@@ -140,15 +131,13 @@ impl<T> ItemStreamReader<T>
 
     /// Get remaining count
     /// 获取剩余计数
-    pub fn remaining(&self) -> usize
-    {
+    pub fn remaining(&self) -> usize {
         self.items.len().saturating_sub(self.index)
     }
 
     /// Check if has more items
     /// 检查是否还有更多项目
-    pub fn has_more(&self) -> bool
-    {
+    pub fn has_more(&self) -> bool {
         self.index < self.items.len()
     }
 }
@@ -157,8 +146,7 @@ impl<T> Clone for ItemStreamReader<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self {
             items: self.items.clone(),
             index: self.index,
@@ -174,22 +162,17 @@ where
 {
     type Item = T;
 
-    async fn read(&mut self) -> BatchResult<Option<T>>
-    {
-        if self.index < self.items.len()
-        {
+    async fn read(&mut self) -> BatchResult<Option<T>> {
+        if self.index < self.items.len() {
             let item = self.items[self.index].clone();
             self.index += 1;
             Ok(Some(item))
-        }
-        else
-        {
+        } else {
             Ok(None)
         }
     }
 
-    fn mark(&mut self) -> Option<String>
-    {
+    fn mark(&mut self) -> Option<String> {
         // Return current position (index), but save index-1 for reset
         // This way reset() will re-read the last successfully read item
         let current = self.index;
@@ -197,10 +180,8 @@ where
         Some(current.to_string())
     }
 
-    async fn reset(&mut self) -> BatchResult<()>
-    {
-        if let Some(idx) = self.marked_index
-        {
+    async fn reset(&mut self) -> BatchResult<()> {
+        if let Some(idx) = self.marked_index {
             self.index = idx;
         }
         Ok(())
@@ -226,8 +207,7 @@ where
 {
     /// Create from iterator
     /// 从迭代器创建
-    pub fn new(iter: I) -> Self
-    {
+    pub fn new(iter: I) -> Self {
         Self {
             iter: Some(iter),
             buffered: None,
@@ -243,19 +223,14 @@ where
 {
     type Item = T;
 
-    async fn read(&mut self) -> BatchResult<Option<T>>
-    {
-        if let Some(buffered) = self.buffered.take()
-        {
+    async fn read(&mut self) -> BatchResult<Option<T>> {
+        if let Some(buffered) = self.buffered.take() {
             return Ok(Some(buffered));
         }
 
-        if let Some(iter) = &mut self.iter
-        {
+        if let Some(iter) = &mut self.iter {
             Ok(iter.next())
-        }
-        else
-        {
+        } else {
             Ok(None)
         }
     }
@@ -275,20 +250,17 @@ where
 ///     return reader;
 /// }
 /// ```
-pub struct CsvFileReader
-{
+pub struct CsvFileReader {
     file_path: String,
     lines: Vec<String>,
     index: usize,
     has_header: bool,
 }
 
-impl CsvFileReader
-{
+impl CsvFileReader {
     /// Create new CSV reader
     /// 创建新CSV读取器
-    pub fn new(file_path: impl Into<String>) -> Self
-    {
+    pub fn new(file_path: impl Into<String>) -> Self {
         Self {
             file_path: file_path.into(),
             lines: Vec::new(),
@@ -299,22 +271,19 @@ impl CsvFileReader
 
     /// Set whether file has header
     /// 设置文件是否有标题行
-    pub fn with_header(mut self, has_header: bool) -> Self
-    {
+    pub fn with_header(mut self, has_header: bool) -> Self {
         self.has_header = has_header;
         self
     }
 
     /// Load file into memory
     /// 将文件加载到内存
-    pub async fn load(&mut self) -> BatchResult<()>
-    {
+    pub async fn load(&mut self) -> BatchResult<()> {
         let content = tokio::fs::read_to_string(&self.file_path).await?;
         self.lines = content.lines().map(|s| s.to_string()).collect();
 
         // Skip header if present
-        if self.has_header && !self.lines.is_empty()
-        {
+        if self.has_header && !self.lines.is_empty() {
             self.index = 1;
         }
 
@@ -323,34 +292,27 @@ impl CsvFileReader
 
     /// Parse CSV line
     /// 解析CSV行
-    pub fn parse_line(line: &str) -> Vec<String>
-    {
+    pub fn parse_line(line: &str) -> Vec<String> {
         let mut result = Vec::new();
         let mut current = String::new();
         let mut in_quotes = false;
         let mut chars = line.chars().peekable();
 
-        while let Some(c) = chars.next()
-        {
-            match c
-            {
-                '"' =>
-                {
+        while let Some(c) = chars.next() {
+            match c {
+                '"' => {
                     in_quotes = !in_quotes;
                     // Check for escaped quote
-                    if chars.peek() == Some(&'"')
-                    {
+                    if chars.peek() == Some(&'"') {
                         current.push('"');
                         chars.next();
                     }
                 },
-                ',' if !in_quotes =>
-                {
+                ',' if !in_quotes => {
                     result.push(current.trim().to_string());
                     current = String::new();
                 },
-                _ =>
-                {
+                _ => {
                     current.push(c);
                 },
             }
@@ -362,26 +324,20 @@ impl CsvFileReader
 }
 
 #[async_trait]
-impl ItemReader for CsvFileReader
-{
+impl ItemReader for CsvFileReader {
     type Item = String;
 
-    async fn read(&mut self) -> BatchResult<Option<String>>
-    {
-        if self.index < self.lines.len()
-        {
+    async fn read(&mut self) -> BatchResult<Option<String>> {
+        if self.index < self.lines.len() {
             let line = self.lines[self.index].clone();
             self.index += 1;
             Ok(Some(line))
-        }
-        else
-        {
+        } else {
             Ok(None)
         }
     }
 
-    async fn open(&mut self) -> BatchResult<()>
-    {
+    async fn open(&mut self) -> BatchResult<()> {
         self.load().await?;
         Ok(())
     }
@@ -389,19 +345,16 @@ impl ItemReader for CsvFileReader
 
 /// JSON file reader
 /// JSON文件读取器
-pub struct JsonFileReader
-{
+pub struct JsonFileReader {
     file_path: String,
     lines: Vec<String>,
     index: usize,
 }
 
-impl JsonFileReader
-{
+impl JsonFileReader {
     /// Create new JSON reader
     /// 创建新JSON读取器
-    pub fn new(file_path: impl Into<String>) -> Self
-    {
+    pub fn new(file_path: impl Into<String>) -> Self {
         Self {
             file_path: file_path.into(),
             lines: Vec::new(),
@@ -411,8 +364,7 @@ impl JsonFileReader
 
     /// Load file into memory
     /// 将文件加载到内存
-    pub async fn load(&mut self) -> BatchResult<()>
-    {
+    pub async fn load(&mut self) -> BatchResult<()> {
         let content = tokio::fs::read_to_string(&self.file_path).await?;
         self.lines = content
             .lines()
@@ -424,40 +376,38 @@ impl JsonFileReader
 }
 
 #[async_trait]
-impl ItemReader for JsonFileReader
-{
+impl ItemReader for JsonFileReader {
     type Item = String;
 
-    async fn read(&mut self) -> BatchResult<Option<String>>
-    {
-        if self.index < self.lines.len()
-        {
+    async fn read(&mut self) -> BatchResult<Option<String>> {
+        if self.index < self.lines.len() {
             let line = self.lines[self.index].clone();
             self.index += 1;
             Ok(Some(line))
-        }
-        else
-        {
+        } else {
             Ok(None)
         }
     }
 
-    async fn open(&mut self) -> BatchResult<()>
-    {
+    async fn open(&mut self) -> BatchResult<()> {
         self.load().await?;
         Ok(())
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_item_stream_reader()
-    {
+    async fn test_item_stream_reader() {
         let items = vec![1, 2, 3, 4, 5];
         let mut reader = ItemStreamReader::new(items);
 
@@ -476,8 +426,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_item_stream_reader_empty()
-    {
+    async fn test_item_stream_reader_empty() {
         let mut reader = ItemStreamReader::<i32>::empty();
 
         assert_eq!(reader.read().await.unwrap(), None);
@@ -485,8 +434,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_item_stream_reader_mark_reset()
-    {
+    async fn test_item_stream_reader_mark_reset() {
         let items = vec![1, 2, 3, 4, 5];
         let mut reader = ItemStreamReader::new(items);
 
@@ -505,8 +453,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_iterator_item_reader()
-    {
+    async fn test_iterator_item_reader() {
         let items = vec!["a", "b", "c"];
         let mut reader = IteratorItemReader::new(items.into_iter());
 
@@ -517,8 +464,7 @@ mod tests
     }
 
     #[test]
-    fn test_csv_parse_line()
-    {
+    fn test_csv_parse_line() {
         let line = "John,Doe,30";
         let parsed = CsvFileReader::parse_line(line);
         assert_eq!(parsed, vec!["John", "Doe", "30"]);
@@ -533,8 +479,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_csv_reader_open_close()
-    {
+    async fn test_csv_reader_open_close() {
         let mut reader = CsvFileReader::new("test.csv").with_header(false);
 
         // Should not error on close without open

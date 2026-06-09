@@ -6,15 +6,11 @@ use thiserror::Error;
 /// State machine error type
 /// 状态机错误类型
 #[derive(Error, Debug)]
-pub enum StateMachineError
-{
+pub enum StateMachineError {
     /// No valid transition for the given event
     /// 没有针对给定事件的有效转换
     #[error("No valid transition from state '{from}' on event '{event}'")]
-    NoValidTransition
-    {
-        from: String, event: String
-    },
+    NoValidTransition { from: String, event: String },
 
     /// Guard evaluation failed
     /// 守卫评估失败

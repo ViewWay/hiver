@@ -14,21 +14,18 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 /// - Getter (getter methods)
 /// - Setter (setter methods)
 /// - With (with_xxx methods for chaining)
-pub fn impl_data(input: DeriveInput) -> TokenStream
-{
+pub fn impl_data(input: DeriveInput) -> TokenStream {
     let struct_name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data
-    {
+    let fields = match &input.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ =>
-        {
+        _ => {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[Data] can only be used on structs with named fields",

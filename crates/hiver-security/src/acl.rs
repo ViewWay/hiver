@@ -14,8 +14,7 @@ use std::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AclPermission(u32);
 
-impl AclPermission
-{
+impl AclPermission {
     /// Administration permission (implies all others).
     pub const ADMIN: AclPermission = AclPermission(1 << 4);
     /// Create permission.
@@ -28,26 +27,22 @@ impl AclPermission
     pub const WRITE: AclPermission = AclPermission(1 << 1);
 
     /// Create a permission from raw bits.
-    pub fn from_bits(bits: u32) -> Self
-    {
+    pub fn from_bits(bits: u32) -> Self {
         Self(bits)
     }
 
     /// Check if this permission includes the given permission.
-    pub fn includes(&self, other: AclPermission) -> bool
-    {
+    pub fn includes(&self, other: AclPermission) -> bool {
         (self.0 & other.0) != 0
     }
 
     /// Combine two permissions.
-    pub fn union(self, other: AclPermission) -> Self
-    {
+    pub fn union(self, other: AclPermission) -> Self {
         Self(self.0 | other.0)
     }
 
     /// Raw bits value.
-    pub fn bits(&self) -> u32
-    {
+    pub fn bits(&self) -> u32 {
         self.0
     }
 }
@@ -55,8 +50,7 @@ impl AclPermission
 /// Security Identity — represents a principal or authority.
 /// 安全身份 —— 表示主体或授权。
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum AclSid
-{
+pub enum AclSid {
     /// A specific user principal.
     Principal(String),
     /// A granted authority (role/permission).
@@ -66,19 +60,16 @@ pub enum AclSid
 /// Identifies a domain object instance.
 /// 标识领域对象实例。
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AclObjectIdentity
-{
+pub struct AclObjectIdentity {
     /// Type of the domain object (e.g. "Document", "Order").
     pub object_type: String,
     /// Identifier of the specific instance.
     pub object_id: String,
 }
 
-impl AclObjectIdentity
-{
+impl AclObjectIdentity {
     /// Create a new object identity.
-    pub fn new(object_type: impl Into<String>, object_id: impl Into<String>) -> Self
-    {
+    pub fn new(object_type: impl Into<String>, object_id: impl Into<String>) -> Self {
         Self {
             object_type: object_type.into(),
             object_id: object_id.into(),
@@ -89,8 +80,7 @@ impl AclObjectIdentity
 /// A single access control entry: grants or denies a permission to a SID.
 /// 单个访问控制条目：授予或拒绝 SID 的权限。
 #[derive(Debug, Clone)]
-pub struct AclEntry
-{
+pub struct AclEntry {
     /// The SID this entry applies to.
     pub sid: AclSid,
     /// The permission mask.
@@ -99,11 +89,9 @@ pub struct AclEntry
     pub granting: bool,
 }
 
-impl AclEntry
-{
+impl AclEntry {
     /// Create a granting entry.
-    pub fn grant(sid: AclSid, permission: AclPermission) -> Self
-    {
+    pub fn grant(sid: AclSid, permission: AclPermission) -> Self {
         Self {
             sid,
             permission,
@@ -112,8 +100,7 @@ impl AclEntry
     }
 
     /// Create a denying entry.
-    pub fn deny(sid: AclSid, permission: AclPermission) -> Self
-    {
+    pub fn deny(sid: AclSid, permission: AclPermission) -> Self {
         Self {
             sid,
             permission,
@@ -122,8 +109,7 @@ impl AclEntry
     }
 
     /// Check if this entry matches the given SID and permission.
-    pub fn matches(&self, sid: &AclSid, permission: AclPermission) -> bool
-    {
+    pub fn matches(&self, sid: &AclSid, permission: AclPermission) -> bool {
         &self.sid == sid && self.permission.includes(permission)
     }
 }
@@ -131,8 +117,7 @@ impl AclEntry
 /// Access Control List for a single domain object.
 /// 单个领域对象的访问控制列表。
 #[derive(Debug, Clone)]
-pub struct Acl
-{
+pub struct Acl {
     /// The object this ACL protects.
     pub object_identity: AclObjectIdentity,
     /// The owner of this ACL.
@@ -145,11 +130,9 @@ pub struct Acl
     pub parent: Option<AclObjectIdentity>,
 }
 
-impl Acl
-{
+impl Acl {
     /// Create a new ACL for an object owned by the given SID.
-    pub fn new(object_identity: AclObjectIdentity, owner: AclSid) -> Self
-    {
+    pub fn new(object_identity: AclObjectIdentity, owner: AclSid) -> Self {
         Self {
             object_identity,
             owner,
@@ -160,31 +143,24 @@ impl Acl
     }
 
     /// Add an entry to this ACL.
-    pub fn add_entry(&mut self, entry: AclEntry)
-    {
+    pub fn add_entry(&mut self, entry: AclEntry) {
         self.entries.push(entry);
     }
 
     /// Remove entries matching the given SID.
-    pub fn remove_entries_for_sid(&mut self, sid: &AclSid)
-    {
+    pub fn remove_entries_for_sid(&mut self, sid: &AclSid) {
         self.entries.retain(|e| &e.sid != sid);
     }
 
     /// Check if the given SID is granted the requested permission.
-    pub fn is_granted(&self, sid: &AclSid, permission: AclPermission) -> bool
-    {
-        if &self.owner == sid
-        {
+    pub fn is_granted(&self, sid: &AclSid, permission: AclPermission) -> bool {
+        if &self.owner == sid {
             return true;
         }
         let mut granted = false;
-        for entry in &self.entries
-        {
-            if entry.matches(sid, permission)
-            {
-                if !entry.granting
-                {
+        for entry in &self.entries {
+            if entry.matches(sid, permission) {
+                if !entry.granting {
                     return false;
                 }
                 granted = true;
@@ -196,39 +172,32 @@ impl Acl
 
 /// In-memory ACL service for managing access control lists.
 /// 内存型 ACL 服务，用于管理访问控制列表。
-pub struct AclService
-{
+pub struct AclService {
     acls: Arc<RwLock<HashMap<(String, String), Acl>>>,
 }
 
-impl Default for AclService
-{
-    fn default() -> Self
-    {
+impl Default for AclService {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl AclService
-{
+impl AclService {
     /// Create a new empty ACL service.
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             acls: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
     /// Create or replace the ACL for an object.
-    pub fn save_acl(&self, acl: Acl)
-    {
+    pub fn save_acl(&self, acl: Acl) {
         let key = (acl.object_identity.object_type.clone(), acl.object_identity.object_id.clone());
         self.acls.write().unwrap().insert(key, acl);
     }
 
     /// Retrieve the ACL for an object, if it exists.
-    pub fn get_acl(&self, oid: &AclObjectIdentity) -> Option<Acl>
-    {
+    pub fn get_acl(&self, oid: &AclObjectIdentity) -> Option<Acl> {
         self.acls
             .read()
             .unwrap()
@@ -237,8 +206,7 @@ impl AclService
     }
 
     /// Remove the ACL for an object.
-    pub fn delete_acl(&self, oid: &AclObjectIdentity) -> bool
-    {
+    pub fn delete_acl(&self, oid: &AclObjectIdentity) -> bool {
         self.acls
             .write()
             .unwrap()
@@ -252,8 +220,7 @@ impl AclService
         oid: &AclObjectIdentity,
         sid: &AclSid,
         permission: AclPermission,
-    ) -> bool
-    {
+    ) -> bool {
         self.acls
             .read()
             .unwrap()
@@ -262,21 +229,24 @@ impl AclService
     }
 
     /// List all ACLs.
-    pub fn list_acls(&self) -> Vec<Acl>
-    {
+    pub fn list_acls(&self) -> Vec<Acl> {
         self.acls.read().unwrap().values().cloned().collect()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_permission_flags()
-    {
+    fn test_permission_flags() {
         let p = AclPermission::READ.union(AclPermission::WRITE);
         assert!(p.includes(AclPermission::READ));
         assert!(p.includes(AclPermission::WRITE));
@@ -284,8 +254,7 @@ mod tests
     }
 
     #[test]
-    fn test_acl_owner_always_granted()
-    {
+    fn test_acl_owner_always_granted() {
         let oid = AclObjectIdentity::new("Document", "1");
         let owner = AclSid::Principal("alice".into());
         let acl = Acl::new(oid, owner.clone());
@@ -293,8 +262,7 @@ mod tests
     }
 
     #[test]
-    fn test_acl_grant_entry()
-    {
+    fn test_acl_grant_entry() {
         let oid = AclObjectIdentity::new("Document", "1");
         let owner = AclSid::Principal("alice".into());
         let mut acl = Acl::new(oid, owner);
@@ -305,8 +273,7 @@ mod tests
     }
 
     #[test]
-    fn test_acl_deny_entry()
-    {
+    fn test_acl_deny_entry() {
         let oid = AclObjectIdentity::new("Document", "1");
         let owner = AclSid::Principal("alice".into());
         let mut acl = Acl::new(oid, owner);
@@ -321,8 +288,7 @@ mod tests
     }
 
     #[test]
-    fn test_acl_service_crud()
-    {
+    fn test_acl_service_crud() {
         let service = AclService::new();
         let oid = AclObjectIdentity::new("Order", "42");
         let owner = AclSid::Principal("alice".into());
@@ -334,8 +300,7 @@ mod tests
     }
 
     #[test]
-    fn test_acl_service_authority_sid()
-    {
+    fn test_acl_service_authority_sid() {
         let service = AclService::new();
         let oid = AclObjectIdentity::new("Report", "r1");
         let owner = AclSid::Principal("admin".into());

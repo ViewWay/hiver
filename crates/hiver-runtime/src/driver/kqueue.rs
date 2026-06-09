@@ -29,8 +29,7 @@ const MIN_KQUEUE_SIZE: u32 = 32;
 
 /// Internal state for the kqueue driver
 /// kqueue driver的内部状态
-struct KqueueState
-{
+struct KqueueState {
     /// Submission queue head index / 提交队列头索引
     submit_head: AtomicUsize,
     /// Submission queue tail index / 提交队列尾索引
@@ -43,8 +42,7 @@ struct KqueueState
 
 /// Completion queue using interior mutability
 /// 使用内部可变性的完成队列
-struct CompletionQueue
-{
+struct CompletionQueue {
     /// The actual completion entries / 实际完成条目
     entries: Box<[Option<CompletionEntry>]>,
 }
@@ -54,12 +52,10 @@ struct CompletionQueue
 unsafe impl Send for CompletionQueue {}
 unsafe impl Sync for CompletionQueue {}
 
-impl CompletionQueue
-{
+impl CompletionQueue {
     /// Create a new completion queue
     /// 创建新的完成队列
-    fn new(capacity: usize) -> Self
-    {
+    fn new(capacity: usize) -> Self {
         Self {
             entries: vec![None; capacity].into_boxed_slice(),
         }
@@ -67,8 +63,7 @@ impl CompletionQueue
 
     /// Get a completion entry at the given position
     /// 获取给定位置的完成条目
-    fn get(&self, index: usize) -> Option<&CompletionEntry>
-    {
+    fn get(&self, index: usize) -> Option<&CompletionEntry> {
         self.entries[index].as_ref()
     }
 
@@ -79,8 +74,7 @@ impl CompletionQueue
     ///
     /// Caller must ensure exclusive access to this position.
     /// 调用者必须确保对此位置有独占访问权。
-    unsafe fn set(&self, index: usize, entry: Option<CompletionEntry>)
-    {
+    unsafe fn set(&self, index: usize, entry: Option<CompletionEntry>) {
         // SAFETY: We have exclusive access through the ring buffer discipline
         // 我们通过环形缓冲区规则拥有独占访问权
         let ptr = self.entries.as_ptr().cast_mut();
@@ -98,8 +92,7 @@ impl CompletionQueue
 /// for various events (read, write, error, etc.).
 ///
 /// kqueue提供了一种高效的方式来监控多个文件描述符的各种事件（读、写、错误等）。
-pub struct KqueueDriver
-{
+pub struct KqueueDriver {
     /// kqueue file descriptor / kqueue文件描述符
     kqueue_fd: RawFd,
     /// Submission queue (ring buffer) / 提交队列（环形缓冲区）
@@ -128,8 +121,7 @@ unsafe impl Send for KqueueDriver {}
 // mutability) KqueueDriver可以在线程间共享（使用原子操作和内部可变性）
 unsafe impl Sync for KqueueDriver {}
 
-impl KqueueDriver
-{
+impl KqueueDriver {
     /// Create a new kqueue driver with default configuration
     /// 使用默认配置创建新的kqueue driver
     ///
@@ -137,8 +129,7 @@ impl KqueueDriver
     ///
     /// Returns an error if kqueue instance creation fails.
     /// 如果kqueue实例创建失败则返回错误。
-    pub fn new() -> std::io::Result<Self>
-    {
+    pub fn new() -> std::io::Result<Self> {
         Self::with_config(crate::driver::DriverConfig::default())
     }
 
@@ -151,14 +142,12 @@ impl KqueueDriver
     /// 返回错误如果：
     /// - The configuration is invalid / 配置无效
     /// - kqueue instance creation fails / kqueue实例创建失败
-    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self>
-    {
+    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self> {
         // Create kqueue instance
         // 创建kqueue实例
         let kqueue_fd = unsafe { libc::kqueue() };
 
-        if kqueue_fd < 0
-        {
+        if kqueue_fd < 0 {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -166,8 +155,7 @@ impl KqueueDriver
         // 设置close-on-exec标志
         unsafe {
             let flags = libc::fcntl(kqueue_fd, libc::F_GETFD);
-            if flags >= 0
-            {
+            if flags >= 0 {
                 libc::fcntl(kqueue_fd, libc::F_SETFD, flags | libc::FD_CLOEXEC);
             }
         }
@@ -175,10 +163,8 @@ impl KqueueDriver
         // Set CPU affinity if specified (platform-dependent)
         // 如果指定了，设置CPU亲和性（取决于平台）
         #[cfg(target_os = "freebsd")]
-        if let Some(_core) = config.cpu_affinity
-        {
-            if let Err(e) = Self::set_cpu_affinity(_core)
-            {
+        if let Some(_core) = config.cpu_affinity {
+            if let Err(e) = Self::set_cpu_affinity(_core) {
                 eprintln!("Warning: Failed to set CPU affinity: {}", e);
             }
         }
@@ -226,8 +212,7 @@ impl KqueueDriver
     /// Set CPU affinity for the current thread (FreeBSD only)
     /// 为当前线程设置CPU亲和性（仅FreeBSD）
     #[cfg(target_os = "freebsd")]
-    fn set_cpu_affinity(core: usize) -> std::io::Result<()>
-    {
+    fn set_cpu_affinity(core: usize) -> std::io::Result<()> {
         unsafe {
             let mut cpuset: libc::cpuset_t = std::mem::zeroed();
             libc::CPU_ZERO(&mut cpuset);
@@ -242,8 +227,7 @@ impl KqueueDriver
                 &cpuset as *const _ as *const _,
             );
 
-            if result < 0
-            {
+            if result < 0 {
                 return Err(std::io::Error::last_os_error());
             }
         }
@@ -254,45 +238,37 @@ impl KqueueDriver
     /// Get the current submission queue position
     /// 获取当前提交队列位置
     #[inline]
-    fn submit_pos(&self, index: usize) -> usize
-    {
+    fn submit_pos(&self, index: usize) -> usize {
         index & self.capacity_mask
     }
 
     /// Get the current completion queue position
     /// 获取当前完成队列位置
     #[inline]
-    fn completion_pos(&self, index: usize) -> usize
-    {
+    fn completion_pos(&self, index: usize) -> usize {
         index & self.capacity_mask
     }
 
     /// Convert Interest to kqueue filter and flags
     /// 将Interest转换为kqueue过滤器和标志
-    fn interest_to_kqueue(&self, interest: Interest) -> (i16, u16)
-    {
+    fn interest_to_kqueue(&self, interest: Interest) -> (i16, u16) {
         let mut filter = 0;
         let mut flags = libc::EV_ADD | libc::EV_RECEIPT;
 
-        if interest.readable
-        {
+        if interest.readable {
             filter |= libc::EVFILT_READ;
         }
-        if interest.writable
-        {
+        if interest.writable {
             filter |= libc::EVFILT_WRITE;
         }
 
-        if interest.oneshot
-        {
+        if interest.oneshot {
             flags |= libc::EV_ONESHOT;
         }
-        if interest.edge
-        {
+        if interest.edge {
             flags |= libc::EV_CLEAR;
         }
-        if interest.priority
-        {
+        if interest.priority {
             // Use EV_DISPATCH to give higher priority
             flags |= libc::EV_DISPATCH;
         }
@@ -302,32 +278,27 @@ impl KqueueDriver
 
     /// Internal wait implementation
     /// 内部等待实现
-    fn wait_internal(&self, timeout_ms: Option<i32>) -> std::io::Result<usize>
-    {
+    fn wait_internal(&self, timeout_ms: Option<i32>) -> std::io::Result<usize> {
         let event_buffer = unsafe { &mut *self.event_buffer.get() };
         let ptr = event_buffer.as_mut_ptr();
         let len = event_buffer.len() as i32;
 
         // Calculate timeout for timespec
         // 计算timespec的超时时间
-        let timeout_ptr = if let Some(ms) = timeout_ms
-        {
+        let timeout_ptr = if let Some(ms) = timeout_ms {
             let mut timeout = libc::timespec {
                 tv_sec: (ms / 1000) as libc::time_t,
                 tv_nsec: ((ms % 1000) * 1_000_000) as libc::c_long,
             };
             &mut timeout as *mut _
-        }
-        else
-        {
+        } else {
             std::ptr::null_mut()
         };
 
         let result =
             unsafe { libc::kevent(self.kqueue_fd, std::ptr::null(), 0, ptr, len, timeout_ptr) };
 
-        if result < 0
-        {
+        if result < 0 {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -335,28 +306,21 @@ impl KqueueDriver
 
         // Process events into completion queue
         // 将事件处理到完成队列
-        for i in 0..count
-        {
+        for i in 0..count {
             let event = &event_buffer[i];
             let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
             let pos = self.completion_pos(tail);
 
             // Determine result based on filter and flags
             // 根据过滤器和标志确定结果
-            let result = if event.flags & (libc::EV_ERROR | libc::EV_EOF) != 0
-            {
+            let result = if event.flags & (libc::EV_ERROR | libc::EV_EOF) != 0 {
                 ERROR_TRANSPORT
-            }
-            else
-            {
+            } else {
                 // Check data field for error indication
                 // 检查data字段是否有错误指示
-                if event.data != 0
-                {
+                if event.data != 0 {
                     event.data as i32
-                }
-                else
-                {
+                } else {
                     1 // Success / 成功
                 }
             };
@@ -381,12 +345,9 @@ impl KqueueDriver
     }
 }
 
-impl Drop for KqueueDriver
-{
-    fn drop(&mut self)
-    {
-        if self.kqueue_fd >= 0
-        {
+impl Drop for KqueueDriver {
+    fn drop(&mut self) {
+        if self.kqueue_fd >= 0 {
             unsafe {
                 libc::close(self.kqueue_fd);
             }
@@ -394,18 +355,14 @@ impl Drop for KqueueDriver
     }
 }
 
-impl AsRawFd for KqueueDriver
-{
-    fn as_raw_fd(&self) -> RawFd
-    {
+impl AsRawFd for KqueueDriver {
+    fn as_raw_fd(&self) -> RawFd {
         self.kqueue_fd
     }
 }
 
-impl Driver for KqueueDriver
-{
-    fn submit(&self) -> std::io::Result<usize>
-    {
+impl Driver for KqueueDriver {
+    fn submit(&self) -> std::io::Result<usize> {
         let mut submitted = 0;
         let head = self.state.submit_head.load(Ordering::Acquire);
         let tail = self.state.submit_tail.load(Ordering::Acquire);
@@ -413,24 +370,19 @@ impl Driver for KqueueDriver
         // Process all pending submissions
         // 处理所有挂起的提交
         let mut idx = head;
-        while idx != tail
-        {
+        while idx != tail {
             let pos = self.submit_pos(idx);
             let submit_queue = unsafe { &*self.submit_queue.get() };
             let entry = &submit_queue[pos];
 
-            if entry.fd >= 0
-            {
+            if entry.fd >= 0 {
                 // Convert submit entry to kevent change
                 // 将提交条目转换为kevent change
-                let (filter, flags) = match entry.opcode
-                {
-                    crate::driver::opcode::READ =>
-                    {
+                let (filter, flags) = match entry.opcode {
+                    crate::driver::opcode::READ => {
                         (libc::EVFILT_READ, libc::EV_ADD | libc::EV_ONESHOT)
                     },
-                    crate::driver::opcode::WRITE =>
-                    {
+                    crate::driver::opcode::WRITE => {
                         (libc::EVFILT_WRITE, libc::EV_ADD | libc::EV_ONESHOT)
                     },
                     _ => (0, 0),
@@ -456,13 +408,11 @@ impl Driver for KqueueDriver
                     )
                 };
 
-                if result < 0
-                {
+                if result < 0 {
                     let err = std::io::Error::last_os_error();
                     // ENOENT means FD not found, but kqueue handles this differently
                     // Try with EV_ADD instead
-                    if err.kind() == std::io::ErrorKind::NotFound
-                    {
+                    if err.kind() == std::io::ErrorKind::NotFound {
                         change.flags = libc::EV_ADD | libc::EV_ONESHOT;
                         let add_result = unsafe {
                             libc::kevent(
@@ -474,13 +424,10 @@ impl Driver for KqueueDriver
                                 std::ptr::null_mut(),
                             )
                         };
-                        if add_result < 0
-                        {
+                        if add_result < 0 {
                             return Err(err);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         return Err(err);
                     }
                 }
@@ -498,13 +445,11 @@ impl Driver for KqueueDriver
         Ok(submitted)
     }
 
-    fn wait(&self) -> std::io::Result<usize>
-    {
+    fn wait(&self) -> std::io::Result<usize> {
         self.wait_internal(None)
     }
 
-    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)>
-    {
+    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)> {
         let timeout_ms = duration.as_millis().min(i32::MAX as u128) as i32;
         let result = self.wait_internal(Some(timeout_ms))?;
 
@@ -516,16 +461,14 @@ impl Driver for KqueueDriver
         Ok((result, head == tail))
     }
 
-    fn get_submission(&self) -> Option<&mut SubmitEntry>
-    {
+    fn get_submission(&self) -> Option<&mut SubmitEntry> {
         let tail = self.state.submit_tail.load(Ordering::Acquire);
         let next_tail = tail + 1;
         let head = self.state.submit_head.load(Ordering::Acquire);
 
         // Check if queue is full
         // 检查队列是否已满
-        if next_tail - head > self.capacity
-        {
+        if next_tail - head > self.capacity {
             return None;
         }
 
@@ -536,10 +479,8 @@ impl Driver for KqueueDriver
             next_tail,
             Ordering::AcqRel,
             Ordering::Acquire,
-        )
-        {
-            Ok(_) =>
-            {
+        ) {
+            Ok(_) => {
                 let pos = self.submit_pos(tail);
                 // SAFETY: We have exclusive access to this position
                 // 我们对此位置有独占访问权
@@ -552,13 +493,11 @@ impl Driver for KqueueDriver
         }
     }
 
-    fn get_completion(&self) -> Option<&CompletionEntry>
-    {
+    fn get_completion(&self) -> Option<&CompletionEntry> {
         let head = self.state.completion_head.load(Ordering::Acquire);
         let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
 
-        if head == tail
-        {
+        if head == tail {
             return None;
         }
 
@@ -566,13 +505,11 @@ impl Driver for KqueueDriver
         self.completion_queue.get(pos)
     }
 
-    fn advance_completion(&self)
-    {
+    fn advance_completion(&self) {
         let head = self.state.completion_head.load(Ordering::Acquire);
         let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
 
-        if head != tail
-        {
+        if head != tail {
             let pos = self.completion_pos(head);
             // SAFETY: We have exclusive access through the ring buffer discipline
             // 我们通过环形缓冲区规则拥有独占访问权
@@ -587,8 +524,7 @@ impl Driver for KqueueDriver
         }
     }
 
-    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
-    {
+    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
         let (filter, flags) = self.interest_to_kqueue(interest);
 
         let change = libc::kevent {
@@ -604,18 +540,14 @@ impl Driver for KqueueDriver
             libc::kevent(self.kqueue_fd, &change, 1, std::ptr::null_mut(), 0, std::ptr::null_mut())
         };
 
-        if result < 0
-        {
+        if result < 0 {
             Err(std::io::Error::last_os_error())
-        }
-        else
-        {
+        } else {
             Ok(())
         }
     }
 
-    fn deregister(&self, fd: RawFd) -> std::io::Result<()>
-    {
+    fn deregister(&self, fd: RawFd) -> std::io::Result<()> {
         let change = libc::kevent {
             ident: fd as libc::uintptr_t,
             filter: 0,
@@ -629,18 +561,14 @@ impl Driver for KqueueDriver
             libc::kevent(self.kqueue_fd, &change, 1, std::ptr::null_mut(), 0, std::ptr::null_mut())
         };
 
-        if result < 0
-        {
+        if result < 0 {
             Err(std::io::Error::last_os_error())
-        }
-        else
-        {
+        } else {
             Ok(())
         }
     }
 
-    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
-    {
+    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
         // kqueue uses EV_DELETE + EV_ADD for modification
         // Or we can use the same filter with EV_ADD to update
         // kqueue使用EV_DELETE + EV_ADD进行修改
@@ -649,18 +577,15 @@ impl Driver for KqueueDriver
         self.register(fd, interest)
     }
 
-    fn submission_capacity(&self) -> usize
-    {
+    fn submission_capacity(&self) -> usize {
         self.capacity
     }
 
-    fn completion_capacity(&self) -> usize
-    {
+    fn completion_capacity(&self) -> usize {
         self.capacity
     }
 
-    fn supports_operation(&self, opcode: u8) -> bool
-    {
+    fn supports_operation(&self, opcode: u8) -> bool {
         matches!(
             opcode,
             crate::driver::opcode::READ
@@ -671,14 +596,18 @@ impl Driver for KqueueDriver
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_kqueue_driver_creation()
-    {
+    fn test_kqueue_driver_creation() {
         // Use dummy fd to avoid SIGBUS from real kqueue fd cleanup in tests
         // 使用虚拟fd避免测试中真实kqueue fd清理导致的SIGBUS
         let driver = KqueueDriver {
@@ -701,8 +630,7 @@ mod tests
     }
 
     #[test]
-    fn test_kqueue_driver_with_config()
-    {
+    fn test_kqueue_driver_with_config() {
         // 128 is already power of 2, should remain 128
         // 128已经是2的幂，应保持128
         let cap = 128;
@@ -725,8 +653,7 @@ mod tests
     }
 
     #[test]
-    fn test_ring_buffer_positions()
-    {
+    fn test_ring_buffer_positions() {
         // Create a driver without real kqueue fd (only needs ring buffer math)
         // 创建不带真实kqueue fd的driver（只需要环形缓冲区计算）
         let driver = KqueueDriver {

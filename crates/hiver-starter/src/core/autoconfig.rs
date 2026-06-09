@@ -58,19 +58,16 @@ use super::container::ApplicationContext;
 ///     }
 /// }
 /// ```
-pub trait AutoConfiguration: Send + Sync + 'static
-{
+pub trait AutoConfiguration: Send + Sync + 'static {
     /// 获取配置类型的 `TypeId`
     /// Get the `TypeId` of this configuration type
-    fn type_id(&self) -> TypeId
-    {
+    fn type_id(&self) -> TypeId {
         TypeId::of::<Self>()
     }
 
     /// 配置名称（用于日志和调试）
     /// Configuration name (for logging and debugging)
-    fn name(&self) -> &'static str
-    {
+    fn name(&self) -> &'static str {
         std::any::type_name::<Self>()
     }
 
@@ -84,8 +81,7 @@ pub trait AutoConfiguration: Send + Sync + 'static
     /// - -100 到 -10: 核心基础设施（配置、日志）
     /// - 0 到 100: 核心组件（数据源、服务器）
     /// - 100 到 1000: 业务组件
-    fn order(&self) -> i32
-    {
+    fn order(&self) -> i32 {
         0
     }
 
@@ -97,8 +93,7 @@ pub trait AutoConfiguration: Send + Sync + 'static
     ///
     /// 默认返回 true，表示始终启用。
     /// Default returns true, meaning always enabled.
-    fn condition(&self) -> bool
-    {
+    fn condition(&self) -> bool {
         true
     }
 
@@ -121,8 +116,7 @@ pub trait AutoConfiguration: Send + Sync + 'static
     ///
     /// 返回配置类型的 `TypeId` 列表。
     /// Returns a list of `TypeIds` of configuration types.
-    fn after(&self) -> &[TypeId]
-    {
+    fn after(&self) -> &[TypeId] {
         &[]
     }
 
@@ -131,15 +125,13 @@ pub trait AutoConfiguration: Send + Sync + 'static
     ///
     /// 返回配置类型的 `TypeId` 列表。
     /// Returns a list of `TypeIds` of configuration types.
-    fn before(&self) -> &[TypeId]
-    {
+    fn before(&self) -> &[TypeId] {
         &[]
     }
 
     /// 是否为可选配置（失败不影响应用启动）
     /// Whether this is an optional configuration (failure doesn't affect startup)
-    fn is_optional(&self) -> bool
-    {
+    fn is_optional(&self) -> bool {
         false
     }
 }
@@ -153,20 +145,16 @@ pub trait AutoConfiguration: Send + Sync + 'static
 #[macro_export]
 macro_rules! impl_auto_configuration {
     ($struct_name:ident, $order:expr, $config:block) => {
-        impl AutoConfiguration for $struct_name
-        {
-            fn name(&self) -> &'static str
-            {
+        impl AutoConfiguration for $struct_name {
+            fn name(&self) -> &'static str {
                 stringify!($struct_name)
             }
 
-            fn order(&self) -> i32
-            {
+            fn order(&self) -> i32 {
                 $order
             }
 
-            fn configure(&self, ctx: &mut ApplicationContext) -> Result<()>
-            {
+            fn configure(&self, ctx: &mut ApplicationContext) -> Result<()> {
                 $config
             }
         }
@@ -180,8 +168,7 @@ macro_rules! impl_auto_configuration {
 /// 自动配置元数据
 /// Auto-configuration metadata
 #[derive(Debug, Clone)]
-pub struct AutoConfigurationMetadata
-{
+pub struct AutoConfigurationMetadata {
     /// 配置名称
     pub name: &'static str,
     /// 配置类型 ID
@@ -196,11 +183,9 @@ pub struct AutoConfigurationMetadata
     pub before: Vec<TypeId>,
 }
 
-impl AutoConfigurationMetadata
-{
+impl AutoConfigurationMetadata {
     /// 创建新的元数据
-    pub fn new<T: AutoConfiguration + 'static>(config: &T) -> Self
-    {
+    pub fn new<T: AutoConfiguration + 'static>(config: &T) -> Self {
         Self {
             name: config.name(),
             type_id: TypeId::of::<T>(),
@@ -212,10 +197,8 @@ impl AutoConfigurationMetadata
     }
 }
 
-impl fmt::Display for AutoConfigurationMetadata
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for AutoConfigurationMetadata {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "AutoConfiguration[name={}, order={}, optional={}]",
@@ -230,8 +213,7 @@ impl fmt::Display for AutoConfigurationMetadata
 
 /// 配置优先级常量（参考 Spring Boot 的 @`AutoConfigureOrder`）
 /// Configuration priority constants (based on Spring Boot's @`AutoConfigureOrder`)
-pub mod order
-{
+pub mod order {
     /// 配置加载顺序：最高优先级（核心基础设施）
     /// Configuration loading order: highest priority (core infrastructure)
     pub const HIGHEST_PRECEDENCE: i32 = -2147483648;
@@ -272,39 +254,38 @@ pub mod order
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     struct TestAutoConfig;
 
-    impl AutoConfiguration for TestAutoConfig
-    {
-        fn name(&self) -> &'static str
-        {
+    impl AutoConfiguration for TestAutoConfig {
+        fn name(&self) -> &'static str {
             "TestAutoConfig"
         }
 
-        fn order(&self) -> i32
-        {
+        fn order(&self) -> i32 {
             0
         }
 
-        fn condition(&self) -> bool
-        {
+        fn condition(&self) -> bool {
             true
         }
 
-        fn configure(&self, _ctx: &mut ApplicationContext) -> Result<()>
-        {
+        fn configure(&self, _ctx: &mut ApplicationContext) -> Result<()> {
             Ok(())
         }
     }
 
     #[test]
-    fn test_auto_configuration_metadata()
-    {
+    fn test_auto_configuration_metadata() {
         let config = TestAutoConfig;
         let metadata = AutoConfigurationMetadata::new(&config);
 
@@ -314,8 +295,7 @@ mod tests
     }
 
     #[test]
-    fn test_order_constants()
-    {
+    fn test_order_constants() {
         // 验证优先级顺序正确
         assert!(order::CORE_CONFIG < order::DATASOURCE_CONFIG);
         assert!(order::DATASOURCE_CONFIG < order::SERVER_CONFIG);

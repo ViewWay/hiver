@@ -41,47 +41,39 @@ use crate::{
 /// )
 /// ```
 #[derive(Debug, Clone)]
-pub struct OpenApiSpec
-{
+pub struct OpenApiSpec {
     /// Inner OpenAPI specification / 内部 OpenAPI 规范
     inner: OpenApi,
 }
 
-impl OpenApiSpec
-{
+impl OpenApiSpec {
     /// Create a new spec builder / 创建新的规范构建器
-    pub fn builder() -> OpenApiSpecBuilder
-    {
+    pub fn builder() -> OpenApiSpecBuilder {
         OpenApiSpecBuilder::new()
     }
 
     /// Create from existing OpenAPI / 从现有 OpenAPI 创建
-    pub fn from_openapi(openapi: OpenApi) -> Self
-    {
+    pub fn from_openapi(openapi: OpenApi) -> Self {
         Self { inner: openapi }
     }
 
     /// Export the spec as JSON / 将规范导出为 JSON
-    pub fn to_json(&self) -> Result<String, serde_json::Error>
-    {
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
         self.inner.to_json()
     }
 
     /// Export the spec as YAML / 将规范导出为 YAML
-    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error>
-    {
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
         self.inner.to_yaml()
     }
 
     /// Get the inner OpenAPI reference / 获取内部 OpenAPI 引用
-    pub fn inner(&self) -> &OpenApi
-    {
+    pub fn inner(&self) -> &OpenApi {
         &self.inner
     }
 
     /// Convert into inner OpenAPI / 转换为内部 OpenAPI
-    pub fn into_inner(self) -> OpenApi
-    {
+    pub fn into_inner(self) -> OpenApi {
         self.inner
     }
 }
@@ -91,8 +83,7 @@ impl OpenApiSpec
 /// Provides a fluent API for constructing OpenAPI specifications.
 /// 提供构建 OpenAPI 规范的流畅 API。
 #[derive(Debug, Clone)]
-pub struct OpenApiSpecBuilder
-{
+pub struct OpenApiSpecBuilder {
     config: OpenApiConfig,
     paths: HashMap<String, PathItem>,
     schemas: HashMap<String, Schema>,
@@ -102,11 +93,9 @@ pub struct OpenApiSpecBuilder
     security_schemes_names: Vec<String>,
 }
 
-impl OpenApiSpecBuilder
-{
+impl OpenApiSpecBuilder {
     /// Create a new builder / 创建新构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             config: OpenApiConfig::default(),
             paths: HashMap::new(),
@@ -117,36 +106,31 @@ impl OpenApiSpecBuilder
     }
 
     /// Set the API title / 设置 API 标题
-    pub fn title(mut self, title: impl Into<String>) -> Self
-    {
+    pub fn title(mut self, title: impl Into<String>) -> Self {
         self.config.info.title = title.into();
         self
     }
 
     /// Set the API version / 设置 API 版本
-    pub fn version(mut self, version: impl Into<String>) -> Self
-    {
+    pub fn version(mut self, version: impl Into<String>) -> Self {
         self.config.info.version = version.into();
         self
     }
 
     /// Set the API description / 设置 API 描述
-    pub fn description(mut self, description: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, description: impl Into<String>) -> Self {
         self.config.info.description = Some(description.into());
         self
     }
 
     /// Set the API terms of service / 设置 API 服务条款
-    pub fn terms_of_service(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn terms_of_service(mut self, url: impl Into<String>) -> Self {
         self.config.info.terms_of_service = Some(url.into());
         self
     }
 
     /// Add a server URL / 添加服务器 URL
-    pub fn add_server(mut self, url: impl Into<String>, description: impl Into<String>) -> Self
-    {
+    pub fn add_server(mut self, url: impl Into<String>, description: impl Into<String>) -> Self {
         self.config.servers.push(ServerConfig {
             url: url.into(),
             description: Some(description.into()),
@@ -179,8 +163,7 @@ impl OpenApiSpecBuilder
         url: impl Into<String>,
         description: impl Into<String>,
         variables: HashMap<String, crate::ServerVariable>,
-    ) -> Self
-    {
+    ) -> Self {
         self.config.servers.push(ServerConfig {
             url: url.into(),
             description: Some(description.into()),
@@ -190,29 +173,25 @@ impl OpenApiSpecBuilder
     }
 
     /// Add a path item / 添加路径项
-    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self
-    {
+    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self {
         self.paths.insert(path.into(), item);
         self
     }
 
     /// Add a schema to components / 向组件添加模式
-    pub fn add_schema(mut self, name: impl Into<String>, schema: Schema) -> Self
-    {
+    pub fn add_schema(mut self, name: impl Into<String>, schema: Schema) -> Self {
         self.schemas.insert(name.into(), schema);
         self
     }
 
     /// Add a tag / 添加标签
-    pub fn add_tag(mut self, tag: TagConfig) -> Self
-    {
+    pub fn add_tag(mut self, tag: TagConfig) -> Self {
         self.config.tags.push(tag);
         self
     }
 
     /// Add a security requirement / 添加安全要求
-    pub fn add_security(mut self, scheme: impl Into<String>, scopes: Vec<String>) -> Self
-    {
+    pub fn add_security(mut self, scheme: impl Into<String>, scopes: Vec<String>) -> Self {
         let mut req = HashMap::new();
         req.insert(scheme.into(), scopes);
         self.security.push(req);
@@ -231,15 +210,15 @@ impl OpenApiSpecBuilder
     ///     .add_security("bearerAuth", vec![])
     ///     .build();
     /// ```
-    pub fn bearer_auth(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn bearer_auth(mut self, name: impl Into<String>) -> Self {
         let scheme_name = name.into();
-        self.config
-            .security_schemes
-            .insert(scheme_name.clone(), SecuritySchemeConfig::Http {
+        self.config.security_schemes.insert(
+            scheme_name.clone(),
+            SecuritySchemeConfig::Http {
                 scheme: "bearer".to_string(),
                 bearer_format: Some("JWT".to_string()),
-            });
+            },
+        );
         self.security_schemes_names.push(scheme_name);
         self
     }
@@ -261,15 +240,15 @@ impl OpenApiSpecBuilder
         name: impl Into<String>,
         key_name: impl Into<String>,
         location: crate::config::ApiKeyLocation,
-    ) -> Self
-    {
+    ) -> Self {
         let scheme_name = name.into();
-        self.config
-            .security_schemes
-            .insert(scheme_name.clone(), SecuritySchemeConfig::ApiKey {
+        self.config.security_schemes.insert(
+            scheme_name.clone(),
+            SecuritySchemeConfig::ApiKey {
                 name: key_name.into(),
                 location,
-            });
+            },
+        );
         self.security_schemes_names.push(scheme_name);
         self
     }
@@ -297,17 +276,15 @@ impl OpenApiSpecBuilder
         authorization_url: impl Into<String>,
         token_url: impl Into<String>,
         scopes: Vec<(&str, &str)>,
-    ) -> Self
-    {
+    ) -> Self {
         let scheme_name = name.into();
         let mut scopes_map = HashMap::new();
-        for (scope, desc) in scopes
-        {
+        for (scope, desc) in scopes {
             scopes_map.insert(scope.to_string(), desc.to_string());
         }
-        self.config
-            .security_schemes
-            .insert(scheme_name.clone(), SecuritySchemeConfig::OAuth2 {
+        self.config.security_schemes.insert(
+            scheme_name.clone(),
+            SecuritySchemeConfig::OAuth2 {
                 flows: crate::config::OAuthFlows {
                     implicit: None,
                     password: None,
@@ -319,31 +296,28 @@ impl OpenApiSpecBuilder
                         scopes: scopes_map,
                     }),
                 },
-            });
+            },
+        );
         self.security_schemes_names.push(scheme_name);
         self
     }
 
     /// Build the `OpenApiSpec` / 构建 `OpenApiSpec`
-    pub fn build(mut self) -> OpenApiSpec
-    {
+    pub fn build(mut self) -> OpenApiSpec {
         // Extract security schemes before config is moved into OpenApi::new()
         let security_schemes = std::mem::take(&mut self.config.security_schemes);
 
         let mut openapi = OpenApi::new(self.config);
 
-        for (path, item) in self.paths
-        {
+        for (path, item) in self.paths {
             openapi = openapi.add_path(path, item);
         }
 
-        for (name, schema) in self.schemas
-        {
+        for (name, schema) in self.schemas {
             openapi = openapi.add_schema(name, schema);
         }
 
-        for sec in self.security
-        {
+        for sec in self.security {
             openapi = openapi.add_security(sec);
         }
 
@@ -352,10 +326,8 @@ impl OpenApiSpecBuilder
         if !security_schemes.is_empty()
             && let Some(ref mut components) = openapi.components
         {
-            for (name, scheme_config) in security_schemes
-            {
-                let scheme = match scheme_config
-                {
+            for (name, scheme_config) in security_schemes {
+                let scheme = match scheme_config {
                     SecuritySchemeConfig::Http {
                         scheme,
                         bearer_format,
@@ -373,8 +345,7 @@ impl OpenApiSpecBuilder
                         flows,
                         description: None,
                     },
-                    SecuritySchemeConfig::OpenIdConnect { connect_url } =>
-                    {
+                    SecuritySchemeConfig::OpenIdConnect { connect_url } => {
                         SecurityScheme::OpenIdConnect {
                             url: connect_url,
                             description: None,
@@ -392,10 +363,8 @@ impl OpenApiSpecBuilder
     }
 }
 
-impl Default for OpenApiSpecBuilder
-{
-    fn default() -> Self
-    {
+impl Default for OpenApiSpecBuilder {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -417,19 +386,16 @@ impl Default for OpenApiSpecBuilder
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct SchemaGenerator
-{
+pub struct SchemaGenerator {
     /// The schema being built / 正在构建的模式
     schema: Schema,
     /// Name of the schema / 模式名称
     name: String,
 }
 
-impl SchemaGenerator
-{
+impl SchemaGenerator {
     /// Create a new generator / 创建新生成器
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::new(),
             name: name.into(),
@@ -437,8 +403,7 @@ impl SchemaGenerator
     }
 
     /// Create a string schema generator / 创建字符串模式生成器
-    pub fn string(name: impl Into<String>) -> Self
-    {
+    pub fn string(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::string(),
             name: name.into(),
@@ -446,8 +411,7 @@ impl SchemaGenerator
     }
 
     /// Create an integer schema generator / 创建整数模式生成器
-    pub fn integer(name: impl Into<String>) -> Self
-    {
+    pub fn integer(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::integer(),
             name: name.into(),
@@ -455,8 +419,7 @@ impl SchemaGenerator
     }
 
     /// Create a long schema generator / 创建长整数模式生成器
-    pub fn long(name: impl Into<String>) -> Self
-    {
+    pub fn long(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::long(),
             name: name.into(),
@@ -464,8 +427,7 @@ impl SchemaGenerator
     }
 
     /// Create a float schema generator / 创建浮点数模式生成器
-    pub fn float(name: impl Into<String>) -> Self
-    {
+    pub fn float(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::float(),
             name: name.into(),
@@ -473,8 +435,7 @@ impl SchemaGenerator
     }
 
     /// Create a boolean schema generator / 创建布尔模式生成器
-    pub fn boolean(name: impl Into<String>) -> Self
-    {
+    pub fn boolean(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::boolean(),
             name: name.into(),
@@ -482,8 +443,7 @@ impl SchemaGenerator
     }
 
     /// Create an array schema generator / 创建数组模式生成器
-    pub fn array(name: impl Into<String>, items: Schema) -> Self
-    {
+    pub fn array(name: impl Into<String>, items: Schema) -> Self {
         Self {
             schema: Schema::array(items),
             name: name.into(),
@@ -491,8 +451,7 @@ impl SchemaGenerator
     }
 
     /// Create an object schema generator / 创建对象模式生成器
-    pub fn object(name: impl Into<String>) -> Self
-    {
+    pub fn object(name: impl Into<String>) -> Self {
         Self {
             schema: Schema::object(),
             name: name.into(),
@@ -500,78 +459,67 @@ impl SchemaGenerator
     }
 
     /// Set description / 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.schema = self.schema.description(desc);
         self
     }
 
     /// Set example / 设置示例
-    pub fn example(mut self, example: serde_json::Value) -> Self
-    {
+    pub fn example(mut self, example: serde_json::Value) -> Self {
         self.schema = self.schema.example(example);
         self
     }
 
     /// Set minimum value / 设置最小值
-    pub fn minimum(mut self, min: f64) -> Self
-    {
+    pub fn minimum(mut self, min: f64) -> Self {
         self.schema.minimum = Some(min);
         self
     }
 
     /// Set maximum value / 设置最大值
-    pub fn maximum(mut self, max: f64) -> Self
-    {
+    pub fn maximum(mut self, max: f64) -> Self {
         self.schema.maximum = Some(max);
         self
     }
 
     /// Set minimum length / 设置最小长度
-    pub fn min_length(mut self, len: usize) -> Self
-    {
+    pub fn min_length(mut self, len: usize) -> Self {
         self.schema.min_length = Some(len);
         self
     }
 
     /// Set maximum length / 设置最大长度
-    pub fn max_length(mut self, len: usize) -> Self
-    {
+    pub fn max_length(mut self, len: usize) -> Self {
         self.schema.max_length = Some(len);
         self
     }
 
     /// Set pattern / 设置正则模式
-    pub fn pattern(mut self, pat: impl Into<String>) -> Self
-    {
+    pub fn pattern(mut self, pat: impl Into<String>) -> Self {
         self.schema.pattern = Some(pat.into());
         self
     }
 
     /// Set default value / 设置默认值
-    pub fn default(mut self, val: serde_json::Value) -> Self
-    {
+    pub fn default(mut self, val: serde_json::Value) -> Self {
         self.schema.default = Some(val);
         self
     }
 
     /// Set nullable / 设置可空
-    pub fn nullable(mut self, nullable: bool) -> Self
-    {
+    pub fn nullable(mut self, nullable: bool) -> Self {
         self.schema.nullable = Some(nullable);
         self
     }
 
     /// Set enum values / 设置枚举值
-    pub fn enum_values(mut self, values: Vec<serde_json::Value>) -> Self
-    {
+    pub fn enum_values(mut self, values: Vec<serde_json::Value>) -> Self {
         self.schema = self.schema.enum_values(values);
         self
     }
 
     /// Add a property to an object schema / 向对象模式添加属性
-    pub fn add_property(mut self, name: impl Into<String>, prop: Schema) -> Self
-    {
+    pub fn add_property(mut self, name: impl Into<String>, prop: Schema) -> Self {
         self.schema = self
             .schema
             .add_property(name, crate::SchemaProperty::new(prop));
@@ -579,52 +527,45 @@ impl SchemaGenerator
     }
 
     /// Add a required property / 添加必需属性
-    pub fn add_required(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn add_required(mut self, name: impl Into<String>) -> Self {
         self.schema = self.schema.add_required(name);
         self
     }
 
     /// Build the schema / 构建模式
-    pub fn build(self) -> Schema
-    {
+    pub fn build(self) -> Schema {
         self.schema
     }
 
     /// Build as a named (name, schema) pair / 构建为 (名称, 模式) 对
-    pub fn build_named(self) -> (String, Schema)
-    {
+    pub fn build_named(self) -> (String, Schema) {
         (self.name, self.schema)
     }
 }
 
 /// Helper to quickly create a GET operation / 快速创建 GET 操作的助手
-pub fn get_operation(path: &str, summary: &str) -> PathItem
-{
+pub fn get_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().get(Operation::new().summary(summary).operation_id(
         format!("get_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
     ))
 }
 
 /// Helper to quickly create a POST operation / 快速创建 POST 操作的助手
-pub fn post_operation(path: &str, summary: &str) -> PathItem
-{
+pub fn post_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().post(Operation::new().summary(summary).operation_id(
         format!("post_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
     ))
 }
 
 /// Helper to quickly create a PUT operation / 快速创建 PUT 操作的助手
-pub fn put_operation(path: &str, summary: &str) -> PathItem
-{
+pub fn put_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().put(Operation::new().summary(summary).operation_id(
         format!("put_{}", path.trim_start_matches('/').replace('/', "_").replace(['{', '}'], "")),
     ))
 }
 
 /// Helper to quickly create a DELETE operation / 快速创建 DELETE 操作的助手
-pub fn delete_operation(path: &str, summary: &str) -> PathItem
-{
+pub fn delete_operation(path: &str, summary: &str) -> PathItem {
     PathItem::new().delete(Operation::new().summary(summary).operation_id(format!(
             "delete_{}",
             path.trim_start_matches('/')
@@ -652,17 +593,14 @@ pub fn delete_operation(path: &str, summary: &str) -> PathItem
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct NestedSchemaBuilder
-{
+pub struct NestedSchemaBuilder {
     name: String,
     schema: Schema,
 }
 
-impl NestedSchemaBuilder
-{
+impl NestedSchemaBuilder {
     /// Create a new nested schema builder / 创建新嵌套模式构建器
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             schema: Schema::object(),
@@ -670,8 +608,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add a string property with an example value / 添加带示例值的字符串属性
-    pub fn string_property(mut self, name: impl Into<String>, example: impl Into<String>) -> Self
-    {
+    pub fn string_property(mut self, name: impl Into<String>, example: impl Into<String>) -> Self {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
@@ -683,8 +620,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add an integer property with an example value / 添加带示例值的整数属性
-    pub fn integer_property(mut self, name: impl Into<String>, example: i64) -> Self
-    {
+    pub fn integer_property(mut self, name: impl Into<String>, example: i64) -> Self {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
@@ -694,8 +630,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add a boolean property with an example value / 添加带示例值的布尔属性
-    pub fn boolean_property(mut self, name: impl Into<String>, example: bool) -> Self
-    {
+    pub fn boolean_property(mut self, name: impl Into<String>, example: bool) -> Self {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
@@ -705,8 +640,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add a nested object property / 添加嵌套对象属性
-    pub fn object_property(mut self, name: impl Into<String>, schema: Schema) -> Self
-    {
+    pub fn object_property(mut self, name: impl Into<String>, schema: Schema) -> Self {
         let n = name.into();
         self.schema = self
             .schema
@@ -715,8 +649,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add an array property / 添加数组属性
-    pub fn array_property(mut self, name: impl Into<String>, items: Schema) -> Self
-    {
+    pub fn array_property(mut self, name: impl Into<String>, items: Schema) -> Self {
         let n = name.into();
         self.schema = self
             .schema
@@ -725,8 +658,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add a property with an explicit schema and mark it as required / 添加带显式模式的必需属性
-    pub fn required_property(mut self, name: impl Into<String>, schema: Schema) -> Self
-    {
+    pub fn required_property(mut self, name: impl Into<String>, schema: Schema) -> Self {
         let n = name.into();
         self.schema = self
             .schema
@@ -736,8 +668,7 @@ impl NestedSchemaBuilder
     }
 
     /// Add a reference property (links to components/schemas) / 添加引用属性
-    pub fn ref_property(mut self, name: impl Into<String>, ref_name: impl Into<String>) -> Self
-    {
+    pub fn ref_property(mut self, name: impl Into<String>, ref_name: impl Into<String>) -> Self {
         let n = name.into();
         self.schema = self.schema.add_property(
             &n,
@@ -750,21 +681,18 @@ impl NestedSchemaBuilder
     }
 
     /// Set description / 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.schema = self.schema.description(desc);
         self
     }
 
     /// Build the schema / 构建模式
-    pub fn build(self) -> Schema
-    {
+    pub fn build(self) -> Schema {
         self.schema
     }
 
     /// Build as a named pair / 构建为命名对
-    pub fn build_named(self) -> (String, Schema)
-    {
+    pub fn build_named(self) -> (String, Schema) {
         (self.name, self.schema)
     }
 }
@@ -783,18 +711,15 @@ impl NestedSchemaBuilder
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct MapSchemaBuilder
-{
+pub struct MapSchemaBuilder {
     name: String,
     value_schema: Option<Schema>,
     description: Option<String>,
 }
 
-impl MapSchemaBuilder
-{
+impl MapSchemaBuilder {
     /// Create a new map schema builder / 创建新 Map 模式构建器
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             value_schema: None,
@@ -803,15 +728,13 @@ impl MapSchemaBuilder
     }
 
     /// Set the value schema / 设置值模式
-    pub fn value_schema(mut self, schema: Schema) -> Self
-    {
+    pub fn value_schema(mut self, schema: Schema) -> Self {
         self.value_schema = Some(schema);
         self
     }
 
     /// Set description / 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.description = Some(desc.into());
         self
     }
@@ -820,19 +743,16 @@ impl MapSchemaBuilder
     ///
     /// Returns an Object schema with `additionalProperties` set to the value schema.
     /// 返回一个设置了 `additionalProperties` 的 Object 模式。
-    pub fn build(self) -> Schema
-    {
+    pub fn build(self) -> Schema {
         let mut schema = Schema::object();
-        if let Some(desc) = self.description
-        {
+        if let Some(desc) = self.description {
             schema = schema.description(desc);
         }
         // OpenAPI represents maps as object with additionalProperties.
         // Since our Schema struct doesn't have an additionalProperties field,
         // we encode the map as an object and note that values follow the given schema.
         // This is a pragmatic approach for the current schema model.
-        if let Some(value_schema) = self.value_schema
-        {
+        if let Some(value_schema) = self.value_schema {
             schema = schema.add_property(
                 "[key]",
                 crate::SchemaProperty::new(value_schema.description("Map value")),
@@ -842,8 +762,7 @@ impl MapSchemaBuilder
     }
 
     /// Build as a named pair / 构建为命名对
-    pub fn build_named(self) -> (String, Schema)
-    {
+    pub fn build_named(self) -> (String, Schema) {
         let name = self.name.clone();
         (name, self.build())
     }
@@ -862,18 +781,15 @@ impl MapSchemaBuilder
 ///     .build();
 /// ```
 #[derive(Debug, Clone)]
-pub struct EnumSchemaBuilder
-{
+pub struct EnumSchemaBuilder {
     name: String,
     variants: Vec<String>,
     description: Option<String>,
 }
 
-impl EnumSchemaBuilder
-{
+impl EnumSchemaBuilder {
     /// Create a new enum schema builder / 创建新枚举模式构建器
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             variants: Vec::new(),
@@ -882,32 +798,27 @@ impl EnumSchemaBuilder
     }
 
     /// Add a variant / 添加变体
-    pub fn variant(mut self, v: impl Into<String>) -> Self
-    {
+    pub fn variant(mut self, v: impl Into<String>) -> Self {
         self.variants.push(v.into());
         self
     }
 
     /// Add multiple variants / 添加多个变体
-    pub fn variants(mut self, vs: impl IntoIterator<Item = impl Into<String>>) -> Self
-    {
-        for v in vs
-        {
+    pub fn variants(mut self, vs: impl IntoIterator<Item = impl Into<String>>) -> Self {
+        for v in vs {
             self.variants.push(v.into());
         }
         self
     }
 
     /// Set description / 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self
-    {
+    pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.description = Some(desc.into());
         self
     }
 
     /// Build the enum schema / 构建枚举模式
-    pub fn build(self) -> Schema
-    {
+    pub fn build(self) -> Schema {
         let enum_values: Vec<serde_json::Value> = self
             .variants
             .iter()
@@ -915,16 +826,14 @@ impl EnumSchemaBuilder
             .collect();
 
         let mut schema = Schema::string().enum_values(enum_values);
-        if let Some(desc) = self.description
-        {
+        if let Some(desc) = self.description {
             schema = schema.description(desc);
         }
         schema
     }
 
     /// Build as a named pair / 构建为命名对
-    pub fn build_named(self) -> (String, Schema)
-    {
+    pub fn build_named(self) -> (String, Schema) {
         let name = self.name.clone();
         (name, self.build())
     }
@@ -936,8 +845,7 @@ impl EnumSchemaBuilder
 
 /// Helper to create a Bearer token security scheme for use in components.
 /// 创建用于组件的 Bearer 令牌安全方案的助手。
-pub fn bearer_security_scheme() -> SecurityScheme
-{
+pub fn bearer_security_scheme() -> SecurityScheme {
     SecurityScheme::Http {
         scheme: "bearer".to_string(),
         bearer_format: Some("JWT".to_string()),
@@ -947,8 +855,7 @@ pub fn bearer_security_scheme() -> SecurityScheme
 
 /// Helper to create a Basic auth security scheme.
 /// 创建 Basic 认证安全方案的助手。
-pub fn basic_security_scheme() -> SecurityScheme
-{
+pub fn basic_security_scheme() -> SecurityScheme {
     SecurityScheme::Http {
         scheme: "basic".to_string(),
         bearer_format: None,
@@ -961,14 +868,11 @@ pub fn basic_security_scheme() -> SecurityScheme
 pub fn api_key_security_scheme(
     name: impl Into<String>,
     location: crate::config::ApiKeyLocation,
-) -> SecurityScheme
-{
+) -> SecurityScheme {
     let name = name.into();
-    let desc = match &location
-    {
+    let desc = match &location {
         crate::config::ApiKeyLocation::Header => format!("API key passed in header '{}'", name),
-        crate::config::ApiKeyLocation::Query =>
-        {
+        crate::config::ApiKeyLocation::Query => {
             format!("API key passed as query parameter '{}'", name)
         },
     };
@@ -986,8 +890,7 @@ pub fn oauth2_authorization_code_security_scheme(
     authorization_url: impl Into<String>,
     token_url: impl Into<String>,
     scopes: HashMap<String, String>,
-) -> SecurityScheme
-{
+) -> SecurityScheme {
     SecurityScheme::OAuth2 {
         flows: crate::config::OAuthFlows {
             implicit: None,
@@ -1010,8 +913,7 @@ pub fn oauth2_authorization_code_security_scheme(
 
 /// Helper to create a server variable with a default value and optional enum.
 /// 创建带默认值和可选枚举的服务器变量的助手。
-pub fn server_variable(default: impl Into<String>) -> crate::ServerVariable
-{
+pub fn server_variable(default: impl Into<String>) -> crate::ServerVariable {
     crate::ServerVariable {
         default_value: default.into(),
         enum_values: None,
@@ -1025,8 +927,7 @@ pub fn server_variable_with_enum(
     default: impl Into<String>,
     enum_values: Vec<impl Into<String>>,
     description: impl Into<String>,
-) -> crate::ServerVariable
-{
+) -> crate::ServerVariable {
     crate::ServerVariable {
         default_value: default.into(),
         enum_values: Some(enum_values.into_iter().map(Into::into).collect()),
@@ -1035,15 +936,19 @@ pub fn server_variable_with_enum(
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::{Response, TagConfig};
 
     #[test]
-    fn test_openapi_spec_builder()
-    {
+    fn test_openapi_spec_builder() {
         let spec = OpenApiSpec::builder()
             .title("Pet Store")
             .version("2.0.0")
@@ -1068,8 +973,7 @@ mod tests
     }
 
     #[test]
-    fn test_openapi_spec_to_yaml()
-    {
+    fn test_openapi_spec_to_yaml() {
         let spec = OpenApiSpec::builder()
             .title("Test API")
             .version("1.0.0")
@@ -1081,8 +985,7 @@ mod tests
     }
 
     #[test]
-    fn test_schema_generator_string()
-    {
+    fn test_schema_generator_string() {
         let schema = SchemaGenerator::string("username")
             .min_length(1)
             .max_length(64)
@@ -1096,8 +999,7 @@ mod tests
     }
 
     #[test]
-    fn test_schema_generator_object()
-    {
+    fn test_schema_generator_object() {
         let schema = SchemaGenerator::object("User")
             .add_property("id", Schema::integer())
             .add_property("name", Schema::string())
@@ -1112,8 +1014,7 @@ mod tests
     }
 
     #[test]
-    fn test_schema_generator_enum()
-    {
+    fn test_schema_generator_enum() {
         let schema = SchemaGenerator::string("status")
             .enum_values(vec![
                 serde_json::Value::String("active".to_string()),
@@ -1126,8 +1027,7 @@ mod tests
     }
 
     #[test]
-    fn test_schema_generator_with_security()
-    {
+    fn test_schema_generator_with_security() {
         let spec = OpenApiSpec::builder()
             .title("Secure API")
             .version("1.0.0")
@@ -1138,8 +1038,7 @@ mod tests
     }
 
     #[test]
-    fn test_operation_helpers()
-    {
+    fn test_operation_helpers() {
         let get = get_operation("/users/{id}", "Get user by ID");
         assert!(get.get.is_some());
 
@@ -1158,8 +1057,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_nested_schema_builder_basic()
-    {
+    fn test_nested_schema_builder_basic() {
         let schema = NestedSchemaBuilder::new("User")
             .string_property("name", "Alice")
             .integer_property("age", 30)
@@ -1174,8 +1072,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_with_ref()
-    {
+    fn test_nested_schema_builder_with_ref() {
         let schema = NestedSchemaBuilder::new("Order")
             .integer_property("id", 1)
             .ref_property("user", "User")
@@ -1187,8 +1084,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_required()
-    {
+    fn test_nested_schema_builder_required() {
         let schema = NestedSchemaBuilder::new("CreateUser")
             .required_property("email", Schema::string().description("Email address"))
             .string_property("nickname", "alice")
@@ -1199,8 +1095,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_array_property()
-    {
+    fn test_nested_schema_builder_array_property() {
         let schema = NestedSchemaBuilder::new("Group")
             .string_property("name", "Admins")
             .array_property("members", Schema::reference("#/components/schemas/User"))
@@ -1212,8 +1107,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_object_property()
-    {
+    fn test_nested_schema_builder_object_property() {
         let address = NestedSchemaBuilder::new("Address")
             .string_property("city", "Shanghai")
             .string_property("street", "Nanjing Rd")
@@ -1229,8 +1123,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_example_values()
-    {
+    fn test_nested_schema_builder_example_values() {
         let schema = NestedSchemaBuilder::new("User")
             .string_property("name", "Alice")
             .integer_property("age", 30)
@@ -1247,8 +1140,7 @@ mod tests
     }
 
     #[test]
-    fn test_nested_schema_builder_description()
-    {
+    fn test_nested_schema_builder_description() {
         let schema = NestedSchemaBuilder::new("User")
             .description("A registered user")
             .string_property("name", "Alice")
@@ -1262,8 +1154,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_map_schema_builder_basic()
-    {
+    fn test_map_schema_builder_basic() {
         let schema = MapSchemaBuilder::new("metadata")
             .value_schema(Schema::string())
             .description("String key-value metadata")
@@ -1274,8 +1165,7 @@ mod tests
     }
 
     #[test]
-    fn test_map_schema_builder_without_value()
-    {
+    fn test_map_schema_builder_without_value() {
         let schema = MapSchemaBuilder::new("tags").build();
         assert_eq!(schema.schema_type, Some(SchemaType::Object));
     }
@@ -1285,8 +1175,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_enum_schema_builder_basic()
-    {
+    fn test_enum_schema_builder_basic() {
         let schema = EnumSchemaBuilder::new("Status")
             .variant("active")
             .variant("inactive")
@@ -1302,8 +1191,7 @@ mod tests
     }
 
     #[test]
-    fn test_enum_schema_builder_variants_iter()
-    {
+    fn test_enum_schema_builder_variants_iter() {
         let schema = EnumSchemaBuilder::new("Role")
             .variants(vec!["admin", "user", "guest"])
             .build();
@@ -1313,8 +1201,7 @@ mod tests
     }
 
     #[test]
-    fn test_enum_schema_builder_description()
-    {
+    fn test_enum_schema_builder_description() {
         let schema = EnumSchemaBuilder::new("Status")
             .variants(vec!["open", "closed"])
             .description("Order status")
@@ -1328,17 +1215,14 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_bearer_security_scheme()
-    {
+    fn test_bearer_security_scheme() {
         let scheme = bearer_security_scheme();
-        match scheme
-        {
+        match scheme {
             SecurityScheme::Http {
                 scheme: s,
                 bearer_format,
                 description,
-            } =>
-            {
+            } => {
                 assert_eq!(s, "bearer");
                 assert_eq!(bearer_format, Some("JWT".to_string()));
                 assert!(description.is_some());
@@ -1348,17 +1232,14 @@ mod tests
     }
 
     #[test]
-    fn test_basic_security_scheme()
-    {
+    fn test_basic_security_scheme() {
         let scheme = basic_security_scheme();
-        match scheme
-        {
+        match scheme {
             SecurityScheme::Http {
                 scheme: s,
                 bearer_format,
                 ..
-            } =>
-            {
+            } => {
                 assert_eq!(s, "basic");
                 assert!(bearer_format.is_none());
             },
@@ -1367,17 +1248,14 @@ mod tests
     }
 
     #[test]
-    fn test_api_key_security_scheme_header()
-    {
+    fn test_api_key_security_scheme_header() {
         let scheme = api_key_security_scheme("X-API-KEY", crate::config::ApiKeyLocation::Header);
-        match scheme
-        {
+        match scheme {
             SecurityScheme::ApiKey {
                 name,
                 location,
                 description,
-            } =>
-            {
+            } => {
                 assert_eq!(name, "X-API-KEY");
                 assert_eq!(location, crate::config::ApiKeyLocation::Header);
                 assert!(description.is_some());
@@ -1388,13 +1266,10 @@ mod tests
     }
 
     #[test]
-    fn test_api_key_security_scheme_query()
-    {
+    fn test_api_key_security_scheme_query() {
         let scheme = api_key_security_scheme("api_key", crate::config::ApiKeyLocation::Query);
-        match scheme
-        {
-            SecurityScheme::ApiKey { name, location, .. } =>
-            {
+        match scheme {
+            SecurityScheme::ApiKey { name, location, .. } => {
                 assert_eq!(name, "api_key");
                 assert_eq!(location, crate::config::ApiKeyLocation::Query);
             },
@@ -1403,8 +1278,7 @@ mod tests
     }
 
     #[test]
-    fn test_oauth2_security_scheme()
-    {
+    fn test_oauth2_security_scheme() {
         let mut scopes = HashMap::new();
         scopes.insert("read".to_string(), "Read access".to_string());
         scopes.insert("write".to_string(), "Write access".to_string());
@@ -1414,10 +1288,8 @@ mod tests
             "https://auth.example.com/token",
             scopes,
         );
-        match scheme
-        {
-            SecurityScheme::OAuth2 { flows, description } =>
-            {
+        match scheme {
+            SecurityScheme::OAuth2 { flows, description } => {
                 assert!(flows.authorization_code.is_some());
                 let auth_code = flows.authorization_code.unwrap();
                 assert_eq!(auth_code.authorization_url, "https://auth.example.com/authorize");
@@ -1434,8 +1306,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_server_variable_basic()
-    {
+    fn test_server_variable_basic() {
         let var = server_variable("8080");
         assert_eq!(var.default_value, "8080");
         assert!(var.enum_values.is_none());
@@ -1443,8 +1314,7 @@ mod tests
     }
 
     #[test]
-    fn test_server_variable_with_enum()
-    {
+    fn test_server_variable_with_enum() {
         let var = server_variable_with_enum("https", vec!["http", "https"], "Server protocol");
         assert_eq!(var.default_value, "https");
         let enums = var.enum_values.unwrap();
@@ -1457,8 +1327,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_spec_builder_bearer_auth()
-    {
+    fn test_spec_builder_bearer_auth() {
         let spec = OpenApiSpec::builder()
             .title("Secure API")
             .version("1.0.0")
@@ -1474,8 +1343,7 @@ mod tests
     }
 
     #[test]
-    fn test_spec_builder_api_key_auth()
-    {
+    fn test_spec_builder_api_key_auth() {
         let spec = OpenApiSpec::builder()
             .title("API Key API")
             .version("1.0.0")
@@ -1489,8 +1357,7 @@ mod tests
     }
 
     #[test]
-    fn test_spec_builder_oauth2_auth()
-    {
+    fn test_spec_builder_oauth2_auth() {
         let spec = OpenApiSpec::builder()
             .title("OAuth2 API")
             .version("1.0.0")
@@ -1520,8 +1387,7 @@ mod tests
     // ========================================================================
 
     #[test]
-    fn test_spec_builder_server_with_variables()
-    {
+    fn test_spec_builder_server_with_variables() {
         let mut vars = HashMap::new();
         vars.insert("port".to_string(), server_variable("8080"));
         vars.insert(

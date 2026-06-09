@@ -55,8 +55,7 @@ use super::{
 /// 等价于 Spring Boot 的 `ConditionContext`。
 /// Equivalent to Spring Boot's `ConditionContext`.
 #[derive(Debug)]
-pub struct ConditionContext
-{
+pub struct ConditionContext {
     /// 配置属性（键值对）
     /// Configuration properties (key-value pairs)
     properties: HashMap<String, String>,
@@ -70,8 +69,7 @@ pub struct ConditionContext
     bean_names: HashMap<String, TypeId>,
 }
 
-impl ConditionContext
-{
+impl ConditionContext {
     /// 从 `ApplicationContext` 构建条件上下文
     /// Build condition context from `ApplicationContext`
     ///
@@ -82,8 +80,7 @@ impl ConditionContext
     /// # 参数 / Parameters
     ///
     /// - `ctx`: 应用上下文 / Application context
-    pub fn from_context(ctx: &ApplicationContext) -> Self
-    {
+    pub fn from_context(ctx: &ApplicationContext) -> Self {
         // 从 ApplicationContext 提取所有属性
         // Extract all properties from ApplicationContext
         let properties = ctx.config_loader().all().clone();
@@ -101,8 +98,7 @@ impl ConditionContext
     /// # 参数 / Parameters
     ///
     /// - `type_id`: Bean 的 TypeId / Bean's TypeId
-    pub fn with_registered_bean(mut self, type_id: TypeId) -> Self
-    {
+    pub fn with_registered_bean(mut self, type_id: TypeId) -> Self {
         self.registered_beans.push(type_id);
         self
     }
@@ -113,8 +109,7 @@ impl ConditionContext
     /// # 参数 / Parameters
     ///
     /// - `beans`: Bean TypeId 列表 / List of bean TypeIds
-    pub fn with_registered_beans(mut self, beans: Vec<TypeId>) -> Self
-    {
+    pub fn with_registered_beans(mut self, beans: Vec<TypeId>) -> Self {
         self.registered_beans = beans;
         self
     }
@@ -125,8 +120,7 @@ impl ConditionContext
     /// # 参数 / Parameters
     ///
     /// - `names`: 命名 Bean 映射 / Named bean mapping
-    pub fn with_bean_names(mut self, names: HashMap<String, TypeId>) -> Self
-    {
+    pub fn with_bean_names(mut self, names: HashMap<String, TypeId>) -> Self {
         self.bean_names = names;
         self
     }
@@ -138,8 +132,7 @@ impl ConditionContext
     ///
     /// - `key`: 属性键 / Property key
     #[must_use]
-    pub fn property(&self, key: &str) -> Option<&str>
-    {
+    pub fn property(&self, key: &str) -> Option<&str> {
         self.properties.get(key).map(String::as_str)
     }
 
@@ -151,8 +144,7 @@ impl ConditionContext
     /// - `key`: 属性键 / Property key
     /// - `expected`: 期望值 / Expected value
     #[must_use]
-    pub fn property_equals(&self, key: &str, expected: &str) -> bool
-    {
+    pub fn property_equals(&self, key: &str, expected: &str) -> bool {
         self.property(key).is_some_and(|v| v == expected)
     }
 
@@ -163,8 +155,7 @@ impl ConditionContext
     ///
     /// - `type_id`: Bean 的 TypeId / Bean's TypeId
     #[must_use]
-    pub fn has_bean(&self, type_id: TypeId) -> bool
-    {
+    pub fn has_bean(&self, type_id: TypeId) -> bool {
         self.registered_beans.contains(&type_id)
     }
 
@@ -175,32 +166,28 @@ impl ConditionContext
     ///
     /// - `name`: Bean 名称 / Bean name
     #[must_use]
-    pub fn has_bean_by_name(&self, name: &str) -> bool
-    {
+    pub fn has_bean_by_name(&self, name: &str) -> bool {
         self.bean_names.contains_key(name)
     }
 
     /// 获取所有配置属性
     /// Get all configuration properties
     #[must_use]
-    pub fn properties(&self) -> &HashMap<String, String>
-    {
+    pub fn properties(&self) -> &HashMap<String, String> {
         &self.properties
     }
 
     /// 获取已注册的 Bean TypeId 列表
     /// Get the list of registered bean TypeIds
     #[must_use]
-    pub fn registered_beans(&self) -> &[TypeId]
-    {
+    pub fn registered_beans(&self) -> &[TypeId] {
         &self.registered_beans
     }
 
     /// 获取命名 Bean 映射
     /// Get the named bean mapping
     #[must_use]
-    pub fn bean_names(&self) -> &HashMap<String, TypeId>
-    {
+    pub fn bean_names(&self) -> &HashMap<String, TypeId> {
         &self.bean_names
     }
 }
@@ -234,8 +221,7 @@ impl ConditionContext
 /// processor.process(&registry, &mut ctx)?;
 /// ```
 #[derive(Debug, Default)]
-pub struct AutoConfigurationProcessor
-{
+pub struct AutoConfigurationProcessor {
     /// 已处理的配置名称列表（按处理顺序）
     /// List of processed configuration names (in processing order)
     processed: Vec<String>,
@@ -248,8 +234,7 @@ pub struct AutoConfigurationProcessor
 /// 配置被跳过的原因
 /// Reason why a configuration was skipped
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum SkipReason
-{
+pub enum SkipReason {
     /// 条件不满足
     /// Condition not met
     ConditionNotMet,
@@ -258,12 +243,10 @@ pub enum SkipReason
     ExecutionError(String),
 }
 
-impl AutoConfigurationProcessor
-{
+impl AutoConfigurationProcessor {
     /// 创建新的自动配置处理器
     /// Create a new auto-configuration processor
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -290,8 +273,7 @@ impl AutoConfigurationProcessor
         &mut self,
         registry: &AutoConfigurationRegistry,
         ctx: &mut ApplicationContext,
-    ) -> Result<ProcessResult>
-    {
+    ) -> Result<ProcessResult> {
         // 清除上次处理的状态
         // Clear previous processing state
         self.processed.clear();
@@ -305,15 +287,13 @@ impl AutoConfigurationProcessor
 
         // Step 2: 逐个执行配置的工厂函数
         // Step 2: Execute each configuration's factory function
-        for entry in &applicable
-        {
+        for entry in &applicable {
             let config_name = entry.name().to_string();
 
             // 在执行前再次检查条件（前面的配置可能改变了容器状态）
             // Re-check condition before execution (previous configs may have
             // changed container state)
-            if !entry.matches(ctx)
-            {
+            if !entry.matches(ctx) {
                 self.skipped
                     .push((config_name, SkipReason::ConditionNotMet));
                 tracing::debug!(
@@ -327,15 +307,12 @@ impl AutoConfigurationProcessor
 
             // Step 3: 调用工厂函数
             // Step 3: Call the factory function
-            match entry.configure(ctx)
-            {
-                Ok(()) =>
-                {
+            match entry.configure(ctx) {
+                Ok(()) => {
                     self.processed.push(config_name);
                     tracing::debug!("Successfully applied auto-configuration: {}", entry.name());
                 },
-                Err(e) =>
-                {
+                Err(e) => {
                     let error_msg = e.to_string();
                     tracing::warn!("Auto-configuration '{}' failed: {}", entry.name(), e);
                     self.skipped
@@ -374,8 +351,7 @@ impl AutoConfigurationProcessor
         registry: &AutoConfigurationRegistry,
         ctx: &mut ApplicationContext,
         _condition_ctx: &ConditionContext,
-    ) -> Result<ProcessResult>
-    {
+    ) -> Result<ProcessResult> {
         // 目前的实现复用 process 方法
         // Current implementation reuses the process method
         // 未来可以扩展为使用自定义条件上下文进行更精细的控制
@@ -385,29 +361,25 @@ impl AutoConfigurationProcessor
 
     /// 获取已处理的配置名称列表
     /// Get the list of processed configuration names
-    pub fn processed(&self) -> &[String]
-    {
+    pub fn processed(&self) -> &[String] {
         &self.processed
     }
 
     /// 获取被跳过的配置列表
     /// Get the list of skipped configurations
-    pub fn skipped(&self) -> &[(String, SkipReason)]
-    {
+    pub fn skipped(&self) -> &[(String, SkipReason)] {
         &self.skipped
     }
 
     /// 检查指定配置是否已被处理
     /// Check if a specific configuration has been processed
-    pub fn is_processed(&self, name: &str) -> bool
-    {
+    pub fn is_processed(&self, name: &str) -> bool {
         self.processed.iter().any(|n| n == name)
     }
 
     /// 获取处理结果摘要
     /// Get processing result summary
-    pub fn summary(&self) -> String
-    {
+    pub fn summary(&self) -> String {
         format!(
             "AutoConfigurationProcessor: {} applied, {} skipped",
             self.processed.len(),
@@ -426,8 +398,7 @@ impl AutoConfigurationProcessor
 /// 包含处理过程中的统计信息。
 /// Contains statistics from the processing run.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ProcessResult
-{
+pub struct ProcessResult {
     /// 成功应用的配置数量
     /// Number of successfully applied configurations
     pub applied_count: usize,
@@ -441,12 +412,10 @@ pub struct ProcessResult
     pub total_candidates: usize,
 }
 
-impl ProcessResult
-{
+impl ProcessResult {
     /// 创建空的处理结果
     /// Create an empty processing result
-    pub fn empty() -> Self
-    {
+    pub fn empty() -> Self {
         Self {
             applied_count: 0,
             skipped_count: 0,
@@ -456,23 +425,19 @@ impl ProcessResult
 
     /// 检查是否有配置被应用
     /// Check if any configurations were applied
-    pub fn has_applied(&self) -> bool
-    {
+    pub fn has_applied(&self) -> bool {
         self.applied_count > 0
     }
 
     /// 检查是否有配置被跳过
     /// Check if any configurations were skipped
-    pub fn has_skipped(&self) -> bool
-    {
+    pub fn has_skipped(&self) -> bool {
         self.skipped_count > 0
     }
 }
 
-impl std::fmt::Display for ProcessResult
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Display for ProcessResult {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
             "ProcessResult(applied={}, skipped={}, total={})",
@@ -492,34 +457,28 @@ impl std::fmt::Display for ProcessResult
 /// 本模块的 `ConditionContext`（独立的条件评估上下文）桥接。
 /// Bridges `autoconfigure::Condition` (operating on `ApplicationContext`)
 /// with this module's `ConditionContext` (standalone condition evaluation context).
-pub struct ConditionAdapter
-{
+pub struct ConditionAdapter {
     /// 内部条件
     /// Inner condition
     inner: Box<dyn Condition>,
 }
 
-impl ConditionAdapter
-{
+impl ConditionAdapter {
     /// 创建新的条件适配器
     /// Create a new condition adapter
-    pub fn new(condition: Box<dyn Condition>) -> Self
-    {
+    pub fn new(condition: Box<dyn Condition>) -> Self {
         Self { inner: condition }
     }
 
     /// 使用 `ApplicationContext` 评估条件
     /// Evaluate condition using `ApplicationContext`
-    pub fn matches_with_ctx(&self, ctx: &ApplicationContext) -> bool
-    {
+    pub fn matches_with_ctx(&self, ctx: &ApplicationContext) -> bool {
         self.inner.matches(ctx)
     }
 }
 
-impl std::fmt::Debug for ConditionAdapter
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for ConditionAdapter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ConditionAdapter").finish()
     }
 }
@@ -529,9 +488,14 @@ impl std::fmt::Debug for ConditionAdapter
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::Arc;
 
     use super::*;
@@ -544,19 +508,16 @@ mod tests
     struct ConfigValue<T>(T);
     impl<T: 'static> Bean for ConfigValue<T> {}
 
-    fn noop_factory(_ctx: &mut ApplicationContext) -> Result<()>
-    {
+    fn noop_factory(_ctx: &mut ApplicationContext) -> Result<()> {
         Ok(())
     }
 
-    fn register_i32_bean(ctx: &mut ApplicationContext) -> Result<()>
-    {
+    fn register_i32_bean(ctx: &mut ApplicationContext) -> Result<()> {
         ctx.register_bean(ConfigValue(42i32));
         Ok(())
     }
 
-    fn register_string_bean(ctx: &mut ApplicationContext) -> Result<()>
-    {
+    fn register_string_bean(ctx: &mut ApplicationContext) -> Result<()> {
         ctx.register_bean(ConfigValue("hello".to_string()));
         Ok(())
     }
@@ -566,8 +527,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_condition_context_from_context()
-    {
+    fn test_condition_context_from_context() {
         let ctx = ApplicationContext::new();
         let cond_ctx = ConditionContext::from_context(&ctx);
 
@@ -579,8 +539,7 @@ mod tests
     }
 
     #[test]
-    fn test_condition_context_with_registered_beans()
-    {
+    fn test_condition_context_with_registered_beans() {
         let ctx = ApplicationContext::new();
         let cond_ctx = ConditionContext::from_context(&ctx)
             .with_registered_bean(TypeId::of::<i32>())
@@ -592,8 +551,7 @@ mod tests
     }
 
     #[test]
-    fn test_condition_context_with_bean_names()
-    {
+    fn test_condition_context_with_bean_names() {
         let ctx = ApplicationContext::new();
         let cond_ctx = ConditionContext::from_context(&ctx)
             .with_bean_names(HashMap::from([("myService".to_string(), TypeId::of::<i32>())]));
@@ -603,8 +561,7 @@ mod tests
     }
 
     #[test]
-    fn test_condition_context_property()
-    {
+    fn test_condition_context_property() {
         let mut loader = crate::config::ConfigurationLoader::new();
         loader.set("test.key".to_string(), "test.value".to_string());
         let ctx = ApplicationContext::with_config_loader(Arc::new(loader));
@@ -621,8 +578,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_processor_empty_registry()
-    {
+    fn test_processor_empty_registry() {
         let registry = AutoConfigurationRegistry::new();
         let mut ctx = ApplicationContext::new();
         let mut processor = AutoConfigurationProcessor::new();
@@ -635,8 +591,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_single_unconditional()
-    {
+    fn test_processor_single_unconditional() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("RegisterInt", register_i32_bean));
 
@@ -652,8 +607,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_multiple_configurations()
-    {
+    fn test_processor_multiple_configurations() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("ConfigInt", register_i32_bean));
         registry.register(AutoConfigurationEntry::new("ConfigStr", register_string_bean));
@@ -669,8 +623,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_conditional_skip()
-    {
+    fn test_processor_conditional_skip() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("AlwaysConfig", register_i32_bean));
         registry.register_conditional(
@@ -695,8 +648,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_conditional_on_missing_bean()
-    {
+    fn test_processor_conditional_on_missing_bean() {
         // 第一个配置注册 i32，第二个配置仅在 String 缺失时注册
         // First config registers i32, second registers String only when absent
         let mut registry = AutoConfigurationRegistry::new();
@@ -719,8 +671,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_priority_ordering()
-    {
+    fn test_processor_priority_ordering() {
         let mut registry = AutoConfigurationRegistry::new();
         registry
             .register(AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100));
@@ -739,8 +690,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_is_processed()
-    {
+    fn test_processor_is_processed() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("MyConfig", register_i32_bean));
 
@@ -756,8 +706,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_skipped_reason()
-    {
+    fn test_processor_skipped_reason() {
         // 使用 match_if_missing(true) 使条件在属性缺失时仍满足 evaluate()，
         // 然后在 processor 中再次检查时条件可能改变
         // Use match_if_missing(true) so condition passes evaluate() even
@@ -780,8 +729,7 @@ mod tests
     }
 
     #[test]
-    fn test_processor_summary_after_process()
-    {
+    fn test_processor_summary_after_process() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("Config1", register_i32_bean));
         registry.register(AutoConfigurationEntry::new("Config2", register_string_bean));
@@ -800,8 +748,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_process_result_empty()
-    {
+    fn test_process_result_empty() {
         let result = ProcessResult::empty();
         assert_eq!(result.applied_count, 0);
         assert_eq!(result.skipped_count, 0);
@@ -811,8 +758,7 @@ mod tests
     }
 
     #[test]
-    fn test_process_result_display()
-    {
+    fn test_process_result_display() {
         let result = ProcessResult {
             applied_count: 5,
             skipped_count: 2,
@@ -829,8 +775,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_condition_adapter()
-    {
+    fn test_condition_adapter() {
         let condition = ConditionalOnPropertyCondition::new("test.key");
         let adapter = ConditionAdapter::new(Box::new(condition));
 
@@ -841,8 +786,7 @@ mod tests
     }
 
     #[test]
-    fn test_condition_adapter_debug()
-    {
+    fn test_condition_adapter_debug() {
         let condition = ConditionalOnPropertyCondition::new("test.key");
         let adapter = ConditionAdapter::new(Box::new(condition));
         let debug_str = format!("{:?}", adapter);
@@ -854,8 +798,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_skip_reason_equality()
-    {
+    fn test_skip_reason_equality() {
         let reason1 = SkipReason::ConditionNotMet;
         let reason2 = SkipReason::ConditionNotMet;
         let reason3 = SkipReason::ExecutionError("test error".to_string());

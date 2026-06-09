@@ -34,8 +34,7 @@ use std::{
 /// Equivalent to Resilience4j's CircuitBreaker.State.
 /// 等价于Resilience4j的CircuitBreaker.State。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CircuitState
-{
+pub enum CircuitState {
     /// Closed - circuit works normally
     /// 关闭 - 断路器正常工作
     Closed,
@@ -49,21 +48,17 @@ pub enum CircuitState
     HalfOpen,
 }
 
-impl CircuitState
-{
+impl CircuitState {
     /// Check if circuit allows requests
     /// 检查断路器是否允许请求
-    pub fn allows_requests(&self) -> bool
-    {
+    pub fn allows_requests(&self) -> bool {
         matches!(self, CircuitState::Closed | CircuitState::HalfOpen)
     }
 
     /// Get state name
     /// 获取状态名称
-    pub fn name(&self) -> &str
-    {
-        match self
-        {
+    pub fn name(&self) -> &str {
+        match self {
             CircuitState::Closed => "CLOSED",
             CircuitState::Open => "OPEN",
             CircuitState::HalfOpen => "HALF_OPEN",
@@ -74,8 +69,7 @@ impl CircuitState
 /// Circuit breaker configuration
 /// 断路器配置
 #[derive(Debug, Clone)]
-pub struct CircuitBreakerConfig
-{
+pub struct CircuitBreakerConfig {
     /// Failure threshold (number of failures before opening)
     /// 失败阈值（打开前的失败次数）
     pub failure_threshold: u32,
@@ -109,12 +103,10 @@ pub struct CircuitBreakerConfig
     pub slow_call_rate_threshold: f64,
 }
 
-impl CircuitBreakerConfig
-{
+impl CircuitBreakerConfig {
     /// Create a new configuration
     /// 创建新配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             failure_threshold: 5,
             success_threshold: 2,
@@ -129,65 +121,56 @@ impl CircuitBreakerConfig
 
     /// Set failure threshold
     /// 设置失败阈值
-    pub fn failure_threshold(mut self, threshold: u32) -> Self
-    {
+    pub fn failure_threshold(mut self, threshold: u32) -> Self {
         self.failure_threshold = threshold;
         self
     }
 
     /// Set success threshold
     /// 设置成功阈值
-    pub fn success_threshold(mut self, threshold: u32) -> Self
-    {
+    pub fn success_threshold(mut self, threshold: u32) -> Self {
         self.success_threshold = threshold;
         self
     }
 
     /// Set open timeout
     /// 设置打开超时
-    pub fn open_timeout(mut self, timeout: Duration) -> Self
-    {
+    pub fn open_timeout(mut self, timeout: Duration) -> Self {
         self.open_timeout = timeout;
         self
     }
 
     /// Set sliding window size (enables rate-based tripping).
     /// 设置滑动窗口大小（启用基于失败率的断路）。
-    pub fn sliding_window_size(mut self, size: usize) -> Self
-    {
+    pub fn sliding_window_size(mut self, size: usize) -> Self {
         self.sliding_window_size = size;
         self
     }
 
     /// Set failure rate threshold (percentage).
     /// 设置失败率阈值（百分比）。
-    pub fn failure_rate_threshold(mut self, threshold: f64) -> Self
-    {
+    pub fn failure_rate_threshold(mut self, threshold: f64) -> Self {
         self.failure_rate_threshold = threshold;
         self
     }
 
     /// Set slow call duration threshold.
     /// 设置慢调用持续时间阈值。
-    pub fn slow_call_duration(mut self, duration: Duration) -> Self
-    {
+    pub fn slow_call_duration(mut self, duration: Duration) -> Self {
         self.slow_call_duration = Some(duration);
         self
     }
 
     /// Set slow call rate threshold (percentage).
     /// 设置慢调用率阈值（百分比）。
-    pub fn slow_call_rate_threshold(mut self, threshold: f64) -> Self
-    {
+    pub fn slow_call_rate_threshold(mut self, threshold: f64) -> Self {
         self.slow_call_rate_threshold = threshold;
         self
     }
 }
 
-impl Default for CircuitBreakerConfig
-{
-    fn default() -> Self
-    {
+impl Default for CircuitBreakerConfig {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -211,8 +194,7 @@ impl Default for CircuitBreakerConfig
 ///     );
 /// }
 /// ```
-pub struct CircuitBreaker
-{
+pub struct CircuitBreaker {
     /// Circuit breaker name
     /// 断路器名称
     pub name: String,
@@ -246,10 +228,8 @@ pub struct CircuitBreaker
     event_callback: Arc<Option<EventCallback>>,
 }
 
-impl std::fmt::Debug for CircuitBreaker
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for CircuitBreaker {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("CircuitBreaker")
             .field("name", &self.name)
             .field("config", &self.config)
@@ -259,25 +239,19 @@ impl std::fmt::Debug for CircuitBreaker
     }
 }
 
-impl CircuitBreaker
-{
+impl CircuitBreaker {
     /// Create a new circuit breaker
     /// 创建新的断路器
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self::with_config(name.into(), CircuitBreakerConfig::default())
     }
 
     /// Create with configuration
     /// 使用配置创建
-    pub fn with_config(name: impl Into<String>, config: CircuitBreakerConfig) -> Self
-    {
-        let window = if config.sliding_window_size > 0
-        {
+    pub fn with_config(name: impl Into<String>, config: CircuitBreakerConfig) -> Self {
+        let window = if config.sliding_window_size > 0 {
             Some(SlidingWindow::new(config.sliding_window_size))
-        }
-        else
-        {
+        } else {
             None
         };
         Self {
@@ -294,8 +268,7 @@ impl CircuitBreaker
 
     /// Get current state
     /// 获取当前状态
-    pub async fn state(&self) -> CircuitState
-    {
+    pub async fn state(&self) -> CircuitState {
         *self.state.read().await
     }
 
@@ -311,8 +284,7 @@ impl CircuitBreaker
         self.check_state().await;
 
         let state = self.state().await;
-        if !state.allows_requests()
-        {
+        if !state.allows_requests() {
             self.emit_event(CircuitBreakerEvent::Rejected);
             return Err(CircuitBreakerError::Open(self.name.clone()));
         }
@@ -323,23 +295,17 @@ impl CircuitBreaker
         let elapsed = start.elapsed();
 
         // Record result
-        match result
-        {
-            Ok(value) =>
-            {
+        match result {
+            Ok(value) => {
                 let is_slow = self.config.slow_call_duration.is_some_and(|d| elapsed >= d);
-                if is_slow
-                {
+                if is_slow {
                     self.on_slow_call(elapsed).await;
-                }
-                else
-                {
+                } else {
                     self.on_success(elapsed).await;
                 }
                 Ok(value)
             },
-            Err(e) =>
-            {
+            Err(e) => {
                 self.on_failure_with_time(elapsed).await;
                 Err(CircuitBreakerError::Failed {
                     circuit: self.name.clone(),
@@ -351,12 +317,10 @@ impl CircuitBreaker
 
     /// Check and update state
     /// 检查并更新状态
-    async fn check_state(&self)
-    {
+    async fn check_state(&self) {
         let state = *self.state.read().await;
 
-        if state == CircuitState::Open
-        {
+        if state == CircuitState::Open {
             // Check if we should transition to half-open
             if let Some(last_fail) = *self.last_failure.read().await
                 && last_fail.elapsed() >= self.config.open_timeout
@@ -369,52 +333,41 @@ impl CircuitBreaker
 
     /// Handle success
     /// 处理成功
-    async fn on_success(&self, elapsed: Duration)
-    {
+    async fn on_success(&self, elapsed: Duration) {
         let state = *self.state.read().await;
         self.emit_event(CircuitBreakerEvent::Success(elapsed));
 
-        if let Some(w) = self.window.write().await.as_mut()
-        {
+        if let Some(w) = self.window.write().await.as_mut() {
             w.record(CallOutcome::Success);
         }
 
-        match state
-        {
-            CircuitState::Closed =>
-            {
+        match state {
+            CircuitState::Closed => {
                 self.failures.store(0, Ordering::SeqCst);
             },
-            CircuitState::HalfOpen =>
-            {
+            CircuitState::HalfOpen => {
                 let successes = self.successes.fetch_add(1, Ordering::SeqCst) + 1;
-                if successes >= self.config.success_threshold as u64
-                {
+                if successes >= self.config.success_threshold as u64 {
                     self.transition_to(CircuitState::Closed).await;
                 }
             },
-            CircuitState::Open =>
-            {},
+            CircuitState::Open => {},
         }
     }
 
     /// Handle slow call
     /// 处理慢调用
-    async fn on_slow_call(&self, elapsed: Duration)
-    {
+    async fn on_slow_call(&self, elapsed: Duration) {
         let state = *self.state.read().await;
         self.emit_event(CircuitBreakerEvent::SlowCall(elapsed));
 
-        if let Some(w) = self.window.write().await.as_mut()
-        {
+        if let Some(w) = self.window.write().await.as_mut() {
             w.record(CallOutcome::SlowCall);
         }
 
-        if state == CircuitState::HalfOpen
-        {
+        if state == CircuitState::HalfOpen {
             let successes = self.successes.fetch_add(1, Ordering::SeqCst) + 1;
-            if successes >= self.config.success_threshold as u64
-            {
+            if successes >= self.config.success_threshold as u64 {
                 self.transition_to(CircuitState::Closed).await;
             }
         }
@@ -424,12 +377,10 @@ impl CircuitBreaker
 
     /// Handle failure with timing
     /// 处理带计时的失败
-    async fn on_failure_with_time(&self, elapsed: Duration)
-    {
+    async fn on_failure_with_time(&self, elapsed: Duration) {
         self.emit_event(CircuitBreakerEvent::Failure(elapsed));
 
-        if let Some(w) = self.window.write().await.as_mut()
-        {
+        if let Some(w) = self.window.write().await.as_mut() {
             w.record(CallOutcome::Failure);
         }
 
@@ -437,19 +388,14 @@ impl CircuitBreaker
         *self.last_failure.write().await = Some(std::time::Instant::now());
 
         let state = *self.state.read().await;
-        if state != CircuitState::Open
-        {
+        if state != CircuitState::Open {
             // Check sliding window rate first, fall back to count-based
-            let should_trip = if let Some(w) = self.window.read().await.as_ref()
-            {
+            let should_trip = if let Some(w) = self.window.read().await.as_ref() {
                 w.failure_rate() >= self.config.failure_rate_threshold
-            }
-            else
-            {
+            } else {
                 failures >= self.config.failure_threshold as u64
             };
-            if should_trip
-            {
+            if should_trip {
                 self.transition_to(CircuitState::Open).await;
             }
         }
@@ -457,11 +403,9 @@ impl CircuitBreaker
 
     /// Check slow call rate and trip if threshold exceeded.
     /// 检查慢调用率，超过阈值则断路。
-    async fn check_slow_call_rate(&self)
-    {
+    async fn check_slow_call_rate(&self) {
         let state = *self.state.read().await;
-        if state == CircuitState::Open
-        {
+        if state == CircuitState::Open {
             return;
         }
         if let Some(w) = self.window.read().await.as_ref()
@@ -473,14 +417,11 @@ impl CircuitBreaker
 
     /// Transition to a new state with event emission.
     /// 转换到新状态并发出事件。
-    async fn transition_to(&self, new_state: CircuitState)
-    {
+    async fn transition_to(&self, new_state: CircuitState) {
         let old = *self.state.read().await;
-        if old != new_state
-        {
+        if old != new_state {
             *self.state.write().await = new_state;
-            if new_state == CircuitState::Closed
-            {
+            if new_state == CircuitState::Closed {
                 self.failures.store(0, Ordering::SeqCst);
                 self.successes.store(0, Ordering::SeqCst);
             }
@@ -493,28 +434,23 @@ impl CircuitBreaker
 
     /// Emit an event if a callback is registered.
     /// 如果注册了回调则发出事件。
-    fn emit_event(&self, event: CircuitBreakerEvent)
-    {
-        if let Some(cb) = self.event_callback.as_ref()
-        {
+    fn emit_event(&self, event: CircuitBreakerEvent) {
+        if let Some(cb) = self.event_callback.as_ref() {
             cb(event);
         }
     }
 
     /// Register an event callback.
     /// 注册事件回调。
-    pub fn on_event(&mut self, callback: EventCallback)
-    {
+    pub fn on_event(&mut self, callback: EventCallback) {
         self.event_callback = Arc::new(Some(callback));
     }
 
     /// Get current metrics snapshot.
     /// 获取当前指标快照。
-    pub async fn metrics(&self) -> CircuitBreakerMetrics
-    {
+    pub async fn metrics(&self) -> CircuitBreakerMetrics {
         let state = *self.state.read().await;
-        if let Some(w) = self.window.read().await.as_ref()
-        {
+        if let Some(w) = self.window.read().await.as_ref() {
             CircuitBreakerMetrics {
                 state,
                 failure_rate: w.failure_rate(),
@@ -524,9 +460,7 @@ impl CircuitBreaker
                 failed_calls: w.failure_count(),
                 slow_calls: w.slow_call_count(),
             }
-        }
-        else
-        {
+        } else {
             let f = self.failures.load(Ordering::SeqCst);
             CircuitBreakerMetrics {
                 state,
@@ -542,27 +476,23 @@ impl CircuitBreaker
 
     /// Reset the circuit breaker
     /// 重置断路器
-    pub async fn reset(&self)
-    {
+    pub async fn reset(&self) {
         *self.state.write().await = CircuitState::Closed;
         self.failures.store(0, Ordering::SeqCst);
         self.successes.store(0, Ordering::SeqCst);
         *self.last_failure.write().await = None;
-        if let Some(w) = self.window.write().await.as_mut()
-        {
+        if let Some(w) = self.window.write().await.as_mut() {
             w.reset();
         }
     }
 
     /// Force open the circuit
     /// 强制打开断路器
-    pub async fn force_open(&self)
-    {
+    pub async fn force_open(&self) {
         let old = *self.state.read().await;
         *self.state.write().await = CircuitState::Open;
         *self.last_failure.write().await = Some(std::time::Instant::now());
-        if old != CircuitState::Open
-        {
+        if old != CircuitState::Open {
             self.emit_event(CircuitBreakerEvent::StateTransition {
                 from: old,
                 to: CircuitState::Open,
@@ -572,8 +502,7 @@ impl CircuitBreaker
 
     /// Force close the circuit
     /// 强制关闭断路器
-    pub async fn force_close(&self)
-    {
+    pub async fn force_close(&self) {
         *self.state.write().await = CircuitState::Closed;
         self.failures.store(0, Ordering::SeqCst);
         self.successes.store(0, Ordering::SeqCst);
@@ -584,16 +513,14 @@ impl CircuitBreaker
 /// Circuit breaker error
 /// 断路器错误
 #[derive(Debug)]
-pub enum CircuitBreakerError<E>
-{
+pub enum CircuitBreakerError<E> {
     /// Circuit is open
     /// 断路器打开
     Open(String),
 
     /// Execution failed
     /// 执行失败
-    Failed
-    {
+    Failed {
         /// Circuit breaker name
         /// 断路器名称
         circuit: String,
@@ -609,19 +536,16 @@ pub enum CircuitBreakerError<E>
 ///
 /// Manages multiple circuit breakers.
 /// 管理多个断路器。
-pub struct CircuitBreakerRegistry
-{
+pub struct CircuitBreakerRegistry {
     /// Circuit breakers
     /// 断路器
     breakers: Arc<tokio::sync::RwLock<std::collections::HashMap<String, Arc<CircuitBreaker>>>>,
 }
 
-impl CircuitBreakerRegistry
-{
+impl CircuitBreakerRegistry {
     /// Create a new registry
     /// 创建新注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             breakers: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
@@ -629,11 +553,9 @@ impl CircuitBreakerRegistry
 
     /// Get or create a circuit breaker
     /// 获取或创建断路器
-    pub async fn get(&self, name: &str) -> Arc<CircuitBreaker>
-    {
+    pub async fn get(&self, name: &str) -> Arc<CircuitBreaker> {
         let breakers = self.breakers.read().await;
-        if let Some(breaker) = breakers.get(name)
-        {
+        if let Some(breaker) = breakers.get(name) {
             return breaker.clone();
         }
         drop(breakers);
@@ -646,10 +568,8 @@ impl CircuitBreakerRegistry
     }
 }
 
-impl Default for CircuitBreakerRegistry
-{
-    fn default() -> Self
-    {
+impl Default for CircuitBreakerRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -661,8 +581,7 @@ impl Default for CircuitBreakerRegistry
 /// Outcome of a single call through the circuit breaker.
 /// 通过断路器的单次调用结果。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CallOutcome
-{
+pub enum CallOutcome {
     /// Call succeeded within acceptable time.
     /// 调用在可接受时间内成功。
     Success,
@@ -680,17 +599,14 @@ pub enum CallOutcome
 /// Equivalent to Resilience4j's `CountBasedSlidingWindow`.
 /// 等价于 Resilience4j 的 `CountBasedSlidingWindow`。
 #[derive(Debug)]
-struct SlidingWindow
-{
+struct SlidingWindow {
     outcomes: Vec<Option<CallOutcome>>,
     head: usize,
     len: usize,
 }
 
-impl SlidingWindow
-{
-    fn new(size: usize) -> Self
-    {
+impl SlidingWindow {
+    fn new(size: usize) -> Self {
         Self {
             outcomes: vec![None; size],
             head: 0,
@@ -699,21 +615,17 @@ impl SlidingWindow
     }
 
     #[allow(clippy::indexing_slicing)]
-    fn record(&mut self, outcome: CallOutcome)
-    {
+    fn record(&mut self, outcome: CallOutcome) {
         self.outcomes[self.head] = Some(outcome);
         self.head = (self.head + 1) % self.outcomes.len();
-        if self.len < self.outcomes.len()
-        {
+        if self.len < self.outcomes.len() {
             self.len += 1;
         }
     }
 
     #[allow(clippy::cast_precision_loss)]
-    fn failure_rate(&self) -> f64
-    {
-        if self.len == 0
-        {
+    fn failure_rate(&self) -> f64 {
+        if self.len == 0 {
             return 0.0;
         }
         let failures = self
@@ -726,10 +638,8 @@ impl SlidingWindow
     }
 
     #[allow(clippy::cast_precision_loss)]
-    fn slow_call_rate(&self) -> f64
-    {
-        if self.len == 0
-        {
+    fn slow_call_rate(&self) -> f64 {
+        if self.len == 0 {
             return 0.0;
         }
         let slow = self
@@ -741,13 +651,11 @@ impl SlidingWindow
         (slow as f64 / self.len as f64) * 100.0
     }
 
-    fn total_calls(&self) -> u64
-    {
+    fn total_calls(&self) -> u64 {
         self.len as u64
     }
 
-    fn success_count(&self) -> u64
-    {
+    fn success_count(&self) -> u64 {
         self.outcomes
             .iter()
             .take(self.len)
@@ -755,8 +663,7 @@ impl SlidingWindow
             .count() as u64
     }
 
-    fn failure_count(&self) -> u64
-    {
+    fn failure_count(&self) -> u64 {
         self.outcomes
             .iter()
             .take(self.len)
@@ -764,8 +671,7 @@ impl SlidingWindow
             .count() as u64
     }
 
-    fn slow_call_count(&self) -> u64
-    {
+    fn slow_call_count(&self) -> u64 {
         self.outcomes
             .iter()
             .take(self.len)
@@ -773,8 +679,7 @@ impl SlidingWindow
             .count() as u64
     }
 
-    fn reset(&mut self)
-    {
+    fn reset(&mut self) {
         self.head = 0;
         self.len = 0;
     }
@@ -790,8 +695,7 @@ impl SlidingWindow
 /// Equivalent to Resilience4j's `CircuitBreaker.Metrics`.
 /// 等价于 Resilience4j 的 `CircuitBreaker.Metrics`。
 #[derive(Debug, Clone)]
-pub struct CircuitBreakerMetrics
-{
+pub struct CircuitBreakerMetrics {
     /// Current circuit state.
     /// 当前断路器状态。
     pub state: CircuitState,
@@ -821,12 +725,10 @@ pub struct CircuitBreakerMetrics
 /// Equivalent to Resilience4j's `CircuitBreakerEvent`.
 /// 等价于 Resilience4j 的 `CircuitBreakerEvent`。
 #[derive(Debug, Clone)]
-pub enum CircuitBreakerEvent
-{
+pub enum CircuitBreakerEvent {
     /// Circuit state changed.
     /// 断路器状态改变。
-    StateTransition
-    {
+    StateTransition {
         /// Previous state.
         /// 之前的状态。
         from: CircuitState,
@@ -853,16 +755,20 @@ pub enum CircuitBreakerEvent
 pub type EventCallback = Arc<dyn Fn(CircuitBreakerEvent) + Send + Sync>;
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::Mutex;
 
     use super::*;
 
     #[tokio::test]
-    async fn test_circuit_breaker()
-    {
+    async fn test_circuit_breaker() {
         let cb = CircuitBreaker::new("test");
 
         assert_eq!(cb.state().await, CircuitState::Closed);
@@ -874,8 +780,7 @@ mod tests
         assert!(result.is_ok());
 
         // Failures should trigger open
-        for _ in 0..=5
-        {
+        for _ in 0..=5 {
             let _ = cb
                 .execute(|| Box::pin(async { Err::<(), _>("error".to_string()) }))
                 .await;
@@ -885,8 +790,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_sliding_window_failure_rate()
-    {
+    async fn test_sliding_window_failure_rate() {
         let cb = CircuitBreaker::with_config(
             "test",
             CircuitBreakerConfig::new()
@@ -895,8 +799,7 @@ mod tests
         );
 
         // 6 failures out of 10 should trip at 50%+ rate
-        for _ in 0..4
-        {
+        for _ in 0..4 {
             let _ = cb
                 .execute(|| Box::pin(async { Err::<(), _>("err".to_string()) }))
                 .await;
@@ -906,8 +809,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_sliding_window_stays_closed_below_threshold()
-    {
+    async fn test_sliding_window_stays_closed_below_threshold() {
         let cb = CircuitBreaker::with_config(
             "test",
             CircuitBreakerConfig::new()
@@ -916,8 +818,7 @@ mod tests
         );
 
         // 3 failures
-        for _ in 0..3
-        {
+        for _ in 0..3 {
             let _ = cb
                 .execute(|| Box::pin(async { Err::<(), _>("err".to_string()) }))
                 .await;
@@ -927,8 +828,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_metrics_snapshot()
-    {
+    async fn test_metrics_snapshot() {
         let cb = CircuitBreaker::with_config(
             "metrics-test",
             CircuitBreakerConfig::new()
@@ -951,8 +851,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_event_callback()
-    {
+    async fn test_event_callback() {
         let events: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
         let events_clone = events.clone();
         let cb = CircuitBreaker::with_config(
@@ -962,8 +861,7 @@ mod tests
 
         let mut cb = cb;
         cb.on_event(Arc::new(move |e| {
-            let name = match e
-            {
+            let name = match e {
                 CircuitBreakerEvent::Success(_) => "success".to_string(),
                 CircuitBreakerEvent::Failure(_) => "failure".to_string(),
                 CircuitBreakerEvent::StateTransition { to, .. } => format!("transition->{:?}", to),
@@ -989,8 +887,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_config_builder()
-    {
+    async fn test_config_builder() {
         let cfg = CircuitBreakerConfig::new()
             .failure_threshold(10)
             .success_threshold(3)
@@ -1007,8 +904,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_registry()
-    {
+    async fn test_registry() {
         let registry = CircuitBreakerRegistry::new();
         let cb1 = registry.get("service-a").await;
         let cb2 = registry.get("service-a").await;

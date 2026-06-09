@@ -13,21 +13,18 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 ///
 /// Note: The struct must implement Clone for this to work.
 /// 注意：结构体必须实现 Clone 才能使用此宏。
-pub fn impl_with(input: DeriveInput) -> TokenStream
-{
+pub fn impl_with(input: DeriveInput) -> TokenStream {
     let struct_name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data
-    {
+    let fields = match &input.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ =>
-        {
+        _ => {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[With] can only be used on structs with named fields",
@@ -43,11 +40,8 @@ pub fn impl_with(input: DeriveInput) -> TokenStream
     let mut field_types = Vec::new();
     let mut with_method_names = Vec::new();
 
-    for field in fields
-    {
-        let Some(field_name) = field.ident.as_ref()
-        else
-        {
+    for field in fields {
+        let Some(field_name) = field.ident.as_ref() else {
             continue;
         };
         let field_type = &field.ty;
@@ -61,8 +55,7 @@ pub fn impl_with(input: DeriveInput) -> TokenStream
                 .any(|seg| seg.ident == "with" || seg.ident == "skip")
         });
 
-        if should_skip
-        {
+        if should_skip {
             continue;
         }
 
@@ -99,12 +92,9 @@ pub fn impl_with(input: DeriveInput) -> TokenStream
 
     // Add Clone bound requirement
     // 添加 Clone bound 要求
-    let where_clause = if where_clause.is_some()
-    {
+    let where_clause = if where_clause.is_some() {
         quote! { #where_clause }
-    }
-    else
-    {
+    } else {
         quote! { where #struct_name #ty_generics: Clone }
     };
 

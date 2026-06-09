@@ -15,8 +15,7 @@ use std::time::Duration;
 /// taskExecutor.setQueueCapacity(100);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ExecutionMode
-{
+pub enum ExecutionMode {
     /// Execute immediately (blocking current thread)
     /// 立即执行（阻塞当前线程）
     Immediate,
@@ -44,8 +43,7 @@ pub enum ExecutionMode
 /// executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RejectionPolicy
-{
+pub enum RejectionPolicy {
     /// Abort with error (default)
     /// 中止并报错（默认）
     Abort,
@@ -87,8 +85,7 @@ pub enum RejectionPolicy
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct TaskExecutorConfig
-{
+pub struct TaskExecutorConfig {
     /// Core pool size (minimum threads)
     /// 核心池大小（最小线程数）
     pub core_pool_size: usize,
@@ -122,10 +119,8 @@ pub struct TaskExecutorConfig
     pub allow_core_thread_timeout: bool,
 }
 
-impl Default for TaskExecutorConfig
-{
-    fn default() -> Self
-    {
+impl Default for TaskExecutorConfig {
+    fn default() -> Self {
         Self {
             core_pool_size: 4,
             max_pool_size: 16,
@@ -139,93 +134,79 @@ impl Default for TaskExecutorConfig
     }
 }
 
-impl TaskExecutorConfig
-{
+impl TaskExecutorConfig {
     /// Create new configuration with default values
     /// 使用默认值创建新配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set core pool size
     /// 设置核心池大小
-    pub fn with_core_pool_size(mut self, size: usize) -> Self
-    {
+    pub fn with_core_pool_size(mut self, size: usize) -> Self {
         self.core_pool_size = size;
         self
     }
 
     /// Set maximum pool size
     /// 设置最大池大小
-    pub fn with_max_pool_size(mut self, size: usize) -> Self
-    {
+    pub fn with_max_pool_size(mut self, size: usize) -> Self {
         self.max_pool_size = size;
         self
     }
 
     /// Set queue capacity
     /// 设置队列容量
-    pub fn with_queue_capacity(mut self, capacity: usize) -> Self
-    {
+    pub fn with_queue_capacity(mut self, capacity: usize) -> Self {
         self.queue_capacity = capacity;
         self
     }
 
     /// Set keep alive duration
     /// 设置保活时长
-    pub fn with_keep_alive_duration(mut self, duration: Duration) -> Self
-    {
+    pub fn with_keep_alive_duration(mut self, duration: Duration) -> Self {
         self.keep_alive_duration = duration;
         self
     }
 
     /// Set thread name prefix
     /// 设置线程名称前缀
-    pub fn with_thread_name_prefix(mut self, prefix: impl Into<String>) -> Self
-    {
+    pub fn with_thread_name_prefix(mut self, prefix: impl Into<String>) -> Self {
         self.thread_name_prefix = prefix.into();
         self
     }
 
     /// Set execution mode
     /// 设置执行模式
-    pub fn with_execution_mode(mut self, mode: ExecutionMode) -> Self
-    {
+    pub fn with_execution_mode(mut self, mode: ExecutionMode) -> Self {
         self.execution_mode = mode;
         self
     }
 
     /// Set rejection policy
     /// 设置拒绝策略
-    pub fn with_rejection_policy(mut self, policy: RejectionPolicy) -> Self
-    {
+    pub fn with_rejection_policy(mut self, policy: RejectionPolicy) -> Self {
         self.rejection_policy = policy;
         self
     }
 
     /// Set allow core thread timeout
     /// 设置允许核心线程超时
-    pub fn with_allow_core_thread_timeout(mut self, allow: bool) -> Self
-    {
+    pub fn with_allow_core_thread_timeout(mut self, allow: bool) -> Self {
         self.allow_core_thread_timeout = allow;
         self
     }
 
     /// Validate configuration
     /// 验证配置
-    pub fn validate(&self) -> Result<(), String>
-    {
-        if self.core_pool_size == 0
-        {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.core_pool_size == 0 {
             return Err("core_pool_size must be greater than 0".to_string());
         }
-        if self.max_pool_size < self.core_pool_size
-        {
+        if self.max_pool_size < self.core_pool_size {
             return Err("max_pool_size must be >= core_pool_size".to_string());
         }
-        if self.queue_capacity == 0
-        {
+        if self.queue_capacity == 0 {
             return Err("queue_capacity must be greater than 0".to_string());
         }
         Ok(())
@@ -233,14 +214,18 @@ impl TaskExecutorConfig
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_default_config()
-    {
+    fn test_default_config() {
         let config = TaskExecutorConfig::default();
         assert_eq!(config.core_pool_size, 4);
         assert_eq!(config.max_pool_size, 16);
@@ -250,8 +235,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_builder()
-    {
+    fn test_config_builder() {
         let config = TaskExecutorConfig::new()
             .with_core_pool_size(8)
             .with_max_pool_size(32)
@@ -267,8 +251,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_validation()
-    {
+    fn test_config_validation() {
         let config = TaskExecutorConfig::default();
         assert!(config.validate().is_ok());
 

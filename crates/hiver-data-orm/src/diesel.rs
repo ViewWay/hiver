@@ -44,8 +44,7 @@ use crate::{Model, Result};
 /// Diesel-compatible column type.
 /// Diesel 兼容的列类型。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DieselColumnType
-{
+pub enum DieselColumnType {
     /// 32-bit integer
     Integer,
     /// 64-bit integer (BIGINT)
@@ -66,14 +65,11 @@ pub enum DieselColumnType
     Uuid,
 }
 
-impl DieselColumnType
-{
+impl DieselColumnType {
     /// Convert to SQL type string.
     /// 转换为 SQL 类型字符串。
-    pub fn to_sql(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn to_sql(&self) -> &'static str {
+        match self {
             Self::Integer => "INTEGER",
             Self::BigInt => "BIGINT",
             Self::Text => "TEXT",
@@ -90,8 +86,7 @@ impl DieselColumnType
 /// A single column in a Diesel-style schema definition.
 /// Diesel 风格 schema 定义中的单个列。
 #[derive(Debug, Clone)]
-pub struct DieselColumn
-{
+pub struct DieselColumn {
     /// Column name / 列名
     pub name: String,
     /// Column data type / 列数据类型
@@ -104,12 +99,10 @@ pub struct DieselColumn
     pub is_unique: bool,
 }
 
-impl DieselColumn
-{
+impl DieselColumn {
     /// Create a new column definition.
     /// 创建新的列定义。
-    pub fn new(name: impl Into<String>, type_: DieselColumnType) -> Self
-    {
+    pub fn new(name: impl Into<String>, type_: DieselColumnType) -> Self {
         Self {
             name: name.into(),
             type_,
@@ -122,8 +115,7 @@ impl DieselColumn
     /// Mark this column as the primary key.
     /// 将此列标记为主键。
     #[must_use]
-    pub fn primary_key(mut self) -> Self
-    {
+    pub fn primary_key(mut self) -> Self {
         self.is_primary_key = true;
         self
     }
@@ -131,8 +123,7 @@ impl DieselColumn
     /// Allow NULL values for this column.
     /// 允许此列为 NULL。
     #[must_use]
-    pub fn nullable(mut self) -> Self
-    {
+    pub fn nullable(mut self) -> Self {
         self.is_nullable = true;
         self
     }
@@ -140,22 +131,18 @@ impl DieselColumn
     /// Add a UNIQUE constraint to this column.
     /// 为此列添加 UNIQUE 约束。
     #[must_use]
-    pub fn unique(mut self) -> Self
-    {
+    pub fn unique(mut self) -> Self {
         self.is_unique = true;
         self
     }
 
     /// Generate the SQL fragment for this column in a CREATE TABLE statement.
-    fn to_create_column_sql(&self) -> String
-    {
+    fn to_create_column_sql(&self) -> String {
         let mut sql = format!("{} {}", self.name, self.type_.to_sql());
-        if !self.is_nullable
-        {
+        if !self.is_nullable {
             sql.push_str(" NOT NULL");
         }
-        if self.is_unique
-        {
+        if self.is_unique {
             sql.push_str(" UNIQUE");
         }
         sql
@@ -168,18 +155,15 @@ impl DieselColumn
 /// Equivalent to Diesel's `table!` macro.
 /// 等价于 Diesel 的 `table!` 宏。
 #[derive(Debug, Clone)]
-pub struct DieselSchema
-{
+pub struct DieselSchema {
     table_name: String,
     columns: Vec<DieselColumn>,
 }
 
-impl DieselSchema
-{
+impl DieselSchema {
     /// Create a new schema definition for a table.
     /// 为表创建新的 schema 定义。
-    pub fn new(table_name: impl Into<String>) -> Self
-    {
+    pub fn new(table_name: impl Into<String>) -> Self {
         Self {
             table_name: table_name.into(),
             columns: Vec::new(),
@@ -194,14 +178,10 @@ impl DieselSchema
         name: impl Into<String>,
         type_: DieselColumnType,
         primary_key: bool,
-    ) -> Self
-    {
-        let col = if primary_key
-        {
+    ) -> Self {
+        let col = if primary_key {
             DieselColumn::new(name, type_).primary_key()
-        }
-        else
-        {
+        } else {
             DieselColumn::new(name, type_)
         };
         self.columns.push(col);
@@ -211,16 +191,14 @@ impl DieselSchema
     /// Add a column with full configuration.
     /// 添加一个完整配置的列。
     #[must_use]
-    pub fn column_full(mut self, column: DieselColumn) -> Self
-    {
+    pub fn column_full(mut self, column: DieselColumn) -> Self {
         self.columns.push(column);
         self
     }
 
     /// Generate the CREATE TABLE SQL statement.
     /// 生成 CREATE TABLE SQL 语句。
-    pub fn to_create_sql(&self) -> String
-    {
+    pub fn to_create_sql(&self) -> String {
         let col_defs: Vec<String> = self
             .columns
             .iter()
@@ -237,8 +215,7 @@ impl DieselSchema
         let mut sql =
             format!("CREATE TABLE IF NOT EXISTS {} ({}", self.table_name, col_defs.join(", "));
 
-        if !pk_columns.is_empty()
-        {
+        if !pk_columns.is_empty() {
             sql.push_str(&format!(", PRIMARY KEY ({})", pk_columns.join(", ")));
         }
 
@@ -248,22 +225,19 @@ impl DieselSchema
 
     /// Generate the DROP TABLE SQL statement.
     /// 生成 DROP TABLE SQL 语句。
-    pub fn to_drop_sql(&self) -> String
-    {
+    pub fn to_drop_sql(&self) -> String {
         format!("DROP TABLE IF EXISTS {}", self.table_name)
     }
 
     /// Get the table name.
     /// 获取表名。
-    pub fn table_name(&self) -> &str
-    {
+    pub fn table_name(&self) -> &str {
         &self.table_name
     }
 
     /// Get the column definitions.
     /// 获取列定义。
-    pub fn columns(&self) -> &[DieselColumn]
-    {
+    pub fn columns(&self) -> &[DieselColumn] {
         &self.columns
     }
 }
@@ -273,20 +247,16 @@ impl DieselSchema
 /// Sort direction for ORDER BY.
 /// ORDER BY 的排序方向。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum OrderDirection
-{
+pub enum OrderDirection {
     /// Ascending / 升序
     Asc,
     /// Descending / 降序
     Desc,
 }
 
-impl OrderDirection
-{
-    fn to_sql(&self) -> &'static str
-    {
-        match self
-        {
+impl OrderDirection {
+    fn to_sql(&self) -> &'static str {
+        match self {
             Self::Asc => "ASC",
             Self::Desc => "DESC",
         }
@@ -300,8 +270,7 @@ impl OrderDirection
 /// that is executed via the Hiver `DatabaseClient`.
 /// 等价于 Diesel 的 `QueryDsl` — 构建通过 Hiver`DatabaseClient` 执行的类型安全查询。
 #[derive(Debug, Clone)]
-pub struct DieselQuery<M>
-{
+pub struct DieselQuery<M> {
     _phantom: PhantomData<M>,
     table: String,
     filters: Vec<String>,
@@ -310,12 +279,10 @@ pub struct DieselQuery<M>
     offset_val: Option<usize>,
 }
 
-impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
-{
+impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M> {
     /// Create a new query against the model's table.
     /// 创建针对模型表的新查询。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             _phantom: PhantomData,
             table: M::table_name().to_string(),
@@ -328,8 +295,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
 
     /// Create a query against a specific table.
     /// 针对特定表创建查询。
-    pub fn from_table(table: impl Into<String>) -> Self
-    {
+    pub fn from_table(table: impl Into<String>) -> Self {
         Self {
             _phantom: PhantomData,
             table: table.into(),
@@ -346,8 +312,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// Conditions should use `?` placeholders for parameter binding
     /// when using the SQLx-style execution path.
     #[must_use]
-    pub fn filter(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn filter(mut self, condition: impl Into<String>) -> Self {
         self.filters.push(condition.into());
         self
     }
@@ -355,10 +320,8 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// Add an optional filter — only if `Some`.
     /// 添加可选过滤 — 仅在 `Some` 时。
     #[must_use]
-    pub fn filter_optional(self, condition: Option<impl Into<String>>) -> Self
-    {
-        match condition
-        {
+    pub fn filter_optional(self, condition: Option<impl Into<String>>) -> Self {
+        match condition {
             Some(cond) => self.filter(cond),
             None => self,
         }
@@ -367,8 +330,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// Add an ORDER BY clause.
     /// 添加 ORDER BY 子句。
     #[must_use]
-    pub fn order(mut self, column: impl Into<String>, direction: OrderDirection) -> Self
-    {
+    pub fn order(mut self, column: impl Into<String>, direction: OrderDirection) -> Self {
         self.orders
             .push(format!("{} {}", column.into(), direction.to_sql()));
         self
@@ -377,8 +339,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// Set the LIMIT.
     /// 设置 LIMIT。
     #[must_use]
-    pub fn limit(mut self, n: usize) -> Self
-    {
+    pub fn limit(mut self, n: usize) -> Self {
         self.limit_val = Some(n);
         self
     }
@@ -386,37 +347,31 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// Set the OFFSET.
     /// 设置 OFFSET。
     #[must_use]
-    pub fn offset(mut self, n: usize) -> Self
-    {
+    pub fn offset(mut self, n: usize) -> Self {
         self.offset_val = Some(n);
         self
     }
 
     /// Build the SELECT SQL statement from the current query.
     /// 从当前查询构建 SELECT SQL 语句。
-    pub fn to_sql(&self) -> String
-    {
+    pub fn to_sql(&self) -> String {
         let mut sql = format!("SELECT * FROM {}", self.table);
 
-        if !self.filters.is_empty()
-        {
+        if !self.filters.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&self.filters.join(" AND "));
         }
 
-        if !self.orders.is_empty()
-        {
+        if !self.orders.is_empty() {
             sql.push_str(" ORDER BY ");
             sql.push_str(&self.orders.join(", "));
         }
 
-        if let Some(limit) = self.limit_val
-        {
+        if let Some(limit) = self.limit_val {
             sql.push_str(&format!(" LIMIT {limit}"));
         }
 
-        if let Some(offset) = self.offset_val
-        {
+        if let Some(offset) = self.offset_val {
             sql.push_str(&format!(" OFFSET {offset}"));
         }
 
@@ -427,8 +382,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     /// 执行查询并加载所有匹配记录。
     ///
     /// Delegates to `DatabaseClient::fetch_all`.
-    pub async fn load<C: DatabaseClient>(self, client: &C) -> Result<Vec<M>>
-    {
+    pub async fn load<C: DatabaseClient>(self, client: &C) -> Result<Vec<M>> {
         let sql = self.to_sql();
         let rows = client
             .fetch_all(&sql)
@@ -436,8 +390,7 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
             .map_err(|e| crate::Error::query_build(format!("Diesel query load failed: {e}")))?;
 
         let mut results = Vec::with_capacity(rows.len());
-        for row in &rows
-        {
+        for row in &rows {
             let model: M = row
                 .deserialize()
                 .map_err(|e| crate::Error::validation(format!("Diesel deserialize: {e}")))?;
@@ -448,18 +401,15 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
 
     /// Execute the query and return the first matching record.
     /// 执行查询并返回第一个匹配记录。
-    pub async fn first<C: DatabaseClient>(self, client: &C) -> Result<Option<M>>
-    {
+    pub async fn first<C: DatabaseClient>(self, client: &C) -> Result<Option<M>> {
         let sql = format!("{} LIMIT 1", self.to_sql());
         let row = client
             .fetch_one(&sql)
             .await
             .map_err(|e| crate::Error::query_build(format!("Diesel first failed: {e}")))?;
 
-        match row
-        {
-            Some(row) =>
-            {
+        match row {
+            Some(row) => {
                 let model: M = row
                     .deserialize()
                     .map_err(|e| crate::Error::validation(format!("Diesel deserialize: {e}")))?;
@@ -471,12 +421,10 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
 
     /// Execute a count query.
     /// 执行计数查询。
-    pub async fn count<C: DatabaseClient>(self, client: &C) -> Result<i64>
-    {
+    pub async fn count<C: DatabaseClient>(self, client: &C) -> Result<i64> {
         let mut sql = format!("SELECT COUNT(*) AS cnt FROM {}", self.table);
 
-        if !self.filters.is_empty()
-        {
+        if !self.filters.is_empty() {
             sql.push_str(" WHERE ");
             sql.push_str(&self.filters.join(" AND "));
         }
@@ -495,18 +443,21 @@ impl<M: Model + serde::de::DeserializeOwned> DieselQuery<M>
     }
 }
 
-impl<M: Model + serde::de::DeserializeOwned> Default for DieselQuery<M>
-{
-    fn default() -> Self
-    {
+impl<M: Model + serde::de::DeserializeOwned> Default for DieselQuery<M> {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::model::*;
 
@@ -514,38 +465,31 @@ mod tests
     #[derive(Debug, Clone)]
     struct User;
 
-    impl Model for User
-    {
-        fn meta() -> ModelMeta
-        {
+    impl Model for User {
+        fn meta() -> ModelMeta {
             let mut meta = ModelMeta::new("users");
             meta.columns.push(Column::new("id", ColumnType::I64));
             meta.columns.push(Column::new("name", ColumnType::String));
             meta
         }
 
-        fn primary_key(&self) -> crate::Result<String>
-        {
+        fn primary_key(&self) -> crate::Result<String> {
             Ok("id".to_string())
         }
 
-        fn set_primary_key(&mut self, _: String) -> crate::Result<()>
-        {
+        fn set_primary_key(&mut self, _: String) -> crate::Result<()> {
             Ok(())
         }
     }
 
-    impl<'de> serde::Deserialize<'de> for User
-    {
-        fn deserialize<D: serde::Deserializer<'de>>(_d: D) -> std::result::Result<Self, D::Error>
-        {
+    impl<'de> serde::Deserialize<'de> for User {
+        fn deserialize<D: serde::Deserializer<'de>>(_d: D) -> std::result::Result<Self, D::Error> {
             Ok(User)
         }
     }
 
     #[test]
-    fn test_diesel_schema_builder()
-    {
+    fn test_diesel_schema_builder() {
         let schema = DieselSchema::new("users")
             .column("id", DieselColumnType::BigInt, true)
             .column("name", DieselColumnType::Text, false)
@@ -559,15 +503,13 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_schema_drop_sql()
-    {
+    fn test_diesel_schema_drop_sql() {
         let schema = DieselSchema::new("products");
         assert_eq!(schema.to_drop_sql(), "DROP TABLE IF EXISTS products");
     }
 
     #[test]
-    fn test_diesel_column_nullable()
-    {
+    fn test_diesel_column_nullable() {
         let col = DieselColumn::new("description", DieselColumnType::Text).nullable();
         assert!(col.is_nullable);
         assert!(col.to_create_column_sql().contains("TEXT"));
@@ -575,16 +517,14 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_column_unique()
-    {
+    fn test_diesel_column_unique() {
         let col = DieselColumn::new("email", DieselColumnType::Text).unique();
         assert!(col.is_unique);
         assert!(col.to_create_column_sql().contains("UNIQUE"));
     }
 
     #[test]
-    fn test_diesel_column_type_to_sql()
-    {
+    fn test_diesel_column_type_to_sql() {
         assert_eq!(DieselColumnType::Integer.to_sql(), "INTEGER");
         assert_eq!(DieselColumnType::BigInt.to_sql(), "BIGINT");
         assert_eq!(DieselColumnType::Text.to_sql(), "TEXT");
@@ -594,8 +534,7 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_query_to_sql()
-    {
+    fn test_diesel_query_to_sql() {
         let sql = DieselQuery::<User>::new()
             .filter("active = true")
             .order("created_at", OrderDirection::Desc)
@@ -611,8 +550,7 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_query_multiple_filters()
-    {
+    fn test_diesel_query_multiple_filters() {
         let sql = DieselQuery::<User>::new()
             .filter("active = true")
             .filter("age > 18")
@@ -622,8 +560,7 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_query_filter_optional_some()
-    {
+    fn test_diesel_query_filter_optional_some() {
         let sql = DieselQuery::<User>::new()
             .filter_optional(Some("name LIKE '%test%'"))
             .to_sql();
@@ -632,8 +569,7 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_query_filter_optional_none()
-    {
+    fn test_diesel_query_filter_optional_none() {
         let sql = DieselQuery::<User>::new()
             .filter_optional(None::<&str>)
             .to_sql();
@@ -642,8 +578,7 @@ mod tests
     }
 
     #[test]
-    fn test_diesel_query_default()
-    {
+    fn test_diesel_query_default() {
         let q: DieselQuery<User> = DieselQuery::default();
         let sql = q.to_sql();
         assert_eq!(sql, "SELECT * FROM users");

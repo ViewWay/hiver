@@ -16,8 +16,7 @@ use crate::{
 
 /// SQLx-based pool client using sqlx::Any for multi-database support.
 /// 基于 SQLx 的连接池客户端，使用 sqlx::Any 支持多数据库。
-pub struct SqlxPoolClient
-{
+pub struct SqlxPoolClient {
     pool: sqlx::AnyPool,
 }
 
@@ -32,17 +31,14 @@ pub type MySqlPoolClient = SqlxPoolClient;
 #[cfg(feature = "sqlite")]
 pub type SqlitePoolClient = SqlxPoolClient;
 
-impl SqlxPoolClient
-{
+impl SqlxPoolClient {
     /// Create a new pool client from an existing AnyPool
-    pub fn from_pool(pool: sqlx::AnyPool) -> Self
-    {
+    pub fn from_pool(pool: sqlx::AnyPool) -> Self {
         Self { pool }
     }
 
     /// Connect to a database (any supported dialect)
-    pub async fn connect(database_url: &str) -> Result<Self>
-    {
+    pub async fn connect(database_url: &str) -> Result<Self> {
         let pool = sqlx::any::AnyPoolOptions::new()
             .connect(database_url)
             .await
@@ -51,8 +47,7 @@ impl SqlxPoolClient
     }
 
     /// Connect with custom pool options
-    pub async fn connect_with_options(database_url: &str, max_connections: u32) -> Result<Self>
-    {
+    pub async fn connect_with_options(database_url: &str, max_connections: u32) -> Result<Self> {
         let pool = sqlx::any::AnyPoolOptions::new()
             .max_connections(max_connections)
             .connect(database_url)
@@ -62,8 +57,7 @@ impl SqlxPoolClient
     }
 
     /// Get the underlying pool
-    pub fn pool(&self) -> &sqlx::AnyPool
-    {
+    pub fn pool(&self) -> &sqlx::AnyPool {
         &self.pool
     }
 }
@@ -71,10 +65,8 @@ impl SqlxPoolClient
 // DatabaseClient implementation
 
 #[async_trait::async_trait]
-impl DatabaseClient for SqlxPoolClient
-{
-    async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>>
-    {
+impl DatabaseClient for SqlxPoolClient {
+    async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>> {
         let db_rows = sqlx::query(sql)
             .fetch_all(&self.pool)
             .await
@@ -83,22 +75,19 @@ impl DatabaseClient for SqlxPoolClient
         db_rows.iter().map(any_row_to_hiver_row).collect()
     }
 
-    async fn fetch_one(&self, sql: &str) -> Result<Option<Row>>
-    {
+    async fn fetch_one(&self, sql: &str) -> Result<Option<Row>> {
         let db_row = sqlx::query(sql)
             .fetch_optional(&self.pool)
             .await
             .map_err(Error::from)?;
 
-        match db_row
-        {
+        match db_row {
             Some(row) => Ok(Some(any_row_to_hiver_row(&row)?)),
             None => Ok(None),
         }
     }
 
-    async fn execute_cmd(&self, sql: &str) -> Result<u64>
-    {
+    async fn execute_cmd(&self, sql: &str) -> Result<u64> {
         let result = sqlx::query(sql)
             .execute(&self.pool)
             .await
@@ -107,8 +96,7 @@ impl DatabaseClient for SqlxPoolClient
         Ok(result.rows_affected())
     }
 
-    async fn begin_transaction(&self) -> Result<crate::Transaction>
-    {
+    async fn begin_transaction(&self) -> Result<crate::Transaction> {
         let tx = self
             .pool
             .begin()
@@ -120,8 +108,7 @@ impl DatabaseClient for SqlxPoolClient
         })))
     }
 
-    async fn ping(&self) -> Result<()>
-    {
+    async fn ping(&self) -> Result<()> {
         sqlx::query("SELECT 1")
             .execute(&self.pool)
             .await
@@ -129,8 +116,7 @@ impl DatabaseClient for SqlxPoolClient
         Ok(())
     }
 
-    async fn close(&self) -> Result<()>
-    {
+    async fn close(&self) -> Result<()> {
         self.pool.close().await;
         Ok(())
     }
@@ -138,13 +124,11 @@ impl DatabaseClient for SqlxPoolClient
 
 // Row conversion: sqlx AnyRow to Hiver Row
 
-fn any_row_to_hiver_row(row: &AnyRow) -> Result<Row>
-{
+fn any_row_to_hiver_row(row: &AnyRow) -> Result<Row> {
     let columns = row.columns();
     let mut hiver_row = Row::new();
 
-    for col in columns
-    {
+    for col in columns {
         let name = col.name().to_string();
         let type_name = col.type_info().to_string().to_lowercase();
 
@@ -155,77 +139,63 @@ fn any_row_to_hiver_row(row: &AnyRow) -> Result<Row>
     Ok(hiver_row)
 }
 
-fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Result<ColumnValue>
-{
-    match type_name
-    {
-        "boolean" | "bool" =>
-        {
+fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Result<ColumnValue> {
+    match type_name {
+        "boolean" | "bool" => {
             let val: bool = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::Bool(val))
         },
-        "int2" | "smallint" | "tinyint" =>
-        {
+        "int2" | "smallint" | "tinyint" => {
             let val: i16 = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::I16(val))
         },
-        "int4" | "integer" | "int" =>
-        {
+        "int4" | "integer" | "int" => {
             let val: i32 = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::I32(val))
         },
-        "int8" | "bigint" =>
-        {
+        "int8" | "bigint" => {
             let val: i64 = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::I64(val))
         },
-        "float4" | "real" | "float" =>
-        {
+        "float4" | "real" | "float" => {
             let val: f32 = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::F32(val))
         },
-        "float8" | "double precision" | "double" =>
-        {
+        "float8" | "double precision" | "double" => {
             let val: f64 = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::F64(val))
         },
-        "varchar" | "text" | "char" | "bpchar" | "name" | "citext" | "string" =>
-        {
+        "varchar" | "text" | "char" | "bpchar" | "name" | "citext" | "string" => {
             let val: String = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::String(val))
         },
-        "bytea" | "blob" | "binary" =>
-        {
+        "bytea" | "blob" | "binary" => {
             let val: Vec<u8> = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
             Ok(ColumnValue::Bytes(val))
         },
-        "uuid" =>
-        {
+        "uuid" => {
             let val: String = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
-            if let Ok(u) = uuid::Uuid::parse_str(&val)
-            {
+            if let Ok(u) = uuid::Uuid::parse_str(&val) {
                 Ok(ColumnValue::Uuid(u))
-            }
-            else
-            {
+            } else {
                 Ok(ColumnValue::String(val))
             }
         },
@@ -233,8 +203,7 @@ fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Resu
         | "timestamptz"
         | "datetime"
         | "timestamp without time zone"
-        | "timestamp with time zone" =>
-        {
+        | "timestamp with time zone" => {
             let val: String = row
                 .try_get(index)
                 .map_err(|e| Error::RowMapping(format!("column {index}: {e}")))?;
@@ -245,25 +214,19 @@ fn extract_any_column_value(row: &AnyRow, index: usize, type_name: &str) -> Resu
                 "%Y-%m-%dT%H:%M:%S%.f",
             ];
             let mut parsed = None;
-            for fmt in &formats
-            {
-                if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(&val, fmt)
-                {
+            for fmt in &formats {
+                if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(&val, fmt) {
                     parsed = Some(dt);
                     break;
                 }
             }
-            if let Some(dt) = parsed
-            {
+            if let Some(dt) = parsed {
                 Ok(ColumnValue::NaiveDateTime(dt))
-            }
-            else
-            {
+            } else {
                 Ok(ColumnValue::String(val))
             }
         },
-        _ =>
-        {
+        _ => {
             let val: String = row.try_get(index).ok().unwrap_or_default();
             Ok(ColumnValue::String(val))
         },
@@ -276,8 +239,7 @@ use std::sync::Arc;
 
 use tokio::sync::Mutex;
 
-struct AnyTransactionInner
-{
+struct AnyTransactionInner {
     inner: Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
 }
 
@@ -297,23 +259,20 @@ async fn take_tx(
 async fn put_tx(
     inner: &Arc<Mutex<Option<sqlx::Transaction<'static, Any>>>>,
     tx: sqlx::Transaction<'static, Any>,
-) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>
-{
+) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut guard = inner.lock().await;
     *guard = Some(tx);
     Ok(())
 }
 
-impl crate::transaction::TransactionInner for AnyTransactionInner
-{
+impl crate::transaction::TransactionInner for AnyTransactionInner {
     fn execute(
         &self,
         sql: &str,
     ) -> futures_util::future::BoxFuture<
         '_,
         std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>,
-    >
-    {
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
@@ -332,8 +291,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
     ) -> futures_util::future::BoxFuture<
         '_,
         std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>,
-    >
-    {
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
@@ -357,8 +315,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
     ) -> futures_util::future::BoxFuture<
         '_,
         std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>,
-    >
-    {
+    > {
         let inner = self.inner.clone();
         let sql = sql.to_string();
         Box::pin(async move {
@@ -366,8 +323,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
             let db_row = sqlx::query(&sql).fetch_optional(&mut *tx).await.map_err(
                 |e| -> Box<dyn std::error::Error + Send + Sync> { e.to_string().into() },
             )?;
-            let result = match db_row
-            {
+            let result = match db_row {
                 Some(row) => Ok(Some(any_row_to_hiver_row(&row)?)),
                 None => Ok(None),
             };
@@ -381,8 +337,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
     ) -> futures_util::future::BoxFuture<
         '_,
         std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>,
-    >
-    {
+    > {
         let inner = self.inner.clone();
         Box::pin(async move {
             let tx = take_tx(&inner).await?;
@@ -397,8 +352,7 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
     ) -> futures_util::future::BoxFuture<
         '_,
         std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>,
-    >
-    {
+    > {
         let inner = self.inner.clone();
         Box::pin(async move {
             let tx = take_tx(&inner).await?;
@@ -408,25 +362,21 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
         })
     }
 
-    fn isolation_level(&self) -> crate::transaction::IsolationLevel
-    {
+    fn isolation_level(&self) -> crate::transaction::IsolationLevel {
         crate::transaction::IsolationLevel::ReadCommitted
     }
 
-    fn is_committed(&self) -> bool
-    {
+    fn is_committed(&self) -> bool {
         let guard = self.inner.try_lock();
         guard.is_ok_and(|tx| tx.is_none())
     }
 
-    fn is_rolled_back(&self) -> bool
-    {
+    fn is_rolled_back(&self) -> bool {
         let guard = self.inner.try_lock();
         guard.is_ok_and(|tx| tx.is_none())
     }
 
-    fn clone_box(&self) -> Box<dyn crate::transaction::TransactionInner>
-    {
+    fn clone_box(&self) -> Box<dyn crate::transaction::TransactionInner> {
         Box::new(AnyTransactionInner {
             inner: self.inner.clone(),
         })
@@ -434,12 +384,16 @@ impl crate::transaction::TransactionInner for AnyTransactionInner
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     #[test]
-    fn test_types_compile()
-    {
+    fn test_types_compile() {
         let _client: Option<super::SqlxPoolClient> = None;
     }
 }

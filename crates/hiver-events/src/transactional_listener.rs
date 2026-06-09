@@ -66,8 +66,7 @@ use crate::event::ApplicationEvent;
 /// }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum TransactionPhase
-{
+pub enum TransactionPhase {
     /// Execute before the transaction commits
     /// 在事务提交之前执行
     BeforeCommit,
@@ -86,8 +85,7 @@ pub enum TransactionPhase
     AfterCompletion,
 }
 
-impl TransactionPhase
-{
+impl TransactionPhase {
     /// Parse transaction phase from a string slice
     /// 从字符串切片解析事务阶段
     ///
@@ -97,10 +95,8 @@ impl TransactionPhase
     /// - `"after_commit"` or `"AFTER_COMMIT"` -> `AfterCommit`
     /// - `"after_rollback"` or `"AFTER_ROLLBACK"` -> `AfterRollback`
     /// - `"after_completion"` or `"AFTER_COMPLETION"` -> `AfterCompletion`
-    pub fn from_str_lossy(s: &str) -> Option<Self>
-    {
-        match s.to_lowercase().as_str()
-        {
+    pub fn from_str_lossy(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
             "before_commit" => Some(Self::BeforeCommit),
             "after_commit" => Some(Self::AfterCommit),
             "after_rollback" => Some(Self::AfterRollback),
@@ -111,10 +107,8 @@ impl TransactionPhase
 
     /// Get the string representation of this phase
     /// 获取此阶段的字符串表示
-    pub fn as_str(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn as_str(&self) -> &'static str {
+        match self {
             Self::BeforeCommit => "before_commit",
             Self::AfterCommit => "after_commit",
             Self::AfterRollback => "after_rollback",
@@ -123,10 +117,8 @@ impl TransactionPhase
     }
 }
 
-impl fmt::Display for TransactionPhase
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for TransactionPhase {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.as_str())
     }
 }
@@ -142,8 +134,7 @@ impl fmt::Display for TransactionPhase
 ///     // Handle event after commit
 /// }
 /// ```
-pub struct TransactionalEventListener
-{
+pub struct TransactionalEventListener {
     /// The event TypeId this listener is interested in
     /// 此监听器关注的事件TypeId
     event_type_id: TypeId,
@@ -177,8 +168,7 @@ pub struct TransactionalEventListener
     order: i32,
 }
 
-impl TransactionalEventListener
-{
+impl TransactionalEventListener {
     /// Create a new transactional event listener
     /// 创建新的事务事件监听器
     ///
@@ -216,82 +206,70 @@ impl TransactionalEventListener
 
     /// Set the condition expression
     /// 设置条件表达式
-    pub fn with_condition(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
         self.condition = Some(condition.into());
         self
     }
 
     /// Set the listener ID
     /// 设置监听器ID
-    pub fn with_id(mut self, id: impl Into<String>) -> Self
-    {
+    pub fn with_id(mut self, id: impl Into<String>) -> Self {
         self.id = id.into();
         self
     }
 
     /// Set the execution order
     /// 设置执行顺序
-    pub fn with_order(mut self, order: i32) -> Self
-    {
+    pub fn with_order(mut self, order: i32) -> Self {
         self.order = order;
         self
     }
 
     /// Get the event TypeId
     /// 获取事件TypeId
-    pub fn event_type_id(&self) -> TypeId
-    {
+    pub fn event_type_id(&self) -> TypeId {
         self.event_type_id
     }
 
     /// Get the event type name
     /// 获取事件类型名称
-    pub fn event_type_name(&self) -> &str
-    {
+    pub fn event_type_name(&self) -> &str {
         &self.event_type_name
     }
 
     /// Get the transaction phase
     /// 获取事务阶段
-    pub fn phase(&self) -> TransactionPhase
-    {
+    pub fn phase(&self) -> TransactionPhase {
         self.phase
     }
 
     /// Get the condition expression
     /// 获取条件表达式
-    pub fn condition(&self) -> Option<&str>
-    {
+    pub fn condition(&self) -> Option<&str> {
         self.condition.as_deref()
     }
 
     /// Get the listener ID
     /// 获取监听器ID
-    pub fn id(&self) -> &str
-    {
+    pub fn id(&self) -> &str {
         &self.id
     }
 
     /// Get the execution order
     /// 获取执行顺序
-    pub fn order(&self) -> i32
-    {
+    pub fn order(&self) -> i32 {
         self.order
     }
 
     /// Invoke the listener with a type-erased event
     /// 使用类型擦除的事件调用监听器
-    pub async fn call(&self, event: &dyn Any) -> Result<(), String>
-    {
+    pub async fn call(&self, event: &dyn Any) -> Result<(), String> {
         (self.listener)(event).await
     }
 }
 
-impl fmt::Debug for TransactionalEventListener
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for TransactionalEventListener {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TransactionalEventListener")
             .field("event_type_name", &self.event_type_name)
             .field("phase", &self.phase)
@@ -314,8 +292,7 @@ impl fmt::Debug for TransactionalEventListener
 /// )
 /// ```
 #[derive(Debug, Clone)]
-pub struct TransactionalEventListenerConfig
-{
+pub struct TransactionalEventListenerConfig {
     /// Transaction phase
     /// 事务阶段
     pub phase: TransactionPhase,
@@ -333,10 +310,8 @@ pub struct TransactionalEventListenerConfig
     pub fallback_execution: bool,
 }
 
-impl Default for TransactionalEventListenerConfig
-{
-    fn default() -> Self
-    {
+impl Default for TransactionalEventListenerConfig {
+    fn default() -> Self {
         Self {
             phase: TransactionPhase::AfterCommit,
             condition: None,
@@ -346,43 +321,37 @@ impl Default for TransactionalEventListenerConfig
     }
 }
 
-impl TransactionalEventListenerConfig
-{
+impl TransactionalEventListenerConfig {
     /// Create new config with default values
     /// 使用默认值创建新配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set the transaction phase
     /// 设置事务阶段
-    pub fn with_phase(mut self, phase: TransactionPhase) -> Self
-    {
+    pub fn with_phase(mut self, phase: TransactionPhase) -> Self {
         self.phase = phase;
         self
     }
 
     /// Set the condition expression
     /// 设置条件表达式
-    pub fn with_condition(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
         self.condition = Some(condition.into());
         self
     }
 
     /// Set the execution order
     /// 设置执行顺序
-    pub fn with_order(mut self, order: i32) -> Self
-    {
+    pub fn with_order(mut self, order: i32) -> Self {
         self.order = order;
         self
     }
 
     /// Set fallback execution behavior
     /// 设置回退执行行为
-    pub fn with_fallback_execution(mut self, fallback: bool) -> Self
-    {
+    pub fn with_fallback_execution(mut self, fallback: bool) -> Self {
         self.fallback_execution = fallback;
         self
     }
@@ -411,8 +380,7 @@ impl TransactionalEventListenerConfig
 ///     }
 /// }
 /// ```
-pub struct TransactionalEventPublisher
-{
+pub struct TransactionalEventPublisher {
     /// Listeners grouped by phase, then by event TypeId
     /// 按阶段分组，然后按事件TypeId分组的监听器
     listeners: Arc<
@@ -425,12 +393,10 @@ pub struct TransactionalEventPublisher
     default_config: TransactionalEventListenerConfig,
 }
 
-impl TransactionalEventPublisher
-{
+impl TransactionalEventPublisher {
     /// Create a new transactional event publisher
     /// 创建新的事务事件发布器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             listeners: Arc::new(RwLock::new(HashMap::new())),
             default_config: TransactionalEventListenerConfig::default(),
@@ -439,8 +405,7 @@ impl TransactionalEventPublisher
 
     /// Create with a custom default configuration
     /// 使用自定义默认配置创建
-    pub fn with_config(config: TransactionalEventListenerConfig) -> Self
-    {
+    pub fn with_config(config: TransactionalEventListenerConfig) -> Self {
         Self {
             listeners: Arc::new(RwLock::new(HashMap::new())),
             default_config: config,
@@ -453,8 +418,7 @@ impl TransactionalEventPublisher
     /// # Parameters / 参数
     ///
     /// - `listener`: The fully configured `TransactionalEventListener`
-    pub async fn register_listener(&self, listener: TransactionalEventListener)
-    {
+    pub async fn register_listener(&self, listener: TransactionalEventListener) {
         let phase = listener.phase();
         let type_id = listener.event_type_id();
 
@@ -490,12 +454,9 @@ impl TransactionalEventPublisher
             + 'static,
     {
         let listener = TransactionalEventListener::new::<E, _>(phase, move |event: &dyn Any| {
-            if let Some(typed) = event.downcast_ref::<E>()
-            {
+            if let Some(typed) = event.downcast_ref::<E>() {
                 handler(typed)
-            }
-            else
-            {
+            } else {
                 Box::pin(async {
                     Err(format!("Type mismatch: expected {}", std::any::type_name::<E>()))
                 })
@@ -554,18 +515,14 @@ impl TransactionalEventPublisher
         &self,
         event: &dyn Any,
         phase: TransactionPhase,
-    ) -> Vec<Result<(), String>>
-    {
+    ) -> Vec<Result<(), String>> {
         let listeners = self.listeners.read().await;
         let mut results = Vec::new();
 
-        if let Some(phase_map) = listeners.get(&phase)
-        {
+        if let Some(phase_map) = listeners.get(&phase) {
             // Try to match against all registered TypeIds in this phase
-            for listener_list in phase_map.values()
-            {
-                for listener in listener_list
-                {
+            for listener_list in phase_map.values() {
+                for listener in listener_list {
                     let result = listener.call(event).await;
                     results.push(result);
                 }
@@ -577,8 +534,7 @@ impl TransactionalEventPublisher
 
     /// Internal: publish a type-erased event to all `AfterCompletion` listeners
     /// 内部：将类型擦除的事件发布到所有 `AfterCompletion` 监听器
-    async fn publish_after_completion_dynamic(&self, event: &dyn Any) -> Vec<Result<(), String>>
-    {
+    async fn publish_after_completion_dynamic(&self, event: &dyn Any) -> Vec<Result<(), String>> {
         self.publish_dynamic(event, TransactionPhase::AfterCompletion)
             .await
     }
@@ -601,8 +557,7 @@ impl TransactionalEventPublisher
         if let Some(phase_map) = listeners.get(&phase)
             && let Some(listener_list) = phase_map.get(&type_id)
         {
-            for listener in listener_list
-            {
+            for listener in listener_list {
                 let result = listener.call(event as &dyn Any).await;
                 results.push(result);
             }
@@ -643,25 +598,20 @@ impl TransactionalEventPublisher
 
     /// Clear all listeners
     /// 清除所有监听器
-    pub async fn clear(&self)
-    {
+    pub async fn clear(&self) {
         let mut listeners = self.listeners.write().await;
         listeners.clear();
     }
 }
 
-impl Default for TransactionalEventPublisher
-{
-    fn default() -> Self
-    {
+impl Default for TransactionalEventPublisher {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl Clone for TransactionalEventPublisher
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for TransactionalEventPublisher {
+    fn clone(&self) -> Self {
         Self {
             listeners: self.listeners.clone(),
             default_config: self.default_config.clone(),
@@ -703,8 +653,7 @@ impl Clone for TransactionalEventPublisher
 /// bridge.commit().await;   // triggers before_commit, after_commit, after_completion
 /// bridge.rollback().await; // triggers after_rollback, after_completion
 /// ```
-pub struct TransactionalEventBridge
-{
+pub struct TransactionalEventBridge {
     /// The publisher to dispatch through
     /// 用于分发的发布器
     publisher: TransactionalEventPublisher,
@@ -718,12 +667,10 @@ pub struct TransactionalEventBridge
     active: Arc<std::sync::atomic::AtomicBool>,
 }
 
-impl TransactionalEventBridge
-{
+impl TransactionalEventBridge {
     /// Create a new bridge with the given publisher
     /// 使用给定的发布器创建新桥接器
-    pub fn new(publisher: TransactionalEventPublisher) -> Self
-    {
+    pub fn new(publisher: TransactionalEventPublisher) -> Self {
         Self {
             publisher,
             pending_events: Arc::new(RwLock::new(Vec::new())),
@@ -738,14 +685,12 @@ impl TransactionalEventBridge
     /// Clears pending events synchronously using `try_blocking_clear`.
     /// Clears pending events and marks the bridge as active.
     /// 清除所有待处理事件并标记桥接器为活动状态。
-    pub fn begin(&self)
-    {
+    pub fn begin(&self) {
         // Try to clear pending events. If we're in an async context,
         // use block_on; otherwise clear directly.
         // 尝试清除待处理事件。如果在异步上下文中，使用 block_on；
         // 否则直接清除。
-        if let Ok(handle) = tokio::runtime::Handle::try_current()
-        {
+        if let Ok(handle) = tokio::runtime::Handle::try_current() {
             // We are inside an async runtime; use block_on to clear
             handle.block_on(async {
                 self.pending_events.write().await.clear();
@@ -761,8 +706,7 @@ impl TransactionalEventBridge
     /// Use this variant when already inside a tokio runtime to avoid
     /// nested block_on panics.
     /// 在已在 tokio 运行时内时使用此变体，以避免嵌套的 block_on 恐慌。
-    pub async fn begin_async(&self)
-    {
+    pub async fn begin_async(&self) {
         self.pending_events.write().await.clear();
         self.active
             .store(true, std::sync::atomic::Ordering::Release);
@@ -782,24 +726,20 @@ impl TransactionalEventBridge
 
     /// Check if a transaction is active
     /// 检查事务是否处于活动状态
-    pub fn is_active(&self) -> bool
-    {
+    pub fn is_active(&self) -> bool {
         self.active.load(std::sync::atomic::Ordering::Acquire)
     }
 
     /// Get the number of pending events
     /// 获取待处理事件的数量
-    pub async fn pending_count(&self) -> usize
-    {
+    pub async fn pending_count(&self) -> usize {
         self.pending_events.read().await.len()
     }
 
     /// Commit the transaction: trigger before_commit, then after_commit, then after_completion
     /// 提交事务：触发 before_commit，然后 after_commit，然后 after_completion
-    pub async fn commit(&self) -> Vec<Result<(), String>>
-    {
-        if !self.active.load(std::sync::atomic::Ordering::Acquire)
-        {
+    pub async fn commit(&self) -> Vec<Result<(), String>> {
+        if !self.active.load(std::sync::atomic::Ordering::Acquire) {
             return Vec::new();
         }
 
@@ -811,8 +751,7 @@ impl TransactionalEventBridge
         let mut all_results = Vec::new();
 
         // Phase 1: before_commit
-        for event in &events
-        {
+        for event in &events {
             let results = self
                 .publisher
                 .publish_dynamic(event.as_ref(), TransactionPhase::BeforeCommit)
@@ -821,8 +760,7 @@ impl TransactionalEventBridge
         }
 
         // Phase 2: after_commit
-        for event in &events
-        {
+        for event in &events {
             let results = self
                 .publisher
                 .publish_dynamic(event.as_ref(), TransactionPhase::AfterCommit)
@@ -831,8 +769,7 @@ impl TransactionalEventBridge
         }
 
         // Phase 3: after_completion (fires after both commit and rollback listeners)
-        for event in &events
-        {
+        for event in &events {
             let results = self
                 .publisher
                 .publish_after_completion_dynamic(event.as_ref())
@@ -848,10 +785,8 @@ impl TransactionalEventBridge
 
     /// Rollback the transaction: trigger after_rollback, then after_completion
     /// 回滚事务：触发 after_rollback，然后 after_completion
-    pub async fn rollback(&self) -> Vec<Result<(), String>>
-    {
-        if !self.active.load(std::sync::atomic::Ordering::Acquire)
-        {
+    pub async fn rollback(&self) -> Vec<Result<(), String>> {
+        if !self.active.load(std::sync::atomic::Ordering::Acquire) {
             return Vec::new();
         }
 
@@ -863,8 +798,7 @@ impl TransactionalEventBridge
         let mut all_results = Vec::new();
 
         // Phase 1: after_rollback
-        for event in &events
-        {
+        for event in &events {
             let results = self
                 .publisher
                 .publish_dynamic(event.as_ref(), TransactionPhase::AfterRollback)
@@ -873,8 +807,7 @@ impl TransactionalEventBridge
         }
 
         // Phase 2: after_completion
-        for event in &events
-        {
+        for event in &events {
             let results = self
                 .publisher
                 .publish_after_completion_dynamic(event.as_ref())
@@ -889,10 +822,8 @@ impl TransactionalEventBridge
     }
 }
 
-impl Clone for TransactionalEventBridge
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for TransactionalEventBridge {
+    fn clone(&self) -> Self {
         Self {
             publisher: self.publisher.clone(),
             pending_events: self.pending_events.clone(),
@@ -902,9 +833,14 @@ impl Clone for TransactionalEventBridge
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::atomic::{AtomicU32, Ordering};
 
     use super::*;
@@ -912,40 +848,32 @@ mod tests
     // --- Test Events ---
 
     #[derive(Clone, Debug)]
-    struct OrderCreatedEvent
-    {
+    struct OrderCreatedEvent {
         order_id: u64,
         status: String,
     }
 
-    impl ApplicationEvent for OrderCreatedEvent
-    {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
-        {
+    impl ApplicationEvent for OrderCreatedEvent {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn Any
-        {
+        fn as_any(&self) -> &dyn Any {
             self
         }
     }
 
     #[derive(Clone, Debug)]
-    struct PaymentProcessedEvent
-    {
+    struct PaymentProcessedEvent {
         payment_id: u64,
     }
 
-    impl ApplicationEvent for PaymentProcessedEvent
-    {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
-        {
+    impl ApplicationEvent for PaymentProcessedEvent {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn Any
-        {
+        fn as_any(&self) -> &dyn Any {
             self
         }
     }
@@ -953,8 +881,7 @@ mod tests
     // --- TransactionPhase Tests ---
 
     #[test]
-    fn test_transaction_phase_from_str()
-    {
+    fn test_transaction_phase_from_str() {
         assert_eq!(
             TransactionPhase::from_str_lossy("before_commit"),
             Some(TransactionPhase::BeforeCommit)
@@ -975,8 +902,7 @@ mod tests
     }
 
     #[test]
-    fn test_transaction_phase_display()
-    {
+    fn test_transaction_phase_display() {
         assert_eq!(TransactionPhase::BeforeCommit.to_string(), "before_commit");
         assert_eq!(TransactionPhase::AfterCommit.to_string(), "after_commit");
         assert_eq!(TransactionPhase::AfterRollback.to_string(), "after_rollback");
@@ -984,16 +910,14 @@ mod tests
     }
 
     #[test]
-    fn test_transaction_phase_default()
-    {
+    fn test_transaction_phase_default() {
         assert_eq!(TransactionPhase::default(), TransactionPhase::AfterCommit);
     }
 
     // --- TransactionalEventListenerConfig Tests ---
 
     #[test]
-    fn test_listener_config_default()
-    {
+    fn test_listener_config_default() {
         let config = TransactionalEventListenerConfig::default();
         assert_eq!(config.phase, TransactionPhase::AfterCommit);
         assert!(config.condition.is_none());
@@ -1002,8 +926,7 @@ mod tests
     }
 
     #[test]
-    fn test_listener_config_builder()
-    {
+    fn test_listener_config_builder() {
         let config = TransactionalEventListenerConfig::new()
             .with_phase(TransactionPhase::BeforeCommit)
             .with_condition("status == 'active'")
@@ -1019,8 +942,7 @@ mod tests
     // --- TransactionalEventPublisher Tests ---
 
     #[tokio::test]
-    async fn test_register_and_publish_after_commit()
-    {
+    async fn test_register_and_publish_after_commit() {
         let publisher = TransactionalEventPublisher::new();
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
@@ -1058,8 +980,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_no_listeners_for_phase()
-    {
+    async fn test_no_listeners_for_phase() {
         let publisher = TransactionalEventPublisher::new();
         let event = OrderCreatedEvent {
             order_id: 1,
@@ -1071,8 +992,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_multiple_listeners_same_phase()
-    {
+    async fn test_multiple_listeners_same_phase() {
         let publisher = TransactionalEventPublisher::new();
         let counter1 = Arc::new(AtomicU32::new(0));
         let counter2 = Arc::new(AtomicU32::new(0));
@@ -1111,8 +1031,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_different_event_types()
-    {
+    async fn test_different_event_types() {
         let publisher = TransactionalEventPublisher::new();
         let order_counter = Arc::new(AtomicU32::new(0));
         let payment_counter = Arc::new(AtomicU32::new(0));
@@ -1153,8 +1072,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_listener_order()
-    {
+    async fn test_listener_order() {
         let publisher = TransactionalEventPublisher::new();
         let execution_order = Arc::new(RwLock::<Vec<i32>>::new(Vec::new()));
 
@@ -1200,8 +1118,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_clear_listeners()
-    {
+    async fn test_clear_listeners() {
         let publisher = TransactionalEventPublisher::new();
         let counter = Arc::new(AtomicU32::new(0));
         let c = counter.clone();
@@ -1236,8 +1153,7 @@ mod tests
     // --- TransactionalEventBridge Tests ---
 
     #[tokio::test]
-    async fn test_bridge_commit_lifecycle()
-    {
+    async fn test_bridge_commit_lifecycle() {
         let publisher = TransactionalEventPublisher::new();
         let bridge = TransactionalEventBridge::new(publisher);
 
@@ -1291,8 +1207,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_bridge_rollback_lifecycle()
-    {
+    async fn test_bridge_rollback_lifecycle() {
         let publisher = TransactionalEventPublisher::new();
         let bridge = TransactionalEventBridge::new(publisher);
 
@@ -1326,8 +1241,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_bridge_noop_when_inactive()
-    {
+    async fn test_bridge_noop_when_inactive() {
         let publisher = TransactionalEventPublisher::new();
         let bridge = TransactionalEventBridge::new(publisher);
 
@@ -1340,8 +1254,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_listener_with_condition()
-    {
+    async fn test_listener_with_condition() {
         let listener = TransactionalEventListener::new::<OrderCreatedEvent, _>(
             TransactionPhase::AfterCommit,
             |_event: &dyn Any| Box::pin(async { Ok(()) }),

@@ -84,7 +84,13 @@
 #![allow(clippy::unused_async)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod acl;
@@ -155,8 +161,7 @@ pub use user::{InMemoryUserService, User, UserDetails, UserService};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude
-{
+pub mod prelude {
     // CSRF re-exports / CSRF重新导出
     pub use super::{
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,

@@ -13,27 +13,22 @@ use crate::commands;
     version,
     about = "Hiver project scaffolding tool / Hiver 项目脚手架工具"
 )]
-pub struct Cli
-{
+pub struct Cli {
     #[command(subcommand)]
     command: Commands,
 }
 
-impl Cli
-{
+impl Cli {
     /// Parse arguments and execute the command.
     /// 解析参数并执行命令。
-    pub fn parse() -> Self
-    {
+    pub fn parse() -> Self {
         Parser::parse()
     }
 
     /// Run the selected command.
     /// 执行选中的命令。
-    pub fn run(self) -> Result<(), Box<dyn std::error::Error>>
-    {
-        match self.command
-        {
+    pub fn run(self) -> Result<(), Box<dyn std::error::Error>> {
+        match self.command {
             Commands::New(args) => commands::new::run(&args),
             Commands::Run(args) => commands::run::run(&args),
             Commands::Build(args) => commands::run::build(&args),
@@ -48,8 +43,7 @@ impl Cli
 /// Available commands.
 /// 可用命令。
 #[derive(Subcommand)]
-enum Commands
-{
+enum Commands {
     /// Create a new Hiver project / 创建新的 Hiver 项目
     #[command(alias = "n")]
     New(NewArgs),
@@ -82,8 +76,7 @@ enum Commands
 /// Arguments for `hiver new`.
 /// `hiver new` 的参数。
 #[derive(clap::Args)]
-pub struct NewArgs
-{
+pub struct NewArgs {
     /// Project name / 项目名称
     pub name: String,
 
@@ -147,8 +140,7 @@ pub struct NewArgs
 /// Arguments for `hiver run`.
 /// `hiver run` 的参数。
 #[derive(clap::Args)]
-pub struct RunArgs
-{
+pub struct RunArgs {
     /// Run in release mode / 以 release 模式运行
     #[arg(long, short)]
     pub release: bool,
@@ -161,8 +153,7 @@ pub struct RunArgs
 /// Arguments for `hiver build`.
 /// `hiver build` 的参数。
 #[derive(clap::Args)]
-pub struct BuildArgs
-{
+pub struct BuildArgs {
     /// Build in release mode / 以 release 模式构建
     #[arg(long, short)]
     pub release: bool,
@@ -171,8 +162,7 @@ pub struct BuildArgs
 /// Arguments for `hiver add`.
 /// `hiver add` 的参数。
 #[derive(clap::Args)]
-pub struct AddArgs
-{
+pub struct AddArgs {
     /// Module name (web, security, data, cache, schedule, actuator, web3, graphql, grpc, ai)
     /// 模块名称
     pub module: String,
@@ -181,8 +171,7 @@ pub struct AddArgs
 /// Arguments for `hiver generate`.
 /// `hiver generate` 的参数。
 #[derive(clap::Args)]
-pub struct GenerateArgs
-{
+pub struct GenerateArgs {
     /// Type of code to generate (controller, service, repository, entity, middleware, config)
     /// 要生成的代码类型
     pub gen_type: String,
@@ -194,8 +183,7 @@ pub struct GenerateArgs
 /// Arguments for `hiver test`.
 /// `hiver test` 的参数。
 #[derive(clap::Args)]
-pub struct TestArgs
-{
+pub struct TestArgs {
     /// Test name filter / 测试名称过滤
     #[arg(long, short)]
     pub filter: Option<String>,

@@ -12,8 +12,7 @@ use crate::core::{
 
 /// Get the number of available CPU cores
 /// 获取可用的 CPU 核心数
-fn available_parallelism() -> usize
-{
+fn available_parallelism() -> usize {
     num_cpus::get()
 }
 
@@ -43,8 +42,7 @@ fn available_parallelism() -> usize
 /// config.configure(&mut context)?;
 /// ```
 #[derive(Debug, Clone)]
-pub struct CoreAutoConfiguration
-{
+pub struct CoreAutoConfiguration {
     /// 应用名称
     /// Application name
     app_name: String,
@@ -58,8 +56,7 @@ pub struct CoreAutoConfiguration
     worker_threads: usize,
 }
 
-impl CoreAutoConfiguration
-{
+impl CoreAutoConfiguration {
     /// 创建新的核心自动配置
     /// Create a new core auto-configuration
     ///
@@ -70,8 +67,7 @@ impl CoreAutoConfiguration
     ///
     /// let config = CoreAutoConfiguration::new();
     /// ```
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             app_name: "Hiver Application".to_string(),
             debug: std::env::var("HIVER_DEBUG")
@@ -97,8 +93,7 @@ impl CoreAutoConfiguration
     ///
     /// let config = CoreAutoConfiguration::with_app_name("My App");
     /// ```
-    pub fn with_app_name(app_name: impl Into<String>) -> Self
-    {
+    pub fn with_app_name(app_name: impl Into<String>) -> Self {
         Self {
             app_name: app_name.into(),
             ..Self::new()
@@ -111,8 +106,7 @@ impl CoreAutoConfiguration
     /// # 参数 / Parameters
     ///
     /// - `debug`: 是否启用调试模式 / Whether to enable debug mode
-    pub fn with_debug(mut self, debug: bool) -> Self
-    {
+    pub fn with_debug(mut self, debug: bool) -> Self {
         self.debug = debug;
         self
     }
@@ -123,8 +117,7 @@ impl CoreAutoConfiguration
     /// # 参数 / Parameters
     ///
     /// - `threads`: 工作线程数 / Number of worker threads
-    pub fn with_worker_threads(mut self, threads: usize) -> Self
-    {
+    pub fn with_worker_threads(mut self, threads: usize) -> Self {
         self.worker_threads = threads;
         self
     }
@@ -134,8 +127,7 @@ impl CoreAutoConfiguration
     ///
     /// 根据环境变量和配置初始化 tracing 日志。
     /// Initializes tracing logging based on environment and configuration.
-    fn init_logging(&self) -> Result<()>
-    {
+    fn init_logging(&self) -> Result<()> {
         // 检查是否已经初始化
         // Check if already initialized
         // 注意：使用 try_init 而不是 set_global_default 来避免覆盖已有的订阅者
@@ -143,12 +135,9 @@ impl CoreAutoConfiguration
 
         // 根据 debug 模式设置日志级别
         // Set log level based on debug mode
-        let level = if self.debug
-        {
+        let level = if self.debug {
             tracing::Level::DEBUG
-        }
-        else
-        {
+        } else {
             std::env::var("HIVER_LOG_LEVEL")
                 .or_else(|_| std::env::var("RUST_LOG"))
                 .ok()
@@ -174,27 +163,22 @@ impl CoreAutoConfiguration
     }
 }
 
-impl Default for CoreAutoConfiguration
-{
-    fn default() -> Self
-    {
+impl Default for CoreAutoConfiguration {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl AutoConfiguration for CoreAutoConfiguration
-{
+impl AutoConfiguration for CoreAutoConfiguration {
     /// 获取配置名称
     /// Get configuration name
-    fn name(&self) -> &'static str
-    {
+    fn name(&self) -> &'static str {
         "CoreAutoConfiguration"
     }
 
     /// 获取配置优先级（最高优先级）
     /// Get configuration priority (highest)
-    fn order(&self) -> i32
-    {
+    fn order(&self) -> i32 {
         -100 // 最高优先级，在其他所有配置之前执行
     }
 
@@ -203,8 +187,7 @@ impl AutoConfiguration for CoreAutoConfiguration
     ///
     /// 核心配置始终启用。
     /// Core configuration is always enabled.
-    fn condition(&self) -> bool
-    {
+    fn condition(&self) -> bool {
         true
     }
 
@@ -216,8 +199,7 @@ impl AutoConfiguration for CoreAutoConfiguration
     /// 1. 初始化日志系统 / Initialize logging system
     /// 2. 设置全局异常处理 / Set up global exception handling
     /// 3. 注册核心 Bean / Register core beans
-    fn configure(&self, _ctx: &mut ApplicationContext) -> Result<()>
-    {
+    fn configure(&self, _ctx: &mut ApplicationContext) -> Result<()> {
         // 打印 Banner
         // Print banner
         logging::print_banner(env!("CARGO_PKG_VERSION"));
@@ -247,50 +229,49 @@ impl AutoConfiguration for CoreAutoConfiguration
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_core_auto_config_new()
-    {
+    fn test_core_auto_config_new() {
         let config = CoreAutoConfiguration::new();
         assert_eq!(config.app_name, "Hiver Application");
         assert_eq!(config.worker_threads, num_cpus::get());
     }
 
     #[test]
-    fn test_core_auto_config_with_app_name()
-    {
+    fn test_core_auto_config_with_app_name() {
         let config = CoreAutoConfiguration::with_app_name("Test App");
         assert_eq!(config.app_name, "Test App");
     }
 
     #[test]
-    fn test_core_auto_config_with_debug()
-    {
+    fn test_core_auto_config_with_debug() {
         let config = CoreAutoConfiguration::new().with_debug(true);
         assert!(config.debug);
     }
 
     #[test]
-    fn test_core_auto_config_with_worker_threads()
-    {
+    fn test_core_auto_config_with_worker_threads() {
         let config = CoreAutoConfiguration::new().with_worker_threads(8);
         assert_eq!(config.worker_threads, 8);
     }
 
     #[test]
-    fn test_core_auto_config_order()
-    {
+    fn test_core_auto_config_order() {
         let config = CoreAutoConfiguration::new();
         assert_eq!(config.order(), -100);
     }
 
     #[test]
-    fn test_core_auto_config_condition()
-    {
+    fn test_core_auto_config_condition() {
         let config = CoreAutoConfiguration::new();
         assert!(config.condition());
     }

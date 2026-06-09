@@ -24,8 +24,7 @@ use proc_macro::TokenStream;
 ///     pub id: i64,
 /// }
 /// ```
-pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
 
@@ -55,7 +54,6 @@ pub(crate) fn impl_id(_attr: TokenStream, item: TokenStream) -> TokenStream
 ///     pub id: i64,
 /// }
 /// ```
-pub(crate) fn impl_generated_value(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub(crate) fn impl_generated_value(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }

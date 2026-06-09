@@ -15,11 +15,9 @@ use hiver_lombok::{
 /// Test Data generates constructor, getters, setters, with methods, and Default.
 /// 测试 Data 生成构造函数、getter、setter、with 方法和 Default。
 #[test]
-fn test_data_macro_full()
-{
+fn test_data_macro_full() {
     #[derive(Data, Clone, PartialEq, Debug)]
-    struct User
-    {
+    struct User {
         id: i64,
         username: String,
         email: String,
@@ -56,11 +54,9 @@ fn test_data_macro_full()
 /// Test Data generates Default impl correctly.
 /// 测试 Data 正确生成 Default 实现。
 #[test]
-fn test_data_default_impl()
-{
+fn test_data_default_impl() {
     #[derive(Data, Clone, PartialEq, Debug)]
-    struct Config
-    {
+    struct Config {
         port: u16,
         host: String,
         enabled: bool,
@@ -84,11 +80,9 @@ fn test_data_default_impl()
 /// Test Data on a single-field struct.
 /// 测试 Data 在单字段结构体上的表现。
 #[test]
-fn test_data_single_field()
-{
+fn test_data_single_field() {
     #[derive(Data, Clone, PartialEq, Debug)]
-    struct Wrapper
-    {
+    struct Wrapper {
         value: i32,
     }
 
@@ -108,8 +102,7 @@ fn test_data_single_field()
 /// Generic struct for testing Data with type parameters.
 /// 用于测试 Data 泛型类型参数的泛型结构体。
 #[derive(Data, Clone, PartialEq, Debug)]
-struct Pair<T: Clone + Default, U: Clone + Default>
-{
+struct Pair<T: Clone + Default, U: Clone + Default> {
     first: T,
     second: U,
 }
@@ -117,8 +110,7 @@ struct Pair<T: Clone + Default, U: Clone + Default>
 /// Test Data on generic structs (Pair<T, U>).
 /// 测试 Data 在泛型结构体上的表现。
 #[test]
-fn test_data_generic_struct()
-{
+fn test_data_generic_struct() {
     let pair: Pair<i32, String> = Pair::new(10, "hello".into());
     assert_eq!(pair.first(), 10);
     assert_eq!(pair.second(), "hello");
@@ -135,11 +127,9 @@ fn test_data_generic_struct()
 /// Test Getter generates field accessor methods.
 /// 测试 Getter 生成字段访问方法。
 #[test]
-fn test_getter_basic()
-{
+fn test_getter_basic() {
     #[derive(Getter)]
-    struct Point
-    {
+    struct Point {
         x: i32,
         y: i32,
     }
@@ -152,11 +142,9 @@ fn test_getter_basic()
 /// Test Getter with multiple types including String and bool.
 /// 测试 Getter 处理多种类型（String、bool 等）。
 #[test]
-fn test_getter_varied_types()
-{
+fn test_getter_varied_types() {
     #[derive(Getter)]
-    struct Record
-    {
+    struct Record {
         id: i64,
         name: String,
         active: bool,
@@ -178,11 +166,9 @@ fn test_getter_varied_types()
 /// Test #[get] attribute skips field getter generation.
 /// 测试 #[get] 属性跳过字段 getter 生成。
 #[test]
-fn test_getter_skip_attribute()
-{
+fn test_getter_skip_attribute() {
     #[derive(Getter)]
-    struct Secret
-    {
+    struct Secret {
         visible: i32,
         #[get]
         hidden: String,
@@ -205,11 +191,9 @@ fn test_getter_skip_attribute()
 /// Test Setter generates set_xxx methods.
 /// 测试 Setter 生成 set_xxx 方法。
 #[test]
-fn test_setter_basic()
-{
+fn test_setter_basic() {
     #[derive(Setter)]
-    struct Point
-    {
+    struct Point {
         x: i32,
         y: i32,
     }
@@ -224,11 +208,9 @@ fn test_setter_basic()
 /// Test #[set] attribute skips field setter generation.
 /// 测试 #[set] 属性跳过字段 setter 生成。
 #[test]
-fn test_setter_skip_attribute()
-{
+fn test_setter_skip_attribute() {
     #[derive(Setter)]
-    struct Protected
-    {
+    struct Protected {
         mutable: i32,
         #[set]
         locked: String,
@@ -246,11 +228,9 @@ fn test_setter_skip_attribute()
 /// Test Setter with String and complex types.
 /// 测试 Setter 处理 String 和复杂类型。
 #[test]
-fn test_setter_string_type()
-{
+fn test_setter_string_type() {
     #[derive(Setter)]
-    struct Profile
-    {
+    struct Profile {
         name: String,
         bio: String,
     }
@@ -272,11 +252,9 @@ fn test_setter_string_type()
 /// Test AllArgsConstructor generates new() with all fields.
 /// 测试 AllArgsConstructor 生成包含所有字段的 new()。
 #[test]
-fn test_all_args_constructor_basic()
-{
+fn test_all_args_constructor_basic() {
     #[derive(AllArgsConstructor, PartialEq, Debug)]
-    struct User
-    {
+    struct User {
         id: i64,
         username: String,
     }
@@ -289,11 +267,9 @@ fn test_all_args_constructor_basic()
 /// Test AllArgsConstructor with many fields.
 /// 测试 AllArgsConstructor 处理多字段结构体。
 #[test]
-fn test_all_args_constructor_many_fields()
-{
+fn test_all_args_constructor_many_fields() {
     #[derive(AllArgsConstructor, PartialEq, Debug)]
-    struct Entity
-    {
+    struct Entity {
         a: i8,
         b: i16,
         c: i32,
@@ -318,11 +294,9 @@ fn test_all_args_constructor_many_fields()
 /// Test NoArgsConstructor generates Default and new().
 /// 测试 NoArgsConstructor 生成 Default 和 new()。
 #[test]
-fn test_no_args_constructor_default_values()
-{
+fn test_no_args_constructor_default_values() {
     #[derive(NoArgsConstructor, PartialEq, Debug)]
-    struct Config
-    {
+    struct Config {
         port: u16,
         host: String,
         timeout: u64,
@@ -341,11 +315,9 @@ fn test_no_args_constructor_default_values()
 /// Test NoArgsConstructor with bool and f64 fields.
 /// 测试 NoArgsConstructor 处理 bool 和 f64 字段。
 #[test]
-fn test_no_args_constructor_primitive_defaults()
-{
+fn test_no_args_constructor_primitive_defaults() {
     #[derive(NoArgsConstructor)]
-    struct Primitives
-    {
+    struct Primitives {
         flag: bool,
         ratio: f64,
         count: usize,
@@ -366,11 +338,9 @@ fn test_no_args_constructor_primitive_defaults()
 /// Test Builder generates builder pattern with all required fields.
 /// 测试 Builder 生成完整 builder 模式。
 #[test]
-fn test_builder_full_construction()
-{
+fn test_builder_full_construction() {
     #[derive(Builder, PartialEq, Debug)]
-    struct User
-    {
+    struct User {
         id: i64,
         username: String,
         email: String,
@@ -391,11 +361,9 @@ fn test_builder_full_construction()
 /// Test Builder returns error when required field is missing.
 /// 测试 Builder 在缺少必填字段时返回错误。
 #[test]
-fn test_builder_missing_field_error()
-{
+fn test_builder_missing_field_error() {
     #[derive(Builder, Debug)]
-    struct Entry
-    {
+    struct Entry {
         key: String,
         value: i32,
     }
@@ -416,11 +384,9 @@ fn test_builder_missing_field_error()
 /// Test Builder with Option fields works correctly.
 /// 测试 Builder 处理 Option 字段。
 #[test]
-fn test_builder_with_option_fields()
-{
+fn test_builder_with_option_fields() {
     #[derive(Builder, Debug)]
-    struct OptionalUser
-    {
+    struct OptionalUser {
         id: i64,
         name: String,
         nickname: Option<String>,
@@ -457,11 +423,9 @@ fn test_builder_with_option_fields()
 /// Test Value generates constructor, getters, and with methods (immutable).
 /// 测试 Value 生成构造函数、getter 和 with 方法（不可变）。
 #[test]
-fn test_value_immutable_access()
-{
+fn test_value_immutable_access() {
     #[derive(Value, Clone, PartialEq, Debug)]
-    struct Money
-    {
+    struct Money {
         amount: i64,
         currency: String,
     }
@@ -481,11 +445,9 @@ fn test_value_immutable_access()
 /// Test Value with multiple fields and chained with_ calls.
 /// 测试 Value 多字段和链式 with_ 调用。
 #[test]
-fn test_value_chained_with_methods()
-{
+fn test_value_chained_with_methods() {
     #[derive(Value, Clone, PartialEq, Debug)]
-    struct Point3D
-    {
+    struct Point3D {
         x: f64,
         y: f64,
         z: f64,
@@ -507,11 +469,9 @@ fn test_value_chained_with_methods()
 /// Test With generates with_xxx methods for struct fields.
 /// 测试 With 生成字段的 with_xxx 方法。
 #[test]
-fn test_with_basic()
-{
+fn test_with_basic() {
     #[derive(With, Clone, PartialEq, Debug)]
-    struct Settings
-    {
+    struct Settings {
         theme: String,
         language: String,
         notifications: bool,
@@ -535,11 +495,9 @@ fn test_with_basic()
 /// Test With preserves other fields when one is modified.
 /// 测试 With 修改一个字段时保留其他字段不变。
 #[test]
-fn test_with_preserves_other_fields()
-{
+fn test_with_preserves_other_fields() {
     #[derive(With, Clone, PartialEq, Debug)]
-    struct Triple
-    {
+    struct Triple {
         a: i32,
         b: i32,
         c: i32,
@@ -559,13 +517,11 @@ fn test_with_preserves_other_fields()
 /// Test combining Data with serde Serialize/Deserialize.
 /// 测试 Data 与 serde Serialize/Deserialize 组合使用。
 #[test]
-fn test_data_with_serde()
-{
+fn test_data_with_serde() {
     use serde::{Deserialize, Serialize};
 
     #[derive(Data, Clone, PartialEq, Debug, Serialize, Deserialize)]
-    struct Product
-    {
+    struct Product {
         id: u64,
         name: String,
         price: f64,
@@ -583,11 +539,9 @@ fn test_data_with_serde()
 /// Test combining AllArgsConstructor + NoArgsConstructor (via Default) without conflict.
 /// 测试 AllArgsConstructor + NoArgsConstructor（通过 Default）组合不冲突。
 #[test]
-fn test_combined_derives()
-{
+fn test_combined_derives() {
     #[derive(Getter, Setter, AllArgsConstructor, NoArgsConstructor, Clone, PartialEq, Debug)]
-    struct Item
-    {
+    struct Item {
         sku: String,
         qty: u32,
     }
@@ -613,11 +567,9 @@ fn test_combined_derives()
 /// Test Builder with a single field struct.
 /// 测试 Builder 在单字段结构体上的表现。
 #[test]
-fn test_builder_single_field()
-{
+fn test_builder_single_field() {
     #[derive(Builder, Debug, PartialEq)]
-    struct Id
-    {
+    struct Id {
         value: u64,
     }
 
@@ -632,11 +584,9 @@ fn test_builder_single_field()
 /// Test Value does NOT generate setters (immutability check via compilation).
 /// 测试 Value 不生成 setter（通过编译验证不可变性）。
 #[test]
-fn test_value_no_setters()
-{
+fn test_value_no_setters() {
     #[derive(Value, Clone, Debug)]
-    struct ImmutablePoint
-    {
+    struct ImmutablePoint {
         x: i32,
         y: i32,
     }
@@ -655,11 +605,9 @@ fn test_value_no_setters()
 /// Test that with_ methods return new instances (not mutating original).
 /// 测试 with_ 方法返回新实例（不修改原始对象）。
 #[test]
-fn test_with_immutability_guarantee()
-{
+fn test_with_immutability_guarantee() {
     #[derive(With, Clone, PartialEq, Debug)]
-    struct Counter
-    {
+    struct Counter {
         value: i32,
         label: String,
     }

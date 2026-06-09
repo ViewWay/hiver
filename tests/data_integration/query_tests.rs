@@ -3,12 +3,10 @@
 
 /// Query builder unit tests (without actual database)
 #[cfg(test)]
-mod tests
-{
+mod tests {
     /// Simple query builder test
     #[test]
-    fn test_simple_select_query()
-    {
+    fn test_simple_select_query() {
         let table = "users";
         let sql = format!("SELECT * FROM {}", table);
         assert!(sql.contains("SELECT"));
@@ -17,8 +15,7 @@ mod tests
 
     /// Test where clause construction
     #[test]
-    fn test_where_clause()
-    {
+    fn test_where_clause() {
         let where_clause = "email = ? AND active = ?";
         assert!(where_clause.contains("email = ?"));
         assert!(where_clause.contains("active = ?"));
@@ -26,16 +23,14 @@ mod tests
 
     /// Test order by clause
     #[test]
-    fn test_order_by()
-    {
+    fn test_order_by() {
         let order_by = "created_at DESC";
         assert!(order_by.contains("DESC"));
     }
 
     /// Test limit clause
     #[test]
-    fn test_limit()
-    {
+    fn test_limit() {
         let limit = 10;
         let sql = format!("LIMIT {}", limit);
         assert_eq!(sql, "LIMIT 10");
@@ -43,8 +38,7 @@ mod tests
 
     /// Test offset clause
     #[test]
-    fn test_offset()
-    {
+    fn test_offset() {
         let offset = 5;
         let sql = format!("OFFSET {}", offset);
         assert_eq!(sql, "OFFSET 5");
@@ -52,8 +46,7 @@ mod tests
 
     /// Test pagination
     #[test]
-    fn test_pagination()
-    {
+    fn test_pagination() {
         let page = 2;
         let size = 20;
         let offset = (page - 1) * size; // (2 - 1) * 20 = 20
@@ -64,8 +57,7 @@ mod tests
 
     /// Test insert query
     #[test]
-    fn test_insert_query()
-    {
+    fn test_insert_query() {
         let table = "users";
         let columns = "email, name";
         let sql = format!("INSERT INTO {} ({}) VALUES (?, ?)", table, columns);
@@ -76,8 +68,7 @@ mod tests
 
     /// Test update query
     #[test]
-    fn test_update_query()
-    {
+    fn test_update_query() {
         let table = "users";
         let set_clause = "email = ?, name = ?";
         let sql = format!("UPDATE {} SET {} WHERE id = ?", table, set_clause);
@@ -88,8 +79,7 @@ mod tests
 
     /// Test delete query
     #[test]
-    fn test_delete_query()
-    {
+    fn test_delete_query() {
         let table = "users";
         let sql = format!("DELETE FROM {} WHERE id = ?", table);
         assert!(sql.contains("DELETE FROM"));
@@ -98,8 +88,7 @@ mod tests
 
     /// Test count query
     #[test]
-    fn test_count_query()
-    {
+    fn test_count_query() {
         let table = "users";
         let sql = format!("SELECT COUNT(*) FROM {}", table);
         assert!(sql.contains("SELECT COUNT(*)"));
@@ -108,8 +97,7 @@ mod tests
 
     /// Test create table query
     #[test]
-    fn test_create_table_query()
-    {
+    fn test_create_table_query() {
         let table = "users";
         let columns = "id INTEGER PRIMARY KEY, email TEXT NOT NULL";
         let sql = format!("CREATE TABLE {} ({})", table, columns);
@@ -119,8 +107,7 @@ mod tests
 
     /// Test drop table query
     #[test]
-    fn test_drop_table_query()
-    {
+    fn test_drop_table_query() {
         let table = "users";
         let sql = format!("DROP TABLE IF EXISTS {}", table);
         assert!(sql.contains("DROP TABLE"));
@@ -129,8 +116,7 @@ mod tests
 
     /// Test create index query
     #[test]
-    fn test_create_index_query()
-    {
+    fn test_create_index_query() {
         let index = "idx_users_email";
         let table = "users";
         let columns = "email";
@@ -142,8 +128,7 @@ mod tests
 
     /// Test drop index query
     #[test]
-    fn test_drop_index_query()
-    {
+    fn test_drop_index_query() {
         let index = "idx_users_email";
         let sql = format!("DROP INDEX IF EXISTS {}", index);
         assert!(sql.contains("DROP INDEX"));

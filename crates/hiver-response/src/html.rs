@@ -32,10 +32,8 @@ use crate::response::{IntoResponse, Response};
 /// ```
 pub struct Html<T>(pub T);
 
-impl<T: AsRef<str>> IntoResponse for Html<T>
-{
-    fn into_response(self) -> Response
-    {
+impl<T: AsRef<str>> IntoResponse for Html<T> {
+    fn into_response(self) -> Response {
         // Convert the inner value to a string for the response body
         // 将内部值转换为字符串用于响应体
         //
@@ -51,39 +49,39 @@ impl<T: AsRef<str>> IntoResponse for Html<T>
     }
 }
 
-impl<T> Html<T>
-{
+impl<T> Html<T> {
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 
     /// Get a mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T
-    {
+    pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
 
     /// Unwrap the inner value
     /// 解包内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_html_response()
-    {
+    fn test_html_response() {
         let html = Html("<h1>Hello</h1>");
         let response = html.into_response();
 

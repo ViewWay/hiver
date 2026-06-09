@@ -1,4 +1,11 @@
-#![allow(missing_docs, dead_code, clippy::format_push_string, clippy::indexing_slicing, clippy::missing_fields_in_debug, clippy::needless_pass_by_value)]
+#![allow(
+    missing_docs,
+    dead_code,
+    clippy::format_push_string,
+    clippy::indexing_slicing,
+    clippy::missing_fields_in_debug,
+    clippy::needless_pass_by_value
+)]
 //! # Hiver AOP
 //!
 //! Spring AOP style aspects for Hiver framework.
@@ -48,7 +55,13 @@ pub use hiver_aop_macros::{
 pub mod runtime;
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 // Re-export runtime types at crate root for convenience

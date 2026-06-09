@@ -13,8 +13,7 @@ use hiver_data_annotations::{Entity, Table};
 /// 映射到 "users" 表的用户实体
 #[Table(name = "users")]
 #[derive(Debug, Clone)]
-pub struct User
-{
+pub struct User {
     pub id: i64,
     pub username: String,
     pub email: String,
@@ -29,8 +28,7 @@ pub struct User
 /// 产品实体 — 默认表名为 "Product"（结构体名）
 #[Entity]
 #[derive(Debug, Clone)]
-pub struct Product
-{
+pub struct Product {
     pub id: i64,
     pub name: String,
     pub price: f64,
@@ -40,8 +38,7 @@ pub struct Product
 // Example 3: Demonstration / 演示
 // ============================================================================
 
-fn main()
-{
+fn main() {
     println!("=== Hiver Data Annotations Demo ===\n");
 
     // Table annotation generates table_name()

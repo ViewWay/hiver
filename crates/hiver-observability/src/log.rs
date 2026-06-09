@@ -57,8 +57,7 @@ use crate::hiver_format::{Banner, HiverFormatter, SimpleFormatter};
 /// Spring Boot log levels
 /// Spring Boot 日志级别
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum LogLevel
-{
+pub enum LogLevel {
     /// Trace level - most detailed
     /// TRACE 级别 - 最详细
     /// TRACE: 追踪信息, 比DEBUG更细粒度的信息事件(除非有特殊用意，否则请使用DEBUG级别替代)
@@ -85,14 +84,11 @@ pub enum LogLevel
     Off = 5,
 }
 
-impl LogLevel
-{
+impl LogLevel {
     /// Parse log level from string
     /// 从字符串解析日志级别
-    pub fn from_str(s: &str) -> Option<Self>
-    {
-        match s.to_uppercase().as_str()
-        {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_uppercase().as_str() {
             "TRACE" => Some(LogLevel::Trace),
             "DEBUG" => Some(LogLevel::Debug),
             "INFO" => Some(LogLevel::Info),
@@ -105,10 +101,8 @@ impl LogLevel
 
     /// Convert to tracing Level
     /// 转换为 tracing Level
-    pub fn to_tracing_level(self) -> Option<Level>
-    {
-        match self
-        {
+    pub fn to_tracing_level(self) -> Option<Level> {
+        match self {
             LogLevel::Trace => Some(Level::TRACE),
             LogLevel::Debug => Some(Level::DEBUG),
             LogLevel::Info => Some(Level::INFO),
@@ -119,12 +113,9 @@ impl LogLevel
     }
 }
 
-impl std::fmt::Display for LogLevel
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
+impl std::fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
             LogLevel::Trace => write!(f, "TRACE"),
             LogLevel::Debug => write!(f, "DEBUG"),
             LogLevel::Info => write!(f, "INFO"),
@@ -163,78 +154,59 @@ pub fn format_pattern(
     level: &LogLevel,
     target: &str,
     message: &str,
-) -> String
-{
+) -> String {
     let mut chars = pattern.chars().peekable();
     let mut formatted = String::new();
 
-    while let Some(c) = chars.next()
-    {
-        if c == '%'
-        {
-            match chars.next()
-            {
-                Some('d') =>
-                {
+    while let Some(c) = chars.next() {
+        if c == '%' {
+            match chars.next() {
+                Some('d') => {
                     formatted.push_str(timestamp);
                 },
-                Some('t') =>
-                {
+                Some('t') => {
                     formatted.push_str(&thread_id.to_string());
                 },
-                Some('p') =>
-                {
+                Some('p') => {
                     formatted.push_str(&level.to_string());
                 },
-                Some('c') =>
-                {
+                Some('c') => {
                     formatted.push_str(target);
                 },
-                Some('m') =>
-                {
+                Some('m') => {
                     formatted.push_str(message);
                 },
-                Some('n') =>
-                {
+                Some('n') => {
                     formatted.push('\n');
                 },
-                Some('%') | None =>
-                {
+                Some('%') | None => {
                     formatted.push('%');
                 },
-                Some('X') =>
-                {
+                Some('X') => {
                     // MDC placeholder %X{key}
                     // MDC 占位符 %X{key}
-                    if chars.next() == Some('{')
-                    {
+                    if chars.next() == Some('{') {
                         let mut key = String::new();
-                        while let Some(&ch) = chars.peek()
-                        {
-                            if ch == '}'
-                            {
+                        while let Some(&ch) = chars.peek() {
+                            if ch == '}' {
                                 break;
                             }
                             key.push(ch);
                             chars.next();
                         }
-                        if chars.next() == Some('}')
-                        {
+                        if chars.next() == Some('}') {
                             // For now, just show [key] placeholder for MDC values
                             // 未来：实际从 MDC map 获取值
                             let _ = write!(formatted, "[{}]", key);
                         }
                     }
                 },
-                Some(other) =>
-                {
+                Some(other) => {
                     formatted.push('%');
                     formatted.push(other);
                 },
             }
-        }
-        else
-        {
+        } else {
             formatted.push(c);
         }
     }
@@ -245,8 +217,7 @@ pub fn format_pattern(
 /// Log format style
 /// 日志格式样式
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LogFormat
-{
+pub enum LogFormat {
     /// Pretty printed with colors (Spring Boot default console style)
     /// 美化打印带颜色（Spring Boot 默认控制台样式）
     Pretty,
@@ -258,14 +229,11 @@ pub enum LogFormat
     Json,
 }
 
-impl LogFormat
-{
+impl LogFormat {
     /// Parse from string
     /// 从字符串解析
-    pub fn from_str(s: &str) -> Option<Self>
-    {
-        match s.to_lowercase().as_str()
-        {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
             "pretty" => Some(LogFormat::Pretty),
             "compact" => Some(LogFormat::Compact),
             "json" => Some(LogFormat::Json),
@@ -294,8 +262,7 @@ impl LogFormat
 /// - **Verbose**: Development, debugging, local testing
 /// - **Simple**: Production, high-throughput scenarios
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LogMode
-{
+pub enum LogMode {
     /// Verbose mode with full context (development)
     /// 详细模式，包含完整上下文（开发环境）
     Verbose,
@@ -305,14 +272,11 @@ pub enum LogMode
     Simple,
 }
 
-impl LogMode
-{
+impl LogMode {
     /// Parse from string
     /// 从字符串解析
-    pub fn from_str(s: &str) -> Option<Self>
-    {
-        match s.to_lowercase().as_str()
-        {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
             "verbose" | "full" | "detailed" => Some(LogMode::Verbose),
             "simple" | "compact" | "minimal" => Some(LogMode::Simple),
             _ => None,
@@ -321,22 +285,17 @@ impl LogMode
 
     /// Get default mode for given profile
     /// 根据配置文件获取默认模式
-    pub fn from_profile(profile: Option<&str>) -> Self
-    {
-        match profile
-        {
+    pub fn from_profile(profile: Option<&str>) -> Self {
+        match profile {
             Some("prod" | "production") => LogMode::Simple,
             _ => LogMode::Verbose, // Default to verbose for unknown profiles
         }
     }
 }
 
-impl std::fmt::Display for LogMode
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
+impl std::fmt::Display for LogMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
             LogMode::Verbose => write!(f, "verbose"),
             LogMode::Simple => write!(f, "simple"),
         }
@@ -346,8 +305,7 @@ impl std::fmt::Display for LogMode
 /// Logger configuration
 /// 日志配置器
 #[derive(Debug, Clone)]
-pub struct LoggerConfig
-{
+pub struct LoggerConfig {
     /// Global log level
     /// 全局日志级别
     pub level: LogLevel,
@@ -396,8 +354,7 @@ pub struct LoggerConfig
 /// Log rotation policy
 /// 日志轮转策略
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LogRotation
-{
+pub enum LogRotation {
     /// Never rotate
     /// 从不轮转
     Never,
@@ -412,21 +369,16 @@ pub enum LogRotation
     Minutely,
 }
 
-impl Default for LoggerConfig
-{
-    fn default() -> Self
-    {
+impl Default for LoggerConfig {
+    fn default() -> Self {
         // Get profile from environment
         let profile = std::env::var("HIVER_PROFILE").ok();
 
         // Get mode from environment or derive from profile
-        let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE")
-        {
+        let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
             LogMode::from_str(&mode_str)
                 .unwrap_or_else(|| LogMode::from_profile(profile.as_deref()))
-        }
-        else
-        {
+        } else {
             LogMode::from_profile(profile.as_deref())
         };
 
@@ -477,8 +429,7 @@ impl Default for LoggerConfig
 /// 全局日志初始化器
 pub struct Logger;
 
-impl Logger
-{
+impl Logger {
     /// Initialize the global logger with default configuration
     /// 使用默认配置初始化全局日志
     ///
@@ -489,8 +440,7 @@ impl Logger
     ///
     /// Logger::init().unwrap();
     /// ```
-    pub fn init() -> Result<(), Box<dyn std::error::Error>>
-    {
+    pub fn init() -> Result<(), Box<dyn std::error::Error>> {
         Logger::init_with_config(&LoggerConfig::default())
     }
 
@@ -511,16 +461,13 @@ impl Logger
     ///
     /// Logger::init_with_config(config).unwrap();
     /// ```
-    pub fn init_with_config(config: &LoggerConfig) -> Result<(), Box<dyn std::error::Error>>
-    {
+    pub fn init_with_config(config: &LoggerConfig) -> Result<(), Box<dyn std::error::Error>> {
         let env_filter = create_env_filter(config.level);
 
         // Choose formatter based on LogMode first, then LogFormat
         // 首先根据 LogMode 选择格式化器，然后根据 LogFormat
-        match config.mode
-        {
-            LogMode::Simple =>
-            {
+        match config.mode {
+            LogMode::Simple => {
                 // Simple mode - use SimpleFormatter for high performance
                 // 精简模式 - 使用 SimpleFormatter 以获得高性能
                 #[cfg(feature = "hiver-format")]
@@ -529,17 +476,14 @@ impl Logger
                         .with_target(config.with_target)
                         .event_format(SimpleFormatter::new());
 
-                    if let Some(ref path) = config.file_path
-                    {
+                    if let Some(ref path) = config.file_path {
                         let file_appender = create_file_appender(path, config.rotation)?;
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
                             .with(fmt::layer().with_writer(file_appender).compact())
                             .try_init()?;
-                    }
-                    else
-                    {
+                    } else {
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
@@ -551,17 +495,14 @@ impl Logger
                     // Fallback to standard compact
                     let fmt_layer = fmt::layer().with_target(config.with_target).compact();
 
-                    if let Some(ref path) = config.file_path
-                    {
+                    if let Some(ref path) = config.file_path {
                         let file_appender = create_file_appender(path, config.rotation)?;
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
                             .with(fmt::layer().with_writer(file_appender).compact())
                             .try_init()?;
-                    }
-                    else
-                    {
+                    } else {
                         Registry::default()
                             .with(env_filter)
                             .with(fmt_layer)
@@ -569,14 +510,11 @@ impl Logger
                     }
                 }
             },
-            LogMode::Verbose =>
-            {
+            LogMode::Verbose => {
                 // Verbose mode - full format based on LogFormat
                 // 详细模式 - 根据 LogFormat 使用完整格式
-                match config.format
-                {
-                    LogFormat::Pretty =>
-                    {
+                match config.format {
+                    LogFormat::Pretty => {
                         #[cfg(feature = "hiver-format")]
                         {
                             let mut fmt_layer = fmt::layer()
@@ -586,8 +524,7 @@ impl Logger
                                 .event_format(HiverFormatter::new());
                             fmt_layer.set_span_events(FmtSpan::CLOSE);
 
-                            if let Some(ref path) = config.file_path
-                            {
+                            if let Some(ref path) = config.file_path {
                                 let file_appender = create_file_appender(path, config.rotation)?;
                                 let (non_blocking, _guard) =
                                     tracing_appender::non_blocking(file_appender);
@@ -604,9 +541,7 @@ impl Logger
                                     .with(fmt_layer)
                                     .with(file_layer)
                                     .try_init()?;
-                            }
-                            else
-                            {
+                            } else {
                                 Registry::default()
                                     .with(env_filter)
                                     .with(fmt_layer)
@@ -622,8 +557,7 @@ impl Logger
                                 .compact();
                             fmt_layer.set_span_events(FmtSpan::CLOSE);
 
-                            if let Some(ref path) = config.file_path
-                            {
+                            if let Some(ref path) = config.file_path {
                                 let file_appender = create_file_appender(path, config.rotation)?;
                                 let (non_blocking, _guard) =
                                     tracing_appender::non_blocking(file_appender);
@@ -640,9 +574,7 @@ impl Logger
                                     .with(fmt_layer)
                                     .with(file_layer)
                                     .try_init()?;
-                            }
-                            else
-                            {
+                            } else {
                                 Registry::default()
                                     .with(env_filter)
                                     .with(fmt_layer)
@@ -650,8 +582,7 @@ impl Logger
                             }
                         }
                     },
-                    LogFormat::Compact =>
-                    {
+                    LogFormat::Compact => {
                         let mut fmt_layer = fmt::layer()
                             .with_file(config.with_file)
                             .with_line_number(config.with_file)
@@ -659,8 +590,7 @@ impl Logger
                             .compact();
                         fmt_layer.set_span_events(FmtSpan::CLOSE);
 
-                        if let Some(ref path) = config.file_path
-                        {
+                        if let Some(ref path) = config.file_path {
                             let file_appender = create_file_appender(path, config.rotation)?;
 
                             let file_layer = fmt::layer()
@@ -675,17 +605,14 @@ impl Logger
                                 .with(fmt_layer)
                                 .with(file_layer)
                                 .try_init()?;
-                        }
-                        else
-                        {
+                        } else {
                             Registry::default()
                                 .with(env_filter)
                                 .with(fmt_layer)
                                 .try_init()?;
                         }
                     },
-                    LogFormat::Json =>
-                    {
+                    LogFormat::Json => {
                         let mut fmt_layer = fmt::layer()
                             .json()
                             .with_file(config.with_file)
@@ -694,8 +621,7 @@ impl Logger
                             .with_current_span(false);
                         fmt_layer.set_span_events(FmtSpan::CLOSE);
 
-                        if let Some(ref path) = config.file_path
-                        {
+                        if let Some(ref path) = config.file_path {
                             let file_appender = create_file_appender(path, config.rotation)?;
 
                             let file_layer = fmt::layer()
@@ -710,9 +636,7 @@ impl Logger
                                 .with(fmt_layer)
                                 .with(file_layer)
                                 .try_init()?;
-                        }
-                        else
-                        {
+                        } else {
                             Registry::default()
                                 .with(env_filter)
                                 .with(fmt_layer)
@@ -742,8 +666,7 @@ impl Logger
     ///
     /// Logger::init_spring_style().unwrap();
     /// ```
-    pub fn init_spring_style() -> Result<(), Box<dyn std::error::Error>>
-    {
+    pub fn init_spring_style() -> Result<(), Box<dyn std::error::Error>> {
         #[cfg(feature = "hiver-format")]
         {
             // Print banner (uses default values)
@@ -760,14 +683,12 @@ impl Logger
         }
 
         // Spring Boot: logging.file.name
-        if let Ok(file) = std::env::var("LOGGING_FILE_NAME")
-        {
+        if let Ok(file) = std::env::var("LOGGING_FILE_NAME") {
             config.file_path = Some(file);
         }
 
         // Spring Boot: logging.pattern.console
-        if let Ok(pattern) = std::env::var("LOGGING_PATTERN_CONSOLE")
-        {
+        if let Ok(pattern) = std::env::var("LOGGING_PATTERN_CONSOLE") {
             config.custom_pattern = Some(pattern);
         }
 
@@ -816,9 +737,9 @@ impl Logger
     /// Logger::init_from_config(&config)?;
     /// ```
     #[cfg(feature = "config")]
-    pub fn init_from_config(config: &hiver_config::Config)
-    -> Result<(), Box<dyn std::error::Error>>
-    {
+    pub fn init_from_config(
+        config: &hiver_config::Config,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         // Get profile first (affects defaults)
         let profile = config
             .get("hiver.profile")
@@ -832,72 +753,53 @@ impl Logger
         };
 
         // Override with explicit config values
-        if let Some(level) = config.get("logging.level")
-        {
-            if let Some(s) = level.as_str()
-            {
-                if let Some(lvl) = LogLevel::from_str(s)
-                {
+        if let Some(level) = config.get("logging.level") {
+            if let Some(s) = level.as_str() {
+                if let Some(lvl) = LogLevel::from_str(s) {
                     logger_config.level = lvl;
                 }
             }
         }
 
-        if let Some(mode) = config.get("logging.mode")
-        {
-            if let Some(s) = mode.as_str()
-            {
-                if let Some(m) = LogMode::from_str(s)
-                {
+        if let Some(mode) = config.get("logging.mode") {
+            if let Some(s) = mode.as_str() {
+                if let Some(m) = LogMode::from_str(s) {
                     logger_config.mode = m;
                 }
             }
-        }
-        else
-        {
+        } else {
             // Derive from profile if not explicitly set
             logger_config.mode = LogMode::from_profile(profile.as_deref());
         }
 
-        if let Some(format) = config.get("logging.format")
-        {
-            if let Some(s) = format.as_str()
-            {
-                if let Some(f) = LogFormat::from_str(s)
-                {
+        if let Some(format) = config.get("logging.format") {
+            if let Some(s) = format.as_str() {
+                if let Some(f) = LogFormat::from_str(s) {
                     logger_config.format = f;
                 }
             }
         }
 
-        if let Some(file) = config.get("logging.file")
-        {
-            if let Some(s) = file.as_str()
-            {
+        if let Some(file) = config.get("logging.file") {
+            if let Some(s) = file.as_str() {
                 logger_config.file_path = Some(s.to_string());
             }
         }
 
         // Rotation settings
-        if let Some(rotation) = config.get("logging.rotation.policy")
-        {
-            if let Some(s) = rotation.as_str()
-            {
-                match s.to_lowercase().as_str()
-                {
+        if let Some(rotation) = config.get("logging.rotation.policy") {
+            if let Some(s) = rotation.as_str() {
+                match s.to_lowercase().as_str() {
                     "daily" => logger_config.rotation = LogRotation::Daily,
                     "hourly" => logger_config.rotation = LogRotation::Hourly,
                     "never" => logger_config.rotation = LogRotation::Never,
-                    _ =>
-                    {},
+                    _ => {},
                 }
             }
         }
 
-        if let Some(max) = config.get("logging.rotation.max_files")
-        {
-            if let Some(n) = max.as_i64()
-            {
+        if let Some(max) = config.get("logging.rotation.max_files") {
+            if let Some(n) = max.as_i64() {
                 logger_config.max_files = n.max(0) as usize;
             }
         }
@@ -909,16 +811,12 @@ impl Logger
 /// Create environment filter for log level
 /// 创建日志级别的环境过滤器
 #[allow(clippy::indexing_slicing)]
-fn create_env_filter(default_level: LogLevel) -> EnvFilter
-{
-    let base_filter = if let Some(level) = default_level.to_tracing_level()
-    {
+fn create_env_filter(default_level: LogLevel) -> EnvFilter {
+    let base_filter = if let Some(level) = default_level.to_tracing_level() {
         EnvFilter::builder()
             .with_default_directive(level.into())
             .from_env_lossy()
-    }
-    else
-    {
+    } else {
         EnvFilter::builder()
             .with_default_directive(Level::INFO.into())
             .from_env_lossy()
@@ -927,33 +825,24 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter
     // Support Spring Boot style: logging.level.<package>=<LEVEL>
     // 支持Spring Boot风格：logging.level.<package>=<LEVEL>
 
-    if let Ok(level_str) = std::env::var("LOGGING_LEVEL")
-    {
+    if let Ok(level_str) = std::env::var("LOGGING_LEVEL") {
         let parts: Vec<&str> = level_str.split('=').collect();
-        if parts.len() == 2
-        {
+        if parts.len() == 2 {
             let target = parts[0];
             let level = parts[1];
-            if let Some(lvl) = LogLevel::from_str(level).and_then(LogLevel::to_tracing_level)
-            {
+            if let Some(lvl) = LogLevel::from_str(level).and_then(LogLevel::to_tracing_level) {
                 base_filter.add_directive(
                     format!("{}={}", target, lvl)
                         .parse()
                         .unwrap_or_else(|_| lvl.into()),
                 )
-            }
-            else
-            {
+            } else {
                 base_filter
             }
-        }
-        else
-        {
+        } else {
             base_filter
         }
-    }
-    else
-    {
+    } else {
         base_filter
     }
 }
@@ -964,20 +853,15 @@ fn create_env_filter(default_level: LogLevel) -> EnvFilter
 fn create_file_appender(
     path: &str,
     rotation: LogRotation,
-) -> Result<RollingFileAppender, std::io::Error>
-{
-    let (directory, prefix) = if path.contains('/')
-    {
+) -> Result<RollingFileAppender, std::io::Error> {
+    let (directory, prefix) = if path.contains('/') {
         let parts: Vec<&str> = path.rsplitn(2, '/').collect();
         (parts[1], parts[0])
-    }
-    else
-    {
+    } else {
         (".", path)
     };
 
-    let rotation = match rotation
-    {
+    let rotation = match rotation {
         LogRotation::Never => Rotation::NEVER,
         LogRotation::Daily => Rotation::DAILY,
         LogRotation::Hourly => Rotation::HOURLY,
@@ -1001,15 +885,13 @@ fn create_file_appender(
 /// ```
 pub struct LoggerFactory;
 
-impl LoggerFactory
-{
+impl LoggerFactory {
     /// Get a logger for the given name
     /// 获取给定名称的日志记录器
     ///
     /// This follows SLF4J's LoggerFactory.getLogger(String name) pattern.
     /// 这遵循 SLF4J 的 LoggerFactory.getLogger(String name) 模式。
-    pub fn get(name: &str) -> LoggerHandle
-    {
+    pub fn get(name: &str) -> LoggerHandle {
         LoggerHandle {
             name: name.to_string(),
         }
@@ -1020,8 +902,7 @@ impl LoggerFactory
     ///
     /// This follows SLF4J's LoggerFactory.getLogger(Class.class) pattern.
     /// 这遵循 SLF4J 的 LoggerFactory.getLogger(Class.class) 模式。
-    pub fn get_for<T>() -> LoggerHandle
-    {
+    pub fn get_for<T>() -> LoggerHandle {
         LoggerHandle {
             name: std::any::type_name::<T>().to_string(),
         }
@@ -1038,8 +919,7 @@ impl LoggerFactory
     /// let log = LoggerFactory::current_module!();
     /// ```
     #[inline]
-    pub fn current_module() -> LoggerHandle
-    {
+    pub fn current_module() -> LoggerHandle {
         LoggerHandle {
             name: module_path!().to_string(),
         }
@@ -1063,24 +943,20 @@ impl LoggerFactory
 /// log.trace("Trace message");
 /// ```
 #[derive(Debug, Clone)]
-pub struct LoggerHandle
-{
+pub struct LoggerHandle {
     name: String,
 }
 
-impl LoggerHandle
-{
+impl LoggerHandle {
     /// Log an ERROR message
     /// 记录 ERROR 消息
-    pub fn error(&self, message: std::fmt::Arguments)
-    {
+    pub fn error(&self, message: std::fmt::Arguments) {
         self.error_args(&[], message);
     }
 
     /// Log an ERROR message with fields
     /// 记录带字段的 ERROR 消息
-    pub fn error_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments)
-    {
+    pub fn error_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         // Note: We include the logger name in the message since tracing macros require constant
         // target 注意：我们在消息中包含日志记录器名称，因为tracing宏需要常量target
         tracing::error!(target: "hiver", "[{}] {}", self.name, message);
@@ -1088,64 +964,55 @@ impl LoggerHandle
 
     /// Log a WARN message
     /// 记录 WARN 消息
-    pub fn warn(&self, message: std::fmt::Arguments)
-    {
+    pub fn warn(&self, message: std::fmt::Arguments) {
         self.warn_args(&[], message);
     }
 
     /// Log a WARN message with fields
     /// 记录带字段的 WARN 消息
-    pub fn warn_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments)
-    {
+    pub fn warn_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         tracing::warn!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log an INFO message
     /// 记录 INFO 消息
-    pub fn info(&self, message: std::fmt::Arguments)
-    {
+    pub fn info(&self, message: std::fmt::Arguments) {
         self.info_args(&[], message);
     }
 
     /// Log an INFO message with fields
     /// 记录带字段的 INFO 消息
-    pub fn info_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments)
-    {
+    pub fn info_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         tracing::info!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log a DEBUG message
     /// 记录 DEBUG 消息
-    pub fn debug(&self, message: std::fmt::Arguments)
-    {
+    pub fn debug(&self, message: std::fmt::Arguments) {
         self.debug_args(&[], message);
     }
 
     /// Log a DEBUG message with fields
     /// 记录带字段的 DEBUG 消息
-    pub fn debug_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments)
-    {
+    pub fn debug_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         tracing::debug!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Log a TRACE message
     /// 记录 TRACE 消息
-    pub fn trace(&self, message: std::fmt::Arguments)
-    {
+    pub fn trace(&self, message: std::fmt::Arguments) {
         self.trace_args(&[], message);
     }
 
     /// Log a TRACE message with fields
     /// 记录带字段的 TRACE 消息
-    pub fn trace_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments)
-    {
+    pub fn trace_args(&self, _fields: &[(&str, String)], message: std::fmt::Arguments) {
         tracing::trace!(target: "hiver", "[{}] {}", self.name, message);
     }
 
     /// Get the logger name
     /// 获取日志记录器名称
-    pub fn name(&self) -> &str
-    {
+    pub fn name(&self) -> &str {
         &self.name
     }
 }
@@ -1156,28 +1023,30 @@ static GLOBAL_LOGGER: OnceLock<LoggerHandle> = OnceLock::new();
 
 /// Initialize global logger for current module
 /// 初始化当前模块的全局日志记录器
-pub fn init_global_logger() -> LoggerHandle
-{
+pub fn init_global_logger() -> LoggerHandle {
     let logger = LoggerFactory::current_module();
     GLOBAL_LOGGER.get_or_init(|| logger.clone()).clone()
 }
 
 /// Get global logger instance
 /// 获取全局日志记录器实例
-pub fn global_logger() -> Option<&'static LoggerHandle>
-{
+pub fn global_logger() -> Option<&'static LoggerHandle> {
     GLOBAL_LOGGER.get()
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_log_level_parse()
-    {
+    fn test_log_level_parse() {
         assert_eq!(LogLevel::from_str("TRACE"), Some(LogLevel::Trace));
         assert_eq!(LogLevel::from_str("DEBUG"), Some(LogLevel::Debug));
         assert_eq!(LogLevel::from_str("INFO"), Some(LogLevel::Info));
@@ -1188,8 +1057,7 @@ mod tests
     }
 
     #[test]
-    fn test_log_format_parse()
-    {
+    fn test_log_format_parse() {
         assert_eq!(LogFormat::from_str("pretty"), Some(LogFormat::Pretty));
         assert_eq!(LogFormat::from_str("compact"), Some(LogFormat::Compact));
         assert_eq!(LogFormat::from_str("json"), Some(LogFormat::Json));
@@ -1197,8 +1065,7 @@ mod tests
     }
 
     #[test]
-    fn test_log_level_ordering()
-    {
+    fn test_log_level_ordering() {
         assert!(LogLevel::Trace < LogLevel::Debug);
         assert!(LogLevel::Debug < LogLevel::Info);
         assert!(LogLevel::Info < LogLevel::Warn);
@@ -1207,8 +1074,7 @@ mod tests
     }
 
     #[test]
-    fn test_logger_factory()
-    {
+    fn test_logger_factory() {
         let log = LoggerFactory::get("test::module");
         assert_eq!(log.name(), "test::module");
 
@@ -1217,8 +1083,7 @@ mod tests
     }
 
     #[test]
-    fn test_format_pattern_basic()
-    {
+    fn test_format_pattern_basic() {
         let pattern = "%d [%t] %p %c - %m%n";
         let result = format_pattern(
             pattern,
@@ -1236,22 +1101,19 @@ mod tests
     }
 
     #[test]
-    fn test_format_pattern_percent()
-    {
+    fn test_format_pattern_percent() {
         let result = format_pattern("Progress: 50%% complete", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "Progress: 50% complete");
     }
 
     #[test]
-    fn test_format_pattern_newline()
-    {
+    fn test_format_pattern_newline() {
         let result = format_pattern("Line 1%nLine 2", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "Line 1\nLine 2");
     }
 
     #[test]
-    fn test_format_pattern_mdc()
-    {
+    fn test_format_pattern_mdc() {
         let result = format_pattern("User: %X{userId}", "", 0, &LogLevel::Info, "", "");
         assert_eq!(result, "User: [userId]");
     }

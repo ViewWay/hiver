@@ -41,8 +41,7 @@ use crate::SecurityResult;
 /// RBAC configuration
 /// RBAC配置
 #[derive(Debug, Clone)]
-pub struct RbacConfig
-{
+pub struct RbacConfig {
     /// Enable permission caching
     /// 启用权限缓存
     pub enable_cache: bool,
@@ -64,17 +63,18 @@ pub struct RbacConfig
     pub role_hierarchy: HashMap<String, Vec<String>>,
 }
 
-impl Default for RbacConfig
-{
-    fn default() -> Self
-    {
+impl Default for RbacConfig {
+    fn default() -> Self {
         let mut role_hierarchy = HashMap::new();
         // Admin > Moderator > User > Guest
-        role_hierarchy.insert("ADMIN".to_string(), vec![
-            "MODERATOR".to_string(),
-            "USER".to_string(),
-            "GUEST".to_string(),
-        ]);
+        role_hierarchy.insert(
+            "ADMIN".to_string(),
+            vec![
+                "MODERATOR".to_string(),
+                "USER".to_string(),
+                "GUEST".to_string(),
+            ],
+        );
         role_hierarchy
             .insert("MODERATOR".to_string(), vec!["USER".to_string(), "GUEST".to_string()]);
         role_hierarchy.insert("USER".to_string(), vec!["GUEST".to_string()]);
@@ -89,51 +89,44 @@ impl Default for RbacConfig
     }
 }
 
-impl RbacConfig
-{
+impl RbacConfig {
     /// Create a new config
     /// 创建新配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Enable or disable caching
     /// 启用或禁用缓存
-    pub fn enable_cache(mut self, enable: bool) -> Self
-    {
+    pub fn enable_cache(mut self, enable: bool) -> Self {
         self.enable_cache = enable;
         self
     }
 
     /// Set cache TTL
     /// 设置缓存TTL
-    pub fn cache_ttl(mut self, ttl: Duration) -> Self
-    {
+    pub fn cache_ttl(mut self, ttl: Duration) -> Self {
         self.cache_ttl = ttl.as_secs();
         self
     }
 
     /// Enable or disable audit logging
     /// 启用或禁用审计日志
-    pub fn enable_audit(mut self, enable: bool) -> Self
-    {
+    pub fn enable_audit(mut self, enable: bool) -> Self {
         self.enable_audit = enable;
         self
     }
 
     /// Enable or disable role hierarchy
     /// 启用或禁用角色层级
-    pub fn enable_hierarchy(mut self, enable: bool) -> Self
-    {
+    pub fn enable_hierarchy(mut self, enable: bool) -> Self {
         self.enable_hierarchy = enable;
         self
     }
 
     /// Set role hierarchy
     /// 设置角色层级
-    pub fn role_hierarchy(mut self, hierarchy: HashMap<String, Vec<String>>) -> Self
-    {
+    pub fn role_hierarchy(mut self, hierarchy: HashMap<String, Vec<String>>) -> Self {
         self.role_hierarchy = hierarchy;
         self
     }
@@ -142,8 +135,7 @@ impl RbacConfig
 /// Permission entry
 /// 权限条目
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PermissionEntry
-{
+pub struct PermissionEntry {
     /// Permission ID
     /// 权限ID
     pub id: String,
@@ -169,8 +161,7 @@ pub struct PermissionEntry
     pub roles: Vec<String>,
 }
 
-impl PermissionEntry
-{
+impl PermissionEntry {
     /// Create a new permission
     /// 创建新权限
     pub fn new(
@@ -179,8 +170,7 @@ impl PermissionEntry
         description: impl Into<String>,
         resource: impl Into<String>,
         action: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             id: id.into(),
             name: name.into(),
@@ -193,8 +183,7 @@ impl PermissionEntry
 
     /// Add role to permission
     /// 添加角色到权限
-    pub fn add_role(mut self, role: impl Into<String>) -> Self
-    {
+    pub fn add_role(mut self, role: impl Into<String>) -> Self {
         self.roles.push(role.into());
         self
     }
@@ -203,8 +192,7 @@ impl PermissionEntry
 /// Role permission mapping
 /// 角色权限映射
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RolePermission
-{
+pub struct RolePermission {
     /// Role name
     /// 角色名
     pub role: String,
@@ -217,8 +205,7 @@ pub struct RolePermission
 /// User role mapping
 /// 用户角色映射
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UserRole
-{
+pub struct UserRole {
     /// User ID
     /// 用户ID
     pub user_id: String,
@@ -239,8 +226,7 @@ pub struct UserRole
 /// Audit log entry
 /// 审计日志条目
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuditLog
-{
+pub struct AuditLog {
     /// Timestamp
     /// 时间戳
     pub timestamp: DateTime<Utc>,
@@ -277,8 +263,7 @@ pub struct AuditLog
 /// Audit logger trait
 /// 审计日志器trait
 #[async_trait::async_trait]
-pub trait AuditLogger: Send + Sync
-{
+pub trait AuditLogger: Send + Sync {
     /// Log an audit event
     /// 记录审计事件
     async fn log(&self, entry: AuditLog) -> SecurityResult<()>;
@@ -289,29 +274,23 @@ pub trait AuditLogger: Send + Sync
 #[derive(Debug, Clone)]
 pub struct ConsoleAuditLogger;
 
-impl ConsoleAuditLogger
-{
+impl ConsoleAuditLogger {
     /// Create a new console audit logger
     /// 创建新的控制台审计日志器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self
     }
 }
 
-impl Default for ConsoleAuditLogger
-{
-    fn default() -> Self
-    {
+impl Default for ConsoleAuditLogger {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[async_trait::async_trait]
-impl AuditLogger for ConsoleAuditLogger
-{
-    async fn log(&self, entry: AuditLog) -> SecurityResult<()>
-    {
+impl AuditLogger for ConsoleAuditLogger {
+    async fn log(&self, entry: AuditLog) -> SecurityResult<()> {
         let status = if entry.granted { "GRANTED" } else { "DENIED" };
         tracing::info!(
             "[AUDIT] {} | User: {} | Permission: {} | Resource: {:?} | Reason: {:?}",
@@ -328,8 +307,7 @@ impl AuditLogger for ConsoleAuditLogger
 /// Permission cache entry
 /// 权限缓存条目
 #[derive(Debug, Clone)]
-struct CacheEntry
-{
+struct CacheEntry {
     /// Permissions
     /// 权限
     permissions: HashSet<String>,
@@ -345,8 +323,7 @@ struct CacheEntry
 /// Central manager for role-based access control with caching and audit logging.
 /// 基于角色的访问控制的中央管理器，支持缓存和审计日志。
 #[derive(Clone)]
-pub struct RbacManager
-{
+pub struct RbacManager {
     /// Configuration
     /// 配置
     config: RbacConfig,
@@ -372,12 +349,10 @@ pub struct RbacManager
     audit_logger: Option<Arc<dyn AuditLogger>>,
 }
 
-impl RbacManager
-{
+impl RbacManager {
     /// Create a new RBAC manager
     /// 创建新的RBAC管理器
-    pub fn new(config: RbacConfig) -> Self
-    {
+    pub fn new(config: RbacConfig) -> Self {
         Self {
             config,
             user_roles: Arc::new(RwLock::new(HashMap::new())),
@@ -389,10 +364,8 @@ impl RbacManager
     }
 }
 
-impl fmt::Debug for RbacManager
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for RbacManager {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("RbacManager")
             .field("config", &self.config)
             .field("user_roles", &"<hidden>")
@@ -404,27 +377,23 @@ impl fmt::Debug for RbacManager
     }
 }
 
-impl RbacManager
-{
+impl RbacManager {
     /// Set audit logger
     /// 设置审计日志器
-    pub fn with_audit_logger(mut self, logger: Arc<dyn AuditLogger>) -> Self
-    {
+    pub fn with_audit_logger(mut self, logger: Arc<dyn AuditLogger>) -> Self {
         self.audit_logger = Some(logger);
         self
     }
 
     /// Add a user role mapping
     /// 添加用户角色映射
-    pub async fn add_user_role(&self, user_role: UserRole) -> SecurityResult<()>
-    {
+    pub async fn add_user_role(&self, user_role: UserRole) -> SecurityResult<()> {
         let user_id = user_role.user_id.clone();
         let mut user_roles = self.user_roles.write().await;
         user_roles.insert(user_id.clone(), user_role);
 
         // Invalidate cache for this user
-        if self.config.enable_cache
-        {
+        if self.config.enable_cache {
             let mut cache = self.cache.write().await;
             cache.remove(&user_id);
         }
@@ -438,14 +407,12 @@ impl RbacManager
         &self,
         role: String,
         permissions: Vec<String>,
-    ) -> SecurityResult<()>
-    {
+    ) -> SecurityResult<()> {
         let mut role_permissions = self.role_permissions.write().await;
         role_permissions.insert(role, permissions.into_iter().collect());
 
         // Invalidate all cache
-        if self.config.enable_cache
-        {
+        if self.config.enable_cache {
             let mut cache = self.cache.write().await;
             cache.clear();
         }
@@ -455,8 +422,7 @@ impl RbacManager
 
     /// Add a permission definition
     /// 添加权限定义
-    pub async fn add_permission(&self, permission: PermissionEntry) -> SecurityResult<()>
-    {
+    pub async fn add_permission(&self, permission: PermissionEntry) -> SecurityResult<()> {
         let mut permissions = self.permissions.write().await;
         permissions.insert(permission.id.clone(), permission);
         Ok(())
@@ -464,8 +430,7 @@ impl RbacManager
 
     /// Load permissions from database (placeholder)
     /// 从数据库加载权限（占位符）
-    pub async fn load_permissions_from_db(&self) -> SecurityResult<()>
-    {
+    pub async fn load_permissions_from_db(&self) -> SecurityResult<()> {
         // In a real implementation, this would query a database
         tracing::info!("Loading permissions from database...");
 
@@ -491,10 +456,10 @@ impl RbacManager
 
         self.add_role_permission("USER".to_string(), vec!["user.read".to_string()])
             .await?;
-        self.add_role_permission("ADMIN".to_string(), vec![
-            "user.read".to_string(),
-            "user.write".to_string(),
-        ])
+        self.add_role_permission(
+            "ADMIN".to_string(),
+            vec!["user.read".to_string(), "user.write".to_string()],
+        )
         .await?;
 
         Ok(())
@@ -502,8 +467,7 @@ impl RbacManager
 
     /// Check if user has permission
     /// 检查用户是否有权限
-    pub async fn check_permission(&self, user_id: &str, permission: &str) -> SecurityResult<bool>
-    {
+    pub async fn check_permission(&self, user_id: &str, permission: &str) -> SecurityResult<bool> {
         self.check_permission_with_context(user_id, permission, None, None, None)
             .await
     }
@@ -517,8 +481,7 @@ impl RbacManager
         resource: Option<String>,
         ip_address: Option<String>,
         user_agent: Option<String>,
-    ) -> SecurityResult<bool>
-    {
+    ) -> SecurityResult<bool> {
         // Check cache first
         if self.config.enable_cache
             && let Some(cached) = self.get_cached_permissions(user_id).await
@@ -534,8 +497,7 @@ impl RbacManager
         let granted = permissions.contains(permission);
 
         // Cache the result
-        if self.config.enable_cache
-        {
+        if self.config.enable_cache {
             self.cache_permissions(user_id, permissions).await;
         }
 
@@ -548,12 +510,10 @@ impl RbacManager
 
     /// Check if user has role
     /// 检查用户是否有角色
-    pub async fn check_role(&self, user_id: &str, role: &str) -> SecurityResult<bool>
-    {
+    pub async fn check_role(&self, user_id: &str, role: &str) -> SecurityResult<bool> {
         let user_roles = self.user_roles.read().await;
 
-        if let Some(user_role) = user_roles.get(user_id)
-        {
+        if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
             if let Some(expires_at) = user_role.expires_at
                 && Utc::now() > expires_at
@@ -562,18 +522,14 @@ impl RbacManager
             }
 
             // Check direct role
-            if user_role.roles.contains(role)
-            {
+            if user_role.roles.contains(role) {
                 return Ok(true);
             }
 
             // Check hierarchy
-            if self.config.enable_hierarchy
-            {
-                for user_role_name in &user_role.roles
-                {
-                    if self.role_inherits_role(user_role_name, role)
-                    {
+            if self.config.enable_hierarchy {
+                for user_role_name in &user_role.roles {
+                    if self.role_inherits_role(user_role_name, role) {
                         return Ok(true);
                     }
                 }
@@ -585,15 +541,13 @@ impl RbacManager
 
     /// Get all permissions for a user
     /// 获取用户的所有权限
-    async fn get_user_permissions(&self, user_id: &str) -> SecurityResult<HashSet<String>>
-    {
+    async fn get_user_permissions(&self, user_id: &str) -> SecurityResult<HashSet<String>> {
         let user_roles = self.user_roles.read().await;
         let role_permissions = self.role_permissions.read().await;
 
         let mut permissions = HashSet::new();
 
-        if let Some(user_role) = user_roles.get(user_id)
-        {
+        if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
             if let Some(expires_at) = user_role.expires_at
                 && Utc::now() > expires_at
@@ -605,22 +559,17 @@ impl RbacManager
             permissions.extend(user_role.direct_permissions.clone());
 
             // Add role permissions
-            for role_name in &user_role.roles
-            {
+            for role_name in &user_role.roles {
                 // Get role's direct permissions
-                if let Some(role_perms) = role_permissions.get(role_name)
-                {
+                if let Some(role_perms) = role_permissions.get(role_name) {
                     permissions.extend(role_perms.clone());
                 }
 
                 // Get inherited permissions via hierarchy
-                if self.config.enable_hierarchy
-                {
+                if self.config.enable_hierarchy {
                     let inherited_roles = self.get_all_inherited_roles(role_name);
-                    for inherited_role in inherited_roles
-                    {
-                        if let Some(role_perms) = role_permissions.get(&inherited_role)
-                        {
+                    for inherited_role in inherited_roles {
+                        if let Some(role_perms) = role_permissions.get(&inherited_role) {
                             permissions.extend(role_perms.clone());
                         }
                     }
@@ -633,19 +582,14 @@ impl RbacManager
 
     /// Get all inherited roles for a role
     /// 获取角色的所有继承角色
-    fn get_all_inherited_roles(&self, role: &str) -> HashSet<String>
-    {
+    fn get_all_inherited_roles(&self, role: &str) -> HashSet<String> {
         let mut inherited = HashSet::new();
         let mut to_check = vec![role.to_string()];
 
-        while let Some(check) = to_check.pop()
-        {
-            if let Some(children) = self.config.role_hierarchy.get(&check)
-            {
-                for child in children
-                {
-                    if inherited.insert(child.clone())
-                    {
+        while let Some(check) = to_check.pop() {
+            if let Some(children) = self.config.role_hierarchy.get(&check) {
+                for child in children {
+                    if inherited.insert(child.clone()) {
                         to_check.push(child.clone());
                     }
                 }
@@ -657,31 +601,25 @@ impl RbacManager
 
     /// Check if a role inherits another role
     /// 检查角色是否继承另一个角色
-    fn role_inherits_role(&self, role: &str, target: &str) -> bool
-    {
-        if role == target
-        {
+    fn role_inherits_role(&self, role: &str, target: &str) -> bool {
+        if role == target {
             return true;
         }
 
-        if let Some(children) = self.config.role_hierarchy.get(role)
-        {
+        if let Some(children) = self.config.role_hierarchy.get(role) {
             children.iter().any(|child| {
                 // Need to check recursively but can't await in async trait easily
                 // For now, do direct check
                 child == target || self.config.role_hierarchy.contains_key(child)
             })
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// Get cached permissions for a user
     /// 获取用户的缓存权限
-    async fn get_cached_permissions(&self, user_id: &str) -> Option<HashSet<String>>
-    {
+    async fn get_cached_permissions(&self, user_id: &str) -> Option<HashSet<String>> {
         let cache = self.cache.read().await;
         if let Some(entry) = cache.get(user_id)
             && entry.expires_at > Utc::now()
@@ -693,8 +631,7 @@ impl RbacManager
 
     /// Cache permissions for a user
     /// 缓存用户的权限
-    async fn cache_permissions(&self, user_id: &str, permissions: HashSet<String>)
-    {
+    async fn cache_permissions(&self, user_id: &str, permissions: HashSet<String>) {
         let expires_at = Utc::now() + chrono::Duration::seconds(self.config.cache_ttl as i64);
         let entry = CacheEntry {
             permissions,
@@ -707,16 +644,14 @@ impl RbacManager
 
     /// Clear permission cache
     /// 清除权限缓存
-    pub async fn clear_cache(&self)
-    {
+    pub async fn clear_cache(&self) {
         let mut cache = self.cache.write().await;
         cache.clear();
     }
 
     /// Clear cache for a specific user
     /// 清除特定用户的缓存
-    pub async fn clear_user_cache(&self, user_id: &str)
-    {
+    pub async fn clear_user_cache(&self, user_id: &str) {
         let mut cache = self.cache.write().await;
         cache.remove(user_id);
     }
@@ -732,8 +667,7 @@ impl RbacManager
         reason: Option<String>,
         ip_address: Option<String>,
         user_agent: Option<String>,
-    )
-    {
+    ) {
         if self.config.enable_audit
             && let Some(logger) = &self.audit_logger
         {
@@ -754,12 +688,10 @@ impl RbacManager
 
     /// Get all roles for a user
     /// 获取用户的所有角色
-    pub async fn get_user_roles(&self, user_id: &str) -> SecurityResult<HashSet<String>>
-    {
+    pub async fn get_user_roles(&self, user_id: &str) -> SecurityResult<HashSet<String>> {
         let user_roles = self.user_roles.read().await;
 
-        if let Some(user_role) = user_roles.get(user_id)
-        {
+        if let Some(user_role) = user_roles.get(user_id) {
             // Check if expired
             if let Some(expires_at) = user_role.expires_at
                 && Utc::now() > expires_at
@@ -774,8 +706,7 @@ impl RbacManager
 
     /// Assign role to user
     /// 给用户分配角色
-    pub async fn assign_role(&self, user_id: &str, role: &str) -> SecurityResult<()>
-    {
+    pub async fn assign_role(&self, user_id: &str, role: &str) -> SecurityResult<()> {
         let mut user_roles = self.user_roles.write().await;
 
         let user_role = user_roles
@@ -790,8 +721,7 @@ impl RbacManager
         user_role.roles.insert(role.to_string());
 
         // Invalidate cache
-        if self.config.enable_cache
-        {
+        if self.config.enable_cache {
             let mut cache = self.cache.write().await;
             cache.remove(user_id);
         }
@@ -801,17 +731,14 @@ impl RbacManager
 
     /// Revoke role from user
     /// 从用户撤销角色
-    pub async fn revoke_role(&self, user_id: &str, role: &str) -> SecurityResult<()>
-    {
+    pub async fn revoke_role(&self, user_id: &str, role: &str) -> SecurityResult<()> {
         let mut user_roles = self.user_roles.write().await;
 
-        if let Some(user_role) = user_roles.get_mut(user_id)
-        {
+        if let Some(user_role) = user_roles.get_mut(user_id) {
             user_role.roles.remove(role);
 
             // Invalidate cache
-            if self.config.enable_cache
-            {
+            if self.config.enable_cache {
                 let mut cache = self.cache.write().await;
                 cache.remove(user_id);
             }
@@ -821,26 +748,28 @@ impl RbacManager
     }
 }
 
-impl Default for RbacManager
-{
-    fn default() -> Self
-    {
+impl Default for RbacManager {
+    fn default() -> Self {
         Self::new(RbacConfig::default())
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     use super::*;
 
     // ── Helper: create a user role mapping / 辅助函数：创建用户角色映射 ──
 
-    fn make_user_role(user_id: &str, roles: &[&str]) -> UserRole
-    {
+    fn make_user_role(user_id: &str, roles: &[&str]) -> UserRole {
         UserRole {
             user_id: user_id.to_string(),
             roles: roles.iter().map(|r| r.to_string()).collect(),
@@ -853,8 +782,7 @@ mod tests
         user_id: &str,
         roles: &[&str],
         permissions: &[&str],
-    ) -> UserRole
-    {
+    ) -> UserRole {
         UserRole {
             user_id: user_id.to_string(),
             roles: roles.iter().map(|r| r.to_string()).collect(),
@@ -863,8 +791,7 @@ mod tests
         }
     }
 
-    fn make_expired_user_role(user_id: &str, roles: &[&str]) -> UserRole
-    {
+    fn make_expired_user_role(user_id: &str, roles: &[&str]) -> UserRole {
         UserRole {
             user_id: user_id.to_string(),
             roles: roles.iter().map(|r| r.to_string()).collect(),
@@ -876,31 +803,25 @@ mod tests
     /// Capturing audit logger for test assertions.
     /// 用于测试断言的捕获型审计日志器。
     #[derive(Debug)]
-    struct CapturingAuditLogger
-    {
+    struct CapturingAuditLogger {
         entries: Arc<RwLock<Vec<AuditLog>>>,
     }
 
-    impl CapturingAuditLogger
-    {
-        fn new() -> Self
-        {
+    impl CapturingAuditLogger {
+        fn new() -> Self {
             Self {
                 entries: Arc::new(RwLock::new(Vec::new())),
             }
         }
 
-        async fn logged_entries(&self) -> Vec<AuditLog>
-        {
+        async fn logged_entries(&self) -> Vec<AuditLog> {
             self.entries.read().await.clone()
         }
     }
 
     #[async_trait::async_trait]
-    impl AuditLogger for CapturingAuditLogger
-    {
-        async fn log(&self, entry: AuditLog) -> SecurityResult<()>
-        {
+    impl AuditLogger for CapturingAuditLogger {
+        async fn log(&self, entry: AuditLog) -> SecurityResult<()> {
             self.entries.write().await.push(entry);
             Ok(())
         }
@@ -908,31 +829,25 @@ mod tests
 
     /// Audit logger that counts invocations.
     /// 统计调用次数的审计日志器。
-    struct CountingAuditLogger
-    {
+    struct CountingAuditLogger {
         count: AtomicUsize,
     }
 
-    impl CountingAuditLogger
-    {
-        fn new() -> Self
-        {
+    impl CountingAuditLogger {
+        fn new() -> Self {
             Self {
                 count: AtomicUsize::new(0),
             }
         }
 
-        fn invocation_count(&self) -> usize
-        {
+        fn invocation_count(&self) -> usize {
             self.count.load(Ordering::SeqCst)
         }
     }
 
     #[async_trait::async_trait]
-    impl AuditLogger for CountingAuditLogger
-    {
-        async fn log(&self, _entry: AuditLog) -> SecurityResult<()>
-        {
+    impl AuditLogger for CountingAuditLogger {
+        async fn log(&self, _entry: AuditLog) -> SecurityResult<()> {
             self.count.fetch_add(1, Ordering::SeqCst);
             Ok(())
         }
@@ -943,8 +858,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_config_default_values()
-    {
+    fn test_config_default_values() {
         let config = RbacConfig::default();
         assert!(config.enable_cache);
         assert!(config.enable_audit);
@@ -953,8 +867,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_default_hierarchy()
-    {
+    fn test_config_default_hierarchy() {
         let config = RbacConfig::default();
         // ADMIN inherits MODERATOR, USER, GUEST
         let admin_children = config.role_hierarchy.get("ADMIN").unwrap();
@@ -973,8 +886,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_builder_chain()
-    {
+    fn test_config_builder_chain() {
         let config = RbacConfig::new()
             .enable_cache(false)
             .enable_audit(false)
@@ -988,8 +900,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_custom_role_hierarchy()
-    {
+    fn test_config_custom_role_hierarchy() {
         let mut custom = HashMap::new();
         custom.insert("SUPER".to_string(), vec!["OPERATOR".to_string()]);
 
@@ -1004,8 +915,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_permission_entry_new()
-    {
+    fn test_permission_entry_new() {
         let entry = PermissionEntry::new("p1", "user:read", "Read users", "user", "read");
         assert_eq!(entry.id, "p1");
         assert_eq!(entry.name, "user:read");
@@ -1016,8 +926,7 @@ mod tests
     }
 
     #[test]
-    fn test_permission_entry_add_roles()
-    {
+    fn test_permission_entry_add_roles() {
         let entry = PermissionEntry::new("p1", "doc:write", "Write docs", "doc", "write")
             .add_role("ADMIN")
             .add_role("EDITOR");
@@ -1025,8 +934,7 @@ mod tests
     }
 
     #[test]
-    fn test_permission_entry_serialization()
-    {
+    fn test_permission_entry_serialization() {
         let entry = PermissionEntry::new("p1", "user:delete", "Delete users", "user", "delete")
             .add_role("ADMIN");
         let json = serde_json::to_string(&entry).unwrap();
@@ -1041,8 +949,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_assign_role_to_new_user()
-    {
+    async fn test_assign_role_to_new_user() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("alice", "USER").await.unwrap();
 
@@ -1051,8 +958,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_assign_multiple_roles()
-    {
+    async fn test_assign_multiple_roles() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("bob", "USER").await.unwrap();
         mgr.assign_role("bob", "MODERATOR").await.unwrap();
@@ -1064,8 +970,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_assign_duplicate_role_is_idempotent()
-    {
+    async fn test_assign_duplicate_role_is_idempotent() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("carol", "USER").await.unwrap();
         mgr.assign_role("carol", "USER").await.unwrap();
@@ -1075,8 +980,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_revoke_role()
-    {
+    async fn test_revoke_role() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("dave", "USER").await.unwrap();
         mgr.assign_role("dave", "ADMIN").await.unwrap();
@@ -1088,8 +992,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_revoke_nonexistent_role_is_noop()
-    {
+    async fn test_revoke_nonexistent_role_is_noop() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("eve", "USER").await.unwrap();
         // Revoking a role the user doesn't have should succeed silently
@@ -1099,8 +1002,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_revoke_from_nonexistent_user_is_noop()
-    {
+    async fn test_revoke_from_nonexistent_user_is_noop() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.revoke_role("ghost", "USER").await.unwrap();
         let roles = mgr.get_user_roles("ghost").await.unwrap();
@@ -1112,8 +1014,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_check_permission_granted()
-    {
+    async fn test_check_permission_granted() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("u1", &["USER"]))
             .await
@@ -1126,8 +1027,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_check_permission_denied()
-    {
+    async fn test_check_permission_denied() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("u2", &["GUEST"]))
             .await
@@ -1140,15 +1040,13 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_check_permission_unknown_user_denied()
-    {
+    async fn test_check_permission_unknown_user_denied() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         assert!(!mgr.check_permission("nobody", "any.thing").await.unwrap());
     }
 
     #[tokio::test]
-    async fn test_direct_permissions()
-    {
+    async fn test_direct_permissions() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role_with_permissions("u3", &["GUEST"], &["special.perm"]))
             .await
@@ -1166,8 +1064,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_check_role_direct()
-    {
+    async fn test_check_role_direct() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.assign_role("u10", "EDITOR").await.unwrap();
 
@@ -1176,8 +1073,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_check_role_via_hierarchy()
-    {
+    async fn test_check_role_via_hierarchy() {
         // Default hierarchy: ADMIN > MODERATOR > USER > GUEST
         let mgr = RbacManager::new(
             RbacConfig::new()
@@ -1194,8 +1090,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_check_role_hierarchy_disabled()
-    {
+    async fn test_check_role_hierarchy_disabled() {
         let mgr = RbacManager::new(
             RbacConfig::new()
                 .enable_hierarchy(false)
@@ -1214,8 +1109,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_admin_inherits_user_permissions()
-    {
+    async fn test_admin_inherits_user_permissions() {
         let mgr = RbacManager::new(
             RbacConfig::new()
                 .enable_hierarchy(true)
@@ -1243,8 +1137,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_moderator_inherits_user_and_guest_permissions()
-    {
+    async fn test_moderator_inherits_user_and_guest_permissions() {
         let mgr = RbacManager::new(
             RbacConfig::new()
                 .enable_hierarchy(true)
@@ -1270,8 +1163,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_leaf_role_does_not_inherit_parent()
-    {
+    async fn test_leaf_role_does_not_inherit_parent() {
         let mgr = RbacManager::new(
             RbacConfig::new()
                 .enable_hierarchy(true)
@@ -1290,8 +1182,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_multi_level_inheritance_chain()
-    {
+    async fn test_multi_level_inheritance_chain() {
         // ADMIN > MODERATOR > USER > GUEST
         let mgr = RbacManager::new(
             RbacConfig::new()
@@ -1319,8 +1210,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_expired_user_role_returns_no_roles()
-    {
+    async fn test_expired_user_role_returns_no_roles() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
             .await
@@ -1331,8 +1221,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_expired_user_role_denies_permission()
-    {
+    async fn test_expired_user_role_denies_permission() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
             .await
@@ -1349,8 +1238,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_expired_user_role_check_role_fails()
-    {
+    async fn test_expired_user_role_check_role_fails() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_expired_user_role("expired_user", &["ADMIN"]))
             .await
@@ -1364,8 +1252,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_cache_hit_returns_same_result()
-    {
+    async fn test_cache_hit_returns_same_result() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("cached_user", &["USER"]))
             .await
@@ -1389,8 +1276,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_cache_invalidated_on_role_assignment()
-    {
+    async fn test_cache_invalidated_on_role_assignment() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["USER"]))
             .await
@@ -1412,8 +1298,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_cache_invalidated_on_role_revocation()
-    {
+    async fn test_cache_invalidated_on_role_revocation() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["USER", "ADMIN"]))
             .await
@@ -1431,8 +1316,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_cache_invalidated_on_add_user_role()
-    {
+    async fn test_cache_invalidated_on_add_user_role() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["USER"]))
             .await
@@ -1451,8 +1335,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_add_role_permission_clears_all_cache()
-    {
+    async fn test_add_role_permission_clears_all_cache() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("a", &["USER"]))
             .await
@@ -1479,8 +1362,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_clear_cache_manual()
-    {
+    async fn test_clear_cache_manual() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["USER"]))
             .await
@@ -1496,8 +1378,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_clear_user_cache_targeted()
-    {
+    async fn test_clear_user_cache_targeted() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(true).enable_audit(false));
         mgr.add_user_role(make_user_role("u1", &["USER"]))
             .await
@@ -1519,8 +1400,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_no_cache_mode()
-    {
+    async fn test_no_cache_mode() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["USER"]))
             .await
@@ -1539,8 +1419,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_audit_log_records_granted()
-    {
+    async fn test_audit_log_records_granted() {
         let logger = Arc::new(CapturingAuditLogger::new());
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
             .with_audit_logger(logger.clone());
@@ -1563,8 +1442,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_audit_log_records_denied()
-    {
+    async fn test_audit_log_records_denied() {
         let logger = Arc::new(CapturingAuditLogger::new());
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
             .with_audit_logger(logger.clone());
@@ -1582,8 +1460,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_audit_log_with_context()
-    {
+    async fn test_audit_log_with_context() {
         let logger = Arc::new(CapturingAuditLogger::new());
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
             .with_audit_logger(logger.clone());
@@ -1612,8 +1489,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_audit_disabled_no_logs()
-    {
+    async fn test_audit_disabled_no_logs() {
         let logger = Arc::new(CountingAuditLogger::new());
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false))
             .with_audit_logger(logger.clone());
@@ -1627,8 +1503,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_audit_log_timestamp_is_recent()
-    {
+    async fn test_audit_log_timestamp_is_recent() {
         let logger = Arc::new(CapturingAuditLogger::new());
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(true))
             .with_audit_logger(logger.clone());
@@ -1649,8 +1524,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_console_audit_logger_does_not_error()
-    {
+    async fn test_console_audit_logger_does_not_error() {
         let logger = ConsoleAuditLogger::new();
         let entry = AuditLog {
             timestamp: Utc::now(),
@@ -1670,8 +1544,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_add_and_store_permission_entry()
-    {
+    async fn test_add_and_store_permission_entry() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         let perm = PermissionEntry::new("p.x", "x:do", "Do X", "x", "do").add_role("OPERATOR");
         mgr.add_permission(perm).await.unwrap();
@@ -1679,8 +1552,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_load_permissions_from_db_populates_defaults()
-    {
+    async fn test_load_permissions_from_db_populates_defaults() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.load_permissions_from_db().await.unwrap();
 
@@ -1720,16 +1592,14 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_manager_default_construction()
-    {
+    fn test_manager_default_construction() {
         let mgr = RbacManager::default();
         let debug = format!("{:?}", mgr);
         assert!(debug.contains("RbacManager"));
     }
 
     #[test]
-    fn test_manager_debug_format()
-    {
+    fn test_manager_debug_format() {
         let mgr = RbacManager::new(RbacConfig::new());
         let debug = format!("{:?}", mgr);
         assert!(debug.contains("config"));
@@ -1737,8 +1607,7 @@ mod tests
     }
 
     #[test]
-    fn test_manager_with_audit_logger_debug()
-    {
+    fn test_manager_with_audit_logger_debug() {
         let mgr = RbacManager::new(RbacConfig::new())
             .with_audit_logger(Arc::new(ConsoleAuditLogger::new()));
         let debug = format!("{:?}", mgr);
@@ -1750,8 +1619,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_user_role_serialization()
-    {
+    fn test_user_role_serialization() {
         let role = make_user_role("alice", &["ADMIN", "USER"]);
         let json = serde_json::to_string(&role).unwrap();
         let deserialized: UserRole = serde_json::from_str(&json).unwrap();
@@ -1760,8 +1628,7 @@ mod tests
     }
 
     #[test]
-    fn test_role_permission_serialization()
-    {
+    fn test_role_permission_serialization() {
         let rp = RolePermission {
             role: "EDITOR".to_string(),
             permissions: {
@@ -1782,8 +1649,7 @@ mod tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_user_with_no_roles_gets_no_permissions()
-    {
+    async fn test_user_with_no_roles_gets_no_permissions() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("empty_user", &[]))
             .await
@@ -1796,8 +1662,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_role_with_no_permissions()
-    {
+    async fn test_role_with_no_permissions() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("u", &["EMPTY_ROLE"]))
             .await
@@ -1810,8 +1675,7 @@ mod tests
 
     #[tokio::test]
     #[ignore = "pre-existing: rbac check changed after async-to-sync refactoring"]
-    async fn test_multiple_users_isolated()
-    {
+    async fn test_multiple_users_isolated() {
         let mgr = RbacManager::new(RbacConfig::new().enable_cache(false).enable_audit(false));
         mgr.add_user_role(make_user_role("alice", &["ADMIN"]))
             .await

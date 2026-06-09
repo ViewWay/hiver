@@ -51,8 +51,7 @@ impl Identifier for uuid::Uuid {}
 ///     }
 /// }
 /// ```
-pub trait AggregateRoot: Any + Send + Sync + Debug
-{
+pub trait AggregateRoot: Any + Send + Sync + Debug {
     /// ID type
     /// ID 类型
     type Id: Identifier;
@@ -116,8 +115,7 @@ pub trait AggregateRoot: Any + Send + Sync + Debug
 ///     }
 /// }
 /// ```
-pub trait Auditable
-{
+pub trait Auditable {
     /// Get creation timestamp
     /// 获取创建时间戳
     fn created_at(&self) -> Option<chrono::DateTime<chrono::Utc>>;
@@ -136,8 +134,7 @@ pub trait Auditable
 
     /// Get creator
     /// 获取创建者
-    fn created_by(&self) -> Option<&str>
-    {
+    fn created_by(&self) -> Option<&str> {
         None
     }
 
@@ -147,8 +144,7 @@ pub trait Auditable
 
     /// Get last updater
     /// 获取最后更新者
-    fn updated_by(&self) -> Option<&str>
-    {
+    fn updated_by(&self) -> Option<&str> {
         None
     }
 
@@ -185,8 +181,7 @@ pub trait Auditable
 ///     }
 /// }
 /// ```
-pub trait Versioned
-{
+pub trait Versioned {
     /// Get current version
     /// 获取当前版本
     fn version(&self) -> i32;
@@ -197,8 +192,7 @@ pub trait Versioned
 
     /// Increment version
     /// 递增版本
-    fn increment_version(&mut self)
-    {
+    fn increment_version(&mut self) {
         let current = self.version();
         self.set_version(current + 1);
     }
@@ -236,8 +230,7 @@ pub trait Versioned
 ///     }
 /// }
 /// ```
-pub trait SoftDeletable
-{
+pub trait SoftDeletable {
     /// Check if entity is deleted
     /// 检查实体是否已删除
     fn is_deleted(&self) -> bool;
@@ -252,8 +245,7 @@ pub trait SoftDeletable
 
     /// Get deletion timestamp
     /// 获取删除时间戳
-    fn deleted_at(&self) -> Option<chrono::DateTime<chrono::Utc>>
-    {
+    fn deleted_at(&self) -> Option<chrono::DateTime<chrono::Utc>> {
         None
     }
 }
@@ -264,8 +256,7 @@ pub trait SoftDeletable
 /// Events that can occur during an entity's lifecycle.
 /// 实体生命周期中可能发生的事件。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LifecycleEvent
-{
+pub enum LifecycleEvent {
     /// Before save
     /// 保存前
     BeforeSave,
@@ -330,8 +321,7 @@ pub enum LifecycleEvent
 ///     }
 /// }
 /// ```
-pub trait EntityWithLifecycle
-{
+pub trait EntityWithLifecycle {
     /// Callback before save
     /// 保存前回调
     fn before_save(&mut self) {}
@@ -370,10 +360,8 @@ pub trait EntityWithLifecycle
 
     /// Dispatch lifecycle event
     /// 分发生命周期事件
-    fn dispatch_lifecycle_event(&mut self, event: LifecycleEvent)
-    {
-        match event
-        {
+    fn dispatch_lifecycle_event(&mut self, event: LifecycleEvent) {
+        match event {
             LifecycleEvent::BeforeSave => self.before_save(),
             LifecycleEvent::AfterSave => self.after_save(),
             LifecycleEvent::BeforeInsert => self.before_insert(),
@@ -382,8 +370,7 @@ pub trait EntityWithLifecycle
             LifecycleEvent::AfterUpdate => self.after_update(),
             LifecycleEvent::BeforeDelete => self.before_delete(),
             LifecycleEvent::AfterDelete => self.after_delete(),
-            LifecycleEvent::BeforeLoad =>
-            {},
+            LifecycleEvent::BeforeLoad => {},
             LifecycleEvent::AfterLoad => self.after_load(),
         }
     }
@@ -411,8 +398,7 @@ pub trait EntityWithLifecycle
 ///     }
 /// }
 /// ```
-pub trait TableName
-{
+pub trait TableName {
     /// Get the table name for this entity
     /// 获取此实体的表名
     fn table_name() -> &'static str;
@@ -453,20 +439,17 @@ pub trait TableName
 ///     }
 /// }
 /// ```
-pub trait ColumnName
-{
+pub trait ColumnName {
     /// Convert field name to column name
     /// 将字段名转换为列名
-    fn column_name(field: &str) -> String
-    {
+    fn column_name(field: &str) -> String {
         // Default: snake_case to snake_case (no change)
         field.to_string()
     }
 
     /// Get all column names for this entity
     /// 获取此实体的所有列名
-    fn column_names() -> Vec<&'static str>
-    {
+    fn column_names() -> Vec<&'static str> {
         Vec::new()
     }
 }
@@ -514,19 +497,16 @@ pub trait ColumnName
 ///     }
 /// }
 /// ```
-pub trait Entity: AggregateRoot + TableName + Any + Send + Sync
-{
+pub trait Entity: AggregateRoot + TableName + Any + Send + Sync {
     /// Get a value by field name
     /// 通过字段名获取值
-    fn get_field(&self, _field: &str) -> Option<String>
-    {
+    fn get_field(&self, _field: &str) -> Option<String> {
         None
     }
 
     /// Set a value by field name
     /// 通过字段名设置值
-    fn set_field(&mut self, _field: &str, _value: &str) -> bool
-    {
+    fn set_field(&mut self, _field: &str, _value: &str) -> bool {
         false
     }
 
@@ -545,62 +525,57 @@ pub trait Entity: AggregateRoot + TableName + Any + Send + Sync
 impl<E> EntityWithLifecycle for E where E: AggregateRoot {}
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use chrono::Utc;
 
     use super::*;
 
     #[derive(Debug, Clone)]
-    struct TestUser
-    {
+    struct TestUser {
         id: i32,
         name: String,
     }
 
-    impl AggregateRoot for TestUser
-    {
+    impl AggregateRoot for TestUser {
         type Id = i32;
 
-        fn id(&self) -> &Self::Id
-        {
+        fn id(&self) -> &Self::Id {
             &self.id
         }
 
-        fn set_id(&mut self, id: Self::Id)
-        {
+        fn set_id(&mut self, id: Self::Id) {
             self.id = id;
         }
 
-        fn is_new(&self) -> bool
-        {
+        fn is_new(&self) -> bool {
             self.id == 0
         }
 
-        fn type_name() -> String
-        {
+        fn type_name() -> String {
             "TestUser".to_string()
         }
     }
 
-    impl TableName for TestUser
-    {
-        fn table_name() -> &'static str
-        {
+    impl TableName for TestUser {
+        fn table_name() -> &'static str {
             "test_users"
         }
     }
 
-    impl Entity for TestUser
-    {
+    impl Entity for TestUser {
         // Entity trait uses methods from AggregateRoot
         // Entity trait 使用来自 AggregateRoot 的方法
     }
 
     #[test]
-    fn test_aggregate_root()
-    {
+    fn test_aggregate_root() {
         let user = TestUser {
             id: 1,
             name: "Alice".to_string(),
@@ -612,8 +587,7 @@ mod tests
     }
 
     #[test]
-    fn test_new_entity()
-    {
+    fn test_new_entity() {
         let user = TestUser {
             id: 0,
             name: "Bob".to_string(),
@@ -623,8 +597,7 @@ mod tests
     }
 
     #[test]
-    fn test_set_id()
-    {
+    fn test_set_id() {
         let mut user = TestUser {
             id: 0,
             name: "Charlie".to_string(),
@@ -637,45 +610,37 @@ mod tests
     }
 
     #[test]
-    fn test_table_name()
-    {
+    fn test_table_name() {
         assert_eq!(TestUser::table_name(), "test_users");
     }
 
     #[derive(Debug, Clone)]
-    struct AuditedTestUser
-    {
+    struct AuditedTestUser {
         id: i32,
         created: Option<chrono::DateTime<chrono::Utc>>,
         updated: Option<chrono::DateTime<chrono::Utc>>,
     }
 
-    impl Auditable for AuditedTestUser
-    {
-        fn created_at(&self) -> Option<chrono::DateTime<chrono::Utc>>
-        {
+    impl Auditable for AuditedTestUser {
+        fn created_at(&self) -> Option<chrono::DateTime<chrono::Utc>> {
             self.created
         }
 
-        fn set_created_at(&mut self, ts: chrono::DateTime<chrono::Utc>)
-        {
+        fn set_created_at(&mut self, ts: chrono::DateTime<chrono::Utc>) {
             self.created = Some(ts);
         }
 
-        fn updated_at(&self) -> Option<chrono::DateTime<chrono::Utc>>
-        {
+        fn updated_at(&self) -> Option<chrono::DateTime<chrono::Utc>> {
             self.updated
         }
 
-        fn set_updated_at(&mut self, ts: chrono::DateTime<chrono::Utc>)
-        {
+        fn set_updated_at(&mut self, ts: chrono::DateTime<chrono::Utc>) {
             self.updated = Some(ts);
         }
     }
 
     #[test]
-    fn test_auditable()
-    {
+    fn test_auditable() {
         let mut user = AuditedTestUser {
             id: 1,
             created: None,
@@ -691,28 +656,23 @@ mod tests
     }
 
     #[derive(Debug, Clone)]
-    struct VersionedTestUser
-    {
+    struct VersionedTestUser {
         id: i32,
         ver: i32,
     }
 
-    impl Versioned for VersionedTestUser
-    {
-        fn version(&self) -> i32
-        {
+    impl Versioned for VersionedTestUser {
+        fn version(&self) -> i32 {
             self.ver
         }
 
-        fn set_version(&mut self, version: i32)
-        {
+        fn set_version(&mut self, version: i32) {
             self.ver = version;
         }
     }
 
     #[test]
-    fn test_versioned()
-    {
+    fn test_versioned() {
         let mut user = VersionedTestUser { id: 1, ver: 0 };
 
         assert_eq!(user.version(), 0);
@@ -723,41 +683,34 @@ mod tests
     }
 
     #[derive(Debug, Clone)]
-    struct SoftDeleteTestUser
-    {
+    struct SoftDeleteTestUser {
         id: i32,
         deleted: bool,
         deleted_at: Option<chrono::DateTime<chrono::Utc>>,
     }
 
-    impl SoftDeletable for SoftDeleteTestUser
-    {
-        fn is_deleted(&self) -> bool
-        {
+    impl SoftDeletable for SoftDeleteTestUser {
+        fn is_deleted(&self) -> bool {
             self.deleted
         }
 
-        fn mark_deleted(&mut self)
-        {
+        fn mark_deleted(&mut self) {
             self.deleted = true;
             self.deleted_at = Some(Utc::now());
         }
 
-        fn restore(&mut self)
-        {
+        fn restore(&mut self) {
             self.deleted = false;
             self.deleted_at = None;
         }
 
-        fn deleted_at(&self) -> Option<chrono::DateTime<chrono::Utc>>
-        {
+        fn deleted_at(&self) -> Option<chrono::DateTime<chrono::Utc>> {
             self.deleted_at
         }
     }
 
     #[test]
-    fn test_soft_deletable()
-    {
+    fn test_soft_deletable() {
         let mut user = SoftDeleteTestUser {
             id: 1,
             deleted: false,
@@ -777,35 +730,29 @@ mod tests
     }
 
     #[derive(Debug, Clone)]
-    struct UserWithLifecycle
-    {
+    struct UserWithLifecycle {
         id: i32,
         name: String,
         before_save_called: bool,
         after_load_called: bool,
     }
 
-    impl AggregateRoot for UserWithLifecycle
-    {
+    impl AggregateRoot for UserWithLifecycle {
         type Id = i32;
 
-        fn id(&self) -> &Self::Id
-        {
+        fn id(&self) -> &Self::Id {
             &self.id
         }
 
-        fn set_id(&mut self, id: Self::Id)
-        {
+        fn set_id(&mut self, id: Self::Id) {
             self.id = id;
         }
 
-        fn is_new(&self) -> bool
-        {
+        fn is_new(&self) -> bool {
             self.id == 0
         }
 
-        fn type_name() -> String
-        {
+        fn type_name() -> String {
             "UserWithLifecycle".to_string()
         }
     }
@@ -815,26 +762,22 @@ mod tests
     // Instead, we directly test lifecycle callback behavior
     // 注意：由于 blanket implementation，我们无法手动实现 EntityWithLifecycle
     // 我们直接测试生命周期回调行为
-    impl UserWithLifecycle
-    {
+    impl UserWithLifecycle {
         /// Custom before_save callback for testing
         /// 用于测试的自定义 before_save 回调
-        pub(crate) fn before_save_custom(&mut self)
-        {
+        pub(crate) fn before_save_custom(&mut self) {
             self.before_save_called = true;
         }
 
         /// Custom after_load callback for testing
         /// 用于测试的自定义 after_load 回调
-        pub(crate) fn after_load_custom(&mut self)
-        {
+        pub(crate) fn after_load_custom(&mut self) {
             self.after_load_called = true;
         }
     }
 
     #[test]
-    fn test_lifecycle_callbacks()
-    {
+    fn test_lifecycle_callbacks() {
         let mut user = UserWithLifecycle {
             id: 1,
             name: "Test".to_string(),

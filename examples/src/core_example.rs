@@ -10,8 +10,7 @@
 
 use hiver_core::{Error, ErrorKind, Extensions};
 
-fn main() -> Result<(), Box<dyn std::error::Error>>
-{
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Hiver Core Example / Hiver核心示例 ===\n");
 
     // 1. Error Handling / 错误处理
@@ -40,8 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>
 ///
 /// Demonstrates different error types and how to create them.
 /// 演示不同的错误类型以及如何创建它们。
-fn error_handling_example()
-{
+fn error_handling_example() {
     // Not Found error / 404错误
     let not_found = Error::not_found("User not found");
     println!("  404 Not Found: {}", not_found);
@@ -75,8 +73,7 @@ fn error_handling_example()
 ///
 /// Equivalent to Spring's `@RequestScope` beans or `Model` attributes.
 /// 等价于 Spring 的 `@RequestScope` bean 或 `Model` 属性。
-fn extensions_example()
-{
+fn extensions_example() {
     let mut ext = Extensions::new();
 
     // Store different types / 存储不同类型
@@ -89,23 +86,19 @@ fn extensions_example()
     });
 
     // Retrieve values / 检索值
-    if let Some(s) = ext.get::<String>()
-    {
+    if let Some(s) = ext.get::<String>() {
         println!("  String: {}", s);
     }
 
-    if let Some(n) = ext.get::<i32>()
-    {
+    if let Some(n) = ext.get::<i32>() {
         println!("  Integer: {}", n);
     }
 
-    if let Some(v) = ext.get::<Vec<i32>>()
-    {
+    if let Some(v) = ext.get::<Vec<i32>>() {
         println!("  Vec: {:?}", v);
     }
 
-    if let Some(user) = ext.get::<User>()
-    {
+    if let Some(user) = ext.get::<User>() {
         println!("  User: {} (id={})", user.name, user.id);
     }
 
@@ -118,8 +111,7 @@ fn extensions_example()
 ///
 /// Demonstrates how to convert application errors to HTTP errors.
 /// 演示如何将应用错误转换为 HTTP 错误。
-fn error_conversion_example()
-{
+fn error_conversion_example() {
     // Simulating database error / 模拟数据库错误
     let db_error = "Connection refused";
     let http_error = Error::internal(format!("Database error: {}", db_error));
@@ -144,8 +136,7 @@ fn error_conversion_example()
 
 /// Example user type / 示例用户类型
 #[derive(Debug)]
-struct User
-{
+struct User {
     id: u64,
     name: String,
 }

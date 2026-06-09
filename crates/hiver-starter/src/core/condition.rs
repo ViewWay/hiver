@@ -21,8 +21,7 @@ use super::container::ApplicationContext;
 ///
 /// 用于判断是否应该应用某个配置。
 /// Used to determine whether a configuration should be applied.
-pub trait Conditional: Send + Sync
-{
+pub trait Conditional: Send + Sync {
     /// 检查条件是否满足
     /// Check if the condition is met
     fn matches(&self, ctx: &ApplicationContext) -> bool;
@@ -41,8 +40,7 @@ pub trait Conditional: Send + Sync
 /// 等价于 Spring Boot 的 `@ConditionalOnProperty`。
 /// Equivalent to Spring Boot's `@ConditionalOnProperty`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnProperty
-{
+pub struct ConditionalOnProperty {
     /// 属性键
     pub key: String,
 
@@ -53,11 +51,9 @@ pub struct ConditionalOnProperty
     pub match_if_empty: bool,
 }
 
-impl ConditionalOnProperty
-{
+impl ConditionalOnProperty {
     /// 创建新的属性条件
-    pub fn new(key: impl Into<String>) -> Self
-    {
+    pub fn new(key: impl Into<String>) -> Self {
         Self {
             key: key.into(),
             value: None,
@@ -66,37 +62,27 @@ impl ConditionalOnProperty
     }
 
     /// 设置期望的值
-    pub fn value(mut self, value: impl Into<String>) -> Self
-    {
+    pub fn value(mut self, value: impl Into<String>) -> Self {
         self.value = Some(value.into());
         self
     }
 
     /// 设置 `match_if_empty`
-    pub fn match_if_empty(mut self, match_if_empty: bool) -> Self
-    {
+    pub fn match_if_empty(mut self, match_if_empty: bool) -> Self {
         self.match_if_empty = match_if_empty;
         self
     }
 }
 
-impl Conditional for ConditionalOnProperty
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
-        if let Some(actual_value) = ctx.get_property(&self.key)
-        {
-            if let Some(ref expected_value) = self.value
-            {
+impl Conditional for ConditionalOnProperty {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
+        if let Some(actual_value) = ctx.get_property(&self.key) {
+            if let Some(ref expected_value) = self.value {
                 actual_value == *expected_value
-            }
-            else
-            {
+            } else {
                 self.match_if_empty || !actual_value.is_empty()
             }
-        }
-        else
-        {
+        } else {
             false
         }
     }
@@ -115,8 +101,7 @@ impl Conditional for ConditionalOnProperty
 /// 等价于 Spring Boot 的 `@ConditionalOnMissingBean`。
 /// Equivalent to Spring Boot's `@ConditionalOnMissingBean`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnMissingBean
-{
+pub struct ConditionalOnMissingBean {
     /// Bean 类型 ID
     pub type_id: TypeId,
 
@@ -124,11 +109,9 @@ pub struct ConditionalOnMissingBean
     pub type_name: &'static str,
 }
 
-impl ConditionalOnMissingBean
-{
+impl ConditionalOnMissingBean {
     /// 创建新的 Bean 缺失条件
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
             type_name: std::any::type_name::<T>(),
@@ -136,10 +119,8 @@ impl ConditionalOnMissingBean
     }
 }
 
-impl Conditional for ConditionalOnMissingBean
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for ConditionalOnMissingBean {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         !ctx.contains_bean_by_id(self.type_id)
     }
 }
@@ -157,8 +138,7 @@ impl Conditional for ConditionalOnMissingBean
 /// 等价于 Spring Boot 的 `@ConditionalOnBean`。
 /// Equivalent to Spring Boot's `@ConditionalOnBean`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnBean
-{
+pub struct ConditionalOnBean {
     /// Bean 类型 ID
     pub type_id: TypeId,
 
@@ -166,11 +146,9 @@ pub struct ConditionalOnBean
     pub type_name: &'static str,
 }
 
-impl ConditionalOnBean
-{
+impl ConditionalOnBean {
     /// 创建新的 Bean 存在条件
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
             type_name: std::any::type_name::<T>(),
@@ -178,10 +156,8 @@ impl ConditionalOnBean
     }
 }
 
-impl Conditional for ConditionalOnBean
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for ConditionalOnBean {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         ctx.contains_bean_by_id(self.type_id)
     }
 }
@@ -199,27 +175,22 @@ impl Conditional for ConditionalOnBean
 /// 等价于 Spring Boot 的 `@ConditionalOnClass`。
 /// Equivalent to Spring Boot's `@ConditionalOnClass`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnFeature
-{
+pub struct ConditionalOnFeature {
     /// Feature 名称
     pub feature: String,
 }
 
-impl ConditionalOnFeature
-{
+impl ConditionalOnFeature {
     /// 创建新的 Feature 条件
-    pub fn new(feature: impl Into<String>) -> Self
-    {
+    pub fn new(feature: impl Into<String>) -> Self {
         Self {
             feature: feature.into(),
         }
     }
 }
 
-impl Conditional for ConditionalOnFeature
-{
-    fn matches(&self, _ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for ConditionalOnFeature {
+    fn matches(&self, _ctx: &ApplicationContext) -> bool {
         // 检查 feature 是否启用（通过环境变量）
         std::env::var("CARGO_FEATURE_")
             .or_else(|_| std::env::var(format!("HIVER_FEATURE_{}", self.feature.to_uppercase())))
@@ -244,27 +215,22 @@ impl Conditional for ConditionalOnFeature
 /// // "cache.enabled == true"
 /// ```
 #[derive(Debug, Clone)]
-pub struct ConditionalOnExpression
-{
+pub struct ConditionalOnExpression {
     /// 表达式字符串
     pub expression: String,
 }
 
-impl ConditionalOnExpression
-{
+impl ConditionalOnExpression {
     /// 创建新的表达式条件
-    pub fn new(expression: impl Into<String>) -> Self
-    {
+    pub fn new(expression: impl Into<String>) -> Self {
         Self {
             expression: expression.into(),
         }
     }
 }
 
-impl Conditional for ConditionalOnExpression
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for ConditionalOnExpression {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         // 表达式解析器 - 支持逻辑和比较运算符
         // Expression parser - supports logical and comparison operators
         let mut parser = ExpressionParser::new(&self.expression, ctx);
@@ -287,18 +253,15 @@ impl Conditional for ConditionalOnExpression
 /// - 属性值: `key.name` (解析为字符串)
 /// - 字符串: `"text"` 或 `'text'`
 /// - 数字: `123`, `3.14`
-struct ExpressionParser<'a>
-{
+struct ExpressionParser<'a> {
     input: &'a str,
     ctx: &'a ApplicationContext,
     pos: usize,
 }
 
-impl<'a> ExpressionParser<'a>
-{
+impl<'a> ExpressionParser<'a> {
     /// 创建新的表达式解析器
-    fn new(input: &'a str, ctx: &'a ApplicationContext) -> Self
-    {
+    fn new(input: &'a str, ctx: &'a ApplicationContext) -> Self {
         Self {
             input: input.trim(),
             ctx,
@@ -307,26 +270,20 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析表达式
-    fn parse(&mut self) -> Option<bool>
-    {
+    fn parse(&mut self) -> Option<bool> {
         self.parse_or()
     }
 
     /// 解析 OR 表达式 (||, or)
-    fn parse_or(&mut self) -> Option<bool>
-    {
+    fn parse_or(&mut self) -> Option<bool> {
         let mut left = self.parse_and()?;
 
-        loop
-        {
+        loop {
             self.skip_whitespace();
-            if self.consume("||") || self.consume("or")
-            {
+            if self.consume("||") || self.consume("or") {
                 let right = self.parse_and()?;
                 left = left || right;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
@@ -335,20 +292,15 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析 AND 表达式 (&&, and)
-    fn parse_and(&mut self) -> Option<bool>
-    {
+    fn parse_and(&mut self) -> Option<bool> {
         let mut left = self.parse_not()?;
 
-        loop
-        {
+        loop {
             self.skip_whitespace();
-            if self.consume("&&") || self.consume("and")
-            {
+            if self.consume("&&") || self.consume("and") {
                 let right = self.parse_not()?;
                 left = left && right;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
@@ -357,31 +309,24 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析 NOT 表达式 (!, not)
-    fn parse_not(&mut self) -> Option<bool>
-    {
+    fn parse_not(&mut self) -> Option<bool> {
         self.skip_whitespace();
-        if self.consume("!") || self.consume("not")
-        {
+        if self.consume("!") || self.consume("not") {
             Some(!self.parse_primary()?)
-        }
-        else
-        {
+        } else {
             self.parse_primary()
         }
     }
 
     /// 解析基本表达式（比较、值、分组）
-    fn parse_primary(&mut self) -> Option<bool>
-    {
+    fn parse_primary(&mut self) -> Option<bool> {
         self.skip_whitespace();
 
         // 处理括号分组
-        if self.consume("(")
-        {
+        if self.consume("(") {
             let result = self.parse_or()?;
             self.skip_whitespace();
-            if !self.consume(")")
-            {
+            if !self.consume(")") {
                 return None;
             }
             return Some(result);
@@ -392,26 +337,20 @@ impl<'a> ExpressionParser<'a>
         self.skip_whitespace();
 
         // 检查是否有比较运算符
-        if let Some(op) = self.try_consume_comparison_op()
-        {
+        if let Some(op) = self.try_consume_comparison_op() {
             let right = self.parse_value()?;
             Some(self.evaluate_comparison(&left, &op, &right))
-        }
-        else
-        {
+        } else {
             // 没有比较运算符，将值转换为布尔值
             Some(self.value_to_bool(&left))
         }
     }
 
     /// 尝试消费比较运算符
-    fn try_consume_comparison_op(&mut self) -> Option<String>
-    {
+    fn try_consume_comparison_op(&mut self) -> Option<String> {
         let ops = ["==", "!=", "<=", ">=", "<", ">"];
-        for op in &ops
-        {
-            if self.consume(op)
-            {
+        for op in &ops {
+            if self.consume(op) {
                 return Some((*op).to_string());
             }
         }
@@ -419,10 +358,8 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 评估比较运算
-    fn evaluate_comparison(&self, left: &Value, op: &str, right: &Value) -> bool
-    {
-        match op
-        {
+    fn evaluate_comparison(&self, left: &Value, op: &str, right: &Value) -> bool {
+        match op {
             "==" => left.equals(right),
             "!=" => !left.equals(right),
             "<" => left.less_than(right),
@@ -434,43 +371,36 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析值
-    fn parse_value(&mut self) -> Option<Value>
-    {
+    fn parse_value(&mut self) -> Option<Value> {
         self.skip_whitespace();
 
         // 布尔值 true
-        if self.consume("true")
-        {
+        if self.consume("true") {
             return Some(Value::Boolean(true));
         }
 
         // 布尔值 false
-        if self.consume("false")
-        {
+        if self.consume("false") {
             return Some(Value::Boolean(false));
         }
 
         // 字符串值（双引号）
-        if self.peek() == Some('"')
-        {
+        if self.peek() == Some('"') {
             return self.parse_string('"');
         }
 
         // 字符串值（单引号）
-        if self.peek() == Some('\'')
-        {
+        if self.peek() == Some('\'') {
             return self.parse_string('\'');
         }
 
         // 数字值
-        if let Some(num) = self.parse_number()
-        {
+        if let Some(num) = self.parse_number() {
             return Some(num);
         }
 
         // 属性引用（标识符）
-        if let Some(ident) = self.parse_identifier()
-        {
+        if let Some(ident) = self.parse_identifier() {
             return Some(ctx_get_property(self.ctx, &ident));
         }
 
@@ -478,65 +408,50 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析数字
-    fn parse_number(&mut self) -> Option<Value>
-    {
+    fn parse_number(&mut self) -> Option<Value> {
         let start = self.pos;
         let mut has_dot = false;
 
-        while let Some(c) = self.peek()
-        {
-            if c.is_numeric()
-            {
+        while let Some(c) = self.peek() {
+            if c.is_numeric() {
                 self.pos += 1;
-            }
-            else if c == '.' && !has_dot
-            {
+            } else if c == '.' && !has_dot {
                 has_dot = true;
                 self.pos += 1;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
 
-        if self.pos > start
-        {
+        if self.pos > start {
             let num_str = &self.input[start..self.pos];
             num_str.parse::<f64>().ok().map(Value::Number)
-        }
-        else
-        {
+        } else {
             None
         }
     }
 
     /// 解析字符串
-    fn parse_string(&mut self, quote: char) -> Option<Value>
-    {
+    fn parse_string(&mut self, quote: char) -> Option<Value> {
         self.consume(&quote.to_string());
         let start = self.pos;
         let mut escaped = false;
 
-        while self.pos < self.input.len()
-        {
+        while self.pos < self.input.len() {
             let c = self.input.chars().nth(self.pos)?;
             self.pos += 1;
 
-            if escaped
-            {
+            if escaped {
                 escaped = false;
                 continue;
             }
 
-            if c == '\\'
-            {
+            if c == '\\' {
                 escaped = true;
                 continue;
             }
 
-            if c == quote
-            {
+            if c == quote {
                 let s = &self.input[start..self.pos - 1];
                 return Some(Value::String(s.to_string()));
             }
@@ -546,73 +461,53 @@ impl<'a> ExpressionParser<'a>
     }
 
     /// 解析标识符（属性名）
-    fn parse_identifier(&mut self) -> Option<String>
-    {
+    fn parse_identifier(&mut self) -> Option<String> {
         let start = self.pos;
 
-        while let Some(c) = self.peek()
-        {
-            if c.is_alphanumeric() || c == '.' || c == '_' || c == '-'
-            {
+        while let Some(c) = self.peek() {
+            if c.is_alphanumeric() || c == '.' || c == '_' || c == '-' {
                 self.pos += 1;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
 
-        if self.pos > start
-        {
+        if self.pos > start {
             Some(self.input[start..self.pos].to_string())
-        }
-        else
-        {
+        } else {
             None
         }
     }
 
     /// 跳过空白字符
-    fn skip_whitespace(&mut self)
-    {
-        while let Some(c) = self.peek()
-        {
-            if c.is_whitespace()
-            {
+    fn skip_whitespace(&mut self) {
+        while let Some(c) = self.peek() {
+            if c.is_whitespace() {
                 self.pos += 1;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
     }
 
     /// 查看当前字符
-    fn peek(&self) -> Option<char>
-    {
+    fn peek(&self) -> Option<char> {
         self.input.chars().nth(self.pos)
     }
 
     /// 消费指定的字符串
-    fn consume(&mut self, s: &str) -> bool
-    {
-        if self.input[self.pos..].starts_with(s)
-        {
+    fn consume(&mut self, s: &str) -> bool {
+        if self.input[self.pos..].starts_with(s) {
             self.pos += s.len();
             true
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// 将值转换为布尔值
-    fn value_to_bool(&self, value: &Value) -> bool
-    {
-        match value
-        {
+    fn value_to_bool(&self, value: &Value) -> bool {
+        match value {
             Value::Boolean(b) => *b,
             Value::String(s) => !s.is_empty(),
             Value::Number(n) => *n != 0.0,
@@ -622,30 +517,25 @@ impl<'a> ExpressionParser<'a>
 }
 
 /// 从上下文获取属性值
-fn ctx_get_property(ctx: &ApplicationContext, key: &str) -> Value
-{
+fn ctx_get_property(ctx: &ApplicationContext, key: &str) -> Value {
     ctx.get_property(key)
         .map_or(Value::Null, |v| parse_value_string(&v))
 }
 
 /// 解析值字符串
-fn parse_value_string(s: &str) -> Value
-{
+fn parse_value_string(s: &str) -> Value {
     let s = s.trim();
 
     // 尝试解析为布尔值
-    if s.eq_ignore_ascii_case("true")
-    {
+    if s.eq_ignore_ascii_case("true") {
         return Value::Boolean(true);
     }
-    if s.eq_ignore_ascii_case("false")
-    {
+    if s.eq_ignore_ascii_case("false") {
         return Value::Boolean(false);
     }
 
     // 尝试解析为数字
-    if let Ok(n) = s.parse::<f64>()
-    {
+    if let Ok(n) = s.parse::<f64>() {
         return Value::Number(n);
     }
 
@@ -655,102 +545,72 @@ fn parse_value_string(s: &str) -> Value
 
 /// 表达式值
 #[derive(Debug, Clone)]
-enum Value
-{
+enum Value {
     Boolean(bool),
     String(String),
     Number(f64),
     Null,
 }
 
-impl Value
-{
-    fn equals(&self, other: &Value) -> bool
-    {
-        match (self, other)
-        {
+impl Value {
+    fn equals(&self, other: &Value) -> bool {
+        match (self, other) {
             (Value::Boolean(a), Value::Boolean(b)) => a == b,
             (Value::String(a), Value::String(b)) => a == b,
             (Value::Number(a), Value::Number(b)) => (a - b).abs() < f64::EPSILON,
             (Value::Null, Value::Null) => true,
-            (Value::String(a), Value::Number(b)) =>
-            {
+            (Value::String(a), Value::Number(b)) => {
                 a.parse::<f64>().is_ok_and(|n| (n - b).abs() < f64::EPSILON)
             },
-            (Value::Number(a), Value::String(b)) =>
-            {
+            (Value::Number(a), Value::String(b)) => {
                 b.parse::<f64>().is_ok_and(|n| (a - n).abs() < f64::EPSILON)
             },
             _ => false,
         }
     }
 
-    fn less_than(&self, other: &Value) -> bool
-    {
+    fn less_than(&self, other: &Value) -> bool {
         self.compare(other).is_some_and(|v| v < 0)
     }
 
-    fn greater_than(&self, other: &Value) -> bool
-    {
+    fn greater_than(&self, other: &Value) -> bool {
         self.compare(other).is_some_and(|v| v > 0)
     }
 
-    fn less_than_or_equal(&self, other: &Value) -> bool
-    {
+    fn less_than_or_equal(&self, other: &Value) -> bool {
         self.compare(other).is_some_and(|v| v <= 0)
     }
 
-    fn greater_than_or_equal(&self, other: &Value) -> bool
-    {
+    fn greater_than_or_equal(&self, other: &Value) -> bool {
         self.compare(other).is_some_and(|v| v >= 0)
     }
 
-    fn compare(&self, other: &Value) -> Option<i32>
-    {
-        match (self, other)
-        {
-            (Value::Number(a), Value::Number(b)) =>
-            {
-                if a < b
-                {
+    fn compare(&self, other: &Value) -> Option<i32> {
+        match (self, other) {
+            (Value::Number(a), Value::Number(b)) => {
+                if a < b {
                     Some(-1)
-                }
-                else if a > b
-                {
+                } else if a > b {
                     Some(1)
-                }
-                else
-                {
+                } else {
                     Some(0)
                 }
             },
-            (Value::String(a), Value::String(b)) =>
-            {
-                if a < b
-                {
+            (Value::String(a), Value::String(b)) => {
+                if a < b {
                     Some(-1)
-                }
-                else if a > b
-                {
+                } else if a > b {
                     Some(1)
-                }
-                else
-                {
+                } else {
                     Some(0)
                 }
             },
-            (Value::Boolean(a), Value::Boolean(b)) =>
-            {
-                if !a && *b
-                {
+            (Value::Boolean(a), Value::Boolean(b)) => {
+                if !a && *b {
                     Some(-1)
-                }
-                else if *a && !b
-                {
+                } else if *a && !b {
                     Some(1)
-                }
-                else
-                {
+                } else {
                     Some(0)
                 }
             },
@@ -765,106 +625,85 @@ impl Value
 
 /// 所有条件都必须满足（AND）
 /// All conditions must be met (AND)
-pub struct AllConditions
-{
+pub struct AllConditions {
     conditions: Vec<Box<dyn Conditional>>,
 }
 
-impl AllConditions
-{
+impl AllConditions {
     /// 创建新的 AND 条件组合
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             conditions: Vec::new(),
         }
     }
 
     /// 添加条件
-    pub fn add(mut self, condition: Box<dyn Conditional>) -> Self
-    {
+    pub fn add(mut self, condition: Box<dyn Conditional>) -> Self {
         self.conditions.push(condition);
         self
     }
 }
 
-impl Default for AllConditions
-{
-    fn default() -> Self
-    {
+impl Default for AllConditions {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl Conditional for AllConditions
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for AllConditions {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         self.conditions.iter().all(|c| c.matches(ctx))
     }
 }
 
 /// 任一条件满足即可（OR）
 /// Any condition can be met (OR)
-pub struct AnyConditions
-{
+pub struct AnyConditions {
     conditions: Vec<Box<dyn Conditional>>,
 }
 
-impl AnyConditions
-{
+impl AnyConditions {
     /// 创建新的 OR 条件组合
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             conditions: Vec::new(),
         }
     }
 
     /// 添加条件
-    pub fn add(mut self, condition: Box<dyn Conditional>) -> Self
-    {
+    pub fn add(mut self, condition: Box<dyn Conditional>) -> Self {
         self.conditions.push(condition);
         self
     }
 }
 
-impl Default for AnyConditions
-{
-    fn default() -> Self
-    {
+impl Default for AnyConditions {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl Conditional for AnyConditions
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for AnyConditions {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         self.conditions.iter().any(|c| c.matches(ctx))
     }
 }
 
 /// 条件不满足（NOT）
 /// Condition is not met (NOT)
-pub struct NotCondition
-{
+pub struct NotCondition {
     condition: Box<dyn Conditional>,
 }
 
-impl NotCondition
-{
+impl NotCondition {
     /// 创建新的 NOT 条件
-    pub fn new(condition: Box<dyn Conditional>) -> Self
-    {
+    pub fn new(condition: Box<dyn Conditional>) -> Self {
         Self { condition }
     }
 }
 
-impl Conditional for NotCondition
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Conditional for NotCondition {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         !self.condition.matches(ctx)
     }
 }
@@ -936,17 +775,21 @@ macro_rules! any_conditions {
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::Arc;
 
     use super::*;
     use crate::config::loader::ConfigurationLoader;
 
     #[test]
-    fn test_conditional_on_property()
-    {
+    fn test_conditional_on_property() {
         let ctx = ApplicationContext::new();
         let cond = ConditionalOnProperty::new("test.key");
 
@@ -955,8 +798,7 @@ mod tests
     }
 
     #[test]
-    fn test_conditional_on_expression()
-    {
+    fn test_conditional_on_expression() {
         let ctx = ApplicationContext::new();
         ctx.register_bean("test_value".to_string());
 
@@ -967,8 +809,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_comparison()
-    {
+    fn test_expression_comparison() {
         let mut loader = ConfigurationLoader::new();
         loader.set("port".to_string(), "8080".to_string());
         loader.set("count".to_string(), "5".to_string());
@@ -997,8 +838,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_logical()
-    {
+    fn test_expression_logical() {
         let mut loader = ConfigurationLoader::new();
         loader.set("a".to_string(), "true".to_string());
         loader.set("b".to_string(), "false".to_string());
@@ -1024,8 +864,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_grouping()
-    {
+    fn test_expression_grouping() {
         let mut loader = ConfigurationLoader::new();
         loader.set("a".to_string(), "true".to_string());
         loader.set("b".to_string(), "true".to_string());
@@ -1042,8 +881,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_strings()
-    {
+    fn test_expression_strings() {
         let mut loader = ConfigurationLoader::new();
         loader.set("env".to_string(), "production".to_string());
         loader.set("mode".to_string(), "dev".to_string());
@@ -1059,8 +897,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_complex()
-    {
+    fn test_expression_complex() {
         let mut loader = ConfigurationLoader::new();
         loader.set("env".to_string(), "production".to_string());
         loader.set("port".to_string(), "8080".to_string());
@@ -1078,8 +915,7 @@ mod tests
     }
 
     #[test]
-    fn test_expression_debug()
-    {
+    fn test_expression_debug() {
         let mut loader = ConfigurationLoader::new();
         loader.set("port".to_string(), "8080".to_string());
         let ctx = ApplicationContext::with_config_loader(Arc::new(loader));
@@ -1096,8 +932,7 @@ mod tests
     }
 
     #[test]
-    fn test_all_conditions()
-    {
+    fn test_all_conditions() {
         let ctx = ApplicationContext::new();
         let cond1 = ConditionalOnProperty::new("key1");
         let cond2 = ConditionalOnProperty::new("key2");
@@ -1108,8 +943,7 @@ mod tests
     }
 
     #[test]
-    fn test_any_conditions()
-    {
+    fn test_any_conditions() {
         let ctx = ApplicationContext::new();
         let cond1 = ConditionalOnProperty::new("key1");
         let cond2 = ConditionalOnProperty::new("key2");

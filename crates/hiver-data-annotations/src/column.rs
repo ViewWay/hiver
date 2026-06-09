@@ -31,7 +31,6 @@ use proc_macro::TokenStream;
 ///     pub username: String,
 /// }
 /// ```
-pub(crate) fn impl_column(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub(crate) fn impl_column(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }

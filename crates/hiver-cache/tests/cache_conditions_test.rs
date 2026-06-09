@@ -11,8 +11,7 @@ use serde_json::Value as JsonValue;
 // ========================================================================
 
 #[test]
-fn test_condition_id_positive()
-{
+fn test_condition_id_positive() {
     let mut args = HashMap::new();
     args.insert("id".to_string(), JsonValue::Number(123.into()));
 
@@ -21,8 +20,7 @@ fn test_condition_id_positive()
 }
 
 #[test]
-fn test_condition_age_check()
-{
+fn test_condition_age_check() {
     let mut args = HashMap::new();
     args.insert("age".to_string(), JsonValue::Number(25.into()));
 
@@ -32,8 +30,7 @@ fn test_condition_age_check()
 }
 
 #[test]
-fn test_condition_string_equality()
-{
+fn test_condition_string_equality() {
     let mut args = HashMap::new();
     args.insert("role".to_string(), JsonValue::String("ADMIN".to_string()));
 
@@ -43,8 +40,7 @@ fn test_condition_string_equality()
 }
 
 #[test]
-fn test_condition_and_expressions()
-{
+fn test_condition_and_expressions() {
     let mut args = HashMap::new();
     args.insert("age".to_string(), JsonValue::Number(25.into()));
     args.insert("active".to_string(), JsonValue::Bool(true));
@@ -55,8 +51,7 @@ fn test_condition_and_expressions()
 }
 
 #[test]
-fn test_condition_or_expressions()
-{
+fn test_condition_or_expressions() {
     let mut args = HashMap::new();
     args.insert("role".to_string(), JsonValue::String("USER".to_string()));
     args.insert("admin".to_string(), JsonValue::Bool(false));
@@ -66,8 +61,7 @@ fn test_condition_or_expressions()
 }
 
 #[test]
-fn test_condition_not_expressions()
-{
+fn test_condition_not_expressions() {
     let mut args = HashMap::new();
     args.insert("active".to_string(), JsonValue::Bool(false));
     args.insert("deleted".to_string(), JsonValue::Bool(true));
@@ -77,8 +71,7 @@ fn test_condition_not_expressions()
 }
 
 #[test]
-fn test_condition_is_empty()
-{
+fn test_condition_is_empty() {
     let mut args = HashMap::new();
     args.insert("name".to_string(), JsonValue::String(String::new()));
     args.insert("email".to_string(), JsonValue::String("test@example.com".to_string()));
@@ -92,8 +85,7 @@ fn test_condition_is_empty()
 }
 
 #[test]
-fn test_condition_length_checks()
-{
+fn test_condition_length_checks() {
     let mut args = HashMap::new();
     args.insert("username".to_string(), JsonValue::String("alice".to_string()));
     args.insert("name".to_string(), JsonValue::String("Bo".to_string()));
@@ -105,8 +97,7 @@ fn test_condition_length_checks()
 }
 
 #[test]
-fn test_unless_result_null()
-{
+fn test_unless_result_null() {
     let args = HashMap::new();
 
     // Unless: don't cache if result is null
@@ -119,8 +110,7 @@ fn test_unless_result_null()
 }
 
 #[test]
-fn test_unless_result_empty()
-{
+fn test_unless_result_empty() {
     let args = HashMap::new();
 
     // Unless: don't cache if result is empty string
@@ -137,8 +127,7 @@ fn test_unless_result_empty()
 }
 
 #[test]
-fn test_complex_conditions()
-{
+fn test_complex_conditions() {
     let mut args = HashMap::new();
     args.insert("age".to_string(), JsonValue::Number(25.into()));
     args.insert("active".to_string(), JsonValue::Bool(true));
@@ -159,8 +148,7 @@ fn test_complex_conditions()
 }
 
 #[test]
-fn test_condition_with_multiple_parameters()
-{
+fn test_condition_with_multiple_parameters() {
     let mut args = HashMap::new();
     args.insert("min_age".to_string(), JsonValue::Number(18.into()));
     args.insert("max_age".to_string(), JsonValue::Number(65.into()));
@@ -171,8 +159,7 @@ fn test_condition_with_multiple_parameters()
 }
 
 #[test]
-fn test_condition_with_string_comparison()
-{
+fn test_condition_with_string_comparison() {
     let mut args = HashMap::new();
     args.insert("status".to_string(), JsonValue::String("ACTIVE".to_string()));
     args.insert("role".to_string(), JsonValue::String("USER".to_string()));
@@ -183,8 +170,7 @@ fn test_condition_with_string_comparison()
 }
 
 #[test]
-fn test_nested_conditions()
-{
+fn test_nested_conditions() {
     let mut args = HashMap::new();
     args.insert("age".to_string(), JsonValue::Number(25.into()));
     args.insert("active".to_string(), JsonValue::Bool(true));
@@ -207,8 +193,7 @@ fn test_nested_conditions()
 }
 
 #[test]
-fn test_cacheable_options_builder()
-{
+fn test_cacheable_options_builder() {
     let options = CacheableOptions::new()
         .cache_name("users")
         .key("#id")
@@ -224,8 +209,7 @@ fn test_cacheable_options_builder()
 }
 
 #[test]
-fn test_cache_put_options_builder()
-{
+fn test_cache_put_options_builder() {
     let options = CachePutOptions::new()
         .cache_name("users")
         .key("#user.id")
@@ -237,8 +221,7 @@ fn test_cache_put_options_builder()
 }
 
 #[test]
-fn test_cache_evict_options_builder()
-{
+fn test_cache_evict_options_builder() {
     let options = CacheEvictOptions::new()
         .cache_name("users")
         .key("#id")
@@ -254,8 +237,7 @@ fn test_cache_evict_options_builder()
 }
 
 #[test]
-fn test_condition_with_zero()
-{
+fn test_condition_with_zero() {
     let mut args = HashMap::new();
     args.insert("count".to_string(), JsonValue::Number(0.into()));
 
@@ -265,8 +247,7 @@ fn test_condition_with_zero()
 }
 
 #[test]
-fn test_condition_with_negative_numbers()
-{
+fn test_condition_with_negative_numbers() {
     let mut args = HashMap::new();
     args.insert("temperature".to_string(), JsonValue::Number((-10).into()));
 
@@ -276,8 +257,7 @@ fn test_condition_with_negative_numbers()
 }
 
 #[test]
-fn test_condition_with_floating_point()
-{
+fn test_condition_with_floating_point() {
     let mut args = HashMap::new();
     args.insert(
         "price".to_string(),
@@ -290,8 +270,7 @@ fn test_condition_with_floating_point()
 }
 
 #[test]
-fn test_condition_equality_with_different_types()
-{
+fn test_condition_equality_with_different_types() {
     let mut args = HashMap::new();
     args.insert("id".to_string(), JsonValue::Number(123.into()));
     args.insert("name".to_string(), JsonValue::String("123".to_string()));
@@ -304,8 +283,7 @@ fn test_condition_equality_with_different_types()
 }
 
 #[test]
-fn test_multiple_or_conditions()
-{
+fn test_multiple_or_conditions() {
     let mut args = HashMap::new();
     args.insert("role".to_string(), JsonValue::String("USER".to_string()));
     args.insert("admin".to_string(), JsonValue::Bool(false));
@@ -317,8 +295,7 @@ fn test_multiple_or_conditions()
 }
 
 #[test]
-fn test_multiple_and_conditions()
-{
+fn test_multiple_and_conditions() {
     let mut args = HashMap::new();
     args.insert("age".to_string(), JsonValue::Number(25.into()));
     args.insert("active".to_string(), JsonValue::Bool(true));
@@ -342,8 +319,7 @@ fn test_multiple_and_conditions()
 }
 
 #[test]
-fn test_condition_precedence()
-{
+fn test_condition_precedence() {
     let mut args = HashMap::new();
     args.insert("a".to_string(), JsonValue::Bool(true));
     args.insert("b".to_string(), JsonValue::Bool(false));
@@ -359,8 +335,7 @@ fn test_condition_precedence()
 }
 
 #[test]
-fn test_real_world_cache_conditions()
-{
+fn test_real_world_cache_conditions() {
     // Test 1: Only cache active users
     let mut args = HashMap::new();
     args.insert("active".to_string(), JsonValue::Bool(true));

@@ -42,8 +42,7 @@ async fn setup_redis() -> (redis::aio::MultiplexedConnection, testcontainers::Co
 // 测试 1：Redis 容器启动并接受连接（PING）
 // ============================================================
 #[tokio::test]
-async fn test_redis_connectivity()
-{
+async fn test_redis_connectivity() {
     let (mut con, _container) = setup_redis().await;
 
     let pong: String = redis::cmd("PING")
@@ -59,8 +58,7 @@ async fn test_redis_connectivity()
 // 测试 2：SET 和 GET 字符串值
 // ============================================================
 #[tokio::test]
-async fn test_redis_set_get_string()
-{
+async fn test_redis_set_get_string() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -82,8 +80,7 @@ async fn test_redis_set_get_string()
 // 测试 3：带过期时间的 SET（TTL）
 // ============================================================
 #[tokio::test]
-async fn test_redis_set_with_expiry()
-{
+async fn test_redis_set_with_expiry() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -101,8 +98,7 @@ async fn test_redis_set_with_expiry()
 // 测试 4：DELETE 键
 // ============================================================
 #[tokio::test]
-async fn test_redis_delete_key()
-{
+async fn test_redis_delete_key() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -126,8 +122,7 @@ async fn test_redis_delete_key()
 // 测试 5：EXISTS 检查
 // ============================================================
 #[tokio::test]
-async fn test_redis_exists()
-{
+async fn test_redis_exists() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -153,8 +148,7 @@ async fn test_redis_exists()
 // 测试 6：INCR 和 DECR 整数操作
 // ============================================================
 #[tokio::test]
-async fn test_redis_incr_decr()
-{
+async fn test_redis_incr_decr() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -174,8 +168,7 @@ async fn test_redis_incr_decr()
 // 测试 7：Hash 操作（HSET, HGET, HGETALL）
 // ============================================================
 #[tokio::test]
-async fn test_redis_hash_operations()
-{
+async fn test_redis_hash_operations() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -209,8 +202,7 @@ async fn test_redis_hash_operations()
 // 测试 8：List 操作（LPUSH, RPUSH, LRANGE, LLEN）
 // ============================================================
 #[tokio::test]
-async fn test_redis_list_operations()
-{
+async fn test_redis_list_operations() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -241,8 +233,7 @@ async fn test_redis_list_operations()
 // 测试 9：Set 操作（SADD, SMEMBERS, SISMEMBER, SCARD）
 // ============================================================
 #[tokio::test]
-async fn test_redis_set_operations()
-{
+async fn test_redis_set_operations() {
     let (mut con, _container) = setup_redis().await;
 
     let added: i64 = con.sadd("test:tags", "rust").await.expect("Failed to SADD");
@@ -279,8 +270,7 @@ async fn test_redis_set_operations()
 // 测试 10：Sorted Set 操作（ZADD, ZRANGE, ZRANK, ZCARD）
 // ============================================================
 #[tokio::test]
-async fn test_redis_sorted_set_operations()
-{
+async fn test_redis_sorted_set_operations() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -322,8 +312,7 @@ async fn test_redis_sorted_set_operations()
 // 测试 11：多键操作（MSET, MGET）
 // ============================================================
 #[tokio::test]
-async fn test_redis_mset_mget()
-{
+async fn test_redis_mset_mget() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con
@@ -351,8 +340,7 @@ async fn test_redis_mset_mget()
 // 测试 12：KEYS 模式匹配
 // ============================================================
 #[tokio::test]
-async fn test_redis_keys_pattern()
-{
+async fn test_redis_keys_pattern() {
     let (mut con, _container) = setup_redis().await;
 
     let _: () = con

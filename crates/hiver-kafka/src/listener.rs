@@ -12,8 +12,7 @@ use std::{future::Future, sync::Arc};
 /// Configuration for a Kafka listener
 /// Kafka 监听器配置
 #[derive(Clone, Debug)]
-pub struct KafkaListenerConfig
-{
+pub struct KafkaListenerConfig {
     /// Broker addresses
     /// Broker 地址
     pub brokers: String,
@@ -31,12 +30,10 @@ pub struct KafkaListenerConfig
     pub poll_timeout_ms: u64,
 }
 
-impl KafkaListenerConfig
-{
+impl KafkaListenerConfig {
     /// Create a new listener config
     /// 创建新监听器配置
-    pub fn new(brokers: impl Into<String>, group_id: impl Into<String>) -> Self
-    {
+    pub fn new(brokers: impl Into<String>, group_id: impl Into<String>) -> Self {
         Self {
             brokers: brokers.into(),
             group_id: group_id.into(),
@@ -48,16 +45,14 @@ impl KafkaListenerConfig
 
     /// Add a topic to subscribe
     /// 添加订阅主题
-    pub fn topic(mut self, topic: impl Into<String>) -> Self
-    {
+    pub fn topic(mut self, topic: impl Into<String>) -> Self {
         self.topics.push(topic.into());
         self
     }
 
     /// Set auto commit
     /// 设置自动提交
-    pub fn auto_commit(mut self, auto_commit: bool) -> Self
-    {
+    pub fn auto_commit(mut self, auto_commit: bool) -> Self {
         self.auto_commit = auto_commit;
         self
     }
@@ -65,25 +60,23 @@ impl KafkaListenerConfig
 
 /// A declarative Kafka message listener
 /// 声明式 Kafka 消息监听器
-pub struct KafkaListener
-{
+pub struct KafkaListener {
     config: KafkaListenerConfig,
 }
 
-impl KafkaListener
-{
+impl KafkaListener {
     /// Create a new listener from config
     /// 从配置创建新监听器
-    pub fn new(config: KafkaListenerConfig) -> Self
-    {
+    pub fn new(config: KafkaListenerConfig) -> Self {
         Self { config }
     }
 
     /// Create a builder-style listener
     /// 创建构建器风格的监听器
-    pub fn builder(brokers: impl Into<String>, group_id: impl Into<String>)
-    -> KafkaListenerBuilder
-    {
+    pub fn builder(
+        brokers: impl Into<String>,
+        group_id: impl Into<String>,
+    ) -> KafkaListenerBuilder {
         KafkaListenerBuilder {
             config: KafkaListenerConfig::new(brokers, group_id),
         }
@@ -99,8 +92,7 @@ impl KafkaListener
         let consumer = KafkaConsumer::new(&self.config.brokers, &self.config.group_id)?;
 
         let topics: Vec<&str> = self.config.topics.iter().map(String::as_str).collect();
-        if topics.is_empty()
-        {
+        if topics.is_empty() {
             return Err(KafkaError::Config("No topics configured for listener".to_string()));
         }
         consumer.subscribe(&topics)?;
@@ -127,54 +119,52 @@ impl KafkaListener
 
     /// Get the listener config
     /// 获取监听器配置
-    pub fn config(&self) -> &KafkaListenerConfig
-    {
+    pub fn config(&self) -> &KafkaListenerConfig {
         &self.config
     }
 }
 
 /// Builder for KafkaListener
 /// KafkaListener 构建器
-pub struct KafkaListenerBuilder
-{
+pub struct KafkaListenerBuilder {
     config: KafkaListenerConfig,
 }
 
-impl KafkaListenerBuilder
-{
+impl KafkaListenerBuilder {
     /// Add a topic
     /// 添加主题
-    pub fn topic(mut self, topic: impl Into<String>) -> Self
-    {
+    pub fn topic(mut self, topic: impl Into<String>) -> Self {
         self.config.topics.push(topic.into());
         self
     }
 
     /// Set auto commit
     /// 设置自动提交
-    pub fn auto_commit(mut self, auto_commit: bool) -> Self
-    {
+    pub fn auto_commit(mut self, auto_commit: bool) -> Self {
         self.config.auto_commit = auto_commit;
         self
     }
 
     /// Build the listener
     /// 构建监听器
-    pub fn build(self) -> KafkaListener
-    {
+    pub fn build(self) -> KafkaListener {
         KafkaListener::new(self.config)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_listener_config_builder()
-    {
+    fn test_listener_config_builder() {
         let config = KafkaListenerConfig::new("localhost:9092", "my-group")
             .topic("orders")
             .topic("payments")
@@ -187,8 +177,7 @@ mod tests
     }
 
     #[test]
-    fn test_listener_builder()
-    {
+    fn test_listener_builder() {
         let listener = KafkaListener::builder("localhost:9092", "test-group")
             .topic("events")
             .auto_commit(true)
@@ -198,8 +187,7 @@ mod tests
     }
 
     #[test]
-    fn test_listener_no_topics_error()
-    {
+    fn test_listener_no_topics_error() {
         let config = KafkaListenerConfig::new("invalid:9092", "group");
         assert!(config.topics.is_empty());
     }

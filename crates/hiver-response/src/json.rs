@@ -37,12 +37,9 @@ use crate::response::{IntoResponse, Response};
 /// ```
 pub struct Json<T>(pub T);
 
-impl<T: Serialize> IntoResponse for Json<T>
-{
-    fn into_response(self) -> Response
-    {
-        match serde_json::to_vec(&self.0)
-        {
+impl<T: Serialize> IntoResponse for Json<T> {
+    fn into_response(self) -> Response {
+        match serde_json::to_vec(&self.0) {
             Ok(json) => Response::builder()
                 .header("content-type", "application/json")
                 .body(json)
@@ -55,42 +52,41 @@ impl<T: Serialize> IntoResponse for Json<T>
     }
 }
 
-impl<T> Json<T>
-{
+impl<T> Json<T> {
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 
     /// Get a mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T
-    {
+    pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
 
     /// Unwrap the inner value
     /// 解包内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_json_response()
-    {
+    fn test_json_response() {
         #[derive(Serialize)]
-        struct TestData
-        {
+        struct TestData {
             message: String,
             count: u32,
         }

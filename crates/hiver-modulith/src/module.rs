@@ -5,34 +5,29 @@ use std::any::TypeId;
 
 /// A module in the modular monolith.
 /// 模块化单体中的模块。
-pub trait Module: Send + Sync + 'static
-{
+pub trait Module: Send + Sync + 'static {
     /// Module name (must be unique across the application).
     fn name(&self) -> &str;
 
     /// Human-readable description.
-    fn description(&self) -> &'static str
-    {
+    fn description(&self) -> &'static str {
         ""
     }
 
     /// Names of modules this module depends on.
-    fn dependencies(&self) -> Vec<&str>
-    {
+    fn dependencies(&self) -> Vec<&str> {
         Vec::new()
     }
 
     /// Packages/namespaces this module owns (for boundary verification).
-    fn packages(&self) -> Vec<&str>
-    {
+    fn packages(&self) -> Vec<&str> {
         vec![self.name()]
     }
 }
 
 /// Static metadata about a registered module.
 #[derive(Debug, Clone)]
-pub struct ModuleMetadata
-{
+pub struct ModuleMetadata {
     /// Module name.
     pub name: String,
     /// Description.
@@ -45,11 +40,9 @@ pub struct ModuleMetadata
     pub type_id: TypeId,
 }
 
-impl ModuleMetadata
-{
+impl ModuleMetadata {
     /// Build metadata from a Module trait object.
-    pub fn from_module<M: Module>(module: &M) -> Self
-    {
+    pub fn from_module<M: Module>(module: &M) -> Self {
         Self {
             name: module.name().to_string(),
             description: module.description().to_string(),
@@ -65,38 +58,37 @@ impl ModuleMetadata
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     struct OrderModule;
-    impl Module for OrderModule
-    {
-        fn name(&self) -> &'static str
-        {
+    impl Module for OrderModule {
+        fn name(&self) -> &'static str {
             "order"
         }
 
-        fn description(&self) -> &'static str
-        {
+        fn description(&self) -> &'static str {
             "Order management"
         }
 
-        fn dependencies(&self) -> Vec<&str>
-        {
+        fn dependencies(&self) -> Vec<&str> {
             vec!["customer", "product"]
         }
 
-        fn packages(&self) -> Vec<&str>
-        {
+        fn packages(&self) -> Vec<&str> {
             vec!["order", "order.item"]
         }
     }
 
     #[test]
-    fn test_module_metadata()
-    {
+    fn test_module_metadata() {
         let m = OrderModule;
         let meta = ModuleMetadata::from_module(&m);
         assert_eq!(meta.name, "order");
@@ -106,13 +98,10 @@ mod tests
     }
 
     #[test]
-    fn test_default_dependencies()
-    {
+    fn test_default_dependencies() {
         struct SimpleMod;
-        impl Module for SimpleMod
-        {
-            fn name(&self) -> &'static str
-            {
+        impl Module for SimpleMod {
+            fn name(&self) -> &'static str {
                 "simple"
             }
         }

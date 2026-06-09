@@ -35,8 +35,7 @@ use hiver_router::{Middleware, Next};
 /// );
 /// ```
 #[derive(Clone)]
-pub struct StaticFiles
-{
+pub struct StaticFiles {
     /// URI prefix to serve files from (e.g., "/static")
     /// 服务文件的URI前缀（如 "/static"）
     uri_prefix: String,
@@ -66,8 +65,7 @@ pub struct StaticFiles
     cache_control: Option<String>,
 }
 
-impl StaticFiles
-{
+impl StaticFiles {
     /// Create a new static file handler
     /// 创建新的静态文件处理器
     ///
@@ -75,8 +73,7 @@ impl StaticFiles
     ///
     /// * `uri_prefix` - URI prefix to serve files from (e.g., "/static")
     /// * `base_path` - File system path to serve files from (e.g., "./public")
-    pub fn new(uri_prefix: impl Into<String>, base_path: impl Into<PathBuf>) -> Self
-    {
+    pub fn new(uri_prefix: impl Into<String>, base_path: impl Into<PathBuf>) -> Self {
         let uri_prefix = uri_prefix.into();
         Self {
             uri_prefix,
@@ -91,69 +88,56 @@ impl StaticFiles
 
     /// Set the index file name (e.g., "index.html")
     /// 设置索引文件名（如 "index.html"）
-    pub fn with_index_file(mut self, file: impl Into<String>) -> Self
-    {
+    pub fn with_index_file(mut self, file: impl Into<String>) -> Self {
         self.index_file = Some(file.into());
         self
     }
 
     /// Enable SPA mode - redirect all paths to index.html
     /// 启用SPA模式 - 将所有路径重定向到 index.html
-    pub fn with_spa_mode(mut self, enabled: bool) -> Self
-    {
+    pub fn with_spa_mode(mut self, enabled: bool) -> Self {
         self.spa_mode = enabled;
         self
     }
 
     /// Set allowed file extensions (e.g., vec!["html", "css", "js"])
     /// 设置允许的文件扩展名（如 vec!["html", "css", "js"]）
-    pub fn with_allowed_extensions(mut self, extensions: Vec<String>) -> Self
-    {
+    pub fn with_allowed_extensions(mut self, extensions: Vec<String>) -> Self {
         self.allowed_extensions = Some(extensions);
         self
     }
 
     /// Enable directory listing
     /// 启用目录列表
-    pub fn with_listing(mut self, enabled: bool) -> Self
-    {
+    pub fn with_listing(mut self, enabled: bool) -> Self {
         self.show_listing = enabled;
         self
     }
 
     /// Set cache control header
     /// 设置缓存控制头
-    pub fn with_cache_control(mut self, cache_control: impl Into<String>) -> Self
-    {
+    pub fn with_cache_control(mut self, cache_control: impl Into<String>) -> Self {
         self.cache_control = Some(cache_control.into());
         self
     }
 
     /// Check if a path is allowed
     /// 检查路径是否被允许
-    fn is_allowed(&self, path: &Path) -> bool
-    {
-        if let Some(ref allowed) = self.allowed_extensions
-        {
-            if let Some(ext) = path.extension()
-            {
+    fn is_allowed(&self, path: &Path) -> bool {
+        if let Some(ref allowed) = self.allowed_extensions {
+            if let Some(ext) = path.extension() {
                 allowed.contains(&ext.to_string_lossy().to_string())
-            }
-            else
-            {
+            } else {
                 false
             }
-        }
-        else
-        {
+        } else {
             true
         }
     }
 
     /// Get content type for a file
     /// 获取文件的内容类型
-    fn get_content_type(path: &Path) -> String
-    {
+    fn get_content_type(path: &Path) -> String {
         mime_guess::from_path(path)
             .first_or_octet_stream()
             .to_string()
@@ -161,8 +145,7 @@ impl StaticFiles
 
     /// Serve a file
     /// 服务文件
-    fn serve_file(&self, file_path: &Path) -> Result<Response>
-    {
+    fn serve_file(&self, file_path: &Path) -> Result<Response> {
         // Read file contents
         let contents = fs::read(file_path)
             .map_err(|e| Error::internal(format!("Failed to read file: {}", e)))?;
@@ -176,8 +159,7 @@ impl StaticFiles
             .header("content-type", content_type);
 
         // Add cache control if set
-        if let Some(ref cache) = self.cache_control
-        {
+        if let Some(ref cache) = self.cache_control {
             builder = builder.header("cache-control", cache);
         }
 
@@ -188,8 +170,7 @@ impl StaticFiles
 
     /// Serve directory listing
     /// 服务目录列表
-    fn serve_listing(&self, dir_path: &Path, request_path: &str) -> Result<Response>
-    {
+    fn serve_listing(&self, dir_path: &Path, request_path: &str) -> Result<Response> {
         let entries = fs::read_dir(dir_path)
             .map_err(|e| Error::internal(format!("Failed to read directory: {}", e)))?;
 
@@ -217,8 +198,7 @@ impl StaticFiles
         );
 
         // Parent directory link
-        if request_path != self.uri_prefix
-        {
+        if request_path != self.uri_prefix {
             html.push_str(
                 r#"        <li><a class="parent" href="../">../</a></li>
 "#,
@@ -226,8 +206,7 @@ impl StaticFiles
         }
 
         // Directory entries
-        for entry_result in entries
-        {
+        for entry_result in entries {
             let entry = entry_result
                 .map_err(|e| Error::internal(format!("Failed to read entry: {}", e)))?;
             let name = entry.file_name().to_string_lossy().to_string();
@@ -267,8 +246,7 @@ where
         req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
-    {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
         let uri_prefix = self.uri_prefix.clone();
         let base_path = self.base_path.clone();
         let index_file = self.index_file.clone();
@@ -281,8 +259,7 @@ where
             let path = req.path();
 
             // Check if path starts with URI prefix
-            if !path.starts_with(&uri_prefix)
-            {
+            if !path.starts_with(&uri_prefix) {
                 return next.call(req, state).await;
             }
 
@@ -291,8 +268,7 @@ where
 
             // Build full file path
             let mut file_path = base_path.clone();
-            if !relative_path.is_empty()
-            {
+            if !relative_path.is_empty() {
                 file_path.push(relative_path);
             }
 
@@ -303,8 +279,7 @@ where
                         .canonicalize()
                         .unwrap_or_else(|_| base_path.clone()),
                 )
-            })
-            {
+            }) {
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
                     .body(Body::from("Access denied"))
@@ -312,15 +287,12 @@ where
             }
 
             // Check if file exists
-            if !file_path.exists()
-            {
+            if !file_path.exists() {
                 // SPA mode: serve index.html for non-existent files
-                if spa_mode && let Some(ref index) = index_file
-                {
+                if spa_mode && let Some(ref index) = index_file {
                     file_path = base_path.clone();
                     file_path.push(index);
-                    if file_path.exists()
-                    {
+                    if file_path.exists() {
                         return Self {
                             uri_prefix,
                             base_path,
@@ -337,14 +309,11 @@ where
             }
 
             // Check if it's a directory
-            if file_path.is_dir()
-            {
+            if file_path.is_dir() {
                 // Try to serve index file
-                if let Some(ref index) = index_file
-                {
+                if let Some(ref index) = index_file {
                     let index_path = file_path.join(index);
-                    if index_path.exists()
-                    {
+                    if index_path.exists() {
                         return Self {
                             uri_prefix,
                             base_path,
@@ -359,8 +328,7 @@ where
                 }
 
                 // Serve directory listing if enabled
-                if show_listing
-                {
+                if show_listing {
                     return Self {
                         uri_prefix,
                         base_path,
@@ -388,8 +356,7 @@ where
                 cache_control,
             };
 
-            if !this.is_allowed(&file_path)
-            {
+            if !this.is_allowed(&file_path) {
                 return Ok(Response::builder()
                     .status(StatusCode::FORBIDDEN)
                     .body(Body::from("File type not allowed"))
@@ -403,14 +370,18 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_static_files_creation()
-    {
+    fn test_static_files_creation() {
         let static_files = StaticFiles::new("/static", "./public");
         assert_eq!(static_files.uri_prefix, "/static");
         assert_eq!(static_files.base_path, PathBuf::from("./public"));
@@ -419,8 +390,7 @@ mod tests
     }
 
     #[test]
-    fn test_static_files_builder()
-    {
+    fn test_static_files_builder() {
         let static_files = StaticFiles::new("/assets", "./dist")
             .with_index_file("index.html")
             .with_spa_mode(true)
@@ -437,16 +407,14 @@ mod tests
     }
 
     #[test]
-    fn test_is_allowed_with_no_restrictions()
-    {
+    fn test_is_allowed_with_no_restrictions() {
         let static_files = StaticFiles::new("/static", "./public");
         assert!(static_files.is_allowed(Path::new("test.html")));
         assert!(static_files.is_allowed(Path::new("test.exe")));
     }
 
     #[test]
-    fn test_is_allowed_with_restrictions()
-    {
+    fn test_is_allowed_with_restrictions() {
         let static_files = StaticFiles::new("/static", "./public")
             .with_allowed_extensions(vec!["html".into(), "css".into()]);
         assert!(static_files.is_allowed(Path::new("test.html")));
@@ -456,8 +424,7 @@ mod tests
     }
 
     #[test]
-    fn test_get_content_type()
-    {
+    fn test_get_content_type() {
         assert_eq!(StaticFiles::get_content_type(Path::new("test.html")), "text/html");
         assert_eq!(StaticFiles::get_content_type(Path::new("test.css")), "text/css");
         assert_eq!(StaticFiles::get_content_type(Path::new("test.js")), "text/javascript");

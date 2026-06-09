@@ -11,8 +11,7 @@ use thiserror::Error;
 /// Represents all possible errors when interacting with `HashiCorp` Vault.
 /// 表示与 `HashiCorp` Vault 交互时可能出现的所有错误。
 #[derive(Debug, Error)]
-pub enum VaultError
-{
+pub enum VaultError {
     /// HTTP request failed / HTTP 请求失败
     #[error("HTTP request failed: {0}")]
     HttpError(#[from] reqwest::Error),
@@ -27,8 +26,7 @@ pub enum VaultError
 
     /// Secret not found / 密钥未找到
     #[error("Secret not found: {path}")]
-    SecretNotFound
-    {
+    SecretNotFound {
         /// Path of the secret / 密钥路径
         path: String,
     },
@@ -43,8 +41,7 @@ pub enum VaultError
 
     /// Lease not found / 租约未找到
     #[error("Lease not found: {lease_id}")]
-    LeaseNotFound
-    {
+    LeaseNotFound {
         /// Lease ID / 租约 ID
         lease_id: String,
     },
@@ -59,8 +56,7 @@ pub enum VaultError
 
     /// Vault server error (5xx) / Vault 服务器错误
     #[error("Vault server error ({status}): {message}")]
-    ServerError
-    {
+    ServerError {
         /// HTTP status code / HTTP 状态码
         status: u16,
         /// Error message / 错误消息
@@ -69,8 +65,7 @@ pub enum VaultError
 
     /// Client error (4xx) / 客户端错误
     #[error("Client error ({status}): {message}")]
-    ClientError
-    {
+    ClientError {
         /// HTTP status code / HTTP 状态码
         status: u16,
         /// Error message / 错误消息
@@ -105,35 +100,24 @@ pub enum VaultError
 /// Result type alias for Vault operations / Vault 操作结果类型别名
 pub type VaultResult<T> = Result<T, VaultError>;
 
-impl VaultError
-{
+impl VaultError {
     /// Create an error from an HTTP response status and body
     /// 根据 HTTP 响应状态码和 body 创建错误
-    pub fn from_status(status: u16, body: &str) -> Self
-    {
-        if status >= 500
-        {
+    pub fn from_status(status: u16, body: &str) -> Self {
+        if status >= 500 {
             Self::ServerError {
                 status,
                 message: body.to_string(),
             }
-        }
-        else if status == 403
-        {
+        } else if status == 403 {
             Self::PermissionDenied(body.to_string())
-        }
-        else if status == 404
-        {
+        } else if status == 404 {
             Self::SecretNotFound {
                 path: body.to_string(),
             }
-        }
-        else if status == 503
-        {
+        } else if status == 503 {
             Self::VaultSealed
-        }
-        else
-        {
+        } else {
             Self::ClientError {
                 status,
                 message: body.to_string(),

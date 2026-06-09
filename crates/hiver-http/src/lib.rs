@@ -107,7 +107,13 @@
 #![allow(async_fn_in_trait)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod api_response;
@@ -116,6 +122,7 @@ pub mod builder;
 #[cfg(feature = "client")]
 pub mod client;
 pub mod conn;
+pub mod content_negotiation;
 pub mod controller_advice;
 pub mod error;
 pub mod exception;
@@ -129,7 +136,6 @@ pub mod request;
 pub mod respond;
 pub mod response;
 pub mod response_entity;
-pub mod content_negotiation;
 pub mod server;
 pub mod service;
 pub mod sse;
@@ -188,8 +194,7 @@ pub use websocket::{
 ///
 /// 这些常量涵盖 Web 应用中最常用的 MIME 类型。
 /// 等价于 Spring 的 `MediaType` 常量。
-pub mod content_type
-{
+pub mod content_type {
     /// JSON content type / JSON 内容类型
     ///
     /// Used for API responses and request bodies.
@@ -228,8 +233,7 @@ pub mod content_type
 ///
 /// 这些常量提供 HTTP/2 规范要求的 小写头名称。
 /// 等价于 Spring 的 `HttpHeaders` 常量。
-pub mod header
-{
+pub mod header {
     /// Content-Type header name / Content-Type 头名称
     pub const CONTENT_TYPE: &str = "content-type";
     /// Content-Length header name / Content-Length 头名称
@@ -275,41 +279,34 @@ pub mod header
 #[derive(Debug, Clone)]
 pub struct Json<T>(pub T);
 
-impl<T> Json<T>
-{
+impl<T> Json<T> {
     /// Create a new JSON wrapper
     /// 创建新的JSON包装器
-    pub fn new(value: T) -> Self
-    {
+    pub fn new(value: T) -> Self {
         Self(value)
     }
 
     /// Get the inner value
     /// 获取内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 
     /// Get a mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T
-    {
+    pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
 }
 
-impl<T> From<T> for Json<T>
-{
-    fn from(value: T) -> Self
-    {
+impl<T> From<T> for Json<T> {
+    fn from(value: T) -> Self {
         Self(value)
     }
 }
@@ -326,8 +323,7 @@ impl<T> From<T> for Json<T>
 /// annotated with `@ResponseBody`.
 ///
 /// 这等价于Spring的`ResponseEntity`或使用`@ResponseBody`注解的方法。
-pub trait IntoResponse
-{
+pub trait IntoResponse {
     /// Convert self into a Response
     /// 将self转换为Response
     fn into_response(self) -> Response;
@@ -335,10 +331,8 @@ pub trait IntoResponse
 
 // Implement IntoResponse for common types
 // 为常见类型实现IntoResponse
-impl IntoResponse for String
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for String {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -347,10 +341,8 @@ impl IntoResponse for String
     }
 }
 
-impl IntoResponse for &'static str
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for &'static str {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -359,10 +351,8 @@ impl IntoResponse for &'static str
     }
 }
 
-impl IntoResponse for ()
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for () {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(StatusCode::NO_CONTENT)
             .body(Body::empty())
@@ -370,10 +360,8 @@ impl IntoResponse for ()
     }
 }
 
-impl IntoResponse for std::borrow::Cow<'static, str>
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for std::borrow::Cow<'static, str> {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type::TEXT)
@@ -382,10 +370,8 @@ impl IntoResponse for std::borrow::Cow<'static, str>
     }
 }
 
-impl IntoResponse for Vec<u8>
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for Vec<u8> {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, "application/octet-stream")
@@ -394,10 +380,8 @@ impl IntoResponse for Vec<u8>
     }
 }
 
-impl IntoResponse for StatusCode
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for StatusCode {
+    fn into_response(self) -> Response {
         Response::builder()
             .status(self)
             .body(Body::empty())
@@ -410,26 +394,20 @@ impl IntoResponse for StatusCode
 // 异常处理（等价于 Spring @ControllerAdvice/@ExceptionHandler）
 // ============================================================================
 
-impl IntoResponse for ErrorResponse
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for ErrorResponse {
+    fn into_response(self) -> Response {
         self.to_response()
     }
 }
 
-impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E
-{
-    fn into_response(self) -> Response
-    {
+impl<E: IntoErrorResponse + std::any::Any> IntoResponse for E {
+    fn into_response(self) -> Response {
         self.to_error_response().to_response()
     }
 }
 
-impl IntoResponse for error::ResponseStatusException
-{
-    fn into_response(self) -> Response
-    {
+impl IntoResponse for error::ResponseStatusException {
+    fn into_response(self) -> Response {
         ErrorResponse::new(self.status.as_u16(), "STATUS_EXCEPTION", &self.reason).to_response()
     }
 }
@@ -453,8 +431,7 @@ impl IntoResponse for error::ResponseStatusException
 /// - `@PathVariable` → 提取路径参数
 /// - `@RequestBody` → 提取请求体
 /// - `@RequestHeader` → 提取请求头
-pub trait FromRequest: Sized
-{
+pub trait FromRequest: Sized {
     /// Extract this type from the request
     /// 从请求中提取此类型
     async fn from_request(req: &Request) -> Result<Self>;
@@ -462,18 +439,14 @@ pub trait FromRequest: Sized
 
 // Implement FromRequest for common types
 // 为常见类型实现FromRequest
-impl FromRequest for ()
-{
-    async fn from_request(_req: &Request) -> Result<Self>
-    {
+impl FromRequest for () {
+    async fn from_request(_req: &Request) -> Result<Self> {
         Ok(())
     }
 }
 
-impl FromRequest for String
-{
-    async fn from_request(req: &Request) -> Result<Self>
-    {
+impl FromRequest for String {
+    async fn from_request(req: &Request) -> Result<Self> {
         let body = req
             .body()
             .as_bytes()
@@ -484,10 +457,8 @@ impl FromRequest for String
     }
 }
 
-impl FromRequest for Vec<u8>
-{
-    async fn from_request(req: &Request) -> Result<Self>
-    {
+impl FromRequest for Vec<u8> {
+    async fn from_request(req: &Request) -> Result<Self> {
         Ok(req
             .body()
             .as_bytes()
@@ -496,10 +467,8 @@ impl FromRequest for Vec<u8>
     }
 }
 
-impl<T: serde::de::DeserializeOwned> FromRequest for Json<T>
-{
-    async fn from_request(req: &Request) -> Result<Self>
-    {
+impl<T: serde::de::DeserializeOwned> FromRequest for Json<T> {
+    async fn from_request(req: &Request) -> Result<Self> {
         let body = req
             .body()
             .as_bytes()
@@ -511,10 +480,8 @@ impl<T: serde::de::DeserializeOwned> FromRequest for Json<T>
     }
 }
 
-impl FromRequest for Method
-{
-    async fn from_request(req: &Request) -> Result<Self>
-    {
+impl FromRequest for Method {
+    async fn from_request(req: &Request) -> Result<Self> {
         Ok(req.method())
     }
 }

@@ -35,19 +35,16 @@ use crate::Authentication;
 /// }
 /// ```
 #[derive(Clone)]
-pub struct SecurityContextExt
-{
+pub struct SecurityContextExt {
     /// Current authentication
     /// 当前认证
     authentication: Arc<RwLock<Option<Authentication>>>,
 }
 
-impl SecurityContextExt
-{
+impl SecurityContextExt {
     /// Create a new `SecurityContext` extension
     /// `创建新的SecurityContext扩展`
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             authentication: Arc::new(RwLock::new(None)),
         }
@@ -58,15 +55,13 @@ impl SecurityContextExt
     ///
     /// Returns an error if `SecurityContext` is not found in the request.
     /// 如果请求中未找到SecurityContext，则返回错误。
-    pub fn from_request(req: &Request) -> Option<Arc<Self>>
-    {
+    pub fn from_request(req: &Request) -> Option<Arc<Self>> {
         req.extensions().get::<Arc<Self>>().cloned()
     }
 
     /// Set `SecurityContext` to Request extensions
     /// `将SecurityContext设置到Request扩展`
-    pub fn set_to_request(req: &mut Request) -> Arc<Self>
-    {
+    pub fn set_to_request(req: &mut Request) -> Arc<Self> {
         let ctx = Arc::new(Self::new());
         req.extensions_mut().insert(ctx.clone());
         ctx
@@ -74,31 +69,27 @@ impl SecurityContextExt
 
     /// Get current authentication
     /// 获取当前认证
-    pub async fn get_authentication(&self) -> Option<Authentication>
-    {
+    pub async fn get_authentication(&self) -> Option<Authentication> {
         self.authentication.read().await.clone()
     }
 
     /// Set authentication
     /// 设置认证
-    pub async fn set_authentication(&self, auth: Authentication)
-    {
+    pub async fn set_authentication(&self, auth: Authentication) {
         let mut auth_guard = self.authentication.write().await;
         *auth_guard = Some(auth);
     }
 
     /// Clear authentication
     /// 清除认证
-    pub async fn clear(&self)
-    {
+    pub async fn clear(&self) {
         let mut auth_guard = self.authentication.write().await;
         *auth_guard = None;
     }
 
     /// Check if authenticated
     /// 检查是否已认证
-    pub async fn is_authenticated(&self) -> bool
-    {
+    pub async fn is_authenticated(&self) -> bool {
         self.authentication
             .read()
             .await
@@ -108,8 +99,7 @@ impl SecurityContextExt
 
     /// Get current username
     /// 获取当前用户名
-    pub async fn get_username(&self) -> Option<String>
-    {
+    pub async fn get_username(&self) -> Option<String> {
         self.authentication
             .read()
             .await
@@ -119,8 +109,7 @@ impl SecurityContextExt
 
     /// Check if user has authority
     /// 检查用户是否有权限
-    pub async fn has_authority(&self, authority: &crate::Authority) -> bool
-    {
+    pub async fn has_authority(&self, authority: &crate::Authority) -> bool {
         self.authentication
             .read()
             .await
@@ -130,8 +119,7 @@ impl SecurityContextExt
 
     /// Check if user has role
     /// 检查用户是否有角色
-    pub async fn has_role(&self, role: &crate::Role) -> bool
-    {
+    pub async fn has_role(&self, role: &crate::Role) -> bool {
         self.authentication
             .read()
             .await
@@ -140,10 +128,8 @@ impl SecurityContextExt
     }
 }
 
-impl Default for SecurityContextExt
-{
-    fn default() -> Self
-    {
+impl Default for SecurityContextExt {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -162,8 +148,7 @@ impl Default for SecurityContextExt
 ///     Ok(Response::json(auth))
 /// }
 /// ```
-pub async fn get_authentication_from_request(req: &Request) -> Option<Authentication>
-{
+pub async fn get_authentication_from_request(req: &Request) -> Option<Authentication> {
     SecurityContextExt::from_request(req)?
         .get_authentication()
         .await
@@ -174,8 +159,7 @@ pub async fn get_authentication_from_request(req: &Request) -> Option<Authentica
 pub fn set_authentication_to_request(
     req: &mut Request,
     _auth: Authentication,
-) -> Arc<SecurityContextExt>
-{
+) -> Arc<SecurityContextExt> {
     let ctx = SecurityContextExt::set_to_request(req);
     // Note: This is a synchronous function, so we can't await
     // In practice, you should use the async set_authentication method
@@ -185,16 +169,20 @@ pub fn set_authentication_to_request(
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use hiver_http::{Method, Request};
 
     use super::*;
 
     #[tokio::test]
-    async fn test_security_context_ext()
-    {
+    async fn test_security_context_ext() {
         let mut req = Request::from_method_uri(Method::GET, "/test");
 
         // Set SecurityContext

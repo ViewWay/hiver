@@ -34,7 +34,13 @@
 #![warn(unreachable_pub)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod error;
@@ -60,8 +66,7 @@ pub const DEFAULT_MAX_BUFFER_SIZE: usize = 8 * 1024;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude
-{
+pub mod prelude {
     pub use super::{
         DEFAULT_MAX_BUFFER_SIZE, DEFAULT_MAX_FILE_SIZE, FileValidator, Multipart, MultipartConfig,
         MultipartError, MultipartFile, MultipartResult, Part, mime_types,

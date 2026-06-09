@@ -26,16 +26,13 @@ use crate::{DatabaseType, R2dbcError, R2dbcResult, row::Row};
     note = "Use DatabaseClient implementations (SqlxPoolClient) directly. Connection will be \
             removed in a future release."
 )]
-pub struct Connection
-{
+pub struct Connection {
     inner: Arc<dyn ConnectionInner>,
     database_type: DatabaseType,
 }
 
-impl Clone for Connection
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for Connection {
+    fn clone(&self) -> Self {
         Self {
             inner: Arc::clone(&self.inner),
             database_type: self.database_type,
@@ -45,8 +42,7 @@ impl Clone for Connection
 
 /// Trait for database connection operations
 /// 数据库连接操作的 trait
-pub(crate) trait ConnectionInner: Send + Sync
-{
+pub(crate) trait ConnectionInner: Send + Sync {
     /// Execute a query and return the first row
     /// 执行查询并返回第一行
     fn fetch_one(
@@ -83,12 +79,10 @@ pub(crate) trait ConnectionInner: Send + Sync
     fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
 }
 
-impl Connection
-{
+impl Connection {
     /// Create a new connection
     /// 创建新连接
-    pub(crate) fn new(inner: Arc<dyn ConnectionInner>, database_type: DatabaseType) -> Self
-    {
+    pub(crate) fn new(inner: Arc<dyn ConnectionInner>, database_type: DatabaseType) -> Self {
         Self {
             inner,
             database_type,
@@ -97,15 +91,13 @@ impl Connection
 
     /// Get the database type
     /// 获取数据库类型
-    pub fn database_type(&self) -> DatabaseType
-    {
+    pub fn database_type(&self) -> DatabaseType {
         self.database_type
     }
 
     /// Execute a query and return the first row
     /// 执行查询并返回第一行
-    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>>
-    {
+    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>> {
         self.inner
             .fetch_one(sql)
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -113,8 +105,7 @@ impl Connection
 
     /// Execute a query and return all rows
     /// 执行查询并返回所有行
-    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>>
-    {
+    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>> {
         self.inner
             .fetch_all(sql)
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -122,8 +113,7 @@ impl Connection
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
-    pub async fn execute(&self, sql: &str) -> R2dbcResult<u64>
-    {
+    pub async fn execute(&self, sql: &str) -> R2dbcResult<u64> {
         self.inner
             .execute(sql)
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -131,8 +121,7 @@ impl Connection
 
     /// Begin a transaction
     /// 开始事务
-    pub async fn begin(&self) -> R2dbcResult<crate::Transaction>
-    {
+    pub async fn begin(&self) -> R2dbcResult<crate::Transaction> {
         self.inner
             .begin()
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -140,8 +129,7 @@ impl Connection
 
     /// Close the connection
     /// 关闭连接
-    pub async fn close(self) -> R2dbcResult<()>
-    {
+    pub async fn close(self) -> R2dbcResult<()> {
         self.inner
             .close()
             .map_err(|e| R2dbcError::Unknown(e.to_string()))
@@ -168,16 +156,14 @@ impl Connection
     note = "Use SqlxPoolClient for real pool functionality. ConnectionPool will be removed in a \
             future release."
 )]
-pub struct ConnectionPool
-{
+pub struct ConnectionPool {
     inner: Arc<dyn PoolInner>,
     database_type: DatabaseType,
 }
 
 /// Trait for connection pool operations
 /// 连接池操作的 trait
-pub(crate) trait PoolInner: Send + Sync
-{
+pub(crate) trait PoolInner: Send + Sync {
     /// Acquire a connection from the pool
     /// 从连接池获取连接
     fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>>;
@@ -229,14 +215,12 @@ pub(crate) trait PoolInner: Send + Sync
 /// 2. `Arc::from_raw` 接管指针并创建新的 Arc
 /// 3. 转换后不再使用该指针
 #[allow(unsafe_code)]
-fn box_to_arc(inner: Box<dyn PoolInner>) -> Arc<dyn PoolInner>
-{
+fn box_to_arc(inner: Box<dyn PoolInner>) -> Arc<dyn PoolInner> {
     let raw = Box::into_raw(inner);
     unsafe { Arc::from_raw(raw) }
 }
 
-impl ConnectionPool
-{
+impl ConnectionPool {
     /// Create a new connection pool with the given URL
     /// 使用给定的 URL 创建新的连接池
     ///
@@ -251,22 +235,18 @@ impl ConnectionPool
     /// ```rust,no_run,ignore
     /// let pool = ConnectionPool::connect("postgresql://localhost:5432/mydb").await?;
     /// ```
-    pub async fn connect(url: &str) -> R2dbcResult<Self>
-    {
+    pub async fn connect(url: &str) -> R2dbcResult<Self> {
         Self::connect_with_config(url, PoolConfig::default()).await
     }
 
     /// Create a new connection pool with the given URL and configuration
     /// 使用给定的 URL 和配置创建新的连接池
-    pub async fn connect_with_config(url: &str, config: PoolConfig) -> R2dbcResult<Self>
-    {
+    pub async fn connect_with_config(url: &str, config: PoolConfig) -> R2dbcResult<Self> {
         let database_type = Self::detect_database_type(url);
 
         // Create the appropriate pool wrapper based on database type
-        let inner: Box<dyn PoolInner> = match database_type
-        {
-            DatabaseType::PostgreSQL =>
-            {
+        let inner: Box<dyn PoolInner> = match database_type {
+            DatabaseType::PostgreSQL => {
                 let sqlx_pool = sqlx::postgres::PgPoolOptions::new()
                     .max_connections(config.max_size)
                     .min_connections(config.min_idle)
@@ -280,8 +260,7 @@ impl ConnectionPool
                 Box::new(PostgresPoolWrapper { pool: sqlx_pool })
             },
             #[cfg(feature = "mysql")]
-            DatabaseType::MySQL =>
-            {
+            DatabaseType::MySQL => {
                 let sqlx_pool = sqlx::mysql::MySqlPoolOptions::new()
                     .max_connections(config.max_size)
                     .min_connections(config.min_idle)
@@ -295,8 +274,7 @@ impl ConnectionPool
                 Box::new(MySqlPoolWrapper { pool: sqlx_pool })
             },
             #[cfg(feature = "sqlite")]
-            DatabaseType::SQLite =>
-            {
+            DatabaseType::SQLite => {
                 let sqlx_pool = sqlx::sqlite::SqlitePoolOptions::new()
                     .max_connections(config.max_size)
                     .min_connections(config.min_idle)
@@ -310,17 +288,14 @@ impl ConnectionPool
                 Box::new(SqlitePoolWrapper { pool: sqlx_pool })
             },
             #[cfg(not(feature = "mysql"))]
-            DatabaseType::MySQL =>
-            {
+            DatabaseType::MySQL => {
                 return Err(R2dbcError::unknown("MySQL support requires 'mysql' feature"));
             },
             #[cfg(not(feature = "sqlite"))]
-            DatabaseType::SQLite =>
-            {
+            DatabaseType::SQLite => {
                 return Err(R2dbcError::unknown("SQLite support requires 'sqlite' feature"));
             },
-            DatabaseType::H2 =>
-            {
+            DatabaseType::H2 => {
                 return Err(R2dbcError::unknown("H2 database not yet supported"));
             },
         };
@@ -333,26 +308,16 @@ impl ConnectionPool
 
     /// Detect the database type from the connection URL
     /// 从连接 URL 检测数据库类型
-    fn detect_database_type(url: &str) -> DatabaseType
-    {
-        if url.starts_with("postgresql://") || url.starts_with("postgres://")
-        {
+    fn detect_database_type(url: &str) -> DatabaseType {
+        if url.starts_with("postgresql://") || url.starts_with("postgres://") {
             DatabaseType::PostgreSQL
-        }
-        else if url.starts_with("mysql://") || url.starts_with("mariadb://")
-        {
+        } else if url.starts_with("mysql://") || url.starts_with("mariadb://") {
             DatabaseType::MySQL
-        }
-        else if url.starts_with("sqlite://") || url.starts_with("sqlite:")
-        {
+        } else if url.starts_with("sqlite://") || url.starts_with("sqlite:") {
             DatabaseType::SQLite
-        }
-        else if url.starts_with("h2://") || url.starts_with("jdbc:h2:")
-        {
+        } else if url.starts_with("h2://") || url.starts_with("jdbc:h2:") {
             DatabaseType::H2
-        }
-        else
-        {
+        } else {
             // Default to PostgreSQL
             DatabaseType::PostgreSQL
         }
@@ -360,15 +325,13 @@ impl ConnectionPool
 
     /// Get the database type
     /// 获取数据库类型
-    pub fn database_type(&self) -> DatabaseType
-    {
+    pub fn database_type(&self) -> DatabaseType {
         self.database_type
     }
 
     /// Acquire a connection from the pool
     /// 从连接池获取连接
-    pub async fn acquire(&self) -> R2dbcResult<Connection>
-    {
+    pub async fn acquire(&self) -> R2dbcResult<Connection> {
         self.inner
             .acquire()
             .map_err(|e| R2dbcError::Pool(e.to_string()))
@@ -376,8 +339,7 @@ impl ConnectionPool
 
     /// Execute a query using a connection from the pool and return the first row
     /// 使用池中的连接执行查询并返回第一行
-    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>>
-    {
+    pub async fn fetch_one(&self, sql: &str) -> R2dbcResult<Option<Row>> {
         self.inner
             .fetch_one(sql)
             .map_err(|e| R2dbcError::Sql(e.to_string()))
@@ -385,8 +347,7 @@ impl ConnectionPool
 
     /// Execute a query and return all rows
     /// 执行查询并返回所有行
-    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>>
-    {
+    pub async fn fetch_all(&self, sql: &str) -> R2dbcResult<Vec<Row>> {
         self.inner
             .fetch_all(sql)
             .map_err(|e| R2dbcError::Sql(e.to_string()))
@@ -394,8 +355,7 @@ impl ConnectionPool
 
     /// Execute a statement and return affected rows
     /// 执行语句并返回受影响的行数
-    pub async fn execute(&self, sql: &str) -> R2dbcResult<u64>
-    {
+    pub async fn execute(&self, sql: &str) -> R2dbcResult<u64> {
         self.inner
             .execute(sql)
             .map_err(|e| R2dbcError::Sql(e.to_string()))
@@ -403,8 +363,7 @@ impl ConnectionPool
 
     /// Begin a transaction
     /// 开始事务
-    pub async fn begin(&self) -> R2dbcResult<crate::Transaction>
-    {
+    pub async fn begin(&self) -> R2dbcResult<crate::Transaction> {
         self.inner
             .begin()
             .map_err(|e| R2dbcError::Transaction(e.to_string()))
@@ -412,8 +371,7 @@ impl ConnectionPool
 
     /// Close the connection pool
     /// 关闭连接池
-    pub async fn close(&self) -> R2dbcResult<()>
-    {
+    pub async fn close(&self) -> R2dbcResult<()> {
         self.inner
             .close()
             .map_err(|e| R2dbcError::Pool(e.to_string()))
@@ -425,31 +383,26 @@ impl ConnectionPool
 
 /// PostgreSQL pool wrapper
 /// PostgreSQL 连接池包装器
-struct PostgresPoolWrapper
-{
+struct PostgresPoolWrapper {
     pool: sqlx::postgres::PgPool,
 }
 
 /// MySQL pool wrapper
 /// MySQL 连接池包装器
 #[cfg(feature = "mysql")]
-struct MySqlPoolWrapper
-{
+struct MySqlPoolWrapper {
     pool: sqlx::mysql::MySqlPool,
 }
 
 /// SQLite pool wrapper
 /// SQLite 连接池包装器
 #[cfg(feature = "sqlite")]
-struct SqlitePoolWrapper
-{
+struct SqlitePoolWrapper {
     pool: sqlx::sqlite::SqlitePool,
 }
 
-impl PoolInner for PostgresPoolWrapper
-{
-    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>>
-    {
+impl PoolInner for PostgresPoolWrapper {
+    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>> {
         // Placeholder - would need async context
         Err("Not implemented".into())
     }
@@ -457,139 +410,124 @@ impl PoolInner for PostgresPoolWrapper
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(None)
     }
 
     fn fetch_all(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
     fn execute(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
     fn begin(
         &self,
-    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
-    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>
-    {
+    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Ok(())
     }
 }
 
 #[cfg(feature = "mysql")]
-impl PoolInner for MySqlPoolWrapper
-{
-    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>>
-    {
+impl PoolInner for MySqlPoolWrapper {
+    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(None)
     }
 
     fn fetch_all(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
     fn execute(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
     fn begin(
         &self,
-    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
-    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>
-    {
+    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Ok(())
     }
 }
 
 #[cfg(feature = "sqlite")]
-impl PoolInner for SqlitePoolWrapper
-{
-    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>>
-    {
+impl PoolInner for SqlitePoolWrapper {
+    fn acquire(&self) -> std::result::Result<Connection, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
     fn fetch_one(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Option<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(None)
     }
 
     fn fetch_all(
         &self,
         _sql: &str,
-    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<Vec<Row>, Box<dyn std::error::Error + Send + Sync>> {
         Ok(Vec::new())
     }
 
     fn execute(
         &self,
         _sql: &str,
-    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         Ok(0)
     }
 
     fn begin(
         &self,
-    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>>
-    {
+    ) -> std::result::Result<crate::Transaction, Box<dyn std::error::Error + Send + Sync>> {
         Err("Not implemented".into())
     }
 
-    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>
-    {
+    fn close(&self) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Ok(())
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_pool_config_default()
-    {
+    fn test_pool_config_default() {
         let config = PoolConfig::default();
         assert_eq!(config.max_size, 10);
         assert_eq!(config.min_idle, 1);
@@ -597,8 +535,7 @@ mod tests
     }
 
     #[test]
-    fn test_pool_config_builder()
-    {
+    fn test_pool_config_builder() {
         let config = PoolConfig::new()
             .with_max_size(20)
             .with_min_idle(5)
@@ -610,8 +547,7 @@ mod tests
     }
 
     #[test]
-    fn test_detect_database_type()
-    {
+    fn test_detect_database_type() {
         assert_eq!(
             ConnectionPool::detect_database_type("postgresql://localhost/db"),
             DatabaseType::PostgreSQL

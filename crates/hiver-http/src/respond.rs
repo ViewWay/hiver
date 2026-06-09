@@ -51,13 +51,11 @@ pub trait ResponseFormatter: Send + Sync {
 /// Supports JSON and plain text out of the box.
 ///
 /// 使用 [`ContentNegotiationManager`] 协商响应格式。默认支持 JSON 和纯文本。
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct DefaultResponseFormatter {
     /// The content negotiation manager. / 内容协商管理器。
     negotiation: ContentNegotiationManager,
 }
-
 
 impl DefaultResponseFormatter {
     /// Create a new formatter with the given negotiation manager.
@@ -89,7 +87,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .header("content-type", "application/json")
                     .body(Body::from(json))
                     .expect("valid response builder"))
-            }
+            },
             "text/plain" => {
                 let text = serde_json::to_string(data)
                     .map_err(|e| Error::Internal(format!("JSON serialization: {}", e)))?;
@@ -98,7 +96,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .header("content-type", "text/plain")
                     .body(Body::from(text))
                     .expect("valid response builder"))
-            }
+            },
             "text/html" => {
                 let text = serde_json::to_string(data)
                     .map_err(|e| Error::Internal(format!("JSON serialization: {}", e)))?;
@@ -107,7 +105,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .header("content-type", "text/html")
                     .body(Body::from(text))
                     .expect("valid response builder"))
-            }
+            },
             "application/xml" => {
                 // Fallback to JSON if XML serialization is not available
                 // 如果 XML 序列化不可用，回退到 JSON
@@ -118,7 +116,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .header("content-type", "application/json")
                     .body(Body::from(json))
                     .expect("valid response builder"))
-            }
+            },
             _ => {
                 // Fallback to JSON for unknown types / 未知类型回退到 JSON
                 let json = serde_json::to_vec(data)
@@ -128,7 +126,7 @@ impl ResponseFormatter for DefaultResponseFormatter {
                     .header("content-type", "application/json")
                     .body(Body::from(json))
                     .expect("valid response builder"))
-            }
+            },
         }
     }
 }
@@ -136,7 +134,13 @@ impl ResponseFormatter for DefaultResponseFormatter {
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests {
     use super::*;
     use crate::body::HttpBody;
@@ -226,7 +230,9 @@ mod tests {
         let manager = ContentNegotiationManager::new(&["text/plain"]);
         let formatter = DefaultResponseFormatter::new(manager);
         let data = "custom manager";
-        let response = formatter.format(&data, "text/plain, application/json;q=0.5").unwrap();
+        let response = formatter
+            .format(&data, "text/plain, application/json;q=0.5")
+            .unwrap();
         assert_eq!(response.header("content-type"), Some("text/plain"));
     }
 

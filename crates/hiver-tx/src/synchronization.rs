@@ -12,8 +12,7 @@ use crate::{
 
 /// Holds a live database transaction behind a mutex.
 /// 在互斥锁后持有活动的数据库事务。
-pub trait LiveTransaction: Send
-{
+pub trait LiveTransaction: Send {
     /// Commit the underlying transaction.
     fn commit_boxed(
         self: Box<Self>,
@@ -28,8 +27,7 @@ tokio::task_local! {
     static ACTIVE_TX: Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>>;
 }
 
-fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>>
-{
+fn active_map() -> Arc<Mutex<HashMap<String, (TransactionStatus, Box<dyn LiveTransaction>)>>> {
     ACTIVE_TX.try_with(Clone::clone).expect(
         "No active transaction scope: wrap your transactional code with `with_transaction_scope`",
     )
@@ -56,8 +54,7 @@ where
 
 /// Bind a live transaction to a status name in the current task.
 /// 将活动事务绑定到当前任务中的状态名称。
-pub async fn bind_transaction(status: TransactionStatus, tx: Box<dyn LiveTransaction>)
-{
+pub async fn bind_transaction(status: TransactionStatus, tx: Box<dyn LiveTransaction>) {
     let map = active_map();
     let mut guard = map.lock().await;
     guard.insert(status.name().to_string(), (status, tx));
@@ -65,8 +62,7 @@ pub async fn bind_transaction(status: TransactionStatus, tx: Box<dyn LiveTransac
 
 /// Take and remove a live transaction for commit/rollback.
 /// 取出并移除用于提交/回滚的活动事务。
-pub async fn take_transaction(status: &TransactionStatus) -> Option<Box<dyn LiveTransaction>>
-{
+pub async fn take_transaction(status: &TransactionStatus) -> Option<Box<dyn LiveTransaction>> {
     let map = active_map();
     let mut guard = map.lock().await;
     guard.remove(status.name()).map(|(_, tx)| tx)
@@ -74,8 +70,7 @@ pub async fn take_transaction(status: &TransactionStatus) -> Option<Box<dyn Live
 
 /// Returns an existing active status for REQUIRED propagation, if any.
 /// 对于 REQUIRED 传播，返回现有活动状态（如有）。
-pub async fn current_status() -> Option<TransactionStatus>
-{
+pub async fn current_status() -> Option<TransactionStatus> {
     let map = active_map();
     let guard = map.lock().await;
     guard.values().next().map(|(s, _)| s.clone())
@@ -85,27 +80,19 @@ pub async fn current_status() -> Option<TransactionStatus>
 /// 解析传播行为：返回现有状态或指示需要新事务。
 pub async fn resolve_propagation(
     definition: &TransactionDefinition,
-) -> Result<Option<TransactionStatus>, TransactionError>
-{
-    match definition.propagation
-    {
+) -> Result<Option<TransactionStatus>, TransactionError> {
+    match definition.propagation {
         Propagation::Required | Propagation::Supports => Ok(current_status().await),
-        Propagation::Mandatory => match current_status().await
-        {
+        Propagation::Mandatory => match current_status().await {
             Some(s) => Ok(Some(s)),
-            None =>
-            {
+            None => {
                 Err(TransactionError::InvalidState("No existing transaction for MANDATORY".into()))
             },
         },
-        Propagation::Never =>
-        {
-            if current_status().await.is_some()
-            {
+        Propagation::Never => {
+            if current_status().await.is_some() {
                 Err(TransactionError::InvalidState("Existing transaction present for NEVER".into()))
-            }
-            else
-            {
+            } else {
                 Ok(None)
             }
         },

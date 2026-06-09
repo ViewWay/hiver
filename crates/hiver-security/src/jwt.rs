@@ -62,8 +62,7 @@ use crate::{Authority, Role, SecurityError, SecurityResult};
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JwtClaims
-{
+pub struct JwtClaims {
     /// Subject (user ID)
     /// 主体（用户ID）
     pub sub: String,
@@ -110,8 +109,7 @@ pub struct JwtClaims
     pub custom: HashMap<String, serde_json::Value>,
 }
 
-impl JwtClaims
-{
+impl JwtClaims {
     /// Create new JWT claims
     /// 创建新的JWT声明
     pub fn new(
@@ -119,8 +117,7 @@ impl JwtClaims
         username: impl Into<String>,
         authorities: &[Authority],
         expiration_hours: i64,
-    ) -> Self
-    {
+    ) -> Self {
         let now = Utc::now();
         let expiration = now + Duration::hours(expiration_hours);
 
@@ -140,8 +137,7 @@ impl JwtClaims
 
     /// Create a JwtClaims builder for advanced configuration
     /// 创建JwtClaims构建器用于高级配置
-    pub fn builder(user_id: impl Into<String>, username: impl Into<String>) -> JwtClaimsBuilder
-    {
+    pub fn builder(user_id: impl Into<String>, username: impl Into<String>) -> JwtClaimsBuilder {
         JwtClaimsBuilder {
             sub: user_id.into(),
             username: username.into(),
@@ -157,24 +153,21 @@ impl JwtClaims
 
     /// Set the issuer claim
     /// 设置签发者声明
-    pub fn with_issuer(mut self, issuer: impl Into<String>) -> Self
-    {
+    pub fn with_issuer(mut self, issuer: impl Into<String>) -> Self {
         self.iss = Some(issuer.into());
         self
     }
 
     /// Set the audience claim
     /// 设置受众声明
-    pub fn with_audience(mut self, audience: impl Into<String>) -> Self
-    {
+    pub fn with_audience(mut self, audience: impl Into<String>) -> Self {
         self.aud = Some(serde_json::Value::String(audience.into()));
         self
     }
 
     /// Set multiple audiences
     /// 设置多个受众
-    pub fn with_audiences(mut self, audiences: Vec<String>) -> Self
-    {
+    pub fn with_audiences(mut self, audiences: Vec<String>) -> Self {
         self.aud = Some(serde_json::Value::Array(
             audiences
                 .into_iter()
@@ -186,39 +179,34 @@ impl JwtClaims
 
     /// Set the not-before claim
     /// 设置生效时间声明
-    pub fn with_not_before(mut self, nbf: i64) -> Self
-    {
+    pub fn with_not_before(mut self, nbf: i64) -> Self {
         self.nbf = Some(nbf);
         self
     }
 
     /// Set the JWT ID claim
     /// 设置JWT标识符声明
-    pub fn with_jwt_id(mut self, jti: impl Into<String>) -> Self
-    {
+    pub fn with_jwt_id(mut self, jti: impl Into<String>) -> Self {
         self.jti = Some(jti.into());
         self
     }
 
     /// Add a custom claim
     /// 添加自定义声明
-    pub fn with_custom_claim(mut self, key: impl Into<String>, value: serde_json::Value) -> Self
-    {
+    pub fn with_custom_claim(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.custom.insert(key.into(), value);
         self
     }
 
     /// Check if token is expired
     /// 检查token是否过期
-    pub fn is_expired(&self) -> bool
-    {
+    pub fn is_expired(&self) -> bool {
         Utc::now().timestamp() > self.exp
     }
 
     /// Get time until expiration
     /// 获取剩余有效时间
-    pub fn time_until_expiration(&self) -> Duration
-    {
+    pub fn time_until_expiration(&self) -> Duration {
         let now = Utc::now().timestamp();
         let seconds_left = self.exp - now;
         Duration::seconds(seconds_left)
@@ -226,8 +214,7 @@ impl JwtClaims
 
     /// Convert authorities to Authority enum
     /// 将authorities转换为Authority枚举
-    pub fn get_authorities(&self) -> Vec<Authority>
-    {
+    pub fn get_authorities(&self) -> Vec<Authority> {
         self.authorities
             .iter()
             .filter_map(|a| Authority::from_string(a))
@@ -236,25 +223,21 @@ impl JwtClaims
 
     /// Check if has authority
     /// 检查是否有权限
-    pub fn has_authority(&self, authority: &Authority) -> bool
-    {
+    pub fn has_authority(&self, authority: &Authority) -> bool {
         self.get_authorities().contains(authority)
     }
 
     /// Check if has role
     /// 检查是否有角色
-    pub fn has_role(&self, role: &Role) -> bool
-    {
+    pub fn has_role(&self, role: &Role) -> bool {
         self.get_authorities()
             .contains(&Authority::Role(role.clone()))
     }
 
     /// Get the audience as a list of strings
     /// 获取受众字符串列表
-    pub fn audiences(&self) -> Vec<String>
-    {
-        match &self.aud
-        {
+    pub fn audiences(&self) -> Vec<String> {
+        match &self.aud {
             Some(serde_json::Value::String(s)) => vec![s.clone()],
             Some(serde_json::Value::Array(arr)) => arr
                 .iter()
@@ -266,8 +249,7 @@ impl JwtClaims
 
     /// Check if a specific audience is present
     /// 检查是否包含特定受众
-    pub fn has_audience(&self, audience: &str) -> bool
-    {
+    pub fn has_audience(&self, audience: &str) -> bool {
         self.audiences().iter().any(|a| a == audience)
     }
 }
@@ -275,8 +257,7 @@ impl JwtClaims
 /// Builder for constructing JwtClaims with all optional fields
 /// 用于构建包含所有可选字段的JwtClaims的构建器
 #[derive(Debug)]
-pub struct JwtClaimsBuilder
-{
+pub struct JwtClaimsBuilder {
     sub: String,
     username: String,
     authorities: Vec<String>,
@@ -288,68 +269,59 @@ pub struct JwtClaimsBuilder
     custom: HashMap<String, serde_json::Value>,
 }
 
-impl JwtClaimsBuilder
-{
+impl JwtClaimsBuilder {
     /// Set authorities
     /// 设置权限
-    pub fn authorities(mut self, auths: &[Authority]) -> Self
-    {
+    pub fn authorities(mut self, auths: &[Authority]) -> Self {
         self.authorities = auths.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Set expiration in hours
     /// 设置过期时间（小时）
-    pub fn expiration_hours(mut self, hours: i64) -> Self
-    {
+    pub fn expiration_hours(mut self, hours: i64) -> Self {
         self.expiration_hours = hours;
         self
     }
 
     /// Set issuer
     /// 设置签发者
-    pub fn issuer(mut self, issuer: impl Into<String>) -> Self
-    {
+    pub fn issuer(mut self, issuer: impl Into<String>) -> Self {
         self.issuer = Some(issuer.into());
         self
     }
 
     /// Set audience
     /// 设置受众
-    pub fn audience(mut self, audience: impl Into<String>) -> Self
-    {
+    pub fn audience(mut self, audience: impl Into<String>) -> Self {
         self.audience = Some(audience.into());
         self
     }
 
     /// Set not-before timestamp
     /// 设置生效时间戳
-    pub fn not_before(mut self, nbf: i64) -> Self
-    {
+    pub fn not_before(mut self, nbf: i64) -> Self {
         self.not_before = Some(nbf);
         self
     }
 
     /// Set JWT ID
     /// 设置JWT标识符
-    pub fn jwt_id(mut self, jti: impl Into<String>) -> Self
-    {
+    pub fn jwt_id(mut self, jti: impl Into<String>) -> Self {
         self.jwt_id = Some(jti.into());
         self
     }
 
     /// Add a custom claim
     /// 添加自定义声明
-    pub fn custom_claim(mut self, key: impl Into<String>, value: serde_json::Value) -> Self
-    {
+    pub fn custom_claim(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.custom.insert(key.into(), value);
         self
     }
 
     /// Build the JwtClaims
     /// 构建JwtClaims
-    pub fn build(self) -> JwtClaims
-    {
+    pub fn build(self) -> JwtClaims {
         let now = Utc::now();
         let expiration = now + Duration::hours(self.expiration_hours);
 
@@ -371,8 +343,7 @@ impl JwtClaimsBuilder
 /// Supported JWT signing algorithms
 /// 支持的JWT签名算法
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum JwtAlgorithm
-{
+pub enum JwtAlgorithm {
     /// HMAC using SHA-256
     #[default]
     Hs256,
@@ -384,14 +355,11 @@ pub enum JwtAlgorithm
     Rs256,
 }
 
-impl JwtAlgorithm
-{
+impl JwtAlgorithm {
     /// Convert to jsonwebtoken Algorithm
     /// 转换为jsonwebtoken库的Algorithm
-    pub fn to_algorithm(&self) -> jsonwebtoken::Algorithm
-    {
-        match self
-        {
+    pub fn to_algorithm(&self) -> jsonwebtoken::Algorithm {
+        match self {
             JwtAlgorithm::Hs256 => jsonwebtoken::Algorithm::HS256,
             JwtAlgorithm::Hs384 => jsonwebtoken::Algorithm::HS384,
             JwtAlgorithm::Hs512 => jsonwebtoken::Algorithm::HS512,
@@ -416,20 +384,17 @@ impl JwtAlgorithm
 /// ```
 pub struct JwtUtil;
 
-impl JwtUtil
-{
+impl JwtUtil {
     /// Get JWT secret key from environment or use default
     /// 从环境变量获取JWT密钥或使用默认值
-    fn get_secret() -> String
-    {
+    fn get_secret() -> String {
         env::var("JWT_SECRET")
             .unwrap_or_else(|_| "hiver-jwt-secret-key-change-in-production-2024".to_string())
     }
 
     /// Get default token expiration in hours
     /// 获取默认token过期时间（小时）
-    fn get_default_expiration() -> i64
-    {
+    fn get_default_expiration() -> i64 {
         env::var("JWT_EXPIRATION_HOURS")
             .ok()
             .and_then(|s| s.parse().ok())
@@ -462,8 +427,7 @@ impl JwtUtil
         user_id: impl Into<String>,
         username: impl Into<String>,
         authorities: &[Authority],
-    ) -> SecurityResult<String>
-    {
+    ) -> SecurityResult<String> {
         let expiration_hours = Self::get_default_expiration();
         Self::create_token_with_expiration(user_id, username, authorities, expiration_hours)
     }
@@ -482,8 +446,7 @@ impl JwtUtil
         username: impl Into<String>,
         authorities: &[Authority],
         expiration_hours: i64,
-    ) -> SecurityResult<String>
-    {
+    ) -> SecurityResult<String> {
         let claims = JwtClaims::new(user_id, username, authorities, expiration_hours);
 
         let secret = Self::get_secret();
@@ -507,8 +470,7 @@ impl JwtUtil
     /// # Errors / 错误
     ///
     /// Returns error if token is invalid or expired / 如果token无效或过期则返回错误
-    pub fn verify_token(token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn verify_token(token: &str) -> SecurityResult<JwtClaims> {
         let secret = Self::get_secret();
         let decoding_key = DecodingKey::from_secret(secret.as_ref());
         let validation = Validation::new(jsonwebtoken::Algorithm::HS256);
@@ -518,17 +480,14 @@ impl JwtUtil
                 let claims = data.claims;
 
                 // Check expiration manually for better error messages
-                if claims.is_expired()
-                {
+                if claims.is_expired() {
                     return Err(SecurityError::TokenExpired("Token has expired".to_string()));
                 }
 
                 Ok(claims)
             })
-            .map_err(|e| match e.kind()
-            {
-                jsonwebtoken::errors::ErrorKind::ExpiredSignature =>
-                {
+            .map_err(|e| match e.kind() {
+                jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                     SecurityError::TokenExpired("Token signature has expired".to_string())
                 },
                 _ => SecurityError::InvalidToken(format!("Invalid token: {}", e)),
@@ -544,8 +503,7 @@ impl JwtUtil
     /// # Arguments / 参数
     ///
     /// * `token` - Old JWT token / 旧的JWT token
-    pub fn refresh_token(token: &str) -> SecurityResult<String>
-    {
+    pub fn refresh_token(token: &str) -> SecurityResult<String> {
         let claims = Self::verify_token(token)?;
 
         // Parse authorities back from strings
@@ -566,8 +524,7 @@ impl JwtUtil
     /// This should NOT be used in production for authentication.
     /// 这不应该在生产环境中用于身份验证。
     #[cfg(test)]
-    pub fn parse_token_unsafe(token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn parse_token_unsafe(token: &str) -> SecurityResult<JwtClaims> {
         Self::decode_without_validation(token)
     }
 
@@ -584,12 +541,10 @@ impl JwtUtil
     ///
     /// Do NOT use this for authentication decisions.
     /// 不要将此用于身份验证决策。
-    pub fn decode_without_validation(token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn decode_without_validation(token: &str) -> SecurityResult<JwtClaims> {
         use base64::Engine;
         let parts: Vec<&str> = token.split('.').collect();
-        if parts.len() != 3
-        {
+        if parts.len() != 3 {
             return Err(SecurityError::InvalidToken(
                 "Invalid token format: expected 3 parts".to_string(),
             ));
@@ -627,34 +582,27 @@ impl JwtUtil
         algorithm: &JwtAlgorithm,
         issuer: Option<&str>,
         audience: Option<&str>,
-    ) -> SecurityResult<JwtClaims>
-    {
+    ) -> SecurityResult<JwtClaims> {
         let decoding_key = DecodingKey::from_secret(secret.as_ref());
         let mut validation = Validation::new(algorithm.to_algorithm());
 
-        if let Some(iss) = issuer
-        {
+        if let Some(iss) = issuer {
             validation.set_issuer(&[iss]);
         }
-        if let Some(aud) = audience
-        {
+        if let Some(aud) = audience {
             validation.set_audience(&[aud]);
         }
 
         decode::<JwtClaims>(token, &decoding_key, &validation)
             .map(|data| data.claims)
-            .map_err(|e| match e.kind()
-            {
-                jsonwebtoken::errors::ErrorKind::ExpiredSignature =>
-                {
+            .map_err(|e| match e.kind() {
+                jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                     SecurityError::TokenExpired("Token has expired".to_string())
                 },
-                jsonwebtoken::errors::ErrorKind::InvalidToken =>
-                {
+                jsonwebtoken::errors::ErrorKind::InvalidToken => {
                     SecurityError::InvalidToken("Token is invalid".to_string())
                 },
-                jsonwebtoken::errors::ErrorKind::InvalidSignature =>
-                {
+                jsonwebtoken::errors::ErrorKind::InvalidSignature => {
                     SecurityError::InvalidToken("Invalid token signature".to_string())
                 },
                 _ => SecurityError::InvalidToken(format!("Token validation failed: {}", e)),
@@ -679,15 +627,13 @@ impl JwtUtil
     /// # Returns / 返回
     ///
     /// A tuple of (token_string, was_refreshed) / 一个元组（令牌字符串，是否已刷新）
-    pub fn refresh_if_needed(token: &str, threshold_secs: i64) -> SecurityResult<(String, bool)>
-    {
+    pub fn refresh_if_needed(token: &str, threshold_secs: i64) -> SecurityResult<(String, bool)> {
         let claims = Self::decode_without_validation(token)?;
 
         let now = Utc::now().timestamp();
         let remaining = claims.exp - now;
 
-        if remaining < threshold_secs
-        {
+        if remaining < threshold_secs {
             // Token is close to expiry or already expired; refresh it
             // 令牌即将过期或已经过期；刷新它
             let authorities: Vec<Authority> = claims
@@ -697,9 +643,7 @@ impl JwtUtil
                 .collect();
             let new_token = Self::create_token(&claims.sub, &claims.username, &authorities)?;
             Ok((new_token, true))
-        }
-        else
-        {
+        } else {
             Ok((token.to_string(), false))
         }
     }
@@ -724,8 +668,7 @@ impl JwtUtil
 /// }
 /// ```
 #[derive(Clone)]
-pub struct JwtTokenProvider
-{
+pub struct JwtTokenProvider {
     /// Secret key for signing tokens (HMAC) or PEM-encoded RSA private key
     /// 签名令牌的密钥（HMAC）或PEM编码的RSA私钥
     secret: String,
@@ -751,12 +694,10 @@ pub struct JwtTokenProvider
     audience: Option<String>,
 }
 
-impl JwtTokenProvider
-{
+impl JwtTokenProvider {
     /// Create new JWT token provider with default settings
     /// 使用默认设置创建新的JWT令牌提供者
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             secret: JwtUtil::get_secret(),
             rsa_public_key_pem: None,
@@ -769,8 +710,7 @@ impl JwtTokenProvider
 
     /// Create with custom secret and expiration
     /// 使用自定义密钥和过期时间创建
-    pub fn with_settings(secret: impl Into<String>, expiration_hours: i64) -> Self
-    {
+    pub fn with_settings(secret: impl Into<String>, expiration_hours: i64) -> Self {
         Self {
             secret: secret.into(),
             rsa_public_key_pem: None,
@@ -783,24 +723,21 @@ impl JwtTokenProvider
 
     /// Set the signing algorithm
     /// 设置签名算法
-    pub fn with_algorithm(mut self, algorithm: JwtAlgorithm) -> Self
-    {
+    pub fn with_algorithm(mut self, algorithm: JwtAlgorithm) -> Self {
         self.algorithm = algorithm;
         self
     }
 
     /// Set the expected issuer for validation
     /// 设置用于验证的预期签发者
-    pub fn with_issuer(mut self, issuer: impl Into<String>) -> Self
-    {
+    pub fn with_issuer(mut self, issuer: impl Into<String>) -> Self {
         self.issuer = Some(issuer.into());
         self
     }
 
     /// Set the expected audience for validation
     /// 设置用于验证的预期受众
-    pub fn with_audience(mut self, audience: impl Into<String>) -> Self
-    {
+    pub fn with_audience(mut self, audience: impl Into<String>) -> Self {
         self.audience = Some(audience.into());
         self
     }
@@ -811,18 +748,15 @@ impl JwtTokenProvider
     /// When using RS256, the private key is used for signing and
     /// the public key is used for verification.
     /// 使用RS256时，私钥用于签名，公钥用于验证。
-    pub fn with_rsa_public_key(mut self, pem: impl Into<String>) -> Self
-    {
+    pub fn with_rsa_public_key(mut self, pem: impl Into<String>) -> Self {
         self.rsa_public_key_pem = Some(pem.into());
         self
     }
 
     /// Get the encoding key based on the algorithm
     /// 根据算法获取编码密钥
-    fn encoding_key(&self) -> SecurityResult<EncodingKey>
-    {
-        match self.algorithm
-        {
+    fn encoding_key(&self) -> SecurityResult<EncodingKey> {
+        match self.algorithm {
             JwtAlgorithm::Rs256 => EncodingKey::from_rsa_pem(self.secret.as_bytes())
                 .map_err(|e| SecurityError::Jwt(format!("Invalid RSA private key: {}", e))),
             _ => Ok(EncodingKey::from_secret(self.secret.as_ref())),
@@ -831,12 +765,9 @@ impl JwtTokenProvider
 
     /// Get the decoding key based on the algorithm
     /// 根据算法获取解码密钥
-    fn decoding_key(&self) -> SecurityResult<DecodingKey>
-    {
-        match self.algorithm
-        {
-            JwtAlgorithm::Rs256 =>
-            {
+    fn decoding_key(&self) -> SecurityResult<DecodingKey> {
+        match self.algorithm {
+            JwtAlgorithm::Rs256 => {
                 let pem = self.rsa_public_key_pem.as_deref().unwrap_or(&self.secret);
                 DecodingKey::from_rsa_pem(pem.as_bytes())
                     .map_err(|e| SecurityError::Jwt(format!("Invalid RSA public key: {}", e)))
@@ -847,19 +778,14 @@ impl JwtTokenProvider
 
     /// Build the validation rules
     /// 构建验证规则
-    fn validation(&self) -> Validation
-    {
+    fn validation(&self) -> Validation {
         let mut validation = Validation::new(self.algorithm.to_algorithm());
-        if let Some(ref iss) = self.issuer
-        {
+        if let Some(ref iss) = self.issuer {
             validation.set_issuer(&[iss.as_str()]);
         }
-        if let Some(ref aud) = self.audience
-        {
+        if let Some(ref aud) = self.audience {
             validation.set_audience(&[aud.as_str()]);
-        }
-        else
-        {
+        } else {
             // If no audience is configured, disable audience validation
             // 如果未配置受众，则禁用受众验证
             validation.set_audience::<&str>(&[]);
@@ -874,18 +800,15 @@ impl JwtTokenProvider
         user_id: impl Into<String>,
         username: impl Into<String>,
         authorities: &[Authority],
-    ) -> SecurityResult<String>
-    {
+    ) -> SecurityResult<String> {
         let mut claims = JwtClaims::new(user_id, username, authorities, self.expiration_hours);
 
         // Apply provider-level issuer and audience to claims
         // 将提供者级别的签发者和受众应用于声明
-        if self.issuer.is_some()
-        {
+        if self.issuer.is_some() {
             claims.iss.clone_from(&self.issuer);
         }
-        if let Some(ref aud) = self.audience
-        {
+        if let Some(ref aud) = self.audience {
             claims.aud = Some(serde_json::Value::String(aud.clone()));
         }
 
@@ -898,10 +821,8 @@ impl JwtTokenProvider
 
     /// Validate token, returning true if valid
     /// 验证令牌，有效则返回true
-    pub fn validate_token(&self, token: &str) -> SecurityResult<bool>
-    {
-        match self.decode_and_validate(token)
-        {
+    pub fn validate_token(&self, token: &str) -> SecurityResult<bool> {
+        match self.decode_and_validate(token) {
             Ok(_) => Ok(true),
             Err(_) => Ok(false),
         }
@@ -909,15 +830,13 @@ impl JwtTokenProvider
 
     /// Get authentication from token
     /// 从token获取认证
-    pub fn get_authentication(&self, token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn get_authentication(&self, token: &str) -> SecurityResult<JwtClaims> {
         self.decode_and_validate(token)
     }
 
     /// Refresh token
     /// 刷新token
-    pub fn refresh_token(&self, token: &str) -> SecurityResult<String>
-    {
+    pub fn refresh_token(&self, token: &str) -> SecurityResult<String> {
         let claims = self.decode_and_validate(token)?;
         let authorities: Vec<Authority> = claims
             .authorities
@@ -932,21 +851,17 @@ impl JwtTokenProvider
     ///
     /// Returns the decoded claims if all validations pass.
     /// 如果所有验证都通过，则返回解码后的声明。
-    pub fn decode_and_validate(&self, token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn decode_and_validate(&self, token: &str) -> SecurityResult<JwtClaims> {
         let decoding_key = self.decoding_key()?;
         let validation = self.validation();
 
         decode::<JwtClaims>(token, &decoding_key, &validation)
             .map(|data| data.claims)
-            .map_err(|e| match e.kind()
-            {
-                jsonwebtoken::errors::ErrorKind::ExpiredSignature =>
-                {
+            .map_err(|e| match e.kind() {
+                jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                     SecurityError::TokenExpired("Token has expired".to_string())
                 },
-                jsonwebtoken::errors::ErrorKind::InvalidSignature =>
-                {
+                jsonwebtoken::errors::ErrorKind::InvalidSignature => {
                     SecurityError::InvalidToken("Invalid token signature".to_string())
                 },
                 _ => SecurityError::InvalidToken(format!("Token validation failed: {}", e)),
@@ -955,8 +870,7 @@ impl JwtTokenProvider
 
     /// Decode token without validation (reads claims without checking signature)
     /// 不验证地解码令牌（读取声明而不检查签名）
-    pub fn decode_without_validation(&self, token: &str) -> SecurityResult<JwtClaims>
-    {
+    pub fn decode_without_validation(&self, token: &str) -> SecurityResult<JwtClaims> {
         JwtUtil::decode_without_validation(token)
     }
 
@@ -969,15 +883,13 @@ impl JwtTokenProvider
         &self,
         token: &str,
         threshold_secs: i64,
-    ) -> SecurityResult<(String, bool)>
-    {
+    ) -> SecurityResult<(String, bool)> {
         let claims = JwtUtil::decode_without_validation(token)?;
 
         let now = Utc::now().timestamp();
         let remaining = claims.exp - now;
 
-        if remaining < threshold_secs
-        {
+        if remaining < threshold_secs {
             let authorities: Vec<Authority> = claims
                 .authorities
                 .iter()
@@ -985,9 +897,7 @@ impl JwtTokenProvider
                 .collect();
             let new_token = self.generate_token(&claims.sub, &claims.username, &authorities)?;
             Ok((new_token, true))
-        }
-        else
-        {
+        } else {
             Ok((token.to_string(), false))
         }
     }
@@ -996,8 +906,7 @@ impl JwtTokenProvider
 
     /// Convenience constructor: HMAC-SHA256 with a custom issuer.
     /// 便捷构造函数：使用自定义签发者的 HMAC-SHA256。
-    pub fn new_hmac(secret: impl Into<String>, issuer: impl Into<String>) -> Self
-    {
+    pub fn new_hmac(secret: impl Into<String>, issuer: impl Into<String>) -> Self {
         Self {
             secret: secret.into(),
             rsa_public_key_pem: None,
@@ -1016,8 +925,7 @@ impl JwtTokenProvider
         client_id: &str,
         scope: &str,
         ttl: std::time::Duration,
-    ) -> SecurityResult<String>
-    {
+    ) -> SecurityResult<String> {
         let now = Utc::now().timestamp();
         let exp = now + ttl.as_secs() as i64;
         let mut custom: HashMap<String, serde_json::Value> = HashMap::new();
@@ -1043,8 +951,7 @@ impl JwtTokenProvider
 
     /// Generate a minimal OIDC ID token (subject + audience).
     /// 生成最小化的 OIDC ID 令牌（主体 + 受众）。
-    pub fn generate_id_token(&self, subject: &str, client_id: &str) -> SecurityResult<String>
-    {
+    pub fn generate_id_token(&self, subject: &str, client_id: &str) -> SecurityResult<String> {
         let now = Utc::now().timestamp();
         let exp = now + 3600;
         let claims = JwtClaims {
@@ -1066,10 +973,8 @@ impl JwtTokenProvider
     }
 }
 
-impl Default for JwtTokenProvider
-{
-    fn default() -> Self
-    {
+impl Default for JwtTokenProvider {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -1077,8 +982,7 @@ impl Default for JwtTokenProvider
 /// JWT authentication result
 /// JWT认证结果
 #[derive(Debug, Clone)]
-pub struct JwtAuthentication
-{
+pub struct JwtAuthentication {
     /// User ID
     pub user_id: String,
 
@@ -1089,12 +993,10 @@ pub struct JwtAuthentication
     pub authorities: Vec<Authority>,
 }
 
-impl JwtAuthentication
-{
+impl JwtAuthentication {
     /// Create from claims
     /// 从声明创建
-    pub fn from_claims(claims: &JwtClaims) -> Self
-    {
+    pub fn from_claims(claims: &JwtClaims) -> Self {
         Self {
             user_id: claims.sub.clone(),
             username: claims.username.clone(),
@@ -1104,28 +1006,30 @@ impl JwtAuthentication
 
     /// Check if has authority
     /// 检查是否有权限
-    pub fn has_authority(&self, authority: &Authority) -> bool
-    {
+    pub fn has_authority(&self, authority: &Authority) -> bool {
         self.authorities.contains(authority)
     }
 
     /// Check if has role
     /// 检查是否有角色
-    pub fn has_role(&self, role: &Role) -> bool
-    {
+    pub fn has_role(&self, role: &Role) -> bool {
         self.authorities.contains(&Authority::Role(role.clone()))
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_create_and_verify_token()
-    {
+    fn test_create_and_verify_token() {
         let authorities = vec![
             Authority::Role(Role::User),
             Authority::Permission("user:read".to_string()),
@@ -1142,8 +1046,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_authorities()
-    {
+    fn test_token_authorities() {
         let authorities = vec![Authority::Role(Role::Admin), Authority::Role(Role::User)];
 
         let token = JwtUtil::create_token("123", "admin", &authorities).unwrap();
@@ -1155,8 +1058,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_provider()
-    {
+    fn test_token_provider() {
         let provider = JwtTokenProvider::new();
         let authorities = vec![Authority::Role(Role::User)];
 
@@ -1171,8 +1073,7 @@ mod tests
     }
 
     #[test]
-    fn test_refresh_token()
-    {
+    fn test_refresh_token() {
         let authorities = vec![Authority::Role(Role::User)];
         let old_token = JwtUtil::create_token("123", "alice", &authorities).unwrap();
 
@@ -1187,8 +1088,7 @@ mod tests
     }
 
     #[test]
-    fn test_jwt_authentication_from_claims()
-    {
+    fn test_jwt_authentication_from_claims() {
         let authorities = vec![Authority::Role(Role::Admin)];
         let token = JwtUtil::create_token("123", "admin", &authorities).unwrap();
         let claims = JwtUtil::verify_token(&token).unwrap();
@@ -1200,8 +1100,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_with_custom_expiration()
-    {
+    fn test_token_with_custom_expiration() {
         let authorities = vec![Authority::Role(Role::User)];
         let token =
             JwtUtil::create_token_with_expiration("123", "alice", &authorities, 48).unwrap();
@@ -1214,15 +1113,13 @@ mod tests
     }
 
     #[test]
-    fn test_invalid_token()
-    {
+    fn test_invalid_token() {
         let result = JwtUtil::verify_token("invalid.token.here");
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_decode_without_validation()
-    {
+    fn test_decode_without_validation() {
         let authorities = vec![Authority::Role(Role::User)];
         let token = JwtUtil::create_token("123", "alice", &authorities).unwrap();
 
@@ -1232,15 +1129,13 @@ mod tests
     }
 
     #[test]
-    fn test_decode_without_validation_invalid_format()
-    {
+    fn test_decode_without_validation_invalid_format() {
         let result = JwtUtil::decode_without_validation("not.a.valid.jwt.token");
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_decode_and_validate()
-    {
+    fn test_decode_and_validate() {
         let secret = "test-secret-for-validation";
         let provider = JwtTokenProvider::with_settings(secret, 24);
 
@@ -1256,8 +1151,7 @@ mod tests
     }
 
     #[test]
-    fn test_decode_and_validate_wrong_secret()
-    {
+    fn test_decode_and_validate_wrong_secret() {
         let secret = "correct-secret";
         let provider = JwtTokenProvider::with_settings(secret, 24);
 
@@ -1273,8 +1167,7 @@ mod tests
     }
 
     #[test]
-    fn test_decode_and_validate_with_issuer()
-    {
+    fn test_decode_and_validate_with_issuer() {
         let secret = "test-secret";
         let provider = JwtTokenProvider::with_settings(secret, 24).with_issuer("my-app");
 
@@ -1296,8 +1189,7 @@ mod tests
     }
 
     #[test]
-    fn test_decode_and_validate_wrong_issuer()
-    {
+    fn test_decode_and_validate_wrong_issuer() {
         let secret = "test-secret";
         let provider = JwtTokenProvider::with_settings(secret, 24).with_issuer("my-app");
 
@@ -1318,8 +1210,7 @@ mod tests
     }
 
     #[test]
-    fn test_refresh_if_needed_no_refresh()
-    {
+    fn test_refresh_if_needed_no_refresh() {
         let authorities = vec![Authority::Role(Role::User)];
         // Token expires in 24 hours by default
         let token = JwtUtil::create_token("123", "alice", &authorities).unwrap();
@@ -1331,8 +1222,7 @@ mod tests
     }
 
     #[test]
-    fn test_provider_refresh_if_needed_no_refresh()
-    {
+    fn test_provider_refresh_if_needed_no_refresh() {
         let provider = JwtTokenProvider::new();
         let authorities = vec![Authority::Role(Role::User)];
         let token = provider
@@ -1346,8 +1236,7 @@ mod tests
     }
 
     #[test]
-    fn test_provider_with_audience()
-    {
+    fn test_provider_with_audience() {
         let provider = JwtTokenProvider::with_settings("secret", 24).with_audience("my-api");
 
         let authorities = vec![Authority::Role(Role::User)];
@@ -1362,8 +1251,7 @@ mod tests
     }
 
     #[test]
-    fn test_claims_builder()
-    {
+    fn test_claims_builder() {
         let claims = JwtClaims::builder("123", "alice")
             .authorities(&[Authority::Role(Role::Admin)])
             .expiration_hours(48)
@@ -1385,8 +1273,7 @@ mod tests
     }
 
     #[test]
-    fn test_claims_with_audiences()
-    {
+    fn test_claims_with_audiences() {
         let claims = JwtClaims::new("123", "alice", &[], 24)
             .with_audiences(vec!["api-v1".to_string(), "api-v2".to_string()]);
 
@@ -1397,8 +1284,7 @@ mod tests
     }
 
     #[test]
-    fn test_claims_custom_claims()
-    {
+    fn test_claims_custom_claims() {
         let claims = JwtClaims::new("123", "alice", &[], 24)
             .with_custom_claim("role", serde_json::Value::String("manager".to_string()))
             .with_custom_claim("level", serde_json::Value::Number(5.into()));
@@ -1411,8 +1297,7 @@ mod tests
     }
 
     #[test]
-    fn test_provider_hs384()
-    {
+    fn test_provider_hs384() {
         let provider =
             JwtTokenProvider::with_settings("secret-key", 24).with_algorithm(JwtAlgorithm::Hs384);
 
@@ -1428,8 +1313,7 @@ mod tests
     }
 
     #[test]
-    fn test_provider_hs512()
-    {
+    fn test_provider_hs512() {
         let provider =
             JwtTokenProvider::with_settings("secret-key", 24).with_algorithm(JwtAlgorithm::Hs512);
 
@@ -1445,14 +1329,12 @@ mod tests
     }
 
     #[test]
-    fn test_algorithm_default()
-    {
+    fn test_algorithm_default() {
         assert_eq!(JwtAlgorithm::default(), JwtAlgorithm::Hs256);
     }
 
     #[test]
-    fn test_expired_token_rejection()
-    {
+    fn test_expired_token_rejection() {
         // Create a token that expires immediately (0 hours = already past)
         // Note: we can't truly create an expired token with the current API,
         // so we test with a very short expiration and check the logic
@@ -1473,8 +1355,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_round_trip_all_claims()
-    {
+    fn test_token_round_trip_all_claims() {
         let provider = JwtTokenProvider::with_settings("test-secret", 1)
             .with_issuer("test-issuer")
             .with_audience("test-audience");

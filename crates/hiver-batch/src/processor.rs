@@ -41,8 +41,7 @@ use crate::error::{BatchError, BatchResult};
 /// Returning `None` from process filters the item (it won't be written).
 /// 从 process 返回 `None` 会过滤该项目（它不会被写入）。
 #[async_trait]
-pub trait ItemProcessor: Send + Sync
-{
+pub trait ItemProcessor: Send + Sync {
     /// Input item type
     /// 输入项目类型
     type Input: Send + Sync;
@@ -60,15 +59,13 @@ pub trait ItemProcessor: Send + Sync
 
     /// Called before processing starts
     /// 处理开始前调用
-    async fn before_process(&self) -> BatchResult<()>
-    {
+    async fn before_process(&self) -> BatchResult<()> {
         Ok(())
     }
 
     /// Called after processing completes
     /// 处理完成后调用
-    async fn after_process(&self) -> BatchResult<()>
-    {
+    async fn after_process(&self) -> BatchResult<()> {
         Ok(())
     }
 }
@@ -85,25 +82,20 @@ pub trait ItemProcessor: Send + Sync
 /// // No processor defined means pass-through
 /// ```
 #[derive(Debug, Clone, Copy)]
-pub struct PassThroughProcessor<T>
-{
+pub struct PassThroughProcessor<T> {
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T> Default for PassThroughProcessor<T>
-{
-    fn default() -> Self
-    {
+impl<T> Default for PassThroughProcessor<T> {
+    fn default() -> Self {
         Self {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<T> PassThroughProcessor<T>
-{
-    pub fn new() -> Self
-    {
+impl<T> PassThroughProcessor<T> {
+    pub fn new() -> Self {
         Self {
             _phantom: std::marker::PhantomData,
         }
@@ -118,8 +110,7 @@ where
     type Input = T;
     type Output = T;
 
-    async fn process(&self, item: T) -> BatchResult<Option<T>>
-    {
+    async fn process(&self, item: T) -> BatchResult<Option<T>> {
         Ok(Some(item))
     }
 }
@@ -153,8 +144,7 @@ where
 {
     /// Create new function processor
     /// 创建新函数处理器
-    pub fn new(func: F) -> Self
-    {
+    pub fn new(func: F) -> Self {
         Self {
             func,
             _phantom: std::marker::PhantomData,
@@ -166,8 +156,7 @@ impl<I, O, F> Clone for FunctionProcessor<I, O, F>
 where
     F: Fn(I) -> BatchResult<Option<O>> + Send + Sync + Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self {
             func: self.func.clone(),
             _phantom: std::marker::PhantomData,
@@ -185,8 +174,7 @@ where
     type Input = I;
     type Output = O;
 
-    async fn process(&self, item: I) -> BatchResult<Option<O>>
-    {
+    async fn process(&self, item: I) -> BatchResult<Option<O>> {
         (self.func)(item)
     }
 }
@@ -219,8 +207,7 @@ where
 {
     /// Create new filter processor
     /// 创建新过滤处理器
-    pub fn new(predicate: F) -> Self
-    {
+    pub fn new(predicate: F) -> Self {
         Self {
             predicate,
             _phantom: std::marker::PhantomData,
@@ -232,8 +219,7 @@ impl<T, F> Clone for FilterProcessor<T, F>
 where
     F: Fn(&T) -> bool + Send + Sync + Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self {
             predicate: self.predicate.clone(),
             _phantom: std::marker::PhantomData,
@@ -249,14 +235,10 @@ where
     type Input = T;
     type Output = T;
 
-    async fn process(&self, item: T) -> BatchResult<Option<T>>
-    {
-        if (self.predicate)(&item)
-        {
+    async fn process(&self, item: T) -> BatchResult<Option<T>> {
+        if (self.predicate)(&item) {
             Ok(Some(item))
-        }
-        else
-        {
+        } else {
             Ok(None) // Filter out
         }
     }
@@ -290,8 +272,7 @@ where
 {
     /// Create new map processor
     /// 创建新映射处理器
-    pub fn new(func: F) -> Self
-    {
+    pub fn new(func: F) -> Self {
         Self {
             func,
             _phantom: std::marker::PhantomData,
@@ -303,8 +284,7 @@ impl<T, U, F> Clone for MapProcessor<T, U, F>
 where
     F: Fn(T) -> U + Send + Sync + Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self {
             func: self.func.clone(),
             _phantom: std::marker::PhantomData,
@@ -322,8 +302,7 @@ where
     type Input = T;
     type Output = U;
 
-    async fn process(&self, item: T) -> BatchResult<Option<U>>
-    {
+    async fn process(&self, item: T) -> BatchResult<Option<U>> {
         Ok(Some((self.func)(item)))
     }
 }
@@ -361,8 +340,7 @@ where
 {
     /// Create new validating processor
     /// 创建新验证处理器
-    pub fn new(validator: F) -> Self
-    {
+    pub fn new(validator: F) -> Self {
         Self {
             validator,
             _phantom: std::marker::PhantomData,
@@ -374,8 +352,7 @@ impl<T, F> Clone for ValidatingProcessor<T, F>
 where
     F: Fn(&T) -> Result<(), String> + Send + Sync + Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self {
             validator: self.validator.clone(),
             _phantom: std::marker::PhantomData,
@@ -392,22 +369,25 @@ where
     type Input = T;
     type Output = T;
 
-    async fn process(&self, item: T) -> BatchResult<Option<T>>
-    {
+    async fn process(&self, item: T) -> BatchResult<Option<T>> {
         (self.validator)(&item).map_err(|msg| BatchError::ValidationError { message: msg })?;
         Ok(Some(item))
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_pass_through_processor()
-    {
+    async fn test_pass_through_processor() {
         let processor = PassThroughProcessor::<i32>::new();
 
         assert_eq!(processor.process(42).await.unwrap(), Some(42));
@@ -415,8 +395,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_pass_through_processor_str()
-    {
+    async fn test_pass_through_processor_str() {
         let processor = PassThroughProcessor::<&str>::new();
 
         assert_eq!(processor.process("hello").await.unwrap(), Some("hello"));
@@ -424,8 +403,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_function_processor()
-    {
+    async fn test_function_processor() {
         let processor = FunctionProcessor::new(|item: i32| Ok(Some(item * 2)));
 
         assert_eq!(processor.process(5).await.unwrap(), Some(10));
@@ -433,8 +411,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_map_processor()
-    {
+    async fn test_map_processor() {
         let processor = MapProcessor::new(|item: i32| item * 2);
 
         assert_eq!(processor.process(5).await.unwrap(), Some(10));
@@ -442,8 +419,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_map_processor_string()
-    {
+    async fn test_map_processor_string() {
         let processor = MapProcessor::new(|item: String| item.to_uppercase());
 
         assert_eq!(
@@ -453,15 +429,11 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_validating_processor()
-    {
+    async fn test_validating_processor() {
         let validator = |item: &i32| {
-            if *item > 0
-            {
+            if *item > 0 {
                 Ok(())
-            }
-            else
-            {
+            } else {
                 Err("Must be positive".to_string())
             }
         };

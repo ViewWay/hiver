@@ -19,8 +19,7 @@ use crate::Cache;
 /// Eviction policy
 /// 驱逐策略
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EvictPolicy
-{
+pub enum EvictPolicy {
     /// Evict a specific entry
     /// 驱逐特定条目
     Key,
@@ -87,8 +86,7 @@ where
 /// 等价于Spring的`@CacheEvict`注解。
 pub struct CacheEvictExec;
 
-impl CacheEvictExec
-{
+impl CacheEvictExec {
     /// Evict a specific key from cache
     /// 从缓存驱逐特定key
     ///
@@ -185,8 +183,7 @@ impl CacheEvictExec
 /// )
 /// ```
 #[derive(Debug, Clone)]
-pub struct CacheEvictOptions
-{
+pub struct CacheEvictOptions {
     /// Cache name(s)
     /// 缓存名称
     pub cache_names: Vec<String>,
@@ -208,12 +205,10 @@ pub struct CacheEvictOptions
     pub condition: Option<String>,
 }
 
-impl CacheEvictOptions
-{
+impl CacheEvictOptions {
     /// Create new cache evict options
     /// 创建新的cache evict选项
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             cache_names: vec![crate::DEFAULT_CACHE.to_string()],
             key: None,
@@ -225,70 +220,66 @@ impl CacheEvictOptions
 
     /// Set cache name
     /// 设置缓存名称
-    pub fn cache_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn cache_name(mut self, name: impl Into<String>) -> Self {
         self.cache_names = vec![name.into()];
         self
     }
 
     /// Set cache names
     /// 设置缓存名称
-    pub fn cache_names(mut self, names: Vec<String>) -> Self
-    {
+    pub fn cache_names(mut self, names: Vec<String>) -> Self {
         self.cache_names = names;
         self
     }
 
     /// Set key
     /// 设置key
-    pub fn key(mut self, key: impl Into<String>) -> Self
-    {
+    pub fn key(mut self, key: impl Into<String>) -> Self {
         self.key = Some(key.into());
         self
     }
 
     /// Set `all_entries`
     /// `设置all_entries`
-    pub fn all_entries(mut self, all: bool) -> Self
-    {
+    pub fn all_entries(mut self, all: bool) -> Self {
         self.all_entries = all;
         self
     }
 
     /// Set `before_invocation`
     /// `设置before_invocation`
-    pub fn before_invocation(mut self, before: bool) -> Self
-    {
+    pub fn before_invocation(mut self, before: bool) -> Self {
         self.before_invocation = before;
         self
     }
 
     /// Set condition
     /// 设置条件
-    pub fn condition(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn condition(mut self, condition: impl Into<String>) -> Self {
         self.condition = Some(condition.into());
         self
     }
 }
 
-impl Default for CacheEvictOptions
-{
-    fn default() -> Self
-    {
+impl Default for CacheEvictOptions {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_cache_evict_options()
-    {
+    fn test_cache_evict_options() {
         let options = CacheEvictOptions::new()
             .cache_name("users")
             .all_entries(true)

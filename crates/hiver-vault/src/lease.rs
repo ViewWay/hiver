@@ -9,8 +9,7 @@ use crate::{client::VaultClient, error::VaultResult};
 
 /// Lease information / 租约信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LeaseInfo
-{
+pub struct LeaseInfo {
     /// Lease ID / 租约 ID
     #[serde(rename = "lease_id")]
     pub lease_id: String,
@@ -23,8 +22,7 @@ pub struct LeaseInfo
 
 /// Renewal request body / 续订请求体
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct RenewRequest
-{
+struct RenewRequest {
     /// Lease ID to renew / 要续订的租约 ID
     #[serde(rename = "lease_id", skip_serializing_if = "Option::is_none")]
     lease_id: Option<String>,
@@ -34,8 +32,7 @@ struct RenewRequest
 
 /// Renewal response / 续订响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct RenewResponse
-{
+struct RenewResponse {
     #[serde(rename = "lease_id")]
     lease_id: String,
     #[serde(rename = "lease_duration")]
@@ -54,8 +51,7 @@ pub async fn renew(
     client: &VaultClient,
     lease_id: &str,
     increment: Option<u64>,
-) -> VaultResult<LeaseInfo>
-{
+) -> VaultResult<LeaseInfo> {
     let body = RenewRequest {
         lease_id: Some(lease_id.to_string()),
         increment,
@@ -78,8 +74,7 @@ pub async fn renew(
 ///
 /// 立即撤销给定租约。等价于 Spring Vault 的
 /// `VaultTemplate.leaseOps().revoke(leaseId)`。
-pub async fn revoke(client: &VaultClient, lease_id: &str) -> VaultResult<()>
-{
+pub async fn revoke(client: &VaultClient, lease_id: &str) -> VaultResult<()> {
     let body = serde_json::json!({
         "lease_id": lease_id
     });
@@ -92,8 +87,7 @@ pub async fn revoke(client: &VaultClient, lease_id: &str) -> VaultResult<()>
 ///
 /// Revokes all leases that start with the given prefix.
 /// 撤销所有以给定前缀开头的租约。
-pub async fn revoke_prefix(client: &VaultClient, prefix: &str) -> VaultResult<()>
-{
+pub async fn revoke_prefix(client: &VaultClient, prefix: &str) -> VaultResult<()> {
     let path = format!("sys/leases/revoke-prefix/{prefix}");
     client.put(&path, &serde_json::json!({})).await?;
     Ok(())
@@ -103,8 +97,7 @@ pub async fn revoke_prefix(client: &VaultClient, prefix: &str) -> VaultResult<()
 ///
 /// Force revocation using the sys/leases/revoke-force endpoint.
 /// 使用 sys/leases/revoke-force 端点强制撤销。
-pub async fn revoke_force(client: &VaultClient, prefix: &str) -> VaultResult<()>
-{
+pub async fn revoke_force(client: &VaultClient, prefix: &str) -> VaultResult<()> {
     let path = format!("sys/leases/revoke-force/{prefix}");
     client.put(&path, &serde_json::json!({})).await?;
     Ok(())
@@ -114,8 +107,7 @@ pub async fn revoke_force(client: &VaultClient, prefix: &str) -> VaultResult<()>
 ///
 /// Queries Vault for information about a specific lease.
 /// 查询 Vault 获取特定租约的信息。
-pub async fn lookup(client: &VaultClient, lease_id: &str) -> VaultResult<LeaseInfo>
-{
+pub async fn lookup(client: &VaultClient, lease_id: &str) -> VaultResult<LeaseInfo> {
     let body = serde_json::json!({
         "lease_id": lease_id
     });

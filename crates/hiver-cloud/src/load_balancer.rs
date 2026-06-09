@@ -38,8 +38,7 @@ use crate::ServiceInstance;
 ///         .build();
 /// }
 /// ```
-pub trait LoadBalancer: Send + Sync
-{
+pub trait LoadBalancer: Send + Sync {
     /// Choose an instance from the list
     /// 从列表中选择实例
     async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>;
@@ -51,39 +50,31 @@ pub trait LoadBalancer: Send + Sync
 /// Equivalent to Spring Cloud's `RoundRobinLoadBalancer`.
 /// 等价于Spring `Cloud的RoundRobinLoadBalancer`。
 #[derive(Debug)]
-pub struct RoundRobinLoadBalancer
-{
+pub struct RoundRobinLoadBalancer {
     /// Current index
     /// 当前索引
     index: AtomicUsize,
 }
 
-impl RoundRobinLoadBalancer
-{
+impl RoundRobinLoadBalancer {
     /// Create a new round-robin load balancer
     /// 创建新的轮询负载均衡器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             index: AtomicUsize::new(0),
         }
     }
 }
 
-impl Default for RoundRobinLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for RoundRobinLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl LoadBalancer for RoundRobinLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
-        if instances.is_empty()
-        {
+impl LoadBalancer for RoundRobinLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        if instances.is_empty() {
             return None;
         }
 
@@ -100,12 +91,9 @@ impl LoadBalancer for RoundRobinLoadBalancer
 /// 等价于Spring `Cloud的RandomLoadBalancer`。
 pub struct RandomLoadBalancer;
 
-impl LoadBalancer for RandomLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
-        if instances.is_empty()
-        {
+impl LoadBalancer for RandomLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        if instances.is_empty() {
             return None;
         }
 
@@ -122,19 +110,16 @@ impl LoadBalancer for RandomLoadBalancer
 /// Equivalent to Spring Cloud's `WeightedServiceInstanceListSupplier`.
 /// 等价于Spring `Cloud的WeightedServiceInstanceListSupplier`。
 #[derive(Debug)]
-pub struct WeightedLoadBalancer
-{
+pub struct WeightedLoadBalancer {
     /// Random number generator
     /// 随机数生成器
     _rng: std::sync::Mutex<rand::rngs::ThreadRng>,
 }
 
-impl WeightedLoadBalancer
-{
+impl WeightedLoadBalancer {
     /// Create a new weighted load balancer
     /// 创建新的加权负载均衡器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             _rng: std::sync::Mutex::new(rand::rngs::ThreadRng::default()),
         }
@@ -147,27 +132,22 @@ impl WeightedLoadBalancer
     pub async fn choose_weighted(
         &self,
         weighted_instances: &[(ServiceInstance, f32)],
-    ) -> Option<ServiceInstance>
-    {
-        if weighted_instances.is_empty()
-        {
+    ) -> Option<ServiceInstance> {
+        if weighted_instances.is_empty() {
             return None;
         }
 
         let total_weight: f32 = weighted_instances.iter().map(|(_, w)| w).sum();
-        if total_weight <= 0.0
-        {
+        if total_weight <= 0.0 {
             return None;
         }
 
         let mut rng = self._rng.lock().expect("lock poisoned");
         let mut random = rng.random::<f32>() * total_weight;
 
-        for (instance, weight) in weighted_instances
-        {
+        for (instance, weight) in weighted_instances {
             random -= weight;
-            if random <= 0.0
-            {
+            if random <= 0.0 {
                 return Some(instance.clone());
             }
         }
@@ -178,10 +158,8 @@ impl WeightedLoadBalancer
     }
 }
 
-impl Default for WeightedLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for WeightedLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -194,19 +172,16 @@ impl Default for WeightedLoadBalancer
 ///
 /// Equivalent to Spring Cloud's `LeastConnectionLoadBalancer`.
 /// 等价于Spring `Cloud的LeastConnectionLoadBalancer`。
-pub struct LeastConnectionLoadBalancer
-{
+pub struct LeastConnectionLoadBalancer {
     /// Connection counts (`instance_id` -> count)
     /// `连接计数（instance_id` -> count）
     connections: Arc<tokio::sync::RwLock<std::collections::HashMap<String, usize>>>,
 }
 
-impl LeastConnectionLoadBalancer
-{
+impl LeastConnectionLoadBalancer {
     /// Create a new least-connection load balancer
     /// 创建新的最少连接负载均衡器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             connections: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
@@ -214,16 +189,14 @@ impl LeastConnectionLoadBalancer
 
     /// Increment connection count for an instance
     /// 增加实例的连接计数
-    pub async fn increment_connection(&self, instance_id: &str)
-    {
+    pub async fn increment_connection(&self, instance_id: &str) {
         let mut connections = self.connections.write().await;
         *connections.entry(instance_id.to_string()).or_insert(0) += 1;
     }
 
     /// Decrement connection count for an instance
     /// 减少实例的连接计数
-    pub async fn decrement_connection(&self, instance_id: &str)
-    {
+    pub async fn decrement_connection(&self, instance_id: &str) {
         let mut connections = self.connections.write().await;
         if let Some(count) = connections.get_mut(instance_id)
             && *count > 0
@@ -233,20 +206,15 @@ impl LeastConnectionLoadBalancer
     }
 }
 
-impl Default for LeastConnectionLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for LeastConnectionLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl LoadBalancer for LeastConnectionLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
-        if instances.is_empty()
-        {
+impl LoadBalancer for LeastConnectionLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        if instances.is_empty() {
             return None;
         }
 
@@ -254,11 +222,9 @@ impl LoadBalancer for LeastConnectionLoadBalancer
         let mut best = None;
         let mut best_count = usize::MAX;
 
-        for instance in instances
-        {
+        for instance in instances {
             let count = connections.get(&instance.instance_id).copied().unwrap_or(0);
-            if count < best_count
-            {
+            if count < best_count {
                 best = Some(instance.clone());
                 best_count = count;
             }
@@ -271,8 +237,7 @@ impl LoadBalancer for LeastConnectionLoadBalancer
 /// Service instance with weight
 /// 带权重的服务实例
 #[derive(Debug, Clone)]
-pub struct WeightedServiceInstance
-{
+pub struct WeightedServiceInstance {
     /// Service instance
     /// 服务实例
     pub instance: ServiceInstance,
@@ -290,37 +255,30 @@ pub struct WeightedServiceInstance
 ///
 /// Equivalent to Spring Cloud `ReactorLoadBalancer`.
 /// 等价于Spring Cloud `ReactorLoadBalancer`。
-pub struct ReactiveLoadBalancer
-{
+pub struct ReactiveLoadBalancer {
     /// Round robin strategy
     /// 轮询策略
     round_robin: Arc<RoundRobinLoadBalancer>,
 }
 
-impl ReactiveLoadBalancer
-{
+impl ReactiveLoadBalancer {
     /// Create a new reactive load balancer
     /// 创建新的响应式负载均衡器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             round_robin: Arc::new(RoundRobinLoadBalancer::new()),
         }
     }
 }
 
-impl Default for ReactiveLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for ReactiveLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl LoadBalancer for ReactiveLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
+impl LoadBalancer for ReactiveLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         // Default to round-robin
         self.round_robin.choose(instances).await
     }
@@ -333,31 +291,26 @@ impl LoadBalancer for ReactiveLoadBalancer
 /// Equivalent to Spring Cloud's `WeightedServiceInstanceListSupplier` with round-robin.
 /// 从实例元数据键 `"weight"` 读取权重，默认为 1。
 /// 等价于 Spring Cloud 的 `WeightedServiceInstanceListSupplier` 配合轮询。
-pub struct WeightedRoundRobinLoadBalancer
-{
+pub struct WeightedRoundRobinLoadBalancer {
     states: Arc<tokio::sync::RwLock<std::collections::HashMap<String, SmoothWeightState>>>,
 }
 
 #[derive(Debug, Default)]
-struct SmoothWeightState
-{
+struct SmoothWeightState {
     weight: u32,
     current: i64,
 }
 
-impl WeightedRoundRobinLoadBalancer
-{
+impl WeightedRoundRobinLoadBalancer {
     /// Create a new weighted round-robin load balancer.
     /// 创建新的加权轮询负载均衡器。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             states: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
     }
 
-    fn get_weight(instance: &ServiceInstance) -> u32
-    {
+    fn get_weight(instance: &ServiceInstance) -> u32 {
         instance
             .metadata
             .get("weight")
@@ -366,27 +319,21 @@ impl WeightedRoundRobinLoadBalancer
     }
 }
 
-impl Default for WeightedRoundRobinLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for WeightedRoundRobinLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl LoadBalancer for WeightedRoundRobinLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
-        if instances.is_empty()
-        {
+impl LoadBalancer for WeightedRoundRobinLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
+        if instances.is_empty() {
             return None;
         }
 
         let mut states = self.states.write().await;
 
-        for inst in instances
-        {
+        for inst in instances {
             let w = Self::get_weight(inst);
             states
                 .entry(inst.instance_id.clone())
@@ -400,22 +347,17 @@ impl LoadBalancer for WeightedRoundRobinLoadBalancer
         let total_weight: u32 = instances.iter().map(Self::get_weight).sum();
 
         let mut best: Option<(&ServiceInstance, i64)> = None;
-        for inst in instances
-        {
-            if let Some(state) = states.get_mut(&inst.instance_id)
-            {
+        for inst in instances {
+            if let Some(state) = states.get_mut(&inst.instance_id) {
                 state.current += state.weight as i64;
-                if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c)
-                {
+                if best.is_none() || state.current > best.map_or(i64::MIN, |(_, c)| c) {
                     best = Some((inst, state.current));
                 }
             }
         }
 
-        if let Some((inst, _)) = best
-        {
-            if let Some(state) = states.get_mut(&inst.instance_id)
-            {
+        if let Some((inst, _)) = best {
+            if let Some(state) = states.get_mut(&inst.instance_id) {
                 state.current -= total_weight as i64;
             }
             return Some(inst.clone());
@@ -432,30 +374,25 @@ impl LoadBalancer for WeightedRoundRobinLoadBalancer
 /// Equivalent to Spring Cloud's hash-based load balancing.
 /// 使用虚拟节点根据哈希键将请求路由到相同实例。
 /// 等价于 Spring Cloud 的基于哈希的负载均衡。
-pub struct ConsistentHashLoadBalancer
-{
+pub struct ConsistentHashLoadBalancer {
     virtual_nodes: usize,
 }
 
-impl ConsistentHashLoadBalancer
-{
+impl ConsistentHashLoadBalancer {
     /// Create with default 150 virtual nodes per instance.
     /// 使用默认每个实例 150 个虚拟节点创建。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self { virtual_nodes: 150 }
     }
 
     /// Set the number of virtual nodes per instance.
     /// 设置每个实例的虚拟节点数。
-    pub fn with_virtual_nodes(mut self, n: usize) -> Self
-    {
+    pub fn with_virtual_nodes(mut self, n: usize) -> Self {
         self.virtual_nodes = n;
         self
     }
 
-    fn hash_key(key: &str) -> u64
-    {
+    fn hash_key(key: &str) -> u64 {
         use std::hash::{Hash, Hasher};
         let mut h = std::collections::hash_map::DefaultHasher::new();
         key.hash(&mut h);
@@ -468,22 +405,17 @@ impl ConsistentHashLoadBalancer
         &self,
         instances: &'a [ServiceInstance],
         key: &str,
-    ) -> Option<&'a ServiceInstance>
-    {
-        if instances.is_empty()
-        {
+    ) -> Option<&'a ServiceInstance> {
+        if instances.is_empty() {
             return None;
         }
-        if instances.len() == 1
-        {
+        if instances.len() == 1 {
             return instances.first();
         }
 
         let mut ring: Vec<(u64, usize)> = Vec::with_capacity(instances.len() * self.virtual_nodes);
-        for (idx, inst) in instances.iter().enumerate()
-        {
-            for vn in 0..self.virtual_nodes
-            {
+        for (idx, inst) in instances.iter().enumerate() {
+            for vn in 0..self.virtual_nodes {
                 let vk = format!("{}:{}", inst.instance_id, vn);
                 ring.push((Self::hash_key(&vk), idx));
             }
@@ -498,32 +430,32 @@ impl ConsistentHashLoadBalancer
     }
 }
 
-impl Default for ConsistentHashLoadBalancer
-{
-    fn default() -> Self
-    {
+impl Default for ConsistentHashLoadBalancer {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl LoadBalancer for ConsistentHashLoadBalancer
-{
-    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance>
-    {
+impl LoadBalancer for ConsistentHashLoadBalancer {
+    async fn choose(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         self.choose_by_key(instances, &instances.first()?.service_id)
             .cloned()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_round_robin()
-    {
+    async fn test_round_robin() {
         let lb = RoundRobinLoadBalancer::new();
 
         let instances = vec![
@@ -543,8 +475,7 @@ mod tests
     }
 
     #[test]
-    fn test_random_load_balancer()
-    {
+    fn test_random_load_balancer() {
         let _lb = RandomLoadBalancer;
         let instances = vec![
             ServiceInstance::new("test", "1", "localhost", 8080),
@@ -556,8 +487,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_weighted_round_robin()
-    {
+    async fn test_weighted_round_robin() {
         let lb = WeightedRoundRobinLoadBalancer::new();
 
         let mut inst_a = ServiceInstance::new("test", "1", "localhost", 8080);
@@ -573,8 +503,7 @@ mod tests
         let instances = vec![inst_a, inst_b];
 
         let mut counts = std::collections::HashMap::new();
-        for _ in 0..12
-        {
+        for _ in 0..12 {
             let chosen = lb.choose(&instances).await.unwrap();
             *counts.entry(chosen.instance_id.clone()).or_insert(0) += 1;
         }
@@ -585,8 +514,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_weighted_round_robin_default_weight()
-    {
+    async fn test_weighted_round_robin_default_weight() {
         let lb = WeightedRoundRobinLoadBalancer::new();
         let instances = vec![
             ServiceInstance::new("test", "1", "localhost", 8080),
@@ -600,8 +528,7 @@ mod tests
     }
 
     #[test]
-    fn test_consistent_hash_same_key_same_instance()
-    {
+    fn test_consistent_hash_same_key_same_instance() {
         let lb = ConsistentHashLoadBalancer::new();
         let instances = vec![
             ServiceInstance::new("svc", "1", "localhost", 8080),
@@ -615,8 +542,7 @@ mod tests
     }
 
     #[test]
-    fn test_consistent_hash_different_keys_distribute()
-    {
+    fn test_consistent_hash_different_keys_distribute() {
         let lb = ConsistentHashLoadBalancer::new();
         let instances = vec![
             ServiceInstance::new("svc", "1", "localhost", 8080),
@@ -625,10 +551,8 @@ mod tests
         ];
 
         let mut chosen_ids = std::collections::HashSet::new();
-        for i in 0..30
-        {
-            if let Some(inst) = lb.choose_by_key(&instances, &format!("key-{i}"))
-            {
+        for i in 0..30 {
+            if let Some(inst) = lb.choose_by_key(&instances, &format!("key-{i}")) {
                 chosen_ids.insert(inst.instance_id.clone());
             }
         }
@@ -637,8 +561,7 @@ mod tests
     }
 
     #[test]
-    fn test_consistent_hash_empty_instances()
-    {
+    fn test_consistent_hash_empty_instances() {
         let lb = ConsistentHashLoadBalancer::new();
         let instances: Vec<ServiceInstance> = vec![];
         assert!(lb.choose_by_key(&instances, "key").is_none());

@@ -38,8 +38,7 @@
 ///
 /// 提供类型化的 get/set 方法用于存储请求范围的数据，
 /// 类似于 Spring 中的 `HttpServletRequest.setAttribute()`。
-pub trait RequestExt
-{
+pub trait RequestExt {
     /// Get a value from the request extensions.
     /// 从请求扩展中获取值。
     ///
@@ -63,8 +62,7 @@ pub trait RequestExt
 ///
 /// 提供类型化的 get/set 方法用于存储响应范围的数据，
 /// 例如追踪 ID、自定义元数据或中间件状态。
-pub trait ResponseExt
-{
+pub trait ResponseExt {
     /// Get a value from the response extensions.
     /// 从响应扩展中获取值。
     ///

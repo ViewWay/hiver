@@ -2,8 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, parse_macro_input};
 
-pub fn scheduled(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn scheduled(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -28,12 +27,10 @@ pub fn scheduled(attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-fn parse_schedule_args(attr: &TokenStream) -> proc_macro2::TokenStream
-{
+fn parse_schedule_args(attr: &TokenStream) -> proc_macro2::TokenStream {
     let attr_str = attr.to_string();
 
-    if attr_str.contains("cron")
-    {
+    if attr_str.contains("cron") {
         let interval_ms: u64 = 60_000;
         quote! {
             loop {
@@ -41,35 +38,28 @@ fn parse_schedule_args(attr: &TokenStream) -> proc_macro2::TokenStream
                 hiver_runtime::sleep(hiver_runtime::Duration::from_millis(#interval_ms)).await;
             }
         }
-    }
-    else if attr_str.contains("fixed_rate")
-    {
+    } else if attr_str.contains("fixed_rate") {
         quote! {
             loop {
                 self().await;
                 tokio::time::sleep(Duration::from_millis(5000)).await;
             }
         }
-    }
-    else if attr_str.contains("fixed_delay")
-    {
+    } else if attr_str.contains("fixed_delay") {
         quote! {
             loop {
                 self().await;
                 tokio::time::sleep(Duration::from_millis(5000)).await;
             }
         }
-    }
-    else
-    {
+    } else {
         quote! {
             self().await;
         }
     }
 }
 
-pub fn async_fn(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn async_fn(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
 
     let expanded = quote! {
@@ -79,8 +69,7 @@ pub fn async_fn(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn slf4j(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn slf4j(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as syn::ItemStruct);
     let name = &input.ident;
 
@@ -89,8 +78,7 @@ pub fn slf4j(_attr: TokenStream, item: TokenStream) -> TokenStream
         .iter()
         .any(|f| f.ident.as_ref().is_some_and(|i| *i == "log"));
 
-    if has_log_field
-    {
+    if has_log_field {
         return TokenStream::from(quote! { #input });
     }
 
@@ -107,8 +95,7 @@ pub fn slf4j(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn logger(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn logger(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

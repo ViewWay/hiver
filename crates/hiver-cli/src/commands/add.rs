@@ -12,12 +12,15 @@ use crate::cli::AddArgs;
 const MODULE_DEPS: &[(&str, &[&str])] = &[
     ("web", &["hiver-http", "hiver-router", "hiver-middleware"]),
     ("security", &["hiver-security"]),
-    ("data", &[
-        "hiver-data-rdbc",
-        "hiver-data-orm",
-        "hiver-tx",
-        "hiver-flyway",
-    ]),
+    (
+        "data",
+        &[
+            "hiver-data-rdbc",
+            "hiver-data-orm",
+            "hiver-tx",
+            "hiver-flyway",
+        ],
+    ),
     ("cache", &["hiver-data-redis"]),
     ("schedule", &["hiver-schedule"]),
     ("actuator", &["hiver-actuator"]),
@@ -29,8 +32,7 @@ const MODULE_DEPS: &[(&str, &[&str])] = &[
 
 /// Run the `hiver add` command.
 /// 执行 `hiver add` 命令。
-pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>>
-{
+pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>> {
     let module = args.module.to_lowercase();
 
     let deps = MODULE_DEPS
@@ -49,8 +51,7 @@ pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>>
     // Find Cargo.toml in current directory.
     // 在当前目录查找 Cargo.toml。
     let cargo_path = Path::new("Cargo.toml");
-    if !cargo_path.exists()
-    {
+    if !cargo_path.exists() {
         return Err("No Cargo.toml found in current directory / 当前目录未找到 Cargo.toml".into());
     }
 
@@ -59,8 +60,7 @@ pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>>
 
     // Ensure [dependencies] section exists.
     // 确保 [dependencies] 段存在。
-    if doc.get("dependencies").is_none()
-    {
+    if doc.get("dependencies").is_none() {
         doc.as_table_mut()
             .unwrap()
             .insert("dependencies".to_string(), toml::Value::Table(toml::map::Map::new()));
@@ -69,15 +69,11 @@ pub fn run(args: &AddArgs) -> Result<(), Box<dyn std::error::Error>>
     let deps_table = doc["dependencies"].as_table_mut().unwrap();
     let version = "\"0.1\"";
 
-    for dep in deps
-    {
-        if !deps_table.contains_key(*dep)
-        {
+    for dep in deps {
+        if !deps_table.contains_key(*dep) {
             deps_table.insert(dep.to_string(), toml::Value::String(version.to_string()));
             println!("  {} Added dependency: {}", style("+").green(), style(dep).green().bold());
-        }
-        else
-        {
+        } else {
             println!("  {} Already exists: {}", style("→").yellow(), style(dep).yellow());
         }
     }

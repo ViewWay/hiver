@@ -32,20 +32,16 @@ use crate::config::ConfigurationLoader;
 /// Used as a placeholder in swap tricks.
 struct DummyAutoConfig;
 
-impl AutoConfiguration for DummyAutoConfig
-{
-    fn name(&self) -> &'static str
-    {
+impl AutoConfiguration for DummyAutoConfig {
+    fn name(&self) -> &'static str {
         "DummyAutoConfig"
     }
 
-    fn configure(&self, _ctx: &mut ApplicationContext) -> AnyhowResult<()>
-    {
+    fn configure(&self, _ctx: &mut ApplicationContext) -> AnyhowResult<()> {
         Ok(())
     }
 
-    fn is_optional(&self) -> bool
-    {
+    fn is_optional(&self) -> bool {
         true
     }
 }
@@ -68,8 +64,7 @@ where
     REQUEST_BEANS.scope(RwLock::new(HashMap::new()), f()).await
 }
 
-fn request_scope_get<T: 'static + Send + Sync>(type_id: TypeId) -> Option<Arc<T>>
-{
+fn request_scope_get<T: 'static + Send + Sync>(type_id: TypeId) -> Option<Arc<T>> {
     REQUEST_BEANS
         .try_with(|map| {
             map.read()
@@ -83,11 +78,9 @@ fn request_scope_get<T: 'static + Send + Sync>(type_id: TypeId) -> Option<Arc<T>
 
 /// Store a request-scoped bean for the current task.
 /// 为当前任务存储请求作用域 Bean。
-pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>)
-{
+pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>) {
     let _ = REQUEST_BEANS.try_with(|map| {
-        if let Ok(mut guard) = map.write()
-        {
+        if let Ok(mut guard) = map.write() {
             guard.insert(TypeId::of::<T>(), bean);
         }
     });
@@ -126,8 +119,7 @@ pub fn set_request_bean<T: 'static + Send + Sync>(bean: Arc<T>)
 ///     service.do_something();
 /// }
 /// ```
-pub struct ApplicationContext
-{
+pub struct ApplicationContext {
     /// 单例 Bean 容器（按类型）
     /// Singleton bean container (by type)
     singletons: RwLock<HashMap<TypeId, Box<dyn Any + Send + Sync>>>,
@@ -158,10 +150,8 @@ pub struct ApplicationContext
         RwLock<HashMap<TypeId, fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>>>,
 }
 
-impl Debug for ApplicationContext
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl Debug for ApplicationContext {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ApplicationContext")
             .field("singletons_count", &self.singletons.read().expect("lock poisoned").len())
             .field("named_beans_count", &self.named_beans.read().expect("lock poisoned").len())
@@ -171,12 +161,10 @@ impl Debug for ApplicationContext
     }
 }
 
-impl ApplicationContext
-{
+impl ApplicationContext {
     /// 创建新的应用上下文
     /// Create a new application context
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             singletons: RwLock::new(HashMap::new()),
             named_beans: RwLock::new(HashMap::new()),
@@ -190,8 +178,7 @@ impl ApplicationContext
 
     /// 使用配置加载器创建应用上下文
     /// Create application context with configuration loader
-    pub fn with_config_loader(config_loader: Arc<ConfigurationLoader>) -> Self
-    {
+    pub fn with_config_loader(config_loader: Arc<ConfigurationLoader>) -> Self {
         Self {
             singletons: RwLock::new(HashMap::new()),
             named_beans: RwLock::new(HashMap::new()),
@@ -215,8 +202,7 @@ impl ApplicationContext
     /// ```rust,ignore
     /// ctx.register_bean(MyService::new());
     /// ```
-    pub fn register_bean<T: 'static + Send + Sync>(&self, bean: T)
-    {
+    pub fn register_bean<T: 'static + Send + Sync>(&self, bean: T) {
         let type_id = TypeId::of::<T>();
         let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(type_id, Box::new(bean));
@@ -224,8 +210,7 @@ impl ApplicationContext
 
     /// 注册 Bean（按类型，使用 Arc）
     /// Register bean (by type, using Arc)
-    pub fn register_bean_arc<T: 'static + Send + Sync>(&self, bean: Arc<T>)
-    {
+    pub fn register_bean_arc<T: 'static + Send + Sync>(&self, bean: Arc<T>) {
         let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(TypeId::of::<T>(), Box::new(bean));
     }
@@ -238,8 +223,7 @@ impl ApplicationContext
     /// ```rust,ignore
     /// ctx.register_named_bean("primaryDataSource".to_string(), dataSource);
     /// ```
-    pub fn register_named_bean<T: 'static + Send + Sync>(&self, name: String, bean: T)
-    {
+    pub fn register_named_bean<T: 'static + Send + Sync>(&self, name: String, bean: T) {
         let type_id = TypeId::of::<T>();
         let mut named_beans = self.named_beans.write().expect("lock poisoned");
         let mut bean_names = self.bean_names.write().expect("lock poisoned");
@@ -250,8 +234,7 @@ impl ApplicationContext
 
     /// 注册自动配置
     /// Register auto-configuration
-    pub fn register_auto_configuration(&mut self, config: Box<dyn AutoConfiguration>)
-    {
+    pub fn register_auto_configuration(&mut self, config: Box<dyn AutoConfiguration>) {
         self.auto_configurations.push(config);
     }
 
@@ -272,13 +255,11 @@ impl ApplicationContext
     ///     service.do_something();
     /// }
     /// ```
-    pub fn get_bean<T: 'static + Clone + Send + Sync>(&self) -> Option<Arc<T>>
-    {
+    pub fn get_bean<T: 'static + Clone + Send + Sync>(&self) -> Option<Arc<T>> {
         let type_id = TypeId::of::<T>();
 
         // Request-scoped bean from task-local storage
-        if let Some(bean) = request_scope_get::<T>(type_id)
-        {
+        if let Some(bean) = request_scope_get::<T>(type_id) {
             return Some(bean);
         }
 
@@ -290,12 +271,10 @@ impl ApplicationContext
             .get(&type_id)
         {
             let raw = factory(self);
-            if let Some(arc) = raw.downcast_ref::<Arc<T>>()
-            {
+            if let Some(arc) = raw.downcast_ref::<Arc<T>>() {
                 return Some(arc.clone());
             }
-            if let Some(val) = raw.downcast_ref::<T>()
-            {
+            if let Some(val) = raw.downcast_ref::<T>() {
                 return Some(Arc::new(val.clone()));
             }
             return None;
@@ -303,12 +282,9 @@ impl ApplicationContext
 
         let singletons = self.singletons.read().expect("lock poisoned");
         singletons.get(&type_id).and_then(|b| {
-            if let Some(arc) = b.downcast_ref::<Arc<T>>()
-            {
+            if let Some(arc) = b.downcast_ref::<Arc<T>>() {
                 Some(arc.clone())
-            }
-            else
-            {
+            } else {
                 b.downcast_ref::<T>().map(|val| Arc::new(val.clone()))
             }
         })
@@ -319,8 +295,7 @@ impl ApplicationContext
     ///
     /// Used by `@ConditionalOnMissingBean` to decide whether to skip registration.
     /// 由 `@ConditionalOnMissingBean` 使用，以决定是否跳过注册。
-    pub fn has_bean<T: 'static>(&self) -> bool
-    {
+    pub fn has_bean<T: 'static>(&self) -> bool {
         let type_id = TypeId::of::<T>();
         self.singletons
             .read()
@@ -333,8 +308,7 @@ impl ApplicationContext
     ///
     /// 如果 Bean 不存在，返回错误。
     /// Returns an error if the bean doesn't exist.
-    pub fn get_required_bean<T: 'static + Clone + Send + Sync>(&self) -> AnyhowResult<Arc<T>>
-    {
+    pub fn get_required_bean<T: 'static + Clone + Send + Sync>(&self) -> AnyhowResult<Arc<T>> {
         self.get_bean::<T>().ok_or_else(|| {
             anyhow::anyhow!("Required bean of type {} not found", std::any::type_name::<T>())
         })
@@ -342,8 +316,7 @@ impl ApplicationContext
 
     /// 获取 Bean（按名称）
     /// Get bean (by name)
-    pub fn get_bean_by_name<T: 'static + Clone + Send + Sync>(&self, name: &str) -> Option<Arc<T>>
-    {
+    pub fn get_bean_by_name<T: 'static + Clone + Send + Sync>(&self, name: &str) -> Option<Arc<T>> {
         let named_beans = self.named_beans.read().expect("lock poisoned");
         named_beans
             .get(name)
@@ -357,24 +330,21 @@ impl ApplicationContext
 
     /// 检查 Bean 是否存在（按类型）
     /// Check if bean exists (by type)
-    pub fn contains_bean<T: 'static>(&self) -> bool
-    {
+    pub fn contains_bean<T: 'static>(&self) -> bool {
         let singletons = self.singletons.read().expect("lock poisoned");
         singletons.contains_key(&TypeId::of::<T>())
     }
 
     /// 检查 Bean 是否存在（按名称）
     /// Check if bean exists (by name)
-    pub fn contains_named_bean(&self, name: &str) -> bool
-    {
+    pub fn contains_named_bean(&self, name: &str) -> bool {
         let named_beans = self.named_beans.read().expect("lock poisoned");
         named_beans.contains_key(name)
     }
 
     /// 获取所有 Bean 名称
     /// Get all bean names
-    pub fn get_bean_names(&self) -> Vec<String>
-    {
+    pub fn get_bean_names(&self) -> Vec<String> {
         let bean_names = self.bean_names.read().expect("lock poisoned");
         bean_names.keys().cloned().collect()
     }
@@ -385,49 +355,42 @@ impl ApplicationContext
 
     /// 获取配置加载器
     /// Get configuration loader
-    pub fn config_loader(&self) -> &Arc<ConfigurationLoader>
-    {
+    pub fn config_loader(&self) -> &Arc<ConfigurationLoader> {
         &self.config_loader
     }
 
     /// 获取配置属性
     /// Get configuration property
-    pub fn get_property(&self, key: &str) -> Option<String>
-    {
+    pub fn get_property(&self, key: &str) -> Option<String> {
         self.config_loader.get(key)
     }
 
     /// 获取配置属性（带默认值）
     /// Get configuration property (with default)
-    pub fn get_property_or_default(&self, key: &str, default: &str) -> String
-    {
+    pub fn get_property_or_default(&self, key: &str, default: &str) -> String {
         self.get_property(key)
             .unwrap_or_else(|| default.to_string())
     }
 
     /// 获取配置属性（带默认值）- 简化版本
     /// Get configuration property (with default) - simplified version
-    pub fn get_property_or(&self, key: &str, default: &str) -> String
-    {
+    pub fn get_property_or(&self, key: &str, default: &str) -> String {
         self.get_property_or_default(key, default)
     }
 
     /// 检查 Bean 是否存在（按 `TypeId`）
     /// Check if bean exists (by `TypeId`)
-    pub fn contains_bean_by_id(&self, type_id: TypeId) -> bool
-    {
+    pub fn contains_bean_by_id(&self, type_id: TypeId) -> bool {
         let singletons = self.singletons.read().expect("lock poisoned");
         singletons.contains_key(&type_id)
     }
 
     /// Register a raw bean box by type id and optional name.
     /// 按类型 ID 和可选名称注册原始 Bean 容器。
-    pub fn register_raw(&self, type_id: TypeId, name: &str, bean: Box<dyn Any + Send + Sync>)
-    {
+    pub fn register_raw(&self, type_id: TypeId, name: &str, bean: Box<dyn Any + Send + Sync>) {
         let mut singletons = self.singletons.write().expect("lock poisoned");
         singletons.insert(type_id, bean);
-        if !name.is_empty()
-        {
+        if !name.is_empty() {
             let mut bean_names = self.bean_names.write().expect("lock poisoned");
             bean_names.insert(name.to_string(), type_id);
         }
@@ -439,8 +402,7 @@ impl ApplicationContext
         &self,
         type_id: TypeId,
         factory: fn(&ApplicationContext) -> Box<dyn Any + Send + Sync>,
-    )
-    {
+    ) {
         self.prototype_factories
             .write()
             .expect("lock poisoned")
@@ -449,8 +411,7 @@ impl ApplicationContext
 
     /// Instantiate all beans collected via `inventory::submit!`.
     /// 实例化通过 `inventory::submit!` 收集的所有 Bean。
-    pub fn instantiate_beans_from_inventory(&self) -> AnyhowResult<()>
-    {
+    pub fn instantiate_beans_from_inventory(&self) -> AnyhowResult<()> {
         let descriptors: Vec<&BeanDescriptor> = inventory::iter::<BeanDescriptor>().collect();
         let applicable: Vec<&BeanDescriptor> = descriptors
             .into_iter()
@@ -459,17 +420,13 @@ impl ApplicationContext
 
         let sorted = topological_sort(&applicable).map_err(anyhow::Error::msg)?;
 
-        for desc in sorted
-        {
+        for desc in sorted {
             tracing::debug!("Instantiating bean: {}", desc.name);
-            match desc.scope
-            {
-                BeanScope::Prototype =>
-                {
+            match desc.scope {
+                BeanScope::Prototype => {
                     self.register_prototype_factory((desc.type_id)(), desc.factory);
                 },
-                BeanScope::Singleton | BeanScope::Request =>
-                {
+                BeanScope::Singleton | BeanScope::Request => {
                     let bean = (desc.factory)(self);
                     self.register_raw((desc.type_id)(), desc.name, bean);
                 },
@@ -480,8 +437,7 @@ impl ApplicationContext
 
     /// Invoke `PostConstruct` on all singleton beans that implement the trait.
     /// 对所有实现了 `PostConstruct` 的单例 Bean 调用 `post_construct`。
-    pub fn call_post_construct(&self)
-    {
+    pub fn call_post_construct(&self) {
         // PostConstruct is invoked from generated factories when `T: PostConstruct`.
         // `PostConstruct` 在生成的工厂中于 `T: PostConstruct` 时调用。
         tracing::debug!("PostConstruct phase completed");
@@ -489,8 +445,7 @@ impl ApplicationContext
 
     /// Invoke `PreDestroy` on all singleton beans that implement the trait.
     /// 对所有实现了 `PreDestroy` 的单例 Bean 调用 `pre_destroy`。
-    pub fn call_pre_destroy(&self)
-    {
+    pub fn call_pre_destroy(&self) {
         tracing::debug!("PreDestroy phase completed");
     }
 
@@ -503,14 +458,12 @@ impl ApplicationContext
     ///
     /// 执行所有自动配置并启动应用。
     /// Executes all auto-configurations and starts the application.
-    pub async fn start(&mut self) -> AnyhowResult<()>
-    {
+    pub async fn start(&mut self) -> AnyhowResult<()> {
         // Check if already started
         // 检查是否已启动
         {
             let started = self.started.read().expect("lock poisoned");
-            if *started
-            {
+            if *started {
                 return Ok(());
             }
         }
@@ -528,8 +481,7 @@ impl ApplicationContext
 
         #[cfg(feature = "data")]
         {
-            if let Err(e) = crate::data::register_sqlx_transaction_manager(self).await
-            {
+            if let Err(e) = crate::data::register_sqlx_transaction_manager(self).await {
                 tracing::warn!("SqlxTransactionManager registration failed: {e}");
             }
         }
@@ -550,8 +502,7 @@ impl ApplicationContext
 
     /// 执行所有自动配置
     /// Run all auto-configurations
-    async fn run_auto_configurations(&mut self) -> AnyhowResult<()>
-    {
+    async fn run_auto_configurations(&mut self) -> AnyhowResult<()> {
         // 记录已处理的配置索引（用于依赖解析）
         // Record processed configuration indices (for dependency resolution)
         let mut processed: HashSet<usize> = HashSet::new();
@@ -559,11 +510,9 @@ impl ApplicationContext
 
         // 处理配置（可能需要多次迭代以解决依赖）
         // Process configurations (may need multiple iterations to resolve dependencies)
-        for _iteration in 0..10
-        {
+        for _iteration in 0..10 {
             let remaining = remaining_count - processed.len();
-            if remaining == 0
-            {
+            if remaining == 0 {
                 break;
             }
 
@@ -573,12 +522,10 @@ impl ApplicationContext
             // Get configuration count
             let config_count = self.auto_configurations.len();
 
-            for idx in 0..config_count
-            {
+            for idx in 0..config_count {
                 // 跳过已处理的
                 // Skip already processed
-                if processed.contains(&idx)
-                {
+                if processed.contains(&idx) {
                     continue;
                 }
 
@@ -586,8 +533,7 @@ impl ApplicationContext
                 // Get configuration and check conditions
                 let should_process = {
                     let config = &self.auto_configurations[idx];
-                    if config.condition()
-                    {
+                    if config.condition() {
                         // 检查依赖：所有 after 依赖必须已处理
                         // Check dependencies: all 'after' dependencies must be processed
                         Self::check_dependencies_satisfied(
@@ -596,15 +542,12 @@ impl ApplicationContext
                             &processed,
                             idx,
                         )
-                    }
-                    else
-                    {
+                    } else {
                         false
                     }
                 };
 
-                if !should_process
-                {
+                if !should_process {
                     continue;
                 }
 
@@ -627,14 +570,10 @@ impl ApplicationContext
                 // Put back the configuration
                 self.auto_configurations[idx] = config;
 
-                if let Err(e) = result
-                {
-                    if is_optional
-                    {
+                if let Err(e) = result {
+                    if is_optional {
                         tracing::warn!("Optional auto-configuration {} failed: {}", config_name, e);
-                    }
-                    else
-                    {
+                    } else {
                         return Err(anyhow::anyhow!(
                             "Auto-configuration {} failed: {}",
                             config_name,
@@ -647,15 +586,13 @@ impl ApplicationContext
                 progress = true;
             }
 
-            if !progress
-            {
+            if !progress {
                 break;
             }
         }
 
         let remaining = remaining_count - processed.len();
-        if remaining > 0
-        {
+        if remaining > 0 {
             tracing::warn!(
                 "{} auto-configurations were not applied due to unmet dependencies",
                 remaining
@@ -667,8 +604,7 @@ impl ApplicationContext
 
     /// 关闭应用上下文
     /// Shutdown application context
-    pub async fn shutdown(&self) -> AnyhowResult<()>
-    {
+    pub async fn shutdown(&self) -> AnyhowResult<()> {
         tracing::info!("Shutting down Hiver ApplicationContext...");
         self.call_pre_destroy();
         *self.started.write().expect("lock poisoned") = false;
@@ -677,15 +613,13 @@ impl ApplicationContext
 
     /// 检查是否已启动
     /// Check if started
-    pub fn is_started(&self) -> bool
-    {
+    pub fn is_started(&self) -> bool {
         *self.started.read().expect("lock poisoned")
     }
 
     /// 获取已注册的 Bean 数量
     /// Get the number of registered beans
-    pub fn bean_count(&self) -> usize
-    {
+    pub fn bean_count(&self) -> usize {
         self.singletons.read().expect("lock poisoned").len()
     }
 
@@ -708,21 +642,16 @@ impl ApplicationContext
         all_configs: &[Box<dyn AutoConfiguration>],
         processed: &HashSet<usize>,
         _current_idx: usize,
-    ) -> bool
-    {
+    ) -> bool {
         // 检查 after 依赖：所有 after 依赖必须已处理
         // Check after dependencies: all 'after' dependencies must be processed
-        for after_type_id in config.after()
-        {
+        for after_type_id in config.after() {
             let mut found_and_processed = false;
-            for (idx, other_config) in all_configs.iter().enumerate()
-            {
-                if other_config.type_id() == *after_type_id
-                {
+            for (idx, other_config) in all_configs.iter().enumerate() {
+                if other_config.type_id() == *after_type_id {
                     // 找到了依赖配置，检查是否已处理
                     // Found the dependency config, check if it's been processed
-                    if processed.contains(&idx)
-                    {
+                    if processed.contains(&idx) {
                         found_and_processed = true;
                     }
                     break;
@@ -730,26 +659,21 @@ impl ApplicationContext
             }
             // 如果依赖的配置存在但未处理，则依赖不满足
             // If the dependency exists but isn't processed, dependency is not satisfied
-            if !found_and_processed
-            {
+            if !found_and_processed {
                 return false;
             }
         }
 
         // 检查 before 依赖：所有 before 依赖都未处理
         // Check before dependencies: all 'before' dependencies must NOT be processed
-        for before_type_id in config.before()
-        {
-            for (idx, other_config) in all_configs.iter().enumerate()
-            {
-                if other_config.type_id() == *before_type_id
-                {
+        for before_type_id in config.before() {
+            for (idx, other_config) in all_configs.iter().enumerate() {
+                if other_config.type_id() == *before_type_id {
                     // 找到了依赖配置，检查是否已处理
                     // 如果已处理，则不能执行当前配置
                     // Found the dependency config, check if it's been processed
                     // If processed, we cannot execute the current config
-                    if processed.contains(&idx)
-                    {
+                    if processed.contains(&idx) {
                         return false;
                     }
                     break;
@@ -771,8 +695,7 @@ impl ApplicationContext
 /// 描述如何创建和初始化一个 Bean。
 /// Describes how to create and initialize a bean.
 #[derive(Debug, Clone)]
-pub struct BeanDefinition
-{
+pub struct BeanDefinition {
     /// Bean 名称
     pub name: String,
 
@@ -789,11 +712,9 @@ pub struct BeanDefinition
     pub depends_on: Vec<String>,
 }
 
-impl BeanDefinition
-{
+impl BeanDefinition {
     /// 创建新的 Bean 定义
-    pub fn new<T: 'static>(name: String) -> Self
-    {
+    pub fn new<T: 'static>(name: String) -> Self {
         Self {
             name,
             type_id: TypeId::of::<T>(),
@@ -804,15 +725,13 @@ impl BeanDefinition
     }
 
     /// 设置为主 Bean
-    pub fn primary(mut self) -> Self
-    {
+    pub fn primary(mut self) -> Self {
         self.is_primary = true;
         self
     }
 
     /// 设置为懒加载
-    pub fn lazy(mut self) -> Self
-    {
+    pub fn lazy(mut self) -> Self {
         self.is_lazy = true;
         self
     }
@@ -828,8 +747,7 @@ impl BeanDefinition
 /// 用于管理和查找应用中的所有组件。
 /// Used to manage and find all components in the application.
 #[derive(Debug)]
-pub struct ComponentRegistry
-{
+pub struct ComponentRegistry {
     /// 控制器
     pub controllers: Vec<String>,
 
@@ -846,11 +764,9 @@ pub struct ComponentRegistry
     pub components: Vec<String>,
 }
 
-impl ComponentRegistry
-{
+impl ComponentRegistry {
     /// 创建新的组件注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             controllers: Vec::new(),
             services: Vec::new(),
@@ -861,38 +777,32 @@ impl ComponentRegistry
     }
 
     /// 注册控制器
-    pub fn register_controller(&mut self, name: String)
-    {
+    pub fn register_controller(&mut self, name: String) {
         self.controllers.push(name);
     }
 
     /// 注册服务
-    pub fn register_service(&mut self, name: String)
-    {
+    pub fn register_service(&mut self, name: String) {
         self.services.push(name);
     }
 
     /// 注册仓储
-    pub fn register_repository(&mut self, name: String)
-    {
+    pub fn register_repository(&mut self, name: String) {
         self.repositories.push(name);
     }
 
     /// 注册配置类
-    pub fn register_configuration(&mut self, name: String)
-    {
+    pub fn register_configuration(&mut self, name: String) {
         self.configurations.push(name);
     }
 
     /// 注册组件
-    pub fn register_component(&mut self, name: String)
-    {
+    pub fn register_component(&mut self, name: String) {
         self.components.push(name);
     }
 
     /// 获取所有组件名称
-    pub fn all_components(&self) -> Vec<&str>
-    {
+    pub fn all_components(&self) -> Vec<&str> {
         let mut all = Vec::new();
         all.extend(self.controllers.iter().map(String::as_str));
         all.extend(self.services.iter().map(String::as_str));
@@ -903,10 +813,8 @@ impl ComponentRegistry
     }
 }
 
-impl Default for ComponentRegistry
-{
-    fn default() -> Self
-    {
+impl Default for ComponentRegistry {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -916,9 +824,14 @@ impl Default for ComponentRegistry
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use hiver_core::Bean;
 
@@ -927,16 +840,14 @@ mod tests
     impl<T: 'static> Bean for ConfigValue<T> {}
 
     #[test]
-    fn test_application_context_creation()
-    {
+    fn test_application_context_creation() {
         let ctx = ApplicationContext::new();
         assert!(!ctx.is_started());
         assert_eq!(ctx.bean_count(), 0);
     }
 
     #[test]
-    fn test_bean_registration_and_retrieval()
-    {
+    fn test_bean_registration_and_retrieval() {
         let ctx = ApplicationContext::new();
 
         // 注册 Bean
@@ -950,8 +861,7 @@ mod tests
     }
 
     #[test]
-    fn test_named_bean()
-    {
+    fn test_named_bean() {
         let ctx = ApplicationContext::new();
 
         ctx.register_named_bean("test".to_string(), ConfigValue("value".to_string()));
@@ -962,8 +872,7 @@ mod tests
     }
 
     #[test]
-    fn test_component_registry()
-    {
+    fn test_component_registry() {
         let mut registry = ComponentRegistry::new();
 
         registry.register_controller("TestController".to_string());

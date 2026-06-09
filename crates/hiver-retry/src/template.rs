@@ -32,8 +32,7 @@ use crate::RetryPolicy;
 ///     void onError(RetryContext context, Throwable throwable);
 /// }
 /// ```
-pub trait RetryCallback: Send + Sync
-{
+pub trait RetryCallback: Send + Sync {
     /// Called before each retry attempt
     /// 每次重试前调用
     fn on_retry(&self, attempt: usize, delay: Duration);
@@ -52,8 +51,7 @@ pub trait RetryCallback: Send + Sync
 #[derive(Debug, Clone, Copy)]
 pub struct NoOpCallback;
 
-impl RetryCallback for NoOpCallback
-{
+impl RetryCallback for NoOpCallback {
     fn on_retry(&self, _attempt: usize, _delay: Duration) {}
 
     fn on_success(&self, _attempts: usize) {}
@@ -74,8 +72,7 @@ impl RetryCallback for NoOpCallback
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct RetryContext
-{
+pub struct RetryContext {
     /// Current attempt number (1-indexed)
     /// 当前尝试次数（从1开始）
     pub attempt: usize,
@@ -93,10 +90,8 @@ pub struct RetryContext
     pub last_error: Option<String>,
 }
 
-impl RetryContext
-{
-    pub fn new() -> Self
-    {
+impl RetryContext {
+    pub fn new() -> Self {
         Self {
             attempt: 1,
             total_delay: Duration::ZERO,
@@ -105,27 +100,22 @@ impl RetryContext
         }
     }
 
-    pub fn increment(&mut self, delay: Duration)
-    {
+    pub fn increment(&mut self, delay: Duration) {
         self.attempt += 1;
         self.total_delay += delay;
     }
 
-    pub fn set_exhausted(&mut self)
-    {
+    pub fn set_exhausted(&mut self) {
         self.exhausted = true;
     }
 
-    pub fn set_last_error(&mut self, error: String)
-    {
+    pub fn set_last_error(&mut self, error: String) {
         self.last_error = Some(error);
     }
 }
 
-impl Default for RetryContext
-{
-    fn default() -> Self
-    {
+impl Default for RetryContext {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -139,19 +129,16 @@ impl Default for RetryContext
 /// let template = RetryTemplate::fixed(3);
 /// let result = template.execute(|| async { fetch_data().await }).await?;
 /// ```
-pub struct RetryTemplate
-{
+pub struct RetryTemplate {
     policy: RetryPolicy,
     max_attempts: usize,
     callback: Arc<dyn RetryCallback>,
 }
 
-impl RetryTemplate
-{
+impl RetryTemplate {
     /// Create a new RetryTemplate with default policy
     /// 使用默认策略创建新的 RetryTemplate
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -162,8 +149,7 @@ impl RetryTemplate
     /// ```rust,ignore
     /// let template = RetryTemplate::fixed(3);
     /// ```
-    pub fn fixed(max_attempts: usize) -> Self
-    {
+    pub fn fixed(max_attempts: usize) -> Self {
         Self {
             policy: RetryPolicy::new().with_max_attempts(max_attempts),
             max_attempts,
@@ -178,8 +164,7 @@ impl RetryTemplate
     /// ```rust,ignore
     /// let template = RetryTemplate::exponential(3, Duration::from_millis(100));
     /// ```
-    pub fn exponential(max_attempts: usize, initial_delay: Duration) -> Self
-    {
+    pub fn exponential(max_attempts: usize, initial_delay: Duration) -> Self {
         Self {
             policy: RetryPolicy::new()
                 .with_max_attempts(max_attempts)
@@ -192,8 +177,7 @@ impl RetryTemplate
 
     /// Set custom callback
     /// 设置自定义回调
-    pub fn with_callback(mut self, callback: Arc<dyn RetryCallback>) -> Self
-    {
+    pub fn with_callback(mut self, callback: Arc<dyn RetryCallback>) -> Self {
         self.callback = callback;
         self
     }
@@ -216,24 +200,19 @@ impl RetryTemplate
         let mut context = RetryContext::new();
         let mut _last_error: Option<String> = None;
 
-        loop
-        {
+        loop {
             let result = op().await;
 
-            match result
-            {
-                Ok(value) =>
-                {
+            match result {
+                Ok(value) => {
                     self.callback.on_success(context.attempt);
                     return Ok(value);
                 },
-                Err(error) =>
-                {
+                Err(error) => {
                     let error_msg = error.to_string();
                     _last_error = Some(error_msg.clone());
 
-                    if context.attempt >= self.max_attempts
-                    {
+                    if context.attempt >= self.max_attempts {
                         context.set_exhausted();
                         context.set_last_error(error_msg.clone());
                         self.callback.on_error(&error_msg);
@@ -273,18 +252,15 @@ impl RetryTemplate
         E: std::error::Error + Send + Sync + 'static,
         R: FnOnce(String) -> T,
     {
-        match self.execute(op).await
-        {
+        match self.execute(op).await {
             Ok(value) => Ok(value),
             Err(error) => Ok(recover(error)),
         }
     }
 }
 
-impl Default for RetryTemplate
-{
-    fn default() -> Self
-    {
+impl Default for RetryTemplate {
+    fn default() -> Self {
         Self {
             policy: RetryPolicy::new(),
             max_attempts: 3,
@@ -305,8 +281,7 @@ impl Default for RetryTemplate
 ///     .retryOn(NetworkException.class)
 ///     .build();
 /// ```
-pub struct RetryTemplateBuilder
-{
+pub struct RetryTemplateBuilder {
     max_attempts: usize,
     backoff_type: BackoffType,
     initial_delay: Duration,
@@ -316,10 +291,8 @@ pub struct RetryTemplateBuilder
     callback: Arc<dyn RetryCallback>,
 }
 
-impl Default for RetryTemplateBuilder
-{
-    fn default() -> Self
-    {
+impl Default for RetryTemplateBuilder {
+    fn default() -> Self {
         Self {
             max_attempts: 3,
             backoff_type: BackoffType::Exponential,
@@ -332,59 +305,51 @@ impl Default for RetryTemplateBuilder
     }
 }
 
-impl RetryTemplateBuilder
-{
+impl RetryTemplateBuilder {
     /// Create new builder
     /// 创建新构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set maximum retry attempts
     /// 设置最大重试次数
-    pub fn max_attempts(mut self, max: usize) -> Self
-    {
+    pub fn max_attempts(mut self, max: usize) -> Self {
         self.max_attempts = max.max(1);
         self
     }
 
     /// Set backoff type
     /// 设置退避类型
-    pub fn backoff(mut self, backoff: BackoffType) -> Self
-    {
+    pub fn backoff(mut self, backoff: BackoffType) -> Self {
         self.backoff_type = backoff;
         self
     }
 
     /// Set initial delay
     /// 设置初始延迟
-    pub fn initial_delay(mut self, delay: Duration) -> Self
-    {
+    pub fn initial_delay(mut self, delay: Duration) -> Self {
         self.initial_delay = delay;
         self
     }
 
     /// Set maximum delay
     /// 设置最大延迟
-    pub fn max_delay(mut self, delay: Duration) -> Self
-    {
+    pub fn max_delay(mut self, delay: Duration) -> Self {
         self.max_delay = Some(delay);
         self
     }
 
     /// Set multiplier for exponential backoff
     /// 设置指数退避倍数
-    pub fn multiplier(mut self, mult: f64) -> Self
-    {
+    pub fn multiplier(mut self, mult: f64) -> Self {
         self.multiplier = mult.max(1.0);
         self
     }
 
     /// Set jitter factor
     /// 设置抖动系数
-    pub fn jitter_factor(mut self, factor: f64) -> Self
-    {
+    pub fn jitter_factor(mut self, factor: f64) -> Self {
         self.jitter_factor = factor.clamp(0.0, 1.0);
         self
     }
@@ -395,8 +360,7 @@ impl RetryTemplateBuilder
     where
         F: Fn(usize, Duration) + Send + Sync + 'static,
     {
-        struct OnRetry<F>
-        {
+        struct OnRetry<F> {
             f: Arc<F>,
         }
 
@@ -404,8 +368,7 @@ impl RetryTemplateBuilder
         where
             F: Fn(usize, Duration) + Send + Sync,
         {
-            fn on_retry(&self, attempt: usize, delay: Duration)
-            {
+            fn on_retry(&self, attempt: usize, delay: Duration) {
                 (self.f)(attempt, delay)
             }
 
@@ -424,8 +387,7 @@ impl RetryTemplateBuilder
     where
         F: Fn(usize) + Send + Sync + 'static,
     {
-        struct OnSuccess<F>
-        {
+        struct OnSuccess<F> {
             f: Arc<F>,
         }
 
@@ -435,8 +397,7 @@ impl RetryTemplateBuilder
         {
             fn on_retry(&self, _attempt: usize, _delay: Duration) {}
 
-            fn on_success(&self, attempts: usize)
-            {
+            fn on_success(&self, attempts: usize) {
                 (self.f)(attempts)
             }
 
@@ -449,8 +410,7 @@ impl RetryTemplateBuilder
 
     /// Build the RetryTemplate
     /// 构建 RetryTemplate
-    pub fn build(self) -> RetryTemplate
-    {
+    pub fn build(self) -> RetryTemplate {
         RetryTemplate {
             policy: RetryPolicy::new()
                 .with_max_attempts(self.max_attempts)
@@ -466,16 +426,20 @@ impl RetryTemplateBuilder
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     use super::*;
 
     #[tokio::test]
-    async fn test_retry_template_fixed()
-    {
+    async fn test_retry_template_fixed() {
         let template = RetryTemplate::fixed(3);
         let call_count = Arc::new(AtomicUsize::new(0));
 
@@ -484,12 +448,9 @@ mod tests
                 let cc = call_count.clone();
                 async move {
                     let count = cc.fetch_add(1, Ordering::SeqCst);
-                    if count < 2
-                    {
+                    if count < 2 {
                         Err(std::io::Error::other("test error"))
-                    }
-                    else
-                    {
+                    } else {
                         Ok("success")
                     }
                 }
@@ -502,8 +463,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_retry_template_with_recovery()
-    {
+    async fn test_retry_template_with_recovery() {
         let template = RetryTemplate::fixed(2);
 
         let result = template
@@ -518,8 +478,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_retry_context()
-    {
+    async fn test_retry_context() {
         let mut context = RetryContext::new();
         assert_eq!(context.attempt, 1);
 
@@ -532,8 +491,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_builder()
-    {
+    async fn test_builder() {
         let template = RetryTemplateBuilder::new()
             .max_attempts(5)
             .backoff(BackoffType::Fixed)
@@ -544,17 +502,13 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_callback()
-    {
-        struct TestCallback
-        {
+    async fn test_callback() {
+        struct TestCallback {
             retry_count: Arc<AtomicUsize>,
         }
 
-        impl RetryCallback for TestCallback
-        {
-            fn on_retry(&self, attempt: usize, _delay: Duration)
-            {
+        impl RetryCallback for TestCallback {
+            fn on_retry(&self, attempt: usize, _delay: Duration) {
                 self.retry_count.fetch_add(1, Ordering::SeqCst);
                 println!("Retry attempt {}", attempt);
             }
@@ -576,12 +530,9 @@ mod tests
                 let cc = call_count.clone();
                 async move {
                     let count = cc.fetch_add(1, Ordering::SeqCst);
-                    if count < 2
-                    {
+                    if count < 2 {
                         Err(std::io::Error::other("test error"))
-                    }
-                    else
-                    {
+                    } else {
                         Ok("success")
                     }
                 }

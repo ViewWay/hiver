@@ -74,8 +74,7 @@ use sha2::{Digest, Sha256};
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OAuth2Config
-{
+pub struct OAuth2Config {
     /// Client ID
     /// 客户端ID
     pub client_id: String,
@@ -131,8 +130,7 @@ pub struct OAuth2Config
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[derive(Default)]
-pub enum TokenEndpointAuthMethod
-{
+pub enum TokenEndpointAuthMethod {
     /// Client secret in request body
     /// 在请求体中发送客户端密钥
     #[default]
@@ -147,12 +145,10 @@ pub enum TokenEndpointAuthMethod
     None,
 }
 
-impl OAuth2Config
-{
+impl OAuth2Config {
     /// Create a new `OAuth2` configuration
     /// 创建新的 `OAuth2` 配置
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             client_id: String::new(),
             client_secret: None,
@@ -170,105 +166,91 @@ impl OAuth2Config
 
     /// Set client ID
     /// 设置客户端ID
-    pub fn client_id(mut self, id: impl Into<String>) -> Self
-    {
+    pub fn client_id(mut self, id: impl Into<String>) -> Self {
         self.client_id = id.into();
         self
     }
 
     /// Set client secret
     /// 设置客户端密钥
-    pub fn client_secret(mut self, secret: impl Into<String>) -> Self
-    {
+    pub fn client_secret(mut self, secret: impl Into<String>) -> Self {
         self.client_secret = Some(secret.into());
         self
     }
 
     /// Set authorization endpoint
     /// 设置授权端点
-    pub fn authorization_endpoint(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn authorization_endpoint(mut self, url: impl Into<String>) -> Self {
         self.authorization_endpoint = url.into();
         self
     }
 
     /// Set token endpoint
     /// 设置令牌端点
-    pub fn token_endpoint(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn token_endpoint(mut self, url: impl Into<String>) -> Self {
         self.token_endpoint = url.into();
         self
     }
 
     /// Set redirect URI
     /// 设置重定向URI
-    pub fn redirect_uri(mut self, uri: impl Into<String>) -> Self
-    {
+    pub fn redirect_uri(mut self, uri: impl Into<String>) -> Self {
         self.redirect_uri = uri.into();
         self
     }
 
     /// Add scope
     /// 添加范围
-    pub fn add_scope(mut self, scope: impl Into<String>) -> Self
-    {
+    pub fn add_scope(mut self, scope: impl Into<String>) -> Self {
         self.scopes.push(scope.into());
         self
     }
 
     /// Set scopes
     /// 设置范围
-    pub fn scopes(mut self, scopes: Vec<String>) -> Self
-    {
+    pub fn scopes(mut self, scopes: Vec<String>) -> Self {
         self.scopes = scopes;
         self
     }
 
     /// Set token endpoint authentication method
     /// 设置令牌端点认证方法
-    pub fn token_endpoint_auth_method(mut self, method: TokenEndpointAuthMethod) -> Self
-    {
+    pub fn token_endpoint_auth_method(mut self, method: TokenEndpointAuthMethod) -> Self {
         self.token_endpoint_auth_method = method;
         self
     }
 
     /// Enable basic auth for token endpoint
     /// 为令牌端点启用基本认证
-    pub fn use_basic_auth(mut self, use_basic: bool) -> Self
-    {
+    pub fn use_basic_auth(mut self, use_basic: bool) -> Self {
         self.use_basic_auth = use_basic;
         self
     }
 
     /// Set user info endpoint
     /// 设置用户信息端点
-    pub fn user_info_endpoint(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn user_info_endpoint(mut self, url: impl Into<String>) -> Self {
         self.user_info_endpoint = Some(url.into());
         self
     }
 
     /// Set introspection endpoint
     /// 设置内省端点
-    pub fn introspection_endpoint(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn introspection_endpoint(mut self, url: impl Into<String>) -> Self {
         self.introspection_endpoint = Some(url.into());
         self
     }
 
     /// Set revocation endpoint
     /// 设置撤销端点
-    pub fn revocation_endpoint(mut self, url: impl Into<String>) -> Self
-    {
+    pub fn revocation_endpoint(mut self, url: impl Into<String>) -> Self {
         self.revocation_endpoint = Some(url.into());
         self
     }
 }
 
-impl Default for OAuth2Config
-{
-    fn default() -> Self
-    {
+impl Default for OAuth2Config {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -282,8 +264,7 @@ impl Default for OAuth2Config
 /// OAuth2AccessTokenResponse.class
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TokenResponse
-{
+pub struct TokenResponse {
     /// Access token
     /// 访问令牌
     pub access_token: String,
@@ -315,34 +296,27 @@ pub struct TokenResponse
     pub id_token: Option<String>,
 }
 
-fn default_token_type() -> String
-{
+fn default_token_type() -> String {
     "Bearer".to_string()
 }
 
-impl TokenResponse
-{
+impl TokenResponse {
     /// Check if the token is expired
     /// 检查令牌是否过期
-    pub fn is_expired(&self) -> bool
-    {
-        if let Some(expires_in) = self.expires_in
-        {
+    pub fn is_expired(&self) -> bool {
+        if let Some(expires_in) = self.expires_in {
             // This is a simplified check - in production, you'd store the
             // token creation time and compare against that
             // 这是简化的检查 - 在生产环境中，你需要存储令牌创建时间并与之比较
             expires_in == 0
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// Get the authorization header value
     /// 获取授权头值
-    pub fn authorization_header(&self) -> String
-    {
+    pub fn authorization_header(&self) -> String {
         format!("{} {}", self.token_type, self.access_token)
     }
 }
@@ -350,8 +324,7 @@ impl TokenResponse
 /// Token response with creation timestamp for accurate expiry tracking
 /// 带创建时间戳的令牌响应，用于准确的过期跟踪
 #[derive(Debug, Clone)]
-pub struct TokenResponseWithTimestamp
-{
+pub struct TokenResponseWithTimestamp {
     /// Inner token response
     /// 内部令牌响应
     pub token: TokenResponse,
@@ -361,12 +334,10 @@ pub struct TokenResponseWithTimestamp
     pub created_at: Instant,
 }
 
-impl TokenResponseWithTimestamp
-{
+impl TokenResponseWithTimestamp {
     /// Wrap a TokenResponse with the current timestamp
     /// 用当前时间戳包装TokenResponse
-    pub fn new(token: TokenResponse) -> Self
-    {
+    pub fn new(token: TokenResponse) -> Self {
         Self {
             token,
             created_at: Instant::now(),
@@ -375,23 +346,18 @@ impl TokenResponseWithTimestamp
 
     /// Check if the token is expired based on elapsed time
     /// 基于经过的时间检查令牌是否过期
-    pub fn is_expired(&self) -> bool
-    {
-        if let Some(expires_in) = self.token.expires_in
-        {
+    pub fn is_expired(&self) -> bool {
+        if let Some(expires_in) = self.token.expires_in {
             let elapsed = self.created_at.elapsed().as_secs();
             elapsed >= expires_in
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// Return remaining seconds until expiry, or None if no expiration is set
     /// 返回距离过期的剩余秒数，如果未设置过期时间则返回 None
-    pub fn remaining_seconds(&self) -> Option<u64>
-    {
+    pub fn remaining_seconds(&self) -> Option<u64> {
         self.token
             .expires_in
             .map(|exp| exp.saturating_sub(self.created_at.elapsed().as_secs()))
@@ -399,8 +365,7 @@ impl TokenResponseWithTimestamp
 
     /// Get the authorization header value
     /// 获取授权头值
-    pub fn authorization_header(&self) -> String
-    {
+    pub fn authorization_header(&self) -> String {
         self.token.authorization_header()
     }
 }
@@ -411,8 +376,7 @@ impl TokenResponseWithTimestamp
 /// Provides OAuth2 PKCE support as defined in RFC 7636.
 /// 提供RFC 7636中定义的OAuth2 PKCE支持。
 #[derive(Debug, Clone)]
-pub struct PkceParams
-{
+pub struct PkceParams {
     /// Code verifier - cryptographically random string
     /// 代码验证器 - 加密随机字符串
     pub code_verifier: String,
@@ -426,8 +390,7 @@ pub struct PkceParams
     pub code_challenge_method: String,
 }
 
-impl PkceParams
-{
+impl PkceParams {
     /// Generate a new PKCE parameter pair using S256 transformation
     /// 使用S256转换生成新的PKCE参数对
     ///
@@ -435,8 +398,7 @@ impl PkceParams
     /// from the set [A-Z] / [a-z] / [0-9] / "-" / "." / "_" / "~".
     /// code_verifier是43-128个字符的高熵随机字符串，
     /// 字符集为[A-Z]/[a-z]/[0-9]/"-"/"."/"_"/"~"。
-    pub fn generate() -> Self
-    {
+    pub fn generate() -> Self {
         let code_verifier = Self::generate_code_verifier();
         let code_challenge = Self::generate_code_challenge(&code_verifier);
         Self {
@@ -451,8 +413,7 @@ impl PkceParams
     ///
     /// Returns a 43-character string (32 bytes base64url-encoded).
     /// 返回43个字符的字符串（32字节base64url编码）。
-    pub fn generate_code_verifier() -> String
-    {
+    pub fn generate_code_verifier() -> String {
         let mut rng = rand::rng();
         let bytes: [u8; 32] = rng.random();
         base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
@@ -462,8 +423,7 @@ impl PkceParams
     /// 使用SHA-256从代码验证器生成代码挑战
     ///
     /// code_challenge = BASE64URL(SHA256(ASCII(code_verifier)))
-    pub fn generate_code_challenge(code_verifier: &str) -> String
-    {
+    pub fn generate_code_challenge(code_verifier: &str) -> String {
         let mut hasher = Sha256::new();
         hasher.update(code_verifier.as_bytes());
         let hash = hasher.finalize();
@@ -478,19 +438,16 @@ impl PkceParams
 /// originates from the same user who initiated the authorization request.
 /// state参数通过确保回调来自发起授权请求的同一用户来防止CSRF攻击。
 #[derive(Debug, Clone)]
-pub struct StateManager
-{
+pub struct StateManager {
     /// Generated state value
     /// 生成的状态值
     state: String,
 }
 
-impl StateManager
-{
+impl StateManager {
     /// Generate a new random state parameter
     /// 生成新的随机状态参数
-    pub fn generate() -> Self
-    {
+    pub fn generate() -> Self {
         let mut rng = rand::rng();
         let bytes: [u8; 32] = rng.random();
         Self {
@@ -500,8 +457,7 @@ impl StateManager
 
     /// Generate a state parameter from a known value (for testing)
     /// 从已知值生成状态参数（用于测试）
-    pub fn from_value(value: impl Into<String>) -> Self
-    {
+    pub fn from_value(value: impl Into<String>) -> Self {
         Self {
             state: value.into(),
         }
@@ -509,8 +465,7 @@ impl StateManager
 
     /// Get the state value
     /// 获取状态值
-    pub fn value(&self) -> &str
-    {
+    pub fn value(&self) -> &str {
         &self.state
     }
 
@@ -519,8 +474,7 @@ impl StateManager
     ///
     /// Uses constant-time comparison to prevent timing attacks.
     /// 使用常量时间比较以防止时序攻击。
-    pub fn validate(&self, received_state: &str) -> bool
-    {
+    pub fn validate(&self, received_state: &str) -> bool {
         subtle::ConstantTimeEq::ct_eq(self.state.as_bytes(), received_state.as_bytes()).into()
     }
 }
@@ -534,8 +488,7 @@ impl StateManager
 /// OAuth2RestTemplate
 /// AuthorizedClientServiceBuilder
 /// ```
-pub struct OAuth2Client
-{
+pub struct OAuth2Client {
     /// Client configuration
     /// 客户端配置
     config: Arc<OAuth2Config>,
@@ -546,12 +499,10 @@ pub struct OAuth2Client
     http_client: Arc<reqwest::Client>,
 }
 
-impl OAuth2Client
-{
+impl OAuth2Client {
     /// Create a new `OAuth2` client
     /// 创建新的 `OAuth2` 客户端
-    pub fn new(config: OAuth2Config) -> Self
-    {
+    pub fn new(config: OAuth2Config) -> Self {
         Self {
             config: Arc::new(config),
             #[cfg(feature = "http-client")]
@@ -561,8 +512,7 @@ impl OAuth2Client
 
     /// Get the configuration
     /// 获取配置
-    pub fn config(&self) -> &OAuth2Config
-    {
+    pub fn config(&self) -> &OAuth2Config {
         &self.config
     }
 
@@ -579,8 +529,7 @@ impl OAuth2Client
     /// // Store state in session, redirect user to auth_url
     /// // On callback, verify: state.validate(received_state)
     /// ```
-    pub fn get_authorization_url_with_state(&self, scopes: &str) -> (String, StateManager)
-    {
+    pub fn get_authorization_url_with_state(&self, scopes: &str) -> (String, StateManager) {
         let state_mgr = StateManager::generate();
         let url = self.build_authorization_url(scopes, state_mgr.value(), None);
         (url, state_mgr)
@@ -596,8 +545,7 @@ impl OAuth2Client
     pub fn get_authorization_url_with_pkce(
         &self,
         scopes: &str,
-    ) -> (String, StateManager, PkceParams)
-    {
+    ) -> (String, StateManager, PkceParams) {
         let state_mgr = StateManager::generate();
         let pkce = PkceParams::generate();
         let url =
@@ -612,14 +560,10 @@ impl OAuth2Client
         scopes: &str,
         state: &str,
         code_challenge: Option<&str>,
-    ) -> String
-    {
-        let scopes_joined = if self.config.scopes.is_empty()
-        {
+    ) -> String {
+        let scopes_joined = if self.config.scopes.is_empty() {
             scopes.to_string()
-        }
-        else
-        {
+        } else {
             self.config.scopes.join(" ")
         };
 
@@ -632,8 +576,7 @@ impl OAuth2Client
             urlencoding::encode(state),
         );
 
-        if let Some(challenge) = code_challenge
-        {
+        if let Some(challenge) = code_challenge {
             url.push_str("&code_challenge=");
             url.push_str(&urlencoding::encode(challenge));
             url.push_str("&code_challenge_method=S256");
@@ -654,16 +597,14 @@ impl OAuth2Client
     /// let auth_url = client.get_authorization_url("read write");
     /// // Redirect user to auth_url
     /// ```
-    pub fn get_authorization_url(&self, scopes: &str) -> String
-    {
+    pub fn get_authorization_url(&self, scopes: &str) -> String {
         let state = Self::generate_state();
         self.build_authorization_url(scopes, &state, None)
     }
 
     /// Generate random state parameter (legacy, prefer StateManager)
     /// 生成随机状态参数（旧版，建议使用StateManager）
-    fn generate_state() -> String
-    {
+    fn generate_state() -> String {
         let mut rng = rand::rng();
         let bytes: [u8; 16] = rng.random();
         hex::encode(bytes)
@@ -682,8 +623,7 @@ impl OAuth2Client
         &self,
         code: &str,
         redirect_uri: &str,
-    ) -> SecurityResult<TokenResponse>
-    {
+    ) -> SecurityResult<TokenResponse> {
         self.exchange_token(&[
             ("grant_type", "authorization_code"),
             ("code", code),
@@ -700,8 +640,7 @@ impl OAuth2Client
         code: &str,
         redirect_uri: &str,
         pkce: &PkceParams,
-    ) -> SecurityResult<TokenResponse>
-    {
+    ) -> SecurityResult<TokenResponse> {
         self.exchange_token(&[
             ("grant_type", "authorization_code"),
             ("code", code),
@@ -720,8 +659,7 @@ impl OAuth2Client
     /// OAuth2ClientCredentialsGrantRequest
     /// ```
     #[cfg(feature = "http-client")]
-    pub async fn exchange_client_credentials(&self) -> SecurityResult<TokenResponse>
-    {
+    pub async fn exchange_client_credentials(&self) -> SecurityResult<TokenResponse> {
         self.exchange_token(&[("grant_type", "client_credentials")])
             .await
     }
@@ -739,8 +677,7 @@ impl OAuth2Client
         &self,
         username: &str,
         password: &str,
-    ) -> SecurityResult<TokenResponse>
-    {
+    ) -> SecurityResult<TokenResponse> {
         self.exchange_token(&[
             ("grant_type", "password"),
             ("username", username),
@@ -758,8 +695,7 @@ impl OAuth2Client
     /// OAuth2RefreshTokenGrantRequest
     /// ```
     #[cfg(feature = "http-client")]
-    pub async fn refresh_token(&self, refresh_token: &str) -> SecurityResult<TokenResponse>
-    {
+    pub async fn refresh_token(&self, refresh_token: &str) -> SecurityResult<TokenResponse> {
         self.exchange_token(&[
             ("grant_type", "refresh_token"),
             ("refresh_token", refresh_token),
@@ -779,8 +715,7 @@ impl OAuth2Client
     /// the request fails, or the response cannot be parsed.
     /// 如果user_info_endpoint未配置、请求失败或响应无法解析，则返回SecurityError。
     #[cfg(feature = "http-client")]
-    pub async fn get_user_info(&self, access_token: &str) -> SecurityResult<UserInfo>
-    {
+    pub async fn get_user_info(&self, access_token: &str) -> SecurityResult<UserInfo> {
         let endpoint = self.config.user_info_endpoint.as_deref().ok_or_else(|| {
             SecurityError::authentication_error(
                 "user_info_endpoint is not configured in OAuth2Config",
@@ -795,8 +730,7 @@ impl OAuth2Client
             .await
             .map_err(|e| SecurityError::io_error(format!("Failed to fetch user info: {}", e)))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             let status = response.status();
             let error_text = response
                 .text()
@@ -821,9 +755,10 @@ impl OAuth2Client
     /// Sends a POST request with the token to the configured introspection_endpoint.
     /// 向配置的introspection_endpoint发送包含令牌的POST请求。
     #[cfg(feature = "http-client")]
-    pub async fn validate_token(&self, access_token: &str)
-    -> SecurityResult<IntrospectionResponse>
-    {
+    pub async fn validate_token(
+        &self,
+        access_token: &str,
+    ) -> SecurityResult<IntrospectionResponse> {
         let endpoint = self
             .config
             .introspection_endpoint
@@ -838,28 +773,22 @@ impl OAuth2Client
 
         // Add client authentication
         // 添加客户端认证
-        match self.config.token_endpoint_auth_method
-        {
-            TokenEndpointAuthMethod::ClientSecretBasic =>
-            {
-                if let Some(ref secret) = self.config.client_secret
-                {
+        match self.config.token_endpoint_auth_method {
+            TokenEndpointAuthMethod::ClientSecretBasic => {
+                if let Some(ref secret) = self.config.client_secret {
                     let auth = format!("{}:{}", self.config.client_id, secret);
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
             },
-            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None =>
-            {},
+            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {},
         }
 
         let mut params = vec![("token", access_token.to_string())];
 
-        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost
-        {
+        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost {
             params.push(("client_id", self.config.client_id.clone()));
-            if let Some(ref secret) = self.config.client_secret
-            {
+            if let Some(ref secret) = self.config.client_secret {
                 params.push(("client_secret", secret.clone()));
             }
         }
@@ -870,8 +799,7 @@ impl OAuth2Client
             .await
             .map_err(|e| SecurityError::io_error(format!("Failed to validate token: {}", e)))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             let status = response.status();
             let error_text = response
                 .text()
@@ -902,8 +830,7 @@ impl OAuth2Client
         &self,
         token: &str,
         token_type_hint: Option<&str>,
-    ) -> SecurityResult<()>
-    {
+    ) -> SecurityResult<()> {
         let endpoint = self.config.revocation_endpoint.as_deref().ok_or_else(|| {
             SecurityError::authentication_error(
                 "revocation_endpoint is not configured in OAuth2Config",
@@ -914,32 +841,25 @@ impl OAuth2Client
 
         // Add client authentication
         // 添加客户端认证
-        match self.config.token_endpoint_auth_method
-        {
-            TokenEndpointAuthMethod::ClientSecretBasic =>
-            {
-                if let Some(ref secret) = self.config.client_secret
-                {
+        match self.config.token_endpoint_auth_method {
+            TokenEndpointAuthMethod::ClientSecretBasic => {
+                if let Some(ref secret) = self.config.client_secret {
                     let auth = format!("{}:{}", self.config.client_id, secret);
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
             },
-            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None =>
-            {},
+            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {},
         }
 
         let mut params = vec![("token", token.to_string())];
-        if let Some(hint) = token_type_hint
-        {
+        if let Some(hint) = token_type_hint {
             params.push(("token_type_hint", hint.to_string()));
         }
 
-        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost
-        {
+        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost {
             params.push(("client_id", self.config.client_id.clone()));
-            if let Some(ref secret) = self.config.client_secret
-            {
+            if let Some(ref secret) = self.config.client_secret {
                 params.push(("client_secret", secret.clone()));
             }
         }
@@ -952,8 +872,7 @@ impl OAuth2Client
 
         // RFC 7009: The revocation endpoint returns 200 OK even for unknown tokens.
         // RFC 7009：撤销端点即使对于未知令牌也返回200 OK。
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             let status = response.status();
             let error_text = response
                 .text()
@@ -971,26 +890,20 @@ impl OAuth2Client
     /// Internal method to exchange tokens
     /// 交换令牌的内部方法
     #[cfg(feature = "http-client")]
-    async fn exchange_token(&self, params: &[(&str, &str)]) -> SecurityResult<TokenResponse>
-    {
+    async fn exchange_token(&self, params: &[(&str, &str)]) -> SecurityResult<TokenResponse> {
         let mut request = self.http_client.post(&self.config.token_endpoint);
 
         // Add client authentication
         // 添加客户端认证
-        match self.config.token_endpoint_auth_method
-        {
-            TokenEndpointAuthMethod::ClientSecretBasic =>
-            {
-                if let Some(ref secret) = self.config.client_secret
-                {
+        match self.config.token_endpoint_auth_method {
+            TokenEndpointAuthMethod::ClientSecretBasic => {
+                if let Some(ref secret) = self.config.client_secret {
                     let auth = format!("{}:{}", self.config.client_id, secret);
                     let encoded = base64::engine::general_purpose::STANDARD.encode(auth);
                     request = request.header("Authorization", format!("Basic {}", encoded));
                 }
             },
-            TokenEndpointAuthMethod::ClientSecretPost |
-            TokenEndpointAuthMethod::None =>
-            {
+            TokenEndpointAuthMethod::ClientSecretPost | TokenEndpointAuthMethod::None => {
                 // No additional header auth needed / 无需额外头部认证
             },
         }
@@ -1000,10 +913,8 @@ impl OAuth2Client
         let mut form: Vec<(&str, String)> =
             params.iter().map(|(k, v)| (*k, (*v).to_string())).collect();
 
-        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost
-        {
-            if let Some(ref secret) = self.config.client_secret
-            {
+        if self.config.token_endpoint_auth_method == TokenEndpointAuthMethod::ClientSecretPost {
+            if let Some(ref secret) = self.config.client_secret {
                 form.push(("client_id", self.config.client_id.clone()));
                 form.push(("client_secret", secret.clone()));
             }
@@ -1021,8 +932,7 @@ impl OAuth2Client
             .await
             .map_err(|e| SecurityError::io_error(format!("Failed to exchange token: {}", e)))?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             let status = response.status();
             let error_text = response
                 .text()
@@ -1048,8 +958,7 @@ impl OAuth2Client
 /// Represents the response from an OAuth2 token introspection endpoint.
 /// 表示来自OAuth2令牌内省端点的响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct IntrospectionResponse
-{
+pub struct IntrospectionResponse {
     /// Whether the token is active
     /// 令牌是否活跃
     pub active: bool,
@@ -1110,26 +1019,20 @@ pub struct IntrospectionResponse
     pub jti: Option<String>,
 }
 
-impl IntrospectionResponse
-{
+impl IntrospectionResponse {
     /// Check if the token is active
     /// 检查令牌是否活跃
-    pub fn is_active(&self) -> bool
-    {
+    pub fn is_active(&self) -> bool {
         self.active
     }
 
     /// Check if the token is expired based on the exp claim
     /// 根据exp声明检查令牌是否过期
-    pub fn is_expired(&self) -> bool
-    {
-        if let Some(exp) = self.exp
-        {
+    pub fn is_expired(&self) -> bool {
+        if let Some(exp) = self.exp {
             let now = chrono::Utc::now().timestamp();
             now >= exp
-        }
-        else
-        {
+        } else {
             false
         }
     }
@@ -1144,8 +1047,7 @@ impl IntrospectionResponse
 /// ProviderConfiguration
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OIDCDiscoveryDocument
-{
+pub struct OIDCDiscoveryDocument {
     /// Issuer
     /// 颁发者
     pub issuer: String,
@@ -1206,8 +1108,7 @@ pub struct OIDCDiscoveryDocument
     pub revocation_endpoint: Option<String>,
 }
 
-impl OIDCDiscoveryDocument
-{
+impl OIDCDiscoveryDocument {
     /// Convert to `OAuth2Config`
     /// 转换为 `OAuth2` 配置
     pub fn to_oauth2_config(
@@ -1215,8 +1116,7 @@ impl OIDCDiscoveryDocument
         client_id: String,
         client_secret: Option<String>,
         redirect_uri: String,
-    ) -> OAuth2Config
-    {
+    ) -> OAuth2Config {
         OAuth2Config {
             client_id,
             client_secret,
@@ -1242,8 +1142,7 @@ impl OIDCDiscoveryDocument
 /// ProviderConfiguration
 /// NimbusReactiveResourceServerRetriever
 /// ```
-pub struct OIDCDiscovery
-{
+pub struct OIDCDiscovery {
     /// Issuer URL
     /// 颁发者URL
     issuer_url: String,
@@ -1254,12 +1153,10 @@ pub struct OIDCDiscovery
     http_client: Arc<reqwest::Client>,
 }
 
-impl OIDCDiscovery
-{
+impl OIDCDiscovery {
     /// Create a new OIDC discovery client
     /// 创建新的 OIDC 发现客户端
-    pub fn new(issuer_url: impl Into<String>) -> Self
-    {
+    pub fn new(issuer_url: impl Into<String>) -> Self {
         Self {
             issuer_url: issuer_url.into(),
             #[cfg(feature = "http-client")]
@@ -1278,8 +1175,7 @@ impl OIDCDiscovery
     /// let config = doc.to_oauth2_config("client-id", Some("secret"), "redirect-uri");
     /// ```
     #[cfg(feature = "http-client")]
-    pub async fn fetch(&self) -> SecurityResult<OIDCDiscoveryDocument>
-    {
+    pub async fn fetch(&self) -> SecurityResult<OIDCDiscoveryDocument> {
         let discovery_url =
             format!("{}/.well-known/openid-configuration", self.issuer_url.trim_end_matches('/'));
 
@@ -1292,8 +1188,7 @@ impl OIDCDiscovery
                 SecurityError::io_error(format!("Failed to fetch discovery document: {}", e))
             })?;
 
-        if !response.status().is_success()
-        {
+        if !response.status().is_success() {
             let status = response.status();
             let error_text = response
                 .text()
@@ -1322,8 +1217,7 @@ impl OIDCDiscovery
 /// OidcUser
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UserInfo
-{
+pub struct UserInfo {
     /// Subject identifier
     /// 主题标识符
     pub sub: String,
@@ -1370,14 +1264,18 @@ pub struct UserInfo
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_oauth2_config_builder()
-    {
+    fn test_oauth2_config_builder() {
         let config = OAuth2Config::new()
             .client_id("test-client")
             .client_secret("test-secret")
@@ -1405,8 +1303,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_response_authorization_header()
-    {
+    fn test_token_response_authorization_header() {
         let token = TokenResponse {
             access_token: "my-access-token".to_string(),
             token_type: "Bearer".to_string(),
@@ -1420,8 +1317,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_response_not_expired()
-    {
+    fn test_token_response_not_expired() {
         let token = TokenResponse {
             access_token: "my-access-token".to_string(),
             token_type: "Bearer".to_string(),
@@ -1435,8 +1331,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_response_with_timestamp()
-    {
+    fn test_token_response_with_timestamp() {
         let token = TokenResponse {
             access_token: "my-token".to_string(),
             token_type: "Bearer".to_string(),
@@ -1455,8 +1350,7 @@ mod tests
     }
 
     #[test]
-    fn test_authorization_url_generation()
-    {
+    fn test_authorization_url_generation() {
         let config = OAuth2Config::new()
             .client_id("test-client")
             .authorization_endpoint("https://auth.example.com/authorize")
@@ -1474,8 +1368,7 @@ mod tests
     }
 
     #[test]
-    fn test_authorization_url_with_state()
-    {
+    fn test_authorization_url_with_state() {
         let config = OAuth2Config::new()
             .client_id("test-client")
             .authorization_endpoint("https://auth.example.com/authorize")
@@ -1490,8 +1383,7 @@ mod tests
     }
 
     #[test]
-    fn test_authorization_url_with_pkce()
-    {
+    fn test_authorization_url_with_pkce() {
         let config = OAuth2Config::new()
             .client_id("test-client")
             .authorization_endpoint("https://auth.example.com/authorize")
@@ -1513,8 +1405,7 @@ mod tests
     }
 
     #[test]
-    fn test_pkce_params_generation()
-    {
+    fn test_pkce_params_generation() {
         let pkce = PkceParams::generate();
 
         // code_verifier should be 43 chars (32 bytes base64url no-pad)
@@ -1533,8 +1424,7 @@ mod tests
     }
 
     #[test]
-    fn test_pkce_verifier_uniqueness()
-    {
+    fn test_pkce_verifier_uniqueness() {
         let a = PkceParams::generate();
         let b = PkceParams::generate();
         // Two generated verifiers must differ (extremely high probability)
@@ -1543,8 +1433,7 @@ mod tests
     }
 
     #[test]
-    fn test_pkce_challenge_deterministic()
-    {
+    fn test_pkce_challenge_deterministic() {
         let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
         let challenge = PkceParams::generate_code_challenge(verifier);
         // Known test vector from RFC 7636 Appendix B
@@ -1553,8 +1442,7 @@ mod tests
     }
 
     #[test]
-    fn test_state_manager_generate_and_validate()
-    {
+    fn test_state_manager_generate_and_validate() {
         let mgr = StateManager::generate();
         let value = mgr.value().to_string();
 
@@ -1569,8 +1457,7 @@ mod tests
     }
 
     #[test]
-    fn test_state_manager_from_value()
-    {
+    fn test_state_manager_from_value() {
         let mgr = StateManager::from_value("known-state-123");
         assert_eq!(mgr.value(), "known-state-123");
         assert!(mgr.validate("known-state-123"));
@@ -1578,16 +1465,14 @@ mod tests
     }
 
     #[test]
-    fn test_state_manager_uniqueness()
-    {
+    fn test_state_manager_uniqueness() {
         let a = StateManager::generate();
         let b = StateManager::generate();
         assert_ne!(a.value(), b.value());
     }
 
     #[test]
-    fn test_introspection_response_active()
-    {
+    fn test_introspection_response_active() {
         let resp = IntrospectionResponse {
             active: true,
             scope: Some("read write".to_string()),
@@ -1608,8 +1493,7 @@ mod tests
     }
 
     #[test]
-    fn test_introspection_response_expired()
-    {
+    fn test_introspection_response_expired() {
         let resp = IntrospectionResponse {
             active: false,
             scope: None,
@@ -1630,8 +1514,7 @@ mod tests
     }
 
     #[test]
-    fn test_introspection_response_serialization()
-    {
+    fn test_introspection_response_serialization() {
         let json = r#"{
             "active": true,
             "scope": "read write",
@@ -1650,8 +1533,7 @@ mod tests
     }
 
     #[test]
-    fn test_user_info_serialization()
-    {
+    fn test_user_info_serialization() {
         let json = r#"{
             "sub": "user-123",
             "name": "Alice Smith",
@@ -1676,8 +1558,7 @@ mod tests
     }
 
     #[test]
-    fn test_oidc_discovery_document_serialization()
-    {
+    fn test_oidc_discovery_document_serialization() {
         let json = r#"{
             "issuer": "https://auth.example.com",
             "authorization_endpoint": "https://auth.example.com/authorize",
@@ -1720,8 +1601,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_endpoint_auth_method_default()
-    {
+    fn test_token_endpoint_auth_method_default() {
         assert_eq!(TokenEndpointAuthMethod::default(), TokenEndpointAuthMethod::ClientSecretPost);
     }
 }

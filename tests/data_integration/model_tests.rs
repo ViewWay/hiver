@@ -6,8 +6,7 @@ use hiver_data_orm::Model;
 /// Test User model with derive macro
 #[derive(Model, Debug, Clone, PartialEq)]
 #[model(table = "test_users")]
-struct UserModel
-{
+struct UserModel {
     #[model(primary_key)]
     id: i64,
 
@@ -24,8 +23,7 @@ struct UserModel
 /// Test Post model with relationships
 #[derive(Model, Debug, Clone, PartialEq)]
 #[model(table = "test_posts")]
-struct PostModel
-{
+struct PostModel {
     #[model(primary_key)]
     id: i64,
 
@@ -47,8 +45,7 @@ struct PostModel
 /// Test Product model with multiple attributes
 #[derive(Model, Debug, Clone, PartialEq)]
 #[model(table = "products")]
-struct ProductModel
-{
+struct ProductModel {
     #[model(primary_key)]
     id: i64,
 
@@ -72,20 +69,17 @@ struct ProductModel
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
 
     #[test]
-    fn test_model_meta_table_name()
-    {
+    fn test_model_meta_table_name() {
         let meta = UserModel::meta();
         assert_eq!(meta.table_name(), "test_users");
     }
 
     #[test]
-    fn test_model_meta_columns()
-    {
+    fn test_model_meta_columns() {
         let meta = UserModel::meta();
         assert_eq!(meta.columns.len(), 4);
 
@@ -98,8 +92,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_primary_key_column()
-    {
+    fn test_model_primary_key_column() {
         let meta = UserModel::meta();
 
         let id_column = meta
@@ -112,8 +105,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_unique_column()
-    {
+    fn test_model_unique_column() {
         let meta = UserModel::meta();
 
         let email_column = meta
@@ -126,8 +118,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_nullable_column()
-    {
+    fn test_model_nullable_column() {
         let meta = UserModel::meta();
 
         let name_column = meta
@@ -140,8 +131,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_default_value()
-    {
+    fn test_model_default_value() {
         let meta = UserModel::meta();
 
         let created_at_column = meta
@@ -154,8 +144,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_custom_column_name()
-    {
+    fn test_model_custom_column_name() {
         let meta = PostModel::meta();
 
         // Check that user_id column exists with custom name
@@ -169,8 +158,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_auto_table_name()
-    {
+    fn test_model_auto_table_name() {
         let meta = ProductModel::meta();
 
         // Should auto-generate table name from struct name
@@ -179,8 +167,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_max_length()
-    {
+    fn test_model_max_length() {
         let meta = ProductModel::meta();
 
         let sku_column = meta
@@ -193,8 +180,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_multiple_attributes()
-    {
+    fn test_model_multiple_attributes() {
         let meta = ProductModel::meta();
         assert_eq!(meta.columns.len(), 7);
 
@@ -223,8 +209,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_primary_key_method()
-    {
+    fn test_model_primary_key_method() {
         let user = UserModel {
             id: 123,
             email: "test@example.com".to_string(),
@@ -237,8 +222,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_set_primary_key()
-    {
+    fn test_model_set_primary_key() {
         let mut user = UserModel {
             id: 0,
             email: "test@example.com".to_string(),
@@ -251,8 +235,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_display()
-    {
+    fn test_model_display() {
         let user = UserModel {
             id: 123,
             email: "test@example.com".to_string(),
@@ -266,8 +249,7 @@ mod tests
     }
 
     #[test]
-    fn test_model_validation_default()
-    {
+    fn test_model_validation_default() {
         let user = UserModel {
             id: 123,
             email: "test@example.com".to_string(),
@@ -280,8 +262,7 @@ mod tests
     }
 
     #[test]
-    fn test_post_model_columns()
-    {
+    fn test_post_model_columns() {
         let meta = PostModel::meta();
 
         assert_eq!(meta.table_name(), "test_posts");

@@ -21,8 +21,7 @@ use super::Method;
 /// This is equivalent to Spring's `@RequestMapping` annotation system.
 /// 这等价于Spring的`@RequestMapping`注解系统。
 #[derive(Clone)]
-pub struct Router<S = ()>
-{
+pub struct Router<S = ()> {
     /// Routes organized by HTTP method
     /// 按HTTP方法组织的路由
     get_routes: Routes<S>,
@@ -43,17 +42,14 @@ pub struct Router<S = ()>
 /// Routes for a specific HTTP method
 /// 特定HTTP方法的路由
 #[derive(Clone)]
-struct Routes<S>
-{
+struct Routes<S> {
     /// Path pattern -> Route mapping
     /// 路径模式 -> 路由映射
     patterns: HashMap<String, Route<S>>,
 }
 
-impl<S> Default for Routes<S>
-{
-    fn default() -> Self
-    {
+impl<S> Default for Routes<S> {
+    fn default() -> Self {
         Self {
             patterns: HashMap::new(),
         }
@@ -62,8 +58,7 @@ impl<S> Default for Routes<S>
 
 /// A single route
 /// 单个路由
-struct Route<S>
-{
+struct Route<S> {
     /// Path pattern (e.g., "/users/:id")
     /// 路径模式（如 "/users/:id"）
     pattern: String,
@@ -77,10 +72,8 @@ struct Route<S>
 
 /// Manual Clone implementation for Route (doesn't require S: Clone)
 /// Route的手动Clone实现（不需要S: Clone）
-impl<S> Clone for Route<S>
-{
-    fn clone(&self) -> Self
-    {
+impl<S> Clone for Route<S> {
+    fn clone(&self) -> Self {
         Self {
             pattern: self.pattern.clone(),
             handler: self.handler.clone(),
@@ -97,8 +90,7 @@ pub type HandlerFn<S> = Arc<
 
 /// Handler enum that can be either a function or a static response
 /// 处理器枚举，可以是函数或静态响应
-pub enum Handler<S>
-{
+pub enum Handler<S> {
     /// Async function handler
     /// 异步函数处理程序
     Fn(HandlerFn<S>),
@@ -112,12 +104,9 @@ pub enum Handler<S>
 
 /// Manual Clone implementation for Handler (doesn't require S: Clone)
 /// Handler的手动Clone实现（不需要S: Clone）
-impl<S> Clone for Handler<S>
-{
-    fn clone(&self) -> Self
-    {
-        match self
-        {
+impl<S> Clone for Handler<S> {
+    fn clone(&self) -> Self {
+        match self {
             Handler::Fn(f) => Handler::Fn(f.clone()),
             Handler::Static(s) => Handler::Static(s),
             Handler::Bytes(b) => Handler::Bytes(b),
@@ -125,12 +114,10 @@ impl<S> Clone for Handler<S>
     }
 }
 
-impl<S> Router<S>
-{
+impl<S> Router<S> {
     /// Create a new router with state
     /// 创建带状态的新路由器
-    pub fn with_state(state: S) -> Self
-    {
+    pub fn with_state(state: S) -> Self {
         Self {
             get_routes: Routes::default(),
             post_routes: Routes::default(),
@@ -156,94 +143,104 @@ impl<S> Router<S>
     ///     .middleware(logging_middleware)
     ///     .get("/", handler);
     /// ```
-    pub fn middleware(mut self, mw: Arc<dyn Middleware<S>>) -> Self
-    {
+    pub fn middleware(mut self, mw: Arc<dyn Middleware<S>>) -> Self {
         self.middleware.push(mw);
         self
     }
 
     /// Add a GET route
     /// 添加GET路由
-    pub fn get(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self
-    {
+    pub fn get(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self {
         let path = path.into();
         let handler = handler.into();
         let param_names = extract_param_names(&path);
-        self.get_routes.patterns.insert(path.clone(), Route {
-            pattern: path,
-            handler,
-            param_names,
-        });
+        self.get_routes.patterns.insert(
+            path.clone(),
+            Route {
+                pattern: path,
+                handler,
+                param_names,
+            },
+        );
         self
     }
 
     /// Add a POST route
     /// 添加POST路由
-    pub fn post(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self
-    {
+    pub fn post(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self {
         let path = path.into();
         let handler = handler.into();
         let param_names = extract_param_names(&path);
-        self.post_routes.patterns.insert(path.clone(), Route {
-            pattern: path,
-            handler,
-            param_names,
-        });
+        self.post_routes.patterns.insert(
+            path.clone(),
+            Route {
+                pattern: path,
+                handler,
+                param_names,
+            },
+        );
         self
     }
 
     /// Add a PUT route
     /// 添加PUT路由
-    pub fn put(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self
-    {
+    pub fn put(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self {
         let path = path.into();
         let handler = handler.into();
         let param_names = extract_param_names(&path);
-        self.put_routes.patterns.insert(path.clone(), Route {
-            pattern: path,
-            handler,
-            param_names,
-        });
+        self.put_routes.patterns.insert(
+            path.clone(),
+            Route {
+                pattern: path,
+                handler,
+                param_names,
+            },
+        );
         self
     }
 
     /// Add a DELETE route
     /// 添加DELETE路由
-    pub fn delete(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self
-    {
+    pub fn delete(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self {
         let path = path.into();
         let handler = handler.into();
         let param_names = extract_param_names(&path);
-        self.delete_routes.patterns.insert(path.clone(), Route {
-            pattern: path,
-            handler,
-            param_names,
-        });
+        self.delete_routes.patterns.insert(
+            path.clone(),
+            Route {
+                pattern: path,
+                handler,
+                param_names,
+            },
+        );
         self
     }
 
     /// Add a PATCH route
     /// 添加PATCH路由
-    pub fn patch(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self
-    {
+    pub fn patch(mut self, path: impl Into<String>, handler: impl Into<Handler<S>>) -> Self {
         let path = path.into();
         let handler = handler.into();
         let param_names = extract_param_names(&path);
-        self.patch_routes.patterns.insert(path.clone(), Route {
-            pattern: path,
-            handler,
-            param_names,
-        });
+        self.patch_routes.patterns.insert(
+            path.clone(),
+            Route {
+                pattern: path,
+                handler,
+                param_names,
+            },
+        );
         self
     }
 
     /// Match a route for the given method and path
     /// 匹配给定方法和路径的路由
-    fn match_route(&self, method: Method, path: &str)
-    -> Option<(Route<S>, HashMap<String, String>)>
-    {
-        let routes = match method
-        {
+    fn match_route(
+        &self,
+        method: Method,
+        path: &str,
+    ) -> Option<(Route<S>, HashMap<String, String>)> {
+        let routes = match method {
             Method::GET => &self.get_routes,
             Method::POST => &self.post_routes,
             Method::PUT => &self.put_routes,
@@ -255,16 +252,13 @@ impl<S> Router<S>
         };
 
         // Try exact match first
-        if let Some(route) = routes.patterns.get(path)
-        {
+        if let Some(route) = routes.patterns.get(path) {
             return Some((route.clone(), HashMap::new()));
         }
 
         // Try pattern match
-        for route in routes.patterns.values()
-        {
-            if let Some(params) = match_path_pattern(&route.pattern, path)
-            {
+        for route in routes.patterns.values() {
+            if let Some(params) = match_path_pattern(&route.pattern, path) {
                 return Some((route.clone(), params));
             }
         }
@@ -277,26 +271,22 @@ impl<S> Default for Router<S>
 where
     S: Default,
 {
-    fn default() -> Self
-    {
+    fn default() -> Self {
         Self::with_state(S::default())
     }
 }
 
-impl Router
-{
+impl Router {
     /// Create a new router without state
     /// 创建无状态的新路由器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::with_state(())
     }
 }
 
 /// Extract parameter names from path pattern
 /// 从路径模式提取参数名称
-fn extract_param_names(pattern: &str) -> Vec<String>
-{
+fn extract_param_names(pattern: &str) -> Vec<String> {
     pattern
         .split('/')
         .filter_map(|s| s.strip_prefix('{').and_then(|s| s.strip_suffix('}')))
@@ -306,27 +296,22 @@ fn extract_param_names(pattern: &str) -> Vec<String>
 
 /// Match a path pattern against an actual path
 /// 匹配路径模式与实际路径
-fn match_path_pattern(pattern: &str, path: &str) -> Option<HashMap<String, String>>
-{
+fn match_path_pattern(pattern: &str, path: &str) -> Option<HashMap<String, String>> {
     let pattern_parts: Vec<&str> = pattern.split('/').collect();
     let path_parts: Vec<&str> = path.split('/').collect();
 
-    if pattern_parts.len() != path_parts.len()
-    {
+    if pattern_parts.len() != path_parts.len() {
         return None;
     }
 
     let mut params = HashMap::new();
-    for (pattern_part, path_part) in pattern_parts.iter().zip(path_parts.iter())
-    {
+    for (pattern_part, path_part) in pattern_parts.iter().zip(path_parts.iter()) {
         if let Some(param_name) = pattern_part
             .strip_prefix('{')
             .and_then(|s| s.strip_suffix('}'))
         {
             params.insert(param_name.to_string(), path_part.to_string());
-        }
-        else if pattern_part != path_part
-        {
+        } else if pattern_part != path_part {
             return None;
         }
     }
@@ -336,8 +321,7 @@ fn match_path_pattern(pattern: &str, path: &str) -> Option<HashMap<String, Strin
 
 /// Middleware trait
 /// 中间件trait
-pub trait Middleware<S>: Send + Sync + 'static
-{
+pub trait Middleware<S>: Send + Sync + 'static {
     /// Process the request and call the next middleware
     /// 处理请求并调用下一个中间件
     fn call(
@@ -350,8 +334,7 @@ pub trait Middleware<S>: Send + Sync + 'static
 
 /// Next middleware in the chain
 /// 链中的下一个中间件
-pub struct Next<S>
-{
+pub struct Next<S> {
     inner: Arc<
         dyn Fn(Request, Arc<S>) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
             + Send
@@ -361,18 +344,15 @@ pub struct Next<S>
 
 /// Manual Clone implementation for Next (doesn't require S: Clone)
 /// Next的手动Clone实现（不需要S: Clone）
-impl<S> Clone for Next<S>
-{
-    fn clone(&self) -> Self
-    {
+impl<S> Clone for Next<S> {
+    fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
         }
     }
 }
 
-impl<S> Next<S>
-{
+impl<S> Next<S> {
     /// Create a new Next from a closure
     /// 从闭包创建新的Next
     pub fn new<F>(f: F) -> Self
@@ -387,15 +367,13 @@ impl<S> Next<S>
 
     /// Create a new Next from an Arc'd function
     /// `从Arc函数创建新的Next`
-    pub fn from_arc(f: HandlerFn<S>) -> Self
-    {
+    pub fn from_arc(f: HandlerFn<S>) -> Self {
         Self { inner: f }
     }
 
     /// Call the next handler
     /// 调用下一个处理程序
-    pub async fn call(self, req: Request, state: Arc<S>) -> Result<Response>
-    {
+    pub async fn call(self, req: Request, state: Arc<S>) -> Result<Response> {
         (self.inner)(req, state).await
     }
 }
@@ -406,8 +384,7 @@ impl<S> hiver_http::HttpService for Router<S>
 where
     S: Send + Sync + 'static,
 {
-    fn call(&self, mut req: Request) -> impl Future<Output = Result<Response>> + Send
-    {
+    fn call(&self, mut req: Request) -> impl Future<Output = Result<Response>> + Send {
         let method = req.method();
         let path = req.path().to_string();
         let state = self.state.clone();
@@ -415,9 +392,7 @@ where
         let matched = self.match_route(method, &path);
 
         Box::pin(async move {
-            let Some((route, params)) = matched
-            else
-            {
+            let Some((route, params)) = matched else {
                 return Ok(Response::builder()
                     .status(StatusCode::NOT_FOUND)
                     .body(Body::from("Not Found"))
@@ -426,8 +401,7 @@ where
 
             // Set path parameters on request
             // 在请求上设置路径参数
-            for (name, value) in params
-            {
+            for (name, value) in params {
                 req.set_path_var(name, value);
             }
 
@@ -436,8 +410,7 @@ where
             let route_handler = route.handler.clone();
             let route_state = state.clone();
             let handler_fn: HandlerFn<S> =
-                Arc::new(move |req: Request, _st: Arc<S>| match route_handler.clone()
-                {
+                Arc::new(move |req: Request, _st: Arc<S>| match route_handler.clone() {
                     Handler::Static(s) => Box::pin(async move {
                         Ok(Response::builder()
                             .status(StatusCode::OK)
@@ -458,22 +431,18 @@ where
 
             // Build and execute middleware chain
             // 构建并执行中间件链
-            if middleware.is_empty()
-            {
+            if middleware.is_empty() {
                 // No middleware - call handler directly
                 // 无中间件 - 直接调用处理程序
                 handler_fn(req, state).await
-            }
-            else
-            {
+            } else {
                 // Build middleware chain from inner to outer
                 // 从内到外构建中间件链
                 let mut next = Next::from_arc(handler_fn);
 
                 // Apply middleware in reverse order (first registered = outermost)
                 // 以相反顺序应用中间件（第一个注册 = 最外层）
-                for mw in middleware.iter().rev()
-                {
+                for mw in middleware.iter().rev() {
                     let mw = mw.clone();
                     let inner = next.clone();
                     next =
@@ -498,8 +467,7 @@ where
     F: Fn(Request) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<Response>> + Send + 'static,
 {
-    fn from(f: F) -> Self
-    {
+    fn from(f: F) -> Self {
         let handler = Arc::new(move |req: Request, _state: Arc<S>| {
             Box::pin(f(req)) as Pin<Box<dyn Future<Output = Result<Response>> + Send>>
         });
@@ -527,8 +495,7 @@ where
 ///         Ok(Response::from("Count"))
 ///     }));
 /// ```
-pub struct Stateful<F, S>
-{
+pub struct Stateful<F, S> {
     /// The handler function
     /// 处理函数
     pub handler: F,
@@ -537,12 +504,10 @@ pub struct Stateful<F, S>
     pub _phantom: std::marker::PhantomData<S>,
 }
 
-impl<F, S> Stateful<F, S>
-{
+impl<F, S> Stateful<F, S> {
     /// Create a new stateful handler wrapper
     /// 创建新的有状态处理程序包装器
-    pub fn new(handler: F) -> Self
-    {
+    pub fn new(handler: F) -> Self {
         Self {
             handler,
             _phantom: std::marker::PhantomData,
@@ -558,8 +523,7 @@ where
     F: Fn(Request, Arc<S>) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = Result<Response>> + Send + 'static,
 {
-    fn from(Stateful { handler: f, .. }: Stateful<F, S>) -> Self
-    {
+    fn from(Stateful { handler: f, .. }: Stateful<F, S>) -> Self {
         let handler = Arc::new(move |req: Request, state: Arc<S>| {
             Box::pin(f(req, state)) as Pin<Box<dyn Future<Output = Result<Response>> + Send>>
         });
@@ -567,41 +531,41 @@ where
     }
 }
 
-impl<S> From<&'static str> for Handler<S>
-{
-    fn from(s: &'static str) -> Self
-    {
+impl<S> From<&'static str> for Handler<S> {
+    fn from(s: &'static str) -> Self {
         Handler::Static(s)
     }
 }
 
-impl<S> From<&'static [u8]> for Handler<S>
-{
-    fn from(b: &'static [u8]) -> Self
-    {
+impl<S> From<&'static [u8]> for Handler<S> {
+    fn from(b: &'static [u8]) -> Self {
         Handler::Bytes(b)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_extract_param_names()
-    {
+    fn test_extract_param_names() {
         assert_eq!(extract_param_names("/users/{id}"), vec!["id"]);
-        assert_eq!(extract_param_names("/users/{user_id}/posts/{post_id}"), vec![
-            "user_id", "post_id"
-        ]);
+        assert_eq!(
+            extract_param_names("/users/{user_id}/posts/{post_id}"),
+            vec!["user_id", "post_id"]
+        );
         assert_eq!(extract_param_names("/users"), Vec::<String>::new());
     }
 
     #[test]
-    fn test_match_path_pattern()
-    {
+    fn test_match_path_pattern() {
         // Exact match
         assert!(match_path_pattern("/users", "/users").is_some());
 
@@ -619,8 +583,7 @@ mod tests
     }
 
     #[test]
-    fn test_router_creation()
-    {
+    fn test_router_creation() {
         let router = Router::new().get("/", "Hello");
         assert_eq!(router.get_routes.patterns.len(), 1);
     }

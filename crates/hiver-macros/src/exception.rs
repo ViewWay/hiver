@@ -2,8 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, ItemImpl, parse_macro_input};
 
-pub fn controller_advice(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn controller_advice(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemImpl);
     let impl_item = &input;
     let type_name = &impl_item.self_ty;
@@ -22,13 +21,11 @@ pub fn controller_advice(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn rest_controller_advice(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn rest_controller_advice(_attr: TokenStream, item: TokenStream) -> TokenStream {
     controller_advice(_attr, item)
 }
 
-pub fn exception_handler(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn exception_handler(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

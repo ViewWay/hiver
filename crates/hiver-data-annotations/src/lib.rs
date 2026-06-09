@@ -101,8 +101,7 @@ mod pre_authorize_macro;
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_entity(attr, item)
 }
 
@@ -126,8 +125,7 @@ pub fn Entity(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream {
     entity::impl_table(attr, item)
 }
 
@@ -157,8 +155,7 @@ pub fn Table(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_id(attr, item)
 }
 
@@ -179,8 +176,7 @@ pub fn Id(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream {
     id::impl_generated_value(attr, item)
 }
 
@@ -208,8 +204,7 @@ pub fn GeneratedValue(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream {
     column::impl_column(attr, item)
 }
 
@@ -239,8 +234,7 @@ pub fn Column(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn OneToOne(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn OneToOne(attr: TokenStream, item: TokenStream) -> TokenStream {
     relation::impl_one_to_one(attr, item)
 }
 
@@ -266,8 +260,7 @@ pub fn OneToOne(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn OneToMany(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn OneToMany(attr: TokenStream, item: TokenStream) -> TokenStream {
     relation::impl_one_to_many(attr, item)
 }
 
@@ -292,8 +285,7 @@ pub fn OneToMany(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn ManyToOne(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn ManyToOne(attr: TokenStream, item: TokenStream) -> TokenStream {
     relation::impl_many_to_one(attr, item)
 }
 
@@ -319,8 +311,7 @@ pub fn ManyToOne(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn ManyToMany(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn ManyToMany(attr: TokenStream, item: TokenStream) -> TokenStream {
     relation::impl_many_to_many(attr, item)
 }
 
@@ -356,8 +347,7 @@ pub fn ManyToMany(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_query(attr, item)
 }
 
@@ -376,8 +366,7 @@ pub fn Query(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_insert(attr, item)
 }
 
@@ -396,8 +385,7 @@ pub fn Insert(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_update(attr, item)
 }
 
@@ -416,8 +404,7 @@ pub fn Update(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream {
     query::impl_delete(attr, item)
 }
 
@@ -457,8 +444,7 @@ pub fn Delete(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Transactional(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Transactional(attr: TokenStream, item: TokenStream) -> TokenStream {
     transactional_macro::impl_transactional(attr, item)
 }
 
@@ -519,8 +505,7 @@ pub fn Transactional(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[cfg(feature = "security")]
 #[proc_macro_attribute]
-pub fn PreAuthorize(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PreAuthorize(attr: TokenStream, item: TokenStream) -> TokenStream {
     pre_authorize_macro::pre_authorize(attr, item)
 }
 
@@ -528,8 +513,7 @@ pub fn PreAuthorize(attr: TokenStream, item: TokenStream) -> TokenStream
 /// @PreAuthorize 注解的别名
 #[cfg(feature = "security")]
 #[proc_macro_attribute]
-pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream {
     pre_authorize_macro::pre_authorize(attr, item)
 }
 
@@ -548,8 +532,7 @@ pub fn PreAuthorizeMacroFn(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_created_date(attr, item)
 }
 
@@ -564,8 +547,7 @@ pub fn CreatedDate(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_last_modified_date(attr, item)
 }
 
@@ -580,8 +562,7 @@ pub fn LastModifiedDate(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_created_by(attr, item)
 }
 
@@ -596,8 +577,7 @@ pub fn CreatedBy(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream {
     audit::impl_last_modified_by(attr, item)
 }
 
@@ -616,8 +596,7 @@ pub fn LastModifiedBy(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_persist(attr, item)
 }
 
@@ -625,8 +604,7 @@ pub fn PrePersist(attr: TokenStream, item: TokenStream) -> TokenStream
 /// 标记方法在实体持久化之后调用。
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_persist(attr, item)
 }
 
@@ -634,8 +612,7 @@ pub fn PostPersist(attr: TokenStream, item: TokenStream) -> TokenStream
 /// 标记方法在实体更新之前调用。
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_update(attr, item)
 }
 
@@ -643,8 +620,7 @@ pub fn PreUpdate(attr: TokenStream, item: TokenStream) -> TokenStream
 /// 标记方法在实体更新之后调用。
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_update(attr, item)
 }
 
@@ -652,8 +628,7 @@ pub fn PostUpdate(attr: TokenStream, item: TokenStream) -> TokenStream
 /// 标记方法在实体删除之前调用。
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_pre_remove(attr, item)
 }
 
@@ -661,8 +636,7 @@ pub fn PreRemove(attr: TokenStream, item: TokenStream) -> TokenStream
 /// 标记方法在实体从数据库加载之后调用。
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream {
     lifecycle::impl_post_load(attr, item)
 }
 
@@ -681,8 +655,7 @@ pub fn PostLoad(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
 
@@ -697,8 +670,7 @@ pub fn Transient(_attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
 
@@ -714,7 +686,6 @@ pub fn JoinColumn(_attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn JoinTable(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn JoinTable(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }

@@ -47,8 +47,7 @@ use std::{
 /// Represents a single instance of a service with its connection details.
 /// 表示具有其连接详细信息的服务单个实例。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ServiceInstance
-{
+pub struct ServiceInstance {
     /// Unique instance ID
     /// 唯一实例ID
     pub id: String,
@@ -78,28 +77,20 @@ pub struct ServiceInstance
     pub status: InstanceStatus,
 }
 
-impl ServiceInstance
-{
+impl ServiceInstance {
     /// Create a new service instance from a URL
     /// 从URL创建新的服务实例
-    pub fn new(url: impl Into<String>) -> Self
-    {
+    pub fn new(url: impl Into<String>) -> Self {
         let url_str = url.into();
-        let (secure, url) = if let Some(rest) = url_str.strip_prefix("https://")
-        {
+        let (secure, url) = if let Some(rest) = url_str.strip_prefix("https://") {
             (true, rest)
-        }
-        else if let Some(rest) = url_str.strip_prefix("http://")
-        {
+        } else if let Some(rest) = url_str.strip_prefix("http://") {
             (false, rest)
-        }
-        else
-        {
+        } else {
             (false, url_str.as_str())
         };
 
-        let (host, port) = match url.split_once(':')
-        {
+        let (host, port) = match url.split_once(':') {
             Some((h, p)) => (h.to_string(), p.parse::<u16>().unwrap_or(80)),
             None => (url.to_string(), if secure { 443 } else { 80 }),
         };
@@ -117,9 +108,11 @@ impl ServiceInstance
 
     /// Create a service instance with full details
     /// 创建具有完整详细信息的服务实例
-    pub fn with_details(service_name: impl Into<String>, host: impl Into<String>, port: u16)
-    -> Self
-    {
+    pub fn with_details(
+        service_name: impl Into<String>,
+        host: impl Into<String>,
+        port: u16,
+    ) -> Self {
         let service_name = service_name.into();
         let host = host.into();
         let id = format!("{}:{}", host, port);
@@ -137,56 +130,48 @@ impl ServiceInstance
 
     /// Set the service name
     /// 设置服务名称
-    pub fn with_service_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn with_service_name(mut self, name: impl Into<String>) -> Self {
         self.service_name = name.into();
         self
     }
 
     /// Set whether the instance uses HTTPS
     /// 设置实例是否使用HTTPS
-    pub fn with_secure(mut self, secure: bool) -> Self
-    {
+    pub fn with_secure(mut self, secure: bool) -> Self {
         self.secure = secure;
         self
     }
 
     /// Add metadata
     /// 添加元数据
-    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.metadata.insert(key.into(), value.into());
         self
     }
 
     /// Set the instance status
     /// 设置实例状态
-    pub fn with_status(mut self, status: InstanceStatus) -> Self
-    {
+    pub fn with_status(mut self, status: InstanceStatus) -> Self {
         self.status = status;
         self
     }
 
     /// Get the base URL for this instance
     /// 获取此实例的基本URL
-    pub fn base_url(&self) -> String
-    {
+    pub fn base_url(&self) -> String {
         let protocol = if self.secure { "https" } else { "http" };
         format!("{}://{}:{}", protocol, self.host, self.port)
     }
 
     /// Check if the instance is up
     /// 检查实例是否启动
-    pub fn is_up(&self) -> bool
-    {
+    pub fn is_up(&self) -> bool {
         self.status == InstanceStatus::Up
     }
 }
 
-impl fmt::Display for ServiceInstance
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for ServiceInstance {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} ({})", self.base_url(), self.status)
     }
 }
@@ -194,8 +179,7 @@ impl fmt::Display for ServiceInstance
 /// Instance health status
 /// 实例健康状态
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum InstanceStatus
-{
+pub enum InstanceStatus {
     /// Instance is starting
     /// 实例正在启动
     Starting,
@@ -217,12 +201,9 @@ pub enum InstanceStatus
     Unknown,
 }
 
-impl fmt::Display for InstanceStatus
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for InstanceStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Self::Starting => write!(f, "Starting"),
             Self::Up => write!(f, "Up"),
             Self::Down => write!(f, "Down"),
@@ -235,8 +216,7 @@ impl fmt::Display for InstanceStatus
 /// Load balancing strategy
 /// 负载均衡策略
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum LoadBalanceStrategy
-{
+pub enum LoadBalanceStrategy {
     /// Round-robin selection
     /// 轮询选择
     #[default]
@@ -255,12 +235,9 @@ pub enum LoadBalanceStrategy
     IpHash,
 }
 
-impl fmt::Display for LoadBalanceStrategy
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for LoadBalanceStrategy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Self::RoundRobin => write!(f, "RoundRobin"),
             Self::Random => write!(f, "Random"),
             Self::LeastConnections => write!(f, "LeastConnections"),
@@ -272,8 +249,7 @@ impl fmt::Display for LoadBalanceStrategy
 /// Service discovery error
 /// 服务发现错误
 #[derive(Debug, Clone)]
-pub enum DiscoveryError
-{
+pub enum DiscoveryError {
     /// Service not found
     /// 服务未找到
     ServiceNotFound(String),
@@ -295,12 +271,9 @@ pub enum DiscoveryError
     Timeout,
 }
 
-impl fmt::Display for DiscoveryError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for DiscoveryError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Self::ServiceNotFound(name) => write!(f, "Service not found: {}", name),
             Self::NoHealthyInstances(name) => write!(f, "No healthy instances for: {}", name),
             Self::InvalidServiceName(name) => write!(f, "Invalid service name: {}", name),
@@ -321,8 +294,7 @@ pub type Result<T> = std::result::Result<T, DiscoveryError>;
 ///
 /// Defines the interface for service discovery implementations.
 /// 定义服务发现实现的接口。
-pub trait ServiceRegistry: Send + Sync
-{
+pub trait ServiceRegistry: Send + Sync {
     /// Get all instances for a service
     /// 获取服务的所有实例
     fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>>;
@@ -350,8 +322,7 @@ pub trait ServiceRegistry: Send + Sync
 /// A basic implementation of service registry using in-memory storage.
 /// 使用内存存储的服务注册表的基本实现。
 #[derive(Debug, Default)]
-pub struct SimpleServiceRegistry
-{
+pub struct SimpleServiceRegistry {
     /// Service instances by service name
     /// 按服务名称索引的服务实例
     services: RwLock<HashMap<String, Vec<ServiceInstance>>>,
@@ -365,19 +336,16 @@ pub struct SimpleServiceRegistry
     rr_counter: RwLock<HashMap<String, usize>>,
 }
 
-impl SimpleServiceRegistry
-{
+impl SimpleServiceRegistry {
     /// Create a new simple service registry
     /// 创建新的简单服务注册表
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Create with a specific load balancing strategy
     /// 使用特定负载均衡策略创建
-    pub fn with_strategy(strategy: LoadBalanceStrategy) -> Self
-    {
+    pub fn with_strategy(strategy: LoadBalanceStrategy) -> Self {
         Self {
             services: RwLock::new(HashMap::new()),
             strategy,
@@ -387,8 +355,7 @@ impl SimpleServiceRegistry
 
     /// Get healthy instances for a service
     /// 获取服务的健康实例
-    fn get_healthy_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>>
-    {
+    fn get_healthy_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>> {
         let services = self.services.read().expect("lock poisoned");
         let instances = services
             .get(service_name)
@@ -396,45 +363,39 @@ impl SimpleServiceRegistry
 
         let healthy: Vec<_> = instances.iter().filter(|i| i.is_up()).cloned().collect();
 
-        if healthy.is_empty()
-        {
+        if healthy.is_empty() {
             Err(DiscoveryError::NoHealthyInstances(service_name.to_string()))
-        }
-        else
-        {
+        } else {
             Ok(healthy)
         }
     }
 
     /// Select an instance using the configured strategy
     /// 使用配置的策略选择实例
-    fn select_instance(&self, instances: &[ServiceInstance], service_name: &str)
-    -> ServiceInstance
-    {
+    fn select_instance(
+        &self,
+        instances: &[ServiceInstance],
+        service_name: &str,
+    ) -> ServiceInstance {
         assert!(!instances.is_empty(), "Cannot select from empty instances list");
 
-        match self.strategy
-        {
-            LoadBalanceStrategy::RoundRobin =>
-            {
+        match self.strategy {
+            LoadBalanceStrategy::RoundRobin => {
                 let mut counter = self.rr_counter.write().expect("lock poisoned");
                 let index = counter.entry(service_name.to_string()).or_insert(0);
                 let instance = instances[*index % instances.len()].clone();
                 *index = (*index + 1) % instances.len();
                 instance
             },
-            LoadBalanceStrategy::Random =>
-            {
+            LoadBalanceStrategy::Random => {
                 let index = (rand::random::<u64>() as usize) % instances.len();
                 instances[index].clone()
             },
-            LoadBalanceStrategy::LeastConnections =>
-            {
+            LoadBalanceStrategy::LeastConnections => {
                 // For now, return the first instance (would need connection tracking)
                 instances[0].clone()
             },
-            LoadBalanceStrategy::IpHash =>
-            {
+            LoadBalanceStrategy::IpHash => {
                 // Use a simple hash of the service name
                 let hash = service_name.len() % instances.len();
                 instances[hash].clone()
@@ -443,50 +404,40 @@ impl SimpleServiceRegistry
     }
 }
 
-impl ServiceRegistry for SimpleServiceRegistry
-{
-    fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>>
-    {
+impl ServiceRegistry for SimpleServiceRegistry {
+    fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>> {
         self.get_healthy_instances(service_name)
     }
 
-    fn get_instance(&self, service_name: &str) -> Result<ServiceInstance>
-    {
+    fn get_instance(&self, service_name: &str) -> Result<ServiceInstance> {
         let instances = self.get_healthy_instances(service_name)?;
         Ok(self.select_instance(&instances, service_name))
     }
 
-    fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()>
-    {
+    fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()> {
         let mut services = self.services.write().expect("lock poisoned");
         let entry = services.entry(service_name.to_string()).or_default();
 
         // Check if instance already exists
         let exists = entry.iter().any(|i| i.id == instance.id);
-        if !exists
-        {
+        if !exists {
             entry.push(instance);
         }
 
         Ok(())
     }
 
-    fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()>
-    {
+    fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()> {
         let mut services = self.services.write().expect("lock poisoned");
-        if let Some(instances) = services.get_mut(service_name)
-        {
+        if let Some(instances) = services.get_mut(service_name) {
             instances.retain(|i| i.id != instance_id);
             Ok(())
-        }
-        else
-        {
+        } else {
             Err(DiscoveryError::ServiceNotFound(service_name.to_string()))
         }
     }
 
-    fn get_services(&self) -> Result<Vec<String>>
-    {
+    fn get_services(&self) -> Result<Vec<String>> {
         let services = self.services.read().expect("lock poisoned");
         Ok(services.keys().cloned().collect())
     }
@@ -498,94 +449,87 @@ impl ServiceRegistry for SimpleServiceRegistry
 /// High-level client for service discovery operations.
 /// 服务发现操作的高级客户端。
 #[derive(Clone)]
-pub struct ServiceDiscovery
-{
+pub struct ServiceDiscovery {
     /// Underlying registry
     /// 底层注册表
     registry: Arc<dyn ServiceRegistry>,
 }
 
-impl ServiceDiscovery
-{
+impl ServiceDiscovery {
     /// Create a new service discovery client
     /// 创建新的服务发现客户端
-    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self
-    {
+    pub fn new(registry: Arc<dyn ServiceRegistry>) -> Self {
         Self { registry }
     }
 
     /// Create with a simple in-memory registry
     /// 使用简单的内存注册表创建
-    pub fn with_simple_registry() -> Self
-    {
+    pub fn with_simple_registry() -> Self {
         Self::new(Arc::new(SimpleServiceRegistry::new()))
     }
 
     /// Create with a simple registry and specific strategy
     /// 使用简单注册表和特定策略创建
-    pub fn with_strategy(strategy: LoadBalanceStrategy) -> Self
-    {
+    pub fn with_strategy(strategy: LoadBalanceStrategy) -> Self {
         Self::new(Arc::new(SimpleServiceRegistry::with_strategy(strategy)))
     }
 
     /// Discover all instances for a service
     /// 发现服务的所有实例
     #[allow(clippy::unused_async)]
-    pub async fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>>
-    {
+    pub async fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>> {
         self.registry.get_instances(service_name)
     }
 
     /// Get a single service instance
     /// 获取单个服务实例
     #[allow(clippy::unused_async)]
-    pub async fn get_instance(&self, service_name: &str) -> Result<ServiceInstance>
-    {
+    pub async fn get_instance(&self, service_name: &str) -> Result<ServiceInstance> {
         self.registry.get_instance(service_name)
     }
 
     /// Register a service instance
     /// 注册服务实例
     #[allow(clippy::unused_async)]
-    pub async fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()>
-    {
+    pub async fn register(&self, service_name: &str, instance: ServiceInstance) -> Result<()> {
         self.registry.register(service_name, instance)
     }
 
     /// Deregister a service instance
     /// 取消注册服务实例
     #[allow(clippy::unused_async)]
-    pub async fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()>
-    {
+    pub async fn deregister(&self, service_name: &str, instance_id: &str) -> Result<()> {
         self.registry.deregister(service_name, instance_id)
     }
 
     /// Get all registered service names
     /// 获取所有已注册的服务名称
     #[allow(clippy::unused_async)]
-    pub async fn get_services(&self) -> Result<Vec<String>>
-    {
+    pub async fn get_services(&self) -> Result<Vec<String>> {
         self.registry.get_services()
     }
 
     /// Check if a service is available
     /// 检查服务是否可用
     #[allow(clippy::unused_async)]
-    pub async fn is_available(&self, service_name: &str) -> bool
-    {
+    pub async fn is_available(&self, service_name: &str) -> bool {
         self.registry.get_instances(service_name).is_ok()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_service_instance_new()
-    {
+    fn test_service_instance_new() {
         let instance = ServiceInstance::new("http://localhost:8080");
         assert_eq!(instance.host, "localhost");
         assert_eq!(instance.port, 8080);
@@ -593,8 +537,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_https()
-    {
+    fn test_service_instance_https() {
         let instance = ServiceInstance::new("https://example.com");
         assert_eq!(instance.host, "example.com");
         assert_eq!(instance.port, 443);
@@ -602,8 +545,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_with_details()
-    {
+    fn test_service_instance_with_details() {
         let instance = ServiceInstance::with_details("user-service", "10.0.0.1", 8080);
         assert_eq!(instance.service_name, "user-service");
         assert_eq!(instance.host, "10.0.0.1");
@@ -611,8 +553,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_builder()
-    {
+    fn test_service_instance_builder() {
         let instance = ServiceInstance::with_details("api", "localhost", 3000)
             .with_secure(true)
             .with_metadata("version", "1.0")
@@ -624,30 +565,26 @@ mod tests
     }
 
     #[test]
-    fn test_service_instance_base_url()
-    {
+    fn test_service_instance_base_url() {
         let instance = ServiceInstance::new("http://example.com:8080");
         assert_eq!(instance.base_url(), "http://example.com:8080");
     }
 
     #[test]
-    fn test_instance_status_display()
-    {
+    fn test_instance_status_display() {
         assert_eq!(InstanceStatus::Up.to_string(), "Up");
         assert_eq!(InstanceStatus::Down.to_string(), "Down");
         assert_eq!(InstanceStatus::Starting.to_string(), "Starting");
     }
 
     #[test]
-    fn test_load_balance_strategy_display()
-    {
+    fn test_load_balance_strategy_display() {
         assert_eq!(LoadBalanceStrategy::RoundRobin.to_string(), "RoundRobin");
         assert_eq!(LoadBalanceStrategy::Random.to_string(), "Random");
     }
 
     #[test]
-    fn test_simple_registry_registration()
-    {
+    fn test_simple_registry_registration() {
         let registry = SimpleServiceRegistry::new();
         let instance = ServiceInstance::new("http://localhost:8080");
 
@@ -655,8 +592,7 @@ mod tests
     }
 
     #[test]
-    fn test_simple_registry_get_instances()
-    {
+    fn test_simple_registry_get_instances() {
         let registry = SimpleServiceRegistry::new();
         let instance1 = ServiceInstance::new("http://localhost:8080");
         let instance2 = ServiceInstance::new("http://localhost:8081");
@@ -669,8 +605,7 @@ mod tests
     }
 
     #[test]
-    fn test_simple_registry_deregister()
-    {
+    fn test_simple_registry_deregister() {
         let registry = SimpleServiceRegistry::new();
         let instance = ServiceInstance::new("http://localhost:8080");
 
@@ -681,8 +616,7 @@ mod tests
     }
 
     #[test]
-    fn test_service_discovery()
-    {
+    fn test_service_discovery() {
         let _discovery = ServiceDiscovery::with_simple_registry();
         let instance = ServiceInstance::new("http://localhost:8080");
 
@@ -694,8 +628,7 @@ mod tests
     }
 
     #[test]
-    fn test_discovery_error_display()
-    {
+    fn test_discovery_error_display() {
         let err = DiscoveryError::ServiceNotFound("my-service".to_string());
         assert!(err.to_string().contains("Service not found"));
         assert!(err.to_string().contains("my-service"));

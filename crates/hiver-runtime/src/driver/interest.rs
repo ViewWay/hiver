@@ -10,8 +10,7 @@ use std::os::fd::RawFd;
 /// Specifies which events the driver should monitor for a file descriptor.
 /// 指定driver应监控文件描述符的哪些事件。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct Interest
-{
+pub struct Interest {
     /// Monitor for readability / 监控可读性
     pub readable: bool,
     /// Monitor for writability / 监控可写性
@@ -24,13 +23,11 @@ pub struct Interest
     pub edge: bool,
 }
 
-impl Interest
-{
+impl Interest {
     /// Create a new empty interest
     /// 创建一个新的空兴趣
     #[must_use]
-    pub const fn new() -> Self
-    {
+    pub const fn new() -> Self {
         Self {
             readable: false,
             writable: false,
@@ -43,8 +40,7 @@ impl Interest
     /// Create interest for readable events
     /// 创建可读事件兴趣
     #[must_use]
-    pub const fn readable() -> Self
-    {
+    pub const fn readable() -> Self {
         Self {
             readable: true,
             writable: false,
@@ -57,8 +53,7 @@ impl Interest
     /// Create interest for writable events
     /// 创建可写事件兴趣
     #[must_use]
-    pub const fn writable() -> Self
-    {
+    pub const fn writable() -> Self {
         Self {
             readable: false,
             writable: true,
@@ -71,8 +66,7 @@ impl Interest
     /// Create interest for both readable and writable events
     /// 创建可读和可写事件兴趣
     #[must_use]
-    pub const fn both() -> Self
-    {
+    pub const fn both() -> Self {
         Self {
             readable: true,
             writable: true,
@@ -85,8 +79,7 @@ impl Interest
     /// Add readability to the interest
     /// 添加可读性到兴趣
     #[must_use]
-    pub const fn with_readable(mut self) -> Self
-    {
+    pub const fn with_readable(mut self) -> Self {
         self.readable = true;
         self
     }
@@ -94,8 +87,7 @@ impl Interest
     /// Add writability to the interest
     /// 添加可写性到兴趣
     #[must_use]
-    pub const fn with_writable(mut self) -> Self
-    {
+    pub const fn with_writable(mut self) -> Self {
         self.writable = true;
         self
     }
@@ -103,8 +95,7 @@ impl Interest
     /// Enable priority mode
     /// 启用优先级模式
     #[must_use]
-    pub const fn with_priority(mut self) -> Self
-    {
+    pub const fn with_priority(mut self) -> Self {
         self.priority = true;
         self
     }
@@ -112,8 +103,7 @@ impl Interest
     /// Enable one-shot mode
     /// 启用单次模式
     #[must_use]
-    pub const fn with_oneshot(mut self) -> Self
-    {
+    pub const fn with_oneshot(mut self) -> Self {
         self.oneshot = true;
         self
     }
@@ -121,8 +111,7 @@ impl Interest
     /// Enable edge-triggered mode
     /// 启用边缘触发模式
     #[must_use]
-    pub const fn with_edge(mut self) -> Self
-    {
+    pub const fn with_edge(mut self) -> Self {
         self.edge = true;
         self
     }
@@ -130,28 +119,22 @@ impl Interest
     /// Convert to epoll event flags
     /// 转换为epoll事件标志
     #[cfg(target_os = "linux")]
-    pub const fn to_epoll_flags(self) -> u32
-    {
+    pub const fn to_epoll_flags(self) -> u32 {
         let mut flags = 0u32;
 
-        if self.readable
-        {
+        if self.readable {
             flags |= libc::EPOLLIN as u32;
         }
-        if self.writable
-        {
+        if self.writable {
             flags |= libc::EPOLLOUT as u32;
         }
-        if self.priority
-        {
+        if self.priority {
             flags |= libc::EPOLLPRI as u32;
         }
-        if self.oneshot
-        {
+        if self.oneshot {
             flags |= libc::EPOLLONESHOT as u32;
         }
-        if self.edge
-        {
+        if self.edge {
             flags |= libc::EPOLLET as u32;
         }
 
@@ -161,8 +144,7 @@ impl Interest
     /// Convert from epoll event flags
     /// 从epoll事件标志转换
     #[cfg(target_os = "linux")]
-    pub fn from_epoll_flags(flags: u32) -> Self
-    {
+    pub fn from_epoll_flags(flags: u32) -> Self {
         Self {
             readable: (flags & libc::EPOLLIN as u32) != 0,
             writable: (flags & libc::EPOLLOUT as u32) != 0,
@@ -182,42 +164,35 @@ impl Interest
         target_os = "dragonfly"
     ))]
     #[allow(dead_code)]
-    pub fn to_kqueue_filters(&self, fd: RawFd) -> (Vec<libc::kevent>, Vec<libc::kevent>)
-    {
+    pub fn to_kqueue_filters(&self, fd: RawFd) -> (Vec<libc::kevent>, Vec<libc::kevent>) {
         use std::mem::zeroed;
 
         let mut add_events = Vec::with_capacity(2);
         let remove_events = Vec::new();
 
-        if self.readable
-        {
+        if self.readable {
             let mut event = unsafe { zeroed::<libc::kevent>() };
             event.ident = fd as libc::uintptr_t;
             event.filter = libc::EVFILT_READ;
             event.flags = libc::EV_ADD | libc::EV_RECEIPT;
-            if self.edge
-            {
+            if self.edge {
                 event.flags |= libc::EV_CLEAR;
             }
-            if self.oneshot
-            {
+            if self.oneshot {
                 event.flags |= libc::EV_ONESHOT;
             }
             add_events.push(event);
         }
 
-        if self.writable
-        {
+        if self.writable {
             let mut event = unsafe { zeroed::<libc::kevent>() };
             event.ident = fd as libc::uintptr_t;
             event.filter = libc::EVFILT_WRITE;
             event.flags = libc::EV_ADD | libc::EV_RECEIPT;
-            if self.edge
-            {
+            if self.edge {
                 event.flags |= libc::EV_CLEAR;
             }
-            if self.oneshot
-            {
+            if self.oneshot {
                 event.flags |= libc::EV_ONESHOT;
             }
             add_events.push(event);
@@ -228,14 +203,18 @@ impl Interest
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_interest_builder()
-    {
+    fn test_interest_builder() {
         let interest = Interest::readable().with_writable().with_edge();
 
         assert!(interest.readable);
@@ -245,8 +224,7 @@ mod tests
     }
 
     #[test]
-    fn test_interest_both()
-    {
+    fn test_interest_both() {
         let interest = Interest::both();
         assert!(interest.readable);
         assert!(interest.writable);

@@ -33,8 +33,7 @@ use tokio::{
 /// Email error type.
 /// 邮件错误类型。
 #[derive(Error, Debug)]
-pub enum EmailError
-{
+pub enum EmailError {
     /// Configuration error.
     /// 配置错误。
     #[error("Email configuration error: {0}")]
@@ -72,8 +71,7 @@ pub type EmailResult<T> = Result<T, EmailError>;
 /// Email service configuration.
 /// 邮件服务配置。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmailConfig
-{
+pub struct EmailConfig {
     /// SMTP server hostname.
     /// SMTP 服务器主机名。
     pub smtp_host: String,
@@ -103,8 +101,7 @@ pub struct EmailConfig
     pub tls: bool,
 }
 
-impl EmailConfig
-{
+impl EmailConfig {
     /// Create a new email configuration.
     /// 创建新的邮件配置。
     pub fn new(
@@ -113,8 +110,7 @@ impl EmailConfig
         username: impl Into<String>,
         password: impl Into<String>,
         from_address: impl Into<String>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             smtp_host: smtp_host.into(),
             smtp_port,
@@ -128,30 +124,25 @@ impl EmailConfig
 
     /// Builder-style: set the display name.
     /// 构建器风格：设置显示名称。
-    pub fn from_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn from_name(mut self, name: impl Into<String>) -> Self {
         self.from_name = name.into();
         self
     }
 
     /// Builder-style: enable or disable TLS.
     /// 构建器风格：启用或禁用 TLS。
-    pub fn tls(mut self, tls: bool) -> Self
-    {
+    pub fn tls(mut self, tls: bool) -> Self {
         self.tls = tls;
         self
     }
 
     /// Validate required fields.
     /// 验证必填字段。
-    pub fn validate(&self) -> EmailResult<()>
-    {
-        if self.smtp_host.is_empty()
-        {
+    pub fn validate(&self) -> EmailResult<()> {
+        if self.smtp_host.is_empty() {
             return Err(EmailError::ConfigError("smtp_host is required".into()));
         }
-        if self.from_address.is_empty() || !self.from_address.contains('@')
-        {
+        if self.from_address.is_empty() || !self.from_address.contains('@') {
             return Err(EmailError::ConfigError("from_address must be a valid email".into()));
         }
         Ok(())
@@ -165,8 +156,7 @@ impl EmailConfig
 /// File attachment for an email.
 /// 邮件的文件附件。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Attachment
-{
+pub struct Attachment {
     /// File name.
     /// 文件名。
     pub name: String,
@@ -180,12 +170,10 @@ pub struct Attachment
     pub data: Vec<u8>,
 }
 
-impl Attachment
-{
+impl Attachment {
     /// Create a new attachment.
     /// 创建新的附件。
-    pub fn new(name: impl Into<String>, content_type: impl Into<String>, data: Vec<u8>) -> Self
-    {
+    pub fn new(name: impl Into<String>, content_type: impl Into<String>, data: Vec<u8>) -> Self {
         Self {
             name: name.into(),
             content_type: content_type.into(),
@@ -197,8 +185,7 @@ impl Attachment
 /// Email message builder.
 /// 邮件消息构建器。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmailMessage
-{
+pub struct EmailMessage {
     /// Recipient addresses.
     /// 收件人地址。
     pub to: Vec<String>,
@@ -228,20 +215,16 @@ pub struct EmailMessage
     pub attachments: Vec<Attachment>,
 }
 
-impl Default for EmailMessage
-{
-    fn default() -> Self
-    {
+impl Default for EmailMessage {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl EmailMessage
-{
+impl EmailMessage {
     /// Create a new empty email message.
     /// 创建新的空邮件消息。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             to: Vec::new(),
             cc: Vec::new(),
@@ -255,72 +238,62 @@ impl EmailMessage
 
     /// Builder-style: add a recipient.
     /// 构建器风格：添加收件人。
-    pub fn to(mut self, addr: impl Into<String>) -> Self
-    {
+    pub fn to(mut self, addr: impl Into<String>) -> Self {
         self.to.push(addr.into());
         self
     }
 
     /// Builder-style: add a CC recipient.
     /// 构建器风格：添加抄送收件人。
-    pub fn cc(mut self, addr: impl Into<String>) -> Self
-    {
+    pub fn cc(mut self, addr: impl Into<String>) -> Self {
         self.cc.push(addr.into());
         self
     }
 
     /// Builder-style: add a BCC recipient.
     /// 构建器风格：添加密送收件人。
-    pub fn bcc(mut self, addr: impl Into<String>) -> Self
-    {
+    pub fn bcc(mut self, addr: impl Into<String>) -> Self {
         self.bcc.push(addr.into());
         self
     }
 
     /// Builder-style: set the subject.
     /// 构建器风格：设置主题。
-    pub fn subject(mut self, subject: impl Into<String>) -> Self
-    {
+    pub fn subject(mut self, subject: impl Into<String>) -> Self {
         self.subject = subject.into();
         self
     }
 
     /// Builder-style: set the plain-text body.
     /// 构建器风格：设置纯文本正文。
-    pub fn body(mut self, body: impl Into<String>) -> Self
-    {
+    pub fn body(mut self, body: impl Into<String>) -> Self {
         self.body = body.into();
         self
     }
 
     /// Builder-style: set the HTML body.
     /// 构建器风格：设置 HTML 正文。
-    pub fn html_body(mut self, html: impl Into<String>) -> Self
-    {
+    pub fn html_body(mut self, html: impl Into<String>) -> Self {
         self.html_body = Some(html.into());
         self
     }
 
     /// Builder-style: add an attachment.
     /// 构建器风格：添加附件。
-    pub fn attachment(mut self, attachment: Attachment) -> Self
-    {
+    pub fn attachment(mut self, attachment: Attachment) -> Self {
         self.attachments.push(attachment);
         self
     }
 
     /// Validate that the message has at least one recipient and a subject.
     /// 验证消息至少有一个收件人和主题。
-    pub fn validate(&self) -> EmailResult<()>
-    {
-        if self.to.is_empty() && self.cc.is_empty() && self.bcc.is_empty()
-        {
+    pub fn validate(&self) -> EmailResult<()> {
+        if self.to.is_empty() && self.cc.is_empty() && self.bcc.is_empty() {
             return Err(EmailError::InvalidMessage(
                 "Email must have at least one recipient".into(),
             ));
         }
-        if self.subject.is_empty()
-        {
+        if self.subject.is_empty() {
             return Err(EmailError::InvalidMessage("Subject is required".into()));
         }
         Ok(())
@@ -328,8 +301,7 @@ impl EmailMessage
 
     /// Total number of recipients (to + cc + bcc).
     /// 收件人总数（to + cc + bcc）。
-    pub fn recipient_count(&self) -> usize
-    {
+    pub fn recipient_count(&self) -> usize {
         self.to.len() + self.cc.len() + self.bcc.len()
     }
 }
@@ -341,8 +313,7 @@ impl EmailMessage
 /// Simple email template engine with `{{variable}}` substitution.
 /// 简单的邮件模板引擎，支持 `{{variable}}` 替换。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmailTemplate
-{
+pub struct EmailTemplate {
     /// Template string containing `{{key}}` placeholders.
     /// 包含 `{{key}}` 占位符的模板字符串。
     pub template: String,
@@ -352,12 +323,10 @@ pub struct EmailTemplate
     pub variables: HashMap<String, String>,
 }
 
-impl EmailTemplate
-{
+impl EmailTemplate {
     /// Create a new template.
     /// 创建新的模板。
-    pub fn new(template: impl Into<String>) -> Self
-    {
+    pub fn new(template: impl Into<String>) -> Self {
         Self {
             template: template.into(),
             variables: HashMap::new(),
@@ -366,16 +335,14 @@ impl EmailTemplate
 
     /// Set a template variable.
     /// 设置模板变量。
-    pub fn variable(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn variable(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.variables.insert(key.into(), value.into());
         self
     }
 
     /// Set multiple variables at once.
     /// 一次设置多个变量。
-    pub fn variables(mut self, vars: HashMap<String, String>) -> Self
-    {
+    pub fn variables(mut self, vars: HashMap<String, String>) -> Self {
         self.variables = vars;
         self
     }
@@ -385,11 +352,9 @@ impl EmailTemplate
     ///
     /// Unknown variables are left as-is.
     /// 未知的变量保持原样。
-    pub fn render(&self) -> EmailResult<String>
-    {
+    pub fn render(&self) -> EmailResult<String> {
         let mut result = self.template.clone();
-        for (key, value) in &self.variables
-        {
+        for (key, value) in &self.variables {
             let placeholder = format!("{{{{{}}}}}", key);
             result = result.replace(&placeholder, value);
         }
@@ -402,8 +367,7 @@ impl EmailTemplate
         &self,
         to: impl Into<String>,
         subject: impl Into<String>,
-    ) -> EmailResult<EmailMessage>
-    {
+    ) -> EmailResult<EmailMessage> {
         let body = self.render()?;
         Ok(EmailMessage::new().to(to).subject(subject).body(body))
     }
@@ -420,8 +384,7 @@ impl EmailTemplate
 /// or a test double.
 /// 实现可以使用 SMTP、外部 API（SendGrid、SES 等）或测试替身。
 #[async_trait::async_trait]
-pub trait EmailSender: Send + Sync
-{
+pub trait EmailSender: Send + Sync {
     /// Send an email message.
     /// 发送邮件消息。
     async fn send(&self, message: EmailMessage) -> EmailResult<()>;
@@ -438,52 +401,43 @@ pub trait EmailSender: Send + Sync
 /// （EHLO, MAIL FROM, RCPT TO, DATA, QUIT）。
 /// 如果连接或任何 SMTP 命令失败，则返回错误。
 #[derive(Debug, Clone)]
-pub struct SmtpEmailSender
-{
+pub struct SmtpEmailSender {
     config: EmailConfig,
 }
 
-impl SmtpEmailSender
-{
+impl SmtpEmailSender {
     /// Create a new SMTP sender.
     /// 创建新的 SMTP 发送器。
-    pub fn new(config: EmailConfig) -> Self
-    {
+    pub fn new(config: EmailConfig) -> Self {
         Self { config }
     }
 
     /// Get a reference to the configuration.
     /// 获取配置的引用。
-    pub fn config(&self) -> &EmailConfig
-    {
+    pub fn config(&self) -> &EmailConfig {
         &self.config
     }
 
     /// Read a complete SMTP response (multi-line `250-...` / final `250 ...`).
     /// 读取完整的 SMTP 响应（多行 `250-...` / 最终 `250 ...`）。
-    async fn read_response<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> EmailResult<u16>
-    {
+    async fn read_response<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> EmailResult<u16> {
         let mut line = String::new();
         let mut code: u16;
-        loop
-        {
+        loop {
             line.clear();
             let n = reader
                 .read_line(&mut line)
                 .await
                 .map_err(|e| EmailError::SmtpError(format!("failed to read SMTP response: {e}")))?;
-            if n == 0
-            {
+            if n == 0 {
                 return Err(EmailError::SmtpError("SMTP connection closed unexpectedly".into()));
             }
-            if line.len() >= 4
-            {
+            if line.len() >= 4 {
                 code = line[..3]
                     .parse::<u16>()
                     .map_err(|_| EmailError::SmtpError(format!("invalid SMTP response: {line}")))?;
                 // A space after the code means this is the final line of the response.
-                if line.as_bytes()[3] == b' '
-                {
+                if line.as_bytes()[3] == b' ' {
                     break;
                 }
             }
@@ -497,8 +451,7 @@ impl SmtpEmailSender
         writer: &mut W,
         reader: &mut R,
         command: &str,
-    ) -> EmailResult<u16>
-    {
+    ) -> EmailResult<u16> {
         writer
             .write_all(command.as_bytes())
             .await
@@ -512,10 +465,8 @@ impl SmtpEmailSender
 }
 
 #[async_trait::async_trait]
-impl EmailSender for SmtpEmailSender
-{
-    async fn send(&self, message: EmailMessage) -> EmailResult<()>
-    {
+impl EmailSender for SmtpEmailSender {
+    async fn send(&self, message: EmailMessage) -> EmailResult<()> {
         self.config.validate()?;
         message.validate()?;
 
@@ -529,8 +480,7 @@ impl EmailSender for SmtpEmailSender
 
         // Read server greeting.
         let greeting_code = Self::read_response(&mut reader).await?;
-        if !(greeting_code >= 200 && greeting_code < 300)
-        {
+        if !(greeting_code >= 200 && greeting_code < 300) {
             return Err(EmailError::SmtpError(format!(
                 "SMTP server greeting failed with code {greeting_code}"
             )));
@@ -540,16 +490,14 @@ impl EmailSender for SmtpEmailSender
         let hostname = "hiver.local";
         let ehlo_code =
             Self::send_command(&mut writer, &mut reader, &format!("EHLO {hostname}\r\n")).await?;
-        if ehlo_code != 250
-        {
+        if ehlo_code != 250 {
             return Err(EmailError::SmtpError(format!("SMTP EHLO rejected with code {ehlo_code}")));
         }
 
         // MAIL FROM.
         let mail_from_cmd = format!("MAIL FROM:<{}>\r\n", self.config.from_address);
         let mail_code = Self::send_command(&mut writer, &mut reader, &mail_from_cmd).await?;
-        if mail_code != 250
-        {
+        if mail_code != 250 {
             return Err(EmailError::SmtpError(format!(
                 "SMTP MAIL FROM rejected with code {mail_code}"
             )));
@@ -564,8 +512,7 @@ impl EmailSender for SmtpEmailSender
         {
             let rcpt_cmd = format!("RCPT TO:<{recipient}>\r\n");
             let rcpt_code = Self::send_command(&mut writer, &mut reader, &rcpt_cmd).await?;
-            if rcpt_code != 250
-            {
+            if rcpt_code != 250 {
                 return Err(EmailError::SmtpError(format!(
                     "SMTP RCPT TO <{recipient}> rejected with code {rcpt_code}"
                 )));
@@ -574,37 +521,31 @@ impl EmailSender for SmtpEmailSender
 
         // DATA.
         let data_code = Self::send_command(&mut writer, &mut reader, "DATA\r\n").await?;
-        if data_code != 354
-        {
+        if data_code != 354 {
             return Err(EmailError::SmtpError(format!("SMTP DATA rejected with code {data_code}")));
         }
 
         // Build a minimal RFC 5322 message.
         let mut data_payload = String::new();
         data_payload.push_str(&format!("From: {}\r\n", self.config.from_address));
-        for to_addr in &message.to
-        {
+        for to_addr in &message.to {
             data_payload.push_str(&format!("To: {to_addr}\r\n"));
         }
-        for cc_addr in &message.cc
-        {
+        for cc_addr in &message.cc {
             data_payload.push_str(&format!("Cc: {cc_addr}\r\n"));
         }
         data_payload.push_str(&format!("Subject: {}\r\n", message.subject));
         data_payload.push_str("Content-Type: text/plain; charset=utf-8\r\n");
         data_payload.push_str("\r\n");
         // Dot-stuffing: lines starting with "." get an extra "." prepended.
-        for line in message.body.lines()
-        {
-            if line.starts_with('.')
-            {
+        for line in message.body.lines() {
+            if line.starts_with('.') {
                 data_payload.push('.');
             }
             data_payload.push_str(line);
             data_payload.push_str("\r\n");
         }
-        if !message.body.ends_with('\n')
-        {
+        if !message.body.ends_with('\n') {
             data_payload.push_str("\r\n");
         }
         data_payload.push_str(".\r\n");
@@ -620,8 +561,7 @@ impl EmailSender for SmtpEmailSender
         })?;
 
         let data_end_code = Self::read_response(&mut reader).await?;
-        if data_end_code != 250
-        {
+        if data_end_code != 250 {
             return Err(EmailError::SmtpError(format!(
                 "SMTP DATA end rejected with code {data_end_code}"
             )));
@@ -653,26 +593,21 @@ impl EmailSender for SmtpEmailSender
 /// Messages are enqueued and processed in batches.
 /// 消息入队后批量处理。
 #[derive(Debug)]
-pub struct EmailQueue
-{
+pub struct EmailQueue {
     sender: Arc<Mutex<Vec<EmailMessage>>>,
     notify: Arc<Notify>,
 }
 
-impl Default for EmailQueue
-{
-    fn default() -> Self
-    {
+impl Default for EmailQueue {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl EmailQueue
-{
+impl EmailQueue {
     /// Create a new empty email queue.
     /// 创建新的空邮件队列。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             sender: Arc::new(Mutex::new(Vec::new())),
             notify: Arc::new(Notify::new()),
@@ -681,8 +616,7 @@ impl EmailQueue
 
     /// Enqueue a message for later sending.
     /// 将消息入队以供后续发送。
-    pub async fn enqueue(&self, message: EmailMessage)
-    {
+    pub async fn enqueue(&self, message: EmailMessage) {
         let mut queue = self.sender.lock().await;
         queue.push(message);
         self.notify.notify_one();
@@ -693,17 +627,14 @@ impl EmailQueue
     ///
     /// Returns the number of messages successfully sent.
     /// 返回成功发送的消息数。
-    pub async fn process_queue(&self, sender: &dyn EmailSender) -> EmailResult<usize>
-    {
+    pub async fn process_queue(&self, sender: &dyn EmailSender) -> EmailResult<usize> {
         let mut queue = self.sender.lock().await;
         let batch = std::mem::take(&mut *queue);
         drop(queue);
 
         let mut sent = 0usize;
-        for message in &batch
-        {
-            if sender.send(message.clone()).await.is_ok()
-            {
+        for message in &batch {
+            if sender.send(message.clone()).await.is_ok() {
                 sent += 1;
             }
         }
@@ -713,22 +644,19 @@ impl EmailQueue
 
     /// Number of messages currently in the queue.
     /// 当前队列中的消息数。
-    pub async fn len(&self) -> usize
-    {
+    pub async fn len(&self) -> usize {
         self.sender.lock().await.len()
     }
 
     /// Check if the queue is empty.
     /// 检查队列是否为空。
-    pub async fn is_empty(&self) -> bool
-    {
+    pub async fn is_empty(&self) -> bool {
         self.sender.lock().await.is_empty()
     }
 
     /// Clear all pending messages.
     /// 清除所有待处理消息。
-    pub async fn clear(&self)
-    {
+    pub async fn clear(&self) {
         self.sender.lock().await.clear();
     }
 }
@@ -738,16 +666,20 @@ impl EmailQueue
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     // ── EmailConfig / 邮件配置 ──
 
     #[test]
-    fn test_config_new()
-    {
+    fn test_config_new() {
         let cfg = EmailConfig::new("smtp.host", 587, "user", "pass", "from@host");
         assert_eq!(cfg.smtp_host, "smtp.host");
         assert_eq!(cfg.smtp_port, 587);
@@ -755,8 +687,7 @@ mod tests
     }
 
     #[test]
-    fn test_config_builder()
-    {
+    fn test_config_builder() {
         let cfg = EmailConfig::new("smtp.host", 25, "u", "p", "f@h")
             .from_name("Hiver")
             .tls(false);
@@ -765,36 +696,31 @@ mod tests
     }
 
     #[test]
-    fn test_config_validate_ok()
-    {
+    fn test_config_validate_ok() {
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
         assert!(cfg.validate().is_ok());
     }
 
     #[test]
-    fn test_config_validate_missing_host()
-    {
+    fn test_config_validate_missing_host() {
         let cfg = EmailConfig::new("", 587, "u", "p", "from@host");
         assert!(cfg.validate().is_err());
     }
 
     #[test]
-    fn test_config_validate_invalid_from()
-    {
+    fn test_config_validate_invalid_from() {
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "no-at-sign");
         assert!(cfg.validate().is_err());
     }
 
     #[test]
-    fn test_config_validate_empty_from()
-    {
+    fn test_config_validate_empty_from() {
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "");
         assert!(cfg.validate().is_err());
     }
 
     #[test]
-    fn test_config_serialization()
-    {
+    fn test_config_serialization() {
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
         let json = serde_json::to_string(&cfg).unwrap();
         let deserialized: EmailConfig = serde_json::from_str(&json).unwrap();
@@ -804,8 +730,7 @@ mod tests
     // ── EmailMessage / 邮件消息 ──
 
     #[test]
-    fn test_message_builder()
-    {
+    fn test_message_builder() {
         let msg = EmailMessage::new()
             .to("alice@ex.com")
             .to("bob@ex.com")
@@ -824,29 +749,25 @@ mod tests
     }
 
     #[test]
-    fn test_message_validate_ok()
-    {
+    fn test_message_validate_ok() {
         let msg = EmailMessage::new().to("a@b.com").subject("Hi").body("Body");
         assert!(msg.validate().is_ok());
     }
 
     #[test]
-    fn test_message_validate_no_recipient()
-    {
+    fn test_message_validate_no_recipient() {
         let msg = EmailMessage::new().subject("Hi");
         assert!(msg.validate().is_err());
     }
 
     #[test]
-    fn test_message_validate_no_subject()
-    {
+    fn test_message_validate_no_subject() {
         let msg = EmailMessage::new().to("a@b.com");
         assert!(msg.validate().is_err());
     }
 
     #[test]
-    fn test_message_serialization()
-    {
+    fn test_message_serialization() {
         let msg = EmailMessage::new().to("a@b.com").subject("S").body("B");
         let json = serde_json::to_string(&msg).unwrap();
         let deserialized: EmailMessage = serde_json::from_str(&json).unwrap();
@@ -856,8 +777,7 @@ mod tests
     // ── Attachment / 附件 ──
 
     #[test]
-    fn test_attachment_new()
-    {
+    fn test_attachment_new() {
         let att = Attachment::new("file.pdf", "application/pdf", vec![0, 1, 2]);
         assert_eq!(att.name, "file.pdf");
         assert_eq!(att.data.len(), 3);
@@ -866,8 +786,7 @@ mod tests
     // ── EmailTemplate / 邮件模板 ──
 
     #[test]
-    fn test_template_render()
-    {
+    fn test_template_render() {
         let tmpl = EmailTemplate::new("Hello {{name}}, welcome to {{app}}!")
             .variable("name", "Alice")
             .variable("app", "Hiver");
@@ -876,23 +795,20 @@ mod tests
     }
 
     #[test]
-    fn test_template_unknown_variable_unchanged()
-    {
+    fn test_template_unknown_variable_unchanged() {
         let tmpl = EmailTemplate::new("Hello {{name}}! {{unknown}}").variable("name", "Bob");
         let rendered = tmpl.render().unwrap();
         assert_eq!(rendered, "Hello Bob! {{unknown}}");
     }
 
     #[test]
-    fn test_template_no_variables()
-    {
+    fn test_template_no_variables() {
         let tmpl = EmailTemplate::new("Static content");
         assert_eq!(tmpl.render().unwrap(), "Static content");
     }
 
     #[test]
-    fn test_template_render_message()
-    {
+    fn test_template_render_message() {
         let tmpl = EmailTemplate::new("Hi {{user}}, code: {{code}}")
             .variable("user", "Eve")
             .variable("code", "12345");
@@ -904,16 +820,14 @@ mod tests
     }
 
     #[test]
-    fn test_template_multiple_same_variable()
-    {
+    fn test_template_multiple_same_variable() {
         let tmpl = EmailTemplate::new("{{x}} and {{x}}").variable("x", "val");
         let rendered = tmpl.render().unwrap();
         assert_eq!(rendered, "val and val");
     }
 
     #[test]
-    fn test_template_set_variables_batch()
-    {
+    fn test_template_set_variables_batch() {
         let mut vars = HashMap::new();
         vars.insert("a".to_string(), "1".to_string());
         vars.insert("b".to_string(), "2".to_string());
@@ -924,8 +838,7 @@ mod tests
     // ── SmtpEmailSender / SMTP 邮件发送器 ──
 
     #[tokio::test]
-    async fn test_smtp_sender_connection_failure()
-    {
+    async fn test_smtp_sender_connection_failure() {
         // Non-existent host will fail at TCP connect.
         let cfg = EmailConfig::new("smtp.nonexistent.invalid", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);
@@ -935,8 +848,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_smtp_sender_invalid_config()
-    {
+    async fn test_smtp_sender_invalid_config() {
         let cfg = EmailConfig::new("", 587, "u", "p", "bad");
         let sender = SmtpEmailSender::new(cfg);
         let msg = EmailMessage::new().to("a@b.com").subject("S").body("B");
@@ -944,8 +856,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_smtp_sender_invalid_message()
-    {
+    async fn test_smtp_sender_invalid_message() {
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);
         let msg = EmailMessage::new(); // no recipients, no subject
@@ -953,8 +864,7 @@ mod tests
     }
 
     #[test]
-    fn test_smtp_sender_config_access()
-    {
+    fn test_smtp_sender_config_access() {
         let cfg = EmailConfig::new("h", 25, "u", "p", "f@h");
         let sender = SmtpEmailSender::new(cfg);
         assert_eq!(sender.config().smtp_host, "h");
@@ -963,8 +873,7 @@ mod tests
     // ── EmailQueue / 邮件队列 ──
 
     #[tokio::test]
-    async fn test_queue_enqueue_and_len()
-    {
+    async fn test_queue_enqueue_and_len() {
         let queue = EmailQueue::new();
         assert!(queue.is_empty().await);
 
@@ -974,15 +883,13 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_queue_process_all_fail()
-    {
+    async fn test_queue_process_all_fail() {
         // All sends fail because the host is unreachable; queue is still drained.
         let queue = EmailQueue::new();
         let cfg = EmailConfig::new("smtp.nonexistent.invalid", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);
 
-        for i in 0..3
-        {
+        for i in 0..3 {
             let msg = EmailMessage::new()
                 .to(format!("a{}@b.com", i))
                 .subject(format!("S{}", i))
@@ -996,8 +903,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_queue_clear()
-    {
+    async fn test_queue_clear() {
         let queue = EmailQueue::new();
         let msg = EmailMessage::new().to("a@b.com").subject("S").body("B");
         queue.enqueue(msg).await;
@@ -1007,8 +913,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_queue_process_with_failures()
-    {
+    async fn test_queue_process_with_failures() {
         // Use a sender with invalid config so all sends fail
         let queue = EmailQueue::new();
         let bad_cfg = EmailConfig::new("", 587, "u", "p", "bad");
@@ -1023,8 +928,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_queue_process_empty()
-    {
+    async fn test_queue_process_empty() {
         let queue = EmailQueue::new();
         let cfg = EmailConfig::new("smtp.host", 587, "u", "p", "from@host");
         let sender = SmtpEmailSender::new(cfg);

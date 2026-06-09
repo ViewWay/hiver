@@ -84,8 +84,7 @@ pub use transformer::{
 
 /// Prelude module for common imports
 /// Prelude 模块用于常用导入
-pub mod prelude
-{
+pub mod prelude {
     pub use crate::{
         aggregator::{CorrelationAggregator, CountAggregator, MessageAggregator},
         channel::{DirectChannel, MessageChannel, PointToPointChannel, PublishSubscribeChannel},
@@ -100,14 +99,12 @@ pub mod prelude
 
 /// Integration flow builder
 /// 集成流构建器
-pub struct IntegrationFlow
-{
+pub struct IntegrationFlow {
     name: String,
     steps: Vec<FlowStep>,
 }
 
-enum FlowStep
-{
+enum FlowStep {
     Channel(String),
     Transform(std::sync::Arc<dyn transformer::Transformer>),
     Filter(std::sync::Arc<dyn filter::MessageFilter>),
@@ -119,12 +116,10 @@ enum FlowStep
     Aggregate(std::sync::Arc<dyn aggregator::MessageAggregator>),
 }
 
-impl IntegrationFlow
-{
+impl IntegrationFlow {
     /// Create a new integration flow
     /// 创建新的集成流
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             steps: Vec::new(),
@@ -133,32 +128,28 @@ impl IntegrationFlow
 
     /// Add a channel step
     /// 添加通道步骤
-    pub fn channel(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn channel(mut self, name: impl Into<String>) -> Self {
         self.steps.push(FlowStep::Channel(name.into()));
         self
     }
 
     /// Add a transform step
     /// 添加转换步骤
-    pub fn transform(mut self, transformer: std::sync::Arc<dyn transformer::Transformer>) -> Self
-    {
+    pub fn transform(mut self, transformer: std::sync::Arc<dyn transformer::Transformer>) -> Self {
         self.steps.push(FlowStep::Transform(transformer));
         self
     }
 
     /// Add a filter step
     /// 添加过滤步骤
-    pub fn filter(mut self, filter: std::sync::Arc<dyn filter::MessageFilter>) -> Self
-    {
+    pub fn filter(mut self, filter: std::sync::Arc<dyn filter::MessageFilter>) -> Self {
         self.steps.push(FlowStep::Filter(filter));
         self
     }
 
     /// Build the flow
     /// 构建流
-    pub fn build(self) -> Result<BuiltFlow>
-    {
+    pub fn build(self) -> Result<BuiltFlow> {
         Ok(BuiltFlow {
             name: self.name,
             steps: self.steps,
@@ -168,67 +159,51 @@ impl IntegrationFlow
 
 /// Built integration flow
 /// 已构建的集成流
-pub struct BuiltFlow
-{
+pub struct BuiltFlow {
     name: String,
     steps: Vec<FlowStep>,
 }
 
-impl BuiltFlow
-{
+impl BuiltFlow {
     /// Get flow name
     /// 获取流名称
-    pub fn name(&self) -> &str
-    {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Process a message through the flow
     /// 处理消息通过流
-    pub async fn process(&self, message: Message) -> Result<Message>
-    {
+    pub async fn process(&self, message: Message) -> Result<Message> {
         let mut current = message;
 
-        for step in &self.steps
-        {
-            match step
-            {
-                FlowStep::Channel(name) =>
-                {
+        for step in &self.steps {
+            match step {
+                FlowStep::Channel(name) => {
                     let registry = channel::global_registry();
                     let ch = registry.get(name).await?;
                     ch.send(current.clone()).await?;
                 },
-                FlowStep::Transform(transformer) =>
-                {
+                FlowStep::Transform(transformer) => {
                     current = transformer.transform(current).await?;
                 },
-                FlowStep::Filter(filter) =>
-                {
-                    if !filter.test(&current).await
-                    {
+                FlowStep::Filter(filter) => {
+                    if !filter.test(&current).await {
                         return Err(IntegrationError::Message("Message filtered out".to_string()));
                     }
                 },
-                FlowStep::Split(splitter) =>
-                {
+                FlowStep::Split(splitter) => {
                     let messages = splitter.split(current.clone()).await?;
                     // For now, just return the first message
                     // In a real implementation, you'd handle all messages
-                    if let Some(first) = messages.first()
-                    {
+                    if let Some(first) = messages.first() {
                         current = first.clone();
                     }
                 },
-                FlowStep::Aggregate(aggregator) =>
-                {
+                FlowStep::Aggregate(aggregator) => {
                     aggregator.add(current.clone()).await?;
-                    if aggregator.is_complete().await
-                    {
+                    if aggregator.is_complete().await {
                         current = aggregator.result().await?;
-                    }
-                    else
-                    {
+                    } else {
                         return Err(IntegrationError::Message(
                             "Aggregation not complete".to_string(),
                         ));
@@ -243,31 +218,32 @@ impl BuiltFlow
 
 /// Integration flow builder helper
 /// 集成流构建器辅助
-pub struct Flow
-{
+pub struct Flow {
     _private: (),
 }
 
-impl Flow
-{
+impl Flow {
     /// Start a new flow definition
     /// 开始新的流定义
-    pub fn from(name: impl Into<String>) -> IntegrationFlow
-    {
+    pub fn from(name: impl Into<String>) -> IntegrationFlow {
         IntegrationFlow::new(name)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::channel::PointToPointChannel;
 
     #[tokio::test]
-    async fn test_integration_flow()
-    {
+    async fn test_integration_flow() {
         // Register a test channel
         // 注册测试通道
         let registry = channel::global_registry();

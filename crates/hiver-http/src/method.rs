@@ -14,8 +14,7 @@ use std::{fmt, str::FromStr};
 /// HTTP Methods
 /// HTTP 方法
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Method
-{
+pub enum Method {
     /// GET method - retrieve a resource
     /// GET 方法 - 获取资源
     #[default]
@@ -46,8 +45,7 @@ pub enum Method
     CONNECT,
 }
 
-impl Method
-{
+impl Method {
     /// All standard HTTP methods
     /// 所有标准HTTP方法
     pub const ALL: [Method; 9] = [
@@ -64,15 +62,13 @@ impl Method
 
     /// Check if this method is safe (idempotent and doesn't modify state)
     /// 检查此方法是否安全（幂等且不修改状态）
-    pub fn is_safe(&self) -> bool
-    {
+    pub fn is_safe(&self) -> bool {
         matches!(self, Method::GET | Method::HEAD | Method::OPTIONS | Method::TRACE)
     }
 
     /// Check if this method is idempotent
     /// 检查此方法是否幂等
-    pub fn is_idempotent(&self) -> bool
-    {
+    pub fn is_idempotent(&self) -> bool {
         matches!(
             self,
             Method::GET
@@ -87,12 +83,9 @@ impl Method
 
 /// Formats the method as an uppercase string (e.g. `"GET"`, `"POST"`).
 /// 将方法格式化为大写字符串（例如 `"GET"`、`"POST"`）。
-impl fmt::Display for Method
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for Method {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Method::GET => write!(f, "GET"),
             Method::POST => write!(f, "POST"),
             Method::PUT => write!(f, "PUT"),
@@ -108,14 +101,11 @@ impl fmt::Display for Method
 
 /// Parses a method string (case-insensitive). Unknown methods default to GET.
 /// 解析方法字符串（不区分大小写）。未知方法默认为 GET。
-impl FromStr for Method
-{
+impl FromStr for Method {
     type Err = MethodError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err>
-    {
-        match s.to_uppercase().as_str()
-        {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
             "GET" => Ok(Method::GET),
             "POST" => Ok(Method::POST),
             "PUT" => Ok(Method::PUT),
@@ -133,18 +123,14 @@ impl FromStr for Method
 /// Method parsing error
 /// 方法解析错误
 #[derive(Debug, Clone, PartialEq)]
-pub enum MethodError
-{
+pub enum MethodError {
     /// Invalid HTTP method
     InvalidMethod(String),
 }
 
-impl fmt::Display for MethodError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for MethodError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             MethodError::InvalidMethod(m) => write!(f, "Invalid HTTP method: {}", m),
         }
     }
@@ -153,14 +139,18 @@ impl fmt::Display for MethodError
 impl std::error::Error for MethodError {}
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_method_from_str()
-    {
+    fn test_method_from_str() {
         assert_eq!(Method::from_str("GET"), Ok(Method::GET));
         assert_eq!(Method::from_str("get"), Ok(Method::GET));
         assert_eq!(Method::from_str("POST"), Ok(Method::POST));
@@ -168,8 +158,7 @@ mod tests
     }
 
     #[test]
-    fn test_method_is_safe()
-    {
+    fn test_method_is_safe() {
         assert!(Method::GET.is_safe());
         assert!(Method::HEAD.is_safe());
         assert!(!Method::POST.is_safe());
@@ -177,8 +166,7 @@ mod tests
     }
 
     #[test]
-    fn test_method_is_idempotent()
-    {
+    fn test_method_is_idempotent() {
         assert!(Method::GET.is_idempotent());
         assert!(Method::PUT.is_idempotent());
         assert!(Method::DELETE.is_idempotent());

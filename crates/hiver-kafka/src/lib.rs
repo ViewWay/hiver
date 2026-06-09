@@ -34,7 +34,13 @@
 #![warn(unreachable_pub)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 mod config;
@@ -70,8 +76,7 @@ pub use transactional_producer::{TransactionOffset, TransactionState, Transactio
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude
-{
+pub mod prelude {
     pub use super::{
         BytesSerializer, Consumer, ConsumerConfig, ConsumerGroup, ConsumerGroupManager,
         ConsumerOffset, GroupDescription, JsonDeserializer, JsonSerializer, KafkaMessage,

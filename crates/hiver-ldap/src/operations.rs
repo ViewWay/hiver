@@ -23,7 +23,11 @@
 //! let matches = ops.compare("cn=user,dc=example,dc=com", "uid", "jdoe").await?;
 //! ```
 
-use crate::{LdapTemplate, context::{ContextSource, LdapContextSource}, error::LdapResult};
+use crate::{
+    LdapTemplate,
+    context::{ContextSource, LdapContextSource},
+    error::LdapResult,
+};
 
 /// Advanced LDAP operations wrapper / 高级 LDAP 操作包装器
 ///
@@ -31,31 +35,26 @@ use crate::{LdapTemplate, context::{ContextSource, LdapContextSource}, error::Ld
 /// defined in RFC 4511.
 /// 使用 RFC 4511 中定义的较不常见但重要的 LDAP 操作扩展 `LdapTemplate`。
 #[derive(Debug, Clone)]
-pub struct AdvancedOperations
-{
+pub struct AdvancedOperations {
     /// Underlying LDAP template / 底层 LDAP 模板
     template: LdapTemplate,
 }
 
-impl AdvancedOperations
-{
+impl AdvancedOperations {
     /// Create new advanced operations from a template / 从模板创建高级操作
-    pub fn new(template: LdapTemplate) -> Self
-    {
+    pub fn new(template: LdapTemplate) -> Self {
         Self { template }
     }
 
     /// Create from a context source / 从上下文源创建
-    pub fn from_context_source(context_source: LdapContextSource) -> Self
-    {
+    pub fn from_context_source(context_source: LdapContextSource) -> Self {
         Self {
             template: LdapTemplate::new(context_source),
         }
     }
 
     /// Get a reference to the underlying template / 获取底层模板的引用
-    pub fn template(&self) -> &LdapTemplate
-    {
+    pub fn template(&self) -> &LdapTemplate {
         &self.template
     }
 
@@ -88,8 +87,7 @@ impl AdvancedOperations
         new_rdn: &str,
         delete_old_rdn: bool,
         new_superior: Option<&str>,
-    ) -> LdapResult<()>
-    {
+    ) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.template.context_source().get_context().await?;
@@ -123,8 +121,7 @@ impl AdvancedOperations
     /// let is_member = ops.compare("cn=user,dc=example,dc=com", "objectClass", "person").await?;
     /// ```
     #[allow(clippy::unused_async)]
-    pub async fn compare(&self, dn: &str, attribute: &str, value: &str) -> LdapResult<bool>
-    {
+    pub async fn compare(&self, dn: &str, attribute: &str, value: &str) -> LdapResult<bool> {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.template.context_source().get_context().await?;
@@ -149,8 +146,7 @@ impl AdvancedOperations
     ///
     /// - `message_id` — The ID of the operation to abandon / 要放弃的操作 ID
     #[allow(clippy::unused_async)]
-    pub async fn abandon(&self, message_id: i32) -> LdapResult<()>
-    {
+    pub async fn abandon(&self, message_id: i32) -> LdapResult<()> {
         #[cfg(feature = "ldap")]
         {
             let mut conn = self.template.context_source().get_context().await?;
@@ -171,27 +167,23 @@ impl AdvancedOperations
 /// add, replace, and delete operations on individual attributes.
 /// 与 `LdapTemplate::modify()` 一起使用，对单个属性的添加、替换和删除操作进行精细控制。
 #[derive(Debug, Clone)]
-pub enum Modification
-{
+pub enum Modification {
     /// Add a new value to the attribute / 向属性添加新值
-    Add
-    {
+    Add {
         /// Attribute name / 属性名称
         attribute: String,
         /// Values to add / 要添加的值
         values: Vec<String>,
     },
     /// Replace all values of the attribute / 替换属性的所有值
-    Replace
-    {
+    Replace {
         /// Attribute name / 属性名称
         attribute: String,
         /// New values / 新值
         values: Vec<String>,
     },
     /// Delete specific values (or all values) from the attribute / 从属性中删除特定值（或所有值）
-    Delete
-    {
+    Delete {
         /// Attribute name / 属性名称
         attribute: String,
         /// Values to delete (empty means delete all) / 要删除的值（空表示删除全部）
@@ -199,11 +191,9 @@ pub enum Modification
     },
 }
 
-impl Modification
-{
+impl Modification {
     /// Create an add modification / 创建添加修改
-    pub fn add(attribute: impl Into<String>, values: Vec<String>) -> Self
-    {
+    pub fn add(attribute: impl Into<String>, values: Vec<String>) -> Self {
         Self::Add {
             attribute: attribute.into(),
             values,
@@ -211,8 +201,7 @@ impl Modification
     }
 
     /// Create a replace modification / 创建替换修改
-    pub fn replace(attribute: impl Into<String>, values: Vec<String>) -> Self
-    {
+    pub fn replace(attribute: impl Into<String>, values: Vec<String>) -> Self {
         Self::Replace {
             attribute: attribute.into(),
             values,
@@ -220,8 +209,7 @@ impl Modification
     }
 
     /// Create a delete modification / 创建删除修改
-    pub fn delete(attribute: impl Into<String>, values: Vec<String>) -> Self
-    {
+    pub fn delete(attribute: impl Into<String>, values: Vec<String>) -> Self {
         Self::Delete {
             attribute: attribute.into(),
             values,
@@ -230,10 +218,8 @@ impl Modification
 
     /// Get the attribute name / 获取属性名称
     #[allow(clippy::match_same_arms)]
-    pub fn attribute(&self) -> &str
-    {
-        match self
-        {
+    pub fn attribute(&self) -> &str {
+        match self {
             Self::Add { attribute, .. } => attribute,
             Self::Replace { attribute, .. } => attribute,
             Self::Delete { attribute, .. } => attribute,
@@ -242,14 +228,18 @@ impl Modification
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_advanced_operations_new()
-    {
+    fn test_advanced_operations_new() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let template = LdapTemplate::new(ctx.clone());
         let ops = AdvancedOperations::new(template);
@@ -257,16 +247,14 @@ mod tests
     }
 
     #[test]
-    fn test_advanced_operations_from_context_source()
-    {
+    fn test_advanced_operations_from_context_source() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
         assert!(ops.template().context_source().url().contains("localhost"));
     }
 
     #[tokio::test]
-    async fn test_modify_dn_stub()
-    {
+    async fn test_modify_dn_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
         let result = ops
@@ -276,8 +264,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_modify_dn_with_superior_stub()
-    {
+    async fn test_modify_dn_with_superior_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
         let result = ops
@@ -292,8 +279,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_compare_stub()
-    {
+    async fn test_compare_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
         let result = ops
@@ -305,8 +291,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_abandon_stub()
-    {
+    async fn test_abandon_stub() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let ops = AdvancedOperations::from_context_source(ctx);
         let result = ops.abandon(42).await;
@@ -314,22 +299,19 @@ mod tests
     }
 
     #[test]
-    fn test_modification_add()
-    {
+    fn test_modification_add() {
         let m = Modification::add("mail", vec!["user@example.com".to_string()]);
         assert_eq!(m.attribute(), "mail");
     }
 
     #[test]
-    fn test_modification_replace()
-    {
+    fn test_modification_replace() {
         let m = Modification::replace("cn", vec!["New Name".to_string()]);
         assert_eq!(m.attribute(), "cn");
     }
 
     #[test]
-    fn test_modification_delete()
-    {
+    fn test_modification_delete() {
         let m = Modification::delete("description", vec![]);
         assert_eq!(m.attribute(), "description");
     }

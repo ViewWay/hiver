@@ -26,8 +26,7 @@ use crate::{
 /// `CacheWorker` trait, allowing heterogeneous storage in the manager.
 /// 类型擦除包装器，通过 `CacheWorker` trait 暴露 `RedisCache<K, V>`，
 /// 允许在管理器中异构存储。
-pub struct RedisCacheWorker
-{
+pub struct RedisCacheWorker {
     name: String,
     config: CacheConfig,
     stats: Arc<RwLock<CacheStats>>,
@@ -39,8 +38,7 @@ pub struct RedisCacheWorker
 /// 固定、装箱、可发送的 future 的类型别名。
 type PinnedFuture<T> = std::pin::Pin<Box<dyn Future<Output = T> + Send>>;
 
-impl RedisCacheWorker
-{
+impl RedisCacheWorker {
     /// Create a new `RedisCacheWorker` from a typed `RedisCache`.
     /// 从类型化的 `RedisCache` 创建新的 `RedisCacheWorker`。
     pub fn new<K, V>(cache: RedisCache<K, V>, name: String) -> Self
@@ -72,30 +70,24 @@ impl RedisCacheWorker
 }
 
 #[async_trait::async_trait]
-impl CacheWorker for RedisCacheWorker
-{
-    async fn get_stats(&self) -> CacheStats
-    {
+impl CacheWorker for RedisCacheWorker {
+    async fn get_stats(&self) -> CacheStats {
         self.stats.read().await.clone()
     }
 
-    async fn clear(&self)
-    {
+    async fn clear(&self) {
         (self.clear_fn)().await;
     }
 
-    async fn size(&self) -> usize
-    {
+    async fn size(&self) -> usize {
         (self.size_fn)().await
     }
 
-    fn name(&self) -> &str
-    {
+    fn name(&self) -> &str {
         &self.name
     }
 
-    fn config(&self) -> &CacheConfig
-    {
+    fn config(&self) -> &CacheConfig {
         &self.config
     }
 }
@@ -112,8 +104,7 @@ impl CacheWorker for RedisCacheWorker
 /// delegate to an in-memory `SimpleCacheManager`.
 /// 构造时尝试连接 Redis。如果连接失败且 `RedisConfig` 中
 /// `fallback_to_memory` 启用，所有操作委托给内存 `SimpleCacheManager`。
-pub struct RedisCacheManager
-{
+pub struct RedisCacheManager {
     /// Per-name Redis configuration.
     /// 每个缓存名称的 Redis 配置。
     redis_config: RedisConfig,
@@ -131,16 +122,14 @@ pub struct RedisCacheManager
     is_fallback: std::sync::atomic::AtomicBool,
 }
 
-impl RedisCacheManager
-{
+impl RedisCacheManager {
     /// Create a new `RedisCacheManager` with the given Redis configuration.
     /// 使用给定的 Redis 配置创建新的 `RedisCacheManager`。
     ///
     /// The `default_cache_config` is used as the template for newly created
     /// caches when `create_cache` is called without a specific config.
     /// `default_cache_config` 用作调用 `create_cache` 时新创建缓存的模板。
-    pub fn new(redis_config: RedisConfig, default_cache_config: CacheConfig) -> Self
-    {
+    pub fn new(redis_config: RedisConfig, default_cache_config: CacheConfig) -> Self {
         Self {
             redis_config,
             caches: RwLock::new(HashMap::new()),
@@ -151,15 +140,13 @@ impl RedisCacheManager
 
     /// Check whether this manager is operating in fallback (in-memory) mode.
     /// 检查此管理器是否在回退（内存）模式下运行。
-    pub fn is_fallback(&self) -> bool
-    {
+    pub fn is_fallback(&self) -> bool {
         self.is_fallback.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Set the fallback mode flag.
     /// 设置回退模式标志。
-    pub fn set_fallback(&self, value: bool)
-    {
+    pub fn set_fallback(&self, value: bool) {
         self.is_fallback
             .store(value, std::sync::atomic::Ordering::Relaxed);
     }
@@ -188,8 +175,7 @@ impl RedisCacheManager
 
         // If the newly created cache is not connected, switch to fallback.
         // 如果新创建的缓存未连接，切换到回退模式。
-        if !cache.is_connected().await
-        {
+        if !cache.is_connected().await {
             self.set_fallback(true);
         }
 
@@ -201,19 +187,15 @@ impl RedisCacheManager
     }
 }
 
-impl CacheManager for RedisCacheManager
-{
-    fn get_cache(&self, name: &str) -> Option<Arc<dyn CacheWorker>>
-    {
+impl CacheManager for RedisCacheManager {
+    fn get_cache(&self, name: &str) -> Option<Arc<dyn CacheWorker>> {
         // Try synchronous read — since `caches` is a tokio RwLock we use
         // try_read. If that fails (contended), fall through to the memory
         // fallback manager.
         // 尝试同步读取 — 因为 `caches` 是 tokio RwLock，我们使用 try_read。
         // 如果失败（竞争），回退到内存管理器。
-        if let Ok(caches) = self.caches.try_read()
-        {
-            if let Some(worker) = caches.get(name)
-            {
+        if let Ok(caches) = self.caches.try_read() {
+            if let Some(worker) = caches.get(name) {
                 return Some(worker.clone());
             }
         }
@@ -223,20 +205,15 @@ impl CacheManager for RedisCacheManager
         self.fallback.get_cache(name)
     }
 
-    fn get_cache_names(&self) -> Vec<String>
-    {
-        if let Ok(caches) = self.caches.try_read()
-        {
+    fn get_cache_names(&self) -> Vec<String> {
+        if let Ok(caches) = self.caches.try_read() {
             caches.keys().cloned().collect()
-        }
-        else
-        {
+        } else {
             Vec::new()
         }
     }
 
-    fn create_cache(&self, name: &str, config: CacheConfig) -> Option<Arc<dyn CacheWorker>>
-    {
+    fn create_cache(&self, name: &str, config: CacheConfig) -> Option<Arc<dyn CacheWorker>> {
         // Note: Synchronous context — cannot call async `create_redis_cache`.
         // Instead, create a MemoryCache as a placeholder that will be replaced
         // when the async version is called.
@@ -251,20 +228,23 @@ impl CacheManager for RedisCacheManager
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::{cache::CacheConfig, redis_cache::RedisConfig};
 
-    fn test_config(name: &str) -> CacheConfig
-    {
+    fn test_config(name: &str) -> CacheConfig {
         CacheConfig::new(name).ttl_secs(300)
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_creates_cache_in_fallback()
-    {
+    async fn test_redis_cache_manager_creates_cache_in_fallback() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -283,8 +263,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_get_cache_names()
-    {
+    async fn test_redis_cache_manager_get_cache_names() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -301,8 +280,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_get_cache_returns_worker()
-    {
+    async fn test_redis_cache_manager_get_cache_returns_worker() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -322,8 +300,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_get_cache_missing()
-    {
+    async fn test_redis_cache_manager_get_cache_missing() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -331,8 +308,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_worker_stats()
-    {
+    async fn test_redis_cache_manager_worker_stats() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -352,8 +328,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_worker_clear()
-    {
+    async fn test_redis_cache_manager_worker_clear() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -372,8 +347,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_no_fallback()
-    {
+    async fn test_redis_cache_manager_no_fallback() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").no_fallback();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -390,8 +364,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_multiple_caches_isolated()
-    {
+    async fn test_redis_cache_manager_multiple_caches_isolated() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -410,8 +383,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_redis_cache_manager_cache_exists()
-    {
+    async fn test_redis_cache_manager_cache_exists() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 
@@ -425,8 +397,7 @@ mod tests
     }
 
     #[test]
-    fn test_redis_cache_manager_fallback_flag()
-    {
+    fn test_redis_cache_manager_fallback_flag() {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let manager = RedisCacheManager::new(redis_cfg, test_config("default"));
 

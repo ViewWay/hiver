@@ -7,8 +7,7 @@ use syn::{
     parse_macro_input,
 };
 
-pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
 
@@ -112,8 +111,7 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
 
@@ -135,8 +133,7 @@ pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn controller(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn controller(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
 
     let expanded = quote! {
@@ -153,8 +150,7 @@ pub fn controller(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
     let fields = &input.fields;
@@ -190,10 +186,8 @@ pub fn service(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn repository(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
-    if let Ok(input) = syn::parse::<ItemStruct>(item.clone())
-    {
+pub fn repository(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    if let Ok(input) = syn::parse::<ItemStruct>(item.clone()) {
         let _name = &input.ident;
         let bean_reg = crate::bean_register::generate_bean_registration(
             &input,
@@ -211,16 +205,12 @@ pub fn repository(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn config(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn config(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
 
-    let prefix = if attr.is_empty()
-    {
+    let prefix = if attr.is_empty() {
         Ident::new("config", Span::call_site())
-    }
-    else
-    {
+    } else {
         parse_macro_input!(attr as ConfigArgs).prefix
     };
 
@@ -250,35 +240,28 @@ pub fn config(attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-struct ConfigArgs
-{
+struct ConfigArgs {
     prefix: Ident,
 }
 
-impl Parse for ConfigArgs
-{
-    fn parse(input: ParseStream) -> syn::Result<Self>
-    {
+impl Parse for ConfigArgs {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
         let _eq_token = syn::token::Eq::parse(input)?;
 
         let lookahead = input.lookahead1();
-        if lookahead.peek(syn::LitStr)
-        {
+        if lookahead.peek(syn::LitStr) {
             let lit_str: syn::LitStr = input.parse()?;
             Ok(Self {
                 prefix: Ident::new(&lit_str.value(), lit_str.span()),
             })
-        }
-        else
-        {
+        } else {
             let ident: Ident = input.parse()?;
             Ok(Self { prefix: ident })
         }
     }
 }
 
-pub fn component(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn component(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
 
@@ -302,13 +285,11 @@ pub fn component(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn autowired(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn autowired(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
 
-pub fn configuration(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn configuration(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
 
@@ -324,8 +305,7 @@ pub fn configuration(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn bean(_attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn bean(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -343,8 +323,7 @@ pub fn bean(_attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn profile(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn profile(attr: TokenStream, item: TokenStream) -> TokenStream {
     let profile = parse_macro_input!(attr as syn::LitStr);
     let input = parse_macro_input!(item as ItemStruct);
     let struct_name = &input.ident;
@@ -376,46 +355,35 @@ pub fn profile(attr: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(expanded)
 }
 
-pub fn value(attr: TokenStream, item: TokenStream) -> TokenStream
-{
+pub fn value(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStatic);
 
     let attr_str = attr.to_string();
 
-    let property_name = if attr_str.contains("${") && attr_str.contains('}')
-    {
+    let property_name = if attr_str.contains("${") && attr_str.contains('}') {
         let start = attr_str.find("${").map_or(0, |i| i + 2);
         let end = attr_str.find('}').unwrap_or(attr_str.len());
 
         let prop = &attr_str[start..end];
-        if let Some(colon_pos) = prop.find(':')
-        {
+        if let Some(colon_pos) = prop.find(':') {
             prop[..colon_pos].to_string()
-        }
-        else
-        {
+        } else {
             prop.to_string()
         }
-    }
-    else
-    {
+    } else {
         attr_str.trim().to_string()
     };
 
-    let default_value = if let Expr::Lit(expr_lit) = &*input.expr
-    {
+    let default_value = if let Expr::Lit(expr_lit) = &*input.expr {
         Some(expr_lit.clone())
-    }
-    else
-    {
+    } else {
         None
     };
 
     let name = &input.ident;
     let ty = &input.ty;
 
-    let expanded = if let Some(default) = default_value
-    {
+    let expanded = if let Some(default) = default_value {
         quote! {
             #input
 
@@ -428,9 +396,7 @@ pub fn value(attr: TokenStream, item: TokenStream) -> TokenStream
                 }
             }
         }
-    }
-    else
-    {
+    } else {
         quote! {
             #input
         }

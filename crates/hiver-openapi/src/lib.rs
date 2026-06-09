@@ -72,7 +72,13 @@
 #![warn(unreachable_pub)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod config;
@@ -122,8 +128,7 @@ pub const OPENAPI_VERSION: &str = "3.0.3";
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude
-{
+pub mod prelude {
     pub use super::{
         ApiResponse, ContactConfig, LicenseConfig, OPENAPI_VERSION, OpenApi, OpenApiConfig,
         Operation, Parameter, ParameterLocation, PathItem, PathMethod, PathOperation, Response,
@@ -148,18 +153,15 @@ pub mod prelude
 ///     )
 /// )
 /// ```
-pub trait GenerateOpenApi
-{
+pub trait GenerateOpenApi {
     /// Generate `OpenAPI` specification
     /// `生成OpenAPI规范`
     fn generate(&self) -> Result<utoipa::openapi::OpenApi, String>;
 }
 
 /// Default implementation for `utoipa::OpenApi`
-impl<T: utoipa::OpenApi> GenerateOpenApi for T
-{
-    fn generate(&self) -> Result<utoipa::openapi::OpenApi, String>
-    {
+impl<T: utoipa::OpenApi> GenerateOpenApi for T {
+    fn generate(&self) -> Result<utoipa::openapi::OpenApi, String> {
         Ok(T::openapi())
     }
 }

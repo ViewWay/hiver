@@ -27,8 +27,7 @@ use hiver_http::{Body, IntoResponse, Json, Response, StatusCode, content_type, h
 use serde::{Deserialize, Serialize};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>>
-{
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Hiver HTTP Example / Hiver HTTP示例 ===\n");
 
     // 1. Response Building / 响应构建
@@ -81,8 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>>
 ///
 /// Demonstrates various ways to build HTTP responses.
 /// 演示构建HTTP响应的各种方法。
-fn response_building_example()
-{
+fn response_building_example() {
     // Simple text response / 简单文本响应
     let response = Response::builder()
         .status(StatusCode::OK)
@@ -114,8 +112,7 @@ fn response_building_example()
 ///
 /// Equivalent to Spring's `@ResponseBody` annotation.
 /// 等价于 Spring 的 `@ResponseBody` 注解。
-fn json_response_example()
-{
+fn json_response_example() {
     // Create a user response / 创建用户响应
     let user = User {
         id: 1,
@@ -139,8 +136,7 @@ fn json_response_example()
 ///
 /// Demonstrates common HTTP status codes.
 /// 演示常见的HTTP状态码。
-fn status_code_example()
-{
+fn status_code_example() {
     println!("  200 OK: {}", StatusCode::OK.as_u16());
     println!("  201 Created: {}", StatusCode::CREATED.as_u16());
     println!("  204 No Content: {}", StatusCode::NO_CONTENT.as_u16());
@@ -157,8 +153,7 @@ fn status_code_example()
 ///
 /// Demonstrates automatic conversion to Response.
 /// 演示自动转换为Response。
-fn into_response_example()
-{
+fn into_response_example() {
     // String → Response / 字符串自动转响应
     let response: Response = "Hello, World!".into_response();
     println!("  String → Response: {:?}", response.status());
@@ -185,8 +180,7 @@ fn into_response_example()
 ///
 /// Demonstrates setting custom HTTP headers.
 /// 演示设置自定义HTTP头。
-fn custom_headers_example()
-{
+fn custom_headers_example() {
     let response = Response::builder()
         .status(StatusCode::OK)
         .header(header::CONTENT_TYPE, content_type::JSON)
@@ -204,8 +198,7 @@ fn custom_headers_example()
 ///
 /// Demonstrates creating error responses.
 /// 演示创建错误响应。
-fn error_response_example()
-{
+fn error_response_example() {
     // 400 Bad Request
     let response = Response::builder()
         .status(StatusCode::BAD_REQUEST)
@@ -235,13 +228,11 @@ fn error_response_example()
 ///
 /// Demonstrates parsing JSON from request body.
 /// 演示从请求体解析JSON。
-fn json_parsing_example()
-{
+fn json_parsing_example() {
     let json_body = r#"{"id":1,"name":"Alice","email":"alice@example.com"}"#;
 
     // Parse JSON string / 解析JSON字符串
-    if let Ok(user) = serde_json::from_str::<User>(json_body)
-    {
+    if let Ok(user) = serde_json::from_str::<User>(json_body) {
         println!("  Parsed user: {} (email: {})", user.name, user.email);
     }
 
@@ -264,8 +255,7 @@ fn json_parsing_example()
 /// Equivalent to a Spring entity or DTO.
 /// 等价于 Spring 实体或 DTO。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct User
-{
+struct User {
     id: u64,
     name: String,
     email: String,
@@ -287,8 +277,7 @@ struct User
 ///     return ResponseEntity.ok(user);
 /// }
 /// ```
-fn example_get_user_handler(id: u64) -> Response
-{
+fn example_get_user_handler(id: u64) -> Response {
     let user = User {
         id,
         name: "Alice".to_string(),
@@ -317,8 +306,7 @@ fn example_get_user_handler(id: u64) -> Response
 ///     return ResponseEntity.status(HttpStatus.CREATED).body(user);
 /// }
 /// ```
-fn example_create_user_handler(_request: CreateUserRequest) -> Response
-{
+fn example_create_user_handler(_request: CreateUserRequest) -> Response {
     let user = User {
         id: 1,
         name: "Bob".to_string(),
@@ -337,8 +325,7 @@ fn example_create_user_handler(_request: CreateUserRequest) -> Response
 
 /// Create user request / 创建用户请求
 #[derive(Debug, Deserialize)]
-struct CreateUserRequest
-{
+struct CreateUserRequest {
     name: String,
     email: String,
 }
@@ -347,10 +334,8 @@ struct CreateUserRequest
 ///
 /// Demonstrates returning different error responses.
 /// 演示返回不同的错误响应。
-fn example_error_handler(error_type: &str) -> Response
-{
-    let (status, error_msg) = match error_type
-    {
+fn example_error_handler(error_type: &str) -> Response {
+    let (status, error_msg) = match error_type {
         "not_found" => (StatusCode::NOT_FOUND, "User not found"),
         "bad_request" => (StatusCode::BAD_REQUEST, "Invalid input"),
         "unauthorized" => (StatusCode::UNAUTHORIZED, "Authentication required"),
@@ -370,8 +355,7 @@ fn example_error_handler(error_type: &str) -> Response
 ///
 /// Demonstrates a paginated response pattern.
 /// 演示分页响应模式。
-fn example_paginated_response(page: u32, size: u32) -> Response
-{
+fn example_paginated_response(page: u32, size: u32) -> Response {
     let users = vec![
         User {
             id: 1,
@@ -404,8 +388,7 @@ fn example_paginated_response(page: u32, size: u32) -> Response
 
 /// Pagination response / 分页响应
 #[derive(Debug, Serialize)]
-struct PaginationResponse<T>
-{
+struct PaginationResponse<T> {
     data: Vec<T>,
     page: u32,
     size: u32,

@@ -50,8 +50,7 @@ use super::container::ApplicationContext;
 ///   beans
 /// - `condition`: 可选条件，不满足时跳过此配置 / Optional condition; skip if not met
 /// - `priority`: 排序优先级，数字越小优先级越高 / Sort priority (lower = higher priority)
-pub struct AutoConfigurationEntry
-{
+pub struct AutoConfigurationEntry {
     /// 配置名称
     /// Configuration name
     name: String,
@@ -69,8 +68,7 @@ pub struct AutoConfigurationEntry
     priority: i32,
 }
 
-impl AutoConfigurationEntry
-{
+impl AutoConfigurationEntry {
     /// 创建新的自动配置条目
     /// Create a new auto-configuration entry
     ///
@@ -96,8 +94,7 @@ impl AutoConfigurationEntry
     /// # 参数 / Parameters
     ///
     /// - `condition`: 条件对象 / Condition object
-    pub fn with_condition(mut self, condition: Box<dyn Condition>) -> Self
-    {
+    pub fn with_condition(mut self, condition: Box<dyn Condition>) -> Self {
         self.condition = Some(condition);
         self
     }
@@ -108,45 +105,38 @@ impl AutoConfigurationEntry
     /// # 参数 / Parameters
     ///
     /// - `priority`: 优先级数值 / Priority value
-    pub fn with_priority(mut self, priority: i32) -> Self
-    {
+    pub fn with_priority(mut self, priority: i32) -> Self {
         self.priority = priority;
         self
     }
 
     /// 获取配置名称
     /// Get configuration name
-    pub fn name(&self) -> &str
-    {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
     /// 获取优先级
     /// Get priority
-    pub fn priority(&self) -> i32
-    {
+    pub fn priority(&self) -> i32 {
         self.priority
     }
 
     /// 检查条件是否满足（无条件时默认为 true）
     /// Check if condition is met (defaults to true when no condition)
-    pub fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+    pub fn matches(&self, ctx: &ApplicationContext) -> bool {
         self.condition.as_ref().is_none_or(|c| c.matches(ctx))
     }
 
     /// 执行工厂函数
     /// Execute factory function
-    pub fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
-    {
+    pub fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
         (self.factory)(ctx)
     }
 }
 
-impl fmt::Debug for AutoConfigurationEntry
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for AutoConfigurationEntry {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("AutoConfigurationEntry")
             .field("name", &self.name)
             .field("priority", &self.priority)
@@ -185,8 +175,7 @@ impl fmt::Debug for AutoConfigurationEntry
 /// let applicable = registry.evaluate(&context);
 /// ```
 #[derive(Debug, Default)]
-pub struct AutoConfigurationRegistry
-{
+pub struct AutoConfigurationRegistry {
     /// 已注册的自动配置条目
     /// Registered auto-configuration entries
     entries: Vec<AutoConfigurationEntry>,
@@ -199,8 +188,7 @@ pub struct AutoConfigurationRegistry
 /// 排序约束
 /// Ordering constraint
 #[derive(Debug, Clone)]
-struct OrderConstraint
-{
+struct OrderConstraint {
     /// 源配置名称（应在前面）
     /// Source configuration name (should come first)
     before: String,
@@ -210,12 +198,10 @@ struct OrderConstraint
     after: String,
 }
 
-impl AutoConfigurationRegistry
-{
+impl AutoConfigurationRegistry {
     /// 创建新的注册表
     /// Create a new registry
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -225,8 +211,7 @@ impl AutoConfigurationRegistry
     /// # 参数 / Parameters
     ///
     /// - `entry`: 自动配置条目 / Auto-configuration entry
-    pub fn register(&mut self, entry: AutoConfigurationEntry)
-    {
+    pub fn register(&mut self, entry: AutoConfigurationEntry) {
         self.entries.push(entry);
     }
 
@@ -237,8 +222,7 @@ impl AutoConfigurationRegistry
     ///
     /// - `entry`: 自动配置条目（应已通过 `with_condition` 设置条件） / Auto-configuration entry
     ///   (should have condition set via `with_condition`)
-    pub fn register_conditional(&mut self, entry: AutoConfigurationEntry)
-    {
+    pub fn register_conditional(&mut self, entry: AutoConfigurationEntry) {
         self.entries.push(entry);
     }
 
@@ -252,8 +236,7 @@ impl AutoConfigurationRegistry
     ///
     /// - `before_name`: 需要在前的配置名称 / Name of the configuration that should come before
     /// - `after_name`: 需要在后的配置名称 / Name of the configuration that should come after
-    pub fn before(&mut self, before_name: &str, after_name: &str)
-    {
+    pub fn before(&mut self, before_name: &str, after_name: &str) {
         self.order_constraints.push(OrderConstraint {
             before: before_name.to_string(),
             after: after_name.to_string(),
@@ -270,8 +253,7 @@ impl AutoConfigurationRegistry
     ///
     /// - `after_name`: 需要在后的配置名称 / Name of the configuration that should come after
     /// - `before_name`: 需要在前的配置名称 / Name of the configuration that should come before
-    pub fn after(&mut self, after_name: &str, before_name: &str)
-    {
+    pub fn after(&mut self, after_name: &str, before_name: &str) {
         self.order_constraints.push(OrderConstraint {
             before: before_name.to_string(),
             after: after_name.to_string(),
@@ -294,8 +276,7 @@ impl AutoConfigurationRegistry
     ///
     /// 返回所有条件满足的配置条目（已排序）。
     /// Returns all entries whose conditions are met (sorted).
-    pub fn evaluate(&self, ctx: &ApplicationContext) -> Vec<&AutoConfigurationEntry>
-    {
+    pub fn evaluate(&self, ctx: &ApplicationContext) -> Vec<&AutoConfigurationEntry> {
         let mut applicable: Vec<&AutoConfigurationEntry> = self
             .entries
             .iter()
@@ -316,8 +297,7 @@ impl AutoConfigurationRegistry
     /// Sorting strategy:
     /// 1. Sort by priority ascending (lower number comes first)
     /// 2. Adjust order based on Before/After constraints
-    pub fn sort_by_priority(&mut self)
-    {
+    pub fn sort_by_priority(&mut self) {
         // Step 1: sort by numeric priority
         self.entries.sort_by_key(|e| e.priority);
 
@@ -327,29 +307,25 @@ impl AutoConfigurationRegistry
 
     /// 获取所有已注册的条目（只读）
     /// Get all registered entries (read-only)
-    pub fn entries(&self) -> &[AutoConfigurationEntry]
-    {
+    pub fn entries(&self) -> &[AutoConfigurationEntry] {
         &self.entries
     }
 
     /// 获取已注册条目数量
     /// Get the number of registered entries
-    pub fn len(&self) -> usize
-    {
+    pub fn len(&self) -> usize {
         self.entries.len()
     }
 
     /// 检查是否为空
     /// Check if empty
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }
 
     /// 按名称查找条目
     /// Find entry by name
-    pub fn find(&self, name: &str) -> Option<&AutoConfigurationEntry>
-    {
+    pub fn find(&self, name: &str) -> Option<&AutoConfigurationEntry> {
         self.entries.iter().find(|e| e.name() == name)
     }
 
@@ -359,23 +335,19 @@ impl AutoConfigurationRegistry
 
     /// 对引用切片进行排序（用于 evaluate 返回结果）
     /// Sort a slice of references (used for evaluate return value)
-    fn sort_entries(&self, entries: &mut Vec<&AutoConfigurationEntry>)
-    {
+    fn sort_entries(&self, entries: &mut Vec<&AutoConfigurationEntry>) {
         entries.sort_by_key(|e| e.priority);
         self.apply_order_constraints_ref(entries);
     }
 
     /// 将 Before/After 约束应用到 owned 条目列表
     /// Apply Before/After constraints to an owned entry list
-    fn apply_order_constraints_owned(&mut self)
-    {
+    fn apply_order_constraints_owned(&mut self) {
         // 使用多轮冒泡来满足所有 Before/After 约束
         // Use multiple passes of bubble adjustments to satisfy all constraints
-        for _ in 0..self.order_constraints.len()
-        {
+        for _ in 0..self.order_constraints.len() {
             let mut swapped = false;
-            for constraint in &self.order_constraints
-            {
+            for constraint in &self.order_constraints {
                 let before_idx = self
                     .entries
                     .iter()
@@ -385,10 +357,8 @@ impl AutoConfigurationRegistry
                     .iter()
                     .position(|e| e.name() == constraint.after);
 
-                if let (Some(bi), Some(ai)) = (before_idx, after_idx)
-                {
-                    if bi > ai
-                    {
+                if let (Some(bi), Some(ai)) = (before_idx, after_idx) {
+                    if bi > ai {
                         // before 在 after 后面，需要移动
                         // before is after after, need to move
                         let entry = self.entries.remove(bi);
@@ -397,8 +367,7 @@ impl AutoConfigurationRegistry
                     }
                 }
             }
-            if !swapped
-            {
+            if !swapped {
                 break;
             }
         }
@@ -406,28 +375,22 @@ impl AutoConfigurationRegistry
 
     /// 将 Before/After 约束应用到引用切片
     /// Apply Before/After constraints to a reference slice
-    fn apply_order_constraints_ref(&self, entries: &mut Vec<&AutoConfigurationEntry>)
-    {
-        for _ in 0..self.order_constraints.len()
-        {
+    fn apply_order_constraints_ref(&self, entries: &mut Vec<&AutoConfigurationEntry>) {
+        for _ in 0..self.order_constraints.len() {
             let mut swapped = false;
-            for constraint in &self.order_constraints
-            {
+            for constraint in &self.order_constraints {
                 let before_idx = entries.iter().position(|e| e.name() == constraint.before);
                 let after_idx = entries.iter().position(|e| e.name() == constraint.after);
 
-                if let (Some(bi), Some(ai)) = (before_idx, after_idx)
-                {
-                    if bi > ai
-                    {
+                if let (Some(bi), Some(ai)) = (before_idx, after_idx) {
+                    if bi > ai {
                         let entry = entries.remove(bi);
                         entries.insert(ai, entry);
                         swapped = true;
                     }
                 }
             }
-            if !swapped
-            {
+            if !swapped {
                 break;
             }
         }
@@ -448,8 +411,7 @@ impl AutoConfigurationRegistry
 /// `ApplicationContext`，专为自动配置注册表设计。
 /// Independent from the `Conditional` trait in `condition.rs`, this trait
 /// operates directly on `ApplicationContext`, designed for the auto-configuration registry.
-pub trait Condition: Send + Sync + fmt::Debug
-{
+pub trait Condition: Send + Sync + fmt::Debug {
     /// 检查条件是否满足
     /// Check if the condition is met
     ///
@@ -479,33 +441,28 @@ pub trait Condition: Send + Sync + fmt::Debug
 /// 等价于 Spring Boot 的 `@ConditionalOnClass`。
 /// Equivalent to Spring Boot's `@ConditionalOnClass`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnClass
-{
+pub struct ConditionalOnClass {
     /// 类型名称（用于日志和环境变量检查）
     /// Type name (for logging and environment variable checking)
     type_name: &'static str,
 }
 
-impl ConditionalOnClass
-{
+impl ConditionalOnClass {
     /// 创建新的类存在条件
     /// Create a new class presence condition
     ///
     /// # 类型参数 / Type Parameters
     ///
     /// - `T`: 要检查的类型 / Type to check
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_name: std::any::type_name::<T>(),
         }
     }
 }
 
-impl Condition for ConditionalOnClass
-{
-    fn matches(&self, _ctx: &ApplicationContext) -> bool
-    {
+impl Condition for ConditionalOnClass {
+    fn matches(&self, _ctx: &ApplicationContext) -> bool {
         // 在 Rust 中，如果类型 `T` 被引用，编译器会确保其存在。
         // 因此 `TypeId::of::<T>()` 能编译就意味着类型存在。
         //
@@ -535,33 +492,28 @@ impl Condition for ConditionalOnClass
 /// 等价于 Spring Boot 的 `@ConditionalOnMissingClass`。
 /// Equivalent to Spring Boot's `@ConditionalOnMissingClass`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnMissingClass
-{
+pub struct ConditionalOnMissingClass {
     /// 类型名称（用于日志和环境变量检查）
     /// Type name (for logging and environment variable checking)
     type_name: &'static str,
 }
 
-impl ConditionalOnMissingClass
-{
+impl ConditionalOnMissingClass {
     /// 创建新的类不存在条件
     /// Create a new class absence condition
     ///
     /// # 类型参数 / Type Parameters
     ///
     /// - `T`: 要检查不存在的类型 / Type to check for absence
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_name: std::any::type_name::<T>(),
         }
     }
 }
 
-impl Condition for ConditionalOnMissingClass
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Condition for ConditionalOnMissingClass {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         !ConditionalOnClass {
             type_name: self.type_name,
         }
@@ -588,8 +540,7 @@ impl Condition for ConditionalOnMissingClass
 /// 等价于 Spring Boot 的 `@ConditionalOnProperty`。
 /// Equivalent to Spring Boot's `@ConditionalOnProperty`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnPropertyCondition
-{
+pub struct ConditionalOnPropertyCondition {
     /// 属性键
     /// Property key
     key: String,
@@ -603,16 +554,14 @@ pub struct ConditionalOnPropertyCondition
     match_if_missing: bool,
 }
 
-impl ConditionalOnPropertyCondition
-{
+impl ConditionalOnPropertyCondition {
     /// 创建新的属性条件
     /// Create a new property condition
     ///
     /// # 参数 / Parameters
     ///
     /// - `key`: 属性键 / Property key
-    pub fn new(key: impl Into<String>) -> Self
-    {
+    pub fn new(key: impl Into<String>) -> Self {
         Self {
             key: key.into(),
             expected_value: None,
@@ -622,38 +571,28 @@ impl ConditionalOnPropertyCondition
 
     /// 设置期望的值
     /// Set expected value
-    pub fn having_value(mut self, value: impl Into<String>) -> Self
-    {
+    pub fn having_value(mut self, value: impl Into<String>) -> Self {
         self.expected_value = Some(value.into());
         self
     }
 
     /// 设置属性缺失时的匹配行为
     /// Set match behavior when property is absent
-    pub fn match_if_missing(mut self, match_if_missing: bool) -> Self
-    {
+    pub fn match_if_missing(mut self, match_if_missing: bool) -> Self {
         self.match_if_missing = match_if_missing;
         self
     }
 }
 
-impl Condition for ConditionalOnPropertyCondition
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
-        if let Some(actual) = ctx.get_property(&self.key)
-        {
-            if let Some(ref expected) = self.expected_value
-            {
+impl Condition for ConditionalOnPropertyCondition {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
+        if let Some(actual) = ctx.get_property(&self.key) {
+            if let Some(ref expected) = self.expected_value {
                 actual == *expected
-            }
-            else
-            {
+            } else {
                 !actual.is_empty()
             }
-        }
-        else
-        {
+        } else {
             self.match_if_missing
         }
     }
@@ -672,33 +611,28 @@ impl Condition for ConditionalOnPropertyCondition
 /// 等价于 Spring Boot 的 `@ConditionalOnMissingBean`。
 /// Equivalent to Spring Boot's `@ConditionalOnMissingBean`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnMissingBeanCondition
-{
+pub struct ConditionalOnMissingBeanCondition {
     /// Bean 类型 ID
     /// Bean type ID
     type_id: TypeId,
 }
 
-impl ConditionalOnMissingBeanCondition
-{
+impl ConditionalOnMissingBeanCondition {
     /// 创建新的 Bean 缺失条件
     /// Create a new bean missing condition
     ///
     /// # 类型参数 / Type Parameters
     ///
     /// - `T`: 要检查缺失的 Bean 类型 / Bean type to check for absence
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
         }
     }
 }
 
-impl Condition for ConditionalOnMissingBeanCondition
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Condition for ConditionalOnMissingBeanCondition {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         !ctx.contains_bean_by_id(self.type_id)
     }
 }
@@ -716,33 +650,28 @@ impl Condition for ConditionalOnMissingBeanCondition
 /// 等价于 Spring Boot 的 `@ConditionalOnBean`。
 /// Equivalent to Spring Boot's `@ConditionalOnBean`.
 #[derive(Debug, Clone)]
-pub struct ConditionalOnBeanCondition
-{
+pub struct ConditionalOnBeanCondition {
     /// Bean 类型 ID
     /// Bean type ID
     type_id: TypeId,
 }
 
-impl ConditionalOnBeanCondition
-{
+impl ConditionalOnBeanCondition {
     /// 创建新的 Bean 存在条件
     /// Create a new bean present condition
     ///
     /// # 类型参数 / Type Parameters
     ///
     /// - `T`: 要检查存在的 Bean 类型 / Bean type to check for presence
-    pub fn new<T: 'static>() -> Self
-    {
+    pub fn new<T: 'static>() -> Self {
         Self {
             type_id: TypeId::of::<T>(),
         }
     }
 }
 
-impl Condition for ConditionalOnBeanCondition
-{
-    fn matches(&self, ctx: &ApplicationContext) -> bool
-    {
+impl Condition for ConditionalOnBeanCondition {
+    fn matches(&self, ctx: &ApplicationContext) -> bool {
         ctx.contains_bean_by_id(self.type_id)
     }
 }
@@ -760,8 +689,7 @@ impl Condition for ConditionalOnBeanCondition
 /// 等价于 Spring Boot 的 `@AutoConfigureBefore` 和 `@AutoConfigureAfter`。
 /// Equivalent to Spring Boot's `@AutoConfigureBefore` and `@AutoConfigureAfter`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AutoConfigureOrder
-{
+pub enum AutoConfigureOrder {
     /// 在指定配置之前执行
     /// Execute before the specified configuration
     Before,
@@ -796,12 +724,10 @@ pub enum AutoConfigureOrder
 #[derive(Debug, Clone, Copy, Default)]
 pub struct EnableAutoConfiguration;
 
-impl EnableAutoConfiguration
-{
+impl EnableAutoConfiguration {
     /// 创建新的标记实例
     /// Create a new marker instance
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self
     }
 }
@@ -811,9 +737,14 @@ impl EnableAutoConfiguration
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::Arc;
 
     use super::*;
@@ -823,20 +754,17 @@ mod tests
     struct ConfigValue<T>(T);
     impl<T: 'static> Bean for ConfigValue<T> {}
 
-    fn noop_factory(_ctx: &mut ApplicationContext) -> anyhow::Result<()>
-    {
+    fn noop_factory(_ctx: &mut ApplicationContext) -> anyhow::Result<()> {
         Ok(())
     }
 
-    fn register_test_bean(ctx: &mut ApplicationContext) -> anyhow::Result<()>
-    {
+    fn register_test_bean(ctx: &mut ApplicationContext) -> anyhow::Result<()> {
         ctx.register_bean(ConfigValue(42i32));
         Ok(())
     }
 
     #[test]
-    fn test_entry_creation()
-    {
+    fn test_entry_creation() {
         let entry = AutoConfigurationEntry::new("TestConfig", noop_factory);
         assert_eq!(entry.name(), "TestConfig");
         assert_eq!(entry.priority(), 0);
@@ -844,24 +772,21 @@ mod tests
     }
 
     #[test]
-    fn test_entry_with_priority()
-    {
+    fn test_entry_with_priority() {
         let entry =
             AutoConfigurationEntry::new("HighPriorityConfig", noop_factory).with_priority(-100);
         assert_eq!(entry.priority(), -100);
     }
 
     #[test]
-    fn test_entry_matches_no_condition()
-    {
+    fn test_entry_matches_no_condition() {
         let ctx = ApplicationContext::new();
         let entry = AutoConfigurationEntry::new("AlwaysConfig", noop_factory);
         assert!(entry.matches(&ctx));
     }
 
     #[test]
-    fn test_entry_matches_with_condition()
-    {
+    fn test_entry_matches_with_condition() {
         let ctx = ApplicationContext::new();
         let entry = AutoConfigurationEntry::new("ConditionalConfig", noop_factory)
             .with_condition(Box::new(ConditionalOnPropertyCondition::new("nonexistent.key")));
@@ -872,8 +797,7 @@ mod tests
     }
 
     #[test]
-    fn test_entry_configure()
-    {
+    fn test_entry_configure() {
         let mut ctx = ApplicationContext::new();
         let entry = AutoConfigurationEntry::new("RegisterConfig", register_test_bean);
         entry.configure(&mut ctx).unwrap();
@@ -881,8 +805,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_register()
-    {
+    fn test_registry_register() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("ConfigA", noop_factory));
         registry.register(AutoConfigurationEntry::new("ConfigB", noop_factory));
@@ -890,8 +813,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_register_conditional()
-    {
+    fn test_registry_register_conditional() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register_conditional(
             AutoConfigurationEntry::new("ConditionalConfig", noop_factory)
@@ -901,8 +823,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_evaluate_no_conditions()
-    {
+    fn test_registry_evaluate_no_conditions() {
         let ctx = ApplicationContext::new();
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("ConfigA", noop_factory));
@@ -913,8 +834,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_evaluate_with_condition()
-    {
+    fn test_registry_evaluate_with_condition() {
         let ctx = ApplicationContext::new();
         let mut registry = AutoConfigurationRegistry::new();
 
@@ -935,8 +855,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_sort_by_priority()
-    {
+    fn test_registry_sort_by_priority() {
         let mut registry = AutoConfigurationRegistry::new();
         registry
             .register(AutoConfigurationEntry::new("LowPriority", noop_factory).with_priority(100));
@@ -954,8 +873,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_before_after_constraints()
-    {
+    fn test_registry_before_after_constraints() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("ConfigA", noop_factory).with_priority(10));
         registry.register(AutoConfigurationEntry::new("ConfigB", noop_factory).with_priority(5));
@@ -976,8 +894,7 @@ mod tests
     }
 
     #[test]
-    fn test_registry_find()
-    {
+    fn test_registry_find() {
         let mut registry = AutoConfigurationRegistry::new();
         registry.register(AutoConfigurationEntry::new("TargetConfig", noop_factory));
         registry.register(AutoConfigurationEntry::new("OtherConfig", noop_factory));
@@ -991,16 +908,14 @@ mod tests
     }
 
     #[test]
-    fn test_registry_is_empty()
-    {
+    fn test_registry_is_empty() {
         let registry = AutoConfigurationRegistry::new();
         assert!(registry.is_empty());
         assert_eq!(registry.len(), 0);
     }
 
     #[test]
-    fn test_conditional_on_missing_bean_condition()
-    {
+    fn test_conditional_on_missing_bean_condition() {
         let ctx = ApplicationContext::new();
         let condition = ConditionalOnMissingBeanCondition::new::<ConfigValue<i32>>();
 
@@ -1018,8 +933,7 @@ mod tests
     }
 
     #[test]
-    fn test_conditional_on_bean_condition()
-    {
+    fn test_conditional_on_bean_condition() {
         let ctx = ApplicationContext::new();
         let condition = ConditionalOnBeanCondition::new::<ConfigValue<i32>>();
 
@@ -1037,8 +951,7 @@ mod tests
     }
 
     #[test]
-    fn test_conditional_on_property_condition()
-    {
+    fn test_conditional_on_property_condition() {
         let ctx = ApplicationContext::new();
 
         // 属性不存在，match_if_missing=false
@@ -1066,8 +979,7 @@ mod tests
     }
 
     #[test]
-    fn test_enable_auto_configuration_marker()
-    {
+    fn test_enable_auto_configuration_marker() {
         let marker = EnableAutoConfiguration::new();
         let _default = EnableAutoConfiguration;
         // 标记存在且可用
@@ -1076,8 +988,7 @@ mod tests
     }
 
     #[test]
-    fn test_auto_configure_order()
-    {
+    fn test_auto_configure_order() {
         let before = AutoConfigureOrder::Before;
         let after = AutoConfigureOrder::After;
         assert_ne!(before, after);
@@ -1085,8 +996,7 @@ mod tests
     }
 
     #[test]
-    fn test_conditional_on_class()
-    {
+    fn test_conditional_on_class() {
         let ctx = ApplicationContext::new();
         let condition = ConditionalOnClass::new::<String>();
         // 默认行为：返回 true（无环境变量覆盖）
@@ -1095,8 +1005,7 @@ mod tests
     }
 
     #[test]
-    fn test_conditional_on_missing_class()
-    {
+    fn test_conditional_on_missing_class() {
         let ctx = ApplicationContext::new();
         let condition = ConditionalOnMissingClass::new::<String>();
         // 默认：ConditionalOnClass 返回 true，因此 MissingClass 返回 false
@@ -1105,8 +1014,7 @@ mod tests
     }
 
     #[test]
-    fn test_entry_debug_format()
-    {
+    fn test_entry_debug_format() {
         let entry = AutoConfigurationEntry::new("DebugTest", noop_factory).with_priority(42);
         let debug_str = format!("{:?}", entry);
         assert!(debug_str.contains("DebugTest"));

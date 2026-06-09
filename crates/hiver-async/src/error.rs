@@ -13,8 +13,7 @@ use std::fmt;
 /// throw new TaskRejectedException("Task executor is shutdown");
 /// ```
 #[derive(Debug)]
-pub enum AsyncError
-{
+pub enum AsyncError {
     /// Task was rejected (executor full or shutdown)
     /// 任务被拒绝（执行器已满或已关闭）
     TaskRejected(String),
@@ -36,12 +35,9 @@ pub enum AsyncError
     Other(String),
 }
 
-impl fmt::Display for AsyncError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for AsyncError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             AsyncError::TaskRejected(msg) => write!(f, "Task rejected: {}", msg),
             AsyncError::ExecutionFailed(msg) => write!(f, "Execution failed: {}", msg),
             AsyncError::Shutdown(msg) => write!(f, "Executor shutdown: {}", msg),
@@ -57,23 +53,25 @@ impl std::error::Error for AsyncError {}
 /// 异步任务执行结果
 pub type AsyncResult<T> = Result<T, AsyncError>;
 
-impl From<AsyncError> for std::io::Error
-{
-    fn from(err: AsyncError) -> Self
-    {
+impl From<AsyncError> for std::io::Error {
+    fn from(err: AsyncError) -> Self {
         std::io::Error::other(err.to_string())
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_error_display()
-    {
+    fn test_error_display() {
         let err = AsyncError::TaskRejected("queue full".to_string());
         assert_eq!(err.to_string(), "Task rejected: queue full");
 
@@ -82,8 +80,7 @@ mod tests
     }
 
     #[test]
-    fn test_async_result()
-    {
+    fn test_async_result() {
         let result: AsyncResult<()> = Ok(());
         assert!(result.is_ok());
 

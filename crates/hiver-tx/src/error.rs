@@ -10,8 +10,7 @@ use thiserror::Error;
 /// Equivalent to Spring's `TransactionException`.
 /// `等价于Spring的TransactionException`。
 #[derive(Error, Debug)]
-pub enum TransactionError
-{
+pub enum TransactionError {
     /// Transaction creation failed
     /// 事务创建失败
     #[error("Failed to create transaction: {0}")]
@@ -79,8 +78,7 @@ pub type TransactionResult<T> = Result<T, TransactionError>;
 /// `等价于Spring的TransactionSystemException`。
 #[derive(Error, Debug)]
 #[error("Transaction system exception: {message}")]
-pub(crate) struct TransactionSystemException
-{
+pub(crate) struct TransactionSystemException {
     /// Error message
     /// 错误消息
     pub message: String,
@@ -91,12 +89,10 @@ pub(crate) struct TransactionSystemException
     pub source: Option<Box<dyn std::error::Error + Send + Sync>>,
 }
 
-impl TransactionSystemException
-{
+impl TransactionSystemException {
     /// Create a new transaction system exception
     /// 创建新的事务系统异常
-    pub(crate) fn new(message: impl Into<String>) -> Self
-    {
+    pub(crate) fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into(),
             source: None,
@@ -108,8 +104,7 @@ impl TransactionSystemException
     pub(crate) fn with_source(
         message: impl Into<String>,
         source: impl Into<Box<dyn std::error::Error + Send + Sync>>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             message: message.into(),
             source: Some(source.into()),
@@ -124,19 +119,16 @@ impl TransactionSystemException
 /// `等价于Spring的UnexpectedRollbackException`。
 #[derive(Error, Debug)]
 #[error("Unexpected rollback: {message}")]
-pub(crate) struct UnexpectedRollbackException
-{
+pub(crate) struct UnexpectedRollbackException {
     /// Error message
     /// 错误消息
     pub message: String,
 }
 
-impl UnexpectedRollbackException
-{
+impl UnexpectedRollbackException {
     /// Create a new unexpected rollback exception
     /// 创建新的意外回滚异常
-    pub(crate) fn new(message: impl Into<String>) -> Self
-    {
+    pub(crate) fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into(),
         }

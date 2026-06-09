@@ -19,8 +19,7 @@ use serde::{Deserialize, Serialize};
 /// public void auditAction() { ... }
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
-pub enum Propagation
-{
+pub enum Propagation {
     /// Required
     /// 必需
     ///
@@ -73,14 +72,11 @@ pub enum Propagation
     Nested = 6,
 }
 
-impl Propagation
-{
+impl Propagation {
     /// Get propagation from value
     /// 从值获取传播行为
-    pub fn from_value(value: i32) -> Option<Self>
-    {
-        match value
-        {
+    pub fn from_value(value: i32) -> Option<Self> {
+        match value {
             0 => Some(Propagation::Required),
             1 => Some(Propagation::Supports),
             2 => Some(Propagation::Mandatory),
@@ -94,27 +90,22 @@ impl Propagation
 
     /// Get the numeric value
     /// 获取数字值
-    pub fn value(&self) -> i32
-    {
+    pub fn value(&self) -> i32 {
         *self as i32
     }
 
     /// Check if this creates a new transaction
     /// 检查是否创建新事务
-    pub fn creates_new_transaction(&self) -> bool
-    {
+    pub fn creates_new_transaction(&self) -> bool {
         matches!(self, Propagation::Required | Propagation::RequiresNew | Propagation::Nested)
     }
 
     /// Get description
     /// 获取描述
-    pub fn description(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn description(&self) -> &'static str {
+        match self {
             Propagation::Required => "Support current transaction, create new if none",
-            Propagation::Supports =>
-            {
+            Propagation::Supports => {
                 "Support current transaction, execute non-transactionally if none"
             },
             Propagation::Mandatory => "Support current transaction, error if none",
@@ -126,12 +117,9 @@ impl Propagation
     }
 }
 
-impl std::fmt::Display for Propagation
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
+impl std::fmt::Display for Propagation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
             Propagation::Required => write!(f, "REQUIRED"),
             Propagation::Supports => write!(f, "SUPPORTS"),
             Propagation::Mandatory => write!(f, "MANDATORY"),
@@ -143,14 +131,11 @@ impl std::fmt::Display for Propagation
     }
 }
 
-impl std::str::FromStr for Propagation
-{
+impl std::str::FromStr for Propagation {
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err>
-    {
-        match s.to_uppercase().as_str()
-        {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
             "REQUIRED" => Ok(Propagation::Required),
             "SUPPORTS" => Ok(Propagation::Supports),
             "MANDATORY" => Ok(Propagation::Mandatory),
@@ -164,21 +149,24 @@ impl std::str::FromStr for Propagation
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_propagation_from_str()
-    {
+    fn test_propagation_from_str() {
         assert_eq!("REQUIRES_NEW".parse::<Propagation>().unwrap(), Propagation::RequiresNew);
         assert_eq!("mandatory".parse::<Propagation>().unwrap(), Propagation::Mandatory);
     }
 
     #[test]
-    fn test_creates_new_transaction()
-    {
+    fn test_creates_new_transaction() {
         assert!(Propagation::Required.creates_new_transaction());
         assert!(Propagation::RequiresNew.creates_new_transaction());
         assert!(!Propagation::Supports.creates_new_transaction());

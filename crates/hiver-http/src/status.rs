@@ -15,8 +15,7 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StatusCode(u16);
 
-impl StatusCode
-{
+impl StatusCode {
     /// 202 Accepted / 202 已接受
     pub const ACCEPTED: StatusCode = StatusCode(202);
     /// 502 Bad Gateway / 502 网关错误
@@ -128,59 +127,50 @@ impl StatusCode
 
     /// Create a `StatusCode` from a u16
     /// 从u16创建状态码
-    pub const fn from_u16(code: u16) -> StatusCode
-    {
+    pub const fn from_u16(code: u16) -> StatusCode {
         StatusCode(code)
     }
 
     /// Get the status code as u16
     /// 获取u16格式的状态码
-    pub const fn as_u16(self) -> u16
-    {
+    pub const fn as_u16(self) -> u16 {
         self.0
     }
 
     /// Check if this is a 1xx informational response
     /// 检查是否为1xx信息响应
-    pub const fn is_informational(self) -> bool
-    {
+    pub const fn is_informational(self) -> bool {
         self.0 >= 100 && self.0 < 200
     }
 
     /// Check if this is a 2xx success response
     /// 检查是否为2xx成功响应
-    pub const fn is_success(self) -> bool
-    {
+    pub const fn is_success(self) -> bool {
         self.0 >= 200 && self.0 < 300
     }
 
     /// Check if this is a 3xx redirection
     /// 检查是否为3xx重定向
-    pub const fn is_redirection(self) -> bool
-    {
+    pub const fn is_redirection(self) -> bool {
         self.0 >= 300 && self.0 < 400
     }
 
     /// Check if this is a 4xx client error
     /// 检查是否为4xx客户端错误
-    pub const fn is_client_error(self) -> bool
-    {
+    pub const fn is_client_error(self) -> bool {
         self.0 >= 400 && self.0 < 500
     }
 
     /// Check if this is a 5xx server error
     /// 检查是否为5xx服务器错误
-    pub const fn is_server_error(self) -> bool
-    {
+    pub const fn is_server_error(self) -> bool {
         self.0 >= 500 && self.0 < 600
     }
 
     /// Get the canonical reason phrase for this status code
     /// 获取此状态码的标准原因短语
-    pub fn canonical_reason(self) -> Option<&'static str>
-    {
-        match self
-        {
+    pub fn canonical_reason(self) -> Option<&'static str> {
+        match self {
             StatusCode::CONTINUE => Some("Continue"),
             StatusCode::SWITCHING_PROTOCOLS => Some("Switching Protocols"),
             StatusCode::PROCESSING => Some("Processing"),
@@ -237,26 +227,19 @@ impl StatusCode
 
 /// Returns `StatusCode::OK` (200) as the default.
 /// 返回 `StatusCode::OK` (200) 作为默认值。
-impl Default for StatusCode
-{
-    fn default() -> Self
-    {
+impl Default for StatusCode {
+    fn default() -> Self {
         StatusCode::OK
     }
 }
 
 /// Formats the status code as `"CODE Reason"`, e.g. `"404 Not Found"`.
 /// 将状态码格式化为 `"CODE 原因短语"`，例如 `"404 Not Found"`。
-impl fmt::Display for StatusCode
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        if let Some(reason) = self.canonical_reason()
-        {
+impl fmt::Display for StatusCode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(reason) = self.canonical_reason() {
             write!(f, "{} {}", self.0, reason)
-        }
-        else
-        {
+        } else {
             write!(f, "{}", self.0)
         }
     }
@@ -264,23 +247,25 @@ impl fmt::Display for StatusCode
 
 /// Converts a `u16` into a `StatusCode` without validation.
 /// 将 `u16` 转换为 `StatusCode`，不进行验证。
-impl From<u16> for StatusCode
-{
-    fn from(code: u16) -> Self
-    {
+impl From<u16> for StatusCode {
+    fn from(code: u16) -> Self {
         StatusCode(code)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_status_code_categories()
-    {
+    fn test_status_code_categories() {
         assert!(StatusCode::OK.is_success());
         assert!(StatusCode::CREATED.is_success());
         assert!(StatusCode::NOT_FOUND.is_client_error());
@@ -290,8 +275,7 @@ mod tests
     }
 
     #[test]
-    fn test_status_code_display()
-    {
+    fn test_status_code_display() {
         assert_eq!(StatusCode::OK.to_string(), "200 OK");
         assert_eq!(StatusCode::NOT_FOUND.to_string(), "404 Not Found");
     }

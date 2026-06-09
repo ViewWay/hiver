@@ -10,11 +10,9 @@ mod templates;
 
 use cli::Cli;
 
-fn main()
-{
+fn main() {
     let cli = Cli::parse();
-    if let Err(e) = cli.run()
-    {
+    if let Err(e) = cli.run() {
         eprintln!("{} {}", console::style("error:").red().bold(), e);
         std::process::exit(1);
     }

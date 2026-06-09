@@ -20,8 +20,7 @@ use testcontainers::{GenericImage, core::IntoContainerPort, runners::AsyncRunner
 
 /// Helper: start a Kafka (with Zookeeper) container and return broker URL + container.
 /// 辅助函数：启动 Kafka（含 Zookeeper）容器并返回 broker URL 和容器。
-async fn setup_kafka() -> (String, testcontainers::ContainerAsync<GenericImage>)
-{
+async fn setup_kafka() -> (String, testcontainers::ContainerAsync<GenericImage>) {
     // Use confluentinc/cp-kafka which includes both Zookeeper and Kafka in one image
     let container = GenericImage::new("confluentinc/cp-kafka", "7.6.0")
         .with_env_var("KAFKA_NODE_ID", "1")
@@ -56,8 +55,7 @@ async fn setup_kafka() -> (String, testcontainers::ContainerAsync<GenericImage>)
 
 /// Helper: create a Kafka producer.
 /// 辅助函数：创建 Kafka 生产者。
-fn create_producer(broker_url: &str) -> FutureProducer
-{
+fn create_producer(broker_url: &str) -> FutureProducer {
     ClientConfig::new()
         .set("bootstrap.servers", broker_url)
         .set("message.timeout.ms", "5000")
@@ -69,8 +67,7 @@ fn create_producer(broker_url: &str) -> FutureProducer
 
 /// Helper: create a Kafka consumer.
 /// 辅助函数：创建 Kafka 消费者。
-fn create_consumer(broker_url: &str, group_id: &str) -> StreamConsumer
-{
+fn create_consumer(broker_url: &str, group_id: &str) -> StreamConsumer {
     ClientConfig::new()
         .set("bootstrap.servers", broker_url)
         .set("group.id", group_id)
@@ -84,10 +81,8 @@ fn create_consumer(broker_url: &str, group_id: &str) -> StreamConsumer
 
 /// Helper: wait for Kafka broker to be ready by retrying producer creation.
 /// 辅助函数：通过重试生产者创建来等待 Kafka broker 就绪。
-async fn wait_for_kafka(broker_url: &str)
-{
-    for attempt in 0..30
-    {
+async fn wait_for_kafka(broker_url: &str) {
+    for attempt in 0..30 {
         if let Ok(producer) = ClientConfig::new()
             .set("bootstrap.servers", broker_url)
             .set("message.timeout.ms", "1000")
@@ -102,8 +97,7 @@ async fn wait_for_kafka(broker_url: &str)
                 return;
             }
         }
-        if attempt < 29
-        {
+        if attempt < 29 {
             tokio::time::sleep(Duration::from_secs(2)).await;
         }
     }
@@ -115,8 +109,7 @@ async fn wait_for_kafka(broker_url: &str)
 // 测试 1：Kafka 容器启动且 broker 可达
 // ============================================================
 #[tokio::test]
-async fn test_kafka_container_connectivity()
-{
+async fn test_kafka_container_connectivity() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -135,8 +128,7 @@ async fn test_kafka_container_connectivity()
 // 测试 2：通过生产消息隐式创建 topic
 // ============================================================
 #[tokio::test]
-async fn test_kafka_topic_auto_creation()
-{
+async fn test_kafka_topic_auto_creation() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -172,8 +164,7 @@ async fn test_kafka_topic_auto_creation()
 // 测试 3：生产并消费单条消息
 // ============================================================
 #[tokio::test]
-async fn test_kafka_produce_consume_single()
-{
+async fn test_kafka_produce_consume_single() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -193,10 +184,8 @@ async fn test_kafka_produce_consume_single()
 
     let message = tokio::time::timeout(Duration::from_secs(15), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -217,8 +206,7 @@ async fn test_kafka_produce_consume_single()
 // 测试 4：按顺序生产并消费多条消息
 // ============================================================
 #[tokio::test]
-async fn test_kafka_produce_consume_batch()
-{
+async fn test_kafka_produce_consume_batch() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -226,8 +214,7 @@ async fn test_kafka_produce_consume_batch()
     let producer = create_producer(&broker_url);
 
     // Produce 5 messages
-    for i in 0..5
-    {
+    for i in 0..5 {
         producer
             .send(
                 FutureRecord::to(topic)
@@ -248,8 +235,7 @@ async fn test_kafka_produce_consume_batch()
     let deadline = tokio::time::sleep(Duration::from_secs(20));
     tokio::pin!(deadline);
 
-    loop
-    {
+    loop {
         tokio::select! {
             Some(Ok(msg)) = stream.next() => {
                 let payload = msg
@@ -268,8 +254,7 @@ async fn test_kafka_produce_consume_batch()
     }
 
     assert_eq!(received.len(), 5, "Should receive all 5 messages");
-    for i in 0..5
-    {
+    for i in 0..5 {
         assert!(received.contains(&format!("message_{i}")), "Should contain message_{i}");
     }
 }
@@ -279,8 +264,7 @@ async fn test_kafka_produce_consume_batch()
 // 测试 5：消息 key 在生产/消费过程中保留
 // ============================================================
 #[tokio::test]
-async fn test_kafka_message_key_preserved()
-{
+async fn test_kafka_message_key_preserved() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -300,10 +284,8 @@ async fn test_kafka_message_key_preserved()
 
     let message = tokio::time::timeout(Duration::from_secs(15), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -320,8 +302,7 @@ async fn test_kafka_message_key_preserved()
 // 测试 6：消费者组：多个消费者分担负载
 // ============================================================
 #[tokio::test]
-async fn test_kafka_consumer_group()
-{
+async fn test_kafka_consumer_group() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -329,8 +310,7 @@ async fn test_kafka_consumer_group()
     let producer = create_producer(&broker_url);
 
     // Produce 4 messages
-    for i in 0..4
-    {
+    for i in 0..4 {
         producer
             .send(
                 FutureRecord::to(topic)
@@ -359,15 +339,13 @@ async fn test_kafka_consumer_group()
     // Collect from both consumers
     let mut all_received = Vec::new();
 
-    async fn collect_messages(consumer: &StreamConsumer, timeout: Duration) -> Vec<String>
-    {
+    async fn collect_messages(consumer: &StreamConsumer, timeout: Duration) -> Vec<String> {
         let mut results = Vec::new();
         let mut stream = consumer.stream();
         let deadline = tokio::time::sleep(timeout);
         tokio::pin!(deadline);
 
-        loop
-        {
+        loop {
             tokio::select! {
                 Some(Ok(msg)) = stream.next() => {
                     if let Some(Ok(payload)) = msg.payload_view::<str>() {
@@ -402,8 +380,7 @@ async fn test_kafka_consumer_group()
 // 测试 7：带 headers 生产消息
 // ============================================================
 #[tokio::test]
-async fn test_kafka_message_headers()
-{
+async fn test_kafka_message_headers() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -426,10 +403,8 @@ async fn test_kafka_message_headers()
 
     let message = tokio::time::timeout(Duration::from_secs(15), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -449,8 +424,7 @@ async fn test_kafka_message_headers()
 // 测试 8：空 payload 消息
 // ============================================================
 #[tokio::test]
-async fn test_kafka_null_payload()
-{
+async fn test_kafka_null_payload() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -467,10 +441,8 @@ async fn test_kafka_null_payload()
 
     let message = tokio::time::timeout(Duration::from_secs(15), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -490,8 +462,7 @@ async fn test_kafka_null_payload()
 // 测试 9：大消息（100KB）
 // ============================================================
 #[tokio::test]
-async fn test_kafka_large_message()
-{
+async fn test_kafka_large_message() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -515,10 +486,8 @@ async fn test_kafka_large_message()
 
     let message = tokio::time::timeout(Duration::from_secs(20), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -539,8 +508,7 @@ async fn test_kafka_large_message()
 // 测试 10：JSON 消息的生产和消费
 // ============================================================
 #[tokio::test]
-async fn test_kafka_json_message()
-{
+async fn test_kafka_json_message() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -568,10 +536,8 @@ async fn test_kafka_json_message()
 
     let message = tokio::time::timeout(Duration::from_secs(15), async {
         let mut stream = consumer.stream();
-        loop
-        {
-            if let Some(Ok(msg)) = stream.next().await
-            {
+        loop {
+            if let Some(Ok(msg)) = stream.next().await {
                 return msg;
             }
         }
@@ -594,8 +560,7 @@ async fn test_kafka_json_message()
 // 测试 11：多 topic 消费
 // ============================================================
 #[tokio::test]
-async fn test_kafka_multi_topic_subscribe()
-{
+async fn test_kafka_multi_topic_subscribe() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 
@@ -624,8 +589,7 @@ async fn test_kafka_multi_topic_subscribe()
     let deadline = tokio::time::sleep(Duration::from_secs(15));
     tokio::pin!(deadline);
 
-    loop
-    {
+    loop {
         tokio::select! {
             Some(Ok(msg)) = stream.next() => {
                 let payload = msg
@@ -652,8 +616,7 @@ async fn test_kafka_multi_topic_subscribe()
 // 测试 12：生产者发送到不存在的 topic（自动创建）
 // ============================================================
 #[tokio::test]
-async fn test_kafka_produce_to_new_topic()
-{
+async fn test_kafka_produce_to_new_topic() {
     let (broker_url, _container) = setup_kafka().await;
     wait_for_kafka(&broker_url).await;
 

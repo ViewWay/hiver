@@ -27,8 +27,7 @@ use crate::{Cache, CacheConfig, MemoryCache};
 ///     Collection<String> getCacheNames();
 /// }
 /// ```
-pub trait CacheManager: Send + Sync
-{
+pub trait CacheManager: Send + Sync {
     /// Get a cache by name
     /// 按名称获取缓存
     fn get_cache(&self, name: &str) -> Option<Arc<dyn CacheWorker>>;
@@ -43,8 +42,7 @@ pub trait CacheManager: Send + Sync
 
     /// Check if a cache exists
     /// 检查缓存是否存在
-    fn cache_exists(&self, name: &str) -> bool
-    {
+    fn cache_exists(&self, name: &str) -> bool {
         self.get_cache(name).is_some()
     }
 }
@@ -55,8 +53,7 @@ pub trait CacheManager: Send + Sync
 /// This allows storing different cache types in the same manager.
 /// 这允许在同一管理器中存储不同类型的缓存。
 #[async_trait::async_trait]
-pub trait CacheWorker: Send + Sync
-{
+pub trait CacheWorker: Send + Sync {
     /// Get cache statistics
     /// 获取缓存统计
     async fn get_stats(&self) -> crate::cache::CacheStats;
@@ -85,28 +82,23 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    async fn get_stats(&self) -> crate::cache::CacheStats
-    {
+    async fn get_stats(&self) -> crate::cache::CacheStats {
         Cache::stats(self).await
     }
 
-    async fn clear(&self)
-    {
+    async fn clear(&self) {
         Cache::clear(self).await;
     }
 
-    async fn size(&self) -> usize
-    {
+    async fn size(&self) -> usize {
         Cache::size(self).await
     }
 
-    fn name(&self) -> &str
-    {
+    fn name(&self) -> &str {
         &self.config().name
     }
 
-    fn config(&self) -> &CacheConfig
-    {
+    fn config(&self) -> &CacheConfig {
         self.config()
     }
 }
@@ -119,8 +111,7 @@ where
 ///
 /// Manages a set of in-memory caches.
 /// 管理一组内存缓存。
-pub struct SimpleCacheManager
-{
+pub struct SimpleCacheManager {
     /// Registered caches
     /// 已注册的缓存
     caches: tokio::sync::RwLock<HashMap<String, Arc<dyn CacheWorker>>>,
@@ -130,12 +121,10 @@ pub struct SimpleCacheManager
     default_config: CacheConfig,
 }
 
-impl SimpleCacheManager
-{
+impl SimpleCacheManager {
     /// Create a new simple cache manager
     /// 创建新的简单缓存管理器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             caches: tokio::sync::RwLock::new(HashMap::new()),
             default_config: CacheConfig::default(),
@@ -144,8 +133,7 @@ impl SimpleCacheManager
 
     /// Create with default cache configuration
     /// 使用默认缓存配置创建
-    pub fn with_config(config: CacheConfig) -> Self
-    {
+    pub fn with_config(config: CacheConfig) -> Self {
         Self {
             caches: tokio::sync::RwLock::new(HashMap::new()),
             default_config: config,
@@ -174,8 +162,7 @@ impl SimpleCacheManager
         // Try to get existing cache
         {
             let caches = self.caches.read().await;
-            if let Some(_cache) = caches.get(name)
-            {
+            if let Some(_cache) = caches.get(name) {
                 // Note: This would need proper downcasting in real implementation
                 // For now, we'll create a new cache if type doesn't match
             }
@@ -192,30 +179,24 @@ impl SimpleCacheManager
     }
 }
 
-impl Default for SimpleCacheManager
-{
-    fn default() -> Self
-    {
+impl Default for SimpleCacheManager {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl CacheManager for SimpleCacheManager
-{
-    fn get_cache(&self, _name: &str) -> Option<Arc<dyn CacheWorker>>
-    {
+impl CacheManager for SimpleCacheManager {
+    fn get_cache(&self, _name: &str) -> Option<Arc<dyn CacheWorker>> {
         // Note: This is a synchronous method, so we can't use async here
         // In a real implementation, you'd use a different approach
         None // Simplified for now
     }
 
-    fn get_cache_names(&self) -> Vec<String>
-    {
+    fn get_cache_names(&self) -> Vec<String> {
         Vec::new() // Simplified for now
     }
 
-    fn create_cache(&self, _name: &str, _config: CacheConfig) -> Option<Arc<dyn CacheWorker>>
-    {
+    fn create_cache(&self, _name: &str, _config: CacheConfig) -> Option<Arc<dyn CacheWorker>> {
         None // Simplified for now
     }
 }
@@ -225,18 +206,15 @@ impl CacheManager for SimpleCacheManager
 ///
 /// Equivalent to Spring's `CacheManagerCustomizer`.
 /// `等价于Spring的CacheManagerCustomizer`。
-pub struct CacheManagerBuilder
-{
+pub struct CacheManagerBuilder {
     caches: HashMap<String, CacheConfig>,
     default_config: CacheConfig,
 }
 
-impl CacheManagerBuilder
-{
+impl CacheManagerBuilder {
     /// Create a new builder
     /// 创建新的构建器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             caches: HashMap::new(),
             default_config: CacheConfig::default(),
@@ -245,32 +223,27 @@ impl CacheManagerBuilder
 
     /// Add a cache configuration
     /// 添加缓存配置
-    pub fn add_cache(mut self, name: impl Into<String>, config: CacheConfig) -> Self
-    {
+    pub fn add_cache(mut self, name: impl Into<String>, config: CacheConfig) -> Self {
         self.caches.insert(name.into(), config);
         self
     }
 
     /// Set default configuration
     /// 设置默认配置
-    pub fn default_config(mut self, config: CacheConfig) -> Self
-    {
+    pub fn default_config(mut self, config: CacheConfig) -> Self {
         self.default_config = config;
         self
     }
 
     /// Build the cache manager
     /// 构建缓存管理器
-    pub fn build(self) -> SimpleCacheManager
-    {
+    pub fn build(self) -> SimpleCacheManager {
         SimpleCacheManager::with_config(self.default_config)
     }
 }
 
-impl Default for CacheManagerBuilder
-{
-    fn default() -> Self
-    {
+impl Default for CacheManagerBuilder {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -285,8 +258,7 @@ static GLOBAL_MANAGER: tokio::sync::OnceCell<SimpleCacheManager> =
 
 /// Initialize the global cache manager
 /// 初始化全局缓存管理器
-pub(crate) fn init_global_manager(manager: SimpleCacheManager) -> Result<(), String>
-{
+pub(crate) fn init_global_manager(manager: SimpleCacheManager) -> Result<(), String> {
     GLOBAL_MANAGER
         .set(manager)
         .map_err(|_| "Global manager already initialized".to_string())
@@ -294,20 +266,23 @@ pub(crate) fn init_global_manager(manager: SimpleCacheManager) -> Result<(), Str
 
 /// Get the global cache manager
 /// 获取全局缓存管理器
-pub(crate) fn global_manager() -> Option<&'static SimpleCacheManager>
-{
+pub(crate) fn global_manager() -> Option<&'static SimpleCacheManager> {
     GLOBAL_MANAGER.get()
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_cache_manager_builder()
-    {
+    fn test_cache_manager_builder() {
         let builder = CacheManagerBuilder::new()
             .add_cache("users", CacheConfig::new("users"))
             .add_cache("products", CacheConfig::new("products"));

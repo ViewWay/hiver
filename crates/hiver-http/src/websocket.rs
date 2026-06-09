@@ -50,8 +50,7 @@ use crate::{Body, Error, Response, StatusCode};
 /// Represents a WebSocket message that can be sent or received.
 /// `表示可以发送或接收的WebSocket消息`。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Message
-{
+pub enum Message {
     /// Text message (UTF-8 encoded)
     /// 文本消息（UTF-8编码）
     Text(String),
@@ -73,40 +72,34 @@ pub enum Message
     Close(Option<CloseFrame>),
 }
 
-impl Message
-{
+impl Message {
     /// Create a text message
     /// 创建文本消息
-    pub fn text(text: impl Into<String>) -> Self
-    {
+    pub fn text(text: impl Into<String>) -> Self {
         Message::Text(text.into())
     }
 
     /// Create a binary message
     /// 创建二进制消息
-    pub fn binary(data: impl Into<Vec<u8>>) -> Self
-    {
+    pub fn binary(data: impl Into<Vec<u8>>) -> Self {
         Message::Binary(data.into())
     }
 
     /// Create a ping message
     /// 创建ping消息
-    pub fn ping(data: impl Into<Vec<u8>>) -> Self
-    {
+    pub fn ping(data: impl Into<Vec<u8>>) -> Self {
         Message::Ping(data.into())
     }
 
     /// Create a pong message
     /// 创建pong消息
-    pub fn pong(data: impl Into<Vec<u8>>) -> Self
-    {
+    pub fn pong(data: impl Into<Vec<u8>>) -> Self {
         Message::Pong(data.into())
     }
 
     /// Create a close message with status code
     /// 创建带状态码的关闭消息
-    pub fn close(code: u16, reason: impl Into<String>) -> Self
-    {
+    pub fn close(code: u16, reason: impl Into<String>) -> Self {
         Message::Close(Some(CloseFrame {
             code,
             reason: reason.into(),
@@ -115,24 +108,20 @@ impl Message
 
     /// Create a close message without status code
     /// 创建不带状态码的关闭消息
-    pub fn close_empty() -> Self
-    {
+    pub fn close_empty() -> Self {
         Message::Close(None)
     }
 
     /// Check if this is a close message
     /// 检查是否为关闭消息
-    pub fn is_close(&self) -> bool
-    {
+    pub fn is_close(&self) -> bool {
         matches!(self, Message::Close(_))
     }
 
     /// Get the message type as a string
     /// 获取消息类型字符串
-    pub fn type_str(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn type_str(&self) -> &'static str {
+        match self {
             Message::Text(_) => "text",
             Message::Binary(_) => "binary",
             Message::Ping(_) => "ping",
@@ -142,12 +131,9 @@ impl Message
     }
 }
 
-impl fmt::Display for Message
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for Message {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             Message::Text(text) => write!(f, "Text({})", text),
             Message::Binary(data) => write!(f, "Binary({} bytes)", data.len()),
             Message::Ping(data) => write!(f, "Ping({} bytes)", data.len()),
@@ -161,8 +147,7 @@ impl fmt::Display for Message
 /// Close frame information
 /// 关闭帧信息
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CloseFrame
-{
+pub struct CloseFrame {
     /// Status code
     /// 状态码
     pub code: u16,
@@ -172,12 +157,10 @@ pub struct CloseFrame
     pub reason: String,
 }
 
-impl CloseFrame
-{
+impl CloseFrame {
     /// Create a new close frame
     /// 创建新的关闭帧
-    pub fn new(code: u16, reason: impl Into<String>) -> Self
-    {
+    pub fn new(code: u16, reason: impl Into<String>) -> Self {
         Self {
             code,
             reason: reason.into(),
@@ -186,92 +169,79 @@ impl CloseFrame
 
     /// Normal closure (1000)
     /// 正常关闭
-    pub fn normal() -> Self
-    {
+    pub fn normal() -> Self {
         Self::new(1000, "Normal Closure")
     }
 
     /// Endpoint going away (1001)
     /// 端点离去
-    pub fn going_away() -> Self
-    {
+    pub fn going_away() -> Self {
         Self::new(1001, "Endpoint Going Away")
     }
 
     /// Protocol error (1002)
     /// 协议错误
-    pub fn protocol_error() -> Self
-    {
+    pub fn protocol_error() -> Self {
         Self::new(1002, "Protocol Error")
     }
 
     /// Unsupported data (1003)
     /// 不支持的数据类型
-    pub fn unsupported_data() -> Self
-    {
+    pub fn unsupported_data() -> Self {
         Self::new(1003, "Unsupported Data")
     }
 
     /// No status code (1005)
     /// 无状态码
-    pub fn no_status() -> Self
-    {
+    pub fn no_status() -> Self {
         Self::new(1005, "No Status Received")
     }
 
     /// Abnormal closure (1006)
     /// 异常关闭
-    pub fn abnormal() -> Self
-    {
+    pub fn abnormal() -> Self {
         Self::new(1006, "Abnormal Closure")
     }
 
     /// Invalid payload data (1007)
     /// 无效负载数据
-    pub fn invalid_payload() -> Self
-    {
+    pub fn invalid_payload() -> Self {
         Self::new(1007, "Invalid Payload Data")
     }
 
     /// Policy violation (1008)
     /// 策略违规
-    pub fn policy_violation() -> Self
-    {
+    pub fn policy_violation() -> Self {
         Self::new(1008, "Policy Violation")
     }
 
     /// Message too big (1009)
     /// 消息过大
-    pub fn message_too_big() -> Self
-    {
+    pub fn message_too_big() -> Self {
         Self::new(1009, "Message Too Big")
     }
 
     /// Extension required (1010)
     /// 需要扩展
-    pub fn extension_required() -> Self
-    {
+    pub fn extension_required() -> Self {
         Self::new(1010, "Extension Required")
     }
 
     /// Internal error (1011)
     /// 内部错误
-    pub fn internal_error() -> Self
-    {
+    pub fn internal_error() -> Self {
         Self::new(1011, "Internal Error")
     }
 
     /// Service restart (1012)
     /// 服务重启
-    pub fn service_restart() -> Self
-    {
+    pub fn service_restart() -> Self {
         Self::new(1012, "Service Restart")
     }
 
     /// Try again later (1013)
     /// 稍后重试
-    pub fn try_again_later() -> Self
-    {
+    pub fn try_again_later() -> Self {
         Self::new(1013, "Try Again Later")
     }
 }
@@ -282,8 +252,7 @@ impl CloseFrame
 /// Response sent to complete the WebSocket handshake.
 /// `发送以完成WebSocket握手的响应`。
 #[derive(Debug, Clone)]
-pub struct WebSocketUpgrade
-{
+pub struct WebSocketUpgrade {
     /// Accepted protocols (in order of preference)
     /// 接受的协议（按优先级顺序）
     protocols: Vec<String>,
@@ -305,12 +274,10 @@ pub struct WebSocketUpgrade
     max_message_size: usize,
 }
 
-impl WebSocketUpgrade
-{
+impl WebSocketUpgrade {
     /// Create a new WebSocket upgrade
     /// `创建新的WebSocket升级`
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             protocols: Vec::new(),
             max_frame_size: 64 * 1024 * 1024, // 64 MiB
@@ -322,24 +289,21 @@ impl WebSocketUpgrade
 
     /// Set accepted protocols
     /// 设置接受的协议
-    pub fn with_protocols(mut self, protocols: Vec<String>) -> Self
-    {
+    pub fn with_protocols(mut self, protocols: Vec<String>) -> Self {
         self.protocols = protocols;
         self
     }
 
     /// Set maximum frame size
     /// 设置最大帧大小
-    pub fn with_max_frame_size(mut self, size: usize) -> Self
-    {
+    pub fn with_max_frame_size(mut self, size: usize) -> Self {
         self.max_frame_size = size;
         self
     }
 
     /// Enable periodic ping frames
     /// 启用定期ping帧
-    pub fn with_ping(mut self, interval_secs: u64) -> Self
-    {
+    pub fn with_ping(mut self, interval_secs: u64) -> Self {
         self.ping_enabled = true;
         self.ping_interval = interval_secs;
         self
@@ -347,16 +311,14 @@ impl WebSocketUpgrade
 
     /// Set maximum message size
     /// 设置最大消息大小
-    pub fn with_max_message_size(mut self, size: usize) -> Self
-    {
+    pub fn with_max_message_size(mut self, size: usize) -> Self {
         self.max_message_size = size;
         self
     }
 
     /// Generate the upgrade response
     /// 生成升级响应
-    pub fn into_response(self) -> Response
-    {
+    pub fn into_response(self) -> Response {
         let mut builder = Response::builder()
             .status(StatusCode::SWITCHING_PROTOCOLS)
             .header("connection", "Upgrade")
@@ -369,11 +331,9 @@ impl WebSocketUpgrade
         builder = builder.header("sec-websocket-accept", "<computed-key>");
 
         // Add protocol if specified
-        if !self.protocols.is_empty()
-        {
+        if !self.protocols.is_empty() {
             // Use the first protocol (in production, match with client preference)
-            if let Some(protocol) = self.protocols.first()
-            {
+            if let Some(protocol) = self.protocols.first() {
                 builder = builder.header("sec-websocket-protocol", protocol);
             }
         }
@@ -384,18 +344,14 @@ impl WebSocketUpgrade
     }
 }
 
-impl Default for WebSocketUpgrade
-{
-    fn default() -> Self
-    {
+impl Default for WebSocketUpgrade {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl From<WebSocketUpgrade> for Response
-{
-    fn from(upgrade: WebSocketUpgrade) -> Self
-    {
+impl From<WebSocketUpgrade> for Response {
+    fn from(upgrade: WebSocketUpgrade) -> Self {
         upgrade.into_response()
     }
 }
@@ -406,8 +362,7 @@ impl From<WebSocketUpgrade> for Response
 /// Represents an active WebSocket connection for sending/receiving messages.
 /// 表示用于发送/接收消息的活动WebSocket连接。
 #[derive(Debug)]
-pub struct WebSocket
-{
+pub struct WebSocket {
     /// Whether the connection is still open
     /// 连接是否仍然打开
     open: bool,
@@ -417,12 +372,10 @@ pub struct WebSocket
     close_frame: Option<CloseFrame>,
 }
 
-impl WebSocket
-{
+impl WebSocket {
     /// Create a new WebSocket connection
     /// `创建新的WebSocket连接`
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             open: true,
             close_frame: None,
@@ -431,38 +384,32 @@ impl WebSocket
 
     /// Check if the connection is still open
     /// 检查连接是否仍然打开
-    pub fn is_open(&self) -> bool
-    {
+    pub fn is_open(&self) -> bool {
         self.open
     }
 
     /// Get the close frame (if any)
     /// 获取关闭帧（如果有）
-    pub fn close_frame(&self) -> Option<&CloseFrame>
-    {
+    pub fn close_frame(&self) -> Option<&CloseFrame> {
         self.close_frame.as_ref()
     }
 
     /// Close the connection
     /// 关闭连接
-    pub fn close(&mut self, frame: Option<CloseFrame>)
-    {
+    pub fn close(&mut self, frame: Option<CloseFrame>) {
         self.open = false;
         self.close_frame = frame;
     }
 
     /// Convert to HTTP response
     /// 转换为HTTP响应
-    pub fn into_response(self) -> Response
-    {
+    pub fn into_response(self) -> Response {
         WebSocketUpgrade::new().into_response()
     }
 }
 
-impl Default for WebSocket
-{
-    fn default() -> Self
-    {
+impl Default for WebSocket {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -470,8 +417,7 @@ impl Default for WebSocket
 /// WebSocket handshake error
 /// `WebSocket握手错误`
 #[derive(Debug, Clone)]
-pub enum WebSocketError
-{
+pub enum WebSocketError {
     /// Missing Upgrade header
     /// 缺少Upgrade头
     MissingUpgradeHeader,
@@ -497,18 +443,14 @@ pub enum WebSocketError
     Other(String),
 }
 
-impl fmt::Display for WebSocketError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
+impl fmt::Display for WebSocketError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
             WebSocketError::MissingUpgradeHeader => write!(f, "Missing Upgrade header"),
             WebSocketError::MissingConnectionHeader => write!(f, "Missing Connection header"),
             WebSocketError::InvalidVersion => write!(f, "Invalid WebSocket version"),
             WebSocketError::MissingKey => write!(f, "Missing WebSocket key"),
-            WebSocketError::ProtocolNotSupported(proto) =>
-            {
+            WebSocketError::ProtocolNotSupported(proto) => {
                 write!(f, "Protocol not supported: {}", proto)
             },
             WebSocketError::Other(msg) => write!(f, "WebSocket error: {}", msg),
@@ -518,10 +460,8 @@ impl fmt::Display for WebSocketError
 
 impl std::error::Error for WebSocketError {}
 
-impl From<WebSocketError> for Error
-{
-    fn from(err: WebSocketError) -> Self
-    {
+impl From<WebSocketError> for Error {
+    fn from(err: WebSocketError) -> Self {
         Error::InvalidRequest(err.to_string())
     }
 }
@@ -532,8 +472,7 @@ impl From<WebSocketError> for Error
 /// Configuration for WebSocket connections.
 /// `WebSocket连接的配置`。
 #[derive(Debug, Clone)]
-pub struct WebSocketConfig
-{
+pub struct WebSocketConfig {
     /// Maximum frame size in bytes
     /// 最大帧大小（字节）
     pub max_frame_size: usize,
@@ -555,10 +494,8 @@ pub struct WebSocketConfig
     pub compression_enabled: bool,
 }
 
-impl Default for WebSocketConfig
-{
-    fn default() -> Self
-    {
+impl Default for WebSocketConfig {
+    fn default() -> Self {
         Self {
             max_frame_size: 64 * 1024 * 1024,   // 64 MiB
             max_message_size: 64 * 1024 * 1024, // 64 MiB
@@ -569,121 +506,111 @@ impl Default for WebSocketConfig
     }
 }
 
-impl WebSocketConfig
-{
+impl WebSocketConfig {
     /// Create a new WebSocket config
     /// `创建新的WebSocket配置`
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Set maximum frame size
     /// 设置最大帧大小
-    pub fn max_frame_size(mut self, size: usize) -> Self
-    {
+    pub fn max_frame_size(mut self, size: usize) -> Self {
         self.max_frame_size = size;
         self
     }
 
     /// Set maximum message size
     /// 设置最大消息大小
-    pub fn max_message_size(mut self, size: usize) -> Self
-    {
+    pub fn max_message_size(mut self, size: usize) -> Self {
         self.max_message_size = size;
         self
     }
 
     /// Set ping interval
     /// 设置ping间隔
-    pub fn ping_interval(mut self, interval: u64) -> Self
-    {
+    pub fn ping_interval(mut self, interval: u64) -> Self {
         self.ping_interval = interval;
         self
     }
 
     /// Enable compression
     /// 启用压缩
-    pub fn with_compression(mut self, enabled: bool) -> Self
-    {
+    pub fn with_compression(mut self, enabled: bool) -> Self {
         self.compression_enabled = enabled;
         self
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_message_text()
-    {
+    fn test_message_text() {
         let msg = Message::text("Hello");
         assert_eq!(msg.type_str(), "text");
         assert!(!msg.is_close());
     }
 
     #[test]
-    fn test_message_binary()
-    {
+    fn test_message_binary() {
         let msg = Message::binary(vec![1, 2, 3]);
         assert_eq!(msg.type_str(), "binary");
         assert!(!msg.is_close());
     }
 
     #[test]
-    fn test_message_ping()
-    {
+    fn test_message_ping() {
         let msg = Message::ping(vec![1, 2]);
         assert_eq!(msg.type_str(), "ping");
         assert!(!msg.is_close());
     }
 
     #[test]
-    fn test_message_pong()
-    {
+    fn test_message_pong() {
         let msg = Message::pong(vec![1, 2]);
         assert_eq!(msg.type_str(), "pong");
         assert!(!msg.is_close());
     }
 
     #[test]
-    fn test_message_close()
-    {
+    fn test_message_close() {
         let msg = Message::close(1000, "Normal");
         assert!(msg.is_close());
         assert!(matches!(msg, Message::Close(Some(_))));
     }
 
     #[test]
-    fn test_close_frame_normal()
-    {
+    fn test_close_frame_normal() {
         let frame = CloseFrame::normal();
         assert_eq!(frame.code, 1000);
         assert_eq!(frame.reason, "Normal Closure");
     }
 
     #[test]
-    fn test_close_frame_going_away()
-    {
+    fn test_close_frame_going_away() {
         let frame = CloseFrame::going_away();
         assert_eq!(frame.code, 1001);
         assert_eq!(frame.reason, "Endpoint Going Away");
     }
 
     #[test]
-    fn test_websocket_upgrade_creation()
-    {
+    fn test_websocket_upgrade_creation() {
         let upgrade = WebSocketUpgrade::new();
         assert!(upgrade.protocols.is_empty());
         assert_eq!(upgrade.max_frame_size, 64 * 1024 * 1024);
     }
 
     #[test]
-    fn test_websocket_upgrade_builder()
-    {
+    fn test_websocket_upgrade_builder() {
         let upgrade = WebSocketUpgrade::new()
             .with_protocols(vec!["chat".into(), "superchat".into()])
             .with_max_frame_size(1024)
@@ -696,16 +623,14 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_creation()
-    {
+    fn test_websocket_creation() {
         let ws = WebSocket::new();
         assert!(ws.is_open());
         assert!(ws.close_frame().is_none());
     }
 
     #[test]
-    fn test_websocket_close()
-    {
+    fn test_websocket_close() {
         let mut ws = WebSocket::new();
         ws.close(Some(CloseFrame::normal()));
         assert!(!ws.is_open());
@@ -713,8 +638,7 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_config_default()
-    {
+    fn test_websocket_config_default() {
         let config = WebSocketConfig::default();
         assert_eq!(config.max_frame_size, 64 * 1024 * 1024);
         assert_eq!(config.ping_interval, 30);
@@ -722,8 +646,7 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_config_builder()
-    {
+    fn test_websocket_config_builder() {
         let config = WebSocketConfig::new()
             .max_frame_size(1024)
             .max_message_size(2048)
@@ -737,8 +660,7 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_error_display()
-    {
+    fn test_websocket_error_display() {
         let err = WebSocketError::MissingUpgradeHeader;
         assert_eq!(err.to_string(), "Missing Upgrade header");
 
@@ -747,8 +669,7 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_upgrade_into_response()
-    {
+    fn test_websocket_upgrade_into_response() {
         let upgrade = WebSocketUpgrade::new();
         let response = upgrade.into_response();
 
@@ -757,8 +678,7 @@ mod tests
     }
 
     #[test]
-    fn test_websocket_into_response()
-    {
+    fn test_websocket_into_response() {
         let ws = WebSocket::new();
         let response = ws.into_response();
 

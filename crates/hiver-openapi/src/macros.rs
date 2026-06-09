@@ -94,19 +94,16 @@ pub use utoipa::{IntoParams, ToResponse, ToSchema, openapi};
 ///     }
 /// }
 /// ```
-pub trait SchemaHelper
-{
+pub trait SchemaHelper {
     /// Get the schema description
     /// 获取模式描述
-    fn description() -> &'static str
-    {
+    fn description() -> &'static str {
         ""
     }
 
     /// Get the schema example
     /// 获取模式示例
-    fn example() -> &'static str
-    {
+    fn example() -> &'static str {
         ""
     }
 }
@@ -120,37 +117,37 @@ pub trait SchemaHelper
 /// @Operation(summary = "Get user", description = "Get user by ID")
 /// public Response getUser(@PathVariable Long id) { }
 /// ```
-pub trait OperationHelper
-{
+pub trait OperationHelper {
     /// Get the operation summary
     /// 获取操作摘要
-    fn summary() -> &'static str
-    {
+    fn summary() -> &'static str {
         ""
     }
 
     /// Get the operation description
     /// 获取操作描述
-    fn description() -> &'static str
-    {
+    fn description() -> &'static str {
         ""
     }
 
     /// Get the operation tags
     /// 获取操作标签
-    fn tags() -> &'static [&'static str]
-    {
+    fn tags() -> &'static [&'static str] {
         &[]
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     #[test]
-    fn test_macros_exist()
-    {
+    fn test_macros_exist() {
         // Verify that utoipa macros are accessible
         // 验证 utoipa 宏可访问
         assert!(true);

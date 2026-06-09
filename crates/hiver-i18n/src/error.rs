@@ -13,12 +13,10 @@ use std::fmt;
 /// throw new NoSuchMessageException(code, locale);
 /// ```
 #[derive(Debug)]
-pub enum I18nError
-{
+pub enum I18nError {
     /// Message not found for code
     /// 未找到对应代码的消息
-    MessageNotFound
-    {
+    MessageNotFound {
         /// Message code
         /// 消息代码
         code: String,
@@ -33,8 +31,7 @@ pub enum I18nError
 
     /// Resource bundle not found
     /// 资源包未找到
-    ResourceBundleNotFound
-    {
+    ResourceBundleNotFound {
         /// Basename
         /// 基础名称
         basename: String,
@@ -49,8 +46,7 @@ pub enum I18nError
 
     /// Parse error in properties file
     /// 属性文件解析错误
-    ParseError
-    {
+    ParseError {
         /// File path
         /// 文件路径
         file: String,
@@ -68,24 +64,18 @@ pub enum I18nError
     Other(String),
 }
 
-impl fmt::Display for I18nError
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-        match self
-        {
-            I18nError::MessageNotFound { code, locale } =>
-            {
+impl fmt::Display for I18nError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            I18nError::MessageNotFound { code, locale } => {
                 write!(f, "Message not found: code='{}', locale='{}'", code, locale)
             },
             I18nError::InvalidLocale(msg) => write!(f, "Invalid locale: {}", msg),
-            I18nError::ResourceBundleNotFound { basename, locale } =>
-            {
+            I18nError::ResourceBundleNotFound { basename, locale } => {
                 write!(f, "Resource bundle not found: basename='{}', locale='{}'", basename, locale)
             },
             I18nError::IoError(msg) => write!(f, "IO error: {}", msg),
-            I18nError::ParseError { file, message } =>
-            {
+            I18nError::ParseError { file, message } => {
                 write!(f, "Parse error in file '{}': {}", file, message)
             },
             I18nError::EncodingError(msg) => write!(f, "Encoding error: {}", msg),
@@ -96,10 +86,8 @@ impl fmt::Display for I18nError
 
 impl std::error::Error for I18nError {}
 
-impl From<std::io::Error> for I18nError
-{
-    fn from(err: std::io::Error) -> Self
-    {
+impl From<std::io::Error> for I18nError {
+    fn from(err: std::io::Error) -> Self {
         I18nError::IoError(err.to_string())
     }
 }
@@ -109,14 +97,18 @@ impl From<std::io::Error> for I18nError
 pub type I18nResult<T> = Result<T, I18nError>;
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_error_display()
-    {
+    fn test_error_display() {
         let err = I18nError::MessageNotFound {
             code: "test.code".to_string(),
             locale: "en_US".to_string(),
@@ -125,8 +117,7 @@ mod tests
     }
 
     #[test]
-    fn test_i18n_result()
-    {
+    fn test_i18n_result() {
         let result: I18nResult<()> = Ok(());
         assert!(result.is_ok());
 

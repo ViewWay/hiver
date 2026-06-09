@@ -6,18 +6,15 @@ use std::collections::HashMap;
 /// Mock AuthContext for testing
 /// 用于测试的模拟 AuthContext
 #[derive(Debug, Clone)]
-struct TestAuthContext
-{
+struct TestAuthContext {
     pub user_id: i64,
     pub username: String,
     pub roles: Vec<String>,
     pub permissions: Vec<String>,
 }
 
-impl TestAuthContext
-{
-    fn new(user_id: i64, username: &str, roles: Vec<&str>, permissions: Vec<&str>) -> Self
-    {
+impl TestAuthContext {
+    fn new(user_id: i64, username: &str, roles: Vec<&str>, permissions: Vec<&str>) -> Self {
         Self {
             user_id,
             username: username.to_string(),
@@ -26,23 +23,19 @@ impl TestAuthContext
         }
     }
 
-    fn has_role(&self, role: &str) -> bool
-    {
+    fn has_role(&self, role: &str) -> bool {
         self.roles.contains(&role.to_string())
     }
 
-    fn has_permission(&self, permission: &str) -> bool
-    {
+    fn has_permission(&self, permission: &str) -> bool {
         self.permissions.contains(&permission.to_string())
     }
 
-    fn is_admin(&self) -> bool
-    {
+    fn is_admin(&self) -> bool {
         self.has_role("ADMIN")
     }
 
-    fn user_id(&self) -> i64
-    {
+    fn user_id(&self) -> i64 {
         self.user_id
     }
 }
@@ -53,11 +46,9 @@ fn evaluate_test_expression(
     expression: &str,
     auth: &TestAuthContext,
     args: &HashMap<String, String>,
-) -> bool
-{
+) -> bool {
     // Handle OR expressions (check first to avoid partial matches by individual patterns)
-    if expression.contains(" or ")
-    {
+    if expression.contains(" or ") {
         let parts: Vec<&str> = expression.split(" or ").collect();
         return parts
             .iter()
@@ -65,8 +56,7 @@ fn evaluate_test_expression(
     }
 
     // Handle AND expressions (check before individual patterns)
-    if expression.contains(" and ")
-    {
+    if expression.contains(" and ") {
         let parts: Vec<&str> = expression.split(" and ").collect();
         return parts
             .iter()
@@ -74,40 +64,30 @@ fn evaluate_test_expression(
     }
 
     // Handle has_role('ROLE_NAME')
-    if let Some(rest) = expression.strip_prefix("has_role('")
-    {
-        if let Some(role) = rest.strip_suffix("')")
-        {
+    if let Some(rest) = expression.strip_prefix("has_role('") {
+        if let Some(role) = rest.strip_suffix("')") {
             return auth.has_role(role);
         }
     }
 
     // Handle has_permission('PERMISSION_NAME')
-    if let Some(rest) = expression.strip_prefix("has_permission('")
-    {
-        if let Some(perm) = rest.strip_suffix("')")
-        {
+    if let Some(rest) = expression.strip_prefix("has_permission('") {
+        if let Some(perm) = rest.strip_suffix("')") {
             return auth.has_permission(perm);
         }
     }
 
     // Handle is_admin()
-    if expression == "is_admin()"
-    {
+    if expression == "is_admin()" {
         return auth.is_admin();
     }
 
     // Handle parameter checks like #id == auth.user_id()
-    if expression.contains("== auth.user_id()")
-    {
-        if let Some(param_part) = expression.strip_prefix("#")
-        {
-            if let Some(param_name) = param_part.split(" == ").next()
-            {
-                if let Some(param_value) = args.get(param_name)
-                {
-                    if let Ok(value) = param_value.parse::<i64>()
-                    {
+    if expression.contains("== auth.user_id()") {
+        if let Some(param_part) = expression.strip_prefix("#") {
+            if let Some(param_name) = param_part.split(" == ").next() {
+                if let Some(param_value) = args.get(param_name) {
+                    if let Ok(value) = param_value.parse::<i64>() {
                         return value == auth.user_id();
                     }
                 }
@@ -123,8 +103,7 @@ fn evaluate_test_expression(
 // ========================================================================
 
 #[test]
-fn test_has_role_admin()
-{
+fn test_has_role_admin() {
     let admin = TestAuthContext::new(1, "admin", vec!["ADMIN"], vec![]);
     let args = HashMap::new();
 
@@ -135,8 +114,7 @@ fn test_has_role_admin()
 }
 
 #[test]
-fn test_has_role_user_not_admin()
-{
+fn test_has_role_user_not_admin() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let args = HashMap::new();
 
@@ -147,8 +125,7 @@ fn test_has_role_user_not_admin()
 }
 
 #[test]
-fn test_has_role_user()
-{
+fn test_has_role_user() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let args = HashMap::new();
 
@@ -159,8 +136,7 @@ fn test_has_role_user()
 }
 
 #[test]
-fn test_has_permission()
-{
+fn test_has_permission() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec!["user:read", "user:write"]);
     let args = HashMap::new();
 
@@ -181,8 +157,7 @@ fn test_has_permission()
 }
 
 #[test]
-fn test_is_admin()
-{
+fn test_is_admin() {
     let admin = TestAuthContext::new(1, "admin", vec!["ADMIN"], vec![]);
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let args = HashMap::new();
@@ -199,8 +174,7 @@ fn test_is_admin()
 }
 
 #[test]
-fn test_parameter_match()
-{
+fn test_parameter_match() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let mut args = HashMap::new();
 
@@ -220,8 +194,7 @@ fn test_parameter_match()
 }
 
 #[test]
-fn test_or_expression()
-{
+fn test_or_expression() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec!["user:read"]);
     let args = HashMap::new();
 
@@ -243,8 +216,7 @@ fn test_or_expression()
 }
 
 #[test]
-fn test_and_expression()
-{
+fn test_and_expression() {
     let admin = TestAuthContext::new(1, "admin", vec!["ADMIN"], vec!["user:write"]);
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec!["user:read"]);
     let args = HashMap::new();
@@ -271,8 +243,7 @@ fn test_and_expression()
 }
 
 #[test]
-fn test_complex_expression()
-{
+fn test_complex_expression() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec!["user:read"]);
     let mut args = HashMap::new();
 
@@ -304,8 +275,7 @@ fn test_complex_expression()
 // ========================================================================
 
 #[test]
-fn test_admin_can_delete_user()
-{
+fn test_admin_can_delete_user() {
     let admin = TestAuthContext::new(1, "admin", vec!["ADMIN"], vec![]);
     let args = HashMap::new();
 
@@ -316,8 +286,7 @@ fn test_admin_can_delete_user()
 }
 
 #[test]
-fn test_user_cannot_delete_user()
-{
+fn test_user_cannot_delete_user() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let args = HashMap::new();
 
@@ -328,8 +297,7 @@ fn test_user_cannot_delete_user()
 }
 
 #[test]
-fn test_user_can_update_own_profile()
-{
+fn test_user_can_update_own_profile() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let mut args = HashMap::new();
     args.insert("id".to_string(), "2".to_string());
@@ -341,8 +309,7 @@ fn test_user_can_update_own_profile()
 }
 
 #[test]
-fn test_user_cannot_update_other_profile()
-{
+fn test_user_cannot_update_other_profile() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let mut args = HashMap::new();
     args.insert("id".to_string(), "3".to_string());
@@ -354,8 +321,7 @@ fn test_user_cannot_update_other_profile()
 }
 
 #[test]
-fn test_admin_can_update_any_profile()
-{
+fn test_admin_can_update_any_profile() {
     let admin = TestAuthContext::new(1, "admin", vec!["ADMIN"], vec![]);
     let mut args = HashMap::new();
     args.insert("id".to_string(), "3".to_string());
@@ -367,8 +333,7 @@ fn test_admin_can_update_any_profile()
 }
 
 #[test]
-fn test_user_with_read_permission_can_view()
-{
+fn test_user_with_read_permission_can_view() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec!["user:read"]);
     let args = HashMap::new();
 
@@ -379,8 +344,7 @@ fn test_user_with_read_permission_can_view()
 }
 
 #[test]
-fn test_user_without_permission_cannot_view()
-{
+fn test_user_without_permission_cannot_view() {
     let user = TestAuthContext::new(2, "alice", vec!["USER"], vec![]);
     let args = HashMap::new();
 

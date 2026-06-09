@@ -31,38 +31,31 @@ const MAX_HISTORY: usize = 100;
 /// Shared state for builtins
 /// 内置命令的共享状态
 #[derive(Debug, Default)]
-pub struct BuiltinState
-{
+pub struct BuiltinState {
     /// Command history / 命令历史
     pub history: VecDeque<String>,
     /// Last error stacktrace / 最后一个错误的堆栈跟踪
     pub last_error: Option<String>,
 }
 
-impl BuiltinState
-{
+impl BuiltinState {
     /// Create new state / 创建新状态
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Add a history entry / 添加历史记录条目
-    pub fn add_history(&mut self, line: &str)
-    {
-        if !line.trim().is_empty()
-        {
+    pub fn add_history(&mut self, line: &str) {
+        if !line.trim().is_empty() {
             self.history.push_back(line.to_string());
-            while self.history.len() > MAX_HISTORY
-            {
+            while self.history.len() > MAX_HISTORY {
                 self.history.pop_front();
             }
         }
     }
 
     /// Record an error / 记录错误
-    pub fn record_error(&mut self, error: &ShellError)
-    {
+    pub fn record_error(&mut self, error: &ShellError) {
         let backtrace = Backtrace::capture();
         self.last_error = Some(format!("Error: {error}\n{backtrace}"));
     }
@@ -77,25 +70,20 @@ impl BuiltinState
 ///
 /// # Equivalent to Spring Shell / 等价于 Spring Shell
 /// Equivalent to `help` command in Spring Shell.
-pub struct HelpCommand
-{
+pub struct HelpCommand {
     /// Shared state / 共享状态
     state: Arc<Mutex<BuiltinState>>,
 }
 
-impl HelpCommand
-{
+impl HelpCommand {
     /// Create a new help command / 创建新的帮助命令
-    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self
-    {
+    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self {
         Self { state }
     }
 }
 
-impl Command for HelpCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for HelpCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("help")
             .description("Show available commands / 显示可用命令")
             .aliases(&["h", "?"])
@@ -106,11 +94,9 @@ impl Command for HelpCommand
             ))
     }
 
-    fn execute(&self, args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, args: &[&str]) -> ShellResult<String> {
         // Help without arguments — show general help
-        if args.is_empty()
-        {
+        if args.is_empty() {
             let output = format!(
                 "{}\n\n{}\n{}\n{}\n{}\n",
                 "Available Commands / 可用命令:".green().bold(),
@@ -129,12 +115,9 @@ impl Command for HelpCommand
             .state
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        let msg = if state.history.is_empty()
-        {
+        let msg = if state.history.is_empty() {
             format!("No additional help available for: {cmd_name}")
-        }
-        else
-        {
+        } else {
             format!("Help for '{cmd_name}': Use '{cmd_name}' with appropriate arguments.")
         };
         Ok(msg)
@@ -149,18 +132,15 @@ impl Command for HelpCommand
 /// 清屏命令 — 清除终端屏幕
 pub struct ClearCommand;
 
-impl Command for ClearCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for ClearCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("clear")
             .description("Clear the terminal screen / 清除终端屏幕")
             .aliases(&["cls"])
             .group("Built-in")
     }
 
-    fn execute(&self, _args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, _args: &[&str]) -> ShellResult<String> {
         // Return ANSI escape sequence to clear screen
         // 返回ANSI转义序列以清屏
         Ok("\x1b[2J\x1b[H".to_string())
@@ -175,18 +155,15 @@ impl Command for ClearCommand
 /// 退出命令 — 退出shell
 pub struct ExitCommand;
 
-impl Command for ExitCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for ExitCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("exit")
             .description("Exit the shell / 退出shell")
             .aliases(&["quit", "q"])
             .group("Built-in")
     }
 
-    fn execute(&self, _args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, _args: &[&str]) -> ShellResult<String> {
         Err(ShellError::ExitRequested)
     }
 }
@@ -197,39 +174,32 @@ impl Command for ExitCommand
 
 /// Stacktrace command — shows the last error stacktrace
 /// 堆栈跟踪命令 — 显示最后一个错误的堆栈跟踪
-pub struct StacktraceCommand
-{
+pub struct StacktraceCommand {
     /// Shared state / 共享状态
     state: Arc<Mutex<BuiltinState>>,
 }
 
-impl StacktraceCommand
-{
+impl StacktraceCommand {
     /// Create a new stacktrace command / 创建新的堆栈跟踪命令
-    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self
-    {
+    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self {
         Self { state }
     }
 }
 
-impl Command for StacktraceCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for StacktraceCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("stacktrace")
             .description("Show last error stacktrace / 显示最后一次错误的堆栈跟踪")
             .aliases(&["st"])
             .group("Built-in")
     }
 
-    fn execute(&self, _args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, _args: &[&str]) -> ShellResult<String> {
         let state = self
             .state
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        match &state.last_error
-        {
+        match &state.last_error {
             Some(trace) => Ok(trace.clone()),
             None => Ok("No error recorded / 没有记录的错误".to_string()),
         }
@@ -242,25 +212,20 @@ impl Command for StacktraceCommand
 
 /// Script command — executes commands from a file
 /// 脚本命令 — 从文件执行命令
-pub struct ScriptCommand
-{
+pub struct ScriptCommand {
     /// Shared state / 共享状态
     state: Arc<Mutex<BuiltinState>>,
 }
 
-impl ScriptCommand
-{
+impl ScriptCommand {
     /// Create a new script command / 创建新的脚本命令
-    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self
-    {
+    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self {
         Self { state }
     }
 }
 
-impl Command for ScriptCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for ScriptCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("script")
             .description("Execute commands from a file / 从文件执行命令")
             .group("Built-in")
@@ -270,8 +235,7 @@ impl Command for ScriptCommand
             ))
     }
 
-    fn execute(&self, args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, args: &[&str]) -> ShellResult<String> {
         let path = args.first().ok_or_else(|| {
             ShellError::InvalidArguments("Usage: script <file> / 用法: script <文件>".to_string())
         })?;
@@ -291,12 +255,10 @@ impl Command for ScriptCommand
         })?;
 
         let mut results = Vec::new();
-        for (i, line) in content.lines().enumerate()
-        {
+        for (i, line) in content.lines().enumerate() {
             let trimmed = line.trim();
             // Skip empty lines and comments
-            if trimmed.is_empty() || trimmed.starts_with('#')
-            {
+            if trimmed.is_empty() || trimmed.starts_with('#') {
                 continue;
             }
 
@@ -312,12 +274,9 @@ impl Command for ScriptCommand
             results.push(format!("Line {}: {}", i + 1, trimmed));
         }
 
-        if results.is_empty()
-        {
+        if results.is_empty() {
             Ok("Script file is empty / 脚本文件为空".to_string())
-        }
-        else
-        {
+        } else {
             Ok(format!(
                 "Script loaded {} commands from '{}'\n{}",
                 results.len(),
@@ -336,17 +295,14 @@ impl Command for ScriptCommand
 /// 回显命令 — 打印文本
 pub struct EchoCommand;
 
-impl Command for EchoCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for EchoCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("echo")
             .description("Echo text / 回显文本")
             .group("Built-in")
     }
 
-    fn execute(&self, args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, args: &[&str]) -> ShellResult<String> {
         Ok(args.join(" "))
     }
 }
@@ -357,39 +313,32 @@ impl Command for EchoCommand
 
 /// History command — shows command history
 /// 历史命令 — 显示命令历史
-pub struct HistoryCommand
-{
+pub struct HistoryCommand {
     /// Shared state / 共享状态
     state: Arc<Mutex<BuiltinState>>,
 }
 
-impl HistoryCommand
-{
+impl HistoryCommand {
     /// Create a new history command / 创建新的历史命令
-    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self
-    {
+    pub fn new(state: Arc<Mutex<BuiltinState>>) -> Self {
         Self { state }
     }
 }
 
-impl Command for HistoryCommand
-{
-    fn meta(&self) -> CommandMeta
-    {
+impl Command for HistoryCommand {
+    fn meta(&self) -> CommandMeta {
         CommandMeta::new("history")
             .description("Show command history / 显示命令历史")
             .aliases(&["hist"])
             .group("Built-in")
     }
 
-    fn execute(&self, _args: &[&str]) -> ShellResult<String>
-    {
+    fn execute(&self, _args: &[&str]) -> ShellResult<String> {
         let state = self
             .state
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        if state.history.is_empty()
-        {
+        if state.history.is_empty() {
             return Ok("No history / 没有历史记录".to_string());
         }
 
@@ -410,8 +359,7 @@ impl Command for HistoryCommand
 pub fn register_builtins(
     registry: &mut crate::command::CommandRegistry,
     state: &Arc<Mutex<BuiltinState>>,
-)
-{
+) {
     registry.register(ClearCommand);
     registry.register(ExitCommand);
     registry.register(EchoCommand);

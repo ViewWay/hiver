@@ -69,19 +69,16 @@ use anyhow::Result;
 ///     }
 /// }
 /// ```
-pub trait BeanPostProcessor: Send + Sync
-{
+pub trait BeanPostProcessor: Send + Sync {
     /// 处理器名称（用于日志和调试）
     /// Processor name (for logging and debugging)
-    fn name(&self) -> &str
-    {
+    fn name(&self) -> &str {
         std::any::type_name::<Self>()
     }
 
     /// 优先级（数字越小越先执行）
     /// Priority (lower number executes first)
-    fn order(&self) -> i32
-    {
+    fn order(&self) -> i32 {
         0
     }
 
@@ -135,8 +132,7 @@ pub trait BeanPostProcessor: Send + Sync
 /// assert_eq!(context.bean_name(), "userService");
 /// ```
 #[derive(Debug, Clone)]
-pub struct BeanContext
-{
+pub struct BeanContext {
     /// Bean 名称
     /// Bean name
     bean_name: String,
@@ -154,8 +150,7 @@ pub struct BeanContext
     properties: HashMap<String, String>,
 }
 
-impl BeanContext
-{
+impl BeanContext {
     /// 创建新的 Bean 上下文
     /// Create a new bean context
     ///
@@ -163,8 +158,7 @@ impl BeanContext
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `bean_type`: Bean 类型 ID / Bean type ID
-    pub fn new(bean_name: impl Into<String>, bean_type: TypeId) -> Self
-    {
+    pub fn new(bean_name: impl Into<String>, bean_type: TypeId) -> Self {
         Self {
             bean_name: bean_name.into(),
             bean_type,
@@ -175,52 +169,45 @@ impl BeanContext
 
     /// 创建带有类型名称的 Bean 上下文
     /// Create bean context with type name
-    pub fn with_type_name(mut self, type_name: impl Into<String>) -> Self
-    {
+    pub fn with_type_name(mut self, type_name: impl Into<String>) -> Self {
         self.type_name = type_name.into();
         self
     }
 
     /// 设置属性
     /// Set property
-    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
-    {
+    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.properties.insert(key.into(), value.into());
         self
     }
 
     /// 获取 Bean 名称
     /// Get bean name
-    pub fn bean_name(&self) -> &str
-    {
+    pub fn bean_name(&self) -> &str {
         &self.bean_name
     }
 
     /// 获取 Bean 类型 ID
     /// Get bean type ID
-    pub fn bean_type(&self) -> TypeId
-    {
+    pub fn bean_type(&self) -> TypeId {
         self.bean_type
     }
 
     /// 获取 Bean 类型名称
     /// Get bean type name
-    pub fn type_name(&self) -> &str
-    {
+    pub fn type_name(&self) -> &str {
         &self.type_name
     }
 
     /// 获取属性值
     /// Get property value
-    pub fn get_property(&self, key: &str) -> Option<&str>
-    {
+    pub fn get_property(&self, key: &str) -> Option<&str> {
         self.properties.get(key).map(String::as_str)
     }
 
     /// 获取所有属性
     /// Get all properties
-    pub fn properties(&self) -> &HashMap<String, String>
-    {
+    pub fn properties(&self) -> &HashMap<String, String> {
         &self.properties
     }
 }
@@ -251,8 +238,7 @@ impl BeanContext
 /// processor.register_dependency("userService", "userRepository");
 /// ```
 #[derive(Debug, Default)]
-pub struct AutowiredAnnotationBeanPostProcessor
-{
+pub struct AutowiredAnnotationBeanPostProcessor {
     /// 已注册的依赖关系：bean_name -> [依赖的 bean_name 列表]
     /// Registered dependencies: bean_name -> [list of dependent bean names]
     dependencies: HashMap<String, Vec<String>>,
@@ -262,12 +248,10 @@ pub struct AutowiredAnnotationBeanPostProcessor
     processed_count: usize,
 }
 
-impl AutowiredAnnotationBeanPostProcessor
-{
+impl AutowiredAnnotationBeanPostProcessor {
     /// 创建新的 @Autowired 处理器
     /// Create a new @Autowired processor
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -285,8 +269,7 @@ impl AutowiredAnnotationBeanPostProcessor
         &mut self,
         bean_name: impl Into<String>,
         dependency_name: impl Into<String>,
-    )
-    {
+    ) {
         self.dependencies
             .entry(bean_name.into())
             .or_default()
@@ -299,8 +282,7 @@ impl AutowiredAnnotationBeanPostProcessor
     /// # 参数 / Parameters
     ///
     /// - `bean_name`: Bean 名称 / Bean name
-    pub fn get_dependencies(&self, bean_name: &str) -> &[String]
-    {
+    pub fn get_dependencies(&self, bean_name: &str) -> &[String] {
         self.dependencies
             .get(bean_name)
             .map(Vec::as_slice)
@@ -309,21 +291,17 @@ impl AutowiredAnnotationBeanPostProcessor
 
     /// 获取已处理的 Bean 数量
     /// Get the number of processed beans
-    pub fn processed_count(&self) -> usize
-    {
+    pub fn processed_count(&self) -> usize {
         self.processed_count
     }
 }
 
-impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor
-{
-    fn name(&self) -> &'static str
-    {
+impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor {
+    fn name(&self) -> &'static str {
         "AutowiredAnnotationBeanPostProcessor"
     }
 
-    fn order(&self) -> i32
-    {
+    fn order(&self) -> i32 {
         // 在 CommonAnnotation 之前执行，先解析依赖
         // Execute before CommonAnnotation to resolve dependencies first
         -50
@@ -333,12 +311,10 @@ impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor
         &self,
         _bean: &mut dyn Any,
         context: &BeanContext,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         // 在初始化前检查依赖
         // Check dependencies before initialization
-        if let Some(deps) = self.dependencies.get(context.bean_name())
-        {
+        if let Some(deps) = self.dependencies.get(context.bean_name()) {
             tracing::debug!(
                 "AutowiredAnnotationBeanPostProcessor: bean '{}' has {} dependencies",
                 context.bean_name(),
@@ -353,8 +329,7 @@ impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor
         &self,
         _bean: &mut dyn Any,
         context: &BeanContext,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         tracing::trace!(
             "AutowiredAnnotationBeanPostProcessor: post-process after init for '{}'",
             context.bean_name()
@@ -383,8 +358,7 @@ impl BeanPostProcessor for AutowiredAnnotationBeanPostProcessor
 ///
 /// 在 Rust 中，生命周期回调通过注册闭包实现。
 /// In Rust, lifecycle callbacks are implemented via registered closures.
-pub struct CommonAnnotationBeanPostProcessor
-{
+pub struct CommonAnnotationBeanPostProcessor {
     /// @PostConstruct 回调：bean_name -> 回调函数
     /// @PostConstruct callbacks: bean_name -> callback
     post_construct_callbacks: HashMap<String, Box<dyn Fn(&dyn Any) -> Result<()> + Send + Sync>>,
@@ -402,20 +376,16 @@ pub struct CommonAnnotationBeanPostProcessor
     destroyed_beans: Vec<String>,
 }
 
-impl Default for CommonAnnotationBeanPostProcessor
-{
-    fn default() -> Self
-    {
+impl Default for CommonAnnotationBeanPostProcessor {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl CommonAnnotationBeanPostProcessor
-{
+impl CommonAnnotationBeanPostProcessor {
     /// 创建新的生命周期处理器
     /// Create a new lifecycle processor
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             post_construct_callbacks: HashMap::new(),
             pre_destroy_callbacks: HashMap::new(),
@@ -461,10 +431,8 @@ impl CommonAnnotationBeanPostProcessor
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `bean`: Bean 实例 / Bean instance
-    pub fn invoke_post_construct(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()>
-    {
-        if let Some(callback) = self.post_construct_callbacks.get(bean_name)
-        {
+    pub fn invoke_post_construct(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()> {
+        if let Some(callback) = self.post_construct_callbacks.get(bean_name) {
             callback(bean)?;
             self.initialized_beans.push(bean_name.to_string());
             tracing::debug!(
@@ -482,10 +450,8 @@ impl CommonAnnotationBeanPostProcessor
     ///
     /// - `bean_name`: Bean 名称 / Bean name
     /// - `bean`: Bean 实例 / Bean instance
-    pub fn invoke_pre_destroy(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()>
-    {
-        if let Some(callback) = self.pre_destroy_callbacks.get(bean_name)
-        {
+    pub fn invoke_pre_destroy(&mut self, bean_name: &str, bean: &dyn Any) -> Result<()> {
+        if let Some(callback) = self.pre_destroy_callbacks.get(bean_name) {
             callback(bean)?;
             self.destroyed_beans.push(bean_name.to_string());
             tracing::debug!(
@@ -498,42 +464,36 @@ impl CommonAnnotationBeanPostProcessor
 
     /// 检查 Bean 是否已初始化（@PostConstruct 已调用）
     /// Check if bean has been initialized (@PostConstruct called)
-    pub fn is_initialized(&self, bean_name: &str) -> bool
-    {
+    pub fn is_initialized(&self, bean_name: &str) -> bool {
         self.initialized_beans.iter().any(|n| n == bean_name)
     }
 
     /// 检查 Bean 是否已销毁（@PreDestroy 已调用）
     /// Check if bean has been destroyed (@PreDestroy called)
-    pub fn is_destroyed(&self, bean_name: &str) -> bool
-    {
+    pub fn is_destroyed(&self, bean_name: &str) -> bool {
         self.destroyed_beans.iter().any(|n| n == bean_name)
     }
 
     /// 获取已初始化的 Bean 列表
     /// Get list of initialized beans
-    pub fn initialized_beans(&self) -> &[String]
-    {
+    pub fn initialized_beans(&self) -> &[String] {
         &self.initialized_beans
     }
 
     /// 获取已销毁的 Bean 列表
     /// Get list of destroyed beans
-    pub fn destroyed_beans(&self) -> &[String]
-    {
+    pub fn destroyed_beans(&self) -> &[String] {
         &self.destroyed_beans
     }
 
     /// 调用所有 @PreDestroy 回调（按逆序销毁）
     /// Invoke all @PreDestroy callbacks (reverse destruction order)
-    pub fn destroy_all(&mut self) -> Result<()>
-    {
+    pub fn destroy_all(&mut self) -> Result<()> {
         // 按注册逆序销毁
         // Destroy in reverse registration order
         let bean_names: Vec<String> = self.pre_destroy_callbacks.keys().cloned().collect();
 
-        for name in bean_names.iter().rev()
-        {
+        for name in bean_names.iter().rev() {
             tracing::debug!("Destroying bean: {}", name);
             self.destroyed_beans.push(name.clone());
         }
@@ -542,15 +502,12 @@ impl CommonAnnotationBeanPostProcessor
     }
 }
 
-impl BeanPostProcessor for CommonAnnotationBeanPostProcessor
-{
-    fn name(&self) -> &'static str
-    {
+impl BeanPostProcessor for CommonAnnotationBeanPostProcessor {
+    fn name(&self) -> &'static str {
         "CommonAnnotationBeanPostProcessor"
     }
 
-    fn order(&self) -> i32
-    {
+    fn order(&self) -> i32 {
         // 在 Autowired 之后执行
         // Execute after Autowired
         0
@@ -560,8 +517,7 @@ impl BeanPostProcessor for CommonAnnotationBeanPostProcessor
         &self,
         _bean: &mut dyn Any,
         context: &BeanContext,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         // 初始化前：准备调用 @PostConstruct
         // Before init: prepare to call @PostConstruct
         tracing::trace!(
@@ -575,8 +531,7 @@ impl BeanPostProcessor for CommonAnnotationBeanPostProcessor
         &self,
         _bean: &mut dyn Any,
         context: &BeanContext,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         // 初始化后：@PostConstruct 已经完成
         // After init: @PostConstruct is complete
         tracing::trace!(
@@ -599,27 +554,22 @@ impl BeanPostProcessor for CommonAnnotationBeanPostProcessor
 ///
 /// 处理器按 `order` 升序执行。
 /// Processors execute in ascending `order`.
-pub struct BeanPostProcessorChain
-{
+pub struct BeanPostProcessorChain {
     /// 注册的处理器列表
     /// Registered processor list
     processors: Vec<Box<dyn BeanPostProcessor>>,
 }
 
-impl Default for BeanPostProcessorChain
-{
-    fn default() -> Self
-    {
+impl Default for BeanPostProcessorChain {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl BeanPostProcessorChain
-{
+impl BeanPostProcessorChain {
     /// 创建空的处理器链
     /// Create an empty processor chain
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             processors: Vec::new(),
         }
@@ -627,8 +577,7 @@ impl BeanPostProcessorChain
 
     /// 创建带默认处理器的链
     /// Create a chain with default processors
-    pub fn with_defaults() -> Self
-    {
+    pub fn with_defaults() -> Self {
         let mut chain = Self::new();
         chain.add(Box::new(AutowiredAnnotationBeanPostProcessor::new()));
         chain.add(Box::new(CommonAnnotationBeanPostProcessor::new()));
@@ -637,8 +586,7 @@ impl BeanPostProcessorChain
 
     /// 添加处理器
     /// Add a processor
-    pub fn add(&mut self, processor: Box<dyn BeanPostProcessor>)
-    {
+    pub fn add(&mut self, processor: Box<dyn BeanPostProcessor>) {
         self.processors.push(processor);
     }
 
@@ -649,10 +597,8 @@ impl BeanPostProcessorChain
     ///
     /// - `bean`: Bean 实例 / Bean instance
     /// - `context`: Bean 上下文 / Bean context
-    pub fn before_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()>
-    {
-        for processor in &self.processors
-        {
+    pub fn before_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()> {
+        for processor in &self.processors {
             processor.post_process_before_initialization(bean, context)?;
         }
         Ok(())
@@ -665,10 +611,8 @@ impl BeanPostProcessorChain
     ///
     /// - `bean`: Bean 实例 / Bean instance
     /// - `context`: Bean 上下文 / Bean context
-    pub fn after_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()>
-    {
-        for processor in &self.processors
-        {
+    pub fn after_initialization(&self, bean: &mut dyn Any, context: &BeanContext) -> Result<()> {
+        for processor in &self.processors {
             processor.post_process_after_initialization(bean, context)?;
         }
         Ok(())
@@ -676,15 +620,13 @@ impl BeanPostProcessorChain
 
     /// 获取处理器数量
     /// Get processor count
-    pub fn len(&self) -> usize
-    {
+    pub fn len(&self) -> usize {
         self.processors.len()
     }
 
     /// 检查是否为空
     /// Check if empty
-    pub fn is_empty(&self) -> bool
-    {
+    pub fn is_empty(&self) -> bool {
         self.processors.is_empty()
     }
 }
@@ -694,9 +636,14 @@ impl BeanPostProcessorChain
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::sync::Arc;
 
     use super::*;
@@ -706,8 +653,7 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_bean_context_new()
-    {
+    fn test_bean_context_new() {
         let ctx = BeanContext::new("testService", TypeId::of::<String>());
         assert_eq!(ctx.bean_name(), "testService");
         assert_eq!(ctx.bean_type(), TypeId::of::<String>());
@@ -715,15 +661,13 @@ mod tests
     }
 
     #[test]
-    fn test_bean_context_with_type_name()
-    {
+    fn test_bean_context_with_type_name() {
         let ctx = BeanContext::new("svc", TypeId::of::<i32>()).with_type_name("i32");
         assert_eq!(ctx.type_name(), "i32");
     }
 
     #[test]
-    fn test_bean_context_with_property()
-    {
+    fn test_bean_context_with_property() {
         let ctx = BeanContext::new("svc", TypeId::of::<i32>())
             .with_property("key1", "value1")
             .with_property("key2", "value2");
@@ -738,15 +682,13 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_autowired_processor_new()
-    {
+    fn test_autowired_processor_new() {
         let processor = AutowiredAnnotationBeanPostProcessor::new();
         assert_eq!(processor.processed_count(), 0);
     }
 
     #[test]
-    fn test_autowired_register_dependency()
-    {
+    fn test_autowired_register_dependency() {
         let mut processor = AutowiredAnnotationBeanPostProcessor::new();
         processor.register_dependency("userService", "userRepository");
         processor.register_dependency("userService", "cacheManager");
@@ -758,15 +700,13 @@ mod tests
     }
 
     #[test]
-    fn test_autowired_no_dependencies()
-    {
+    fn test_autowired_no_dependencies() {
         let processor = AutowiredAnnotationBeanPostProcessor::new();
         assert!(processor.get_dependencies("unknownService").is_empty());
     }
 
     #[test]
-    fn test_autowired_before_initialization()
-    {
+    fn test_autowired_before_initialization() {
         let processor = AutowiredAnnotationBeanPostProcessor::new();
         let context = BeanContext::new("testService", TypeId::of::<i32>());
         let mut bean = 42i32;
@@ -776,8 +716,7 @@ mod tests
     }
 
     #[test]
-    fn test_autowired_after_initialization()
-    {
+    fn test_autowired_after_initialization() {
         let processor = AutowiredAnnotationBeanPostProcessor::new();
         let context = BeanContext::new("testService", TypeId::of::<i32>());
         let mut bean = 42i32;
@@ -791,16 +730,14 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_common_processor_new()
-    {
+    fn test_common_processor_new() {
         let processor = CommonAnnotationBeanPostProcessor::new();
         assert!(processor.initialized_beans().is_empty());
         assert!(processor.destroyed_beans().is_empty());
     }
 
     #[test]
-    fn test_common_post_construct()
-    {
+    fn test_common_post_construct() {
         let mut processor = CommonAnnotationBeanPostProcessor::new();
         let initialized = Arc::new(std::sync::atomic::AtomicBool::new(false));
         let initialized_clone = initialized.clone();
@@ -818,8 +755,7 @@ mod tests
     }
 
     #[test]
-    fn test_common_pre_destroy()
-    {
+    fn test_common_pre_destroy() {
         let mut processor = CommonAnnotationBeanPostProcessor::new();
         let destroyed = Arc::new(std::sync::atomic::AtomicBool::new(false));
         let destroyed_clone = destroyed.clone();
@@ -837,8 +773,7 @@ mod tests
     }
 
     #[test]
-    fn test_common_no_callback()
-    {
+    fn test_common_no_callback() {
         let mut processor = CommonAnnotationBeanPostProcessor::new();
         let bean = 42i32;
 
@@ -852,8 +787,7 @@ mod tests
     }
 
     #[test]
-    fn test_common_destroy_all()
-    {
+    fn test_common_destroy_all() {
         let mut processor = CommonAnnotationBeanPostProcessor::new();
         processor.register_pre_destroy("serviceA", |_bean| Ok(()));
         processor.register_pre_destroy("serviceB", |_bean| Ok(()));
@@ -863,8 +797,7 @@ mod tests
     }
 
     #[test]
-    fn test_common_before_and_after_init()
-    {
+    fn test_common_before_and_after_init() {
         let processor = CommonAnnotationBeanPostProcessor::new();
         let context = BeanContext::new("testService", TypeId::of::<i32>());
         let mut bean = 42i32;
@@ -881,22 +814,19 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_chain_empty()
-    {
+    fn test_chain_empty() {
         let chain = BeanPostProcessorChain::new();
         assert!(chain.is_empty());
     }
 
     #[test]
-    fn test_chain_with_defaults()
-    {
+    fn test_chain_with_defaults() {
         let chain = BeanPostProcessorChain::with_defaults();
         assert_eq!(chain.len(), 2);
     }
 
     #[test]
-    fn test_chain_before_and_after()
-    {
+    fn test_chain_before_and_after() {
         let mut chain = BeanPostProcessorChain::new();
         chain.add(Box::new(AutowiredAnnotationBeanPostProcessor::new()));
         chain.add(Box::new(CommonAnnotationBeanPostProcessor::new()));
@@ -913,23 +843,18 @@ mod tests
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_custom_bean_post_processor()
-    {
-        struct TestPostProcessor
-        {
+    fn test_custom_bean_post_processor() {
+        struct TestPostProcessor {
             before_called: Arc<std::sync::atomic::AtomicBool>,
             after_called: Arc<std::sync::atomic::AtomicBool>,
         }
 
-        impl BeanPostProcessor for TestPostProcessor
-        {
-            fn name(&self) -> &'static str
-            {
+        impl BeanPostProcessor for TestPostProcessor {
+            fn name(&self) -> &'static str {
                 "TestPostProcessor"
             }
 
-            fn order(&self) -> i32
-            {
+            fn order(&self) -> i32 {
                 10
             }
 
@@ -937,8 +862,7 @@ mod tests
                 &self,
                 _bean: &mut dyn Any,
                 _context: &BeanContext,
-            ) -> Result<()>
-            {
+            ) -> Result<()> {
                 self.before_called
                     .store(true, std::sync::atomic::Ordering::SeqCst);
                 Ok(())
@@ -948,8 +872,7 @@ mod tests
                 &self,
                 _bean: &mut dyn Any,
                 _context: &BeanContext,
-            ) -> Result<()>
-            {
+            ) -> Result<()> {
                 self.after_called
                     .store(true, std::sync::atomic::Ordering::SeqCst);
                 Ok(())

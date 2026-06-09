@@ -17,8 +17,7 @@ use crate::{
 ///
 /// 由健康端点返回。等价于 Spring Vault 的 `VaultHealthOperations`。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct HealthStatus
-{
+pub struct HealthStatus {
     /// Whether Vault is initialized / Vault 是否已初始化
     pub initialized: bool,
     /// Whether Vault is sealed / Vault 是否已封印
@@ -46,8 +45,7 @@ pub struct HealthStatus
 /// Returned by the seal status endpoint.
 /// 由封印状态端点返回。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SealStatus
-{
+pub struct SealStatus {
     /// Seal type / 封印类型
     #[serde(rename = "type")]
     pub seal_type: Option<String>,
@@ -75,8 +73,7 @@ pub struct SealStatus
 ///
 /// 调用 `sys/health` 端点。注意 Vault 对健康状态返回 200，
 /// 待机返回 429，未初始化返回 501，已封印返回 503。
-pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus>
-{
+pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus> {
     let url = client
         .base_url()
         .join("v1/sys/health")
@@ -87,15 +84,12 @@ pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus>
     let status = resp.status();
     // Vault health returns non-200 for some non-error states
     // Vault 健康检查对某些非错误状态返回非 200
-    match status.as_u16()
-    {
-        200 | 429 | 501 | 503 =>
-        {
+    match status.as_u16() {
+        200 | 429 | 501 | 503 => {
             let health: HealthStatus = resp.json().await?;
             Ok(health)
         },
-        _ =>
-        {
+        _ => {
             let body = resp.text().await.unwrap_or_default();
             Err(VaultError::ServerError {
                 status: status.as_u16(),
@@ -109,8 +103,7 @@ pub async fn check_health(client: &VaultClient) -> VaultResult<HealthStatus>
 ///
 /// Calls the `sys/seal-status` endpoint.
 /// 调用 `sys/seal-status` 端点。
-pub async fn get_seal_status(client: &VaultClient) -> VaultResult<SealStatus>
-{
+pub async fn get_seal_status(client: &VaultClient) -> VaultResult<SealStatus> {
     let url = client
         .base_url()
         .join("v1/sys/seal-status")
@@ -118,13 +111,10 @@ pub async fn get_seal_status(client: &VaultClient) -> VaultResult<SealStatus>
 
     let resp = client.http_client().get(url).send().await?;
 
-    if resp.status().is_success()
-    {
+    if resp.status().is_success() {
         let seal: SealStatus = resp.json().await?;
         Ok(seal)
-    }
-    else
-    {
+    } else {
         let status = resp.status().as_u16();
         let body = resp.text().await.unwrap_or_default();
         Err(VaultError::from_status(status, &body))
@@ -135,26 +125,21 @@ pub async fn get_seal_status(client: &VaultClient) -> VaultResult<SealStatus>
 ///
 /// Requires root token. Equivalent to Spring Vault's `VaultSysOperations.seal()`.
 /// 需要 root token。等价于 Spring Vault 的 `VaultSysOperations.seal()`。
-pub async fn seal(client: &VaultClient) -> VaultResult<()>
-{
+pub async fn seal(client: &VaultClient) -> VaultResult<()> {
     let url = client
         .base_url()
         .join("v1/sys/seal")
         .map_err(|e| VaultError::InvalidAddress(e.to_string()))?;
 
     let mut req = client.http_client().put(url);
-    if let Some(token) = client.token()
-    {
+    if let Some(token) = client.token() {
         req = req.header("Authorization", format!("Bearer {token}"));
     }
     let resp = req.send().await?;
 
-    if resp.status().is_success()
-    {
+    if resp.status().is_success() {
         Ok(())
-    }
-    else
-    {
+    } else {
         let status = resp.status().as_u16();
         let body = resp.text().await.unwrap_or_default();
         Err(VaultError::from_status(status, &body))
@@ -167,8 +152,7 @@ pub async fn seal(client: &VaultClient) -> VaultResult<()>
 /// the threshold.
 ///
 /// 提供单个解封密钥份额。可能需要多次调用以达到阈值。
-pub async fn unseal(client: &VaultClient, key: &str) -> VaultResult<SealStatus>
-{
+pub async fn unseal(client: &VaultClient, key: &str) -> VaultResult<SealStatus> {
     let url = client
         .base_url()
         .join("v1/sys/unseal")
@@ -180,13 +164,10 @@ pub async fn unseal(client: &VaultClient, key: &str) -> VaultResult<SealStatus>
 
     let resp = client.http_client().put(url).json(&body).send().await?;
 
-    if resp.status().is_success()
-    {
+    if resp.status().is_success() {
         let seal: SealStatus = resp.json().await?;
         Ok(seal)
-    }
-    else
-    {
+    } else {
         let status = resp.status().as_u16();
         let body = resp.text().await.unwrap_or_default();
         Err(VaultError::from_status(status, &body))

@@ -94,7 +94,13 @@
 //! ```
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod context;
@@ -112,8 +118,7 @@ pub mod step;
 pub mod writer;
 
 // Prelude module for convenient imports
-pub mod prelude
-{
+pub mod prelude {
     pub use crate::{
         context::{JobContext, StepContext},
         error::{BatchError, BatchResult},

@@ -17,8 +17,7 @@ use testcontainers::{GenericImage, core::IntoContainerPort, runners::AsyncRunner
 
 /// Helper: start a RabbitMQ container and return channel + container.
 /// 辅助函数：启动 RabbitMQ 容器并返回 channel 和容器。
-async fn setup_rabbitmq() -> (Channel, testcontainers::ContainerAsync<GenericImage>)
-{
+async fn setup_rabbitmq() -> (Channel, testcontainers::ContainerAsync<GenericImage>) {
     let container = GenericImage::new("rabbitmq", "3-management")
         .with_env_var("RABBITMQ_DEFAULT_USER", "guest")
         .with_env_var("RABBITMQ_DEFAULT_PASS", "guest")
@@ -49,8 +48,7 @@ async fn setup_rabbitmq() -> (Channel, testcontainers::ContainerAsync<GenericIma
 
 /// Helper: declare a classic queue for testing.
 /// 辅助函数：声明一个用于测试的经典队列。
-async fn declare_test_queue(channel: &Channel, queue_name: &str) -> lapin::Queue
-{
+async fn declare_test_queue(channel: &Channel, queue_name: &str) -> lapin::Queue {
     channel
         .queue_declare(
             queue_name,
@@ -71,8 +69,7 @@ async fn declare_test_queue(channel: &Channel, queue_name: &str) -> lapin::Queue
 // 测试 1：RabbitMQ 容器启动并接受连接
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_container_connectivity()
-{
+async fn test_rabbitmq_container_connectivity() {
     let (channel, _container) = setup_rabbitmq().await;
 
     // If we can declare a queue, the connection is working
@@ -85,8 +82,7 @@ async fn test_rabbitmq_container_connectivity()
 // 测试 2：声明队列并检查其存在
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_declare_queue()
-{
+async fn test_rabbitmq_declare_queue() {
     let (channel, _container) = setup_rabbitmq().await;
 
     let queue = channel
@@ -124,8 +120,7 @@ async fn test_rabbitmq_declare_queue()
 // 测试 3：发布并消费单条消息
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_publish_consume_single()
-{
+async fn test_rabbitmq_publish_consume_single() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.basic").await;
 
@@ -171,14 +166,12 @@ async fn test_rabbitmq_publish_consume_single()
 // 测试 4：发布并消费多条消息
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_publish_consume_batch()
-{
+async fn test_rabbitmq_publish_consume_batch() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.batch").await;
 
     // Publish 5 messages
-    for i in 0..5
-    {
+    for i in 0..5 {
         channel
             .basic_publish(
                 "",
@@ -211,8 +204,7 @@ async fn test_rabbitmq_publish_consume_batch()
     let deadline = tokio::time::sleep(Duration::from_secs(15));
     tokio::pin!(deadline);
 
-    loop
-    {
+    loop {
         tokio::select! {
             Some(delivery_result) = consumer.next() => {
                 let (_, delivery) = delivery_result.expect("Delivery error");
@@ -238,8 +230,7 @@ async fn test_rabbitmq_publish_consume_batch()
 // 测试 5：消息确认（ACK）
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_message_ack()
-{
+async fn test_rabbitmq_message_ack() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.ack").await;
 
@@ -301,8 +292,7 @@ async fn test_rabbitmq_message_ack()
 // 测试 6：消息拒绝（NACK 并重新入队）
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_message_nack_requeue()
-{
+async fn test_rabbitmq_message_nack_requeue() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.nack").await;
 
@@ -368,8 +358,7 @@ async fn test_rabbitmq_message_nack_requeue()
 // 测试 7：Fanout 交换机广播到多个队列
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_fanout_exchange()
-{
+async fn test_rabbitmq_fanout_exchange() {
     let (channel, _container) = setup_rabbitmq().await;
 
     // Declare fanout exchange
@@ -446,8 +435,7 @@ async fn test_rabbitmq_fanout_exchange()
 // 测试 8：Direct 交换机使用路由键
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_direct_exchange()
-{
+async fn test_rabbitmq_direct_exchange() {
     let (channel, _container) = setup_rabbitmq().await;
 
     channel
@@ -522,8 +510,7 @@ async fn test_rabbitmq_direct_exchange()
 // 测试 9：Topic 交换机使用模式匹配
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_topic_exchange()
-{
+async fn test_rabbitmq_topic_exchange() {
     let (channel, _container) = setup_rabbitmq().await;
 
     channel
@@ -620,8 +607,7 @@ async fn test_rabbitmq_topic_exchange()
 // 测试 10：队列 TTL（生存时间）— 消息过期
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_queue_ttl()
-{
+async fn test_rabbitmq_queue_ttl() {
     let (channel, _container) = setup_rabbitmq().await;
 
     let mut args = FieldTable::default();
@@ -669,13 +655,11 @@ async fn test_rabbitmq_queue_ttl()
 // 测试 11：清空队列移除所有消息
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_queue_purge()
-{
+async fn test_rabbitmq_queue_purge() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.purge").await;
 
-    for i in 0..5
-    {
+    for i in 0..5 {
         channel
             .basic_publish(
                 "",
@@ -711,8 +695,7 @@ async fn test_rabbitmq_queue_purge()
 // 测试 12：删除队列
 // ============================================================
 #[tokio::test]
-async fn test_rabbitmq_queue_delete()
-{
+async fn test_rabbitmq_queue_delete() {
     let (channel, _container) = setup_rabbitmq().await;
     declare_test_queue(&channel, "test.delete").await;
 

@@ -118,7 +118,13 @@ impl<T: BeanNameAware> BeanNameAware for Arc<T> {
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests {
     use super::*;
 
@@ -134,7 +140,9 @@ mod tests {
             }
         }
 
-        let mut bean = BeanA { name: String::new() };
+        let mut bean = BeanA {
+            name: String::new(),
+        };
         bean.set_bean_name("testBean");
         assert_eq!(bean.name, "testBean");
     }
@@ -151,8 +159,12 @@ mod tests {
             }
         }
 
-        let mut b1 = B { name: String::new() };
-        let mut b2 = B { name: String::new() };
+        let mut b1 = B {
+            name: String::new(),
+        };
+        let mut b2 = B {
+            name: String::new(),
+        };
 
         b1.set_bean_name("alpha");
         b2.set_bean_name("beta");

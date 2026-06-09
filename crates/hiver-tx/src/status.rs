@@ -29,8 +29,7 @@ use std::sync::{
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct TransactionStatus
-{
+pub struct TransactionStatus {
     /// Whether this is a new transaction
     /// 是否为新事务
     new_transaction: Arc<AtomicBool>,
@@ -52,12 +51,10 @@ pub struct TransactionStatus
     name: String,
 }
 
-impl TransactionStatus
-{
+impl TransactionStatus {
     /// Create a new transaction status
     /// 创建新的事务状态
-    pub fn new(name: impl Into<String>) -> Self
-    {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             new_transaction: Arc::new(AtomicBool::new(true)),
             rollback_only: Arc::new(AtomicBool::new(false)),
@@ -69,8 +66,7 @@ impl TransactionStatus
 
     /// Create with existing transaction
     /// 使用现有事务创建
-    pub fn existing(name: impl Into<String>) -> Self
-    {
+    pub fn existing(name: impl Into<String>) -> Self {
         let status = Self::new(name);
         status.new_transaction.store(false, Ordering::SeqCst);
         status
@@ -78,64 +74,55 @@ impl TransactionStatus
 
     /// Check if this is a new transaction
     /// 检查是否为新事务
-    pub fn is_new_transaction(&self) -> bool
-    {
+    pub fn is_new_transaction(&self) -> bool {
         self.new_transaction.load(Ordering::SeqCst)
     }
 
     /// Check if transaction has savepoint
     /// 检查事务是否有保存点
-    pub fn has_savepoint(&self) -> bool
-    {
+    pub fn has_savepoint(&self) -> bool {
         self.has_savepoint.load(Ordering::SeqCst)
     }
 
     /// Set rollback only
     /// 设置仅回滚
-    pub fn set_rollback_only(&self)
-    {
+    pub fn set_rollback_only(&self) {
         self.rollback_only.store(true, Ordering::SeqCst);
     }
 
     /// Check if rollback only
     /// 检查是否仅回滚
-    pub fn is_rollback_only(&self) -> bool
-    {
+    pub fn is_rollback_only(&self) -> bool {
         self.rollback_only.load(Ordering::SeqCst)
     }
 
     /// Check if transaction is completed
     /// 检查事务是否已完成
-    pub fn is_completed(&self) -> bool
-    {
+    pub fn is_completed(&self) -> bool {
         self.completed.load(Ordering::SeqCst)
     }
 
     /// Mark as completed
     /// 标记为已完成
-    pub fn mark_completed(&self)
-    {
+    pub fn mark_completed(&self) {
         self.completed.store(true, Ordering::SeqCst);
     }
 
     /// Get transaction name
     /// 获取事务名称
-    pub fn name(&self) -> &str
-    {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Set has savepoint
     /// 设置有保存点
-    pub fn set_has_savepoint(&self)
-    {
+    pub fn set_has_savepoint(&self) {
         self.has_savepoint.store(true, Ordering::SeqCst);
     }
 
     /// Flush the transaction (if applicable)
     /// 刷新事务（如果适用）
-    pub fn flush(&self)
-    {
+    pub fn flush(&self) {
         // Default implementation does nothing
         // Subclasses can override for specific behavior
     }
@@ -144,8 +131,7 @@ impl TransactionStatus
 /// Transaction state enum
 /// 事务状态枚举
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum TransactionState
-{
+pub(crate) enum TransactionState {
     /// Active transaction
     /// 活动事务
     Active,
@@ -163,19 +149,16 @@ pub(crate) enum TransactionState
     Unknown,
 }
 
-impl TransactionState
-{
+impl TransactionState {
     /// Check if transaction is active
     /// 检查事务是否活动
-    pub(crate) fn is_active(self) -> bool
-    {
+    pub(crate) fn is_active(self) -> bool {
         matches!(self, TransactionState::Active)
     }
 
     /// Check if transaction is completed
     /// 检查事务是否已完成
-    pub(crate) fn is_completed(self) -> bool
-    {
+    pub(crate) fn is_completed(self) -> bool {
         matches!(self, TransactionState::Committed | TransactionState::RolledBack)
     }
 }
@@ -186,8 +169,7 @@ impl TransactionState
 /// Equivalent to Spring's Savepoint.
 /// `等价于Spring的Savepoint`。
 #[derive(Debug, Clone)]
-pub(crate) struct Savepoint
-{
+pub(crate) struct Savepoint {
     /// Savepoint name
     /// 保存点名称
     pub name: String,
@@ -197,12 +179,10 @@ pub(crate) struct Savepoint
     pub id: Option<u64>,
 }
 
-impl Savepoint
-{
+impl Savepoint {
     /// Create a new savepoint
     /// 创建新的保存点
-    pub(crate) fn new(name: impl Into<String>) -> Self
-    {
+    pub(crate) fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             id: None,
@@ -211,8 +191,7 @@ impl Savepoint
 
     /// Create with ID
     /// 使用ID创建
-    pub(crate) fn with_id(name: impl Into<String>, id: u64) -> Self
-    {
+    pub(crate) fn with_id(name: impl Into<String>, id: u64) -> Self {
         Self {
             name: name.into(),
             id: Some(id),
@@ -221,14 +200,18 @@ impl Savepoint
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_transaction_status()
-    {
+    fn test_transaction_status() {
         let status = TransactionStatus::new("test_tx");
 
         assert!(status.is_new_transaction());
@@ -243,8 +226,7 @@ mod tests
     }
 
     #[test]
-    fn test_transaction_state()
-    {
+    fn test_transaction_state() {
         assert!(TransactionState::Active.is_active());
         assert!(!TransactionState::Active.is_completed());
         assert!(TransactionState::Committed.is_completed());

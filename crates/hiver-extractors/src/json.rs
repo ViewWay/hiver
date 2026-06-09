@@ -58,26 +58,22 @@ use crate::{ExtractorError, ExtractorFuture, FromRequest, Request};
 /// ```
 pub struct Json<T>(pub T);
 
-impl<T> Json<T>
-{
+impl<T> Json<T> {
     /// Consume the JSON extractor and get the inner value
     /// 消耗JSON提取器并获取内部值
-    pub fn into_inner(self) -> T
-    {
+    pub fn into_inner(self) -> T {
         self.0
     }
 
     /// Get reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T
-    {
+    pub fn get(&self) -> &T {
         &self.0
     }
 
     /// Get mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T
-    {
+    pub fn get_mut(&mut self) -> &mut T {
         &mut self.0
     }
 }
@@ -86,8 +82,7 @@ impl<T> std::fmt::Debug for Json<T>
 where
     T: std::fmt::Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("Json").field(&self.0).finish()
     }
 }
@@ -96,8 +91,7 @@ impl<T> Clone for Json<T>
 where
     T: Clone,
 {
-    fn clone(&self) -> Self
-    {
+    fn clone(&self) -> Self {
         Self(self.0.clone())
     }
 }
@@ -107,8 +101,7 @@ impl<T> FromRequest for Json<T>
 where
     T: for<'de> Deserialize<'de> + Send + 'static,
 {
-    fn from_request(req: &Request) -> ExtractorFuture<Self>
-    {
+    fn from_request(req: &Request) -> ExtractorFuture<Self> {
         let body_bytes = req.body().as_bytes().map(<[u8]>::to_vec);
         let content_type = req.header("content-type").unwrap_or("").to_string();
 
@@ -138,8 +131,7 @@ where
 
 /// Get content type from request
 /// 从请求获取content type
-pub fn get_content_type(req: &Request) -> String
-{
+pub fn get_content_type(req: &Request) -> String {
     req.header("content-type").unwrap_or("").to_string()
 }
 
@@ -148,14 +140,18 @@ pub fn get_content_type(req: &Request) -> String
 pub const DEFAULT_JSON_LIMIT: usize = 10 * 1024 * 1024;
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_json_into_inner()
-    {
+    fn test_json_into_inner() {
         let json: Json<String> = Json("test".to_string());
         assert_eq!(json.into_inner(), "test");
     }

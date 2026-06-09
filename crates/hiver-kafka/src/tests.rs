@@ -2,15 +2,20 @@
 //! hiver-kafka 集成测试
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use crate::{
         BytesSerializer, Consumer, ConsumerConfig, ConsumerGroup, ConsumerListener, ConsumerOffset,
         DEFAULT_GROUP_ID, DEFAULT_KAFKA_PORT, Deserializer, JsonDeserializer, JsonSerializer,
         KafkaMessage, KeySerializer, MessageHeaderValue, MessageHeaders, MessageKey, MessageValue,
-        Offset, ProduceOptions, Producer, ProducerConfig, Record, Serializer,
-        TopicPartition, TopicPartitionBuilder, VERSION,
+        Offset, ProduceOptions, Producer, ProducerConfig, Record, Serializer, TopicPartition,
+        TopicPartitionBuilder, VERSION,
     };
 
     // ── Module constants ──────────────────────────────────────────────
@@ -18,24 +23,21 @@ mod tests
     /// Test crate version is not empty
     /// 测试 crate 版本非空
     #[test]
-    fn test_version_not_empty()
-    {
+    fn test_version_not_empty() {
         assert!(!VERSION.is_empty());
     }
 
     /// Test default port constant
     /// 测试默认端口常量
     #[test]
-    fn test_default_port()
-    {
+    fn test_default_port() {
         assert_eq!(DEFAULT_KAFKA_PORT, 9092);
     }
 
     /// Test default group id constant
     /// 测试默认组ID常量
     #[test]
-    fn test_default_group_id()
-    {
+    fn test_default_group_id() {
         assert_eq!(DEFAULT_GROUP_ID, "hiver-consumer-group");
     }
 
@@ -44,8 +46,7 @@ mod tests
     /// Test end-to-end produce flow with JSON serialization
     /// 测试端到端 JSON 序列化生产流程
     #[test]
-    fn test_produce_json_end_to_end()
-    {
+    fn test_produce_json_end_to_end() {
         let producer = Producer::new(ProducerConfig::new());
         let payload = serde_json::json!({
             "event": "user_created",
@@ -59,8 +60,7 @@ mod tests
     /// Test producer with custom compression config
     /// 测试带自定义压缩配置的生产者
     #[test]
-    fn test_producer_custom_compression()
-    {
+    fn test_producer_custom_compression() {
         use crate::config::CompressionType;
         let config = ProducerConfig::new()
             .with_bootstrap_servers("kafka.prod:9093")
@@ -80,8 +80,7 @@ mod tests
     /// Test full consumer lifecycle: subscribe -> poll -> commit -> unsubscribe
     /// 测试完整消费者生命周期：订阅 -> 轮询 -> 提交 -> 取消订阅
     #[tokio::test]
-    async fn test_consumer_full_lifecycle()
-    {
+    async fn test_consumer_full_lifecycle() {
         let config =
             ConsumerConfig::new("lifecycle-group").with_bootstrap_servers("localhost:9092");
         let consumer = Consumer::new("localhost:9092", &config);
@@ -116,8 +115,7 @@ mod tests
     /// Test KafkaMessage with full headers round-trip through JSON
     /// 测试带完整头部的 KafkaMessage 通过 JSON 往返
     #[test]
-    fn test_message_full_serde_roundtrip()
-    {
+    fn test_message_full_serde_roundtrip() {
         let msg = KafkaMessage {
             topic: "test-topic".to_string(),
             partition: 3,
@@ -143,12 +141,9 @@ mod tests
         assert_eq!(restored.payload().as_bytes(), Some(&b"binary-payload"[..]));
 
         let h = restored.headers.get("trace-id").unwrap();
-        if let MessageHeaderValue::String(v) = h
-        {
+        if let MessageHeaderValue::String(v) = h {
             assert_eq!(v, "abc-def");
-        }
-        else
-        {
+        } else {
             panic!("expected string header");
         }
     }
@@ -158,8 +153,7 @@ mod tests
     /// Test topic partition builder with offset seek values
     /// 测试带偏移查找值的主题分区构建器
     #[test]
-    fn test_topic_partition_builder_with_offset()
-    {
+    fn test_topic_partition_builder_with_offset() {
         let tp = TopicPartitionBuilder::new("logs")
             .with_partitions(12)
             .with_replication_factor(3)
@@ -180,8 +174,7 @@ mod tests
     /// Test consumer group with listener lifecycle
     /// 测试消费者组与监听器生命周期
     #[tokio::test]
-    async fn test_consumer_group_with_listener()
-    {
+    async fn test_consumer_group_with_listener() {
         let group = ConsumerGroup::new("order-processors")
             .with_member("consumer-1")
             .with_member("consumer-2")
@@ -208,8 +201,7 @@ mod tests
     /// Test full serialization pipeline: key + value -> bytes
     /// 测试完整序列化管道：键 + 值 -> 字节
     #[test]
-    fn test_serialization_pipeline()
-    {
+    fn test_serialization_pipeline() {
         let key_serializer = KeySerializer::new();
         let value_serializer = JsonSerializer;
 
@@ -228,8 +220,7 @@ mod tests
     /// Test bytes serializer then json deserializer round-trip for string
     /// 测试字节序列化器与JSON反序列化器的往返
     #[test]
-    fn test_bytes_serialize_then_json_deserialize()
-    {
+    fn test_bytes_serialize_then_json_deserialize() {
         let bytes_ser = BytesSerializer;
         let json_de = JsonDeserializer;
 
@@ -245,8 +236,7 @@ mod tests
     /// Test KeySerializer rejects non-string data in string mode
     /// 测试 KeySerializer 在字符串模式下拒绝非字符串数据
     #[test]
-    fn test_key_serializer_error_on_bytes()
-    {
+    fn test_key_serializer_error_on_bytes() {
         let serializer = KeySerializer::new();
         let binary_data: Vec<u8> = vec![0x00, 0x01, 0x02];
         let result = serializer.serialize(&binary_data);
@@ -256,8 +246,7 @@ mod tests
     /// Test KafkaMessage clone works correctly
     /// 测试 KafkaMessage 正确克隆
     #[test]
-    fn test_kafka_message_clone()
-    {
+    fn test_kafka_message_clone() {
         let msg = KafkaMessage::new("clone-test", 1, 50, MessageValue::String("data".to_string()));
         let cloned = msg.clone();
         assert_eq!(cloned.topic(), msg.topic());
@@ -268,8 +257,7 @@ mod tests
     /// Test RecordHeader structure
     /// 测试 RecordHeader 结构
     #[test]
-    fn test_record_header()
-    {
+    fn test_record_header() {
         use crate::RecordHeader;
         let header = RecordHeader {
             key: "content-type".to_string(),
@@ -282,8 +270,7 @@ mod tests
     /// Test TopicPartition can be used as HashMap key
     /// 测试 TopicPartition 可用作 HashMap 键
     #[test]
-    fn test_topic_partition_as_hashmap_key()
-    {
+    fn test_topic_partition_as_hashmap_key() {
         use std::collections::HashMap;
         let mut map = HashMap::new();
         let tp1 = TopicPartition::new("topic-a", 0);

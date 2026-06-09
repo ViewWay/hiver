@@ -8,9 +8,14 @@
 //! 当 `ldap` feature 禁用时，模板返回安全的存根值。
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use crate::{
         context::LdapContextSourceBuilder,
         mapper::AttrMap,
@@ -26,67 +31,54 @@ mod tests
     // ============================================================
 
     #[derive(Debug, Clone)]
-    struct Person
-    {
+    struct Person {
         uid: String,
         cn: String,
         mail: String,
     }
 
-    impl OdmEntry for Person
-    {
-        fn base_dn() -> &'static str
-        {
+    impl OdmEntry for Person {
+        fn base_dn() -> &'static str {
             "ou=people,dc=example,dc=com"
         }
 
-        fn rdn_attribute() -> &'static str
-        {
+        fn rdn_attribute() -> &'static str {
             "uid"
         }
 
-        fn object_classes() -> &'static [&'static str]
-        {
+        fn object_classes() -> &'static [&'static str] {
             &["top", "person", "inetOrgPerson"]
         }
 
-        fn attribute_names() -> &'static [&'static str]
-        {
+        fn attribute_names() -> &'static [&'static str] {
             &["uid", "cn", "mail"]
         }
     }
 
     #[derive(Debug, Clone)]
-    struct Group
-    {
+    struct Group {
         cn: String,
         description: String,
         member_count: usize,
     }
 
-    impl OdmEntry for Group
-    {
-        fn base_dn() -> &'static str
-        {
+    impl OdmEntry for Group {
+        fn base_dn() -> &'static str {
             "ou=groups,dc=example,dc=com"
         }
 
-        fn rdn_attribute() -> &'static str
-        {
+        fn rdn_attribute() -> &'static str {
             "cn"
         }
 
-        fn object_classes() -> &'static [&'static str]
-        {
+        fn object_classes() -> &'static [&'static str] {
             &["top", "groupOfNames"]
         }
     }
 
     struct PersonMapper;
-    impl EntryMapper<Person> for PersonMapper
-    {
-        fn map_entry(&self, attrs: &AttrMap) -> Person
-        {
+    impl EntryMapper<Person> for PersonMapper {
+        fn map_entry(&self, attrs: &AttrMap) -> Person {
             Person {
                 uid: attrs.get_first("uid").unwrap_or_default().to_string(),
                 cn: attrs.get_first("cn").unwrap_or_default().to_string(),
@@ -96,10 +88,8 @@ mod tests
     }
 
     struct PersonSerializer;
-    impl EntrySerializer<Person> for PersonSerializer
-    {
-        fn serialize(&self, p: &Person) -> Vec<(String, Vec<String>)>
-        {
+    impl EntrySerializer<Person> for PersonSerializer {
+        fn serialize(&self, p: &Person) -> Vec<(String, Vec<String>)> {
             vec![
                 ("uid".into(), vec![p.uid.clone()]),
                 ("cn".into(), vec![p.cn.clone()]),
@@ -107,26 +97,21 @@ mod tests
             ]
         }
 
-        fn rdn_value(&self, p: &Person) -> String
-        {
+        fn rdn_value(&self, p: &Person) -> String {
             p.uid.clone()
         }
     }
 
     struct PersonIdExtractor;
-    impl IdExtractor<Person, String> for PersonIdExtractor
-    {
-        fn extract_id(&self, p: &Person) -> String
-        {
+    impl IdExtractor<Person, String> for PersonIdExtractor {
+        fn extract_id(&self, p: &Person) -> String {
             p.uid.clone()
         }
     }
 
     struct GroupMapper;
-    impl EntryMapper<Group> for GroupMapper
-    {
-        fn map_entry(&self, attrs: &AttrMap) -> Group
-        {
+    impl EntryMapper<Group> for GroupMapper {
+        fn map_entry(&self, attrs: &AttrMap) -> Group {
             Group {
                 cn: attrs.get_first("cn").unwrap_or_default().to_string(),
                 description: attrs
@@ -139,41 +124,34 @@ mod tests
     }
 
     struct GroupSerializer;
-    impl EntrySerializer<Group> for GroupSerializer
-    {
-        fn serialize(&self, g: &Group) -> Vec<(String, Vec<String>)>
-        {
+    impl EntrySerializer<Group> for GroupSerializer {
+        fn serialize(&self, g: &Group) -> Vec<(String, Vec<String>)> {
             vec![
                 ("cn".into(), vec![g.cn.clone()]),
                 ("description".into(), vec![g.description.clone()]),
             ]
         }
 
-        fn rdn_value(&self, g: &Group) -> String
-        {
+        fn rdn_value(&self, g: &Group) -> String {
             g.cn.clone()
         }
     }
 
     struct GroupIdExtractor;
-    impl IdExtractor<Group, String> for GroupIdExtractor
-    {
-        fn extract_id(&self, g: &Group) -> String
-        {
+    impl IdExtractor<Group, String> for GroupIdExtractor {
+        fn extract_id(&self, g: &Group) -> String {
             g.cn.clone()
         }
     }
 
     // Helper to create a template / 创建模板的辅助函数
-    fn test_template() -> LdapTemplate
-    {
+    fn test_template() -> LdapTemplate {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         LdapTemplate::new(ctx)
     }
 
     fn person_repo()
-    -> TypedLdapRepository<Person, String, PersonMapper, PersonSerializer, PersonIdExtractor>
-    {
+    -> TypedLdapRepository<Person, String, PersonMapper, PersonSerializer, PersonIdExtractor> {
         TypedLdapRepository::new(
             test_template(),
             "ou=people,dc=example,dc=com",
@@ -184,8 +162,7 @@ mod tests
     }
 
     fn group_repo()
-    -> TypedLdapRepository<Group, String, GroupMapper, GroupSerializer, GroupIdExtractor>
-    {
+    -> TypedLdapRepository<Group, String, GroupMapper, GroupSerializer, GroupIdExtractor> {
         TypedLdapRepository::new(
             test_template(),
             "ou=groups,dc=example,dc=com",
@@ -200,8 +177,7 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_context_source_builder_full()
-    {
+    fn test_context_source_builder_full() {
         let ctx = LdapContextSourceBuilder::default()
             .url("ldap://localhost:389")
             .base_dn("dc=example,dc=com")
@@ -214,52 +190,45 @@ mod tests
     }
 
     #[test]
-    fn test_context_source_builder_missing_url()
-    {
+    fn test_context_source_builder_missing_url() {
         let result = LdapContextSourceBuilder::default()
             .base_dn("dc=example,dc=com")
             .build();
         assert!(result.is_err());
-        match result.unwrap_err()
-        {
+        match result.unwrap_err() {
             LdapError::Connection(msg) => assert!(msg.contains("URL")),
             other => panic!("Expected Connection error, got: {:?}", other),
         }
     }
 
     #[test]
-    fn test_context_source_builder_missing_base_dn()
-    {
+    fn test_context_source_builder_missing_base_dn() {
         let result = LdapContextSourceBuilder::default()
             .url("ldap://localhost:389")
             .build();
         assert!(result.is_err());
-        match result.unwrap_err()
-        {
+        match result.unwrap_err() {
             LdapError::Connection(msg) => assert!(msg.contains("Base DN")),
             other => panic!("Expected Connection error, got: {:?}", other),
         }
     }
 
     #[tokio::test]
-    async fn test_context_source_get_context()
-    {
+    async fn test_context_source_get_context() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let conn = ctx.get_context().await.unwrap();
         assert!(conn.is_connected());
     }
 
     #[tokio::test]
-    async fn test_context_source_anonymous_context()
-    {
+    async fn test_context_source_anonymous_context() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let conn = ctx.get_anonymous_context().await.unwrap();
         assert!(conn.is_connected());
     }
 
     #[tokio::test]
-    async fn test_connection_unbind()
-    {
+    async fn test_connection_unbind() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let mut conn = ctx.get_context().await.unwrap();
         assert!(conn.is_connected());
@@ -268,8 +237,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connection_simple_bind()
-    {
+    async fn test_connection_simple_bind() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let mut conn = ctx.get_context().await.unwrap();
         let result = conn.simple_bind("cn=admin", "password").await;
@@ -277,8 +245,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_context_with_credentials()
-    {
+    async fn test_context_with_credentials() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com")
             .with_credentials("cn=admin", "secret");
         let conn = ctx.get_context().await.unwrap();
@@ -290,24 +257,21 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_template_exposes_context_source()
-    {
+    fn test_template_exposes_context_source() {
         let template = test_template();
         assert_eq!(template.context_source().url(), "ldap://localhost:389");
         assert_eq!(template.context_source().base_dn(), "dc=example,dc=com");
     }
 
     #[tokio::test]
-    async fn test_template_authenticate()
-    {
+    async fn test_template_authenticate() {
         let template = test_template();
         let ok = template.authenticate("cn=admin", "secret").await.unwrap();
         assert!(ok);
     }
 
     #[tokio::test]
-    async fn test_template_search_empty()
-    {
+    async fn test_template_search_empty() {
         let template = test_template();
         let results = template
             .search_attrs("dc=example,dc=com", "(objectClass=*)")
@@ -317,14 +281,11 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_template_lookup_none()
-    {
+    async fn test_template_lookup_none() {
         let template = test_template();
         struct CtxMapper;
-        impl ContextMapper<String> for CtxMapper
-        {
-            fn map_from_context(&self, ctx: &str) -> String
-            {
+        impl ContextMapper<String> for CtxMapper {
+            fn map_from_context(&self, ctx: &str) -> String {
                 ctx.to_string()
             }
         }
@@ -336,8 +297,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_template_bind_ok()
-    {
+    async fn test_template_bind_ok() {
         let template = test_template();
         let result = template
             .bind("cn=new,dc=example,dc=com", &[("objectClass", &["person"] as &[&str])])
@@ -346,16 +306,14 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_template_unbind_ok()
-    {
+    async fn test_template_unbind_ok() {
         let template = test_template();
         let result = template.unbind("cn=user,dc=example,dc=com").await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
-    async fn test_template_modify_ok()
-    {
+    async fn test_template_modify_ok() {
         let template = test_template();
         let result = template
             .modify("cn=user,dc=example,dc=com", &[("sn", &["newValue"] as &[&str])])
@@ -364,8 +322,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_template_exists_false()
-    {
+    async fn test_template_exists_false() {
         let template = test_template();
         let exists = template
             .exists("cn=missing,dc=example,dc=com")
@@ -375,8 +332,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_template_count_zero()
-    {
+    async fn test_template_count_zero() {
         let template = test_template();
         let count = template
             .count("dc=example,dc=com", "(objectClass=*)")
@@ -390,15 +346,13 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_person_repo_base()
-    {
+    fn test_person_repo_base() {
         let repo = person_repo();
         assert_eq!(repo.base(), "ou=people,dc=example,dc=com");
     }
 
     #[test]
-    fn test_person_repo_build_entry_dn()
-    {
+    fn test_person_repo_build_entry_dn() {
         let repo = person_repo();
         let person = Person {
             uid: "alice".into(),
@@ -409,47 +363,41 @@ mod tests
     }
 
     #[test]
-    fn test_person_repo_build_id_dn()
-    {
+    fn test_person_repo_build_id_dn() {
         let repo = person_repo();
         assert_eq!(repo.build_id_dn(&"bob".to_string()), "uid=bob,ou=people,dc=example,dc=com");
     }
 
     #[tokio::test]
-    async fn test_person_repo_find_all_empty()
-    {
+    async fn test_person_repo_find_all_empty() {
         let repo = person_repo();
         let results = repo.find_all().await.unwrap();
         assert!(results.is_empty());
     }
 
     #[tokio::test]
-    async fn test_person_repo_find_by_id_none()
-    {
+    async fn test_person_repo_find_by_id_none() {
         let repo = person_repo();
         let result = repo.find_by_id(&"nobody".to_string()).await.unwrap();
         assert!(result.is_none());
     }
 
     #[tokio::test]
-    async fn test_person_repo_exists_false()
-    {
+    async fn test_person_repo_exists_false() {
         let repo = person_repo();
         let exists = repo.exists_by_id(&"ghost".to_string()).await.unwrap();
         assert!(!exists);
     }
 
     #[tokio::test]
-    async fn test_person_repo_count_zero()
-    {
+    async fn test_person_repo_count_zero() {
         let repo = person_repo();
         let count = repo.count().await.unwrap();
         assert_eq!(count, 0);
     }
 
     #[test]
-    fn test_group_repo_build_entry_dn()
-    {
+    fn test_group_repo_build_entry_dn() {
         let repo = group_repo();
         let group = Group {
             cn: "admins".into(),
@@ -464,45 +412,39 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_dn_equality()
-    {
+    fn test_dn_equality() {
         let a = Dn::new("cn=user,dc=example,dc=com");
         let b = Dn::new("cn=user,dc=example,dc=com");
         assert_eq!(a, b);
     }
 
     #[test]
-    fn test_dn_components()
-    {
+    fn test_dn_components() {
         let dn = Dn::new("cn=user,ou=people,dc=example,dc=com");
         assert_eq!(dn.components(), vec!["cn=user", "ou=people", "dc=example", "dc=com"]);
     }
 
     #[test]
-    fn test_dn_rdn()
-    {
+    fn test_dn_rdn() {
         let dn = Dn::new("uid=john,ou=people,dc=example,dc=com");
         assert_eq!(dn.rdn(), Some("uid=john"));
     }
 
     #[test]
-    fn test_dn_parent()
-    {
+    fn test_dn_parent() {
         let dn = Dn::new("uid=john,ou=people,dc=example,dc=com");
         let parent = dn.parent().unwrap();
         assert_eq!(parent.as_str(), "ou=people,dc=example,dc=com");
     }
 
     #[test]
-    fn test_dn_parent_of_root_is_none()
-    {
+    fn test_dn_parent_of_root_is_none() {
         let dn = Dn::new("dc=com");
         assert!(dn.parent().is_none());
     }
 
     #[test]
-    fn test_dn_is_descendant()
-    {
+    fn test_dn_is_descendant() {
         let dn = Dn::new("cn=user,ou=people,dc=example,dc=com");
         let base = Dn::new("dc=example,dc=com");
         assert!(dn.is_descendant_of(&base));
@@ -510,23 +452,20 @@ mod tests
     }
 
     #[test]
-    fn test_dn_case_insensitive_descendant()
-    {
+    fn test_dn_case_insensitive_descendant() {
         let dn = Dn::new("cn=user,DC=EXAMPLE,DC=COM");
         let base = Dn::new("dc=example,dc=com");
         assert!(dn.is_descendant_of(&base));
     }
 
     #[test]
-    fn test_dn_display()
-    {
+    fn test_dn_display() {
         let dn = Dn::new("cn=user,dc=example,dc=com");
         assert_eq!(format!("{}", dn), "cn=user,dc=example,dc=com");
     }
 
     #[test]
-    fn test_build_dn_helper()
-    {
+    fn test_build_dn_helper() {
         assert_eq!(
             build_dn("uid", "john", "ou=people,dc=example,dc=com"),
             "uid=john,ou=people,dc=example,dc=com"
@@ -534,8 +473,7 @@ mod tests
     }
 
     #[test]
-    fn test_parse_rdn_value_found()
-    {
+    fn test_parse_rdn_value_found() {
         assert_eq!(
             parse_rdn_value("uid=john,ou=people,dc=example,dc=com", "uid"),
             Some("john".to_string())
@@ -543,8 +481,7 @@ mod tests
     }
 
     #[test]
-    fn test_parse_rdn_value_not_found()
-    {
+    fn test_parse_rdn_value_not_found() {
         assert_eq!(parse_rdn_value("uid=john,ou=people,dc=example,dc=com", "cn"), None);
     }
 
@@ -553,8 +490,7 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_odm_mapper_full_roundtrip()
-    {
+    fn test_odm_mapper_full_roundtrip() {
         let mut odm = ObjectDirectoryMapper::new();
         odm.add_mapping(AttributeMapping::new("uid", "uid").id());
         odm.add_mapping(AttributeMapping::new("cn", "name"));
@@ -572,8 +508,7 @@ mod tests
     }
 
     #[test]
-    fn test_odm_mapper_skips_readonly_on_serialize()
-    {
+    fn test_odm_mapper_skips_readonly_on_serialize() {
         let mut odm = ObjectDirectoryMapper::new();
         odm.add_mapping(AttributeMapping::new("cn", "name"));
         odm.add_mapping(AttributeMapping::new("createTimestamp", "created").readonly());
@@ -592,8 +527,7 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_attr_map_add_and_get()
-    {
+    fn test_attr_map_add_and_get() {
         let mut map = AttrMap::new();
         map.add("cn", &["John", "Johnny"]);
         assert_eq!(map.get_first("cn"), Some("John"));
@@ -602,16 +536,14 @@ mod tests
     }
 
     #[test]
-    fn test_attr_map_missing_key()
-    {
+    fn test_attr_map_missing_key() {
         let map = AttrMap::new();
         assert!(map.get("cn").is_none());
         assert_eq!(map.get_first("cn"), None);
     }
 
     #[test]
-    fn test_attr_map_default()
-    {
+    fn test_attr_map_default() {
         let map = AttrMap::default();
         assert!(map.get("anything").is_none());
     }
@@ -621,8 +553,7 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_pool_default_config()
-    {
+    fn test_pool_default_config() {
         let config = PoolConfig::default();
         assert_eq!(config.max_size, 8);
         assert_eq!(config.max_idle, 4);
@@ -630,8 +561,7 @@ mod tests
     }
 
     #[test]
-    fn test_pool_borrow_and_return()
-    {
+    fn test_pool_borrow_and_return() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let pool = LdapPool::new(ctx, PoolConfig::default());
         let stats = pool.stats();
@@ -648,8 +578,7 @@ mod tests
     }
 
     #[test]
-    fn test_pool_exhaustion()
-    {
+    fn test_pool_exhaustion() {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
         let config = PoolConfig {
             max_size: 2,
@@ -671,14 +600,12 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_query_wildcard()
-    {
+    fn test_query_wildcard() {
         assert_eq!(LdapQueryBuilder::new().build(), "(objectClass=*)");
     }
 
     #[test]
-    fn test_query_single_eq()
-    {
+    fn test_query_single_eq() {
         assert_eq!(
             LdapQueryBuilder::new().eq("objectClass", "person").build(),
             "(objectClass=person)"
@@ -686,8 +613,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_and()
-    {
+    fn test_query_and() {
         let filter = LdapQueryBuilder::new()
             .where_attr("objectClass")
             .is("person")
@@ -699,8 +625,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_or()
-    {
+    fn test_query_or() {
         let filter = LdapQueryBuilder::or_query()
             .where_attr("cn")
             .is("John")
@@ -712,8 +637,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_not_equal()
-    {
+    fn test_query_not_equal() {
         let filter = LdapQueryBuilder::new()
             .where_attr("status")
             .is_not("inactive")
@@ -722,14 +646,12 @@ mod tests
     }
 
     #[test]
-    fn test_query_present()
-    {
+    fn test_query_present() {
         assert_eq!(LdapQueryBuilder::new().present("mail").build(), "(mail=*)");
     }
 
     #[test]
-    fn test_query_like()
-    {
+    fn test_query_like() {
         assert_eq!(
             LdapQueryBuilder::new()
                 .where_attr("cn")
@@ -740,8 +662,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_starts_with()
-    {
+    fn test_query_starts_with() {
         assert_eq!(
             LdapQueryBuilder::new()
                 .where_attr("cn")
@@ -752,8 +673,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_ends_with()
-    {
+    fn test_query_ends_with() {
         assert_eq!(
             LdapQueryBuilder::new()
                 .where_attr("mail")
@@ -764,8 +684,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_gte_lte()
-    {
+    fn test_query_gte_lte() {
         let filter = LdapQueryBuilder::new()
             .gte("uidNumber", "1000")
             .lte("uidNumber", "2000")
@@ -774,8 +693,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_complex_nested()
-    {
+    fn test_query_complex_nested() {
         let filter = LdapQueryBuilder::new()
             .eq("objectClass", "person")
             .raw("(|(cn=John)(cn=Jane))")
@@ -784,8 +702,7 @@ mod tests
     }
 
     #[test]
-    fn test_query_exists_not_exists()
-    {
+    fn test_query_exists_not_exists() {
         let filter = LdapQueryBuilder::new()
             .where_attr("mail")
             .exists()
@@ -801,8 +718,7 @@ mod tests
     // ============================================================
 
     #[test]
-    fn test_ldap_error_display()
-    {
+    fn test_ldap_error_display() {
         let err = LdapError::Connection("refused".into());
         assert!(err.to_string().contains("refused"));
 

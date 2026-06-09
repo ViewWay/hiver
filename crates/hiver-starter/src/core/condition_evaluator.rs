@@ -52,8 +52,7 @@ use super::{
 /// 包含配置的名称和优先级信息，用于排序和执行。
 /// Contains the configuration's name and priority for sorting and execution.
 #[derive(Debug, Clone)]
-pub struct ApplicableConfig
-{
+pub struct ApplicableConfig {
     /// 配置名称
     /// Configuration name
     pub name: String,
@@ -63,8 +62,7 @@ pub struct ApplicableConfig
     pub priority: i32,
 }
 
-impl ApplicableConfig
-{
+impl ApplicableConfig {
     /// 创建新的适用配置
     /// Create a new applicable configuration
     ///
@@ -72,8 +70,7 @@ impl ApplicableConfig
     ///
     /// - `name`: 配置名称 / Configuration name
     /// - `priority`: 配置优先级 / Configuration priority
-    pub fn new(name: impl Into<String>, priority: i32) -> Self
-    {
+    pub fn new(name: impl Into<String>, priority: i32) -> Self {
         Self {
             name: name.into(),
             priority,
@@ -81,28 +78,22 @@ impl ApplicableConfig
     }
 }
 
-impl fmt::Display for ApplicableConfig
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Display for ApplicableConfig {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "ApplicableConfig[name={}, priority={}]", self.name, self.priority)
     }
 }
 
-impl PartialEq for ApplicableConfig
-{
-    fn eq(&self, other: &Self) -> bool
-    {
+impl PartialEq for ApplicableConfig {
+    fn eq(&self, other: &Self) -> bool {
         self.name == other.name
     }
 }
 
 impl Eq for ApplicableConfig {}
 
-impl std::hash::Hash for ApplicableConfig
-{
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H)
-    {
+impl std::hash::Hash for ApplicableConfig {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.name.hash(state);
     }
 }
@@ -139,8 +130,7 @@ impl std::hash::Hash for ApplicableConfig
 /// evaluator.exclude("ExcludedConfig");
 /// let filtered = evaluator.evaluate(&ctx);
 /// ```
-pub struct ConditionEvaluator<'a>
-{
+pub struct ConditionEvaluator<'a> {
     /// 自动配置注册表引用
     /// Reference to the auto-configuration registry
     registry: &'a AutoConfigurationRegistry,
@@ -150,16 +140,14 @@ pub struct ConditionEvaluator<'a>
     excluded: HashSet<String>,
 }
 
-impl<'a> ConditionEvaluator<'a>
-{
+impl<'a> ConditionEvaluator<'a> {
     /// 创建新的条件评估器
     /// Create a new condition evaluator
     ///
     /// # 参数 / Parameters
     ///
     /// - `registry`: 自动配置注册表 / Auto-configuration registry
-    pub fn new(registry: &'a AutoConfigurationRegistry) -> Self
-    {
+    pub fn new(registry: &'a AutoConfigurationRegistry) -> Self {
         Self {
             registry,
             excluded: HashSet::new(),
@@ -172,8 +160,7 @@ impl<'a> ConditionEvaluator<'a>
     /// # 参数 / Parameters
     ///
     /// - `name`: 要排除的配置名称 / Name of the configuration to exclude
-    pub fn exclude(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn exclude(mut self, name: impl Into<String>) -> Self {
         self.excluded.insert(name.into());
         self
     }
@@ -184,10 +171,8 @@ impl<'a> ConditionEvaluator<'a>
     /// # 参数 / Parameters
     ///
     /// - `names`: 要排除的配置名称列表 / List of configuration names to exclude
-    pub fn exclude_many(mut self, names: &[&str]) -> Self
-    {
-        for name in names
-        {
+    pub fn exclude_many(mut self, names: &[&str]) -> Self {
+        for name in names {
             self.excluded.insert((*name).to_string());
         }
         self
@@ -210,8 +195,7 @@ impl<'a> ConditionEvaluator<'a>
     /// 返回通过条件评估且未被排除的配置列表（按优先级排序）。
     /// Returns configurations that passed condition evaluation and were not excluded
     /// (sorted by priority).
-    pub fn evaluate(&self, ctx: &ApplicationContext) -> Vec<ApplicableConfig>
-    {
+    pub fn evaluate(&self, ctx: &ApplicationContext) -> Vec<ApplicableConfig> {
         self.registry
             .entries()
             .iter()
@@ -230,8 +214,7 @@ impl<'a> ConditionEvaluator<'a>
     /// # 参数 / Parameters
     ///
     /// - `ctx`: 应用上下文 / Application context
-    pub fn evaluate_entries(&self, ctx: &ApplicationContext) -> Vec<&AutoConfigurationEntry>
-    {
+    pub fn evaluate_entries(&self, ctx: &ApplicationContext) -> Vec<&AutoConfigurationEntry> {
         self.registry
             .entries()
             .iter()
@@ -242,22 +225,19 @@ impl<'a> ConditionEvaluator<'a>
 
     /// 获取被排除的配置数量
     /// Get the number of excluded configurations
-    pub fn excluded_count(&self) -> usize
-    {
+    pub fn excluded_count(&self) -> usize {
         self.excluded.len()
     }
 
     /// 检查指定配置是否被排除
     /// Check if a specific configuration is excluded
-    pub fn is_excluded(&self, name: &str) -> bool
-    {
+    pub fn is_excluded(&self, name: &str) -> bool {
         self.excluded.contains(name)
     }
 
     /// 获取注册表中未被排除的总条目数
     /// Get total number of entries in the registry (before evaluation)
-    pub fn total_entries(&self) -> usize
-    {
+    pub fn total_entries(&self) -> usize {
         self.registry.len()
     }
 }
@@ -293,8 +273,7 @@ impl<'a> ConditionEvaluator<'a>
 pub fn evaluate_conditions(
     registry: &AutoConfigurationRegistry,
     ctx: &ApplicationContext,
-) -> Vec<ApplicableConfig>
-{
+) -> Vec<ApplicableConfig> {
     let evaluator = ConditionEvaluator::new(registry);
     evaluator.evaluate(ctx)
 }
@@ -304,19 +283,22 @@ pub fn evaluate_conditions(
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
     use crate::core::autoconfigure::AutoConfigurationEntry;
 
-    fn noop_factory(_ctx: &mut ApplicationContext) -> anyhow::Result<()>
-    {
+    fn noop_factory(_ctx: &mut ApplicationContext) -> anyhow::Result<()> {
         Ok(())
     }
 
-    fn create_test_registry() -> AutoConfigurationRegistry
-    {
+    fn create_test_registry() -> AutoConfigurationRegistry {
         let mut registry = AutoConfigurationRegistry::new();
         registry
             .register(AutoConfigurationEntry::new("CoreConfig", noop_factory).with_priority(-100));
@@ -327,16 +309,14 @@ mod tests
     }
 
     #[test]
-    fn test_applicable_config_creation()
-    {
+    fn test_applicable_config_creation() {
         let config = ApplicableConfig::new("TestConfig", 42);
         assert_eq!(config.name, "TestConfig");
         assert_eq!(config.priority, 42);
     }
 
     #[test]
-    fn test_applicable_config_display()
-    {
+    fn test_applicable_config_display() {
         let config = ApplicableConfig::new("MyConfig", -10);
         let display = config.to_string();
         assert!(display.contains("MyConfig"));
@@ -344,8 +324,7 @@ mod tests
     }
 
     #[test]
-    fn test_applicable_config_equality()
-    {
+    fn test_applicable_config_equality() {
         let a = ApplicableConfig::new("SameName", 1);
         let b = ApplicableConfig::new("SameName", 2);
         let c = ApplicableConfig::new("OtherName", 1);
@@ -357,8 +336,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluator_new()
-    {
+    fn test_evaluator_new() {
         let registry = create_test_registry();
         let evaluator = ConditionEvaluator::new(&registry);
         assert_eq!(evaluator.total_entries(), 3);
@@ -366,8 +344,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluator_evaluate_all()
-    {
+    fn test_evaluator_evaluate_all() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
         let evaluator = ConditionEvaluator::new(&registry);
@@ -383,8 +360,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluator_exclude_single()
-    {
+    fn test_evaluator_exclude_single() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
         let evaluator = ConditionEvaluator::new(&registry).exclude("DataConfig");
@@ -398,8 +374,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluator_exclude_many()
-    {
+    fn test_evaluator_exclude_many() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
         let evaluator =
@@ -413,8 +388,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluator_evaluate_entries()
-    {
+    fn test_evaluator_evaluate_entries() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
         let evaluator = ConditionEvaluator::new(&registry);
@@ -425,8 +399,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluate_with_condition()
-    {
+    fn test_evaluate_with_condition() {
         let mut registry = AutoConfigurationRegistry::new();
 
         registry.register(AutoConfigurationEntry::new("AlwaysConfig", noop_factory));
@@ -447,8 +420,7 @@ mod tests
     }
 
     #[test]
-    fn test_evaluate_with_condition_met()
-    {
+    fn test_evaluate_with_condition_met() {
         let mut registry = AutoConfigurationRegistry::new();
 
         registry.register(AutoConfigurationEntry::new("AlwaysConfig", noop_factory));
@@ -469,8 +441,7 @@ mod tests
     }
 
     #[test]
-    fn test_convenience_evaluate_conditions()
-    {
+    fn test_convenience_evaluate_conditions() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
 
@@ -479,8 +450,7 @@ mod tests
     }
 
     #[test]
-    fn test_empty_registry()
-    {
+    fn test_empty_registry() {
         let registry = AutoConfigurationRegistry::new();
         let ctx = ApplicationContext::new();
         let evaluator = ConditionEvaluator::new(&registry);
@@ -491,8 +461,7 @@ mod tests
     }
 
     #[test]
-    fn test_exclude_all()
-    {
+    fn test_exclude_all() {
         let registry = create_test_registry();
         let ctx = ApplicationContext::new();
         let evaluator = ConditionEvaluator::new(&registry).exclude_many(&[
@@ -506,8 +475,7 @@ mod tests
     }
 
     #[test]
-    fn test_applicable_config_hash()
-    {
+    fn test_applicable_config_hash() {
         let a = ApplicableConfig::new("ConfigA", 1);
         let b = ApplicableConfig::new("ConfigA", 2);
         let c = ApplicableConfig::new("ConfigB", 1);

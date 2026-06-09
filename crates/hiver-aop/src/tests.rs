@@ -7,22 +7,25 @@
 //! 运行时类型测试（JoinPoint, PointcutExpression, AspectRegistry）位于 runtime.rs。
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     /// Verify the test infrastructure is functional
     /// 验证测试基础设施正常工作
     #[test]
-    fn smoke_test()
-    {
+    fn smoke_test() {
         assert!(true, "hiver-aop test infrastructure is working");
     }
 
     /// Verify runtime module is accessible from proc-macro test context
     /// 验证运行时模块在 proc-macro 测试上下文中可访问
     #[test]
-    fn test_runtime_module_accessible()
-    {
+    fn test_runtime_module_accessible() {
         use crate::runtime::AdviceType;
 
         let advice = AdviceType::Before;
@@ -32,8 +35,7 @@ mod tests
     /// Verify global registry is accessible from proc-macro test context
     /// 验证全局注册表在 proc-macro 测试上下文中可访问
     #[test]
-    fn test_global_registry_accessible()
-    {
+    fn test_global_registry_accessible() {
         let _registry = crate::runtime::global_registry();
     }
 }

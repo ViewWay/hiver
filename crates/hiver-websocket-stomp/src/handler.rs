@@ -26,8 +26,7 @@ use crate::{
 /// 实现此 trait 以提供 STOMP 客户端的自定义认证逻辑。
 /// 处理器在 CONNECT/STOMP 握手期间调用 `authenticate`。
 #[async_trait::async_trait]
-pub trait StompAuthenticator: Send + Sync
-{
+pub trait StompAuthenticator: Send + Sync {
     /// Validate the given `login` / `passcode` pair.
     /// 验证给定的 `login` / `passcode` 对。
     ///
@@ -47,39 +46,31 @@ pub trait StompAuthenticator: Send + Sync
 pub struct NoOpAuthenticator;
 
 #[async_trait::async_trait]
-impl StompAuthenticator for NoOpAuthenticator
-{
-    async fn authenticate(&self, _login: &str, _passcode: &str) -> std::result::Result<(), String>
-    {
+impl StompAuthenticator for NoOpAuthenticator {
+    async fn authenticate(&self, _login: &str, _passcode: &str) -> std::result::Result<(), String> {
         Ok(())
     }
 }
 
 /// Simple map-based authenticator for testing and basic deployments.
 /// 基于映射的简单认证器，用于测试和基本部署。
-pub struct SimpleAuthenticator
-{
+pub struct SimpleAuthenticator {
     /// login -> passcode
     credentials: HashMap<String, String>,
 }
 
-impl SimpleAuthenticator
-{
+impl SimpleAuthenticator {
     /// Create a new authenticator from a credential map.
     /// 从凭据映射创建新认证器。
-    pub fn new(credentials: HashMap<String, String>) -> Self
-    {
+    pub fn new(credentials: HashMap<String, String>) -> Self {
         Self { credentials }
     }
 }
 
 #[async_trait::async_trait]
-impl StompAuthenticator for SimpleAuthenticator
-{
-    async fn authenticate(&self, login: &str, passcode: &str) -> std::result::Result<(), String>
-    {
-        match self.credentials.get(login)
-        {
+impl StompAuthenticator for SimpleAuthenticator {
+    async fn authenticate(&self, login: &str, passcode: &str) -> std::result::Result<(), String> {
+        match self.credentials.get(login) {
             Some(expected) if expected == passcode => Ok(()),
             Some(_) => Err("Invalid passcode".to_string()),
             None => Err(format!("Unknown user: {}", login)),
@@ -94,8 +85,7 @@ impl StompAuthenticator for SimpleAuthenticator
 
 /// Handler for messages that cannot be delivered (exhausted retries).
 /// 无法投递消息（重试耗尽）的处理器。
-pub trait DeadLetterHandler: Send + Sync
-{
+pub trait DeadLetterHandler: Send + Sync {
     /// Handle a dead-lettered message.
     /// 处理死信消息。
     fn handle(&self, pending: &PendingAck);
@@ -105,10 +95,8 @@ pub trait DeadLetterHandler: Send + Sync
 /// 默认的死信处理器，记录警告日志。
 pub struct LogDeadLetterHandler;
 
-impl DeadLetterHandler for LogDeadLetterHandler
-{
-    fn handle(&self, pending: &PendingAck)
-    {
+impl DeadLetterHandler for LogDeadLetterHandler {
+    fn handle(&self, pending: &PendingAck) {
         tracing::warn!(
             ack_id = %pending.ack_id,
             destination = %pending.destination,
@@ -121,8 +109,7 @@ impl DeadLetterHandler for LogDeadLetterHandler
 /// STOMP handler configuration
 /// STOMP 处理器配置
 #[derive(Clone)]
-pub struct StompConfig
-{
+pub struct StompConfig {
     /// Server name
     /// 服务器名称
     pub server_name: String,
@@ -152,10 +139,8 @@ pub struct StompConfig
     pub max_delivery_attempts: u32,
 }
 
-impl Default for StompConfig
-{
-    fn default() -> Self
-    {
+impl Default for StompConfig {
+    fn default() -> Self {
         Self {
             server_name: "Hiver-STOMP/1.0".to_string(),
             max_message_size: 64 * 1024, // 64KB
@@ -170,8 +155,7 @@ impl Default for StompConfig
 
 /// STOMP frame handler
 /// STOMP 帧处理器
-pub struct StompHandler<B>
-{
+pub struct StompHandler<B> {
     /// Configuration
     /// 配置
     config: StompConfig,
@@ -208,8 +192,7 @@ where
         session: StompSession,
         broker: Arc<B>,
         outbound_tx: mpsc::Sender<StompFrame>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             config,
             session,
@@ -228,8 +211,7 @@ where
         broker: Arc<B>,
         outbound_tx: mpsc::Sender<StompFrame>,
         authenticator: Arc<dyn StompAuthenticator>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             config,
             session,
@@ -249,8 +231,7 @@ where
         outbound_tx: mpsc::Sender<StompFrame>,
         authenticator: Arc<dyn StompAuthenticator>,
         dead_letter_handler: Arc<dyn DeadLetterHandler>,
-    ) -> Self
-    {
+    ) -> Self {
         Self {
             config,
             session,
@@ -263,61 +244,47 @@ where
 
     /// Get a reference to the underlying session.
     /// 获取底层会话的引用。
-    pub fn session(&self) -> &StompSession
-    {
+    pub fn session(&self) -> &StompSession {
         &self.session
     }
 
     /// Handle incoming frame
     /// 处理传入帧
-    pub async fn handle_frame(&self, frame: StompFrame) -> Result<()>
-    {
+    pub async fn handle_frame(&self, frame: StompFrame) -> Result<()> {
         tracing::debug!("Handling STOMP frame: {}", frame.command);
 
-        match frame.command
-        {
-            crate::frame::StompCommand::Connect | crate::frame::StompCommand::Stomp =>
-            {
+        match frame.command {
+            crate::frame::StompCommand::Connect | crate::frame::StompCommand::Stomp => {
                 self.handle_connect(frame).await?;
             },
-            crate::frame::StompCommand::Send =>
-            {
+            crate::frame::StompCommand::Send => {
                 self.handle_send(frame).await?;
             },
-            crate::frame::StompCommand::Subscribe =>
-            {
+            crate::frame::StompCommand::Subscribe => {
                 self.handle_subscribe(frame).await?;
             },
-            crate::frame::StompCommand::Unsubscribe =>
-            {
+            crate::frame::StompCommand::Unsubscribe => {
                 self.handle_unsubscribe(frame).await?;
             },
-            crate::frame::StompCommand::Ack =>
-            {
+            crate::frame::StompCommand::Ack => {
                 self.handle_ack(frame).await?;
             },
-            crate::frame::StompCommand::Nack =>
-            {
+            crate::frame::StompCommand::Nack => {
                 self.handle_nack(frame).await?;
             },
-            crate::frame::StompCommand::Begin =>
-            {
+            crate::frame::StompCommand::Begin => {
                 self.handle_begin(frame).await?;
             },
-            crate::frame::StompCommand::Commit =>
-            {
+            crate::frame::StompCommand::Commit => {
                 self.handle_commit(frame).await?;
             },
-            crate::frame::StompCommand::Abort =>
-            {
+            crate::frame::StompCommand::Abort => {
                 self.handle_abort(frame).await?;
             },
-            crate::frame::StompCommand::Disconnect =>
-            {
+            crate::frame::StompCommand::Disconnect => {
                 self.handle_disconnect(frame).await?;
             },
-            _ =>
-            {
+            _ => {
                 return Err(StompError::UnsupportedCommand(frame.command.to_string()));
             },
         }
@@ -327,8 +294,7 @@ where
 
     /// Handle CONNECT/STOMP frame
     /// 处理 CONNECT/STOMP 帧
-    async fn handle_connect(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_connect(&self, frame: StompFrame) -> Result<()> {
         // Check version
         // 检查版本
         if let Some(version) = frame.header("accept-version")
@@ -346,8 +312,7 @@ where
         let login = frame.header("login").cloned();
         let passcode = frame.header("passcode").cloned();
 
-        if self.config.require_login
-        {
+        if self.config.require_login {
             let login = login.as_deref().ok_or_else(|| {
                 StompError::AuthenticationFailed("Missing login header".to_string())
             })?;
@@ -355,10 +320,8 @@ where
                 StompError::AuthenticationFailed("Missing passcode header".to_string())
             })?;
 
-            match self.authenticator.authenticate(login, passcode).await
-            {
-                Ok(()) =>
-                {
+            match self.authenticator.authenticate(login, passcode).await {
+                Ok(()) => {
                     tracing::info!(
                         "STOMP authentication successful for user: {} / STOMP认证成功: {}",
                         login,
@@ -366,8 +329,7 @@ where
                     );
                     self.session.set_authenticated_user(Some(login.to_string()));
                 },
-                Err(msg) =>
-                {
+                Err(msg) => {
                     tracing::warn!(
                         "STOMP authentication failed for user {}: {} / STOMP认证失败 {}: {}",
                         login,
@@ -380,9 +342,7 @@ where
                     return Err(StompError::AuthenticationFailed(msg));
                 },
             }
-        }
-        else if let Some(ref login) = login
-        {
+        } else if let Some(ref login) = login {
             // Not required, but if provided we still record the username.
             // 非必需，但如果提供了我们仍然记录用户名。
             tracing::debug!(
@@ -395,12 +355,9 @@ where
 
         // Parse heartbeat
         // 解析心跳
-        let heartbeat = if let Some(hb) = frame.header("heart-beat")
-        {
+        let heartbeat = if let Some(hb) = frame.header("heart-beat") {
             Self::parse_heartbeat(hb)?
-        }
-        else
-        {
+        } else {
             HeartbeatConfig::default()
         };
 
@@ -418,8 +375,7 @@ where
                 self.config.heartbeat_send.unwrap_or(0)
             ),
         );
-        if let Some(session_id) = frame.header("session")
-        {
+        if let Some(session_id) = frame.header("session") {
             connected.set_header("session", session_id);
         }
         self.send_frame(connected).await?;
@@ -434,8 +390,7 @@ where
 
     /// Handle SEND frame
     /// 处理 SEND 帧
-    async fn handle_send(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_send(&self, frame: StompFrame) -> Result<()> {
         let destination = frame.require_header("destination")?.clone();
         let receipt_id = frame.header("receipt").cloned();
         let tx_id = frame.header("transaction").cloned();
@@ -444,14 +399,12 @@ where
         let body = if has_body { frame.body.clone() } else { None };
 
         // Check if destination exists
-        if !self.broker.destination_exists(&destination).await
-        {
+        if !self.broker.destination_exists(&destination).await {
             return Err(StompError::DestinationNotFound(destination));
         }
 
         // Check body size
-        if body_len > self.config.max_message_size
-        {
+        if body_len > self.config.max_message_size {
             return Err(StompError::MessageSizeExceeded {
                 max: self.config.max_message_size,
                 actual: body_len,
@@ -459,12 +412,9 @@ where
         }
 
         // Handle transaction if present
-        if let Some(tx) = tx_id
-        {
+        if let Some(tx) = tx_id {
             self.session.add_to_transaction(&tx, frame)?;
-        }
-        else
-        {
+        } else {
             // Send to broker
             let body_bytes = body.unwrap_or_else(Bytes::new);
             self.broker
@@ -473,8 +423,7 @@ where
         }
 
         // Send receipt if requested
-        if let Some(receipt) = receipt_id
-        {
+        if let Some(receipt) = receipt_id {
             let receipt_frame = StompFrame::receipt(receipt);
             self.send_frame(receipt_frame).await?;
         }
@@ -484,8 +433,7 @@ where
 
     /// Handle SUBSCRIBE frame
     /// 处理 SUBSCRIBE 帧
-    async fn handle_subscribe(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_subscribe(&self, frame: StompFrame) -> Result<()> {
         let destination = frame.require_header("destination")?.clone();
         let id = frame.require_header("id")?.clone();
 
@@ -505,8 +453,7 @@ where
         self.broker.subscribe(&self.session, &destination).await?;
 
         // Send receipt if requested
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -517,8 +464,7 @@ where
 
     /// Handle UNSUBSCRIBE frame
     /// 处理 UNSUBSCRIBE 帧
-    async fn handle_unsubscribe(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_unsubscribe(&self, frame: StompFrame) -> Result<()> {
         let id = frame.require_header("id")?.clone();
 
         let subscription = self
@@ -532,8 +478,7 @@ where
             .await?;
 
         // Send receipt if requested
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -550,8 +495,7 @@ where
     /// that was set when the MESSAGE was delivered).
     /// 根据 STOMP 1.2 规范，ACK 确认由 `ack` 头部标识的消息
     /// （该头部对应于投递 MESSAGE 时设置的 `message-id` / `ack` 头部）。
-    async fn handle_ack(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_ack(&self, frame: StompFrame) -> Result<()> {
         // STOMP 1.2 uses "id" header for ACK. Earlier versions use "message-id".
         // We accept both for compatibility.
         // STOMP 1.2 使用 "id" 头部进行 ACK。早期版本使用 "message-id"。
@@ -592,8 +536,7 @@ where
 
         // Send receipt if requested
         // 如果请求则发送回执
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -609,8 +552,7 @@ where
     /// to a dead-letter destination once retries are exhausted.
     /// 根据 STOMP 1.2 规范，NACK 表示客户端未处理消息。
     /// 代理可以重新投递，或在重试耗尽后路由到死信目标。
-    async fn handle_nack(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_nack(&self, frame: StompFrame) -> Result<()> {
         let ack_id = frame
             .header("id")
             .or_else(|| frame.header("message-id"))
@@ -621,8 +563,7 @@ where
 
         // Validate that the ack-id exists before proceeding.
         // 验证 ack-id 存在后继续。
-        if self.session.get_pending_ack(&ack_id).is_none()
-        {
+        if self.session.get_pending_ack(&ack_id).is_none() {
             return Err(StompError::InvalidHeader(format!(
                 "Unknown acknowledgment id: {} / 未知的确认 ID: {}",
                 ack_id, ack_id
@@ -644,10 +585,8 @@ where
 
         // Re-queue for redelivery or dead-letter if exhausted.
         // 重新排队投递，或如果耗尽则进入死信。
-        match self.session.requeue_for_redelivery(&ack_id)
-        {
-            Some(pending) if self.session.get_pending_ack(&ack_id).is_none() =>
-            {
+        match self.session.requeue_for_redelivery(&ack_id) {
+            Some(pending) if self.session.get_pending_ack(&ack_id).is_none() => {
                 // Message was removed because it is exhausted.
                 // 消息因重试耗尽被移除。
                 tracing::warn!(
@@ -658,8 +597,7 @@ where
                 );
                 self.dead_letter_handler.handle(&pending);
             },
-            Some(pending) =>
-            {
+            Some(pending) => {
                 // Still has retries left — redeliver.
                 // 仍有重试次数 — 重新投递。
                 let mut msg_frame = StompFrame::message(
@@ -670,10 +608,8 @@ where
                 );
                 // Carry through any extra headers.
                 // 传递任何额外头部。
-                for (k, v) in &pending.headers
-                {
-                    if msg_frame.header(k).is_none()
-                    {
+                for (k, v) in &pending.headers {
+                    if msg_frame.header(k).is_none() {
                         msg_frame.set_header(k, v);
                     }
                 }
@@ -689,8 +625,7 @@ where
                 );
                 self.send_frame(msg_frame).await?;
             },
-            None =>
-            {
+            None => {
                 // Already removed by another concurrent NACK — treat as error.
                 // 已被另一个并发 NACK 移除 — 视为错误。
                 return Err(StompError::InvalidHeader(format!(
@@ -702,8 +637,7 @@ where
 
         // Send receipt if requested
         // 如果请求则发送回执
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -713,8 +647,7 @@ where
 
     /// Handle BEGIN frame
     /// 处理 BEGIN 帧
-    async fn handle_begin(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_begin(&self, frame: StompFrame) -> Result<()> {
         let tx_id = frame.require_header("transaction")?.clone();
         self.session.begin_transaction(tx_id);
         Ok(())
@@ -722,23 +655,20 @@ where
 
     /// Handle COMMIT frame
     /// 处理 COMMIT 帧
-    async fn handle_commit(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_commit(&self, frame: StompFrame) -> Result<()> {
         let tx_id = frame.require_header("transaction")?.clone();
         let receipt_id = frame.header("receipt").cloned();
         let messages = self.session.commit_transaction(&tx_id)?;
 
         // Send all pending messages
-        for msg in messages
-        {
+        for msg in messages {
             let destination = msg.require_header("destination")?.clone();
             let body = msg.body.unwrap_or_default();
             self.broker.send(&destination, body, msg.headers).await?;
         }
 
         // Send receipt if requested
-        if let Some(receipt) = receipt_id
-        {
+        if let Some(receipt) = receipt_id {
             let receipt_frame = StompFrame::receipt(receipt);
             self.send_frame(receipt_frame).await?;
         }
@@ -748,14 +678,12 @@ where
 
     /// Handle ABORT frame
     /// 处理 ABORT 帧
-    async fn handle_abort(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_abort(&self, frame: StompFrame) -> Result<()> {
         let tx_id = frame.require_header("transaction")?.clone();
         self.session.abort_transaction(&tx_id)?;
 
         // Send receipt if requested
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -765,12 +693,10 @@ where
 
     /// Handle DISCONNECT frame
     /// 处理 DISCONNECT 帧
-    async fn handle_disconnect(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn handle_disconnect(&self, frame: StompFrame) -> Result<()> {
         // Send receipt if requested
         // 如果请求则发送回执
-        if let Some(receipt_id) = frame.header("receipt")
-        {
+        if let Some(receipt_id) = frame.header("receipt") {
             let receipt = StompFrame::receipt(receipt_id);
             self.send_frame(receipt).await?;
         }
@@ -800,8 +726,7 @@ where
         destination: &str,
         body: Bytes,
         extra_headers: HashMap<String, String>,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         let subscription = self
             .session
             .subscription(subscription_id)
@@ -811,15 +736,13 @@ where
 
         let mut msg_frame =
             StompFrame::message(destination, subscription_id, &ack_id, body.clone());
-        for (k, v) in &extra_headers
-        {
+        for (k, v) in &extra_headers {
             msg_frame.set_header(k, v);
         }
 
         // Register pending ack for non-auto modes.
         // 为非自动模式注册待确认。
-        if subscription.ack_mode != AckMode::Auto
-        {
+        if subscription.ack_mode != AckMode::Auto {
             let pending = PendingAck::new(
                 &ack_id,
                 subscription_id,
@@ -836,8 +759,7 @@ where
 
     /// Send frame to client
     /// 发送帧到客户端
-    async fn send_frame(&self, frame: StompFrame) -> Result<()>
-    {
+    async fn send_frame(&self, frame: StompFrame) -> Result<()> {
         self.outbound_tx
             .send(frame)
             .await
@@ -847,11 +769,9 @@ where
 
     /// Parse heartbeat header
     /// 解析心跳头部
-    fn parse_heartbeat(value: &str) -> Result<HeartbeatConfig>
-    {
+    fn parse_heartbeat(value: &str) -> Result<HeartbeatConfig> {
         let parts: Vec<&str> = value.split(',').collect();
-        if parts.len() != 2
-        {
+        if parts.len() != 2 {
             return Err(StompError::InvalidHeader("Invalid heartbeat format".to_string()));
         }
 
@@ -868,9 +788,14 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::{
         collections::HashMap,
         sync::{Arc, Mutex},
@@ -881,8 +806,7 @@ mod tests
 
     // Helper: build a handler with a bounded channel, capturing outbound frames.
     // 辅助：构建一个带有有界通道的处理器，捕获出站帧。
-    fn setup() -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>)
-    {
+    fn setup() -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>) {
         let config = StompConfig::default();
         let session = StompSession::new("test-session".to_string());
         let broker = Arc::new(MemoryBroker::new());
@@ -894,8 +818,7 @@ mod tests
     fn setup_with_auth(
         credentials: HashMap<String, String>,
         require_login: bool,
-    ) -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>)
-    {
+    ) -> (StompHandler<MemoryBroker>, mpsc::Receiver<StompFrame>) {
         let mut config = StompConfig::default();
         config.require_login = require_login;
         let session = StompSession::new("auth-test-session".to_string());
@@ -908,11 +831,9 @@ mod tests
 
     /// Collect all frames currently in the channel.
     /// 收集通道中当前所有帧。
-    async fn collect_frames(rx: &mut mpsc::Receiver<StompFrame>) -> Vec<StompFrame>
-    {
+    async fn collect_frames(rx: &mut mpsc::Receiver<StompFrame>) -> Vec<StompFrame> {
         let mut frames = Vec::new();
-        while let Ok(f) = rx.try_recv()
-        {
+        while let Ok(f) = rx.try_recv() {
             frames.push(f);
         }
         frames
@@ -923,8 +844,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_config_default()
-    {
+    async fn test_config_default() {
         let config = StompConfig::default();
         assert_eq!(config.server_name, "Hiver-STOMP/1.0");
         assert_eq!(config.max_message_size, 64 * 1024);
@@ -933,16 +853,14 @@ mod tests
     }
 
     #[test]
-    fn test_parse_heartbeat()
-    {
+    fn test_parse_heartbeat() {
         let result = StompHandler::<MemoryBroker>::parse_heartbeat("10000,10000").unwrap();
         assert_eq!(result.client_send, Some(10000));
         assert_eq!(result.client_receive, Some(10000));
     }
 
     #[test]
-    fn test_parse_heartbeat_zeros()
-    {
+    fn test_parse_heartbeat_zeros() {
         let result = StompHandler::<MemoryBroker>::parse_heartbeat("0,0").unwrap();
         assert_eq!(result.client_send, Some(0));
         assert_eq!(result.client_receive, Some(0));
@@ -953,8 +871,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_connect_without_auth_succeeds()
-    {
+    async fn test_connect_without_auth_succeeds() {
         let (handler, mut rx) = setup();
         let frame = StompFrame::connect();
         let result = handler.handle_connect(frame).await;
@@ -968,8 +885,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_with_auth_success()
-    {
+    async fn test_connect_with_auth_success() {
         let mut creds = HashMap::new();
         creds.insert("admin".to_string(), "secret".to_string());
         let (handler, mut rx) = setup_with_auth(creds, true);
@@ -989,8 +905,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_with_auth_wrong_password()
-    {
+    async fn test_connect_with_auth_wrong_password() {
         let mut creds = HashMap::new();
         creds.insert("admin".to_string(), "secret".to_string());
         let (handler, mut rx) = setup_with_auth(creds, true);
@@ -1008,8 +923,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_with_auth_unknown_user()
-    {
+    async fn test_connect_with_auth_unknown_user() {
         let creds = HashMap::<String, String>::new();
         let (handler, mut rx) = setup_with_auth(creds, true);
 
@@ -1026,18 +940,15 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_require_login_missing_login_header()
-    {
+    async fn test_connect_require_login_missing_login_header() {
         let creds = HashMap::<String, String>::new();
         let (handler, _rx) = setup_with_auth(creds, true);
 
         let frame = StompFrame::connect(); // no login/passcode headers
         let result = handler.handle_connect(frame).await;
         assert!(result.is_err());
-        match result.unwrap_err()
-        {
-            StompError::AuthenticationFailed(msg) =>
-            {
+        match result.unwrap_err() {
+            StompError::AuthenticationFailed(msg) => {
                 assert!(msg.contains("Missing login"));
             },
             other => panic!("Expected AuthenticationFailed, got: {:?}", other),
@@ -1045,8 +956,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_require_login_missing_passcode_header()
-    {
+    async fn test_connect_require_login_missing_passcode_header() {
         let creds = HashMap::<String, String>::new();
         let (handler, _rx) = setup_with_auth(creds, true);
 
@@ -1055,10 +965,8 @@ mod tests
         // no passcode
         let result = handler.handle_connect(frame).await;
         assert!(result.is_err());
-        match result.unwrap_err()
-        {
-            StompError::AuthenticationFailed(msg) =>
-            {
+        match result.unwrap_err() {
+            StompError::AuthenticationFailed(msg) => {
                 assert!(msg.contains("Missing passcode"));
             },
             other => panic!("Expected AuthenticationFailed, got: {:?}", other),
@@ -1066,8 +974,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_connect_optional_login_records_user()
-    {
+    async fn test_connect_optional_login_records_user() {
         // require_login=false, but login is provided — should still record.
         // require_login=false，但提供了 login — 仍应记录。
         let mut creds = HashMap::new();
@@ -1092,8 +999,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_ack_removes_pending_message()
-    {
+    async fn test_ack_removes_pending_message() {
         let (handler, mut rx) = setup();
         // Simulate connect
         // 模拟连接
@@ -1134,8 +1040,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_ack_unknown_id_returns_error()
-    {
+    async fn test_ack_unknown_id_returns_error() {
         let (handler, _rx) = setup();
 
         let mut ack_frame = StompFrame::new(crate::frame::StompCommand::Ack);
@@ -1145,8 +1050,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_ack_with_receipt()
-    {
+    async fn test_ack_with_receipt() {
         let (handler, mut rx) = setup();
 
         // Setup subscription
@@ -1188,8 +1092,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_nack_redelivers_message()
-    {
+    async fn test_nack_redelivers_message() {
         let (handler, mut rx) = setup();
 
         handler.handle_connect(StompFrame::connect()).await.unwrap();
@@ -1235,8 +1138,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_nack_exhausted_dead_letters()
-    {
+    async fn test_nack_exhausted_dead_letters() {
         let mut config = StompConfig::default();
         config.max_delivery_attempts = 1; // Only 1 attempt allowed
         let session = StompSession::new("dlq-test".to_string());
@@ -1245,14 +1147,11 @@ mod tests
 
         // Track dead-letter calls
         // 跟踪死信调用
-        struct CollectDeadLetter
-        {
+        struct CollectDeadLetter {
             calls: Mutex<Vec<String>>,
         }
-        impl DeadLetterHandler for CollectDeadLetter
-        {
-            fn handle(&self, pending: &PendingAck)
-            {
+        impl DeadLetterHandler for CollectDeadLetter {
+            fn handle(&self, pending: &PendingAck) {
                 self.calls.lock().unwrap().push(pending.ack_id.clone());
             }
         }
@@ -1304,8 +1203,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_nack_unknown_id_returns_error()
-    {
+    async fn test_nack_unknown_id_returns_error() {
         let (handler, _rx) = setup();
 
         let mut nack_frame = StompFrame::new(crate::frame::StompCommand::Nack);
@@ -1319,8 +1217,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_ack_subscription_mismatch_returns_error()
-    {
+    async fn test_ack_subscription_mismatch_returns_error() {
         let (handler, mut rx) = setup();
 
         handler.handle_connect(StompFrame::connect()).await.unwrap();
@@ -1354,8 +1251,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_auto_ack_mode_no_pending_tracking()
-    {
+    async fn test_auto_ack_mode_no_pending_tracking() {
         let (handler, mut rx) = setup();
 
         handler.handle_connect(StompFrame::connect()).await.unwrap();
@@ -1384,8 +1280,7 @@ mod tests
     // -----------------------------------------------------------------------
 
     #[test]
-    fn test_pending_ack_not_exhausted_initially()
-    {
+    fn test_pending_ack_not_exhausted_initially() {
         let pending = PendingAck::new(
             "ack-1",
             "sub-1",
@@ -1400,8 +1295,7 @@ mod tests
     }
 
     #[test]
-    fn test_pending_ack_exhausted_after_max()
-    {
+    fn test_pending_ack_exhausted_after_max() {
         let mut pending = PendingAck::new(
             "ack-1",
             "sub-1",

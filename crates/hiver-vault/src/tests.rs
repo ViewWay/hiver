@@ -20,16 +20,14 @@ use crate::{
 
 /// Build a VaultClient pointing at the mockito server with an initial token.
 /// 构建指向 mockito 服务器的 VaultClient，并带有初始 token。
-fn mock_client(mock_url: &Url) -> VaultClient
-{
+fn mock_client(mock_url: &Url) -> VaultClient {
     let http = Client::builder().build().expect("build reqwest client");
     VaultClient::from_parts(http, mock_url.clone(), Some("test-token".into()), None)
 }
 
 /// Build a VaultClient without a token (unauthenticated).
 /// 构建没有 token 的 VaultClient（未认证）。
-fn mock_client_no_token(mock_url: &Url) -> VaultClient
-{
+fn mock_client_no_token(mock_url: &Url) -> VaultClient {
     let http = Client::builder().build().expect("build reqwest client");
     VaultClient::from_parts(http, mock_url.clone(), None, None)
 }
@@ -39,8 +37,7 @@ fn mock_client_no_token(mock_url: &Url) -> VaultClient
 // ============================================================================
 
 #[test]
-fn config_builder_default_address()
-{
+fn config_builder_default_address() {
     // Default address should be https://127.0.0.1:8200
     // 默认地址应为 https://127.0.0.1:8200
     let config = VaultConfig::builder()
@@ -50,8 +47,7 @@ fn config_builder_default_address()
 }
 
 #[test]
-fn config_builder_custom_address()
-{
+fn config_builder_custom_address() {
     // Custom address should be used
     // 应使用自定义地址
     let config = VaultConfig::builder()
@@ -62,8 +58,7 @@ fn config_builder_custom_address()
 }
 
 #[test]
-fn config_builder_invalid_address()
-{
+fn config_builder_invalid_address() {
     // Invalid address should return error
     // 无效地址应返回错误
     let result = VaultConfig::builder().address("not a url").build();
@@ -71,8 +66,7 @@ fn config_builder_invalid_address()
 }
 
 #[test]
-fn config_builder_with_token()
-{
+fn config_builder_with_token() {
     // Token should be stored in config
     // Token 应存储在配置中
     let config = VaultConfig::builder()
@@ -83,8 +77,7 @@ fn config_builder_with_token()
 }
 
 #[test]
-fn config_builder_with_namespace()
-{
+fn config_builder_with_namespace() {
     // Namespace should be stored in config
     // 命名空间应存储在配置中
     let config = VaultConfig::builder()
@@ -95,8 +88,7 @@ fn config_builder_with_namespace()
 }
 
 #[test]
-fn config_builder_timeout()
-{
+fn config_builder_timeout() {
     // Custom timeout should be stored
     // 自定义超时应存储
     let config = VaultConfig::builder()
@@ -107,8 +99,7 @@ fn config_builder_timeout()
 }
 
 #[test]
-fn client_url_building()
-{
+fn client_url_building() {
     // url() should correctly join v1/ prefix
     // url() 应正确拼接 v1/ 前缀
     let config = VaultConfig::builder()
@@ -121,8 +112,7 @@ fn client_url_building()
 }
 
 #[test]
-fn client_set_and_get_token()
-{
+fn client_set_and_get_token() {
     // set_token and token() should round-trip
     // set_token 和 token() 应能往返
     let config = VaultConfig::builder().build().expect("build config");
@@ -137,15 +127,12 @@ fn client_set_and_get_token()
 // ============================================================================
 
 #[test]
-fn error_from_status_server_error()
-{
+fn error_from_status_server_error() {
     // 5xx should produce ServerError
     // 5xx 应产生 ServerError
     let err = VaultError::from_status(500, "internal error");
-    match err
-    {
-        VaultError::ServerError { status, message } =>
-        {
+    match err {
+        VaultError::ServerError { status, message } => {
             assert_eq!(status, 500);
             assert_eq!(message, "internal error");
         },
@@ -154,28 +141,23 @@ fn error_from_status_server_error()
 }
 
 #[test]
-fn error_from_status_permission_denied()
-{
+fn error_from_status_permission_denied() {
     // 403 should produce PermissionDenied
     // 403 应产生 PermissionDenied
     let err = VaultError::from_status(403, "forbidden");
-    match err
-    {
+    match err {
         VaultError::PermissionDenied(msg) => assert_eq!(msg, "forbidden"),
         _ => panic!("Expected PermissionDenied, got {err:?}"),
     }
 }
 
 #[test]
-fn error_from_status_not_found()
-{
+fn error_from_status_not_found() {
     // 404 should produce SecretNotFound
     // 404 应产生 SecretNotFound
     let err = VaultError::from_status(404, "secret/data/foo");
-    match err
-    {
-        VaultError::SecretNotFound { path } =>
-        {
+    match err {
+        VaultError::SecretNotFound { path } => {
             assert_eq!(path, "secret/data/foo");
         },
         _ => panic!("Expected SecretNotFound, got {err:?}"),
@@ -183,15 +165,12 @@ fn error_from_status_not_found()
 }
 
 #[test]
-fn error_from_status_client_error()
-{
+fn error_from_status_client_error() {
     // Other 4xx should produce ClientError
     // 其他 4xx 应产生 ClientError
     let err = VaultError::from_status(400, "bad request");
-    match err
-    {
-        VaultError::ClientError { status, message } =>
-        {
+    match err {
+        VaultError::ClientError { status, message } => {
             assert_eq!(status, 400);
             assert_eq!(message, "bad request");
         },
@@ -204,8 +183,7 @@ fn error_from_status_client_error()
 // ============================================================================
 
 #[tokio::test]
-async fn token_auth_success()
-{
+async fn token_auth_success() {
     // Token lookup-self returns valid auth data
     // Token lookup-self 返回有效认证数据
     let mut server = mockito::Server::new_async().await;
@@ -247,8 +225,7 @@ async fn token_auth_success()
 }
 
 #[tokio::test]
-async fn token_auth_invalid_token()
-{
+async fn token_auth_invalid_token() {
     // Invalid token should produce AuthenticationFailed
     // 无效 Token 应产生 AuthenticationFailed
     let mut server = mockito::Server::new_async().await;
@@ -268,10 +245,8 @@ async fn token_auth_invalid_token()
 
     mock.assert_async().await;
     assert!(result.is_err());
-    match result.unwrap_err()
-    {
-        VaultError::AuthenticationFailed(msg) =>
-        {
+    match result.unwrap_err() {
+        VaultError::AuthenticationFailed(msg) => {
             assert!(msg.contains("403"));
         },
         other => panic!("Expected AuthenticationFailed, got {other:?}"),
@@ -279,8 +254,7 @@ async fn token_auth_invalid_token()
 }
 
 #[tokio::test]
-async fn token_auth_missing_data_field()
-{
+async fn token_auth_missing_data_field() {
     // Response missing data field should produce InvalidResponse
     // 响应缺少 data 字段应产生 InvalidResponse
     let mut server = mockito::Server::new_async().await;
@@ -300,8 +274,7 @@ async fn token_auth_missing_data_field()
 
     mock.assert_async().await;
     assert!(result.is_err());
-    match result.unwrap_err()
-    {
+    match result.unwrap_err() {
         VaultError::InvalidResponse(msg) => assert!(msg.contains("Missing data")),
         other => panic!("Expected InvalidResponse, got {other:?}"),
     }
@@ -312,8 +285,7 @@ async fn token_auth_missing_data_field()
 // ============================================================================
 
 #[tokio::test]
-async fn approle_auth_success()
-{
+async fn approle_auth_success() {
     // AppRole login returns valid auth data
     // AppRole 登录返回有效认证数据
     let mut server = mockito::Server::new_async().await;
@@ -362,8 +334,7 @@ async fn approle_auth_success()
 }
 
 #[tokio::test]
-async fn approle_auth_invalid_credentials()
-{
+async fn approle_auth_invalid_credentials() {
     // AppRole login with wrong credentials should fail
     // 使用错误凭据的 AppRole 登录应失败
     let mut server = mockito::Server::new_async().await;
@@ -382,10 +353,8 @@ async fn approle_auth_invalid_credentials()
 
     mock.assert_async().await;
     assert!(result.is_err());
-    match result.unwrap_err()
-    {
-        VaultError::AuthenticationFailed(msg) =>
-        {
+    match result.unwrap_err() {
+        VaultError::AuthenticationFailed(msg) => {
             assert!(msg.contains("400"));
         },
         other => panic!("Expected AuthenticationFailed, got {other:?}"),
@@ -393,8 +362,7 @@ async fn approle_auth_invalid_credentials()
 }
 
 #[tokio::test]
-async fn approle_auth_custom_mount()
-{
+async fn approle_auth_custom_mount() {
     // AppRole with custom mount path uses correct URL
     // 使用自定义挂载路径的 AppRole 使用正确的 URL
     let mut server = mockito::Server::new_async().await;
@@ -425,8 +393,7 @@ async fn approle_auth_custom_mount()
 }
 
 #[tokio::test]
-async fn client_auth_approle_sets_token()
-{
+async fn client_auth_approle_sets_token() {
     // auth_approle on VaultClient should set the client token
     // VaultClient 上的 auth_approle 应设置客户端 token
     let mut server = mockito::Server::new_async().await;
@@ -465,8 +432,7 @@ async fn client_auth_approle_sets_token()
 // ============================================================================
 
 #[tokio::test]
-async fn kv_v1_read_secret()
-{
+async fn kv_v1_read_secret() {
     // Read a secret from KV v1 backend
     // 从 KV v1 后端读取密钥
     let mut server = mockito::Server::new_async().await;
@@ -496,8 +462,7 @@ async fn kv_v1_read_secret()
 }
 
 #[tokio::test]
-async fn kv_v1_write_secret()
-{
+async fn kv_v1_write_secret() {
     // Write a secret to KV v1 backend
     // 向 KV v1 后端写入密钥
     let mut server = mockito::Server::new_async().await;
@@ -524,8 +489,7 @@ async fn kv_v1_write_secret()
 }
 
 #[tokio::test]
-async fn kv_v1_delete_secret()
-{
+async fn kv_v1_delete_secret() {
     // Delete a secret from KV v1 backend
     // 从 KV v1 后端删除密钥
     let mut server = mockito::Server::new_async().await;
@@ -544,8 +508,7 @@ async fn kv_v1_delete_secret()
 }
 
 #[tokio::test]
-async fn kv_v1_list_secrets()
-{
+async fn kv_v1_list_secrets() {
     // List secrets in KV v1 backend
     // 列出 KV v1 后端中的密钥
     let mut server = mockito::Server::new_async().await;
@@ -573,8 +536,7 @@ async fn kv_v1_list_secrets()
 }
 
 #[tokio::test]
-async fn kv_v1_read_not_found()
-{
+async fn kv_v1_read_not_found() {
     // Reading a non-existent secret returns error
     // 读取不存在的密钥返回错误
     let mut server = mockito::Server::new_async().await;
@@ -599,8 +561,7 @@ async fn kv_v1_read_not_found()
 // ============================================================================
 
 #[tokio::test]
-async fn kv_v2_read_secret()
-{
+async fn kv_v2_read_secret() {
     // Read latest version of a KV v2 secret
     // 读取 KV v2 密钥的最新版本
     let mut server = mockito::Server::new_async().await;
@@ -636,8 +597,7 @@ async fn kv_v2_read_secret()
 }
 
 #[tokio::test]
-async fn kv_v2_write_secret()
-{
+async fn kv_v2_write_secret() {
     // Write a secret to KV v2 backend
     // 向 KV v2 后端写入密钥
     let mut server = mockito::Server::new_async().await;
@@ -671,8 +631,7 @@ async fn kv_v2_write_secret()
 }
 
 #[tokio::test]
-async fn kv_v2_delete_secret()
-{
+async fn kv_v2_delete_secret() {
     // Soft-delete latest version of a KV v2 secret
     // 软删除 KV v2 密钥的最新版本
     let mut server = mockito::Server::new_async().await;
@@ -691,8 +650,7 @@ async fn kv_v2_delete_secret()
 }
 
 #[tokio::test]
-async fn kv_v2_delete_versions()
-{
+async fn kv_v2_delete_versions() {
     // Delete specific versions of a KV v2 secret
     // 删除 KV v2 密钥的指定版本
     let mut server = mockito::Server::new_async().await;
@@ -714,8 +672,7 @@ async fn kv_v2_delete_versions()
 }
 
 #[tokio::test]
-async fn kv_v2_undelete_versions()
-{
+async fn kv_v2_undelete_versions() {
     // Undelete specific versions of a KV v2 secret
     // 恢复 KV v2 密钥的指定版本
     let mut server = mockito::Server::new_async().await;
@@ -737,8 +694,7 @@ async fn kv_v2_undelete_versions()
 }
 
 #[tokio::test]
-async fn kv_v2_destroy_versions()
-{
+async fn kv_v2_destroy_versions() {
     // Permanently destroy versions of a KV v2 secret
     // 永久销毁 KV v2 密钥的指定版本
     let mut server = mockito::Server::new_async().await;
@@ -764,8 +720,7 @@ async fn kv_v2_destroy_versions()
 }
 
 #[tokio::test]
-async fn kv_v2_list_secrets()
-{
+async fn kv_v2_list_secrets() {
     // List secrets in KV v2 backend via metadata endpoint
     // 通过元数据端点列出 KV v2 后端中的密钥
     let mut server = mockito::Server::new_async().await;
@@ -793,8 +748,7 @@ async fn kv_v2_list_secrets()
 }
 
 #[tokio::test]
-async fn kv_v2_read_metadata()
-{
+async fn kv_v2_read_metadata() {
     // Read metadata for a KV v2 secret
     // 读取 KV v2 密钥的元数据
     let mut server = mockito::Server::new_async().await;
@@ -827,8 +781,7 @@ async fn kv_v2_read_metadata()
 }
 
 #[tokio::test]
-async fn kv_v2_delete_metadata()
-{
+async fn kv_v2_delete_metadata() {
     // Delete all versions and metadata for a KV v2 secret
     // 删除 KV v2 密钥的所有版本和元数据
     let mut server = mockito::Server::new_async().await;
@@ -853,8 +806,7 @@ async fn kv_v2_delete_metadata()
 // ============================================================================
 
 #[tokio::test]
-async fn transit_create_key()
-{
+async fn transit_create_key() {
     // Create a new transit encryption key
     // 创建新的 transit 加密密钥
     let mut server = mockito::Server::new_async().await;
@@ -881,8 +833,7 @@ async fn transit_create_key()
 }
 
 #[tokio::test]
-async fn transit_read_key()
-{
+async fn transit_read_key() {
     // Read transit key information
     // 读取 transit 密钥信息
     let mut server = mockito::Server::new_async().await;
@@ -919,8 +870,7 @@ async fn transit_read_key()
 }
 
 #[tokio::test]
-async fn transit_encrypt()
-{
+async fn transit_encrypt() {
     // Encrypt plaintext via Transit engine
     // 通过 Transit 引擎加密明文
     let mut server = mockito::Server::new_async().await;
@@ -950,8 +900,7 @@ async fn transit_encrypt()
 }
 
 #[tokio::test]
-async fn transit_decrypt()
-{
+async fn transit_decrypt() {
     // Decrypt ciphertext via Transit engine
     // 通过 Transit 引擎解密密文
     let mut server = mockito::Server::new_async().await;
@@ -987,8 +936,7 @@ async fn transit_decrypt()
 }
 
 #[tokio::test]
-async fn transit_rotate_key()
-{
+async fn transit_rotate_key() {
     // Rotate a transit key
     // 轮换 transit 密钥
     let mut server = mockito::Server::new_async().await;
@@ -1007,8 +955,7 @@ async fn transit_rotate_key()
 }
 
 #[tokio::test]
-async fn transit_rewrap()
-{
+async fn transit_rewrap() {
     // Rewrap ciphertext with latest key version
     // 使用最新密钥版本重包装密文
     let mut server = mockito::Server::new_async().await;
@@ -1044,8 +991,7 @@ async fn transit_rewrap()
 }
 
 #[tokio::test]
-async fn transit_delete_key()
-{
+async fn transit_delete_key() {
     // Delete a transit key
     // 删除 transit 密钥
     let mut server = mockito::Server::new_async().await;
@@ -1067,8 +1013,7 @@ async fn transit_delete_key()
 }
 
 #[tokio::test]
-async fn transit_list_keys()
-{
+async fn transit_list_keys() {
     // List transit keys
     // 列出 transit 密钥
     let mut server = mockito::Server::new_async().await;
@@ -1098,8 +1043,7 @@ async fn transit_list_keys()
 // ============================================================================
 
 #[tokio::test]
-async fn pki_generate_certificate()
-{
+async fn pki_generate_certificate() {
     // Generate a certificate via PKI engine
     // 通过 PKI 引擎生成证书
     let mut server = mockito::Server::new_async().await;
@@ -1135,8 +1079,7 @@ async fn pki_generate_certificate()
 }
 
 #[tokio::test]
-async fn pki_set_role()
-{
+async fn pki_set_role() {
     // Create or update a PKI role
     // 创建或更新 PKI 角色
     let mut server = mockito::Server::new_async().await;
@@ -1164,8 +1107,7 @@ async fn pki_set_role()
 }
 
 #[tokio::test]
-async fn pki_read_role()
-{
+async fn pki_read_role() {
     // Read a PKI role
     // 读取 PKI 角色
     let mut server = mockito::Server::new_async().await;
@@ -1195,8 +1137,7 @@ async fn pki_read_role()
 }
 
 #[tokio::test]
-async fn pki_delete_role()
-{
+async fn pki_delete_role() {
     // Delete a PKI role
     // 删除 PKI 角色
     let mut server = mockito::Server::new_async().await;
@@ -1217,8 +1158,7 @@ async fn pki_delete_role()
 }
 
 #[tokio::test]
-async fn pki_revoke_certificate()
-{
+async fn pki_revoke_certificate() {
     // Revoke a certificate by serial number
     // 通过序列号撤销证书
     let mut server = mockito::Server::new_async().await;
@@ -1243,8 +1183,7 @@ async fn pki_revoke_certificate()
 }
 
 #[tokio::test]
-async fn pki_read_ca_certificate()
-{
+async fn pki_read_ca_certificate() {
     // Read the CA certificate from PKI engine
     // 从 PKI 引擎读取 CA 证书
     let mut server = mockito::Server::new_async().await;
@@ -1272,8 +1211,7 @@ async fn pki_read_ca_certificate()
 }
 
 #[tokio::test]
-async fn pki_read_certificate_by_serial()
-{
+async fn pki_read_certificate_by_serial() {
     // Read a certificate by serial number
     // 通过序列号读取证书
     let mut server = mockito::Server::new_async().await;
@@ -1304,8 +1242,7 @@ async fn pki_read_certificate_by_serial()
 }
 
 #[tokio::test]
-async fn pki_rotate_crl()
-{
+async fn pki_rotate_crl() {
     // Rotate the CRL
     // 轮换 CRL
     let mut server = mockito::Server::new_async().await;
@@ -1324,8 +1261,7 @@ async fn pki_rotate_crl()
 }
 
 #[tokio::test]
-async fn pki_tidy()
-{
+async fn pki_tidy() {
     // Tidy up the PKI backend
     // 清理 PKI 后端
     let mut server = mockito::Server::new_async().await;
@@ -1348,8 +1284,7 @@ async fn pki_tidy()
 // ============================================================================
 
 #[tokio::test]
-async fn health_check_healthy()
-{
+async fn health_check_healthy() {
     // Vault returns 200 when healthy
     // Vault 健康时返回 200
     let mut server = mockito::Server::new_async().await;
@@ -1380,8 +1315,7 @@ async fn health_check_healthy()
 }
 
 #[tokio::test]
-async fn health_check_sealed()
-{
+async fn health_check_sealed() {
     // Vault returns 503 when sealed (still valid health response)
     // Vault 封印时返回 503（仍然是有效的健康响应）
     let mut server = mockito::Server::new_async().await;
@@ -1411,8 +1345,7 @@ async fn health_check_sealed()
 }
 
 #[tokio::test]
-async fn health_check_standby()
-{
+async fn health_check_standby() {
     // Vault returns 429 when in standby mode
     // Vault 待机时返回 429
     let mut server = mockito::Server::new_async().await;
@@ -1442,8 +1375,7 @@ async fn health_check_standby()
 }
 
 #[tokio::test]
-async fn seal_status_unsealed()
-{
+async fn seal_status_unsealed() {
     // Get seal status when Vault is unsealed
     // Vault 未封印时获取封印状态
     let mut server = mockito::Server::new_async().await;
@@ -1478,8 +1410,7 @@ async fn seal_status_unsealed()
 }
 
 #[tokio::test]
-async fn seal_and_unseal()
-{
+async fn seal_and_unseal() {
     // Seal and then unseal Vault
     // 封印然后解封 Vault
     let mut server = mockito::Server::new_async().await;
@@ -1526,8 +1457,7 @@ async fn seal_and_unseal()
 // ============================================================================
 
 #[tokio::test]
-async fn lease_renew()
-{
+async fn lease_renew() {
     // Renew a lease and verify returned info
     // 续订租约并验证返回的信息
     let mut server = mockito::Server::new_async().await;
@@ -1558,8 +1488,7 @@ async fn lease_renew()
 }
 
 #[tokio::test]
-async fn lease_revoke()
-{
+async fn lease_revoke() {
     // Revoke a lease
     // 撤销租约
     let mut server = mockito::Server::new_async().await;
@@ -1584,8 +1513,7 @@ async fn lease_revoke()
 }
 
 #[tokio::test]
-async fn lease_lookup()
-{
+async fn lease_lookup() {
     // Look up lease information
     // 查找租约信息
     let mut server = mockito::Server::new_async().await;
@@ -1624,8 +1552,7 @@ async fn lease_lookup()
 // ============================================================================
 
 #[tokio::test]
-async fn secret_read()
-{
+async fn secret_read() {
     // Read a secret from generic path
     // 从通用路径读取密钥
     let mut server = mockito::Server::new_async().await;
@@ -1656,8 +1583,7 @@ async fn secret_read()
 }
 
 #[tokio::test]
-async fn secret_write()
-{
+async fn secret_write() {
     // Write a secret to generic path
     // 向通用路径写入密钥
     let mut server = mockito::Server::new_async().await;
@@ -1684,8 +1610,7 @@ async fn secret_write()
 }
 
 #[tokio::test]
-async fn secret_delete()
-{
+async fn secret_delete() {
     // Delete a secret at generic path
     // 删除通用路径上的密钥
     let mut server = mockito::Server::new_async().await;
@@ -1705,8 +1630,7 @@ async fn secret_delete()
 }
 
 #[tokio::test]
-async fn secret_list()
-{
+async fn secret_list() {
     // List secrets at a generic path
     // 列出通用路径上的密钥
     let mut server = mockito::Server::new_async().await;
@@ -1737,8 +1661,7 @@ async fn secret_list()
 // ============================================================================
 
 #[tokio::test]
-async fn client_sends_namespace_header()
-{
+async fn client_sends_namespace_header() {
     // Client should send X-Vault-Namespace header when configured
     // 配置后客户端应发送 X-Vault-Namespace 头
     let mut server = mockito::Server::new_async().await;
@@ -1760,8 +1683,7 @@ async fn client_sends_namespace_header()
 }
 
 #[tokio::test]
-async fn client_sends_bearer_token()
-{
+async fn client_sends_bearer_token() {
     // Client should send Authorization: Bearer <token> header
     // 客户端应发送 Authorization: Bearer <token> 头
     let mut server = mockito::Server::new_async().await;
@@ -1782,8 +1704,7 @@ async fn client_sends_bearer_token()
 }
 
 #[tokio::test]
-async fn client_no_auth_header_without_token()
-{
+async fn client_no_auth_header_without_token() {
     // Client without token should not send Authorization header
     // 没有 token 的客户端不应发送 Authorization 头
     let mut server = mockito::Server::new_async().await;

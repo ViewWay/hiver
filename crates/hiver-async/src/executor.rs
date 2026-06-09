@@ -46,8 +46,7 @@ use crate::{
 ///     }
 /// }
 /// ```
-pub struct AsyncTaskExecutor
-{
+pub struct AsyncTaskExecutor {
     /// Executor configuration
     /// 执行器配置
     config: TaskExecutorConfig,
@@ -61,19 +60,16 @@ pub struct AsyncTaskExecutor
     shutdown_flag: Arc<std::sync::atomic::AtomicBool>,
 }
 
-impl AsyncTaskExecutor
-{
+impl AsyncTaskExecutor {
     /// Create new task executor with default configuration
     /// 使用默认配置创建新任务执行器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::with_config(TaskExecutorConfig::default())
     }
 
     /// Create new task executor with custom configuration
     /// 使用自定义配置创建新任务执行器
-    pub fn with_config(config: TaskExecutorConfig) -> Self
-    {
+    pub fn with_config(config: TaskExecutorConfig) -> Self {
         config.validate().expect("Invalid executor configuration");
 
         let semaphore = Arc::new(Semaphore::new(config.max_pool_size + config.queue_capacity));
@@ -87,8 +83,7 @@ impl AsyncTaskExecutor
 
     /// Get configuration
     /// 获取配置
-    pub fn config(&self) -> &TaskExecutorConfig
-    {
+    pub fn config(&self) -> &TaskExecutorConfig {
         &self.config
     }
 
@@ -112,51 +107,41 @@ impl AsyncTaskExecutor
     /// let handle = executor.submit(Box::new(MyTask))?;
     /// handle.await_completion().await?;
     /// ```
-    pub fn submit(&self, task: Box<dyn AsyncTask>) -> AsyncResult<AsyncTaskHandle>
-    {
-        if self.is_shutdown()
-        {
+    pub fn submit(&self, task: Box<dyn AsyncTask>) -> AsyncResult<AsyncTaskHandle> {
+        if self.is_shutdown() {
             return Err(AsyncError::Shutdown("Executor is shutdown".to_string()));
         }
 
         let (runnable, handle) = RunnableTask::new(task);
 
-        match self.config.execution_mode
-        {
-            ExecutionMode::Immediate =>
-            {
+        match self.config.execution_mode {
+            ExecutionMode::Immediate => {
                 // Run immediately in the background
                 let semaphore = self.semaphore.clone();
                 let shutdown_flag = self.shutdown_flag.clone();
                 tokio::spawn(async move {
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
                     let _permit = semaphore.acquire().await.unwrap();
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
                     runnable.execute().await;
                 });
             },
-            ExecutionMode::Background =>
-            {
+            ExecutionMode::Background => {
                 // Run in background with queue management
                 let semaphore = self.semaphore.clone();
                 let shutdown_flag = self.shutdown_flag.clone();
 
                 // Try to acquire permit immediately
-                match semaphore.try_acquire_owned()
-                {
-                    Ok(permit) =>
-                    {
+                match semaphore.try_acquire_owned() {
+                    Ok(permit) => {
                         tokio::spawn(async move {
-                            if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                            {
+                            if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                                 return;
                             }
 
@@ -165,32 +150,26 @@ impl AsyncTaskExecutor
                             runnable.execute().await;
                         });
                     },
-                    Err(_) =>
-                    {
+                    Err(_) => {
                         // Queue is full, apply rejection policy
-                        match self.config.rejection_policy
-                        {
-                            RejectionPolicy::Abort =>
-                            {
+                        match self.config.rejection_policy {
+                            RejectionPolicy::Abort => {
                                 return Err(AsyncError::TaskRejected(
                                     "Task queue is full".to_string(),
                                 ));
                             },
-                            RejectionPolicy::CallerRuns =>
-                            {
+                            RejectionPolicy::CallerRuns => {
                                 // Run in current context (spawn a task that runs immediately)
                                 tokio::spawn(async move {
                                     runnable.execute().await;
                                 });
                             },
-                            RejectionPolicy::Discard =>
-                            {
+                            RejectionPolicy::Discard => {
                                 return Err(AsyncError::TaskRejected(
                                     "Task discarded (queue full)".to_string(),
                                 ));
                             },
-                            RejectionPolicy::DiscardOldest =>
-                            {
+                            RejectionPolicy::DiscardOldest => {
                                 // Try to find and cancel oldest task
                                 // For simplicity, we'll just run the new one
                                 tokio::spawn(async move {
@@ -201,42 +180,36 @@ impl AsyncTaskExecutor
                     },
                 }
             },
-            ExecutionMode::Prioritized =>
-            {
+            ExecutionMode::Prioritized => {
                 // Run with priority (simplified - just spawn)
                 let semaphore = self.semaphore.clone();
                 let shutdown_flag = self.shutdown_flag.clone();
 
                 tokio::spawn(async move {
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
                     let _permit = semaphore.acquire().await.unwrap();
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
                     runnable.execute().await;
                 });
             },
-            ExecutionMode::Retry =>
-            {
+            ExecutionMode::Retry => {
                 // Run with retry on failure
                 let semaphore = self.semaphore.clone();
                 let shutdown_flag = self.shutdown_flag.clone();
 
                 tokio::spawn(async move {
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
                     let _permit = semaphore.acquire().await.unwrap();
-                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed)
-                    {
+                    if shutdown_flag.load(std::sync::atomic::Ordering::Relaxed) {
                         return;
                     }
 
@@ -273,8 +246,7 @@ impl AsyncTaskExecutor
 
     /// Check if executor is shutdown
     /// 检查执行器是否已关闭
-    pub fn is_shutdown(&self) -> bool
-    {
+    pub fn is_shutdown(&self) -> bool {
         self.shutdown_flag
             .load(std::sync::atomic::Ordering::Relaxed)
     }
@@ -284,8 +256,7 @@ impl AsyncTaskExecutor
     ///
     /// Waits for all submitted tasks to complete.
     /// 等待所有提交的任务完成。
-    pub async fn shutdown(&self)
-    {
+    pub async fn shutdown(&self) {
         self.shutdown_flag
             .store(true, std::sync::atomic::Ordering::Relaxed);
 
@@ -299,32 +270,26 @@ impl AsyncTaskExecutor
     ///
     /// Does not wait for tasks to complete.
     /// 不等待任务完成。
-    pub fn shutdown_now(&self)
-    {
+    pub fn shutdown_now(&self) {
         self.shutdown_flag
             .store(true, std::sync::atomic::Ordering::Relaxed);
     }
 
     /// Get active task count (approximate)
     /// 获取活动任务数（近似值）
-    pub fn active_count(&self) -> usize
-    {
+    pub fn active_count(&self) -> usize {
         self.semaphore.available_permits()
     }
 }
 
-impl Default for AsyncTaskExecutor
-{
-    fn default() -> Self
-    {
+impl Default for AsyncTaskExecutor {
+    fn default() -> Self {
         Self::new()
     }
 }
 
-impl Clone for AsyncTaskExecutor
-{
-    fn clone(&self) -> Self
-    {
+impl Clone for AsyncTaskExecutor {
+    fn clone(&self) -> Self {
         Self {
             config: self.config.clone(),
             semaphore: self.semaphore.clone(),
@@ -343,25 +308,27 @@ impl Clone for AsyncTaskExecutor
 ///     void execute(Runnable task);
 /// }
 /// ```
-pub trait TaskExecutor
-{
+pub trait TaskExecutor {
     /// Execute a task
     /// 执行任务
     fn execute_task(&self, task: Box<dyn AsyncTask>) -> AsyncResult<AsyncTaskHandle>;
 }
 
-impl TaskExecutor for AsyncTaskExecutor
-{
-    fn execute_task(&self, task: Box<dyn AsyncTask>) -> AsyncResult<AsyncTaskHandle>
-    {
+impl TaskExecutor for AsyncTaskExecutor {
+    fn execute_task(&self, task: Box<dyn AsyncTask>) -> AsyncResult<AsyncTaskHandle> {
         self.submit(task)
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use std::{
         pin::Pin,
         sync::{
@@ -373,33 +340,27 @@ mod tests
     use super::*;
 
     #[derive(Debug)]
-    struct TestTask
-    {
+    struct TestTask {
         name: String,
         counter: Arc<AtomicU32>,
     }
 
-    impl TestTask
-    {
-        fn new(name: impl Into<String>) -> Self
-        {
+    impl TestTask {
+        fn new(name: impl Into<String>) -> Self {
             Self {
                 name: name.into(),
                 counter: Arc::new(AtomicU32::new(0)),
             }
         }
 
-        fn count(&self) -> u32
-        {
+        fn count(&self) -> u32 {
             self.counter.load(Ordering::Relaxed)
         }
     }
 
     #[async_trait::async_trait]
-    impl AsyncTask for TestTask
-    {
-        fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>>
-        {
+    impl AsyncTask for TestTask {
+        fn run(&self) -> Pin<Box<dyn Future<Output = AsyncResult<()>> + Send + 'static>> {
             let counter = self.counter.clone();
             Box::pin(async move {
                 counter.fetch_add(1, Ordering::Relaxed);
@@ -408,23 +369,20 @@ mod tests
             })
         }
 
-        fn name(&self) -> &str
-        {
+        fn name(&self) -> &str {
             &self.name
         }
     }
 
     #[tokio::test]
-    async fn test_executor_creation()
-    {
+    async fn test_executor_creation() {
         let executor = AsyncTaskExecutor::new();
         assert!(!executor.is_shutdown());
         assert_eq!(executor.config().core_pool_size, 4);
     }
 
     #[tokio::test]
-    async fn test_task_submission()
-    {
+    async fn test_task_submission() {
         let executor = AsyncTaskExecutor::new();
         let task = TestTask::new("test_task");
 
@@ -435,8 +393,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_execute_function()
-    {
+    async fn test_execute_function() {
         let executor = AsyncTaskExecutor::new();
         let counter = Arc::new(AtomicU32::new(0));
         let counter_clone = counter.clone();
@@ -456,13 +413,11 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_multiple_tasks()
-    {
+    async fn test_multiple_tasks() {
         let executor = AsyncTaskExecutor::new();
         let mut handles = Vec::new();
 
-        for i in 0..10
-        {
+        for i in 0..10 {
             let counter = Arc::new(AtomicU32::new(0));
             let counter_clone = counter.clone();
 
@@ -480,15 +435,13 @@ mod tests
         }
 
         // Wait for all tasks
-        for handle in handles
-        {
+        for handle in handles {
             handle.await_completion().await.unwrap();
         }
     }
 
     #[tokio::test]
-    async fn test_shutdown()
-    {
+    async fn test_shutdown() {
         let executor = AsyncTaskExecutor::new();
         assert!(!executor.is_shutdown());
 
@@ -502,8 +455,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_custom_config()
-    {
+    async fn test_custom_config() {
         let config = TaskExecutorConfig::new()
             .with_core_pool_size(2)
             .with_max_pool_size(4)

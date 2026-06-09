@@ -1,13 +1,11 @@
 //! Hiver benchmarks — performance benchmarks for the Hiver framework
 //! Hiver 基准测试 — Hiver框架的性能基准测试
 
-
 use std::hint::black_box;
 
 use criterion::Criterion;
 
-pub fn bench_router(c: &mut Criterion)
-{
+pub fn bench_router(c: &mut Criterion) {
     c.bench_function("router_simple", |b| {
         b.iter(|| {
             black_box(&42);

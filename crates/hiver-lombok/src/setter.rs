@@ -7,20 +7,17 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// Implement #[Setter] derive macro
 /// 实现 #[Setter] 派生宏
-pub fn impl_setter(input: DeriveInput) -> TokenStream
-{
+pub fn impl_setter(input: DeriveInput) -> TokenStream {
     let struct_name = &input.ident;
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data
-    {
+    let fields = match &input.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ =>
-        {
+        _ => {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[Setter] can only be used on structs with named fields",
@@ -45,11 +42,8 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream
     let mut field_types = Vec::new();
     let mut setter_method_names = Vec::new();
 
-    for field in fields
-    {
-        let Some(field_name) = field.ident.as_ref()
-        else
-        {
+    for field in fields {
+        let Some(field_name) = field.ident.as_ref() else {
             continue;
         };
         let field_type = &field.ty;
@@ -63,8 +57,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream
                 .any(|seg| seg.ident == "set" || seg.ident == "skip")
         });
 
-        if should_skip
-        {
+        if should_skip {
             continue;
         }
 
@@ -73,8 +66,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream
 
         // If not using chain mode, generate set_ method name
         // 如果不使用 chain 模式，生成 set_ 方法名
-        if !has_chain_attr
-        {
+        if !has_chain_attr {
             let set_name = format_ident!("set_{}", field_name);
             setter_method_names.push(set_name);
         }
@@ -82,8 +74,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream
 
     // Generate setter methods for each field
     // 为每个字段生成 setter 方法
-    let setters: Vec<TokenStream> = if has_chain_attr
-    {
+    let setters: Vec<TokenStream> = if has_chain_attr {
         // Return &mut Self for chaining
         // 返回 &mut Self 以支持链式调用
         field_names
@@ -99,9 +90,7 @@ pub fn impl_setter(input: DeriveInput) -> TokenStream
                 }
             })
             .collect()
-    }
-    else
-    {
+    } else {
         // Return ()
         // 返回 ()
         field_names

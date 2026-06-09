@@ -40,16 +40,14 @@ use crate::{
 /// }
 /// ```
 #[derive(Debug)]
-pub struct Transit<'a>
-{
+pub struct Transit<'a> {
     client: &'a VaultClient,
     mount: String,
 }
 
 /// Key configuration for create/update / 创建/更新的密钥配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct KeyConfig
-{
+pub struct KeyConfig {
     /// Key type (e.g., "aes256-gcm96", "rsa-2048", "ed25519") / 密钥类型
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     pub key_type: Option<String>,
@@ -72,8 +70,7 @@ pub struct KeyConfig
 
 /// Key information from Vault / Vault 中的密钥信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct KeyInfo
-{
+pub struct KeyInfo {
     /// Key name / 密钥名称
     pub name: String,
     /// Key type / 密钥类型
@@ -99,8 +96,7 @@ pub struct KeyInfo
 
 /// Encrypt request / 加密请求
 #[derive(Debug, Clone, Serialize)]
-struct EncryptRequest
-{
+struct EncryptRequest {
     plaintext: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     associated_data: Option<String>,
@@ -110,15 +106,13 @@ struct EncryptRequest
 
 /// Encrypt response / 加密响应
 #[derive(Debug, Clone, Deserialize)]
-struct EncryptResponse
-{
+struct EncryptResponse {
     ciphertext: String,
 }
 
 /// Decrypt request / 解密请求
 #[derive(Debug, Clone, Serialize)]
-struct DecryptRequest
-{
+struct DecryptRequest {
     ciphertext: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     associated_data: Option<String>,
@@ -128,23 +122,19 @@ struct DecryptRequest
 
 /// Decrypt response / 解密响应
 #[derive(Debug, Clone, Deserialize)]
-struct DecryptResponse
-{
+struct DecryptResponse {
     plaintext: String,
 }
 
 /// Data response wrapper / 数据响应包装
 #[derive(Debug, Clone, Deserialize)]
-struct DataResponse<T>
-{
+struct DataResponse<T> {
     data: T,
 }
 
-impl<'a> Transit<'a>
-{
+impl<'a> Transit<'a> {
     /// Create a new Transit handle / 创建新的 Transit 句柄
-    pub fn new(client: &'a VaultClient, mount: &str) -> Self
-    {
+    pub fn new(client: &'a VaultClient, mount: &str) -> Self {
         Self {
             client,
             mount: mount.to_string(),
@@ -155,8 +145,7 @@ impl<'a> Transit<'a>
     ///
     /// Creates a named key in the Transit engine with the specified type.
     /// 在 Transit 引擎中创建指定类型的命名密钥。
-    pub async fn create_key(&self, key_name: &str, key_type: &str) -> VaultResult<()>
-    {
+    pub async fn create_key(&self, key_name: &str, key_type: &str) -> VaultResult<()> {
         let path = format!("{}/keys/{}", self.mount, key_name);
         let body = serde_json::json!({
             "type": key_type
@@ -170,16 +159,14 @@ impl<'a> Transit<'a>
         &self,
         key_name: &str,
         config: &KeyConfig,
-    ) -> VaultResult<()>
-    {
+    ) -> VaultResult<()> {
         let path = format!("{}/keys/{}", self.mount, key_name);
         self.client.post(&path, config).await?;
         Ok(())
     }
 
     /// Read key information / 读取密钥信息
-    pub async fn read_key(&self, key_name: &str) -> VaultResult<KeyInfo>
-    {
+    pub async fn read_key(&self, key_name: &str) -> VaultResult<KeyInfo> {
         let path = format!("{}/keys/{}", self.mount, key_name);
         let resp = self.client.get(&path).await?;
         let body: DataResponse<KeyInfo> = resp.json().await?;
@@ -187,8 +174,7 @@ impl<'a> Transit<'a>
     }
 
     /// Delete a key / 删除密钥
-    pub async fn delete_key(&self, key_name: &str) -> VaultResult<()>
-    {
+    pub async fn delete_key(&self, key_name: &str) -> VaultResult<()> {
         let path = format!("{}/keys/{}", self.mount, key_name);
         self.client.delete(&path).await?;
         Ok(())
@@ -201,8 +187,7 @@ impl<'a> Transit<'a>
     ///
     /// 使用命名密钥加密给定明文。明文在发送前必须经过 base64 编码
     /// （此方法会处理 `&[u8]` 的编码）。
-    pub async fn encrypt(&self, key_name: &str, plaintext: &[u8]) -> VaultResult<String>
-    {
+    pub async fn encrypt(&self, key_name: &str, plaintext: &[u8]) -> VaultResult<String> {
         let path = format!("{}/encrypt/{}", self.mount, key_name);
         let body = EncryptRequest {
             plaintext: base64::Engine::encode(
@@ -224,8 +209,7 @@ impl<'a> Transit<'a>
         key_name: &str,
         plaintext: &[u8],
         context: &[u8],
-    ) -> VaultResult<String>
-    {
+    ) -> VaultResult<String> {
         let path = format!("{}/encrypt/{}", self.mount, key_name);
         let body = EncryptRequest {
             plaintext: base64::Engine::encode(
@@ -248,8 +232,7 @@ impl<'a> Transit<'a>
     ///
     /// Decrypts the given ciphertext using the named key. Returns the raw bytes.
     /// 使用命名密钥解密给定密文。返回原始字节。
-    pub async fn decrypt(&self, key_name: &str, ciphertext: &str) -> VaultResult<Vec<u8>>
-    {
+    pub async fn decrypt(&self, key_name: &str, ciphertext: &str) -> VaultResult<Vec<u8>> {
         let path = format!("{}/decrypt/{}", self.mount, key_name);
         let body = DecryptRequest {
             ciphertext: ciphertext.to_string(),
@@ -269,8 +252,7 @@ impl<'a> Transit<'a>
         key_name: &str,
         ciphertext: &str,
         context: &[u8],
-    ) -> VaultResult<Vec<u8>>
-    {
+    ) -> VaultResult<Vec<u8>> {
         let path = format!("{}/decrypt/{}", self.mount, key_name);
         let body = DecryptRequest {
             ciphertext: ciphertext.to_string(),
@@ -288,8 +270,7 @@ impl<'a> Transit<'a>
     }
 
     /// Rotate the key / 轮换密钥
-    pub async fn rotate_key(&self, key_name: &str) -> VaultResult<()>
-    {
+    pub async fn rotate_key(&self, key_name: &str) -> VaultResult<()> {
         let path = format!("{}/keys/{}/rotate", self.mount, key_name);
         self.client.post(&path, &serde_json::json!({})).await?;
         Ok(())
@@ -297,8 +278,7 @@ impl<'a> Transit<'a>
 
     /// Rewrap ciphertext (re-encrypt with latest key version) /
     /// 重包装密文（使用最新密钥版本重新加密）
-    pub async fn rewrap(&self, key_name: &str, ciphertext: &str) -> VaultResult<String>
-    {
+    pub async fn rewrap(&self, key_name: &str, ciphertext: &str) -> VaultResult<String> {
         let path = format!("{}/rewrap/{}", self.mount, key_name);
         let body = serde_json::json!({
             "ciphertext": ciphertext
@@ -310,15 +290,13 @@ impl<'a> Transit<'a>
     }
 
     /// List keys / 列出密钥
-    pub async fn list_keys(&self) -> VaultResult<Vec<String>>
-    {
+    pub async fn list_keys(&self) -> VaultResult<Vec<String>> {
         let path = format!("{}/keys", self.mount);
         crate::secret::list(self.client, &path).await
     }
 
     /// Update key configuration / 更新密钥配置
-    pub async fn update_key_config(&self, key_name: &str, config: &KeyConfig) -> VaultResult<()>
-    {
+    pub async fn update_key_config(&self, key_name: &str, config: &KeyConfig) -> VaultResult<()> {
         let path = format!("{}/keys/{}/config", self.mount, key_name);
         self.client.post(&path, config).await?;
         Ok(())

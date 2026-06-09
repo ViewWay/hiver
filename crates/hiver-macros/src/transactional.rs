@@ -32,16 +32,12 @@ use syn::{Expr, ItemFn, parse_macro_input};
 ///     // Transaction logic
 /// }
 /// ```
-pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> TokenStream
-{
+pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> TokenStream {
     // Parse attribute if not empty
     // 解析属性（如果不为空）
-    let options = if attr.is_empty()
-    {
+    let options = if attr.is_empty() {
         TransactionalOptionsParsed::default()
-    }
-    else
-    {
+    } else {
         parse_transactional_options_attr(attr)
     };
 
@@ -57,45 +53,33 @@ pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> Token
 
     // Build propagation configuration
     // 构建传播配置
-    let propagation_config = if let Some(prop) = &options.propagation
-    {
+    let propagation_config = if let Some(prop) = &options.propagation {
         quote! { definition = #prop; }
-    }
-    else
-    {
+    } else {
         quote! {}
     };
 
     // Build isolation configuration
     // 构建隔离级别配置
-    let isolation_config = if let Some(iso) = &options.isolation
-    {
+    let isolation_config = if let Some(iso) = &options.isolation {
         quote! { definition = #iso; }
-    }
-    else
-    {
+    } else {
         quote! {}
     };
 
     // Build timeout configuration
     // 构建超时配置
-    let timeout_config = if let Some(timeout) = &options.timeout_secs
-    {
+    let timeout_config = if let Some(timeout) = &options.timeout_secs {
         quote! { definition = #timeout; }
-    }
-    else
-    {
+    } else {
         quote! {}
     };
 
     // Build read_only configuration
     // 构建只读配置
-    let readonly_config = if options.read_only
-    {
+    let readonly_config = if options.read_only {
         quote! { definition = definition.read_only(true); }
-    }
-    else
-    {
+    } else {
         quote! {}
     };
 
@@ -164,8 +148,7 @@ pub(crate) fn transactional_impl(attr: &TokenStream, item: TokenStream) -> Token
 /// Parsed transactional options
 /// 解析的transactional选项
 #[derive(Default)]
-struct TransactionalOptionsParsed
-{
+struct TransactionalOptionsParsed {
     propagation: Option<Expr>,
     isolation: Option<Expr>,
     timeout_secs: Option<Expr>,
@@ -174,8 +157,7 @@ struct TransactionalOptionsParsed
 
 /// Parse transactional options from attribute token stream
 /// 从属性token流解析transactional选项
-fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsParsed
-{
+fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsParsed {
     let mut options = TransactionalOptionsParsed::default();
 
     // Parse the attribute as a comma-separated list of name=value pairs
@@ -184,20 +166,15 @@ fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsP
 
     // Simple parsing - split by comma, then by '='
     // 简单解析 - 先按逗号分割，再按等号分割
-    for pair in attr_str.split(',')
-    {
+    for pair in attr_str.split(',') {
         let pair = pair.trim();
-        if let Some((key, value)) = pair.split_once('=')
-        {
+        if let Some((key, value)) = pair.split_once('=') {
             let key = key.trim();
             let value = value.trim().trim_matches('"');
 
-            match key
-            {
-                "propagation" =>
-                {
-                    let prop_expr = match value
-                    {
+            match key {
+                "propagation" => {
+                    let prop_expr = match value {
                         "REQUIRED" => quote! { .propagation(Propagation::Required) },
                         "REQUIRES_NEW" => quote! { .propagation(Propagation::RequiresNew) },
                         "SUPPORTS" => quote! { .propagation(Propagation::Supports) },
@@ -210,12 +187,9 @@ fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsP
                     options.propagation =
                         Some(syn::parse2(prop_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
-                "isolation" =>
-                {
-                    let iso_expr = match value
-                    {
-                        "READ_UNCOMMITTED" =>
-                        {
+                "isolation" => {
+                    let iso_expr = match value {
+                        "READ_UNCOMMITTED" => {
                             quote! { .isolation(IsolationLevel::ReadUncommitted) }
                         },
                         "READ_COMMITTED" => quote! { .isolation(IsolationLevel::ReadCommitted) },
@@ -226,21 +200,17 @@ fn parse_transactional_options_attr(attr: &TokenStream) -> TransactionalOptionsP
                     options.isolation =
                         Some(syn::parse2(iso_expr).unwrap_or_else(|e| panic!("{}", e)));
                 },
-                "timeout" | "timeout_secs" =>
-                {
-                    if let Ok(timeout_val) = value.parse::<u64>()
-                    {
+                "timeout" | "timeout_secs" => {
+                    if let Ok(timeout_val) = value.parse::<u64>() {
                         let timeout_expr = quote! { .timeout_secs(#timeout_val) };
                         options.timeout_secs =
                             Some(syn::parse2(timeout_expr).unwrap_or_else(|e| panic!("{}", e)));
                     }
                 },
-                "read_only" =>
-                {
+                "read_only" => {
                     options.read_only = value == "true" || value == "1";
                 },
-                _ =>
-                {},
+                _ => {},
             }
         }
     }

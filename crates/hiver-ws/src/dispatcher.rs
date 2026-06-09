@@ -11,37 +11,29 @@ use crate::{endpoint::Endpoint, soap::SoapMessage, transport::SoapRequest};
 /// Central dispatcher for SOAP messages
 /// SOAP消息的中央调度器
 #[derive(Default)]
-pub struct MessageDispatcher
-{
+pub struct MessageDispatcher {
     endpoints: HashMap<String, Arc<dyn Endpoint>>,
 }
 
-impl MessageDispatcher
-{
+impl MessageDispatcher {
     /// Create a new dispatcher / 创建新的调度器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self::default()
     }
 
     /// Register an endpoint / 注册端点
-    pub fn register(&mut self, name: &str, endpoint: impl Endpoint + 'static)
-    {
+    pub fn register(&mut self, name: &str, endpoint: impl Endpoint + 'static) {
         self.endpoints.insert(name.to_string(), Arc::new(endpoint));
     }
 
     /// Dispatch a SOAP request / 调度SOAP请求
-    pub async fn dispatch(&self, request: SoapRequest) -> SoapMessage
-    {
+    pub async fn dispatch(&self, request: SoapRequest) -> SoapMessage {
         let soap_action = request.soap_action.as_deref().unwrap_or("");
 
         // Find matching endpoint by SOAP action
-        for endpoint in self.endpoints.values()
-        {
-            if endpoint.handles(soap_action)
-            {
-                match endpoint.invoke(&request.body).await
-                {
+        for endpoint in self.endpoints.values() {
+            if endpoint.handles(soap_action) {
+                match endpoint.invoke(&request.body).await {
                     Ok(response) => return response,
                     Err(fault) => return SoapMessage::fault("Server", &fault.to_string()),
                 }
@@ -52,16 +44,13 @@ impl MessageDispatcher
     }
 
     /// List registered endpoints / 列出已注册的端点
-    pub fn endpoint_names(&self) -> Vec<&str>
-    {
+    pub fn endpoint_names(&self) -> Vec<&str> {
         self.endpoints.keys().map(String::as_str).collect()
     }
 }
 
-impl std::fmt::Debug for MessageDispatcher
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
+impl std::fmt::Debug for MessageDispatcher {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("MessageDispatcher")
             .field("endpoints", &self.endpoints.keys())
             .finish()
@@ -69,9 +58,14 @@ impl std::fmt::Debug for MessageDispatcher
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use async_trait::async_trait;
 
     use super::*;
@@ -79,25 +73,21 @@ mod tests
 
     struct TestEndpoint;
     #[async_trait]
-    impl Endpoint for TestEndpoint
-    {
-        fn handles(&self, action: &str) -> bool
-        {
+    impl Endpoint for TestEndpoint {
+        fn handles(&self, action: &str) -> bool {
             action == "urn:Test"
         }
 
         async fn invoke(
             &self,
             _body: &str,
-        ) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>>
-        {
+        ) -> Result<SoapMessage, Box<dyn std::error::Error + Send + Sync>> {
             Ok(SoapMessage::new(serde_json::json!({"result": "ok"})))
         }
     }
 
     #[test]
-    fn test_dispatcher_registration()
-    {
+    fn test_dispatcher_registration() {
         let mut d = MessageDispatcher::new();
         d.register("test", TestEndpoint);
         assert_eq!(d.endpoint_names(), vec!["test"]);

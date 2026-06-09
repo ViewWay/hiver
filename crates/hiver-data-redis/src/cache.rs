@@ -28,8 +28,7 @@ where
     V: Clone + Send + Sync + 'static,
 {
     /// Create a new Redis cache / 创建新的 Redis 缓存
-    pub fn new(client: RedisClient) -> Self
-    {
+    pub fn new(client: RedisClient) -> Self {
         Self {
             client,
             key_prefix: String::new(),
@@ -38,8 +37,7 @@ where
     }
 
     /// Create with key prefix / 使用键前缀创建
-    pub fn with_prefix(client: RedisClient, prefix: &str) -> Self
-    {
+    pub fn with_prefix(client: RedisClient, prefix: &str) -> Self {
         Self {
             client,
             key_prefix: prefix.to_string(),
@@ -52,12 +50,9 @@ where
     where
         K: Serialize,
     {
-        if self.key_prefix.is_empty()
-        {
+        if self.key_prefix.is_empty() {
             serde_json::to_string(key).unwrap_or_default()
-        }
-        else
-        {
+        } else {
             format!("{}{}", self.key_prefix, serde_json::to_string(key).unwrap_or_default())
         }
     }
@@ -85,8 +80,7 @@ where
     V: Clone + Send + Sync + Serialize + for<'de> Deserialize<'de> + 'static,
 {
     /// Get a value from the cache / 从缓存获取值
-    pub async fn get(&self, key: &K) -> Option<V>
-    {
+    pub async fn get(&self, key: &K) -> Option<V> {
         let full_key = self.full_key(key);
         let mut conn = self.client.get_connection().await.ok()?;
 
@@ -96,25 +90,20 @@ where
             .await
             .ok()?;
 
-        match result
-        {
+        match result {
             Some(s) => self.deserialize_value(s.into_bytes()),
             None => None,
         }
     }
 
     /// Put a value in the cache / 向缓存放入值
-    pub async fn put(&self, key: K, value: V)
-    {
+    pub async fn put(&self, key: K, value: V) {
         let full_key = self.full_key(&key);
-        let Ok(mut conn) = self.client.get_connection().await
-        else
-        {
+        let Ok(mut conn) = self.client.get_connection().await else {
             return;
         };
 
-        if let Some(data) = self.serialize_value(&value)
-        {
+        if let Some(data) = self.serialize_value(&value) {
             let _ = redis::cmd("SET")
                 .arg(full_key)
                 .arg(data)
@@ -124,17 +113,13 @@ where
     }
 
     /// Put a value in the cache with TTL / 向缓存放入带TTL的值
-    pub async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64)
-    {
+    pub async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64) {
         let full_key = self.full_key(&key);
-        let Ok(mut conn) = self.client.get_connection().await
-        else
-        {
+        let Ok(mut conn) = self.client.get_connection().await else {
             return;
         };
 
-        if let Some(data) = self.serialize_value(&value)
-        {
+        if let Some(data) = self.serialize_value(&value) {
             let _ = redis::cmd("SETEX")
                 .arg(full_key)
                 .arg(ttl_secs)
@@ -145,12 +130,9 @@ where
     }
 
     /// Invalidate a specific key / 使特定key失效
-    pub async fn invalidate(&self, key: &K)
-    {
+    pub async fn invalidate(&self, key: &K) {
         let full_key = self.full_key(key);
-        let Ok(mut conn) = self.client.get_connection().await
-        else
-        {
+        let Ok(mut conn) = self.client.get_connection().await else {
             return;
         };
 
@@ -161,17 +143,13 @@ where
     }
 
     /// Invalidate all entries / 使所有条目失效
-    pub async fn invalidate_all(&self)
-    {
-        if self.key_prefix.is_empty()
-        {
+    pub async fn invalidate_all(&self) {
+        if self.key_prefix.is_empty() {
             return;
         }
 
         let pattern = format!("{}*", self.key_prefix);
-        let Ok(mut conn) = self.client.get_connection().await
-        else
-        {
+        let Ok(mut conn) = self.client.get_connection().await else {
             return;
         };
 
@@ -182,8 +160,7 @@ where
             .ok()
             .unwrap_or_default();
 
-        if !keys.is_empty()
-        {
+        if !keys.is_empty() {
             let _ = redis::cmd("DEL")
                 .arg(keys)
                 .query_async::<()>(&mut conn)
@@ -192,51 +169,41 @@ where
     }
 
     /// Check if cache contains key / 检查缓存是否包含key
-    pub async fn contains_key(&self, key: &K) -> bool
-    {
+    pub async fn contains_key(&self, key: &K) -> bool {
         let full_key = self.full_key(key);
-        if let Ok(mut conn) = self.client.get_connection().await
-        {
+        if let Ok(mut conn) = self.client.get_connection().await {
             redis::cmd("EXISTS")
                 .arg(full_key)
                 .query_async::<i32>(&mut conn)
                 .await
                 .map(|v| v > 0)
                 .unwrap_or(false)
-        }
-        else
-        {
+        } else {
             false
         }
     }
 
     /// Get cache size / 获取缓存大小
-    pub async fn size(&self) -> usize
-    {
-        if self.key_prefix.is_empty()
-        {
+    pub async fn size(&self) -> usize {
+        if self.key_prefix.is_empty() {
             return 0;
         }
 
         let pattern = format!("{}*", self.key_prefix);
-        if let Ok(mut conn) = self.client.get_connection().await
-        {
+        if let Ok(mut conn) = self.client.get_connection().await {
             redis::cmd("KEYS")
                 .arg(&pattern)
                 .query_async::<Vec<String>>(&mut conn)
                 .await
                 .map(|keys| keys.len())
                 .unwrap_or(0)
-        }
-        else
-        {
+        } else {
             0
         }
     }
 
     /// Clear the cache / 清除缓存
-    pub async fn clear(&self)
-    {
+    pub async fn clear(&self) {
         self.invalidate_all().await;
     }
 }
@@ -246,22 +213,18 @@ where
 /// Manages multiple Redis cache instances, similar to Spring's RedisCacheManager.
 /// 管理多个 Redis 缓存实例，类似于 Spring 的 RedisCacheManager。
 #[derive(Debug, Clone)]
-pub struct RedisCacheManager
-{
+pub struct RedisCacheManager {
     client: RedisClient,
 }
 
-impl RedisCacheManager
-{
+impl RedisCacheManager {
     /// Create a new Redis cache manager / 创建新的 Redis 缓存管理器
-    pub fn new(client: RedisClient) -> Self
-    {
+    pub fn new(client: RedisClient) -> Self {
         Self { client }
     }
 
     /// Get the underlying client / 获取底层客户端
-    pub fn client(&self) -> &RedisClient
-    {
+    pub fn client(&self) -> &RedisClient {
         &self.client
     }
 
@@ -277,14 +240,18 @@ impl RedisCacheManager
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_cache_creation()
-    {
+    fn test_cache_creation() {
         let client = redis::Client::open("redis://127.0.0.1").unwrap();
         let redis_client = RedisClient::from_client(client);
         let cache: RedisCache<String, String> = RedisCache::new(redis_client);
@@ -292,8 +259,7 @@ mod tests
     }
 
     #[test]
-    fn test_cache_with_prefix()
-    {
+    fn test_cache_with_prefix() {
         let client = redis::Client::open("redis://127.0.0.1").unwrap();
         let redis_client = RedisClient::from_client(client);
         let cache: RedisCache<String, String> = RedisCache::with_prefix(redis_client, "myapp:");
@@ -301,8 +267,7 @@ mod tests
     }
 
     #[test]
-    fn test_cache_manager()
-    {
+    fn test_cache_manager() {
         let client = redis::Client::open("redis://127.0.0.1").unwrap();
         let redis_client = RedisClient::from_client(client);
         let manager = RedisCacheManager::new(redis_client);

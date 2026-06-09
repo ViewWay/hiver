@@ -89,8 +89,7 @@ const MAX_TIMEOUT_MS: u64 =
 
 /// Timer entry in the timing wheel
 /// 时间轮中的定时器条目
-struct TimerEntry
-{
+struct TimerEntry {
     /// Unique identifier for this timer
     /// 此定时器的唯一标识符
     id: u64,
@@ -112,17 +111,14 @@ unsafe impl Sync for TimerEntry {}
 /// A timing wheel slot containing timer entries
 /// 包含定时器条目的时间轮槽
 #[derive(Debug)]
-struct TimerSlot
-{
+struct TimerSlot {
     /// List of timer entries in this slot
     /// 此槽中的定时器条目列表
     timers: UnsafeCell<LinkedList<TimerEntry>>,
 }
 
-impl TimerSlot
-{
-    fn new() -> Self
-    {
+impl TimerSlot {
+    fn new() -> Self {
         Self {
             timers: UnsafeCell::new(LinkedList::new()),
         }
@@ -130,16 +126,14 @@ impl TimerSlot
 
     /// Add a timer to this slot
     /// 向此槽添加定时器
-    unsafe fn push(&self, timer: TimerEntry)
-    {
+    unsafe fn push(&self, timer: TimerEntry) {
         let list = &mut *self.timers.get();
         list.push_back(timer);
     }
 
     /// Get all timers from this slot, clearing it
     /// 从此槽获取所有定时器并清空
-    unsafe fn take_all(&self) -> LinkedList<TimerEntry>
-    {
+    unsafe fn take_all(&self) -> LinkedList<TimerEntry> {
         let list = &mut *self.timers.get();
         std::mem::take(list)
     }
@@ -155,8 +149,7 @@ unsafe impl Sync for TimerSlot {}
 ///
 /// Uses 4 wheels with different granularities to cover a wide range of timeouts.
 /// 使用4个具有不同粒度的轮来覆盖大范围的超时。
-pub struct TimerWheel
-{
+pub struct TimerWheel {
     /// Current time in ticks
     /// 当前时间（滴答）
     current_ticks: AtomicU64,
@@ -183,8 +176,7 @@ pub struct TimerWheel
 /// Location of a timer in the wheel
 /// 定时器在轮中的位置
 #[derive(Clone, Copy, Debug)]
-struct TimerLocation
-{
+struct TimerLocation {
     /// Wheel level (0-3)
     #[allow(dead_code)]
     wheel_level: u8,
@@ -198,12 +190,10 @@ struct TimerLocation
 unsafe impl Send for TimerWheel {}
 unsafe impl Sync for TimerWheel {}
 
-impl TimerWheel
-{
+impl TimerWheel {
     /// Create a new timer wheel
     /// 创建新的时间轮
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             current_ticks: AtomicU64::new(0),
             wheel0: (0..WHEEL0_SIZE)
@@ -237,19 +227,15 @@ impl TimerWheel
 
     /// Cancel a timer by ID
     /// 通过ID取消定时器
-    pub fn cancel_timer(&self, id: u64) -> bool
-    {
+    pub fn cancel_timer(&self, id: u64) -> bool {
         let mut registry = self.timer_registry.lock().unwrap();
-        if let Some(_location) = registry.remove(&id)
-        {
+        if let Some(_location) = registry.remove(&id) {
             // Timer was found and removed from registry
             // The actual cancellation will be checked when the timer expires
             // 定时器已找到并从注册表中移除
             // 实际取消将在定时器到期时检查
             true
-        }
-        else
-        {
+        } else {
             false
         }
     }
@@ -257,8 +243,7 @@ impl TimerWheel
     /// Get the current tick count
     /// 获取当前滴答计数
     #[inline]
-    pub fn current_ticks(&self) -> u64
-    {
+    pub fn current_ticks(&self) -> u64 {
         self.current_ticks.load(Ordering::Acquire)
     }
 
@@ -267,13 +252,11 @@ impl TimerWheel
     ///
     /// Returns the number of timers that expired during this advancement.
     /// 返回在此推进期间到期的定时器数量。
-    pub fn advance(&self, ticks: u64) -> usize
-    {
+    pub fn advance(&self, ticks: u64) -> usize {
         let mut expired = 0;
         let _start = self.current_ticks.load(Ordering::Acquire);
 
-        for _ in 0..ticks
-        {
+        for _ in 0..ticks {
             let tick = self.current_ticks.fetch_add(1, Ordering::AcqRel);
             let pos0 = (tick & WHEEL0_MASK as u64) as usize;
 
@@ -281,8 +264,7 @@ impl TimerWheel
             // 处理轮0
             unsafe {
                 let timers = self.wheel0[pos0].take_all();
-                for timer in timers
-                {
+                for timer in timers {
                     // Check if timer is still in registry (not canceled)
                     // 检查定时器是否仍在注册表中（未取消）
                     let is_active = {
@@ -290,12 +272,10 @@ impl TimerWheel
                         registry.remove(&timer.id).is_some()
                     };
 
-                    if is_active
-                    {
+                    if is_active {
                         // Try to wake the timer
                         // 尝试唤醒定时器
-                        if let Some(waker) = timer.waker
-                        {
+                        if let Some(waker) = timer.waker {
                             waker.wake();
                         }
                         expired += 1;
@@ -305,13 +285,11 @@ impl TimerWheel
 
             // Cascade to wheel 1 every WHEEL0_SIZE ticks
             // 每WHEEL0_SIZE个滴答级联到轮1
-            if tick & (WHEEL0_SIZE as u64 - 1) == 0
-            {
+            if tick & (WHEEL0_SIZE as u64 - 1) == 0 {
                 let pos1 = ((tick >> WHEEL0_SHIFT) & WHEEL1_MASK as u64) as usize;
                 unsafe {
                     let timers = self.wheel1[pos1].take_all();
-                    for timer in timers
-                    {
+                    for timer in timers {
                         // Check if timer is still in registry
                         // 检查定时器是否仍在注册表中
                         let is_active = {
@@ -319,8 +297,7 @@ impl TimerWheel
                             registry.contains_key(&timer.id)
                         };
 
-                        if is_active
-                        {
+                        if is_active {
                             // Re-insert into wheel 0
                             // 重新插入轮0
                             self.insert_timer_inner(timer);
@@ -331,21 +308,18 @@ impl TimerWheel
 
             // Cascade to wheel 2 every (WHEEL0_SIZE * WHEEL1_SIZE) ticks
             // 每(WHEEL0_SIZE * WHEEL1_SIZE)个滴答级联到轮2
-            if tick & ((WHEEL0_SIZE * WHEEL1_SIZE) as u64 - 1) == 0
-            {
+            if tick & ((WHEEL0_SIZE * WHEEL1_SIZE) as u64 - 1) == 0 {
                 let pos2 = ((tick >> (WHEEL0_SHIFT + WHEEL1_SHIFT)) & WHEEL2_MASK as u64) as usize;
                 unsafe {
                     let timers = self.wheel2[pos2].take_all();
-                    for timer in timers
-                    {
+                    for timer in timers {
                         // Check if timer is still in registry
                         let is_active = {
                             let registry = self.timer_registry.lock().unwrap();
                             registry.contains_key(&timer.id)
                         };
 
-                        if is_active
-                        {
+                        if is_active {
                             self.insert_timer_inner(timer);
                         }
                     }
@@ -354,22 +328,19 @@ impl TimerWheel
 
             // Cascade to wheel 3 every (WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE) ticks
             // 每(WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE)个滴答级联到轮3
-            if tick & ((WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE) as u64 - 1) == 0
-            {
+            if tick & ((WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE) as u64 - 1) == 0 {
                 let pos3 = ((tick >> (WHEEL0_SHIFT + WHEEL1_SHIFT + WHEEL2_SHIFT))
                     & WHEEL3_MASK as u64) as usize;
                 unsafe {
                     let timers = self.wheel3[pos3].take_all();
-                    for timer in timers
-                    {
+                    for timer in timers {
                         // Check if timer is still in registry
                         let is_active = {
                             let registry = self.timer_registry.lock().unwrap();
                             registry.contains_key(&timer.id)
                         };
 
-                        if is_active
-                        {
+                        if is_active {
                             self.insert_timer_inner(timer);
                         }
                     }
@@ -382,18 +353,15 @@ impl TimerWheel
 
     /// Insert a timer into the wheel
     /// 向时间轮插入定时器
-    fn insert_timer_inner(&self, timer: TimerEntry)
-    {
+    fn insert_timer_inner(&self, timer: TimerEntry) {
         let current = self.current_ticks.load(Ordering::Acquire);
         let expiration = timer.expiration_ms / TICK_MS;
         let id = timer.id;
 
-        if expiration <= current
-        {
+        if expiration <= current {
             // Already expired, wake immediately
             // 已到期，立即唤醒
-            if let Some(waker) = timer.waker
-            {
+            if let Some(waker) = timer.waker {
                 waker.wake();
             }
             return;
@@ -402,24 +370,17 @@ impl TimerWheel
         // Determine wheel level and position before inserting
         // 在插入前确定轮层级和位置
         let ticks = expiration - current;
-        let (wheel_level, pos) = if ticks < WHEEL0_SIZE as u64
-        {
+        let (wheel_level, pos) = if ticks < WHEEL0_SIZE as u64 {
             (0u8, ((current + ticks) & WHEEL0_MASK as u64) as usize)
-        }
-        else if ticks < (WHEEL0_SIZE * WHEEL1_SIZE) as u64
-        {
+        } else if ticks < (WHEEL0_SIZE * WHEEL1_SIZE) as u64 {
             (1u8, (((current + ticks) >> WHEEL0_SHIFT) & WHEEL1_MASK as u64) as usize)
-        }
-        else if ticks < (WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE) as u64
-        {
+        } else if ticks < (WHEEL0_SIZE * WHEEL1_SIZE * WHEEL2_SIZE) as u64 {
             (
                 2u8,
                 (((current + ticks) >> (WHEEL0_SHIFT + WHEEL1_SHIFT)) & WHEEL2_MASK as u64)
                     as usize,
             )
-        }
-        else
-        {
+        } else {
             (
                 3u8,
                 (((current + ticks) >> (WHEEL0_SHIFT + WHEEL1_SHIFT + WHEEL2_SHIFT))
@@ -431,31 +392,28 @@ impl TimerWheel
         // 在插入到轮之前添加到注册表
         {
             let mut registry = self.timer_registry.lock().unwrap();
-            registry.insert(id, TimerLocation {
-                wheel_level,
-                slot_index: pos,
-            });
+            registry.insert(
+                id,
+                TimerLocation {
+                    wheel_level,
+                    slot_index: pos,
+                },
+            );
         }
 
         // Insert into appropriate wheel
         // 插入到适当的轮中
-        match wheel_level
-        {
-            0 =>
-            unsafe { self.wheel0[pos].push(timer) },
-            1 =>
-            unsafe { self.wheel1[pos].push(timer) },
-            2 =>
-            unsafe { self.wheel2[pos].push(timer) },
-            _ =>
-            unsafe { self.wheel3[pos].push(timer) },
+        match wheel_level {
+            0 => unsafe { self.wheel0[pos].push(timer) },
+            1 => unsafe { self.wheel1[pos].push(timer) },
+            2 => unsafe { self.wheel2[pos].push(timer) },
+            _ => unsafe { self.wheel3[pos].push(timer) },
         }
     }
 
     /// Insert a timer with the specified duration
     /// 插入具有指定持续时间的定时器
-    pub fn insert_timer(&self, duration: Duration) -> TimerHandle
-    {
+    pub fn insert_timer(&self, duration: Duration) -> TimerHandle {
         let duration_ms = duration.as_millis() as u64;
         let current = self.current_ticks.load(Ordering::Acquire);
         let expiration_ms = (current * TICK_MS) + duration_ms;
@@ -478,8 +436,7 @@ impl TimerWheel
 
     /// Insert a timer with the specified duration and associated waker
     /// 插入具有指定持续时间和关联waker的定时器
-    pub fn insert_timer_with_waker(&self, duration: Duration, waker: Waker) -> TimerHandle
-    {
+    pub fn insert_timer_with_waker(&self, duration: Duration, waker: Waker) -> TimerHandle {
         let duration_ms = duration.as_millis() as u64;
         let current = self.current_ticks.load(Ordering::Acquire);
         let expiration_ms = (current * TICK_MS) + duration_ms;
@@ -503,8 +460,7 @@ impl TimerWheel
     ///
     /// Returns `None` if there are no active timers.
     /// 如果没有活动定时器则返回 `None`。
-    pub fn next_expiration(&self) -> Option<u64>
-    {
+    pub fn next_expiration(&self) -> Option<u64> {
         // This is a simplified implementation
         // A full implementation would scan all wheels
         // 这是简化实现，完整实现会扫描所有轮
@@ -512,10 +468,8 @@ impl TimerWheel
     }
 }
 
-impl Default for TimerWheel
-{
-    fn default() -> Self
-    {
+impl Default for TimerWheel {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -528,8 +482,7 @@ impl Default for TimerWheel
 /// 可用于在定时器到期前取消它。
 /// 句柄引用全局时间轮，全局时间轮具有静态生命周期。
 #[derive(Clone)]
-pub struct TimerHandle
-{
+pub struct TimerHandle {
     #[allow(dead_code)]
     id: u64,
 }
@@ -538,12 +491,10 @@ pub struct TimerHandle
 // 安全：TimerHandle 只包含 u64 — 没有裸指针或非 Send 数据。
 unsafe impl Send for TimerHandle {}
 
-impl TimerHandle
-{
+impl TimerHandle {
     /// Cancel this timer
     /// 取消此定时器
-    pub fn cancel(&self)
-    {
+    pub fn cancel(&self) {
         // Access the global timer wheel directly — it has static lifetime
         // 直接访问全局时间轮 — 它具有静态生命周期
         global_timer().cancel_timer(self.id);
@@ -551,8 +502,7 @@ impl TimerHandle
 
     /// Create a new timer handle
     /// 创建新的定时器句柄
-    fn new(id: u64) -> Self
-    {
+    fn new(id: u64) -> Self {
         Self { id }
     }
 }
@@ -564,15 +514,13 @@ static GLOBAL_TIMER: OnceLock<TimerWheel> = OnceLock::new();
 /// Get the global timer wheel
 /// 获取全局时间轮
 #[inline]
-pub fn global_timer() -> &'static TimerWheel
-{
+pub fn global_timer() -> &'static TimerWheel {
     GLOBAL_TIMER.get_or_init(|| TimerWheel::new())
 }
 
 /// Sleep future that completes after the specified duration
 /// 在指定持续时间后完成的sleep future
-pub struct Sleep
-{
+pub struct Sleep {
     /// Duration to sleep / 睡眠持续时间
     duration: Duration,
     /// Whether the timer has been registered
@@ -582,12 +530,10 @@ pub struct Sleep
     start: Option<Instant>,
 }
 
-impl Sleep
-{
+impl Sleep {
     /// Create a new sleep future
     /// 创建新的sleep future
-    pub fn new(duration: Duration) -> Self
-    {
+    pub fn new(duration: Duration) -> Self {
         Self {
             duration,
             registered: false,
@@ -596,14 +542,11 @@ impl Sleep
     }
 }
 
-impl Future for Sleep
-{
+impl Future for Sleep {
     type Output = ();
 
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()>
-    {
-        if self.registered
-        {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()> {
+        if self.registered {
             // Check if the duration has elapsed
             // 检查持续时间是否已过
             if let Some(start) = self.start
@@ -612,9 +555,7 @@ impl Future for Sleep
                 return Poll::Ready(());
             }
             Poll::Pending
-        }
-        else
-        {
+        } else {
             // First poll: register the timer
             // 第一次轮询：注册定时器
             self.registered = true;
@@ -644,8 +585,7 @@ impl Future for Sleep
 ///     println!("Woke up after 100ms");
 /// }
 /// ```
-pub fn sleep(duration: Duration) -> Sleep
-{
+pub fn sleep(duration: Duration) -> Sleep {
     Sleep::new(duration)
 }
 
@@ -663,15 +603,11 @@ pub fn sleep(duration: Duration) -> Sleep
 ///     println!("5 seconds have passed");
 /// }
 /// ```
-pub fn sleep_until(instant: Instant) -> SleepUntil
-{
+pub fn sleep_until(instant: Instant) -> SleepUntil {
     let now = Instant::now();
-    let duration = if instant > now
-    {
+    let duration = if instant > now {
         instant.duration_since(now)
-    }
-    else
-    {
+    } else {
         Duration::ZERO
     };
 
@@ -682,17 +618,14 @@ pub fn sleep_until(instant: Instant) -> SleepUntil
 
 /// Sleep until future
 /// sleep until future
-pub struct SleepUntil
-{
+pub struct SleepUntil {
     sleep: Sleep,
 }
 
-impl Future for SleepUntil
-{
+impl Future for SleepUntil {
     type Output = ();
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<()>
-    {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<()> {
         Pin::new(&mut self.sleep).poll(_cx)
     }
 }
@@ -713,8 +646,7 @@ impl Future for SleepUntil
 ///     }
 /// }
 /// ```
-pub fn interval(duration: Duration) -> Interval
-{
+pub fn interval(duration: Duration) -> Interval {
     Interval {
         duration,
         next: Instant::now(),
@@ -723,21 +655,17 @@ pub fn interval(duration: Duration) -> Interval
 
 /// Interval stream
 /// 间隔流
-pub struct Interval
-{
+pub struct Interval {
     duration: Duration,
     next: Instant,
 }
 
-impl Interval
-{
+impl Interval {
     /// Wait for the next tick
     /// 等待下一个滴答
-    pub async fn tick(&mut self) -> Instant
-    {
+    pub async fn tick(&mut self) -> Instant {
         let now = Instant::now();
-        if now >= self.next
-        {
+        if now >= self.next {
             self.next = now + self.duration;
         }
 
@@ -747,21 +675,24 @@ impl Interval
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_timer_wheel_creation()
-    {
+    fn test_timer_wheel_creation() {
         let wheel = TimerWheel::new();
         assert_eq!(wheel.current_ticks(), 0);
     }
 
     #[test]
-    fn test_timer_constants()
-    {
+    fn test_timer_constants() {
         assert_eq!(TICK_MS, 1);
         assert_eq!(WHEEL0_SIZE, 256);
         assert_eq!(WHEEL1_SIZE, 64);
@@ -770,8 +701,7 @@ mod tests
     }
 
     #[test]
-    fn test_global_timer()
-    {
+    fn test_global_timer() {
         // Global timer is shared state (OnceLock), so ticks may be non-zero
         // if other tests accessed it first. Just verify it's accessible.
         // 全局定时器是共享状态 (OnceLock)，如果其他测试先访问了它，ticks 可能非零。
@@ -781,8 +711,7 @@ mod tests
     }
 
     #[test]
-    fn test_max_timeout()
-    {
+    fn test_max_timeout() {
         // Maximum timeout should be about 18.6 hours
         // 最大超时应该约18.6小时
         assert!(MAX_TIMEOUT_MS > 60_000 * 60 * 18);

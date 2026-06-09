@@ -85,8 +85,7 @@ where
 /// ```
 pub struct Cached;
 
-impl Cached
-{
+impl Cached {
     /// Get value from cache or fetch using the provided function
     /// 从缓存获取值或使用提供的函数获取
     ///
@@ -100,19 +99,15 @@ impl Cached
         Fut: Future<Output = Option<V>> + Send,
     {
         // Try to get from cache
-        if let Some(value) = cache.get(key).await
-        {
+        if let Some(value) = cache.get(key).await {
             return Some(value);
         }
 
         // Fetch the value (closure called only on cache miss)
-        if let Some(value) = fetch().await
-        {
+        if let Some(value) = fetch().await {
             cache.put(key.clone(), value.clone()).await;
             Some(value)
-        }
-        else
-        {
+        } else {
             None
         }
     }
@@ -130,15 +125,13 @@ impl Cached
         F: FnOnce() -> Option<V> + Send + 'static,
     {
         // Try to get from cache
-        if let Some(value) = cache.get(key).await
-        {
+        if let Some(value) = cache.get(key).await {
             return Some(value);
         }
 
         // Fetch the value
         let value = fetch();
-        if let Some(ref v) = value
-        {
+        if let Some(ref v) = value {
             cache.put(key.clone(), v.clone()).await;
         }
         value
@@ -159,21 +152,17 @@ impl Cached
         Fut: Future<Output = Option<V>> + Send,
     {
         // Try to get from cache
-        if let Some(value) = cache.get(key).await
-        {
+        if let Some(value) = cache.get(key).await {
             return Some(value);
         }
 
         // Fetch the value (closure called only on cache miss)
-        if let Some(value) = fetch().await
-        {
+        if let Some(value) = fetch().await {
             cache
                 .put_with_ttl(key.clone(), value.clone(), ttl_secs)
                 .await;
             Some(value)
-        }
-        else
-        {
+        } else {
             None
         }
     }
@@ -193,16 +182,13 @@ impl Cached
         Fut: Future<Output = Result<Option<V>, E>> + Send,
     {
         // Try to get from cache
-        if let Some(value) = cache.get(key).await
-        {
+        if let Some(value) = cache.get(key).await {
             return Ok(Some(value));
         }
 
         // Fetch the value (closure called only on cache miss)
-        match fetch().await
-        {
-            Ok(Some(value)) =>
-            {
+        match fetch().await {
+            Ok(Some(value)) => {
                 cache.put(key.clone(), value.clone()).await;
                 Ok(Some(value))
             },
@@ -226,8 +212,7 @@ impl Cached
 /// )
 /// ```
 #[derive(Debug, Clone)]
-pub struct CacheableOptions
-{
+pub struct CacheableOptions {
     /// Cache name(s)
     /// 缓存名称
     pub cache_names: Vec<String>,
@@ -249,12 +234,10 @@ pub struct CacheableOptions
     pub cache_null: bool,
 }
 
-impl CacheableOptions
-{
+impl CacheableOptions {
     /// Create new cacheable options
     /// 创建新的cacheable选项
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             cache_names: vec![crate::DEFAULT_CACHE.to_string()],
             key: None,
@@ -266,70 +249,66 @@ impl CacheableOptions
 
     /// Set cache name
     /// 设置缓存名称
-    pub fn cache_name(mut self, name: impl Into<String>) -> Self
-    {
+    pub fn cache_name(mut self, name: impl Into<String>) -> Self {
         self.cache_names = vec![name.into()];
         self
     }
 
     /// Set cache names
     /// 设置缓存名称
-    pub fn cache_names(mut self, names: Vec<String>) -> Self
-    {
+    pub fn cache_names(mut self, names: Vec<String>) -> Self {
         self.cache_names = names;
         self
     }
 
     /// Set key
     /// 设置key
-    pub fn key(mut self, key: impl Into<String>) -> Self
-    {
+    pub fn key(mut self, key: impl Into<String>) -> Self {
         self.key = Some(key.into());
         self
     }
 
     /// Set condition
     /// 设置条件
-    pub fn condition(mut self, condition: impl Into<String>) -> Self
-    {
+    pub fn condition(mut self, condition: impl Into<String>) -> Self {
         self.condition = Some(condition.into());
         self
     }
 
     /// Set unless
     /// 设置unless
-    pub fn unless(mut self, unless: impl Into<String>) -> Self
-    {
+    pub fn unless(mut self, unless: impl Into<String>) -> Self {
         self.unless = Some(unless.into());
         self
     }
 
     /// Set `cache_null`
     /// `设置cache_null`
-    pub fn cache_null(mut self, cache_null: bool) -> Self
-    {
+    pub fn cache_null(mut self, cache_null: bool) -> Self {
         self.cache_null = cache_null;
         self
     }
 }
 
-impl Default for CacheableOptions
-{
-    fn default() -> Self
-    {
+impl Default for CacheableOptions {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_cacheable_options()
-    {
+    fn test_cacheable_options() {
         let options = CacheableOptions::new()
             .cache_name("users")
             .key("#id")

@@ -18,8 +18,7 @@ use crate::error::{I18nError, I18nResult};
 /// }
 /// ```
 #[async_trait::async_trait]
-pub trait MessageSource: Send + Sync
-{
+pub trait MessageSource: Send + Sync {
     /// Get message for code and locale
     /// 获取代码和语言环境的消息
     ///
@@ -52,8 +51,7 @@ pub trait MessageSource: Send + Sync
     async fn get_resolvable(
         &self,
         resolvable: Box<dyn MessageSourceResolvable>,
-    ) -> I18nResult<String>
-    {
+    ) -> I18nResult<String> {
         let locale = resolvable.locale();
         let args = resolvable.args();
         self.get_message(resolvable.code(), args, locale).await
@@ -73,37 +71,32 @@ pub trait MessageSource: Send + Sync
 ///     Locale getLocale();
 /// }
 /// ```
-pub trait MessageSourceResolvable: Send + Sync
-{
+pub trait MessageSourceResolvable: Send + Sync {
     /// Get message codes (tried in order)
     /// 获取消息代码（按顺序尝试）
     fn codes(&self) -> &[String];
 
     /// Get first code (primary)
     /// 获取第一个代码（主要的）
-    fn code(&self) -> &str
-    {
+    fn code(&self) -> &str {
         self.codes().first().map(|s| s.as_str()).unwrap_or("")
     }
 
     /// Get arguments for message formatting
     /// 获取消息格式化的参数
-    fn args(&self) -> &[String]
-    {
+    fn args(&self) -> &[String] {
         &[]
     }
 
     /// Get default message
     /// 获取默认消息
-    fn default_message(&self) -> Option<&str>
-    {
+    fn default_message(&self) -> Option<&str> {
         None
     }
 
     /// Get target locale
     /// 获取目标语言环境
-    fn locale(&self) -> &str
-    {
+    fn locale(&self) -> &str {
         "en"
     }
 }
@@ -113,8 +106,7 @@ pub trait MessageSourceResolvable: Send + Sync
 /// Default message source resolvable implementation
 /// 默认消息源可解析实现
 #[cfg_attr(not(test), allow(dead_code))]
-pub struct DefaultMessageSourceResolvable
-{
+pub struct DefaultMessageSourceResolvable {
     codes: Vec<String>,
     args: Vec<String>,
     default_message: Option<String>,
@@ -122,12 +114,10 @@ pub struct DefaultMessageSourceResolvable
 }
 
 #[cfg_attr(not(test), allow(dead_code))]
-impl DefaultMessageSourceResolvable
-{
+impl DefaultMessageSourceResolvable {
     /// Create new resolvable
     /// 创建新可解析对象
-    pub fn new(code: impl Into<String>) -> Self
-    {
+    pub fn new(code: impl Into<String>) -> Self {
         Self {
             codes: vec![code.into()],
             args: Vec::new(),
@@ -138,64 +128,53 @@ impl DefaultMessageSourceResolvable
 
     /// Set codes
     /// 设置代码
-    pub fn with_codes(mut self, codes: Vec<String>) -> Self
-    {
+    pub fn with_codes(mut self, codes: Vec<String>) -> Self {
         self.codes = codes;
         self
     }
 
     /// Set args
     /// 设置参数
-    pub fn with_args(mut self, args: Vec<String>) -> Self
-    {
+    pub fn with_args(mut self, args: Vec<String>) -> Self {
         self.args = args;
         self
     }
 
     /// Set default message
     /// 设置默认消息
-    pub fn with_default_message(mut self, message: impl Into<String>) -> Self
-    {
+    pub fn with_default_message(mut self, message: impl Into<String>) -> Self {
         self.default_message = Some(message.into());
         self
     }
 
     /// Set locale
     /// 设置语言环境
-    pub fn with_locale(mut self, locale: impl Into<String>) -> Self
-    {
+    pub fn with_locale(mut self, locale: impl Into<String>) -> Self {
         self.locale = locale.into();
         self
     }
 }
 
-impl MessageSourceResolvable for DefaultMessageSourceResolvable
-{
-    fn codes(&self) -> &[String]
-    {
+impl MessageSourceResolvable for DefaultMessageSourceResolvable {
+    fn codes(&self) -> &[String] {
         &self.codes
     }
 
-    fn args(&self) -> &[String]
-    {
+    fn args(&self) -> &[String] {
         &self.args
     }
 
-    fn default_message(&self) -> Option<&str>
-    {
+    fn default_message(&self) -> Option<&str> {
         self.default_message.as_deref()
     }
 
-    fn locale(&self) -> &str
-    {
+    fn locale(&self) -> &str {
         &self.locale
     }
 }
 
-impl fmt::Debug for DefaultMessageSourceResolvable
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
+impl fmt::Debug for DefaultMessageSourceResolvable {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("DefaultMessageSourceResolvable")
             .field("codes", &self.codes)
             .field("args", &self.args)
@@ -209,18 +188,15 @@ impl fmt::Debug for DefaultMessageSourceResolvable
 /// 静态消息源（用于测试）
 #[derive(Debug, Clone)]
 #[cfg_attr(not(test), allow(dead_code))]
-pub struct StaticMessageSource
-{
+pub struct StaticMessageSource {
     messages: std::collections::HashMap<String, String>,
 }
 
 #[cfg_attr(not(test), allow(dead_code))]
-impl StaticMessageSource
-{
+impl StaticMessageSource {
     /// Create new static message source
     /// 创建新静态消息源
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             messages: std::collections::HashMap::new(),
         }
@@ -228,38 +204,31 @@ impl StaticMessageSource
 
     /// Add message
     /// 添加消息
-    pub fn add_message(mut self, key: impl Into<String>, message: impl Into<String>) -> Self
-    {
+    pub fn add_message(mut self, key: impl Into<String>, message: impl Into<String>) -> Self {
         self.messages.insert(key.into(), message.into());
         self
     }
 
     /// Format message with arguments
     /// 格式化带参数的消息
-    fn format_message(&self, template: &str, args: &[String]) -> String
-    {
+    fn format_message(&self, template: &str, args: &[String]) -> String {
         let mut result = template.to_string();
-        for (i, arg) in args.iter().enumerate()
-        {
+        for (i, arg) in args.iter().enumerate() {
             result = result.replace(&format!("{{{}}}", i), arg);
         }
         result
     }
 }
 
-impl Default for StaticMessageSource
-{
-    fn default() -> Self
-    {
+impl Default for StaticMessageSource {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 #[async_trait::async_trait]
-impl MessageSource for StaticMessageSource
-{
-    async fn get_message(&self, code: &str, args: &[String], _locale: &str) -> I18nResult<String>
-    {
+impl MessageSource for StaticMessageSource {
+    async fn get_message(&self, code: &str, args: &[String], _locale: &str) -> I18nResult<String> {
         let key = code.to_string();
         self.messages
             .get(&key)
@@ -276,10 +245,8 @@ impl MessageSource for StaticMessageSource
         args: &[String],
         default_message: &str,
         _locale: &str,
-    ) -> String
-    {
-        match self.get_message(code, args, _locale).await
-        {
+    ) -> String {
+        match self.get_message(code, args, _locale).await {
             Ok(msg) => msg,
             Err(_) => self.format_message(default_message, args),
         }
@@ -287,14 +254,18 @@ impl MessageSource for StaticMessageSource
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_message_source_resolvable()
-    {
+    fn test_message_source_resolvable() {
         let resolvable = DefaultMessageSourceResolvable::new("test.code")
             .with_args(vec!["Alice".to_string()])
             .with_locale("en_US");
@@ -305,8 +276,7 @@ mod tests
     }
 
     #[tokio::test]
-    async fn test_static_message_source()
-    {
+    async fn test_static_message_source() {
         let source = StaticMessageSource::new()
             .add_message("welcome", "Welcome!")
             .add_message("greeting", "Hello, {0}!");

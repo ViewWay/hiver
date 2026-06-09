@@ -19,8 +19,7 @@ use super::container::ApplicationContext;
 /// 组件类型
 /// Component type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ComponentType
-{
+pub enum ComponentType {
     /// 控制器 (@`RestController`)
     Controller,
 
@@ -37,13 +36,10 @@ pub enum ComponentType
     Component,
 }
 
-impl ComponentType
-{
+impl ComponentType {
     /// 获取组件类型名称
-    pub fn name(&self) -> &'static str
-    {
-        match self
-        {
+    pub fn name(&self) -> &'static str {
+        match self {
             Self::Controller => "Controller",
             Self::Service => "Service",
             Self::Repository => "Repository",
@@ -60,8 +56,7 @@ impl ComponentType
 /// 组件定义
 /// Component definition
 #[derive(Debug, Clone)]
-pub struct ComponentDefinition
-{
+pub struct ComponentDefinition {
     /// 组件名称
     pub name: String,
 
@@ -84,11 +79,9 @@ pub struct ComponentDefinition
     pub depends_on: Vec<String>,
 }
 
-impl ComponentDefinition
-{
+impl ComponentDefinition {
     /// 创建新的组件定义
-    pub fn new(name: String, component_type: ComponentType, type_name: String) -> Self
-    {
+    pub fn new(name: String, component_type: ComponentType, type_name: String) -> Self {
         Self {
             name,
             component_type,
@@ -101,22 +94,19 @@ impl ComponentDefinition
     }
 
     /// 设置为单例
-    pub fn singleton(mut self) -> Self
-    {
+    pub fn singleton(mut self) -> Self {
         self.scope = ComponentScope::Singleton;
         self
     }
 
     /// 设置为原型（每次请求创建新实例）
-    pub fn prototype(mut self) -> Self
-    {
+    pub fn prototype(mut self) -> Self {
         self.scope = ComponentScope::Prototype;
         self
     }
 
     /// 设置为懒加载
-    pub fn lazy(mut self) -> Self
-    {
+    pub fn lazy(mut self) -> Self {
         self.is_lazy = true;
         self
     }
@@ -129,8 +119,7 @@ impl ComponentDefinition
 /// 组件作用域
 /// Component scope
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ComponentScope
-{
+pub enum ComponentScope {
     /// 单例（默认，整个应用共享一个实例）
     /// Singleton (default, shared instance across the application)
     Singleton,
@@ -157,8 +146,7 @@ pub enum ComponentScope
 /// 参考 Spring Boot 的 @`ComponentScan`。
 /// Based on Spring Boot's @`ComponentScan`.
 #[derive(Debug)]
-pub struct ComponentScanner
-{
+pub struct ComponentScanner {
     /// 基础包名
     pub base_packages: Vec<String>,
 
@@ -172,11 +160,9 @@ pub struct ComponentScanner
     pub include_filters: Vec<IncludeFilter>,
 }
 
-impl ComponentScanner
-{
+impl ComponentScanner {
     /// 创建新的组件扫描器
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             base_packages: vec!["app".to_string()],
             component_types: vec![
@@ -191,36 +177,31 @@ impl ComponentScanner
     }
 
     /// 设置基础包名
-    pub fn base_packages(mut self, packages: Vec<String>) -> Self
-    {
+    pub fn base_packages(mut self, packages: Vec<String>) -> Self {
         self.base_packages = packages;
         self
     }
 
     /// 添加基础包名
-    pub fn add_base_package(mut self, package: impl Into<String>) -> Self
-    {
+    pub fn add_base_package(mut self, package: impl Into<String>) -> Self {
         self.base_packages.push(package.into());
         self
     }
 
     /// 设置要扫描的组件类型
-    pub fn component_types(mut self, types: Vec<ComponentType>) -> Self
-    {
+    pub fn component_types(mut self, types: Vec<ComponentType>) -> Self {
         self.component_types = types;
         self
     }
 
     /// 添加排除过滤器
-    pub fn exclude_filter(mut self, filter: ExcludeFilter) -> Self
-    {
+    pub fn exclude_filter(mut self, filter: ExcludeFilter) -> Self {
         self.exclude_filters.push(filter);
         self
     }
 
     /// 添加包含过滤器
-    pub fn include_filter(mut self, filter: IncludeFilter) -> Self
-    {
+    pub fn include_filter(mut self, filter: IncludeFilter) -> Self {
         self.include_filters.push(filter);
         self
     }
@@ -250,8 +231,7 @@ impl ComponentScanner
     /// Recommended approach: Use the `inventory` crate or build-time code
     ///    generation with `build.rs`.
     ///    推荐方法：使用 `inventory` crate 或通过 `build.rs` 进行构建时代码生成。
-    pub fn scan(&self, _ctx: &mut ApplicationContext) -> Result<Vec<ComponentDefinition>>
-    {
+    pub fn scan(&self, _ctx: &mut ApplicationContext) -> Result<Vec<ComponentDefinition>> {
         let components = Vec::new();
 
         tracing::debug!("Scanning components in packages: {:?}", self.base_packages);
@@ -265,10 +245,8 @@ impl ComponentScanner
         &self,
         ctx: &mut ApplicationContext,
         components: Vec<ComponentDefinition>,
-    ) -> Result<()>
-    {
-        for component in components
-        {
+    ) -> Result<()> {
+        for component in components {
             self.register_component(ctx, component)?;
         }
         Ok(())
@@ -280,8 +258,7 @@ impl ComponentScanner
         &self,
         _ctx: &mut ApplicationContext,
         #[allow(clippy::needless_pass_by_value)] component: ComponentDefinition,
-    ) -> Result<()>
-    {
+    ) -> Result<()> {
         tracing::debug!(
             "Registering component: {} ({})",
             component.name,
@@ -311,10 +288,8 @@ impl ComponentScanner
     }
 }
 
-impl Default for ComponentScanner
-{
-    fn default() -> Self
-    {
+impl Default for ComponentScanner {
+    fn default() -> Self {
         Self::new()
     }
 }
@@ -326,8 +301,7 @@ impl Default for ComponentScanner
 /// 排除过滤器
 /// Exclude filter
 #[derive(Debug, Clone)]
-pub struct ExcludeFilter
-{
+pub struct ExcludeFilter {
     /// 过滤器类型
     pub filter_type: FilterType,
 
@@ -335,11 +309,9 @@ pub struct ExcludeFilter
     pub pattern: String,
 }
 
-impl ExcludeFilter
-{
+impl ExcludeFilter {
     /// 创建新的排除过滤器
-    pub fn new(filter_type: FilterType, pattern: impl Into<String>) -> Self
-    {
+    pub fn new(filter_type: FilterType, pattern: impl Into<String>) -> Self {
         Self {
             filter_type,
             pattern: pattern.into(),
@@ -350,8 +322,7 @@ impl ExcludeFilter
 /// 包含过滤器
 /// Include filter
 #[derive(Debug, Clone)]
-pub struct IncludeFilter
-{
+pub struct IncludeFilter {
     /// 过滤器类型
     pub filter_type: FilterType,
 
@@ -359,11 +330,9 @@ pub struct IncludeFilter
     pub pattern: String,
 }
 
-impl IncludeFilter
-{
+impl IncludeFilter {
     /// 创建新的包含过滤器
-    pub fn new(filter_type: FilterType, pattern: impl Into<String>) -> Self
-    {
+    pub fn new(filter_type: FilterType, pattern: impl Into<String>) -> Self {
         Self {
             filter_type,
             pattern: pattern.into(),
@@ -374,8 +343,7 @@ impl IncludeFilter
 /// 过滤器类型
 /// Filter type
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FilterType
-{
+pub enum FilterType {
     /// 正则表达式
     Regex,
 
@@ -393,8 +361,7 @@ pub enum FilterType
 /// 扫描结果
 /// Scan result
 #[derive(Debug)]
-pub struct ScanResult
-{
+pub struct ScanResult {
     /// 找到的组件
     pub components: Vec<ComponentDefinition>,
 
@@ -405,20 +372,16 @@ pub struct ScanResult
     pub duration_ms: u64,
 }
 
-impl ScanResult
-{
+impl ScanResult {
     /// 获取组件数量
-    pub fn component_count(&self) -> usize
-    {
+    pub fn component_count(&self) -> usize {
         self.components.len()
     }
 
     /// 按类型分组统计
-    pub fn count_by_type(&self) -> HashMap<ComponentType, usize>
-    {
+    pub fn count_by_type(&self) -> HashMap<ComponentType, usize> {
         let mut counts = HashMap::new();
-        for component in &self.components
-        {
+        for component in &self.components {
             *counts.entry(component.component_type).or_insert(0) += 1;
         }
         counts
@@ -451,14 +414,18 @@ macro_rules! component_scanner {
 // ============================================================================
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_component_scanner_creation()
-    {
+    fn test_component_scanner_creation() {
         let scanner = ComponentScanner::new();
 
         assert_eq!(scanner.base_packages, vec!["app"]);
@@ -466,8 +433,7 @@ mod tests
     }
 
     #[test]
-    fn test_component_scanner_with_packages()
-    {
+    fn test_component_scanner_with_packages() {
         let scanner = ComponentScanner::new()
             .base_packages(vec!["myapp".to_string(), "myapp.lib".to_string()]);
 
@@ -475,8 +441,7 @@ mod tests
     }
 
     #[test]
-    fn test_component_type_names()
-    {
+    fn test_component_type_names() {
         assert_eq!(ComponentType::Controller.name(), "Controller");
         assert_eq!(ComponentType::Service.name(), "Service");
         assert_eq!(ComponentType::Repository.name(), "Repository");
@@ -485,8 +450,7 @@ mod tests
     }
 
     #[test]
-    fn test_component_definition()
-    {
+    fn test_component_definition() {
         let def = ComponentDefinition::new(
             "UserService".to_string(),
             ComponentType::Service,
@@ -498,8 +462,7 @@ mod tests
     }
 
     #[test]
-    fn test_scan_result_count_by_type()
-    {
+    fn test_scan_result_count_by_type() {
         let result = ScanResult {
             components: vec![
                 ComponentDefinition::new(

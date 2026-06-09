@@ -16,8 +16,7 @@ type HmacSha256 = Hmac<Sha256>;
 /// A remember-me token stored in the repository.
 /// 存储在仓库中的记住我令牌。
 #[derive(Debug, Clone)]
-pub struct RememberMeToken
-{
+pub struct RememberMeToken {
     /// Random series identifier — ties all tokens for a login session.
     pub series: String,
     /// Random token value — rotated on each successful authentication.
@@ -28,34 +27,27 @@ pub struct RememberMeToken
     pub last_used: DateTime<Utc>,
 }
 
-impl RememberMeToken
-{
+impl RememberMeToken {
     /// Encode token as `series:token` for a cookie value.
     /// 将令牌编码为 series:token 格式的 Cookie 值。
-    pub fn to_cookie_value(&self) -> String
-    {
+    pub fn to_cookie_value(&self) -> String {
         format!("{}:{}", self.series, self.value)
     }
 
     /// Parse a cookie value back into (series, value).
     /// 从 Cookie 值解析出 (series, value)。
-    pub fn from_cookie_value(cookie: &str) -> Option<(String, String)>
-    {
+    pub fn from_cookie_value(cookie: &str) -> Option<(String, String)> {
         let parts: Vec<&str> = cookie.splitn(2, ':').collect();
-        if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty()
-        {
+        if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() {
             Some((parts[0].to_string(), parts[1].to_string()))
-        }
-        else
-        {
+        } else {
             None
         }
     }
 
     /// Refresh with a new random value, updating last_used.
     /// 用新的随机值刷新令牌，更新 last_used。
-    pub fn refresh(&mut self)
-    {
+    pub fn refresh(&mut self) {
         self.value = random_hex(16);
         self.last_used = Utc::now();
     }
@@ -63,17 +55,14 @@ impl RememberMeToken
 
 /// In-memory token repository.
 /// 内存令牌仓库。
-pub struct InMemoryTokenRepository
-{
+pub struct InMemoryTokenRepository {
     tokens: RwLock<HashMap<String, RememberMeToken>>,
 }
 
-impl InMemoryTokenRepository
-{
+impl InMemoryTokenRepository {
     /// Create an empty repository.
     /// 创建空仓库。
-    pub fn new() -> Self
-    {
+    pub fn new() -> Self {
         Self {
             tokens: RwLock::new(HashMap::new()),
         }
@@ -81,8 +70,7 @@ impl InMemoryTokenRepository
 
     /// Save a new token.
     /// 保存新令牌。
-    pub fn save(&self, token: RememberMeToken)
-    {
+    pub fn save(&self, token: RememberMeToken) {
         self.tokens
             .write()
             .unwrap()
@@ -91,15 +79,13 @@ impl InMemoryTokenRepository
 
     /// Find a token by its series identifier.
     /// 通过 series 标识查找令牌。
-    pub fn find_by_series(&self, series: &str) -> Option<RememberMeToken>
-    {
+    pub fn find_by_series(&self, series: &str) -> Option<RememberMeToken> {
         self.tokens.read().unwrap().get(series).cloned()
     }
 
     /// Update an existing token.
     /// 更新现有令牌。
-    pub fn update(&self, token: &RememberMeToken)
-    {
+    pub fn update(&self, token: &RememberMeToken) {
         self.tokens
             .write()
             .unwrap()
@@ -108,15 +94,13 @@ impl InMemoryTokenRepository
 
     /// Remove a token by series.
     /// 通过 series 移除令牌。
-    pub fn remove(&self, series: &str)
-    {
+    pub fn remove(&self, series: &str) {
         self.tokens.write().unwrap().remove(series);
     }
 
     /// Remove all tokens for a given user.
     /// 移除指定用户的所有令牌。
-    pub fn remove_user_tokens(&self, username: &str)
-    {
+    pub fn remove_user_tokens(&self, username: &str) {
         self.tokens
             .write()
             .unwrap()
@@ -124,18 +108,15 @@ impl InMemoryTokenRepository
     }
 }
 
-impl Default for InMemoryTokenRepository
-{
-    fn default() -> Self
-    {
+impl Default for InMemoryTokenRepository {
+    fn default() -> Self {
         Self::new()
     }
 }
 
 /// Configuration for Remember-Me services.
 /// 记住我服务的配置。
-pub struct RememberMeConfig
-{
+pub struct RememberMeConfig {
     /// Cookie name (default: "remember-me").
     pub cookie_name: String,
     /// How long the token is valid, in seconds.
@@ -146,10 +127,8 @@ pub struct RememberMeConfig
     pub key: String,
 }
 
-impl Default for RememberMeConfig
-{
-    fn default() -> Self
-    {
+impl Default for RememberMeConfig {
+    fn default() -> Self {
         Self {
             cookie_name: "remember-me".to_string(),
             token_validity_secs: 14 * 24 * 3600, // 2 weeks
@@ -159,12 +138,10 @@ impl Default for RememberMeConfig
     }
 }
 
-impl RememberMeConfig
-{
+impl RememberMeConfig {
     /// Create config with a custom key.
     /// 用自定义密钥创建配置。
-    pub fn with_key(mut self, key: impl Into<String>) -> Self
-    {
+    pub fn with_key(mut self, key: impl Into<String>) -> Self {
         self.key = key.into();
         self
     }
@@ -176,18 +153,15 @@ impl RememberMeConfig
 /// Equivalent to Spring Security's `TokenBasedRememberMeServices` when using
 /// the token-based strategy, or `PersistentTokenBasedRememberMeServices` when
 /// using the persistent repository.
-pub struct RememberMeServices
-{
+pub struct RememberMeServices {
     config: RememberMeConfig,
     repository: InMemoryTokenRepository,
 }
 
-impl RememberMeServices
-{
+impl RememberMeServices {
     /// Create new services with default config.
     /// 用默认配置创建服务。
-    pub fn new(config: RememberMeConfig) -> Self
-    {
+    pub fn new(config: RememberMeConfig) -> Self {
         Self {
             config,
             repository: InMemoryTokenRepository::new(),
@@ -196,8 +170,7 @@ impl RememberMeServices
 
     /// Called after a successful interactive login — creates a new persistent token.
     /// 交互式登录成功后调用 — 创建新的持久令牌。
-    pub fn login_success(&self, username: &str) -> RememberMeToken
-    {
+    pub fn login_success(&self, username: &str) -> RememberMeToken {
         let token = RememberMeToken {
             series: random_hex(16),
             value: random_hex(16),
@@ -213,16 +186,14 @@ impl RememberMeServices
     ///
     /// Returns the username if valid, or `None` if the token is missing,
     /// expired, or stolen (series found but value mismatch → all tokens removed).
-    pub fn auto_login(&self, cookie_value: &str) -> Option<String>
-    {
+    pub fn auto_login(&self, cookie_value: &str) -> Option<String> {
         let (series, value) = RememberMeToken::from_cookie_value(cookie_value)?;
 
         let mut token = self.repository.find_by_series(&series)?;
 
         // Token value mismatch → potential theft; invalidate all user tokens
         // 令牌值不匹配 → 可能被盗；清除该用户所有令牌
-        if token.value != value
-        {
+        if token.value != value {
             let username = token.username.clone();
             self.repository.remove_user_tokens(&username);
             tracing::warn!(
@@ -238,8 +209,7 @@ impl RememberMeServices
         let elapsed = Utc::now()
             .signed_duration_since(token.last_used)
             .num_seconds();
-        if elapsed < 0 || elapsed as u64 > self.config.token_validity_secs
-        {
+        if elapsed < 0 || elapsed as u64 > self.config.token_validity_secs {
             self.repository.remove(&series);
             return None;
         }
@@ -255,18 +225,15 @@ impl RememberMeServices
 
     /// Logout — remove the token identified by the cookie.
     /// 登出 — 移除 Cookie 对应的令牌。
-    pub fn logout(&self, cookie_value: &str)
-    {
-        if let Some((series, _)) = RememberMeToken::from_cookie_value(cookie_value)
-        {
+    pub fn logout(&self, cookie_value: &str) {
+        if let Some((series, _)) = RememberMeToken::from_cookie_value(cookie_value) {
             self.repository.remove(&series);
         }
     }
 
     /// Generate a token-based signature (HMAC-SHA256).
     /// 生成基于令牌的签名 (HMAC-SHA256)。
-    pub fn hash_token(&self, token: &RememberMeToken) -> String
-    {
+    pub fn hash_token(&self, token: &RememberMeToken) -> String {
         let data =
             format!("{}:{}:{}:{}", token.username, token.series, token.value, self.config.key);
         let mut mac = HmacSha256::new_from_slice(self.config.key.as_bytes())
@@ -279,22 +246,25 @@ impl RememberMeServices
 
 /// Generate `n` random bytes as a hex string.
 /// 生成 n 个随机字节的十六进制字符串。
-fn random_hex(n: usize) -> String
-{
+fn random_hex(n: usize) -> String {
     let mut buf = vec![0u8; n];
     rand::rng().fill_bytes(&mut buf);
     hex::encode(&buf)
 }
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
-mod tests
-{
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
+mod tests {
     use super::*;
 
     #[test]
-    fn test_token_roundtrip()
-    {
+    fn test_token_roundtrip() {
         let token = RememberMeToken {
             series: "abc123".to_string(),
             value: "def456".to_string(),
@@ -308,8 +278,7 @@ mod tests
     }
 
     #[test]
-    fn test_invalid_cookie_values()
-    {
+    fn test_invalid_cookie_values() {
         assert!(RememberMeToken::from_cookie_value("").is_none());
         assert!(RememberMeToken::from_cookie_value(":").is_none());
         assert!(RememberMeToken::from_cookie_value("onlyseries:").is_none());
@@ -317,8 +286,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_refresh()
-    {
+    fn test_token_refresh() {
         let mut token = RememberMeToken {
             series: "s".to_string(),
             value: "v".to_string(),
@@ -332,8 +300,7 @@ mod tests
     }
 
     #[test]
-    fn test_repository_crud()
-    {
+    fn test_repository_crud() {
         let repo = InMemoryTokenRepository::new();
         let token = RememberMeToken {
             series: "s1".to_string(),
@@ -355,8 +322,7 @@ mod tests
     }
 
     #[test]
-    fn test_remove_user_tokens()
-    {
+    fn test_remove_user_tokens() {
         let repo = InMemoryTokenRepository::new();
         repo.save(RememberMeToken {
             series: "s1".to_string(),
@@ -383,8 +349,7 @@ mod tests
     }
 
     #[test]
-    fn test_login_auto_logout_cycle()
-    {
+    fn test_login_auto_logout_cycle() {
         let services = RememberMeServices::new(RememberMeConfig::default());
 
         // Login
@@ -400,8 +365,7 @@ mod tests
     }
 
     #[test]
-    fn test_token_theft_detection()
-    {
+    fn test_token_theft_detection() {
         let services = RememberMeServices::new(RememberMeConfig::default());
         let token = services.login_success("alice");
 
@@ -423,8 +387,7 @@ mod tests
     }
 
     #[test]
-    fn test_logout()
-    {
+    fn test_logout() {
         let services = RememberMeServices::new(RememberMeConfig::default());
         let token = services.login_success("alice");
         let cookie = token.to_cookie_value();
@@ -434,8 +397,7 @@ mod tests
     }
 
     #[test]
-    fn test_hash_token()
-    {
+    fn test_hash_token() {
         let config = RememberMeConfig::default().with_key("test-key");
         let services = RememberMeServices::new(config);
         let token = RememberMeToken {

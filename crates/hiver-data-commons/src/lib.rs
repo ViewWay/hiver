@@ -58,10 +58,17 @@
 #![warn(unreachable_pub)]
 
 #[cfg(test)]
-#[allow(clippy::indexing_slicing, clippy::float_cmp, clippy::module_inception, clippy::items_after_statements, clippy::assertions_on_constants)]
+#[allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants
+)]
 mod tests;
 
 pub mod auditing;
+pub mod data_rest;
 pub mod entity;
 pub mod error;
 pub mod method_name;
@@ -70,7 +77,6 @@ pub mod page;
 pub mod part_tree;
 pub mod projection;
 pub mod propagation;
-pub mod data_rest;
 #[cfg(feature = "query")]
 pub mod query;
 pub mod repository;
@@ -116,72 +122,52 @@ pub use specification::{
 ///
 /// Used for building safe SQL value representations when parameterized
 /// queries are not available.
-pub trait ToSql: Send + Sync
-{
+pub trait ToSql: Send + Sync {
     /// Convert to a SQL literal string.
     /// 转换为 SQL 字面量字符串。
     fn to_sql(&self) -> String;
 }
 
-impl ToSql for i32
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for i32 {
+    fn to_sql(&self) -> String {
         self.to_string()
     }
 }
-impl ToSql for i64
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for i64 {
+    fn to_sql(&self) -> String {
         self.to_string()
     }
 }
-impl ToSql for u32
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for u32 {
+    fn to_sql(&self) -> String {
         self.to_string()
     }
 }
-impl ToSql for u64
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for u64 {
+    fn to_sql(&self) -> String {
         self.to_string()
     }
 }
-impl ToSql for f64
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for f64 {
+    fn to_sql(&self) -> String {
         self.to_string()
     }
 }
-impl ToSql for &str
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for &str {
+    fn to_sql(&self) -> String {
         format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
-impl ToSql for String
-{
-    fn to_sql(&self) -> String
-    {
+impl ToSql for String {
+    fn to_sql(&self) -> String {
         format!("'{}'", self.replace('\'', "''").replace('\0', ""))
     }
 }
-impl ToSql for bool
-{
-    fn to_sql(&self) -> String
-    {
-        if *self
-        {
+impl ToSql for bool {
+    fn to_sql(&self) -> String {
+        if *self {
             "TRUE".to_string()
-        }
-        else
-        {
+        } else {
             "FALSE".to_string()
         }
     }
@@ -197,11 +183,9 @@ impl ToSql for bool
 /// let sql = replace_placeholders("name = ? AND age > ?", 2, 1);
 /// assert_eq!(sql, "name = $1 AND age > $2");
 /// ```
-pub fn replace_placeholders(sql: &str, param_count: usize, start_idx: u32) -> String
-{
+pub fn replace_placeholders(sql: &str, param_count: usize, start_idx: u32) -> String {
     let mut result = sql.to_string();
-    for idx in start_idx..start_idx + param_count as u32
-    {
+    for idx in start_idx..start_idx + param_count as u32 {
         result = result.replacen('?', &format!("${idx}"), 1);
     }
     result
@@ -212,8 +196,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude
-{
+pub mod prelude {
     pub use super::{
         AggregateRoot, CrudRepository, Direction, Error, Identifier, MethodName, Order, Page,
         PageRequest, PagingAndSortingRepository, Repository, Result, Sort, TableName, Versioned,
