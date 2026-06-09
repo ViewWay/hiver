@@ -70,6 +70,7 @@ pub mod page;
 pub mod part_tree;
 pub mod projection;
 pub mod propagation;
+pub mod data_rest;
 #[cfg(feature = "query")]
 pub mod query;
 pub mod repository;

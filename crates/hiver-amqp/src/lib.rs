@@ -46,6 +46,7 @@ mod listener;
 mod message;
 mod publisher;
 mod queue;
+pub mod kafka;
 pub mod rabbit_client;
 
 pub use ack::{AckMode, AckState, AcknowledgableMessage, ChannelExt};
